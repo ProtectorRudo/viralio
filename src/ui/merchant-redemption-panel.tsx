@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Merchant, RewardStatus } from "@/domain/types";
@@ -122,6 +123,11 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
               <p className="eyebrow public-intro">Canje autenticado</p>
               <h1>Validar premio</h1>
               <p className="lead">Ingresá el código de 8 caracteres que muestra el cliente.</p>
+              <nav className="merchant-panel-switch" aria-label="Panel del comercio">
+                <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/panel`}>Resumen</Link>
+                <span className="merchant-panel-tab is-active" aria-current="page">Canjes</span>
+                <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
+              </nav>
               <form onSubmit={lookup} className="merchant-form" data-testid="merchant-reward-search">
                 <label htmlFor="reward-code">Código del premio</label>
                 <input id="reward-code" data-testid="reward-code" inputMode="text" autoCapitalize="characters" autoComplete="off" value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="AB12CD34" required maxLength={8} />
