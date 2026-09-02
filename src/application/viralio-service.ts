@@ -4,7 +4,7 @@ import { canRecordEvent, transition } from "@/domain/flow";
 import { selectPrize } from "@/domain/probabilities";
 import { rewardStatus } from "@/domain/rewards";
 import { isValidReferralToken } from "@/domain/tokens";
-import type { AnalyticsEvent, EventName, Reward, Session, ShareChannel } from "@/domain/types";
+import type { AnalyticsEvent, EventName, MerchantMetrics, Reward, Session, ShareChannel } from "@/domain/types";
 import type { Repository, TransactionRepository, UniqueValueKind } from "@/persistence/repository";
 
 function token(): string {
@@ -218,6 +218,11 @@ export class ViralioService {
       await transaction.insertEvent(analyticsEvent("reward_redeemed", session, now, { rewardId: reward.id }));
       return updated;
     });
+  }
+
+  async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
+    if (!getMerchantById(merchantId)) throw new Error("Merchant not found");
+    return this.repository.transaction((transaction) => transaction.getMerchantMetrics(merchantId));
   }
 
   async recordWhatsappSave(sessionId: string): Promise<void> {
