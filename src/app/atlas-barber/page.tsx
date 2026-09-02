@@ -3,13 +3,13 @@ import { getMerchantBySlug } from "@/config/merchants";
 import { MerchantExperience } from "@/ui/merchant-experience";
 
 export const metadata: Metadata = {
-  title: "Moka · Hay algo especial esperando",
-  description: "Abrí tu pase Moka, compartí y descubrí un premio para tu próxima pausa.",
+  title: "Atlas Barber · Tu pase privado",
+  description: "Abrí tu pase Atlas, compartí y descubrí un beneficio para tu próximo corte.",
 };
 
-export default async function MokaPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
+export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams;
-  const merchant = getMerchantBySlug("moka");
+  const merchant = getMerchantBySlug("atlas-barber");
   if (!merchant) throw new Error("Merchant not found");
   return <MerchantExperience merchant={merchant} referralToken={ref} />;
 }

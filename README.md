@@ -1,20 +1,67 @@
-# Viralio — prototipo Moka
+# Viralio
 
-Prototipo mobile-first del flujo **Compartí → Girá → Ganá** definido en [VIRALIO-001](https://github.com/ProtectorRudo/viralio/issues/1). La demo pública vive en `/moka`; no pide registro ni datos personales.
+Experiencia mobile-first de recompensas compartibles para comercios. El flujo validado es:
 
-## Requisitos y ejecución
+**QR / landing → premio oculto → compartir → ruleta → premio → guardar en WhatsApp**.
 
-- Node.js 24 LTS (la aplicación también es compatible con las versiones soportadas por Next.js 16).
-- npm 11 o superior.
+Las demos públicas son [Moka](http://localhost:3000/moka), una cafetería cálida y sofisticada, y [Atlas Barber](http://localhost:3000/atlas-barber), una barbería urbana. Ambas ejecutan exactamente el mismo componente, endpoints y dominio; sólo cambia su configuración tipada.
+
+## Ejecutar localmente
+
+Requiere Node.js 24 LTS y npm 11 o superior.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Abrir `http://localhost:3000/moka`. La primera ejecución crea `data/viralio.json`; el archivo de datos local está ignorado por Git. Para definir el origen usado en links compartidos puede copiarse `.env.example` a `.env.local`, aunque en navegador se usa el origen actual.
+La primera sesión crea `data/viralio.json`, ignorado por Git. `.env.example` documenta el origen público opcional; en el navegador se usa siempre el origen actual.
 
-## Verificaciones
+## Sistema de diseño
+
+`src/app/globals.css` define tokens neutrales y reutilizables para:
+
+- escala de spacing y tipografía;
+- radios, surfaces y sombras;
+- duraciones y curvas de motion;
+- focus visible;
+- estados success, warning y error;
+- layout y componentes compartidos.
+
+Los componentes consumen variables semánticas (`--color-primary`, `--color-surface`, etc.), nunca colores de un comercio. `prefers-reduced-motion` elimina transiciones no esenciales y el motor reduce también la espera funcional del reveal. La rueda es SVG: expone una descripción accesible con todos los premios y no depende sólo del color.
+
+## Theming por comercio
+
+Cada entrada de `src/config/merchants.ts` tiene dominio y skin:
+
+- identidad: `displayName`, `shortName`, `monogram` y categoría;
+- copy contextual para landing, share y referral;
+- paleta semántica completa;
+- colores de segmentos;
+- premios, probabilidades, vigencia y WhatsApp.
+
+`merchantThemeStyle()` acepta únicamente colores hexadecimales de seis dígitos y usa un fallback seguro ante cualquier valor inválido. Los valores se aplican como custom properties a la raíz de la experiencia; no se inyecta CSS ni HTML arbitrario. `MerchantExperience` renderiza el flujo entero y `RewardCard` hereda el comercio del reward server-side.
+
+### Agregar otra demo
+
+1. Agregar un `Merchant` en `src/config/merchants.ts`; sus probabilidades deben sumar 100.
+2. Crear una ruta delgada como `src/app/atlas-barber/page.tsx` que busque el slug y renderice `<MerchantExperience merchant={merchant} />`.
+3. Agregar metadata propia y un smoke E2E.
+
+No se copia ni modifica el motor React. La selección del premio sigue ocurriendo únicamente en `ViralioService.spin()`.
+
+## Arquitectura y seguridad del flujo
+
+- `src/domain`: state machine, probabilidades, estados y reglas puras.
+- `src/application`: sesiones, referrals, analytics, emisión y canje transaccionales.
+- `src/persistence`: contrato de repositorio y adaptadores JSON/memoria.
+- `src/config`: tenants, skins y premios.
+- `src/app/api`: validación server-side de cada transición sensible.
+- `src/ui`: motor merchant-driven, rueda premium SVG y tarjeta pública.
+
+La rueda recibe el reward decidido por el servidor, ubica el segmento de `prizeId` bajo el puntero y recién entonces presenta la animación. Nunca calcula ni elige un premio. Una sesión sólo obtiene un reward, el refresh recupera el mismo y un canje no puede repetirse. Tokens y códigos son criptográficos y no secuenciales.
+
+## Verificación
 
 ```bash
 npm test
@@ -25,45 +72,14 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-El E2E usa un viewport Pixel 7 y reemplaza exclusivamente el contrato del Web Share API, porque Playwright no puede operar el share sheet nativo. Comprueba que sólo se desbloquea después de que ese contrato se resuelve y nunca registra una publicación externa.
+La suite E2E cubre Moka completo, persistencia, WhatsApp, coincidencia rueda/servidor, Atlas y su reward card, reduced motion, y ausencia de overflow en 360×800, 390×844, 412×915, 430×932 y 1280×800. Web Share se reemplaza sólo en el límite del navegador, porque Playwright no puede operar el share sheet del sistema.
 
-## Arquitectura
+GitHub Actions ejecuta en pushes a `main` y PRs: `npm ci`, tests unit/integration, lint sin warnings, typecheck y build. E2E queda como verificación local obligatoria: depende de Chromium y de un servidor con persistencia JSON local; excluirlo evita sumar descarga y variabilidad de browser a una CI que debe permanecer rápida, mientras el contrato crítico está cubierto por tests de servicio en CI.
 
-- `src/domain`: state machine, probabilidades, estados y reglas puras, sin dependencia de React.
-- `src/application`: casos de uso transaccionales para sesiones, sharing, referrals, emisión/canje y analytics.
-- `src/persistence`: interfaz `Repository` y adaptadores JSON/memoria. El adaptador puede sustituirse por PostgreSQL sin cambiar el dominio.
-- `src/config`: configuración multi-tenant centralizada; VIRALIO-001 sólo registra Moka.
-- `src/app/api`: endpoints server-side que validan cada transición sensible.
-- `src/ui`: experiencia mobile-first y tarjeta/validador de premio.
+## Share externo y otras limitaciones
 
-Las sesiones, referrals, rewards y códigos usan tokens criptográficos no secuenciales. Las escrituras JSON se serializan y reemplazan atómicamente. El giro y el canje se resuelven dentro de una transacción server-side; reintentar o refrescar devuelve el mismo premio y un reward canjeado no vuelve a cambiar.
-
-## Datos demo
-
-Moka se configura una sola vez en `src/config/merchants.ts`:
-
-| Premio | Probabilidad |
-| --- | ---: |
-| Upgrade de café | 35% |
-| Medialuna gratis en tu próxima visita | 30% |
-| 10% en tu próxima visita | 20% |
-| Café gratis | 14% |
-| Premio especial Moka | 1% |
-
-Los premios vencen a los 7 días. El teléfono `5491100000000` es el número ficticio configurado para la demo y debe reemplazarse por el del comercio en una puesta real.
-
-## Decisiones y limitaciones conocidas
-
-- La persistencia JSON es deliberadamente local/dev: es durable entre reinicios y suficiente para una única instancia, pero no coordina múltiples procesos o despliegues serverless. La interfaz de repositorio marca el límite de migración a PostgreSQL.
-- Web Share sólo aparece si `navigator.share` está disponible. El navegador/plataforma controla el share sheet y no brinda confirmación verificable de una Story; Viralio registra `share_initiated`, nunca `share_published`.
-- WhatsApp usa enlaces `wa.me` con texto precompletado, no WhatsApp Business API. Instagram/redes se ofrecen mediante el share sheet nativo cuando existe; la web no puede publicar directamente ni confirmar una publicación.
-- El validador demo está en `/validar/<token>` y no tiene autenticación de empleados, conforme al alcance del issue. En producción ese acceso deberá protegerse.
-- No se atribuye compra física: el lenguaje y la medición se limitan a visita/participación.
-
-## Flujo manual sugerido
-
-1. Entrar a `/moka` y tocar **Descubrir mi premio**.
-2. Iniciar WhatsApp o el share sheet. La ruleta no existe antes de este paso.
-3. Girar, refrescar y comprobar que el premio persiste.
-4. Abrir **Guardar premio en WhatsApp** y revisar comercio, premio, código, vencimiento y link de tarjeta.
-5. Abrir `/premio/<token>` y `/validar/<token>`; canjear una vez y comprobar los estados `AVAILABLE`, `REDEEMED` y, con una fecha vencida en datos de desarrollo, `EXPIRED`.
+- Viralio registra `share_initiated` cuando se resuelve Web Share o cuando se abre WhatsApp. Los navegadores y redes no ofrecen confirmación verificable de publicación; la UI no afirma que exista.
+- WhatsApp usa `wa.me` con texto precompletado, no WhatsApp Business API. Los números de ambas demos son ficticios.
+- La persistencia JSON es para una sola instancia local/demo. El contrato `Repository` es el límite previsto para una base transaccional productiva.
+- `/validar/<token>` es un validador demo sin autenticación de empleados, acorde al alcance actual. Debe protegerse en producción.
+- La tarjeta pública es presentable y tematizada, pero la fuente de verdad del estado continúa siendo server-side.

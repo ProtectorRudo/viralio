@@ -65,4 +65,16 @@ describe("ViralioService", () => {
     await expect(service.recordWhatsappSave(session.id)).rejects.toThrow(/Reward/);
     expect(repository.database.events.map((event) => event.name)).toEqual(["landing_viewed"]);
   });
+
+  it("runs the identical secure flow with Atlas Barber configuration", async () => {
+    const { repository, service } = setup();
+    const { session, merchant } = await service.startSession("atlas-barber");
+    await service.unlock(session.id);
+    await service.initiateShare(session.id, "whatsapp");
+    const reward = await service.spin(session.id);
+    expect(merchant.id).toBe("merchant_atlas");
+    expect(reward.merchantId).toBe(merchant.id);
+    expect(merchant.prizes.some((prize) => prize.id === reward.prizeId)).toBe(true);
+    expect(repository.database.events.map((event) => event.name)).toContain("reward_issued");
+  });
 });

@@ -1,0 +1,85 @@
+import type { Merchant, Reward } from "@/domain/types";
+
+const center = 160;
+const radius = 146;
+
+function point(angle: number): [number, number] {
+  const radians = (angle * Math.PI) / 180;
+  return [center + radius * Math.cos(radians), center + radius * Math.sin(radians)];
+}
+
+function segmentPath(index: number, count: number): string {
+  const start = -90 + (index * 360) / count;
+  const end = -90 + ((index + 1) * 360) / count;
+  const [x1, y1] = point(start);
+  const [x2, y2] = point(end);
+  return `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z`;
+}
+
+function shortLabel(label: string): [string, string?] {
+  const words = label.replace(" en tu próxima visita", "").replace(" de regalo", "").split(" ");
+  if (words.length < 3) return [words.join(" ")];
+  const midpoint = Math.ceil(words.length / 2);
+  return [words.slice(0, midpoint).join(" "), words.slice(midpoint).join(" ")];
+}
+
+export function winningRotation(merchant: Merchant, reward?: Reward): number {
+  if (!reward) return 0;
+  const index = Math.max(0, merchant.prizes.findIndex((prize) => prize.id === reward.prizeId));
+  return 1800 - ((index + 0.5) * 360) / merchant.prizes.length;
+}
+
+export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
+  merchant: Merchant;
+  reward?: Reward;
+  spinning: boolean;
+  reducedMotion: boolean;
+}) {
+  const rotation = winningRotation(merchant, reward);
+  const prizeList = merchant.prizes.map((prize) => prize.name).join(", ");
+
+  return (
+    <div
+      className={`wheel-frame${spinning ? " is-spinning" : ""}${reducedMotion ? " is-reduced" : ""}`}
+      data-testid="premium-wheel"
+      data-winning-prize={reward?.prizeName ?? ""}
+      role="img"
+      aria-label={`Ruleta de ${merchant.name}. Premios: ${prizeList}`}
+    >
+      <div className="wheel-pointer" aria-hidden="true"><span /></div>
+      <svg
+        className="wheel-svg"
+        viewBox="0 0 320 320"
+        style={{ transform: `rotate(${rotation}deg)` }}
+        aria-hidden="true"
+      >
+        <circle cx="160" cy="160" r="154" className="wheel-rim" />
+        {merchant.prizes.map((prize, index) => {
+          const angle = (index + 0.5) * (360 / merchant.prizes.length);
+          const [first, second] = shortLabel(prize.name);
+          const fill = merchant.theme.palette.wheel[index % merchant.theme.palette.wheel.length];
+          return (
+            <g key={prize.id}>
+              <path d={segmentPath(index, merchant.prizes.length)} fill={fill} className="wheel-segment" data-prize-id={prize.id} />
+              <g transform={`rotate(${angle} 160 160)`}>
+                <text
+                  x="160"
+                  y="49"
+                  textAnchor="middle"
+                  className="wheel-label"
+                  transform={angle > 90 && angle < 270 ? "rotate(180 160 49)" : undefined}
+                >
+                  <tspan x="160" dy="0">{first}</tspan>
+                  {second && <tspan x="160" dy="13">{second}</tspan>}
+                </text>
+              </g>
+            </g>
+          );
+        })}
+        <circle cx="160" cy="160" r="42" className="wheel-hub-ring" />
+        <circle cx="160" cy="160" r="31" className="wheel-hub" />
+        <text x="160" y="166" textAnchor="middle" className="wheel-monogram">{merchant.theme.monogram}</text>
+      </svg>
+    </div>
+  );
+}
