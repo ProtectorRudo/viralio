@@ -9,20 +9,23 @@ export const dynamic = "force-dynamic";
 
 export default async function MerchantDashboardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const merchant = getMerchantBySlug(slug);
-  if (!merchant) notFound();
+  const base = getMerchantBySlug(slug);
+  if (!base) notFound();
 
   let authenticated = false;
   try {
     const store = await cookies();
     const session = verifyMerchantSessionToken(store.get(MERCHANT_SESSION_COOKIE)?.value);
-    authenticated = session?.merchantId === merchant.id;
+    authenticated = session?.merchantId === base.id;
   } catch {
     authenticated = false;
   }
 
-  if (!authenticated) redirect(`/comercio/${merchant.slug}/canjes`);
+  if (!authenticated) redirect(`/comercio/${base.slug}/canjes`);
 
-  const metrics = await viralio.getMerchantMetrics(merchant.id);
+  const [merchant, metrics] = await Promise.all([
+    viralio.getMerchantForExperience(base.slug),
+    viralio.getMerchantMetrics(base.id),
+  ]);
   return <MerchantDashboard merchant={merchant} metrics={metrics} />;
 }
