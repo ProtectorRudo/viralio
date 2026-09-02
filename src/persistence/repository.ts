@@ -1,7 +1,27 @@
-import type { Database } from "@/domain/types";
+import type { AnalyticsEvent, Database, EventName, Reward, Session } from "@/domain/types";
+
+export type UniqueValueKind = "session_referral" | "reward_token" | "short_code";
+
+export interface TransactionRepository {
+  getSessionById(sessionId: string, merchantId?: string, forUpdate?: boolean): Promise<Session | undefined>;
+  getSessionByReferralToken(referralToken: string, merchantId?: string): Promise<Session | undefined>;
+  insertSession(session: Session): Promise<void>;
+  updateSession(session: Session): Promise<void>;
+
+  getRewardById(rewardId: string, forUpdate?: boolean): Promise<Reward | undefined>;
+  getRewardByToken(rewardToken: string, forUpdate?: boolean): Promise<Reward | undefined>;
+  insertReward(reward: Reward): Promise<void>;
+  updateReward(reward: Reward): Promise<void>;
+
+  hasEvent(name: EventName, sessionId: string, rewardId?: string): Promise<boolean>;
+  insertEvent(event: AnalyticsEvent): Promise<void>;
+  uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean>;
+}
 
 export interface Repository {
-  transaction<T>(operation: (database: Database) => T | Promise<T>): Promise<T>;
+  readonly kind: "json" | "memory" | "postgres";
+  transaction<T>(operation: (transaction: TransactionRepository) => Promise<T>): Promise<T>;
+  healthCheck(): Promise<boolean>;
 }
 
 export function emptyDatabase(): Database {
