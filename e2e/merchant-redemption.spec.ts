@@ -68,12 +68,13 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
     response.url().endsWith("/api/merchant/auth") && response.request().method() === "POST",
   );
   await page.getByRole("button", { name: /Ingresar al panel/ }).click();
-  const loginResponse = await loginPromise;
-  expect(loginResponse.status()).toBe(200);
-  const setCookie = loginResponse.headers()["set-cookie"] ?? "";
-  expect(setCookie).toContain("viralio_merchant_session=");
-  expect(setCookie.toLowerCase()).toContain("httponly");
-  expect(setCookie.toLowerCase()).toContain("samesite=strict");
+  expect((await loginPromise).status()).toBe(200);
+
+  const merchantCookie = (await page.context().cookies()).find((cookie) => cookie.name === "viralio_merchant_session");
+  expect(merchantCookie).toBeDefined();
+  expect(merchantCookie?.httpOnly).toBe(true);
+  expect(merchantCookie?.sameSite).toBe("Strict");
+  expect(merchantCookie?.secure).toBe(true);
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
 
   await page.getByTestId("reward-code").fill(reward.shortCode.toLowerCase());
