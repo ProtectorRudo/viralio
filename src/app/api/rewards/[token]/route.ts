@@ -12,13 +12,3 @@ export async function GET(request: Request, context: { params: Promise<{ token: 
     return NextResponse.json({ error: (error as Error).message }, { status: 404 });
   }
 }
-
-export async function PATCH(_request: Request, context: { params: Promise<{ token: string }> }) {
-  try {
-    const { token } = await context.params;
-    const reward = await viralio.redeem(token);
-    return NextResponse.json({ reward, status: rewardStatus(reward) });
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 409 });
-  }
-}
