@@ -60,7 +60,7 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
   );
   await page.getByRole("button", { name: /Ingresar al panel/ }).click();
   expect((await failedLoginPromise).status()).toBe(401);
-  await expect(page.getByRole("alert")).toContainText("Credenciales inválidas");
+  await expect(page.getByText("Credenciales inválidas", { exact: true })).toBeVisible();
   await expect(page.getByTestId("merchant-login-form")).toBeVisible();
 
   await page.getByTestId("merchant-pin").fill("246810");
