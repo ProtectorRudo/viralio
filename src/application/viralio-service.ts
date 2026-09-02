@@ -66,6 +66,17 @@ export class ViralioService {
     });
   }
 
+  async getShareContext(referralToken: string) {
+    if (!isValidReferralToken(referralToken)) throw new Error("Invalid referral token");
+    return this.repository.transaction((database) => {
+      const session = database.sessions.find((candidate) => candidate.referralToken === referralToken);
+      if (!session) throw new Error("Referral not found");
+      const merchant = getMerchantById(session.merchantId);
+      if (!merchant) throw new Error("Merchant not found");
+      return { session, merchant };
+    });
+  }
+
   async unlock(sessionId: string): Promise<Session> {
     return this.repository.transaction((database) => {
       const session = this.requireSession(database, sessionId);
