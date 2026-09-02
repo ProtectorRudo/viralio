@@ -85,14 +85,14 @@ postgresDescribe("PostgresRepository integration", () => {
     expect(count).toBe(1);
   });
 
-  it("allows exactly one redeem when two redeems race", async () => {
+  it("allows exactly one merchant-scoped redeem when two redeems race", async () => {
     const instance = service();
     const session = await sharedSession(instance);
     const reward = await instance.spin(session.id);
 
     const results = await Promise.allSettled([
-      instance.redeem(reward.token),
-      instance.redeem(reward.token),
+      instance.redeemForMerchant("merchant_moka", reward.shortCode),
+      instance.redeemForMerchant("merchant_moka", reward.shortCode),
     ]);
 
     expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
@@ -104,6 +104,14 @@ postgresDescribe("PostgresRepository integration", () => {
       WHERE reward_id = ${reward.id} AND name = 'reward_redeemed'
     `;
     expect(count).toBe(1);
+  });
+
+  it("does not reveal a reward to another merchant", async () => {
+    const instance = service();
+    const session = await sharedSession(instance);
+    const reward = await instance.spin(session.id);
+    await expect(instance.getRewardForMerchant("merchant_atlas", reward.shortCode)).rejects.toThrow(/not found/);
+    await expect(instance.redeemForMerchant("merchant_atlas", reward.shortCode)).rejects.toThrow(/not found/);
   });
 
   it("deduplicates reward_viewed even under concurrent reads", async () => {
@@ -133,7 +141,7 @@ postgresDescribe("PostgresRepository integration", () => {
     const reward = await instance.spin(session.id);
     const expiredService = service(new Date("2026-09-09T12:00:00.000Z"));
 
-    await expect(expiredService.redeem(reward.token)).rejects.toThrow(/not available/);
+    await expect(expiredService.redeemForMerchant("merchant_moka", reward.shortCode)).rejects.toThrow(/not available/);
   });
 });
 

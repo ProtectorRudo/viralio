@@ -15,6 +15,10 @@ function shortCode(): string {
   return randomBytes(4).toString("hex").toUpperCase();
 }
 
+function normalizeShortCode(value: string): string {
+  return value.trim().toUpperCase();
+}
+
 function analyticsEvent(
   name: EventName,
   session: Session,
@@ -177,10 +181,7 @@ export class ViralioService {
         ? await transaction.getSessionById(viewerSessionId, reward.merchantId)
         : await transaction.getSessionById(reward.sessionId, reward.merchantId);
 
-      if (
-        session &&
-        !await transaction.hasEvent("reward_viewed", session.id, reward.id)
-      ) {
+      if (session && !await transaction.hasEvent("reward_viewed", session.id, reward.id)) {
         await transaction.insertEvent(analyticsEvent(
           "reward_viewed",
           session,
@@ -192,9 +193,21 @@ export class ViralioService {
     });
   }
 
-  async redeem(rewardToken: string): Promise<Reward> {
+  async getRewardForMerchant(merchantId: string, value: string): Promise<Reward> {
+    const code = normalizeShortCode(value);
+    if (!/^[A-F0-9]{8}$/.test(code)) throw new Error("Reward not found");
     return this.repository.transaction(async (transaction) => {
-      const reward = await transaction.getRewardByToken(rewardToken, true);
+      const reward = await transaction.getRewardByShortCode(code, merchantId);
+      if (!reward) throw new Error("Reward not found");
+      return reward;
+    });
+  }
+
+  async redeemForMerchant(merchantId: string, value: string): Promise<Reward> {
+    const code = normalizeShortCode(value);
+    if (!/^[A-F0-9]{8}$/.test(code)) throw new Error("Reward not found");
+    return this.repository.transaction(async (transaction) => {
+      const reward = await transaction.getRewardByShortCode(code, merchantId, true);
       if (!reward) throw new Error("Reward not found");
       if (rewardStatus(reward, this.now()) !== "AVAILABLE") throw new Error("Reward is not available");
 
