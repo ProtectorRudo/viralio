@@ -34,7 +34,7 @@ async function issueMokaReward(page: Page) {
   return result.reward;
 }
 
-test("public reward stays read-only and authenticated Moka staff can redeem by code", async ({ page, request }) => {
+test("public reward stays read-only and authenticated Moka staff can redeem and open control center", async ({ page, request }) => {
   const reward = await issueMokaReward(page);
 
   await page.goto(`/premio/${reward.token}`);
@@ -94,6 +94,12 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
   await expect(page.getByTestId("metric-shares")).toHaveText(/^[1-9]\d*$/);
   await expect(page.getByTestId("metric-redeemed")).toHaveText(/^[1-9]\d*$/);
 
+  await page.getByRole("link", { name: "Configuración" }).click();
+  await expect(page).toHaveURL(/\/comercio\/moka\/configuracion$/);
+  await expect(page.getByTestId("merchant-settings-panel")).toBeVisible();
+  await expect(page.getByTestId("probability-total")).toContainText("100%");
+  await expect(page.getByTestId("save-settings")).toBeEnabled();
+
   await page.getByRole("link", { name: "Canjes" }).click();
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
 
@@ -121,4 +127,10 @@ test("merchant write APIs reject requests without same-origin browser context", 
     headers: { origin: "https://evil.example" },
   });
   expect(redeem.status()).toBe(403);
+
+  const settings = await request.put("http://127.0.0.1:3000/api/merchant/settings", {
+    data: {},
+    headers: { origin: "https://evil.example" },
+  });
+  expect(settings.status()).toBe(403);
 });
