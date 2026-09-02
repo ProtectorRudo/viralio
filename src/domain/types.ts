@@ -1,6 +1,6 @@
 export type FlowState = "LANDING" | "UNLOCK" | "SHARED" | "REWARDED";
 export type RewardStatus = "AVAILABLE" | "REDEEMED" | "EXPIRED";
-export type ShareChannel = "whatsapp" | "native" | "social";
+export type ShareChannel = "whatsapp" | "whatsapp_status" | "instagram_story" | "native" | "social";
 
 export type EventName =
   | "landing_viewed"
@@ -35,6 +35,8 @@ export interface MerchantTheme {
   shareTitle: string;
   shareCopy: string;
   referralCopy: string;
+  socialHeadline: string;
+  socialSubcopy: string;
   palette: {
     canvas: string;
     canvasAccent: string;
