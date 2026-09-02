@@ -38,14 +38,29 @@ describe("merchant authentication", () => {
     })).toThrow(/not configured/);
   });
 
-  it("accepts writes only from the exact application origin", () => {
-    expect(isSameOrigin(new Request("https://viralio.example/api/merchant/auth", {
+  it("accepts writes only from the public application origin", () => {
+    expect(isSameOrigin(new Request("http://internal:3000/api/merchant/auth", {
       method: "POST",
-      headers: { origin: "https://viralio.example" },
+      headers: {
+        origin: "https://viralio.example",
+        host: "viralio.example",
+        "x-forwarded-proto": "https",
+        "sec-fetch-site": "same-origin",
+      },
     }))).toBe(true);
+
     expect(isSameOrigin(new Request("https://viralio.example/api/merchant/auth", {
       method: "POST",
-      headers: { origin: "https://evil.example" },
+      headers: { origin: "https://evil.example", host: "viralio.example" },
+    }))).toBe(false);
+
+    expect(isSameOrigin(new Request("https://viralio.example/api/merchant/auth", {
+      method: "POST",
+      headers: {
+        origin: "https://viralio.example",
+        host: "viralio.example",
+        "sec-fetch-site": "cross-site",
+      },
     }))).toBe(false);
   });
 });
