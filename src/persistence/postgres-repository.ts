@@ -296,7 +296,7 @@ class PostgresTransaction implements TransactionRepository {
   ): Promise<void> {
     await this.sql`
       INSERT INTO merchant_settings (merchant_id, settings, updated_at)
-      VALUES (${merchantId}, ${this.sql.json(customization)}, ${updatedAt})
+      VALUES (${merchantId}, ${JSON.stringify(customization)}::jsonb, ${updatedAt})
       ON CONFLICT (merchant_id) DO UPDATE SET
         settings = EXCLUDED.settings,
         updated_at = EXCLUDED.updated_at
