@@ -51,7 +51,8 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
   await expect(page).toHaveURL(new RegExp(`/premio/${reward.token}$`));
   await expect(page.getByRole("button", { name: /Marcar como canjeado/i })).toHaveCount(0);
 
-  await page.goto("/comercio/moka/canjes");
+  await page.goto("/comercio/moka/panel");
+  await expect(page).toHaveURL(/\/comercio\/moka\/canjes$/);
   await expect(page.getByTestId("merchant-login-form")).toBeVisible();
 
   await page.getByTestId("merchant-pin").fill("000000");
@@ -85,6 +86,16 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
   await page.getByTestId("merchant-redeem").click();
   await expect(page.getByTestId("merchant-reward-status")).toHaveText("Canjeado");
   await expect(page.getByTestId("merchant-redeem")).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Resumen" }).click();
+  await expect(page).toHaveURL(/\/comercio\/moka\/panel$/);
+  await expect(page.getByTestId("merchant-dashboard")).toBeVisible();
+  await expect(page.getByTestId("metric-sessions")).toHaveText("1");
+  await expect(page.getByTestId("metric-shares")).toHaveText("1");
+  await expect(page.getByTestId("metric-redeemed")).toHaveText("1");
+
+  await page.getByRole("link", { name: "Canjes" }).click();
+  await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
 
   await page.goto(`/premio/${reward.token}`);
   await expect(page.getByTestId("reward-status")).toHaveText("Canjeado");
