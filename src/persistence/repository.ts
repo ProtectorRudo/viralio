@@ -1,4 +1,4 @@
-import type { AnalyticsEvent, Database, EventName, Reward, Session } from "@/domain/types";
+import type { AnalyticsEvent, Database, EventName, MerchantMetrics, Reward, Session } from "@/domain/types";
 
 export type UniqueValueKind = "session_referral" | "reward_token" | "short_code";
 
@@ -16,6 +16,7 @@ export interface TransactionRepository {
 
   hasEvent(name: EventName, sessionId: string, rewardId?: string): Promise<boolean>;
   insertEvent(event: AnalyticsEvent): Promise<void>;
+  getMerchantMetrics(merchantId: string): Promise<MerchantMetrics>;
   uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean>;
 }
 

@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import type { AnalyticsEvent, EventName, FlowState, Reward, Session } from "@/domain/types";
+import type { AnalyticsEvent, EventName, FlowState, MerchantMetrics, Reward, Session, ShareChannel } from "@/domain/types";
 import type { Repository, TransactionRepository, UniqueValueKind } from "./repository";
 
 type TransactionSql = postgres.TransactionSql;
@@ -28,6 +28,26 @@ interface RewardRow {
   issuedAt: Timestamp;
   expiresAt: Timestamp;
   redeemedAt: Timestamp | null;
+}
+
+interface MerchantSessionMetricsRow {
+  sessions: number;
+  referredSessions: number;
+}
+
+interface MerchantRewardMetricsRow {
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+}
+
+interface MerchantEventMetricsRow {
+  shares: number;
+  whatsappSaves: number;
+}
+
+interface MerchantShareChannelRow {
+  shareChannel: ShareChannel;
+  count: number;
 }
 
 function iso(value: Timestamp): string {
@@ -186,6 +206,59 @@ class PostgresTransaction implements TransactionRepository {
       )
       ON CONFLICT DO NOTHING
     `;
+  }
+
+  async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
+    const sessionRows = await this.sql<MerchantSessionMetricsRow[]>`
+      SELECT
+        count(*)::int AS sessions,
+        count(*) FILTER (WHERE referred_by IS NOT NULL)::int AS referred_sessions
+      FROM sessions
+      WHERE merchant_id = ${merchantId}
+    `;
+    const rewardRows = await this.sql<MerchantRewardMetricsRow[]>`
+      SELECT
+        count(*)::int AS rewards_issued,
+        count(*) FILTER (WHERE redeemed_at IS NOT NULL)::int AS rewards_redeemed
+      FROM rewards
+      WHERE merchant_id = ${merchantId}
+    `;
+    const eventRows = await this.sql<MerchantEventMetricsRow[]>`
+      SELECT
+        count(*) FILTER (WHERE name = 'share_initiated')::int AS shares,
+        count(*) FILTER (WHERE name = 'whatsapp_save_clicked')::int AS whatsapp_saves
+      FROM analytics_events
+      WHERE merchant_id = ${merchantId}
+    `;
+    const channelRows = await this.sql<MerchantShareChannelRow[]>`
+      SELECT share_channel, count(*)::int AS count
+      FROM analytics_events
+      WHERE merchant_id = ${merchantId}
+        AND name = 'share_initiated'
+        AND share_channel IS NOT NULL
+      GROUP BY share_channel
+    `;
+
+    const shareChannels: MerchantMetrics["shareChannels"] = {
+      whatsapp: 0,
+      whatsapp_status: 0,
+      instagram_story: 0,
+      native: 0,
+      social: 0,
+    };
+    for (const row of channelRows) {
+      if (row.shareChannel in shareChannels) shareChannels[row.shareChannel] = row.count;
+    }
+
+    return {
+      sessions: sessionRows[0]?.sessions ?? 0,
+      referredSessions: sessionRows[0]?.referredSessions ?? 0,
+      shares: eventRows[0]?.shares ?? 0,
+      rewardsIssued: rewardRows[0]?.rewardsIssued ?? 0,
+      rewardsRedeemed: rewardRows[0]?.rewardsRedeemed ?? 0,
+      whatsappSaves: eventRows[0]?.whatsappSaves ?? 0,
+      shareChannels,
+    };
   }
 
   async uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean> {

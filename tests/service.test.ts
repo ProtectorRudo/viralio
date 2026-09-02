@@ -95,6 +95,47 @@ describe("ViralioService", () => {
     expect(repository.database.events.some((event) => (event.name as string) === "share_published")).toBe(false);
   });
 
+  it("aggregates dashboard metrics without leaking another merchant", async () => {
+    const { service } = setup();
+    const origin = await service.startSession("moka");
+    await service.unlock(origin.session.id);
+    await service.initiateShare(origin.session.id, "whatsapp_status");
+    const reward = await service.spin(origin.session.id);
+    await service.recordWhatsappSave(origin.session.id);
+    await service.redeemForMerchant("merchant_moka", reward.shortCode);
+
+    const referred = await service.startSession("moka", undefined, origin.session.referralToken);
+    await service.unlock(referred.session.id);
+    await service.initiateShare(referred.session.id, "instagram_story");
+
+    const atlas = await service.startSession("atlas-barber");
+    await service.unlock(atlas.session.id);
+    await service.initiateShare(atlas.session.id, "whatsapp");
+
+    const mokaMetrics = await service.getMerchantMetrics("merchant_moka");
+    expect(mokaMetrics).toEqual({
+      sessions: 2,
+      referredSessions: 1,
+      shares: 2,
+      rewardsIssued: 1,
+      rewardsRedeemed: 1,
+      whatsappSaves: 1,
+      shareChannels: {
+        whatsapp: 0,
+        whatsapp_status: 1,
+        instagram_story: 1,
+        native: 0,
+        social: 0,
+      },
+    });
+
+    const atlasMetrics = await service.getMerchantMetrics("merchant_atlas");
+    expect(atlasMetrics.sessions).toBe(1);
+    expect(atlasMetrics.shares).toBe(1);
+    expect(atlasMetrics.rewardsIssued).toBe(0);
+    expect(atlasMetrics.shareChannels.whatsapp).toBe(1);
+  });
+
   it("does not record impossible analytics events", async () => {
     const { repository, service } = setup();
     const { session } = await service.startSession("moka");

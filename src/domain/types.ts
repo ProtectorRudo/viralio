@@ -102,6 +102,16 @@ export interface AnalyticsEvent {
   timestamp: string;
 }
 
+export interface MerchantMetrics {
+  sessions: number;
+  referredSessions: number;
+  shares: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  whatsappSaves: number;
+  shareChannels: Record<ShareChannel, number>;
+}
+
 export interface Database {
   sessions: Session[];
   rewards: Reward[];

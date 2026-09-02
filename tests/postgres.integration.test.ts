@@ -69,6 +69,46 @@ postgresDescribe("PostgresRepository integration", () => {
     expect(channels).toEqual([{ shareChannel: "instagram_story" }]);
   });
 
+  it("aggregates merchant dashboard metrics without cross-merchant leakage", async () => {
+    const instance = service();
+    const origin = await instance.startSession("moka");
+    await instance.unlock(origin.session.id);
+    await instance.initiateShare(origin.session.id, "whatsapp_status");
+    const reward = await instance.spin(origin.session.id);
+    await instance.recordWhatsappSave(origin.session.id);
+    await instance.redeemForMerchant("merchant_moka", reward.shortCode);
+
+    const referred = await instance.startSession("moka", undefined, origin.session.referralToken);
+    await instance.unlock(referred.session.id);
+    await instance.initiateShare(referred.session.id, "instagram_story");
+
+    const atlas = await instance.startSession("atlas-barber");
+    await instance.unlock(atlas.session.id);
+    await instance.initiateShare(atlas.session.id, "whatsapp");
+
+    expect(await instance.getMerchantMetrics("merchant_moka")).toEqual({
+      sessions: 2,
+      referredSessions: 1,
+      shares: 2,
+      rewardsIssued: 1,
+      rewardsRedeemed: 1,
+      whatsappSaves: 1,
+      shareChannels: {
+        whatsapp: 0,
+        whatsapp_status: 1,
+        instagram_story: 1,
+        native: 0,
+        social: 0,
+      },
+    });
+
+    const atlasMetrics = await instance.getMerchantMetrics("merchant_atlas");
+    expect(atlasMetrics.sessions).toBe(1);
+    expect(atlasMetrics.shares).toBe(1);
+    expect(atlasMetrics.rewardsIssued).toBe(0);
+    expect(atlasMetrics.shareChannels.whatsapp).toBe(1);
+  });
+
   it("returns one reward when two spins race on the same session", async () => {
     const instance = service();
     const session = await sharedSession(instance);
