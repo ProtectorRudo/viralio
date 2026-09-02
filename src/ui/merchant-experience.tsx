@@ -25,6 +25,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
   const [reward, setReward] = useState<Reward>();
   const [spinReward, setSpinReward] = useState<Reward>();
   const [spinning, setSpinning] = useState(false);
+  const [shareBusy, setShareBusy] = useState<ShareChannel>();
   const [error, setError] = useState("");
   const [nativeShare, setNativeShare] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -77,11 +78,50 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     setPayload({ ...payload, session: result.session });
   }
 
-  async function share(channel: ShareChannel) {
+  async function shareToSocialDestination(channel: "whatsapp_status" | "instagram_story") {
     if (!payload) return;
     setError("");
+    setShareBusy(channel);
     try {
-      if (channel === "native" || channel === "social") {
+      if (!navigator.share) {
+        throw new Error("Tu navegador no puede abrir el menú para compartir. Usá Enviar por WhatsApp como alternativa.");
+      }
+
+      const baseShare: ShareData = {
+        title: `Pase sorpresa de ${merchant.name}`,
+        text: merchant.theme.referralCopy,
+        url: referralUrl,
+      };
+      let shareData: ShareData = baseShare;
+
+      try {
+        const response = await fetch(`/api/share-card/${encodeURIComponent(payload.session.referralToken)}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const file = new File([blob], `viralio-${merchant.slug}-pase.png`, { type: blob.type || "image/png" });
+          if (typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
+            shareData = { title: baseShare.title, text: baseShare.text, files: [file] };
+          }
+        }
+      } catch {
+        shareData = baseShare;
+      }
+
+      await navigator.share(shareData);
+      await registerShare(channel);
+    } catch (reason) {
+      if ((reason as DOMException).name !== "AbortError") setError((reason as Error).message);
+    } finally {
+      setShareBusy(undefined);
+    }
+  }
+
+  async function share(channel: "whatsapp" | "native") {
+    if (!payload) return;
+    setError("");
+    setShareBusy(channel);
+    try {
+      if (channel === "native") {
         if (!navigator.share) throw new Error("Tu navegador no ofrece el menú para compartir");
         await navigator.share({ title: `Pase sorpresa de ${merchant.name}`, text: merchant.theme.referralCopy, url: referralUrl });
         await registerShare(channel);
@@ -94,6 +134,8 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       else window.location.href = target;
     } catch (reason) {
       if ((reason as DOMException).name !== "AbortError") setError((reason as Error).message);
+    } finally {
+      setShareBusy(undefined);
     }
   }
 
@@ -104,7 +146,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     try {
       const result = await json<{ reward: Reward }>(`/api/sessions/${payload.session.id}/spin`, { method: "POST" });
       setSpinReward(result.reward);
-      await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 120 : 2500));
+      await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 100 : 4100));
       setReward(result.reward);
       setPayload({ ...payload, session: { ...payload.session, state: "REWARDED", rewardId: result.reward.id } });
     } catch (reason) { setError((reason as Error).message); }
@@ -126,6 +168,8 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       setError((reason as Error).message);
     }
   }
+
+  const shareDisabled = Boolean(shareBusy);
 
   return (
     <main className={`experience theme-${merchant.slug}`} style={merchantThemeStyle(merchant)} data-merchant={merchant.slug}>
@@ -168,18 +212,28 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
           <div className="stage share-stage" data-testid="unlock-stage">
             <div className="pass-stack" aria-hidden="true"><span /><span /><BrandIcon category={merchant.theme.category} /></div>
             <div className="stage-copy">
-              <p className="eyebrow">Un gesto abre la experiencia</p>
+              <p className="eyebrow">Elegí tu destino</p>
               <h1>{merchant.theme.shareTitle}</h1>
               <p className="lead">{merchant.theme.shareCopy}</p>
             </div>
-            <div className="share-actions" aria-label="Opciones para compartir">
-              <button className="button button-whatsapp" onClick={() => share("whatsapp")}>
-                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Opción recomendada</small>Compartir por WhatsApp</span>
+            <div className="story-grid" aria-label="Compartir en estados e historias">
+              <button className="story-option story-whatsapp" data-testid="whatsapp-status-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("whatsapp_status")}>
+                <span className="story-icon" aria-hidden="true">W</span>
+                <span><strong>Estado de WhatsApp</strong><small>{shareBusy === "whatsapp_status" ? "Preparando pase…" : "Pieza 9:16 lista para publicar"}</small></span>
               </button>
-              {nativeShare && <button className="button button-secondary" data-testid="native-share" onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir desde mi teléfono</button>}
-              {nativeShare && <button className="button button-quiet" onClick={() => share("social")}>Instagram y otras redes</button>}
+              <button className="story-option story-instagram" data-testid="instagram-story-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("instagram_story")}>
+                <span className="story-icon" aria-hidden="true">◎</span>
+                <span><strong>Instagram Stories</strong><small>{shareBusy === "instagram_story" ? "Preparando pase…" : "Abrí el menú y elegí Instagram"}</small></span>
+              </button>
             </div>
-            <p className="friend-note"><span aria-hidden="true">◎</span> Tu amigo recibe su propia oportunidad, no tu premio.</p>
+            <div className="share-actions" aria-label="Otras opciones para compartir">
+              <button className="button button-whatsapp" disabled={shareDisabled} onClick={() => share("whatsapp")}>
+                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Envío directo</small>Enviar por WhatsApp</span>
+              </button>
+              <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
+            </div>
+            <p className="share-guidance"><span aria-hidden="true">✦</span> En Estado/Stories tu teléfono abre el menú para compartir. Elegís el destino; Viralio nunca afirma una publicación que no puede confirmar.</p>
+            <p className="friend-note"><span aria-hidden="true">◎</span> Tu contacto recibe su propia oportunidad. Tu premio sigue oculto.</p>
           </div>
         )}
 
@@ -187,8 +241,8 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
           <div className="stage wheel-stage" data-testid="wheel-stage">
             <div className="stage-copy compact">
               <p className="eyebrow success"><span aria-hidden="true">✓</span> Pase desbloqueado</p>
-              <h1>Tu premio ya está en movimiento</h1>
-              <p className="lead">Giramos la rueda para revelarlo.</p>
+              <h1>Ahora sí: que gire</h1>
+              <p className="lead">Más inercia, mismo resultado protegido por servidor.</p>
             </div>
             <PremiumWheel merchant={merchant} reward={spinReward} spinning={spinning} reducedMotion={reducedMotion} />
             <button className="button button-primary spin-button" disabled={spinning} onClick={spin}>
