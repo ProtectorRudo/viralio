@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { getMerchantBySlug } from "@/config/merchants";
+import { viralio } from "@/application";
 import { MerchantExperience } from "@/ui/merchant-experience";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Atlas Barber · Tu pase privado",
@@ -9,7 +11,6 @@ export const metadata: Metadata = {
 
 export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams;
-  const merchant = getMerchantBySlug("atlas-barber");
-  if (!merchant) throw new Error("Merchant not found");
+  const merchant = await viralio.getMerchantForExperience("atlas-barber");
   return <MerchantExperience merchant={merchant} referralToken={ref} />;
 }
