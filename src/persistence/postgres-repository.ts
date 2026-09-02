@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import type { AnalyticsEvent, EventName, FlowState, Reward, Session, ShareChannel } from "@/domain/types";
+import type { AnalyticsEvent, EventName, FlowState, Reward, Session } from "@/domain/types";
 import type { Repository, TransactionRepository, UniqueValueKind } from "./repository";
 
 type TransactionSql = postgres.TransactionSql;
