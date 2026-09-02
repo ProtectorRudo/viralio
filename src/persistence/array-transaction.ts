@@ -1,4 +1,4 @@
-import type { AnalyticsEvent, Database, EventName, Reward, Session } from "@/domain/types";
+import type { AnalyticsEvent, Database, EventName, MerchantMetrics, Reward, Session } from "@/domain/types";
 import type { TransactionRepository, UniqueValueKind } from "./repository";
 
 export class ArrayTransaction implements TransactionRepository {
@@ -71,6 +71,35 @@ export class ArrayTransaction implements TransactionRepository {
       )
     ) return;
     this.database.events.push(event);
+  }
+
+  async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
+    const sessions = this.database.sessions.filter((session) => session.merchantId === merchantId);
+    const rewards = this.database.rewards.filter((reward) => reward.merchantId === merchantId);
+    const events = this.database.events.filter((event) => event.merchantId === merchantId);
+    const shareChannels: MerchantMetrics["shareChannels"] = {
+      whatsapp: 0,
+      whatsapp_status: 0,
+      instagram_story: 0,
+      native: 0,
+      social: 0,
+    };
+
+    for (const event of events) {
+      if (event.name === "share_initiated" && event.shareChannel) {
+        shareChannels[event.shareChannel] += 1;
+      }
+    }
+
+    return {
+      sessions: sessions.length,
+      referredSessions: sessions.filter((session) => Boolean(session.referredBy)).length,
+      shares: events.filter((event) => event.name === "share_initiated").length,
+      rewardsIssued: rewards.length,
+      rewardsRedeemed: rewards.filter((reward) => Boolean(reward.redeemedAt)).length,
+      whatsappSaves: events.filter((event) => event.name === "whatsapp_save_clicked").length,
+      shareChannels,
+    };
   }
 
   async uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean> {
