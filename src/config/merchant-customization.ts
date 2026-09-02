@@ -29,10 +29,10 @@ function whatsapp(value: unknown): string {
 }
 
 function validity(value: unknown): number {
-  if (!Number.isInteger(value) || Number(value) < 1 || Number(value) > 90) {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 1 || value > 90) {
     throw new Error("Invalid rewardValidityDays");
   }
-  return Number(value);
+  return value;
 }
 
 function prizes(value: unknown, base: Merchant): PrizeDefinition[] {
@@ -46,11 +46,16 @@ function prizes(value: unknown, base: Merchant): PrizeDefinition[] {
     if (typeof item.name !== "string") throw new Error("Invalid prizes");
     const name = item.name.trim();
     if (name.length < 2 || name.length > 90) throw new Error("Invalid prizes");
-    if (!Number.isInteger(item.probability) || Number(item.probability) < 0 || Number(item.probability) > 100) {
+    if (
+      typeof item.probability !== "number" ||
+      !Number.isInteger(item.probability) ||
+      item.probability < 0 ||
+      item.probability > 100
+    ) {
       throw new Error("Invalid prizes");
     }
     seen.add(item.id);
-    return { id: item.id, name, probability: Number(item.probability) };
+    return { id: item.id, name, probability: item.probability };
   });
   if (normalized.reduce((sum, prize) => sum + prize.probability, 0) !== 100) {
     throw new Error("Prize probabilities must total 100");
