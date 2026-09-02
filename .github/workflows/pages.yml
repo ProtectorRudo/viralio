@@ -1,0 +1,45 @@
+name: Showroom Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'showcase/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Validate static showcase
+        run: |
+          test -f showcase/index.html
+          test -f showcase/moka/index.html
+          test -f showcase/atlas-barber/index.html
+          test -f showcase/assets/styles.css
+          node --check showcase/assets/app.js
+      - name: Upload showroom artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: showcase
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
