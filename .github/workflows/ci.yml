@@ -38,7 +38,7 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
-      - name: Build
+      - name: Build without deployment secrets
         run: npm run build
 
   postgres:
@@ -80,6 +80,23 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: viralio
+          POSTGRES_PASSWORD: viralio
+          POSTGRES_DB: viralio_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U viralio -d viralio_e2e"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://viralio:viralio@127.0.0.1:5432/viralio_e2e
+      VIRALIO_PERSISTENCE: postgres
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -90,7 +107,9 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci
+      - name: Apply migrations for browser tests
+        run: npm run migrate
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Run responsive E2E
+      - name: Run production responsive E2E
         run: npm run test:e2e
