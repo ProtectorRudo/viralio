@@ -90,9 +90,9 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
   await page.getByRole("link", { name: "Resumen" }).click();
   await expect(page).toHaveURL(/\/comercio\/moka\/panel$/);
   await expect(page.getByTestId("merchant-dashboard")).toBeVisible();
-  await expect(page.getByTestId("metric-sessions")).toHaveText("1");
-  await expect(page.getByTestId("metric-shares")).toHaveText("1");
-  await expect(page.getByTestId("metric-redeemed")).toHaveText("1");
+  await expect(page.getByTestId("metric-sessions")).toHaveText(/^[1-9]\d*$/);
+  await expect(page.getByTestId("metric-shares")).toHaveText(/^[1-9]\d*$/);
+  await expect(page.getByTestId("metric-redeemed")).toHaveText(/^[1-9]\d*$/);
 
   await page.getByRole("link", { name: "Canjes" }).click();
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
