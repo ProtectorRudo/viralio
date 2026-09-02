@@ -28,7 +28,7 @@ Viralio separa deliberadamente **showroom** y **producto real**.
 
 `src/` contiene la aplicación real. Ahí viven sesiones, referrals, analytics, selección server-side de premios, tarjetas, WhatsApp y canje.
 
-VIRALIO-004 incorpora PostgreSQL como persistencia durable. JSON queda exclusivamente como modo local/desarrollo explícito. **Producción falla si no existe una configuración PostgreSQL válida**: nunca cae silenciosamente al filesystem.
+PostgreSQL es la persistencia durable de producción. JSON queda exclusivamente como modo local/desarrollo explícito. **Producción falla si no existe una configuración PostgreSQL válida**: nunca cae silenciosamente al filesystem.
 
 ## Ejecutar localmente
 
@@ -55,7 +55,7 @@ npm run migrate
 npm run dev
 ```
 
-Ver `docs/CLOUD_DEPLOY.md` para Supabase/Vercel y operación cloud.
+Para probar el panel seguro de canjes también deben configurarse `VIRALIO_AUTH_SECRET` y `VIRALIO_MERCHANT_PINS`. Ver `.env.example` y `docs/CLOUD_DEPLOY.md`.
 
 ## Persistencia y concurrencia
 
@@ -75,6 +75,22 @@ Las invariantes críticas se protegen con `SELECT ... FOR UPDATE` y constraints 
 
 El premio sigue siendo seleccionado exclusivamente en `ViralioService.spin()`.
 
+## Canje seguro
+
+La tarjeta del cliente y la autoridad para canjear están separadas.
+
+- `/premio/<token>` es público y **sólo lectura**;
+- `/validar/<token>` es legacy y redirige a la tarjeta pública;
+- no existe `PATCH /api/rewards/<token>`;
+- el comercio opera desde `/comercio/<slug>/canjes`;
+- el acceso usa PIN privado del comercio y una cookie de sesión firmada, HttpOnly y de 8 horas;
+- el empleado busca el código corto visible del cliente;
+- `redeemForMerchant(merchantId, shortCode)` valida pertenencia y bloquea el reward dentro de la transacción;
+- una sesión de Moka no puede consultar ni canjear premios de Atlas, y viceversa;
+- las escrituras sensibles exigen same-origin.
+
+El token público del reward nunca funciona como credencial de escritura.
+
 ## Migraciones
 
 `migrations/` contiene SQL versionado. `npm run migrate` crea `viralio_schema_migrations` y ejecuta sólo migraciones pendientes.
@@ -87,7 +103,7 @@ La aplicación nunca crea o modifica el esquema durante un request.
 
 ## Sistema de diseño
 
-`src/app/globals.css` contiene el sistema estable de diseño y `src/app/viralio-003.css` aplica la capa de premium polish de VIRALIO-003 sin duplicar el motor de componentes.
+`src/app/globals.css` contiene el sistema estable de diseño, `src/app/viralio-003.css` aplica la capa de premium polish y `src/app/viralio-005.css` estiliza el panel seguro de comercio sin duplicar skins.
 
 Los componentes consumen variables semánticas (`--color-primary`, `--color-surface`, etc.), nunca valores de comercio dispersos. `prefers-reduced-motion` elimina animaciones no esenciales y reduce el tiempo funcional del reveal.
 
@@ -95,11 +111,11 @@ Los componentes consumen variables semánticas (`--color-primary`, `--color-surf
 
 Cada entrada de `src/config/merchants.ts` contiene identidad, copy contextual, paleta semántica, segmentos de rueda, premios, probabilidades, vigencia y WhatsApp.
 
-`merchantThemeStyle()` acepta únicamente colores hexadecimales de seis dígitos y usa fallback seguro ante valores inválidos. `MerchantExperience` renderiza el flujo entero y `RewardCard` hereda el comercio del reward server-side.
+`merchantThemeStyle()` acepta únicamente colores hexadecimales de seis dígitos y usa fallback seguro ante valores inválidos. `MerchantExperience`, `RewardCard` y el panel de canjes heredan el theme del comercio sin duplicar el motor.
 
 ## Estados de WhatsApp e Instagram Stories
 
-VIRALIO-003 presenta cuatro destinos explícitos:
+Viralio presenta cuatro destinos explícitos:
 
 - **Estado de WhatsApp**;
 - **Instagram Stories**;
@@ -114,16 +130,17 @@ No existe ni se finge `share_published`.
 
 ## Ruleta premium
 
-La rueda real es SVG y recibe el reward ya decidido por el servidor. VIRALIO-003 usa **9 vueltas completas equivalentes** y aproximadamente **4,1 s** de animación normal. El ángulo final se deriva exclusivamente de `reward.prizeId`.
+La rueda real es SVG y recibe el reward ya decidido por el servidor. Usa **9 vueltas completas equivalentes** y aproximadamente **4,1 s** de animación normal. El ángulo final se deriva exclusivamente de `reward.prizeId`.
 
 ## Arquitectura
 
 - `src/domain`: state machine, probabilidades, estados y reglas puras.
-- `src/application`: sesiones, referrals, analytics, contexto de share, emisión y canje.
+- `src/application`: sesiones, referrals, analytics, emisión y canje merchant-scoped.
 - `src/persistence`: contrato transaccional y adaptadores memory/JSON/PostgreSQL.
+- `src/security`: autenticación y sesión firmada del comercio.
 - `src/config`: tenants, skins y premios.
-- `src/app/api`: validación server-side, health y generación de share card.
-- `src/ui`: motor merchant-driven, rueda premium y tarjeta pública.
+- `src/app/api`: validación server-side, health, auth, canjes y share card.
+- `src/ui`: motor merchant-driven, rueda, tarjeta pública y panel de canjes.
 - `migrations`: esquema PostgreSQL versionado.
 - `showcase`: showroom estático sin backend.
 
@@ -145,12 +162,12 @@ npm run migrate
 npm run test:postgres
 ```
 
-GitHub Actions levanta una instancia limpia de PostgreSQL 16, aplica migraciones y ejecuta pruebas reales de concurrencia además de unit/integration, lint, typecheck, build y E2E Chromium.
+GitHub Actions levanta PostgreSQL 16, aplica migraciones y ejecuta pruebas reales de concurrencia además de unit/integration, lint, typecheck, build y E2E Chromium. Los E2E de canje usan PINs y secreto ficticios exclusivos del CI.
 
 ## Limitaciones actuales
 
 - Web Share no confirma publicación externa ni garantiza que WhatsApp Status o Instagram Stories sean el destino elegido.
 - WhatsApp directo usa `wa.me`, no WhatsApp Business API. Los números de las demos son ficticios.
-- `/validar/<token>` sigue siendo un validador demo sin autenticación y comparte la credencial pública del reward. **VIRALIO-005 debe corregir esto antes de cualquier piloto real.**
+- La autenticación de comercio del primer piloto usa un PIN por comercio; todavía no incluye usuarios individuales, roles, 2FA ni recuperación de acceso.
 - El showroom de GitHub Pages es deliberadamente visual y no representa datos, rewards ni métricas reales.
 - El deploy efectivo a Vercel/Supabase requiere configurar secretos fuera del repositorio.
