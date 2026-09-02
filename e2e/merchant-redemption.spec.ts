@@ -55,12 +55,25 @@ test("public reward stays read-only and authenticated Moka staff can redeem by c
   await expect(page.getByTestId("merchant-login-form")).toBeVisible();
 
   await page.getByTestId("merchant-pin").fill("000000");
+  const failedLoginPromise = page.waitForResponse((response) =>
+    response.url().endsWith("/api/merchant/auth") && response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: /Ingresar al panel/ }).click();
+  expect((await failedLoginPromise).status()).toBe(401);
   await expect(page.getByRole("alert")).toContainText("Credenciales inválidas");
   await expect(page.getByTestId("merchant-login-form")).toBeVisible();
 
   await page.getByTestId("merchant-pin").fill("246810");
+  const loginPromise = page.waitForResponse((response) =>
+    response.url().endsWith("/api/merchant/auth") && response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: /Ingresar al panel/ }).click();
+  const loginResponse = await loginPromise;
+  expect(loginResponse.status()).toBe(200);
+  const setCookie = loginResponse.headers()["set-cookie"] ?? "";
+  expect(setCookie).toContain("viralio_merchant_session=");
+  expect(setCookie.toLowerCase()).toContain("httponly");
+  expect(setCookie.toLowerCase()).toContain("samesite=strict");
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
 
   await page.getByTestId("reward-code").fill(reward.shortCode.toLowerCase());
