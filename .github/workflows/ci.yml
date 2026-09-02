@@ -23,6 +23,15 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci
+      - name: Validate static showroom
+        run: |
+          test -f showcase/index.html
+          test -f showcase/moka/index.html
+          test -f showcase/atlas-barber/index.html
+          test -f showcase/assets/styles.css
+          node --check showcase/assets/app.js
+          grep -q 'data-merchant="moka"' showcase/moka/index.html
+          grep -q 'data-merchant="atlas-barber"' showcase/atlas-barber/index.html
       - name: Unit and integration tests
         run: npm test
       - name: Lint
