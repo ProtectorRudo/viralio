@@ -34,6 +34,12 @@ export class ArrayTransaction implements TransactionRepository {
     return this.database.rewards.find((reward) => reward.token === rewardToken);
   }
 
+  async getRewardByShortCode(shortCode: string, merchantId?: string): Promise<Reward | undefined> {
+    return this.database.rewards.find((reward) =>
+      reward.shortCode === shortCode && (!merchantId || reward.merchantId === merchantId),
+    );
+  }
+
   async insertReward(reward: Reward): Promise<void> {
     if (this.database.rewards.some((candidate) => candidate.sessionId === reward.sessionId)) {
       throw new Error("Session already has a reward");
