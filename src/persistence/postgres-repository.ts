@@ -1,5 +1,15 @@
 import postgres from "postgres";
-import type { AnalyticsEvent, EventName, FlowState, MerchantMetrics, Reward, Session, ShareChannel } from "@/domain/types";
+import type {
+  AnalyticsEvent,
+  EventName,
+  FlowState,
+  MerchantCustomization,
+  MerchantMetrics,
+  MerchantSettingsRecord,
+  Reward,
+  Session,
+  ShareChannel,
+} from "@/domain/types";
 import type { Repository, TransactionRepository, UniqueValueKind } from "./repository";
 
 type TransactionSql = postgres.TransactionSql;
@@ -48,6 +58,12 @@ interface MerchantEventMetricsRow {
 interface MerchantShareChannelRow {
   shareChannel: ShareChannel;
   count: number;
+}
+
+interface MerchantSettingsRow {
+  merchantId: string;
+  settings: MerchantCustomization;
+  updatedAt: Timestamp;
 }
 
 function iso(value: Timestamp): string {
@@ -259,6 +275,32 @@ class PostgresTransaction implements TransactionRepository {
       whatsappSaves: eventRows[0]?.whatsappSaves ?? 0,
       shareChannels,
     };
+  }
+
+  async getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined> {
+    const rows = await this.sql<MerchantSettingsRow[]>`
+      SELECT merchant_id, settings, updated_at
+      FROM merchant_settings
+      WHERE merchant_id = ${merchantId}
+      LIMIT 1
+    `;
+    const row = rows[0];
+    if (!row) return undefined;
+    return { merchantId: row.merchantId, customization: row.settings, updatedAt: iso(row.updatedAt) };
+  }
+
+  async upsertMerchantSettings(
+    merchantId: string,
+    customization: MerchantCustomization,
+    updatedAt: string,
+  ): Promise<void> {
+    await this.sql`
+      INSERT INTO merchant_settings (merchant_id, settings, updated_at)
+      VALUES (${merchantId}, ${this.sql.json(customization)}, ${updatedAt})
+      ON CONFLICT (merchant_id) DO UPDATE SET
+        settings = EXCLUDED.settings,
+        updated_at = EXCLUDED.updated_at
+    `;
   }
 
   async uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean> {
