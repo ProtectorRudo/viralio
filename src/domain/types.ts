@@ -67,6 +67,33 @@ export interface Merchant {
   theme: MerchantTheme;
 }
 
+export interface MerchantExperienceCopy {
+  displayName: string;
+  shortName: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroCopy: string;
+  mysteryLabel: string;
+  shareTitle: string;
+  shareCopy: string;
+  referralCopy: string;
+  socialHeadline: string;
+  socialSubcopy: string;
+}
+
+export interface MerchantCustomization {
+  whatsappNumber: string;
+  rewardValidityDays: number;
+  prizes: PrizeDefinition[];
+  copy: MerchantExperienceCopy;
+}
+
+export interface MerchantSettingsRecord {
+  merchantId: string;
+  customization: MerchantCustomization;
+  updatedAt: string;
+}
+
 export interface Session {
   id: string;
   merchantId: string;
@@ -116,4 +143,5 @@ export interface Database {
   sessions: Session[];
   rewards: Reward[];
   events: AnalyticsEvent[];
+  merchantSettings: MerchantSettingsRecord[];
 }

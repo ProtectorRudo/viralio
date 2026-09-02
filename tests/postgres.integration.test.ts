@@ -1,6 +1,8 @@
 import postgres from "postgres";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { ViralioService } from "@/application/viralio-service";
+import { defaultMerchantCustomization } from "@/config/merchant-customization";
+import { getMerchantBySlug } from "@/config/merchants";
 import { PostgresRepository } from "@/persistence/postgres-repository";
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -13,7 +15,7 @@ postgresDescribe("PostgresRepository integration", () => {
   const repository = new PostgresRepository(databaseUrl, { maxConnections: 5 });
 
   beforeEach(async () => {
-    await sql`TRUNCATE TABLE analytics_events, rewards, sessions CASCADE`;
+    await sql`TRUNCATE TABLE merchant_settings, analytics_events, rewards, sessions CASCADE`;
   });
 
   afterAll(async () => {
@@ -37,16 +39,40 @@ postgresDescribe("PostgresRepository integration", () => {
       SELECT table_name
       FROM information_schema.tables
       WHERE table_schema = 'public'
-        AND table_name IN ('sessions', 'rewards', 'analytics_events', 'viralio_schema_migrations')
+        AND table_name IN ('sessions', 'rewards', 'analytics_events', 'merchant_settings', 'viralio_schema_migrations')
       ORDER BY table_name
     `;
     expect(tables.map((row) => row.tableName)).toEqual([
       "analytics_events",
+      "merchant_settings",
       "rewards",
       "sessions",
       "viralio_schema_migrations",
     ]);
     expect(await repository.healthCheck()).toBe(true);
+  });
+
+  it("persists merchant settings in PostgreSQL without cross-merchant leakage", async () => {
+    const instance = service();
+    const base = getMerchantBySlug("moka")!;
+    const customization = defaultMerchantCustomization(base);
+    customization.copy.displayName = "Moka PostgreSQL";
+    customization.copy.heroTitle = "Configuración durable";
+    customization.rewardValidityDays = 21;
+
+    await instance.updateMerchantCustomization("merchant_moka", customization);
+
+    const moka = await instance.getMerchantForExperience("moka");
+    const atlas = await instance.getMerchantForExperience("atlas-barber");
+    expect(moka.name).toBe("Moka PostgreSQL");
+    expect(moka.rewardValidityDays).toBe(21);
+    expect(atlas.name).toBe("Atlas Barber");
+
+    const rows = await sql<{ merchantId: string; updatedAt: Date }[]>`
+      SELECT merchant_id, updated_at FROM merchant_settings ORDER BY merchant_id
+    `;
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.merchantId).toBe("merchant_moka");
   });
 
   it("persists and resumes a session with referral attribution and share analytics", async () => {

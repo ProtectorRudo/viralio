@@ -3,11 +3,11 @@ import { notFound, redirect } from "next/navigation";
 import { viralio } from "@/application";
 import { getMerchantBySlug } from "@/config/merchants";
 import { MERCHANT_SESSION_COOKIE, verifyMerchantSessionToken } from "@/security/merchant-auth";
-import { MerchantDashboard } from "@/ui/merchant-dashboard";
+import { MerchantSettingsPanel } from "@/ui/merchant-settings-panel";
 
 export const dynamic = "force-dynamic";
 
-export default async function MerchantDashboardPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function MerchantSettingsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const base = getMerchantBySlug(slug);
   if (!base) notFound();
@@ -23,9 +23,9 @@ export default async function MerchantDashboardPage({ params }: { params: Promis
 
   if (!authenticated) redirect(`/comercio/${base.slug}/canjes`);
 
-  const [merchant, metrics] = await Promise.all([
+  const [merchant, customization] = await Promise.all([
     viralio.getMerchantForExperience(base.slug),
-    viralio.getMerchantMetrics(base.id),
+    viralio.getMerchantCustomization(base.id),
   ]);
-  return <MerchantDashboard merchant={merchant} metrics={metrics} />;
+  return <MerchantSettingsPanel merchant={merchant} initialCustomization={customization} />;
 }

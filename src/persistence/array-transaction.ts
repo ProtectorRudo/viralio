@@ -1,8 +1,19 @@
-import type { AnalyticsEvent, Database, EventName, MerchantMetrics, Reward, Session } from "@/domain/types";
+import type {
+  AnalyticsEvent,
+  Database,
+  EventName,
+  MerchantCustomization,
+  MerchantMetrics,
+  MerchantSettingsRecord,
+  Reward,
+  Session,
+} from "@/domain/types";
 import type { TransactionRepository, UniqueValueKind } from "./repository";
 
 export class ArrayTransaction implements TransactionRepository {
-  constructor(private readonly database: Database) {}
+  constructor(private readonly database: Database) {
+    this.database.merchantSettings ??= [];
+  }
 
   async getSessionById(sessionId: string, merchantId?: string): Promise<Session | undefined> {
     return this.database.sessions.find((session) =>
@@ -100,6 +111,21 @@ export class ArrayTransaction implements TransactionRepository {
       whatsappSaves: events.filter((event) => event.name === "whatsapp_save_clicked").length,
       shareChannels,
     };
+  }
+
+  async getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined> {
+    return this.database.merchantSettings.find((settings) => settings.merchantId === merchantId);
+  }
+
+  async upsertMerchantSettings(
+    merchantId: string,
+    customization: MerchantCustomization,
+    updatedAt: string,
+  ): Promise<void> {
+    const record: MerchantSettingsRecord = { merchantId, customization, updatedAt };
+    const index = this.database.merchantSettings.findIndex((settings) => settings.merchantId === merchantId);
+    if (index < 0) this.database.merchantSettings.push(record);
+    else this.database.merchantSettings[index] = record;
   }
 
   async uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean> {

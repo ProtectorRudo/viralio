@@ -36,7 +36,13 @@ export class JsonRepository implements Repository {
 
   private async read(): Promise<Database> {
     try {
-      return JSON.parse(await readFile(this.filePath, "utf8")) as Database;
+      const parsed = JSON.parse(await readFile(this.filePath, "utf8")) as Partial<Database>;
+      return {
+        sessions: parsed.sessions ?? [],
+        rewards: parsed.rewards ?? [],
+        events: parsed.events ?? [],
+        merchantSettings: parsed.merchantSettings ?? [],
+      };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return emptyDatabase();
       throw error;

@@ -1,10 +1,24 @@
 import { randomBytes, randomInt, randomUUID } from "node:crypto";
+import {
+  applyMerchantCustomization,
+  defaultMerchantCustomization,
+  validateMerchantCustomization,
+} from "@/config/merchant-customization";
 import { getMerchantById, getMerchantBySlug } from "@/config/merchants";
 import { canRecordEvent, transition } from "@/domain/flow";
 import { selectPrize } from "@/domain/probabilities";
 import { rewardStatus } from "@/domain/rewards";
 import { isValidReferralToken } from "@/domain/tokens";
-import type { AnalyticsEvent, EventName, MerchantMetrics, Reward, Session, ShareChannel } from "@/domain/types";
+import type {
+  AnalyticsEvent,
+  EventName,
+  Merchant,
+  MerchantCustomization,
+  MerchantMetrics,
+  Reward,
+  Session,
+  ShareChannel,
+} from "@/domain/types";
 import type { Repository, TransactionRepository, UniqueValueKind } from "@/persistence/repository";
 
 function token(): string {
@@ -42,11 +56,44 @@ export class ViralioService {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
+  async getMerchantForExperience(merchantSlug: string): Promise<Merchant> {
+    const base = getMerchantBySlug(merchantSlug);
+    if (!base) throw new Error("Merchant not found");
+    return this.repository.transaction((transaction) => this.resolveMerchant(transaction, base));
+  }
+
+  async getMerchantForId(merchantId: string): Promise<Merchant> {
+    const base = getMerchantById(merchantId);
+    if (!base) throw new Error("Merchant not found");
+    return this.repository.transaction((transaction) => this.resolveMerchant(transaction, base));
+  }
+
+  async getMerchantCustomization(merchantId: string): Promise<MerchantCustomization> {
+    const base = getMerchantById(merchantId);
+    if (!base) throw new Error("Merchant not found");
+    return this.repository.transaction(async (transaction) => {
+      const stored = await transaction.getMerchantSettings(merchantId);
+      if (!stored) return defaultMerchantCustomization(base);
+      return validateMerchantCustomization(stored.customization, base);
+    });
+  }
+
+  async updateMerchantCustomization(merchantId: string, value: unknown): Promise<Merchant> {
+    const base = getMerchantById(merchantId);
+    if (!base) throw new Error("Merchant not found");
+    const customization = validateMerchantCustomization(value, base);
+    await this.repository.transaction((transaction) =>
+      transaction.upsertMerchantSettings(merchantId, customization, this.now().toISOString()),
+    );
+    return applyMerchantCustomization(base, customization);
+  }
+
   async startSession(merchantSlug: string, existingSessionId?: string, referralToken?: string) {
-    const merchant = getMerchantBySlug(merchantSlug);
-    if (!merchant) throw new Error("Merchant not found");
+    const base = getMerchantBySlug(merchantSlug);
+    if (!base) throw new Error("Merchant not found");
 
     return this.repository.transaction(async (transaction) => {
+      const merchant = await this.resolveMerchant(transaction, base);
       const existing = existingSessionId
         ? await transaction.getSessionById(existingSessionId, merchant.id)
         : undefined;
@@ -90,8 +137,9 @@ export class ViralioService {
     return this.repository.transaction(async (transaction) => {
       const session = await transaction.getSessionByReferralToken(referralToken);
       if (!session) throw new Error("Referral not found");
-      const merchant = getMerchantById(session.merchantId);
-      if (!merchant) throw new Error("Merchant not found");
+      const base = getMerchantById(session.merchantId);
+      if (!base) throw new Error("Merchant not found");
+      const merchant = await this.resolveMerchant(transaction, base);
       return { session, merchant };
     });
   }
@@ -139,8 +187,9 @@ export class ViralioService {
       if (session.rewardId) return this.requireRewardById(transaction, session.rewardId);
       if (session.state !== "SHARED") throw new Error("Sharing must be initiated before spinning");
 
-      const merchant = getMerchantById(session.merchantId);
-      if (!merchant) throw new Error("Merchant not found");
+      const base = getMerchantById(session.merchantId);
+      if (!base) throw new Error("Merchant not found");
+      const merchant = await this.resolveMerchant(transaction, base);
       const issuedAt = this.now();
       const now = issuedAt.toISOString();
       await transaction.insertEvent(analyticsEvent("wheel_spun", session, now));
@@ -238,6 +287,13 @@ export class ViralioService {
         { rewardId: session.rewardId },
       ));
     });
+  }
+
+  private async resolveMerchant(transaction: TransactionRepository, base: Merchant): Promise<Merchant> {
+    const stored = await transaction.getMerchantSettings(base.id);
+    if (!stored) return base;
+    const customization = validateMerchantCustomization(stored.customization, base);
+    return applyMerchantCustomization(base, customization);
   }
 
   private async uniqueValue(
