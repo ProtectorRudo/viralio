@@ -10,6 +10,7 @@ export interface TransactionRepository {
 
   getRewardById(rewardId: string, forUpdate?: boolean): Promise<Reward | undefined>;
   getRewardByToken(rewardToken: string, forUpdate?: boolean): Promise<Reward | undefined>;
+  getRewardByShortCode(shortCode: string, merchantId?: string, forUpdate?: boolean): Promise<Reward | undefined>;
   insertReward(reward: Reward): Promise<void>;
   updateReward(reward: Reward): Promise<void>;
 
