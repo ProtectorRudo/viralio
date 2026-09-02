@@ -2,6 +2,7 @@ import type { Merchant, Reward } from "@/domain/types";
 
 const center = 160;
 const radius = 146;
+export const SPIN_TURNS = 9;
 
 function point(angle: number): [number, number] {
   const radians = (angle * Math.PI) / 180;
@@ -26,7 +27,7 @@ function shortLabel(label: string): [string, string?] {
 export function winningRotation(merchant: Merchant, reward?: Reward): number {
   if (!reward) return 0;
   const index = Math.max(0, merchant.prizes.findIndex((prize) => prize.id === reward.prizeId));
-  return 1800 - ((index + 0.5) * 360) / merchant.prizes.length;
+  return (SPIN_TURNS * 360) - ((index + 0.5) * 360) / merchant.prizes.length;
 }
 
 export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
@@ -43,10 +44,12 @@ export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
       className={`wheel-frame${spinning ? " is-spinning" : ""}${reducedMotion ? " is-reduced" : ""}`}
       data-testid="premium-wheel"
       data-winning-prize={reward?.prizeName ?? ""}
+      data-spin-turns={SPIN_TURNS}
       role="img"
       aria-label={`Ruleta de ${merchant.name}. Premios: ${prizeList}`}
     >
       <div className="wheel-pointer" aria-hidden="true"><span /></div>
+      <div className="wheel-aura" aria-hidden="true" />
       <svg
         className="wheel-svg"
         viewBox="0 0 320 320"
