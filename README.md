@@ -8,7 +8,7 @@ Las experiencias reales de desarrollo son [Moka](http://localhost:3000/moka) y [
 
 ## Dos superficies separadas
 
-Viralio separa deliberadamente **showroom** y **producto real**:
+Viralio separa deliberadamente **showroom** y **producto real**.
 
 ### Showroom público — GitHub Pages
 
@@ -22,11 +22,13 @@ Viralio separa deliberadamente **showroom** y **producto real**:
 - ruleta demo de 9 vueltas;
 - sin sesiones, rewards, analytics, canjes ni persistencia reales.
 
-`.github/workflows/pages.yml` publica **únicamente `showcase/`** en GitHub Pages. El showroom nunca consume los endpoints sensibles del SaaS.
+`.github/workflows/pages.yml` publica únicamente `showcase/`. El showroom nunca consume los endpoints sensibles del SaaS.
 
-### Producto real — Next.js + servidor
+### Producto real — Next.js + PostgreSQL
 
-`src/` contiene la aplicación real. Ahí viven las sesiones, referrals, analytics, selección server-side de premios, tarjetas, WhatsApp y canje. La etapa cloud migrará la persistencia JSON a PostgreSQL/Supabase y desplegará esta superficie en infraestructura con backend.
+`src/` contiene la aplicación real. Ahí viven sesiones, referrals, analytics, selección server-side de premios, tarjetas, WhatsApp y canje.
+
+VIRALIO-004 incorpora PostgreSQL como persistencia durable. JSON queda exclusivamente como modo local/desarrollo explícito. **Producción falla si no existe una configuración PostgreSQL válida**: nunca cae silenciosamente al filesystem.
 
 ## Ejecutar localmente
 
@@ -37,7 +39,51 @@ npm ci
 npm run dev
 ```
 
-La primera sesión crea `data/viralio.json`, ignorado por Git. `.env.example` documenta el origen público opcional; en el navegador se usa siempre el origen actual.
+Sin configuración adicional, desarrollo usa `data/viralio.json`, ignorado por Git.
+
+Para usar PostgreSQL:
+
+```text
+VIRALIO_PERSISTENCE=postgres
+DATABASE_URL=postgres://...
+```
+
+Luego:
+
+```bash
+npm run migrate
+npm run dev
+```
+
+Ver `docs/CLOUD_DEPLOY.md` para Supabase/Vercel y operación cloud.
+
+## Persistencia y concurrencia
+
+La capa de aplicación depende de un contrato transaccional, no de arrays ni SQL directamente.
+
+- `MemoryRepository`: tests puros, con rollback por copia y serialización.
+- `JsonRepository`: desarrollo local, escritura atómica y serializada.
+- `PostgresRepository`: producción, transacciones PostgreSQL reales y operaciones por fila.
+
+Las invariantes críticas se protegen con `SELECT ... FOR UPDATE` y constraints de base:
+
+- una recompensa máxima por sesión;
+- un canje máximo por reward;
+- tokens de referral/reward únicos;
+- códigos cortos únicos;
+- deduplicación de `reward_viewed` concurrente.
+
+El premio sigue siendo seleccionado exclusivamente en `ViralioService.spin()`.
+
+## Migraciones
+
+`migrations/` contiene SQL versionado. `npm run migrate` crea `viralio_schema_migrations` y ejecuta sólo migraciones pendientes.
+
+La aplicación nunca crea o modifica el esquema durante un request.
+
+## Health / readiness
+
+`GET /api/health` verifica la persistencia activa. En PostgreSQL ejecuta una consulta real y devuelve sólo estado, tipo de persistencia y reachability; nunca expone la connection string.
 
 ## Sistema de diseño
 
@@ -50,8 +96,6 @@ Los componentes consumen variables semánticas (`--color-primary`, `--color-surf
 Cada entrada de `src/config/merchants.ts` contiene identidad, copy contextual, paleta semántica, segmentos de rueda, premios, probabilidades, vigencia y WhatsApp.
 
 `merchantThemeStyle()` acepta únicamente colores hexadecimales de seis dígitos y usa fallback seguro ante valores inválidos. `MerchantExperience` renderiza el flujo entero y `RewardCard` hereda el comercio del reward server-side.
-
-No se copia ni modifica el motor React para cada comercio. La selección del premio ocurre únicamente en `ViralioService.spin()`.
 
 ## Estados de WhatsApp e Instagram Stories
 
@@ -70,21 +114,18 @@ No existe ni se finge `share_published`.
 
 ## Ruleta premium
 
-La rueda real es SVG, muestra los premios configurados y recibe el reward ya decidido por el servidor. VIRALIO-003 usa **9 vueltas completas equivalentes** y aproximadamente **4,1 s** de animación normal. El ángulo final se deriva exclusivamente de `reward.prizeId`.
+La rueda real es SVG y recibe el reward ya decidido por el servidor. VIRALIO-003 usa **9 vueltas completas equivalentes** y aproximadamente **4,1 s** de animación normal. El ángulo final se deriva exclusivamente de `reward.prizeId`.
 
-Con `prefers-reduced-motion`, la animación se elimina sin cambiar el resultado.
-
-## Arquitectura y seguridad del flujo
+## Arquitectura
 
 - `src/domain`: state machine, probabilidades, estados y reglas puras.
-- `src/application`: sesiones, referrals, analytics, contexto seguro de share, emisión y canje.
-- `src/persistence`: contrato de repositorio y adaptadores JSON/memoria.
+- `src/application`: sesiones, referrals, analytics, contexto de share, emisión y canje.
+- `src/persistence`: contrato transaccional y adaptadores memory/JSON/PostgreSQL.
 - `src/config`: tenants, skins y premios.
-- `src/app/api`: validación server-side y generación de share card.
+- `src/app/api`: validación server-side, health y generación de share card.
 - `src/ui`: motor merchant-driven, rueda premium y tarjeta pública.
+- `migrations`: esquema PostgreSQL versionado.
 - `showcase`: showroom estático sin backend.
-
-Una sesión real sólo obtiene un reward, el refresh recupera el mismo y un canje no puede repetirse. Tokens y códigos son criptográficos y no secuenciales.
 
 ## Verificación
 
@@ -97,12 +138,19 @@ npm run test:e2e
 node --check showcase/assets/app.js
 ```
 
-GitHub Actions ejecuta unit/integration, lint, typecheck, build y E2E Chromium en PRs. El workflow de Pages valida además la estructura del showroom y la sintaxis de su motor JavaScript antes de desplegar.
+Con PostgreSQL disponible:
+
+```bash
+npm run migrate
+npm run test:postgres
+```
+
+GitHub Actions levanta una instancia limpia de PostgreSQL 16, aplica migraciones y ejecuta pruebas reales de concurrencia además de unit/integration, lint, typecheck, build y E2E Chromium.
 
 ## Limitaciones actuales
 
 - Web Share no confirma publicación externa ni garantiza que WhatsApp Status o Instagram Stories sean el destino elegido.
-- WhatsApp directo usa `wa.me`, no WhatsApp Business API. Los números de ambas demos reales son ficticios.
-- La persistencia JSON actual es para una sola instancia local/demo. El contrato `Repository` es el límite previsto para PostgreSQL/Supabase.
-- `/validar/<token>` sigue siendo un validador demo sin autenticación de empleados. Debe protegerse antes de un piloto comercial real.
+- WhatsApp directo usa `wa.me`, no WhatsApp Business API. Los números de las demos son ficticios.
+- `/validar/<token>` sigue siendo un validador demo sin autenticación y comparte la credencial pública del reward. **VIRALIO-005 debe corregir esto antes de cualquier piloto real.**
 - El showroom de GitHub Pages es deliberadamente visual y no representa datos, rewards ni métricas reales.
+- El deploy efectivo a Vercel/Supabase requiere configurar secretos fuera del repositorio.
