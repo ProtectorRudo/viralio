@@ -8,8 +8,8 @@ function setup(now = new Date("2026-09-02T12:00:00.000Z")) {
   return { repository, service: new ViralioService(repository, () => 0.9999, () => now) };
 }
 
-async function sharedSession(service: ViralioService) {
-  const { session } = await service.startSession("moka");
+async function sharedSession(service: ViralioService, merchantSlug = "moka") {
+  const { session } = await service.startSession(merchantSlug);
   await service.unlock(session.id);
   await service.initiateShare(session.id, "native");
   return session;
@@ -27,13 +27,26 @@ describe("ViralioService", () => {
     expect(repository.database.events.filter((event) => event.name === "reward_issued")).toHaveLength(1);
   });
 
-  it("redeems a reward only once", async () => {
+  it("redeems a reward only through the owning merchant and only once", async () => {
     const { repository, service } = setup();
     const session = await sharedSession(service);
     const reward = await service.spin(session.id);
-    expect(rewardStatus(await service.redeem(reward.token))).toBe("REDEEMED");
-    await expect(service.redeem(reward.token)).rejects.toThrow(/not available/);
+
+    await expect(service.getRewardForMerchant("merchant_atlas", reward.shortCode)).rejects.toThrow(/not found/);
+    await expect(service.redeemForMerchant("merchant_atlas", reward.shortCode)).rejects.toThrow(/not found/);
+
+    expect(rewardStatus(await service.redeemForMerchant("merchant_moka", reward.shortCode))).toBe("REDEEMED");
+    await expect(service.redeemForMerchant("merchant_moka", reward.shortCode)).rejects.toThrow(/not available/);
     expect(repository.database.events.filter((event) => event.name === "reward_redeemed")).toHaveLength(1);
+  });
+
+  it("normalizes merchant short codes without exposing cross-merchant rewards", async () => {
+    const { service } = setup();
+    const session = await sharedSession(service);
+    const reward = await service.spin(session.id);
+    const found = await service.getRewardForMerchant("merchant_moka", `  ${reward.shortCode.toLowerCase()}  `);
+    expect(found.id).toBe(reward.id);
+    await expect(service.getRewardForMerchant("merchant_atlas", reward.shortCode)).rejects.toThrow(/not found/);
   });
 
   it("reports expiration based on server time", async () => {
