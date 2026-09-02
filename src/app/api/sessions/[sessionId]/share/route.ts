@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { viralio } from "@/application";
 import type { ShareChannel } from "@/domain/types";
 
-const channels: ShareChannel[] = ["whatsapp", "native", "social"];
+const channels: ShareChannel[] = ["whatsapp", "whatsapp_status", "instagram_story", "native", "social"];
 
 export async function POST(request: Request, context: { params: Promise<{ sessionId: string }> }) {
   try {
