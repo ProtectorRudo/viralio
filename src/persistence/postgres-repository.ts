@@ -76,25 +76,17 @@ class PostgresTransaction implements TransactionRepository {
         SELECT * FROM sessions WHERE id = ${sessionId} AND merchant_id = ${merchantId}
       `;
     } else if (forUpdate) {
-      rows = await this.sql<SessionRow[]>`
-        SELECT * FROM sessions WHERE id = ${sessionId} FOR UPDATE
-      `;
+      rows = await this.sql<SessionRow[]>`SELECT * FROM sessions WHERE id = ${sessionId} FOR UPDATE`;
     } else {
-      rows = await this.sql<SessionRow[]>`
-        SELECT * FROM sessions WHERE id = ${sessionId}
-      `;
+      rows = await this.sql<SessionRow[]>`SELECT * FROM sessions WHERE id = ${sessionId}`;
     }
     return rows[0] ? toSession(rows[0]) : undefined;
   }
 
   async getSessionByReferralToken(referralToken: string, merchantId?: string): Promise<Session | undefined> {
     const rows = merchantId
-      ? await this.sql<SessionRow[]>`
-          SELECT * FROM sessions WHERE referral_token = ${referralToken} AND merchant_id = ${merchantId}
-        `
-      : await this.sql<SessionRow[]>`
-          SELECT * FROM sessions WHERE referral_token = ${referralToken}
-        `;
+      ? await this.sql<SessionRow[]>`SELECT * FROM sessions WHERE referral_token = ${referralToken} AND merchant_id = ${merchantId}`
+      : await this.sql<SessionRow[]>`SELECT * FROM sessions WHERE referral_token = ${referralToken}`;
     return rows[0] ? toSession(rows[0]) : undefined;
   }
 
@@ -112,12 +104,9 @@ class PostgresTransaction implements TransactionRepository {
   async updateSession(session: Session): Promise<void> {
     const result = await this.sql`
       UPDATE sessions SET
-        merchant_id = ${session.merchantId},
-        referral_token = ${session.referralToken},
-        referred_by = ${session.referredBy ?? null},
-        state = ${session.state},
-        reward_id = ${session.rewardId ?? null},
-        updated_at = ${session.updatedAt}
+        merchant_id = ${session.merchantId}, referral_token = ${session.referralToken},
+        referred_by = ${session.referredBy ?? null}, state = ${session.state},
+        reward_id = ${session.rewardId ?? null}, updated_at = ${session.updatedAt}
       WHERE id = ${session.id}
       RETURNING id
     `;
@@ -138,6 +127,24 @@ class PostgresTransaction implements TransactionRepository {
     return rows[0] ? toReward(rows[0]) : undefined;
   }
 
+  async getRewardByShortCode(shortCode: string, merchantId?: string, forUpdate = false): Promise<Reward | undefined> {
+    let rows: RewardRow[];
+    if (merchantId && forUpdate) {
+      rows = await this.sql<RewardRow[]>`
+        SELECT * FROM rewards WHERE short_code = ${shortCode} AND merchant_id = ${merchantId} FOR UPDATE
+      `;
+    } else if (merchantId) {
+      rows = await this.sql<RewardRow[]>`
+        SELECT * FROM rewards WHERE short_code = ${shortCode} AND merchant_id = ${merchantId}
+      `;
+    } else if (forUpdate) {
+      rows = await this.sql<RewardRow[]>`SELECT * FROM rewards WHERE short_code = ${shortCode} FOR UPDATE`;
+    } else {
+      rows = await this.sql<RewardRow[]>`SELECT * FROM rewards WHERE short_code = ${shortCode}`;
+    }
+    return rows[0] ? toReward(rows[0]) : undefined;
+  }
+
   async insertReward(reward: Reward): Promise<void> {
     await this.sql`
       INSERT INTO rewards (
@@ -153,15 +160,9 @@ class PostgresTransaction implements TransactionRepository {
   async updateReward(reward: Reward): Promise<void> {
     const result = await this.sql`
       UPDATE rewards SET
-        token = ${reward.token},
-        short_code = ${reward.shortCode},
-        merchant_id = ${reward.merchantId},
-        session_id = ${reward.sessionId},
-        prize_id = ${reward.prizeId},
-        prize_name = ${reward.prizeName},
-        issued_at = ${reward.issuedAt},
-        expires_at = ${reward.expiresAt},
-        redeemed_at = ${reward.redeemedAt ?? null}
+        token = ${reward.token}, short_code = ${reward.shortCode}, merchant_id = ${reward.merchantId},
+        session_id = ${reward.sessionId}, prize_id = ${reward.prizeId}, prize_name = ${reward.prizeName},
+        issued_at = ${reward.issuedAt}, expires_at = ${reward.expiresAt}, redeemed_at = ${reward.redeemedAt ?? null}
       WHERE id = ${reward.id}
       RETURNING id
     `;
