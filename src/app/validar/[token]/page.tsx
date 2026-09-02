@@ -1,19 +1,6 @@
-import { notFound } from "next/navigation";
-import { viralio } from "@/application";
-import { getMerchantById } from "@/config/merchants";
-import { rewardStatus } from "@/domain/rewards";
-import type { Reward } from "@/domain/types";
-import { RewardCard } from "@/ui/reward-card";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function ValidateRewardPage({ params }: { params: Promise<{ token: string }> }) {
-  let reward: Reward;
-  try {
-    const { token } = await params;
-    reward = await viralio.getReward(token);
-  } catch { notFound(); }
-  const merchant = getMerchantById(reward.merchantId);
-  if (!merchant) notFound();
-  return <RewardCard reward={reward} merchant={merchant} initialStatus={rewardStatus(reward)} validation />;
+export default async function LegacyValidateRewardPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
+  redirect(`/premio/${encodeURIComponent(token)}`);
 }
