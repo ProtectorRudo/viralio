@@ -21,6 +21,40 @@ export interface PrizeDefinition {
   probability: number;
 }
 
+export type MerchantCategory = "coffee" | "barber";
+
+export interface MerchantTheme {
+  displayName: string;
+  shortName: string;
+  monogram: string;
+  category: MerchantCategory;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroCopy: string;
+  mysteryLabel: string;
+  shareTitle: string;
+  shareCopy: string;
+  referralCopy: string;
+  palette: {
+    canvas: string;
+    canvasAccent: string;
+    surface: string;
+    surfaceRaised: string;
+    text: string;
+    textMuted: string;
+    primary: string;
+    primaryHover: string;
+    onPrimary: string;
+    accent: string;
+    accentSecondary: string;
+    border: string;
+    success: string;
+    warning: string;
+    danger: string;
+    wheel: readonly string[];
+  };
+}
+
 export interface Merchant {
   id: string;
   slug: string;
@@ -28,6 +62,7 @@ export interface Merchant {
   whatsappNumber: string;
   rewardValidityDays: number;
   prizes: PrizeDefinition[];
+  theme: MerchantTheme;
 }
 
 export interface Session {
