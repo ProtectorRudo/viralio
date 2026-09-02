@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { getMerchantBySlug } from "@/config/merchants";
+import { viralio } from "@/application";
 import { MerchantExperience } from "@/ui/merchant-experience";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Moka · Hay algo especial esperando",
@@ -9,7 +11,6 @@ export const metadata: Metadata = {
 
 export default async function MokaPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams;
-  const merchant = getMerchantBySlug("moka");
-  if (!merchant) throw new Error("Merchant not found");
+  const merchant = await viralio.getMerchantForExperience("moka");
   return <MerchantExperience merchant={merchant} referralToken={ref} />;
 }
