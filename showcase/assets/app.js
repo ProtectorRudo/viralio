@@ -37,7 +37,6 @@
   const app = document.querySelector("#app");
   if (!config || !app) return;
 
-  let state = "landing";
   let selectedPrize = null;
   let spinning = false;
   const demoCode = () => Math.random().toString(16).slice(2, 10).toUpperCase();
@@ -73,7 +72,6 @@
   }
 
   function renderLanding() {
-    state = "landing";
     shell(`
       <div class="demo-stage landing-stage">
         <div class="mystery-premium" aria-label="Premio oculto">
@@ -94,7 +92,6 @@
   }
 
   function renderShare() {
-    state = "share";
     shell(`
       <div class="demo-stage share-stage">
         <div class="share-card-preview" aria-hidden="true">
@@ -152,7 +149,6 @@
   }
 
   function renderWheel() {
-    state = "wheel";
     shell(`
       <div class="demo-stage wheel-stage-static">
         <div class="stage-copy wheel-copy">
@@ -188,7 +184,6 @@
   }
 
   function renderReward() {
-    state = "reward";
     spinning = false;
     const prize = selectedPrize || { name: config.prizes[0], code: demoCode() };
     shell(`
