@@ -1,25 +1,36 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Database } from "@/domain/types";
+import { ArrayTransaction } from "./array-transaction";
 import { emptyDatabase, type Repository } from "./repository";
 
 export class JsonRepository implements Repository {
+  readonly kind = "json" as const;
   private queue: Promise<void> = Promise.resolve();
 
   constructor(private readonly filePath: string) {}
 
-  async transaction<T>(operation: (database: Database) => T | Promise<T>): Promise<T> {
+  async transaction<T>(operation: (transaction: ArrayTransaction) => Promise<T>): Promise<T> {
     let release!: () => void;
     const previous = this.queue;
     this.queue = new Promise<void>((resolve) => { release = resolve; });
     await previous;
     try {
       const database = await this.read();
-      const result = await operation(database);
+      const result = await operation(new ArrayTransaction(database));
       await this.write(database);
       return result;
     } finally {
       release();
+    }
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      await this.read();
+      return true;
+    } catch {
+      return false;
     }
   }
 
