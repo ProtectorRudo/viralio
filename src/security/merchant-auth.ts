@@ -1,4 +1,3 @@
-import "server-only";
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { getMerchantBySlug } from "@/config/merchants";
 
@@ -107,12 +106,17 @@ export function merchantSessionFromRequest(
   environment: NodeJS.ProcessEnv = process.env,
 ): MerchantSession | undefined {
   const cookieHeader = request.headers.get("cookie") ?? "";
-  const token = cookieHeader
+  const encodedToken = cookieHeader
     .split(";")
     .map((part) => part.trim())
     .find((part) => part.startsWith(`${MERCHANT_SESSION_COOKIE}=`))
     ?.slice(MERCHANT_SESSION_COOKIE.length + 1);
-  return verifyMerchantSessionToken(token ? decodeURIComponent(token) : undefined, Date.now(), environment);
+  if (!encodedToken) return undefined;
+  try {
+    return verifyMerchantSessionToken(decodeURIComponent(encodedToken), Date.now(), environment);
+  } catch {
+    return undefined;
+  }
 }
 
 export function merchantCookieOptions(environment: NodeJS.ProcessEnv = process.env) {
