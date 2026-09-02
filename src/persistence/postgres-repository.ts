@@ -62,12 +62,21 @@ interface MerchantShareChannelRow {
 
 interface MerchantSettingsRow {
   merchantId: string;
-  settings: MerchantCustomization;
+  settings: unknown;
   updatedAt: Timestamp;
 }
 
 function iso(value: Timestamp): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+function parseJsonValue(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return value;
+  }
 }
 
 function toSession(row: SessionRow): Session {
@@ -286,7 +295,11 @@ class PostgresTransaction implements TransactionRepository {
     `;
     const row = rows[0];
     if (!row) return undefined;
-    return { merchantId: row.merchantId, customization: row.settings, updatedAt: iso(row.updatedAt) };
+    return {
+      merchantId: row.merchantId,
+      customization: parseJsonValue(row.settings) as MerchantCustomization,
+      updatedAt: iso(row.updatedAt),
+    };
   }
 
   async upsertMerchantSettings(
