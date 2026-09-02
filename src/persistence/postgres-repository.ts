@@ -220,7 +220,8 @@ export class PostgresRepository implements Repository {
   }
 
   async transaction<T>(operation: (transaction: TransactionRepository) => Promise<T>): Promise<T> {
-    return this.sql.begin("read write", async (sql) => operation(new PostgresTransaction(sql)));
+    const result = await this.sql.begin("read write", async (sql) => operation(new PostgresTransaction(sql)));
+    return result as unknown as T;
   }
 
   async healthCheck(): Promise<boolean> {
