@@ -57,6 +57,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
           <nav className="merchant-panel-switch" aria-label="Panel del comercio">
             <span className="merchant-panel-tab is-active" aria-current="page">Resumen</span>
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/canjes`}>Canjes</Link>
+            <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
             <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
           </nav>
 
