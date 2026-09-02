@@ -53,6 +53,10 @@ function signature(payload: string, environment: NodeJS.ProcessEnv): string {
   return createHmac("sha256", secret(environment)).update(payload, "utf8").digest("base64url");
 }
 
+function firstHeaderValue(value: string | null): string | undefined {
+  return value?.split(",")[0]?.trim() || undefined;
+}
+
 export function verifyMerchantPin(
   merchantSlug: string,
   submittedPin: string,
@@ -132,8 +136,20 @@ export function merchantCookieOptions(environment: NodeJS.ProcessEnv = process.e
 export function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return false;
+
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") return false;
+
   try {
-    return new URL(origin).origin === new URL(request.url).origin;
+    const originUrl = new URL(origin);
+    const requestUrl = new URL(request.url);
+    const host = firstHeaderValue(request.headers.get("host"))
+      ?? firstHeaderValue(request.headers.get("x-forwarded-host"));
+    const protocol = firstHeaderValue(request.headers.get("x-forwarded-proto"))
+      ?? requestUrl.protocol.slice(0, -1);
+    if (!host || !protocol) return false;
+    return originUrl.host.toLowerCase() === host.toLowerCase()
+      && originUrl.protocol.toLowerCase() === `${protocol.toLowerCase()}:`;
   } catch {
     return false;
   }
