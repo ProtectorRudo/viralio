@@ -7,6 +7,10 @@ import { PostgresRepository } from "@/persistence/postgres-repository";
 
 const databaseUrl = process.env.DATABASE_URL;
 const postgresDescribe = databaseUrl ? describe : describe.skip;
+const authEnvironment = {
+  NODE_ENV: "test",
+  VIRALIO_AUTH_SECRET: "postgres-auth-secret-with-at-least-32-characters",
+} as NodeJS.ProcessEnv;
 
 postgresDescribe("PostgresRepository integration", () => {
   if (!databaseUrl) return;
@@ -15,7 +19,7 @@ postgresDescribe("PostgresRepository integration", () => {
   const repository = new PostgresRepository(databaseUrl, { maxConnections: 5 });
 
   beforeEach(async () => {
-    await sql`TRUNCATE TABLE merchant_settings, analytics_events, rewards, sessions CASCADE`;
+    await sql`TRUNCATE TABLE merchant_settings, merchant_accounts, analytics_events, rewards, sessions CASCADE`;
   });
 
   afterAll(async () => {
@@ -39,17 +43,45 @@ postgresDescribe("PostgresRepository integration", () => {
       SELECT table_name
       FROM information_schema.tables
       WHERE table_schema = 'public'
-        AND table_name IN ('sessions', 'rewards', 'analytics_events', 'merchant_settings', 'viralio_schema_migrations')
+        AND table_name IN ('sessions', 'rewards', 'analytics_events', 'merchant_settings', 'merchant_accounts', 'viralio_schema_migrations')
       ORDER BY table_name
     `;
     expect(tables.map((row) => row.tableName)).toEqual([
       "analytics_events",
+      "merchant_accounts",
       "merchant_settings",
       "rewards",
       "sessions",
       "viralio_schema_migrations",
     ]);
     expect(await repository.healthCheck()).toBe(true);
+  });
+
+  it("persists a newly onboarded merchant, credentials and settings atomically", async () => {
+    const instance = service();
+    const merchant = await instance.createMerchant({
+      name: "Bruma Café",
+      slug: "bruma-cafe",
+      template: "coffee",
+      whatsappNumber: "5492215550000",
+      pin: "482619",
+    }, authEnvironment);
+
+    expect((await instance.getMerchantForExperience("bruma-cafe")).id).toBe(merchant.id);
+    expect(await instance.authenticateDynamicMerchant("bruma-cafe", "482619", authEnvironment)).toBe(merchant.id);
+    expect(await instance.authenticateDynamicMerchant("bruma-cafe", "000000", authEnvironment)).toBeUndefined();
+
+    const accounts = await sql<{ merchantId: string; pinHash: string }[]>`
+      SELECT merchant_id, pin_hash FROM merchant_accounts WHERE slug = 'bruma-cafe'
+    `;
+    expect(accounts).toHaveLength(1);
+    expect(accounts[0]?.merchantId).toBe(merchant.id);
+    expect(accounts[0]?.pinHash).not.toContain("482619");
+
+    const settings = await sql<{ merchantId: string }[]>`
+      SELECT merchant_id FROM merchant_settings WHERE merchant_id = ${merchant.id}
+    `;
+    expect(settings).toHaveLength(1);
   });
 
   it("persists merchant settings in PostgreSQL without cross-merchant leakage", async () => {

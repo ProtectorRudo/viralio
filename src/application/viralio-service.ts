@@ -1,5 +1,10 @@
 import { randomBytes, randomInt, randomUUID } from "node:crypto";
 import {
+  defaultCustomizationForAccount,
+  merchantFromAccount,
+  parseMerchantOnboarding,
+} from "@/config/merchant-accounts";
+import {
   applyMerchantCustomization,
   defaultMerchantCustomization,
   validateMerchantCustomization,
@@ -13,6 +18,7 @@ import type {
   AnalyticsEvent,
   EventName,
   Merchant,
+  MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
   Reward,
@@ -20,6 +26,7 @@ import type {
   ShareChannel,
 } from "@/domain/types";
 import type { Repository, TransactionRepository, UniqueValueKind } from "@/persistence/repository";
+import { createMerchantPinCredentials, verifyMerchantAccountPin } from "@/security/merchant-auth";
 
 function token(): string {
   return randomBytes(16).toString("base64url");
@@ -56,22 +63,65 @@ export class ViralioService {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
+  async createMerchant(value: unknown, environment: NodeJS.ProcessEnv = process.env): Promise<Merchant> {
+    const input = parseMerchantOnboarding(value);
+    if (getMerchantBySlug(input.slug)) throw new Error("Merchant already exists");
+    const credentials = createMerchantPinCredentials(input.pin, environment);
+    const createdAt = this.now().toISOString();
+    const account: MerchantAccount = {
+      id: `merchant_${randomUUID()}`,
+      slug: input.slug,
+      name: input.name,
+      template: input.template,
+      ...credentials,
+      createdAt,
+    };
+
+    return this.repository.transaction(async (transaction) => {
+      if (await transaction.getMerchantAccountBySlug(account.slug)) throw new Error("Merchant already exists");
+      const base = merchantFromAccount(account);
+      const customization = validateMerchantCustomization(
+        defaultCustomizationForAccount(account, input.whatsappNumber),
+        base,
+      );
+      await transaction.insertMerchantAccount(account);
+      await transaction.upsertMerchantSettings(account.id, customization, createdAt);
+      return applyMerchantCustomization(base, customization);
+    });
+  }
+
+  async authenticateDynamicMerchant(
+    merchantSlug: string,
+    submittedPin: string,
+    environment: NodeJS.ProcessEnv = process.env,
+  ): Promise<string | undefined> {
+    return this.repository.transaction(async (transaction) => {
+      const account = await transaction.getMerchantAccountBySlug(merchantSlug);
+      if (!account || !verifyMerchantAccountPin(account, submittedPin, environment)) return undefined;
+      return account.id;
+    });
+  }
+
   async getMerchantForExperience(merchantSlug: string): Promise<Merchant> {
-    const base = getMerchantBySlug(merchantSlug);
-    if (!base) throw new Error("Merchant not found");
-    return this.repository.transaction((transaction) => this.resolveMerchant(transaction, base));
+    return this.repository.transaction(async (transaction) => {
+      const base = await this.resolveMerchantBaseBySlug(transaction, merchantSlug);
+      if (!base) throw new Error("Merchant not found");
+      return this.resolveMerchant(transaction, base);
+    });
   }
 
   async getMerchantForId(merchantId: string): Promise<Merchant> {
-    const base = getMerchantById(merchantId);
-    if (!base) throw new Error("Merchant not found");
-    return this.repository.transaction((transaction) => this.resolveMerchant(transaction, base));
+    return this.repository.transaction(async (transaction) => {
+      const base = await this.resolveMerchantBaseById(transaction, merchantId);
+      if (!base) throw new Error("Merchant not found");
+      return this.resolveMerchant(transaction, base);
+    });
   }
 
   async getMerchantCustomization(merchantId: string): Promise<MerchantCustomization> {
-    const base = getMerchantById(merchantId);
-    if (!base) throw new Error("Merchant not found");
     return this.repository.transaction(async (transaction) => {
+      const base = await this.resolveMerchantBaseById(transaction, merchantId);
+      if (!base) throw new Error("Merchant not found");
       const stored = await transaction.getMerchantSettings(merchantId);
       if (!stored) return defaultMerchantCustomization(base);
       return validateMerchantCustomization(stored.customization, base);
@@ -79,20 +129,19 @@ export class ViralioService {
   }
 
   async updateMerchantCustomization(merchantId: string, value: unknown): Promise<Merchant> {
-    const base = getMerchantById(merchantId);
-    if (!base) throw new Error("Merchant not found");
-    const customization = validateMerchantCustomization(value, base);
-    await this.repository.transaction((transaction) =>
-      transaction.upsertMerchantSettings(merchantId, customization, this.now().toISOString()),
-    );
-    return applyMerchantCustomization(base, customization);
+    return this.repository.transaction(async (transaction) => {
+      const base = await this.resolveMerchantBaseById(transaction, merchantId);
+      if (!base) throw new Error("Merchant not found");
+      const customization = validateMerchantCustomization(value, base);
+      await transaction.upsertMerchantSettings(merchantId, customization, this.now().toISOString());
+      return applyMerchantCustomization(base, customization);
+    });
   }
 
   async startSession(merchantSlug: string, existingSessionId?: string, referralToken?: string) {
-    const base = getMerchantBySlug(merchantSlug);
-    if (!base) throw new Error("Merchant not found");
-
     return this.repository.transaction(async (transaction) => {
+      const base = await this.resolveMerchantBaseBySlug(transaction, merchantSlug);
+      if (!base) throw new Error("Merchant not found");
       const merchant = await this.resolveMerchant(transaction, base);
       const existing = existingSessionId
         ? await transaction.getSessionById(existingSessionId, merchant.id)
@@ -137,7 +186,7 @@ export class ViralioService {
     return this.repository.transaction(async (transaction) => {
       const session = await transaction.getSessionByReferralToken(referralToken);
       if (!session) throw new Error("Referral not found");
-      const base = getMerchantById(session.merchantId);
+      const base = await this.resolveMerchantBaseById(transaction, session.merchantId);
       if (!base) throw new Error("Merchant not found");
       const merchant = await this.resolveMerchant(transaction, base);
       return { session, merchant };
@@ -187,7 +236,7 @@ export class ViralioService {
       if (session.rewardId) return this.requireRewardById(transaction, session.rewardId);
       if (session.state !== "SHARED") throw new Error("Sharing must be initiated before spinning");
 
-      const base = getMerchantById(session.merchantId);
+      const base = await this.resolveMerchantBaseById(transaction, session.merchantId);
       if (!base) throw new Error("Merchant not found");
       const merchant = await this.resolveMerchant(transaction, base);
       const issuedAt = this.now();
@@ -270,8 +319,10 @@ export class ViralioService {
   }
 
   async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
-    if (!getMerchantById(merchantId)) throw new Error("Merchant not found");
-    return this.repository.transaction((transaction) => transaction.getMerchantMetrics(merchantId));
+    return this.repository.transaction(async (transaction) => {
+      if (!await this.resolveMerchantBaseById(transaction, merchantId)) throw new Error("Merchant not found");
+      return transaction.getMerchantMetrics(merchantId);
+    });
   }
 
   async recordWhatsappSave(sessionId: string): Promise<void> {
@@ -287,6 +338,26 @@ export class ViralioService {
         { rewardId: session.rewardId },
       ));
     });
+  }
+
+  private async resolveMerchantBaseBySlug(
+    transaction: TransactionRepository,
+    slug: string,
+  ): Promise<Merchant | undefined> {
+    const configured = getMerchantBySlug(slug);
+    if (configured) return configured;
+    const account = await transaction.getMerchantAccountBySlug(slug);
+    return account ? merchantFromAccount(account) : undefined;
+  }
+
+  private async resolveMerchantBaseById(
+    transaction: TransactionRepository,
+    merchantId: string,
+  ): Promise<Merchant | undefined> {
+    const configured = getMerchantById(merchantId);
+    if (configured) return configured;
+    const account = await transaction.getMerchantAccountById(merchantId);
+    return account ? merchantFromAccount(account) : undefined;
   }
 
   private async resolveMerchant(transaction: TransactionRepository, base: Merchant): Promise<Merchant> {

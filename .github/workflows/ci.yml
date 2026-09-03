@@ -98,6 +98,7 @@ jobs:
       DATABASE_URL: postgres://viralio:viralio@127.0.0.1:5432/viralio_e2e
       VIRALIO_PERSISTENCE: postgres
       VIRALIO_AUTH_SECRET: ci-viralio-auth-secret-with-at-least-32-characters
+      VIRALIO_ONBOARDING_KEY: ci-viralio-onboarding-key-with-24-characters
       VIRALIO_MERCHANT_PINS: '{"moka":"246810","atlas-barber":"135790"}'
     steps:
       - name: Checkout

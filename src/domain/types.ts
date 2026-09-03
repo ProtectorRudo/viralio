@@ -22,6 +22,7 @@ export interface PrizeDefinition {
 }
 
 export type MerchantCategory = "coffee" | "barber";
+export type MerchantTemplate = MerchantCategory;
 
 export interface MerchantTheme {
   displayName: string;
@@ -94,6 +95,16 @@ export interface MerchantSettingsRecord {
   updatedAt: string;
 }
 
+export interface MerchantAccount {
+  id: string;
+  slug: string;
+  name: string;
+  template: MerchantTemplate;
+  pinSalt: string;
+  pinHash: string;
+  createdAt: string;
+}
+
 export interface Session {
   id: string;
   merchantId: string;
@@ -144,4 +155,5 @@ export interface Database {
   rewards: Reward[];
   events: AnalyticsEvent[];
   merchantSettings: MerchantSettingsRecord[];
+  merchantAccounts: MerchantAccount[];
 }

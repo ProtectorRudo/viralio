@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { viralio } from "@/application";
 import {
   MERCHANT_SESSION_COOKIE,
   createMerchantSessionToken,
@@ -18,7 +19,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 });
     }
 
-    const merchantId = verifyMerchantPin(body.merchantSlug, body.pin);
+    const merchantId = verifyMerchantPin(body.merchantSlug, body.pin)
+      ?? await viralio.authenticateDynamicMerchant(body.merchantSlug, body.pin);
     if (!merchantId) {
       return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 });
     }
