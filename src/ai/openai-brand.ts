@@ -23,7 +23,7 @@ export interface OpenAiBrandDraft {
 export interface BrandAssistantInput {
   name: string;
   template: MerchantTemplate;
-  businessType: string;
+  businessType?: string;
   brief: string;
   logoDataUrl?: string;
 }
@@ -98,6 +98,12 @@ function cleanInput(value: unknown, label: string, min: number, max: number): st
   const normalized = value.trim().replace(/\s+/g, " ");
   if (normalized.length < min || normalized.length > max || /[<>]/.test(normalized)) throw new Error(`Invalid ${label}`);
   return normalized;
+}
+
+function defaultBusinessType(template: MerchantTemplate): string {
+  if (template === "coffee") return "Café / gastronomía";
+  if (template === "barber") return "Barbería / peluquería";
+  return "Comercio";
 }
 
 function modelName(environment: NodeJS.ProcessEnv): string {
@@ -181,7 +187,7 @@ export async function generateOpenAiBrandDraft(
   const fetchImpl = options.fetchImpl ?? fetch;
   const now = options.now ?? (() => new Date());
   const name = cleanInput(input.name, "merchant name", 2, 60);
-  const businessType = cleanInput(input.businessType, "business type", 2, 60);
+  const businessType = cleanInput(input.businessType ?? defaultBusinessType(input.template), "business type", 2, 60);
   const brief = cleanInput(input.brief, "brand brief", 3, 700);
   if (input.template !== "coffee" && input.template !== "barber" && input.template !== "generic") throw new Error("Invalid merchant template");
   const logoDataUrl = normalizeLogoDataUrl(input.logoDataUrl);
