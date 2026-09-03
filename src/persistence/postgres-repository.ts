@@ -6,6 +6,7 @@ import type {
   MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
+  MerchantMetricsWindow,
   MerchantSettingsRecord,
   MerchantTemplate,
   Reward,
@@ -257,35 +258,52 @@ class PostgresTransaction implements TransactionRepository {
     `;
   }
 
-  async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
+  async getMerchantMetrics(merchantId: string, window?: MerchantMetricsWindow): Promise<MerchantMetrics> {
+    const from = window?.from ?? "0001-01-01T00:00:00.000Z";
+    const to = window?.to ?? "9999-12-31T23:59:59.999Z";
+
     const sessionRows = await this.sql<MerchantSessionMetricsRow[]>`
       SELECT
         count(*)::int AS sessions,
         count(*) FILTER (WHERE referred_by IS NOT NULL)::int AS referred_sessions
       FROM sessions
       WHERE merchant_id = ${merchantId}
+        AND created_at >= ${from}
+        AND created_at < ${to}
     `;
     const rewardRows = await this.sql<MerchantRewardMetricsRow[]>`
       SELECT
         count(*)::int AS rewards_issued,
-        count(*) FILTER (WHERE redeemed_at IS NOT NULL)::int AS rewards_redeemed
-      FROM rewards
-      WHERE merchant_id = ${merchantId}
+        count(*) FILTER (WHERE r.redeemed_at IS NOT NULL)::int AS rewards_redeemed
+      FROM rewards r
+      JOIN sessions s ON s.id = r.session_id
+      WHERE r.merchant_id = ${merchantId}
+        AND s.merchant_id = ${merchantId}
+        AND s.created_at >= ${from}
+        AND s.created_at < ${to}
     `;
     const eventRows = await this.sql<MerchantEventMetricsRow[]>`
       SELECT
-        count(*) FILTER (WHERE name = 'share_initiated')::int AS shares,
-        count(*) FILTER (WHERE name = 'whatsapp_save_clicked')::int AS whatsapp_saves
-      FROM analytics_events
-      WHERE merchant_id = ${merchantId}
+        count(*) FILTER (WHERE e.name = 'share_initiated')::int AS shares,
+        count(*) FILTER (WHERE e.name = 'whatsapp_save_clicked')::int AS whatsapp_saves
+      FROM analytics_events e
+      JOIN sessions s ON s.id = e.session_id
+      WHERE e.merchant_id = ${merchantId}
+        AND s.merchant_id = ${merchantId}
+        AND s.created_at >= ${from}
+        AND s.created_at < ${to}
     `;
     const channelRows = await this.sql<MerchantShareChannelRow[]>`
-      SELECT share_channel, count(*)::int AS count
-      FROM analytics_events
-      WHERE merchant_id = ${merchantId}
-        AND name = 'share_initiated'
-        AND share_channel IS NOT NULL
-      GROUP BY share_channel
+      SELECT e.share_channel, count(*)::int AS count
+      FROM analytics_events e
+      JOIN sessions s ON s.id = e.session_id
+      WHERE e.merchant_id = ${merchantId}
+        AND s.merchant_id = ${merchantId}
+        AND s.created_at >= ${from}
+        AND s.created_at < ${to}
+        AND e.name = 'share_initiated'
+        AND e.share_channel IS NOT NULL
+      GROUP BY e.share_channel
     `;
 
     const shareChannels: MerchantMetrics["shareChannels"] = {
