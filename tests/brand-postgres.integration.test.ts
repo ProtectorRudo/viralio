@@ -67,10 +67,14 @@ postgresDescribe("Brand Profile PostgreSQL integration", () => {
     expect(restored.theme.heroTitle).toBe("Tu visita guarda una sorpresa");
     expect(restored.theme.socialHeadline).toContain("Bruma");
 
-    const rows = await sql<Array<{ settings: { brand?: { source?: string; ai?: { model?: string } } } }>>`
-      SELECT settings FROM merchant_settings WHERE merchant_id = ${created.id}
+    const rows = await sql<Array<{ source: string | null; model: string | null }>>`
+      SELECT
+        settings->'brand'->>'source' AS source,
+        settings->'brand'->'ai'->>'model' AS model
+      FROM merchant_settings
+      WHERE merchant_id = ${created.id}
     `;
-    expect(rows[0]?.settings.brand?.source).toBe("openai");
-    expect(rows[0]?.settings.brand?.ai?.model).toBe("gpt-5.6-terra");
+    expect(rows[0]?.source).toBe("openai");
+    expect(rows[0]?.model).toBe("gpt-5.6-terra");
   });
 });
