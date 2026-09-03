@@ -1,0 +1,254 @@
+import { buildMerchantBrandProfile, normalizeLogoDataUrl } from "@/brand/brand-engine";
+import type { MerchantBrandProfile, MerchantTemplate } from "@/domain/types";
+
+export const DEFAULT_OPENAI_BRAND_MODEL = "gpt-5.6-terra";
+
+export interface GeneratedBrandCopy {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroCopy: string;
+  mysteryLabel: string;
+  shareTitle: string;
+  shareCopy: string;
+  referralCopy: string;
+  socialHeadline: string;
+  socialSubcopy: string;
+}
+
+export interface OpenAiBrandDraft {
+  brand: MerchantBrandProfile;
+  copy: GeneratedBrandCopy;
+}
+
+export interface BrandAssistantInput {
+  name: string;
+  template: MerchantTemplate;
+  brief: string;
+  logoDataUrl?: string;
+}
+
+interface RawBrandDraft {
+  stylePreset: "editorial" | "minimal" | "luxury" | "bold" | "warm" | "urban";
+  fontPreset: "editorial" | "modern" | "geometric" | "humanist";
+  tone: string;
+  keywords: string[];
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    surface: string;
+    text: string;
+  };
+  copy: GeneratedBrandCopy;
+}
+
+const copyProperties = {
+  heroEyebrow: { type: "string", minLength: 2, maxLength: 80 },
+  heroTitle: { type: "string", minLength: 2, maxLength: 100 },
+  heroCopy: { type: "string", minLength: 2, maxLength: 220 },
+  mysteryLabel: { type: "string", minLength: 2, maxLength: 60 },
+  shareTitle: { type: "string", minLength: 2, maxLength: 100 },
+  shareCopy: { type: "string", minLength: 2, maxLength: 220 },
+  referralCopy: { type: "string", minLength: 2, maxLength: 220 },
+  socialHeadline: { type: "string", minLength: 2, maxLength: 100 },
+  socialSubcopy: { type: "string", minLength: 2, maxLength: 180 },
+} as const;
+
+export const BRAND_DRAFT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["stylePreset", "fontPreset", "tone", "keywords", "colors", "copy"],
+  properties: {
+    stylePreset: { type: "string", enum: ["editorial", "minimal", "luxury", "bold", "warm", "urban"] },
+    fontPreset: { type: "string", enum: ["editorial", "modern", "geometric", "humanist"] },
+    tone: { type: "string", minLength: 3, maxLength: 120 },
+    keywords: {
+      type: "array",
+      minItems: 2,
+      maxItems: 6,
+      uniqueItems: true,
+      items: { type: "string", minLength: 2, maxLength: 28 },
+    },
+    colors: {
+      type: "object",
+      additionalProperties: false,
+      required: ["primary", "secondary", "accent", "background", "surface", "text"],
+      properties: {
+        primary: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
+        secondary: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
+        accent: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
+        background: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
+        surface: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
+        text: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
+      },
+    },
+    copy: {
+      type: "object",
+      additionalProperties: false,
+      required: Object.keys(copyProperties),
+      properties: copyProperties,
+    },
+  },
+} as const;
+
+function cleanInput(value: unknown, label: string, min: number, max: number): string {
+  if (typeof value !== "string") throw new Error(`Invalid ${label}`);
+  const normalized = value.trim().replace(/\s+/g, " ");
+  if (normalized.length < min || normalized.length > max) throw new Error(`Invalid ${label}`);
+  return normalized;
+}
+
+function modelName(environment: NodeJS.ProcessEnv): string {
+  const model = environment.OPENAI_BRAND_MODEL?.trim() || DEFAULT_OPENAI_BRAND_MODEL;
+  if (!/^[A-Za-z0-9._-]{2,80}$/.test(model)) throw new Error("Brand AI is not configured");
+  return model;
+}
+
+function apiKey(environment: NodeJS.ProcessEnv): string {
+  const key = environment.OPENAI_API_KEY?.trim() ?? "";
+  if (!key || key.length < 20) throw new Error("Brand AI is not configured");
+  return key;
+}
+
+function outputText(payload: unknown): string {
+  if (!payload || typeof payload !== "object") throw new Error("Brand AI returned an invalid response");
+  const output = (payload as { output?: unknown }).output;
+  if (!Array.isArray(output)) throw new Error("Brand AI returned an invalid response");
+  for (const item of output) {
+    if (!item || typeof item !== "object") continue;
+    const content = (item as { content?: unknown }).content;
+    if (!Array.isArray(content)) continue;
+    for (const part of content) {
+      if (!part || typeof part !== "object") continue;
+      const candidate = part as { type?: unknown; text?: unknown };
+      if (candidate.type === "output_text" && typeof candidate.text === "string" && candidate.text.trim()) {
+        return candidate.text;
+      }
+    }
+  }
+  throw new Error("Brand AI returned an invalid response");
+}
+
+function normalizeCopy(value: unknown): GeneratedBrandCopy {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Brand AI returned invalid copy");
+  const candidate = value as Record<string, unknown>;
+  const limits: Record<keyof GeneratedBrandCopy, number> = {
+    heroEyebrow: 80,
+    heroTitle: 100,
+    heroCopy: 220,
+    mysteryLabel: 60,
+    shareTitle: 100,
+    shareCopy: 220,
+    referralCopy: 220,
+    socialHeadline: 100,
+    socialSubcopy: 180,
+  };
+  const result = {} as GeneratedBrandCopy;
+  for (const key of Object.keys(limits) as Array<keyof GeneratedBrandCopy>) {
+    result[key] = cleanInput(candidate[key], `brand copy ${key}`, 2, limits[key]);
+  }
+  return result;
+}
+
+function normalizeRawDraft(value: unknown): RawBrandDraft {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Brand AI returned an invalid draft");
+  const candidate = value as Record<string, unknown>;
+  if (!candidate.colors || typeof candidate.colors !== "object" || Array.isArray(candidate.colors)) {
+    throw new Error("Brand AI returned an invalid draft");
+  }
+  return {
+    stylePreset: candidate.stylePreset as RawBrandDraft["stylePreset"],
+    fontPreset: candidate.fontPreset as RawBrandDraft["fontPreset"],
+    tone: candidate.tone as string,
+    keywords: candidate.keywords as string[],
+    colors: candidate.colors as RawBrandDraft["colors"],
+    copy: normalizeCopy(candidate.copy),
+  };
+}
+
+export async function generateOpenAiBrandDraft(
+  input: BrandAssistantInput,
+  options: {
+    environment?: NodeJS.ProcessEnv;
+    fetchImpl?: typeof fetch;
+    now?: () => Date;
+    timeoutMs?: number;
+  } = {},
+): Promise<OpenAiBrandDraft> {
+  const environment = options.environment ?? process.env;
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const now = options.now ?? (() => new Date());
+  const name = cleanInput(input.name, "merchant name", 2, 60);
+  const brief = cleanInput(input.brief, "brand brief", 3, 700);
+  if (input.template !== "coffee" && input.template !== "barber") throw new Error("Invalid merchant template");
+  const logoDataUrl = normalizeLogoDataUrl(input.logoDataUrl);
+  const model = modelName(environment);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 20_000);
+
+  const userContent: Array<Record<string, unknown>> = [{
+    type: "input_text",
+    text: `Comercio: ${name}\nRubro base: ${input.template}\nBrief de marca: ${brief}`,
+  }];
+  if (logoDataUrl) userContent.push({ type: "input_image", image_url: logoDataUrl, detail: "high" });
+
+  try {
+    const response = await fetchImpl("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey(environment)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        store: false,
+        input: [
+          {
+            role: "developer",
+            content: [{
+              type: "input_text",
+              text: "Sos el director de marca de Viralio. Diseñá una identidad premium, profesional y fiel al negocio para un funnel móvil de recompensas. Evitá estética de casino, kermés o plantilla genérica. Devolvé sólo el schema solicitado. Los colores deben ser #RRGGBB. No cambies premios, probabilidades ni reglas del producto. El copy debe sonar natural en español rioplatense y funcionar también aislado en una Story/Estado 9:16.",
+            }],
+          },
+          { role: "user", content: userContent },
+        ],
+        text: {
+          format: {
+            type: "json_schema",
+            name: "viralio_brand_draft",
+            strict: true,
+            schema: BRAND_DRAFT_SCHEMA,
+          },
+        },
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) throw new Error("Brand AI is temporarily unavailable");
+    const payload = await response.json() as unknown;
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(outputText(payload));
+    } catch {
+      throw new Error("Brand AI returned an invalid response");
+    }
+    const draft = normalizeRawDraft(parsed);
+    const brand = buildMerchantBrandProfile({
+      source: "openai",
+      logoDataUrl,
+      stylePreset: draft.stylePreset,
+      fontPreset: draft.fontPreset,
+      tone: draft.tone,
+      keywords: draft.keywords,
+      colors: draft.colors,
+      ai: { model, generatedAt: now().toISOString() },
+    });
+    return { brand, copy: draft.copy };
+  } catch (error) {
+    if ((error as Error).name === "AbortError") throw new Error("Brand AI timed out");
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
