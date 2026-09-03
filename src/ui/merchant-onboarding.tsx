@@ -14,6 +14,13 @@ interface BrandDraft {
   copy: Partial<MerchantExperienceCopy>;
 }
 
+interface BrandFailure {
+  error?: string;
+  diagnosticCode?: string;
+  upstreamStatus?: number;
+  upstreamCode?: string;
+}
+
 const MAX_LOGO_BYTES = 700 * 1024;
 const LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 
@@ -57,6 +64,7 @@ export function MerchantOnboarding() {
   const [useAiBranding, setUseAiBranding] = useState(true);
   const [brandDraft, setBrandDraft] = useState<BrandDraft>();
   const [brandBusy, setBrandBusy] = useState(false);
+  const [brandError, setBrandError] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<OnboardingResult>();
@@ -65,6 +73,7 @@ export function MerchantOnboarding() {
 
   function invalidateDraft() {
     setBrandDraft(undefined);
+    setBrandError("");
   }
 
   function changeName(value: string) {
@@ -99,7 +108,7 @@ export function MerchantOnboarding() {
   }
 
   async function generateBrand() {
-    setError("");
+    setBrandError("");
     setBrandBusy(true);
     setBrandDraft(undefined);
     try {
@@ -108,14 +117,19 @@ export function MerchantOnboarding() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ onboardingKey, name, template, businessType, brief: brandBrief, logoDataUrl: logoDataUrl || undefined }),
       });
-      const payload = await response.json() as BrandDraft & { error?: string };
+      const payload = await response.json() as BrandDraft & BrandFailure;
       if (!response.ok) {
-        setError(payload.error ?? "No se pudo generar la identidad");
+        const diagnostic = [
+          payload.diagnosticCode ? `código ${payload.diagnosticCode}` : "",
+          typeof payload.upstreamStatus === "number" ? `OpenAI HTTP ${payload.upstreamStatus}` : "",
+          payload.upstreamCode ? `OpenAI ${payload.upstreamCode}` : "",
+        ].filter(Boolean).join(" · ");
+        setBrandError(`${payload.error ?? "No se pudo generar la identidad"}${diagnostic ? ` (${diagnostic})` : ""}`);
         return;
       }
       setBrandDraft(payload);
     } catch {
-      setError("No se pudo conectar con ChatGPT para branding");
+      setBrandError("No se pudo conectar con ChatGPT para branding");
     } finally {
       setBrandBusy(false);
     }
@@ -168,6 +182,7 @@ export function MerchantOnboarding() {
     setLogoDataUrl("");
     setBrandBrief("");
     setBrandDraft(undefined);
+    setBrandError("");
     setUseAiBranding(true);
   }
 
@@ -260,7 +275,7 @@ export function MerchantOnboarding() {
             <section className="onboarding-section">
               <div className="onboarding-section-title"><span>03</span><div><strong>Brand Engine</strong><small>Identidad asistida por ChatGPT, render controlado por Viralio</small></div></div>
               <label style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <input data-testid="brand-ai-toggle" type="checkbox" checked={useAiBranding} onChange={(event) => { setUseAiBranding(event.target.checked); if (!event.target.checked) setBrandDraft(undefined); }} />
+                <input data-testid="brand-ai-toggle" type="checkbox" checked={useAiBranding} onChange={(event) => { setUseAiBranding(event.target.checked); if (!event.target.checked) { setBrandDraft(undefined); setBrandError(""); } }} />
                 Generar identidad con ChatGPT
               </label>
               {useAiBranding && (
@@ -268,6 +283,7 @@ export function MerchantOnboarding() {
                   {brandBusy ? "ChatGPT está diseñando…" : brandDraft ? "Regenerar identidad con ChatGPT" : "Generar identidad con ChatGPT"}
                 </button>
               )}
+              {brandError && <p className="onboarding-error" data-testid="brand-error" role="alert">{brandError}</p>}
 
               {brandDraft && (
                 <div data-testid="brand-preview" style={{ display: "grid", gap: 14, padding: 16, border: `1px solid ${brandDraft.brand.palette.border}`, borderRadius: 18, background: brandDraft.brand.palette.canvas, color: brandDraft.brand.palette.text }}>
