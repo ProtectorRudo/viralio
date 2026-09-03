@@ -5,6 +5,7 @@ import type {
   MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
+  MerchantMetricsWindow,
   MerchantSettingsRecord,
   Reward,
   Session,
@@ -26,7 +27,7 @@ export interface TransactionRepository {
 
   hasEvent(name: EventName, sessionId: string, rewardId?: string): Promise<boolean>;
   insertEvent(event: AnalyticsEvent): Promise<void>;
-  getMerchantMetrics(merchantId: string): Promise<MerchantMetrics>;
+  getMerchantMetrics(merchantId: string, window?: MerchantMetricsWindow): Promise<MerchantMetrics>;
 
   getMerchantAccountBySlug(slug: string): Promise<MerchantAccount | undefined>;
   getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined>;
