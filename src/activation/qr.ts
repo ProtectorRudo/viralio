@@ -94,7 +94,7 @@ function encodeData(text: string, spec: VersionSpec): number[] {
 }
 
 function formatBits(mask: number): number {
-  let valueBits = (LEVEL_L << 3) | mask;
+  const valueBits = (LEVEL_L << 3) | mask;
   let remainder = valueBits << 10;
   const generator = 0x537;
   while (bitLength(remainder) >= bitLength(generator)) {
