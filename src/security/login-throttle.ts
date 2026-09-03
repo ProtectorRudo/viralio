@@ -229,3 +229,13 @@ export async function clearMerchantLoginThrottle(
   }
   await sql`DELETE FROM merchant_login_throttles WHERE throttle_key = ${throttleKey}`;
 }
+
+export async function closeMerchantLoginThrottleStore(): Promise<void> {
+  if (globalThrottle.viralioLoginThrottleSql) {
+    await globalThrottle.viralioLoginThrottleSql.end({ timeout: 5 });
+    delete globalThrottle.viralioLoginThrottleSql;
+    delete globalThrottle.viralioLoginThrottleDatabaseUrl;
+  }
+  globalThrottle.viralioLoginThrottleMemory?.clear();
+  globalThrottle.viralioLoginThrottleQueue = Promise.resolve();
+}
