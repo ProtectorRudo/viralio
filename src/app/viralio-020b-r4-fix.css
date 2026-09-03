@@ -1,0 +1,5 @@
+/* R4 micro-fix: reserve the middle headline line for the blush italic word,
+   avoiding a dark duplicate underneath it. */
+.experience.theme-joyeria-aurora .campaign-copy h1::before {
+  content: "Hay algo\A \A para ti";
+}
