@@ -2,6 +2,7 @@ import type {
   AnalyticsEvent,
   Database,
   EventName,
+  MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
   MerchantSettingsRecord,
@@ -13,6 +14,7 @@ import type { TransactionRepository, UniqueValueKind } from "./repository";
 export class ArrayTransaction implements TransactionRepository {
   constructor(private readonly database: Database) {
     this.database.merchantSettings ??= [];
+    this.database.merchantAccounts ??= [];
   }
 
   async getSessionById(sessionId: string, merchantId?: string): Promise<Session | undefined> {
@@ -111,6 +113,21 @@ export class ArrayTransaction implements TransactionRepository {
       whatsappSaves: events.filter((event) => event.name === "whatsapp_save_clicked").length,
       shareChannels,
     };
+  }
+
+  async getMerchantAccountBySlug(slug: string): Promise<MerchantAccount | undefined> {
+    return this.database.merchantAccounts.find((account) => account.slug === slug);
+  }
+
+  async getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined> {
+    return this.database.merchantAccounts.find((account) => account.id === merchantId);
+  }
+
+  async insertMerchantAccount(account: MerchantAccount): Promise<void> {
+    if (this.database.merchantAccounts.some((candidate) => candidate.id === account.id || candidate.slug === account.slug)) {
+      throw new Error("Merchant already exists");
+    }
+    this.database.merchantAccounts.push(account);
   }
 
   async getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined> {
