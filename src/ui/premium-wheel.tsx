@@ -3,6 +3,7 @@ import type { Merchant, Reward } from "@/domain/types";
 const center = 160;
 const radius = 146;
 export const SPIN_TURNS = 9;
+export const SPIN_DURATION_MS = 5600;
 
 function point(angle: number): [number, number] {
   const radians = (angle * Math.PI) / 180;
@@ -45,6 +46,7 @@ export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
       data-testid="premium-wheel"
       data-winning-prize={reward?.prizeName ?? ""}
       data-spin-turns={SPIN_TURNS}
+      data-spin-duration-ms={SPIN_DURATION_MS}
       role="img"
       aria-label={`Ruleta de ${merchant.name}. Premios: ${prizeList}`}
     >
