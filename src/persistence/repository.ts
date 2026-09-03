@@ -2,6 +2,7 @@ import type {
   AnalyticsEvent,
   Database,
   EventName,
+  MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
   MerchantSettingsRecord,
@@ -26,6 +27,11 @@ export interface TransactionRepository {
   hasEvent(name: EventName, sessionId: string, rewardId?: string): Promise<boolean>;
   insertEvent(event: AnalyticsEvent): Promise<void>;
   getMerchantMetrics(merchantId: string): Promise<MerchantMetrics>;
+
+  getMerchantAccountBySlug(slug: string): Promise<MerchantAccount | undefined>;
+  getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined>;
+  insertMerchantAccount(account: MerchantAccount): Promise<void>;
+
   getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined>;
   upsertMerchantSettings(merchantId: string, customization: MerchantCustomization, updatedAt: string): Promise<void>;
   uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean>;
@@ -38,5 +44,5 @@ export interface Repository {
 }
 
 export function emptyDatabase(): Database {
-  return { sessions: [], rewards: [], events: [], merchantSettings: [] };
+  return { sessions: [], rewards: [], events: [], merchantSettings: [], merchantAccounts: [] };
 }
