@@ -1,0 +1,212 @@
+:root {
+  --motion-wheel: 5600ms;
+  --ease-spin: cubic-bezier(.06, .68, .035, 1);
+}
+
+/* Share is the primary growth action: make the sequence explicit without claiming publication verification. */
+.share-progress {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  margin: -2px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+}
+
+.share-progress > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.share-progress > span b {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.share-progress > span small {
+  font-size: 11px;
+  font-weight: 780;
+  letter-spacing: .02em;
+}
+
+.share-progress > span.is-active {
+  color: var(--color-primary);
+}
+
+.share-progress > span.is-active b {
+  border-color: color-mix(in srgb, var(--color-primary) 48%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.share-progress > i {
+  height: 1px;
+  background: color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+.share-unlock-note {
+  width: 100%;
+  margin: -2px 0 2px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.share-unlock-note strong { color: var(--color-text); }
+
+/* Longer spin with a deliberately soft final deceleration. */
+.wheel-frame.is-spinning .wheel-svg {
+  transition-timing-function: var(--ease-spin);
+}
+
+.wheel-frame.is-spinning:not(.is-reduced) .wheel-aura {
+  animation-duration: 1.2s;
+}
+
+.wheel-frame.is-spinning:not(.is-reduced) .wheel-pointer {
+  animation-duration: 210ms;
+}
+
+/* Operational canjes: active rewards first; expired rewards stay in history, never deleted. */
+.merchant-reward-feed {
+  display: grid;
+  width: 100%;
+  gap: 12px;
+  margin: 2px 0 4px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+}
+
+.merchant-reward-feed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+
+.merchant-reward-feed-head > div {
+  display: grid;
+  gap: 2px;
+}
+
+.merchant-reward-feed-head strong {
+  font-size: 14px;
+}
+
+.merchant-reward-feed-head small,
+.merchant-feed-loading {
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.merchant-reward-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.merchant-reward-filters button {
+  min-height: 36px;
+  padding: 7px 5px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.merchant-reward-filters button.is-active {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  color: var(--color-text);
+}
+
+.merchant-reward-list {
+  display: grid;
+  gap: 7px;
+  max-height: 310px;
+  overflow: auto;
+}
+
+.merchant-reward-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 9%, transparent);
+  border-radius: 13px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.merchant-reward-row > span:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.merchant-reward-row strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merchant-reward-row small {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.merchant-reward-row .status-badge {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 9px;
+}
+
+.merchant-feed-empty,
+.merchant-feed-error {
+  margin: 2px 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  text-align: left;
+}
+
+.merchant-code-lookup {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 9%, transparent);
+}
+
+@media (max-width: 380px) {
+  .share-progress > span small { display: none; }
+  .merchant-reward-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-frame.is-spinning .wheel-aura,
+  .wheel-frame.is-spinning .wheel-pointer { animation: none !important; }
+}
