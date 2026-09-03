@@ -1,21 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Merchant } from "@/domain/types";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
 
 export function MerchantActivationKit({ merchant }: { merchant: Merchant }) {
   const relativePath = `/${merchant.slug}`;
-  const [publicUrl, setPublicUrl] = useState(relativePath);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    setPublicUrl(`${window.location.origin}${relativePath}`);
-  }, [relativePath]);
 
   async function copyLink() {
     try {
+      const publicUrl = new URL(relativePath, window.location.origin).href;
       await navigator.clipboard.writeText(publicUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
@@ -59,10 +55,10 @@ export function MerchantActivationKit({ merchant }: { merchant: Merchant }) {
               <p className="eyebrow">01 · Enlace público</p>
               <h2>Una URL simple para compartir.</h2>
               <div className="activation-url" data-testid="activation-public-url">
-                <span>{publicUrl}</span>
-                <button type="button" onClick={copyLink} data-testid="copy-activation-link">{copied ? "Copiado ✓" : "Copiar"}</button>
+                <span>{relativePath}</span>
+                <button type="button" onClick={copyLink} data-testid="copy-activation-link">{copied ? "Copiado ✓" : "Copiar enlace"}</button>
               </div>
-              <p className="activation-help">Podés pegarla en la bio, WhatsApp, Google Business, redes o cualquier pieza digital.</p>
+              <p className="activation-help">Al copiar, Viralio agrega automáticamente el dominio actual. Podés pegarlo en bio, WhatsApp, Google Business, redes o cualquier pieza digital.</p>
             </article>
 
             <article className="activation-panel activation-qr-panel">
