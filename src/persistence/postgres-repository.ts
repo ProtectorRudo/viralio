@@ -73,6 +73,7 @@ interface MerchantAccountRow {
   slug: string;
   name: string;
   template: MerchantTemplate;
+  businessType: string;
   pinSalt: string;
   pinHash: string;
   createdAt: Timestamp;
@@ -125,6 +126,7 @@ function toMerchantAccount(row: MerchantAccountRow): MerchantAccount {
     slug: row.slug,
     name: row.name,
     template: row.template,
+    businessType: row.businessType,
     pinSalt: row.pinSalt,
     pinHash: row.pinHash,
     createdAt: iso(row.createdAt),
@@ -312,7 +314,7 @@ class PostgresTransaction implements TransactionRepository {
 
   async getMerchantAccountBySlug(slug: string): Promise<MerchantAccount | undefined> {
     const rows = await this.sql<MerchantAccountRow[]>`
-      SELECT merchant_id, slug, name, template, pin_salt, pin_hash, created_at
+      SELECT merchant_id, slug, name, template, business_type, pin_salt, pin_hash, created_at
       FROM merchant_accounts
       WHERE slug = ${slug}
       LIMIT 1
@@ -322,7 +324,7 @@ class PostgresTransaction implements TransactionRepository {
 
   async getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined> {
     const rows = await this.sql<MerchantAccountRow[]>`
-      SELECT merchant_id, slug, name, template, pin_salt, pin_hash, created_at
+      SELECT merchant_id, slug, name, template, business_type, pin_salt, pin_hash, created_at
       FROM merchant_accounts
       WHERE merchant_id = ${merchantId}
       LIMIT 1
@@ -333,9 +335,9 @@ class PostgresTransaction implements TransactionRepository {
   async insertMerchantAccount(account: MerchantAccount): Promise<void> {
     await this.sql`
       INSERT INTO merchant_accounts (
-        merchant_id, slug, name, template, pin_salt, pin_hash, created_at
+        merchant_id, slug, name, template, business_type, pin_salt, pin_hash, created_at
       ) VALUES (
-        ${account.id}, ${account.slug}, ${account.name}, ${account.template},
+        ${account.id}, ${account.slug}, ${account.name}, ${account.template}, ${account.businessType ?? "Comercio"},
         ${account.pinSalt}, ${account.pinHash}, ${account.createdAt}
       )
     `;
