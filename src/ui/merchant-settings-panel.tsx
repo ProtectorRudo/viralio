@@ -121,6 +121,7 @@ export function MerchantSettingsPanel({
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/panel`}>Resumen</Link>
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/canjes`}>Canjes</Link>
             <span className="merchant-panel-tab is-active" aria-current="page">Configuración</span>
+            <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/activacion`}>Activación</Link>
             <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
           </nav>
 
