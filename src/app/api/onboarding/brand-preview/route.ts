@@ -67,6 +67,7 @@ export async function POST(request: Request) {
         error: publicBrandAiMessage(error),
         diagnosticCode: error.diagnosticCode,
         ...(error.upstreamStatus ? { upstreamStatus: error.upstreamStatus } : {}),
+        ...(error.upstreamCode ? { upstreamCode: error.upstreamCode } : {}),
       }, error.diagnosticCode === "invalid_response" ? 502 : 503);
     }
     return jsonNoStore({ error: "No pudimos generar una identidad válida para esa marca" }, 400);
