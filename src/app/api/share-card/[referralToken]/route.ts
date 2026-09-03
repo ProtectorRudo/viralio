@@ -15,7 +15,9 @@ export async function GET(request: Request, context: { params: Promise<{ referra
     const origin = new URL(request.url).origin;
     const referralUrl = `${origin}/${merchant.slug}?ref=${encodeURIComponent(referralToken)}`;
     const p = merchant.theme.palette;
-    const dark = merchant.theme.category === "barber";
+    const angular = merchant.theme.stylePreset === "urban" || merchant.theme.stylePreset === "minimal";
+    const dark = merchant.theme.category === "barber" || p.canvas === "#111111" || p.canvas === "#000000";
+    const logo = merchant.theme.logoDataUrl;
 
     const tree = React.createElement(
       "div",
@@ -33,7 +35,7 @@ export async function GET(request: Request, context: { params: Promise<{ referra
           color: p.text,
           position: "relative",
           overflow: "hidden",
-          fontFamily: "Arial, sans-serif",
+          fontFamily: merchant.theme.fontPreset === "editorial" ? "Georgia, serif" : "Arial, sans-serif",
         },
       },
       React.createElement("div", {
@@ -55,12 +57,16 @@ export async function GET(request: Request, context: { params: Promise<{ referra
           "div",
           {
             style: {
-              width: 104, height: 104, borderRadius: dark ? 24 : 999, display: "flex",
-              alignItems: "center", justifyContent: "center", background: p.primary, color: p.onPrimary,
-              fontSize: 48, fontWeight: 800, boxShadow: "0 22px 55px rgba(0,0,0,.18)",
+              width: 112, height: 112, borderRadius: angular ? 24 : 999, display: "flex",
+              alignItems: "center", justifyContent: "center", background: logo ? p.surfaceRaised : p.primary,
+              color: p.onPrimary, fontSize: 48, fontWeight: 800, boxShadow: "0 22px 55px rgba(0,0,0,.18)",
+              border: logo ? `2px solid ${p.border}` : "none",
+              overflow: "hidden",
             },
           },
-          merchant.theme.monogram,
+          logo
+            ? React.createElement("img", { src: logo, width: 86, height: 86, alt: "", style: { objectFit: "contain" } })
+            : merchant.theme.monogram,
         ),
         React.createElement(
           "div",
@@ -76,7 +82,7 @@ export async function GET(request: Request, context: { params: Promise<{ referra
           "div",
           {
             style: {
-              width: 330, height: 330, borderRadius: dark ? 54 : 999,
+              width: 330, height: 330, borderRadius: angular ? 54 : 999,
               display: "flex", alignItems: "center", justifyContent: "center",
               border: `2px solid ${p.border}`, background: p.surfaceRaised,
               boxShadow: "0 35px 90px rgba(0,0,0,.17)", color: p.primary,
@@ -86,7 +92,7 @@ export async function GET(request: Request, context: { params: Promise<{ referra
           "?",
         ),
         React.createElement("div", { style: { ...textStyle(p.primary, 30, 800), textTransform: "uppercase", letterSpacing: "0.16em" } }, "HAY ALGO PARA VOS"),
-        React.createElement("div", { style: { ...textStyle(p.text, 86, dark ? 800 : 700), maxWidth: 850 } }, merchant.theme.socialHeadline),
+        React.createElement("div", { style: { ...textStyle(p.text, 86, merchant.theme.stylePreset === "bold" ? 850 : 750), maxWidth: 850 } }, merchant.theme.socialHeadline),
         React.createElement("div", { style: { color: p.textMuted, fontSize: 38, lineHeight: 1.35, maxWidth: 820 } }, merchant.theme.socialSubcopy),
       ),
       React.createElement(
@@ -97,7 +103,7 @@ export async function GET(request: Request, context: { params: Promise<{ referra
           {
             style: {
               display: "flex", flexDirection: "column", gap: 10, padding: "30px 34px",
-              border: `2px solid ${p.border}`, borderRadius: 28, background: p.surface,
+              border: `2px solid ${p.border}`, borderRadius: angular ? 18 : 28, background: p.surface,
             },
           },
           React.createElement("div", { style: { color: p.textMuted, fontSize: 21, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" } }, "Abrí tu pase"),
