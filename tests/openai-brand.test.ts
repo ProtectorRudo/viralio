@@ -41,6 +41,19 @@ function responseFor(value: unknown) {
   }), { status: 200, headers: { "Content-Type": "application/json" } });
 }
 
+function errorResponse(status: number, code: string, message = "upstream detail must stay private") {
+  return new Response(JSON.stringify({ error: { code, message, type: "api_error" } }), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+const input = {
+  name: "Bruma Café",
+  template: "coffee" as const,
+  brief: "Café de especialidad cálido y premium.",
+};
+
 describe("OpenAI brand assistant", () => {
   it("uses Responses API with store false, strict schema and optional logo image", async () => {
     let capturedBody: Record<string, unknown> | undefined;
@@ -71,8 +84,8 @@ describe("OpenAI brand assistant", () => {
       strict: true,
       schema: BRAND_DRAFT_SCHEMA,
     });
-    const input = capturedBody?.input as Array<{ role: string; content: Array<Record<string, unknown>> }>;
-    expect(input.find((item) => item.role === "user")?.content.some((part) => part.type === "input_image" && part.image_url === tinyPng)).toBe(true);
+    const apiInput = capturedBody?.input as Array<{ role: string; content: Array<Record<string, unknown>> }>;
+    expect(apiInput.find((item) => item.role === "user")?.content.some((part) => part.type === "input_image" && part.image_url === tinyPng)).toBe(true);
     expect(result.brand.source).toBe("openai");
     expect(result.brand.ai?.model).toBe("gpt-5.6-terra");
     expect(result.copy.socialHeadline).toContain("Bruma");
@@ -85,28 +98,54 @@ describe("OpenAI brand assistant", () => {
       return responseFor(rawDraft);
     }) as unknown as typeof fetch;
 
-    await generateOpenAiBrandDraft({
-      name: "Bruma Café",
-      template: "coffee",
-      brief: "Café de especialidad cálido y premium.",
-    }, { environment, fetchImpl });
+    await generateOpenAiBrandDraft(input, { environment, fetchImpl });
 
-    const input = capturedBody?.input as Array<{ role: string; content: Array<Record<string, unknown>> }>;
-    expect(input.flatMap((item) => item.content).some((part) => part.type === "input_image")).toBe(false);
+    const apiInput = capturedBody?.input as Array<{ role: string; content: Array<Record<string, unknown>> }>;
+    expect(apiInput.flatMap((item) => item.content).some((part) => part.type === "input_image")).toBe(false);
   });
 
   it("fails closed on malformed model output and missing configuration", async () => {
     const malformedFetch = vi.fn(async () => responseFor({ unexpected: true })) as unknown as typeof fetch;
-    await expect(generateOpenAiBrandDraft({
-      name: "Bruma Café",
-      template: "coffee",
-      brief: "Café de especialidad cálido.",
-    }, { environment, fetchImpl: malformedFetch })).rejects.toThrow(/invalid/);
+    await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl: malformedFetch })).rejects.toMatchObject({
+      diagnosticCode: "invalid_response",
+    });
 
-    await expect(generateOpenAiBrandDraft({
-      name: "Bruma Café",
-      template: "coffee",
-      brief: "Café de especialidad cálido.",
-    }, { environment: { NODE_ENV: "test" }, fetchImpl: malformedFetch })).rejects.toThrow(/not configured/);
+    await expect(generateOpenAiBrandDraft(input, { environment: { NODE_ENV: "test" }, fetchImpl: malformedFetch })).rejects.toMatchObject({
+      diagnosticCode: "not_configured",
+    });
+  });
+
+  it.each([
+    [401, "invalid_api_key", "auth"],
+    [403, "permission_denied", "permission"],
+    [404, "model_not_found", "model_access"],
+    [429, "insufficient_quota", "quota"],
+    [429, "rate_limit_exceeded", "rate_limit"],
+    [400, "invalid_request_error", "invalid_request"],
+    [500, "server_error", "upstream"],
+  ] as const)("classifies OpenAI HTTP %s safely as %s", async (status, code, diagnosticCode) => {
+    const privateUpstreamMessage = `private-${status}-${code}-${environment.OPENAI_API_KEY}`;
+    const fetchImpl = vi.fn(async () => errorResponse(status, code, privateUpstreamMessage)) as unknown as typeof fetch;
+
+    let captured: unknown;
+    try {
+      await generateOpenAiBrandDraft(input, { environment, fetchImpl });
+    } catch (error) {
+      captured = error;
+    }
+
+    expect(captured).toMatchObject({ diagnosticCode, upstreamStatus: status });
+    expect(String((captured as Error).message)).not.toContain(privateUpstreamMessage);
+    expect(String((captured as Error).message)).not.toContain(String(environment.OPENAI_API_KEY));
+  });
+
+  it("classifies an aborted OpenAI call as timeout", async () => {
+    const fetchImpl = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+    })) as unknown as typeof fetch;
+
+    await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl, timeoutMs: 5 })).rejects.toMatchObject({
+      diagnosticCode: "timeout",
+    });
   });
 });
