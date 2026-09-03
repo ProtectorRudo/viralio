@@ -1,0 +1,377 @@
+/* VIRALIO-020B R3 — reference rebuild.
+   This deliberately stops inheriting the R2 landing composition for Joyería Aurora.
+   The approved visual reference is treated as the contract: immersive brand scene first,
+   interface chrome second. Business logic remains untouched. */
+
+/* --- Aurora: full-screen editorial jewellery scene -------------------------------- */
+.experience.theme-joyeria-aurora {
+  background: #efe4dc;
+}
+
+.experience.theme-joyeria-aurora .ambient {
+  display: none !important;
+}
+
+.experience.theme-joyeria-aurora .experience-card {
+  position: relative;
+  width: min(100%, 430px);
+  min-height: 100svh;
+  padding: 0;
+  background: #fbf6f1;
+  overflow: hidden;
+}
+
+/* The brand lives inside the composition instead of occupying a separate app header. */
+.experience.theme-joyeria-aurora .premium-brand-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  min-height: 0;
+  padding: 28px 28px 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy {
+  gap: 5px;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy strong {
+  color: #442f2c;
+  font-family: var(--font-display);
+  font-size: 1.42rem;
+  font-weight: 500;
+  letter-spacing: .16em;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy small {
+  color: #ad8978;
+  font-size: .47rem;
+  font-weight: 650;
+  letter-spacing: .28em;
+}
+
+.experience.theme-joyeria-aurora .premium-signature {
+  position: absolute;
+  right: 0;
+  bottom: 7px;
+  left: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: rgba(80, 55, 49, .48);
+  font-size: .48rem;
+  pointer-events: none;
+}
+
+.experience.theme-joyeria-aurora .premium-campaign-stage {
+  position: relative;
+  display: block;
+  min-height: 100svh;
+  padding: 0;
+  overflow: hidden;
+}
+
+.experience.theme-joyeria-aurora .campaign-frame {
+  position: relative;
+  display: block;
+  min-height: 100svh;
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 81% 54%, rgba(255, 255, 255, .84) 0 10%, rgba(255, 255, 255, 0) 33%),
+    linear-gradient(148deg, #fbf6f1 0 43%, #f4e9e1 43% 100%);
+}
+
+/* A fashion-editorial block, not the previous centered app copy. */
+.experience.theme-joyeria-aurora .campaign-copy {
+  position: absolute;
+  top: 112px;
+  left: 28px;
+  z-index: 9;
+  display: block;
+  width: min(73%, 286px);
+  padding: 0;
+  text-align: left;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy .eyebrow {
+  margin: 0 0 14px;
+  color: #a27b69;
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .24em;
+  text-align: left;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy h1 {
+  max-width: 7.2ch;
+  margin: 0;
+  color: #392724;
+  font-family: var(--font-display);
+  font-size: clamp(3.45rem, 15vw, 4.7rem);
+  font-weight: 460;
+  letter-spacing: -.058em;
+  line-height: .82;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy .lead {
+  max-width: 24ch;
+  margin: 22px 0 0;
+  color: #806c63;
+  font-size: .73rem;
+  line-height: 1.58;
+  text-align: left;
+}
+
+/* The visual is an art-directed jewellery scene occupying the whole page. */
+.experience.theme-joyeria-aurora .campaign-visual {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.experience.theme-joyeria-aurora .campaign-index,
+.experience.theme-joyeria-aurora .campaign-caption {
+  display: none;
+}
+
+/* blush sculptural plane */
+.experience.theme-joyeria-aurora .campaign-visual::before {
+  position: absolute;
+  top: 36%;
+  right: -24%;
+  width: 94%;
+  height: 49%;
+  border: 0;
+  border-radius: 52% 0 0 45%;
+  background: #ead7cd;
+  box-shadow: inset 1px 0 0 rgba(183, 145, 123, .18);
+  content: "";
+  transform: rotate(-7deg);
+  transform-origin: 50% 50%;
+}
+
+/* champagne architectural line */
+.experience.theme-joyeria-aurora .campaign-visual::after {
+  position: absolute;
+  top: 29%;
+  right: 12%;
+  width: 47%;
+  height: 54%;
+  border: 1px solid rgba(177, 136, 101, .34);
+  border-left-color: transparent;
+  border-radius: 0 56% 56% 0;
+  content: "";
+  transform: rotate(8deg);
+}
+
+.experience.theme-joyeria-aurora .campaign-visual .mystery-object {
+  position: absolute;
+  top: 35.5%;
+  right: 2%;
+  z-index: 5;
+  display: block;
+  width: 254px;
+  height: 345px;
+  margin: 0;
+}
+
+.experience.theme-joyeria-aurora .campaign-visual .mystery-halo {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* long fine chain */
+.experience.theme-joyeria-aurora .campaign-visual .mystery-halo::before {
+  position: absolute;
+  top: -178px;
+  left: 57.5%;
+  width: 1px;
+  height: 284px;
+  border: 0;
+  background: linear-gradient(180deg, rgba(181, 140, 100, 0), rgba(181, 140, 100, .75) 22%, rgba(181, 140, 100, .75));
+  content: "";
+  box-shadow: 5px 7px 0 -4.5px rgba(181, 140, 100, .55), -4px 17px 0 -4.5px rgba(181, 140, 100, .52);
+}
+
+/* oversized offset jewellery ring */
+.experience.theme-joyeria-aurora .campaign-visual .mystery-halo::after {
+  position: absolute;
+  top: 83px;
+  left: 25px;
+  width: 202px;
+  height: 202px;
+  border: 1px solid rgba(170, 126, 88, .56);
+  border-radius: 50%;
+  background: rgba(255, 251, 247, .16);
+  content: "";
+  box-shadow:
+    0 0 0 12px rgba(255, 250, 246, .18),
+    0 28px 80px rgba(95, 63, 54, .08);
+}
+
+/* main pendant / brand seal */
+.experience.theme-joyeria-aurora .campaign-visual .mystery-medallion {
+  position: absolute;
+  top: 106px;
+  left: 48px;
+  z-index: 4;
+  display: grid;
+  width: 156px;
+  height: 156px;
+  place-items: center;
+  border: 1px solid rgba(173, 128, 91, .72);
+  border-radius: 50%;
+  background: rgba(255, 251, 247, .91);
+  box-shadow:
+    inset 0 0 0 7px rgba(226, 204, 190, .26),
+    0 26px 80px rgba(86, 55, 48, .12);
+  animation: aurora-reference-float 6.5s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+
+/* little gemstone glints created without adding generic app icons */
+.experience.theme-joyeria-aurora .campaign-visual .mystery-medallion::before,
+.experience.theme-joyeria-aurora .campaign-visual .mystery-medallion::after {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(182, 137, 98, .76);
+  background: #fffaf6;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.experience.theme-joyeria-aurora .campaign-visual .mystery-medallion::before {
+  top: -35px;
+  right: 5px;
+}
+
+.experience.theme-joyeria-aurora .campaign-visual .mystery-medallion::after {
+  bottom: -22px;
+  left: -18px;
+  width: 6px;
+  height: 6px;
+}
+
+/* CTA floats over the artwork like the approved concept, rather than living below a card. */
+.experience.theme-joyeria-aurora .campaign-action {
+  position: absolute;
+  right: 28px;
+  bottom: 31px;
+  left: 28px;
+  z-index: 12;
+  display: grid;
+  gap: 10px;
+  padding: 0;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .button {
+  min-height: 58px;
+  border: 1px solid #4c342f;
+  border-radius: 999px;
+  background: #4c342f;
+  box-shadow: 0 16px 35px rgba(73, 47, 42, .15);
+  color: #fffaf5;
+  font-size: .69rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .button:hover {
+  border-color: #34231f;
+  background: #34231f;
+  transform: translateY(-1px);
+}
+
+.experience.theme-joyeria-aurora .campaign-action .trust-line {
+  margin: 0;
+  color: rgba(91, 67, 59, .62);
+  font-size: .52rem;
+  letter-spacing: .02em;
+  text-align: center;
+}
+
+@keyframes aurora-reference-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(0, -7px, 0) rotate(1deg); }
+}
+
+@media (max-width: 390px) {
+  .experience.theme-joyeria-aurora .campaign-copy {
+    top: 105px;
+    left: 23px;
+    width: 75%;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy h1 {
+    font-size: clamp(3.05rem, 14.6vw, 4rem);
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy .lead {
+    max-width: 22ch;
+    margin-top: 18px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-visual .mystery-object {
+    top: 38%;
+    right: -7%;
+    transform: scale(.9);
+    transform-origin: 70% 50%;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action {
+    right: 23px;
+    bottom: 27px;
+    left: 23px;
+  }
+}
+
+@media (max-height: 760px) {
+  .experience.theme-joyeria-aurora .campaign-copy {
+    top: 92px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy h1 {
+    font-size: clamp(2.8rem, 13.4vw, 3.7rem);
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy .lead {
+    margin-top: 14px;
+    font-size: .68rem;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-visual .mystery-object {
+    top: 35%;
+    transform: scale(.82);
+    transform-origin: 72% 50%;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action .button {
+    min-height: 52px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience.theme-joyeria-aurora .campaign-visual .mystery-medallion {
+    animation: none;
+  }
+}
