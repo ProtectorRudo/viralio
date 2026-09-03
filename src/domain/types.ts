@@ -21,7 +21,7 @@ export interface PrizeDefinition {
   probability: number;
 }
 
-export type MerchantCategory = "coffee" | "barber";
+export type MerchantCategory = "coffee" | "barber" | "generic";
 export type MerchantTemplate = MerchantCategory;
 export type BrandSource = "template" | "manual" | "openai";
 export type BrandStylePreset = "editorial" | "minimal" | "luxury" | "bold" | "warm" | "urban";
@@ -65,6 +65,7 @@ export interface MerchantTheme {
   shortName: string;
   monogram: string;
   category: MerchantCategory;
+  businessType?: string;
   heroEyebrow: string;
   heroTitle: string;
   heroCopy: string;
@@ -124,6 +125,7 @@ export interface MerchantAccount {
   slug: string;
   name: string;
   template: MerchantTemplate;
+  businessType: string;
   pinSalt: string;
   pinHash: string;
   createdAt: string;
