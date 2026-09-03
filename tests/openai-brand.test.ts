@@ -48,6 +48,19 @@ function errorResponse(status: number, code: string, message = "upstream detail 
   });
 }
 
+function collectSchemaKeys(value: unknown, keys = new Set<string>()): Set<string> {
+  if (Array.isArray(value)) {
+    for (const item of value) collectSchemaKeys(item, keys);
+    return keys;
+  }
+  if (!value || typeof value !== "object") return keys;
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    keys.add(key);
+    collectSchemaKeys(child, keys);
+  }
+  return keys;
+}
+
 const input = {
   name: "Bruma Café",
   template: "coffee" as const,
@@ -89,6 +102,40 @@ describe("OpenAI brand assistant", () => {
     expect(result.brand.source).toBe("openai");
     expect(result.brand.ai?.model).toBe("gpt-5.6-terra");
     expect(result.copy.socialHeadline).toContain("Bruma");
+  });
+
+  it("keeps the strict schema inside the supported Structured Outputs subset", () => {
+    const keys = collectSchemaKeys(BRAND_DRAFT_SCHEMA);
+    expect(keys.has("minLength")).toBe(false);
+    expect(keys.has("maxLength")).toBe(false);
+    expect(keys.has("uniqueItems")).toBe(false);
+    expect(BRAND_DRAFT_SCHEMA.additionalProperties).toBe(false);
+    expect(BRAND_DRAFT_SCHEMA.properties.keywords).toMatchObject({ minItems: 2, maxItems: 6 });
+    expect(BRAND_DRAFT_SCHEMA.properties.colors.properties.primary).toMatchObject({
+      type: "string",
+      pattern: "^#[0-9A-Fa-f]{6}$",
+    });
+  });
+
+  it("still rejects drafts that violate Viralio local brand limits", async () => {
+    const tooLongCopy = {
+      ...rawDraft,
+      copy: { ...rawDraft.copy, heroTitle: "x".repeat(101) },
+    };
+    const duplicateKeywords = {
+      ...rawDraft,
+      keywords: ["premium", "Premium"],
+    };
+
+    const copyFetch = vi.fn(async () => responseFor(tooLongCopy)) as unknown as typeof fetch;
+    await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl: copyFetch })).rejects.toMatchObject({
+      diagnosticCode: "invalid_response",
+    });
+
+    const keywordFetch = vi.fn(async () => responseFor(duplicateKeywords)) as unknown as typeof fetch;
+    await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl: keywordFetch })).rejects.toMatchObject({
+      diagnosticCode: "invalid_response",
+    });
   });
 
   it("omits image input when no logo exists", async () => {
