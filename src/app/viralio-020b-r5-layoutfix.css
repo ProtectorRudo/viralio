@@ -1,0 +1,311 @@
+/* VIRALIO-020B R5 — rigid Aurora landing composition.
+   Fixes the R4 screenshot regression: no overlapping title, no floating microcopy,
+   image and CTA locked to reference-aligned zones. This layer intentionally overrides
+   only Aurora LANDING. */
+
+.experience.theme-joyeria-aurora .premium-campaign-stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100dvh;
+  min-height: 680px;
+  max-height: 880px;
+  padding: 0;
+  overflow: hidden;
+  background: #fff9f5;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header {
+  top: 0;
+  padding-top: 27px;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy {
+  gap: 5px;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy small::before {
+  font-size: .49rem;
+  letter-spacing: .29em;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy strong::before {
+  font-size: 1.72rem;
+  letter-spacing: .085em;
+}
+
+.experience.theme-joyeria-aurora .campaign-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Text block: every line owns a fixed slot. */
+.experience.theme-joyeria-aurora .campaign-copy {
+  position: absolute;
+  top: 132px;
+  left: 31px;
+  z-index: 14;
+  display: block;
+  width: 255px;
+  height: 268px;
+  padding: 0;
+  pointer-events: none;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy .eyebrow {
+  display: none;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy h1,
+.experience.theme-joyeria-aurora .campaign-copy .lead {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  font-size: 0;
+  line-height: 1;
+}
+
+/* Kill the R4 combined multiline title completely. */
+.experience.theme-joyeria-aurora .campaign-copy h1::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 235px;
+  content: "Hay algo";
+  white-space: nowrap;
+  color: #44312d;
+  font-family: var(--font-display);
+  font-size: 3.08rem;
+  font-style: normal;
+  font-weight: 450;
+  letter-spacing: -.055em;
+  line-height: .94;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy h1::after {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 245px;
+  content: "hermoso";
+  white-space: nowrap;
+  color: #c88f7f;
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-style: italic;
+  font-weight: 430;
+  letter-spacing: -.055em;
+  line-height: .94;
+}
+
+/* Reuse lead pseudo for the third headline line only. */
+.experience.theme-joyeria-aurora .campaign-copy .lead::before {
+  position: absolute;
+  top: 103px;
+  left: 0;
+  width: 210px;
+  content: "para ti";
+  white-space: nowrap;
+  color: #44312d;
+  font-family: var(--font-display);
+  font-size: 3.02rem;
+  font-style: normal;
+  font-weight: 450;
+  letter-spacing: -.055em;
+  line-height: .94;
+}
+
+/* Reference star and microcopy live below the headline, never over the jewellery. */
+.experience.theme-joyeria-aurora .campaign-copy::before {
+  position: absolute;
+  top: 171px;
+  left: 2px;
+  content: "✦";
+  color: #c88f7f;
+  font-family: Georgia, serif;
+  font-size: .95rem;
+  line-height: 1;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy::after {
+  position: absolute;
+  top: 203px;
+  left: 0;
+  width: 128px;
+  content: "Descubre tu\A regalo exclusivo.";
+  white-space: pre-line;
+  color: #6d5b54;
+  font-family: var(--font-body);
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 450;
+  letter-spacing: 0;
+  line-height: 1.42;
+}
+
+/* Photo zone: full-width silk/jewellery block like reference phone 01. */
+.experience.theme-joyeria-aurora .campaign-visual {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.experience.theme-joyeria-aurora .campaign-visual::before {
+  position: absolute;
+  top: 300px;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 430px);
+  min-height: 270px;
+  max-height: 390px;
+  border: 0;
+  background-position: center 48%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Disable every abstract R3/R4 jewellery decoration. */
+.experience.theme-joyeria-aurora .campaign-visual::after,
+.experience.theme-joyeria-aurora .campaign-visual .mystery-object,
+.experience.theme-joyeria-aurora .campaign-visual .mystery-halo,
+.experience.theme-joyeria-aurora .campaign-visual .mystery-medallion,
+.experience.theme-joyeria-aurora .campaign-index,
+.experience.theme-joyeria-aurora .campaign-caption {
+  display: none !important;
+}
+
+/* Keep text readable where it enters the image, mimicking the original editorial crop. */
+.experience.theme-joyeria-aurora .campaign-frame::after {
+  position: absolute;
+  top: 278px;
+  right: 0;
+  left: 0;
+  z-index: 8;
+  height: 94px;
+  content: "";
+  background: linear-gradient(180deg, #fff9f5 0%, rgba(255,249,245,.82) 42%, rgba(255,249,245,0) 100%);
+  pointer-events: none;
+}
+
+/* CTA block sits fully inside viewport. */
+.experience.theme-joyeria-aurora .campaign-action {
+  position: absolute;
+  right: 29px;
+  bottom: 25px;
+  left: 29px;
+  z-index: 24;
+  display: grid;
+  gap: 11px;
+  padding: 0;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .button {
+  width: 100%;
+  min-height: 55px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 5px;
+  background: #dda092;
+  box-shadow: 0 9px 26px rgba(119, 76, 65, .10);
+  color: #fffaf7;
+  font-family: var(--font-body);
+  font-size: .67rem;
+  font-weight: 750;
+  letter-spacing: .075em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .button:hover {
+  background: #d59587;
+  transform: none;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .trust-line {
+  margin: 0;
+  color: #9a766d;
+  font-size: 0;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .trust-line::before {
+  content: "Es rápido, fácil y mágico ✨";
+  font-family: var(--font-body);
+  font-size: .60rem;
+  font-weight: 430;
+}
+
+/* Viralio signature is intentionally hidden on landing to match the approved reference.
+   It remains present on subsequent stages. */
+.experience.theme-joyeria-aurora .experience-card:has(.premium-campaign-stage) .premium-signature {
+  display: none;
+}
+
+@media (max-width: 390px) {
+  .experience.theme-joyeria-aurora .campaign-copy {
+    top: 126px;
+    left: 27px;
+    transform: scale(.91);
+    transform-origin: top left;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-visual::before {
+    top: 286px;
+    height: calc(100% - 412px);
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action {
+    right: 24px;
+    bottom: 22px;
+    left: 24px;
+  }
+}
+
+@media (max-height: 720px) {
+  .experience.theme-joyeria-aurora .premium-campaign-stage {
+    min-height: 640px;
+  }
+
+  .experience.theme-joyeria-aurora .premium-brand-header {
+    padding-top: 19px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy {
+    top: 105px;
+    left: 28px;
+    transform: scale(.82);
+    transform-origin: top left;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-visual::before {
+    top: 250px;
+    height: calc(100% - 365px);
+    min-height: 250px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-frame::after {
+    top: 228px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action {
+    bottom: 18px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action .button {
+    min-height: 49px;
+  }
+}
