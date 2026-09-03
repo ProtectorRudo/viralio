@@ -62,16 +62,28 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
   await expect(page.getByTestId("activation-qr")).toBeVisible();
   await expect(page.getByTestId("activation-poster")).toBeVisible();
 
-  const qr = await page.request.get("/api/merchant/activation/qr");
-  expect(qr.status()).toBe(200);
-  expect(qr.headers()["content-type"]).toContain("image/svg+xml");
-  const svg = await qr.text();
-  expect(svg).toContain("<svg");
-  expect(svg).toContain("<path");
+  const qr = await page.evaluate(async () => {
+    const response = await fetch("/api/merchant/activation/qr");
+    return {
+      status: response.status,
+      contentType: response.headers.get("content-type"),
+      body: await response.text(),
+    };
+  });
+  expect(qr.status).toBe(200);
+  expect(qr.contentType).toContain("image/svg+xml");
+  expect(qr.body).toContain("<svg");
+  expect(qr.body).toContain("<path");
 
-  const download = await page.request.get("/api/merchant/activation/qr?download=1");
-  expect(download.status()).toBe(200);
-  expect(download.headers()["content-disposition"]).toContain(`viralio-${slug}-qr.svg`);
+  const download = await page.evaluate(async () => {
+    const response = await fetch("/api/merchant/activation/qr?download=1");
+    return {
+      status: response.status,
+      contentDisposition: response.headers.get("content-disposition"),
+    };
+  });
+  expect(download.status).toBe(200);
+  expect(download.contentDisposition).toContain(`viralio-${slug}-qr.svg`);
 });
 
 test("onboarding and activation assets enforce their security boundary", async ({ request }) => {
