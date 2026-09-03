@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { viralio } from "@/application";
-import { merchantExperiencePath } from "@/config/merchant-accounts";
 import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
 
 export async function POST(request: Request) {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
     const merchant = await viralio.createMerchant(merchantInput);
     return NextResponse.json({
       merchant: { id: merchant.id, slug: merchant.slug, name: merchant.name },
-      experiencePath: merchantExperiencePath(merchant.slug),
+      experiencePath: `/${merchant.slug}`,
       panelPath: `/comercio/${merchant.slug}/canjes`,
     }, { status: 201 });
   } catch (error) {
