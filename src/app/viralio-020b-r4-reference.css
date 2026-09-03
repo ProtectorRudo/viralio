@@ -1,0 +1,323 @@
+/* VIRALIO-020B R4 — faithful Aurora reference pass.
+   The approved phone mockup is the contract: ivory canvas, centered wordmark,
+   oversized editorial serif, silk/jewellery photo, blush CTA and minimal chrome. */
+
+.experience.theme-joyeria-aurora {
+  background: #eee4dc;
+}
+
+.experience.theme-joyeria-aurora .experience-card {
+  width: min(100%, 430px);
+  min-height: 100svh;
+  padding: 0;
+  background: #fbf6f1;
+}
+
+.experience.theme-joyeria-aurora .premium-campaign-stage {
+  position: relative;
+  min-height: 100svh;
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 84% 21%, rgba(232, 203, 187, .18) 0 9%, transparent 29%),
+    linear-gradient(180deg, #fffaf6 0%, #fbf3ed 57%, #f7ece6 100%);
+}
+
+/* Header mirrors the approved phone: JOYERÍA small, AURORA large. */
+.experience.theme-joyeria-aurora .premium-brand-header {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  display: grid;
+  min-height: 0;
+  justify-items: center;
+  padding: 30px 24px 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-mark,
+.experience.theme-joyeria-aurora .premium-brand-header .brand-edition {
+  display: none;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy small,
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy strong {
+  font-size: 0;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy small::before {
+  content: "JOYERÍA";
+  color: #8d6b5f;
+  font-family: var(--font-body);
+  font-size: .52rem;
+  font-weight: 650;
+  letter-spacing: .27em;
+}
+
+.experience.theme-joyeria-aurora .premium-brand-header .brand-copy strong::before {
+  content: "AURORA";
+  color: #4b3732;
+  font-family: var(--font-display);
+  font-size: 1.78rem;
+  font-weight: 470;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+.experience.theme-joyeria-aurora .campaign-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* Approved editorial headline: left aligned, three strong lines. */
+.experience.theme-joyeria-aurora .campaign-copy {
+  position: absolute;
+  top: 148px;
+  left: 30px;
+  z-index: 14;
+  display: block;
+  width: 68%;
+  padding: 0;
+  text-align: left;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy .eyebrow {
+  display: none;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy h1 {
+  display: grid;
+  margin: 0;
+  color: #44312d;
+  font-family: var(--font-display);
+  font-size: 0;
+  font-weight: 450;
+  letter-spacing: -.04em;
+  line-height: .92;
+  text-align: left;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy h1::before {
+  content: "Hay algo\A hermoso\A para ti";
+  white-space: pre-line;
+  color: #44312d;
+  font-family: var(--font-display);
+  font-size: clamp(3.18rem, 14.2vw, 4.1rem);
+  font-weight: 450;
+  letter-spacing: -.055em;
+  line-height: .88;
+}
+
+/* Make only the middle line feel softer, matching the approved italic emphasis. */
+.experience.theme-joyeria-aurora .campaign-copy h1::after {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  content: "hermoso";
+  color: #c58e7e;
+  font-family: var(--font-display);
+  font-size: clamp(3.18rem, 14.2vw, 4.1rem);
+  font-style: italic;
+  font-weight: 430;
+  letter-spacing: -.055em;
+  line-height: .88;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy .lead {
+  position: absolute;
+  top: 205px;
+  left: 0;
+  width: 19ch;
+  margin: 0;
+  color: #715f58;
+  font-size: 0;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.experience.theme-joyeria-aurora .campaign-copy .lead::before {
+  content: "✦\A\A Descubre tu regalo exclusivo.";
+  white-space: pre-line;
+  color: #715f58;
+  font-family: var(--font-body);
+  font-size: .75rem;
+  line-height: 1.45;
+}
+
+/* Silk + ring + necklace taken from the approved reference itself, UI excluded. */
+.experience.theme-joyeria-aurora .campaign-visual {
+  position: absolute;
+  inset: 0;
+  min-height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.experience.theme-joyeria-aurora .campaign-visual::before {
+  position: absolute;
+  right: -12px;
+  bottom: 118px;
+  left: -12px;
+  height: 292px;
+  border: 0;
+  border-radius: 0;
+  background-image:
+    linear-gradient(180deg, rgba(255,250,246,.16) 0%, rgba(255,250,246,0) 18%),
+    url("data:image/webp;base64,UklGRqAPAABXRUJQVlA4IJQPAABwZgCdASqkAeAAPrVapU6nJSezItRqImAWiWduvUjp2fcK3oTbfStdwrZZfPdoszhRG7CfUm8D8dvDGbFxZ1J+fD6Jnaa/7YYm06qqqqqslrcwxkEFehv9+lj4OapsYep8DmlC8at788U46KwXvFSkdDgIZh4LD0VWWG7jAkhmV0n7+kUV+xMH1d/ddbvD3TIYuzkxpBJ+My1QfQywSU5oKYihjAuU942Jd36QZfyFe/2iaayKkMK6tB8P061G4wy+SgkzXXxBEk0OG+IwExMdb6fU/mv6LATfbvViXittwfWIbjmEZ2m2ObNJNqrOtyPUFMKAt+debB61/WUcMOGiikfz+gK/Dh6DmAUzU/R5sEIuIP5Thb2ZVf2K0OVpZBguEN5HTJgnv5n++pyyyh46OczksqQTquhVs70eKgdGXA15tCSg0RHtZvr747RODh09NbKE5Mk1ez6lsmNnYxiE5kUvgx+GLAVJR6vUlISBdWHkS7lp2jQECL8Ta1K3NWquLLGr8AGA3mnlQmax2p3imu8HnES/jAj0BNoId+6T0KiVn9L+RJGCrW9t5srU5Uipd9tjUKOC4JTa3jT5JZOyCzabvcuIqhbcqE7rxqv5rjl/qhuUzKZiOJR1VSeDBr5bOx2qttxv7tSh1yq76gIGXn2904tccKGbbr4mC1i4KwDQ1zM1ytKIUHas4AI1p9ht+SaPZDiOCTNCAS7ocAm5XR3x9dcibevwW6OBK5r8OlOzmsHDnW2o2+D4KuEJqu/33DbjH53My+1+02GJA0hhL9vW1mEYa9QHHCjU4fimqEpPNbaacFk4aFMhIdOf4tqdlE8fYcp+8NvCeAJfE8o6ll9QGLR17weiKUJDmfH+F2keGO6Q2jLGFZzEbsIoyU8WL5N58pVkfGYm7359u0XoOsN3O0pZCpkvwemq2JWjYU/OG0yW1RR2Saisa27KzkCNLE0ez58yQi3xPRRoG5WVDUB6bo5rE6dbUgBfHwV6ID46TpgSy6Qp3xkmd9fd3zBctd96IwPqBhei6M4k0FQJLOmROChnZDyO7qKIrWQsn3dn2GYZlg0cfFbnJ6BtvsqGoERNqwVxHkdJnZgA/vX5Nu9UewB/3Y5hczGJ9s1Md2dSSGG64qGESfTI00N96T87aYRw/WS1RBz2fO+56DdNzzuv2BOaacw/BhGiefrXbFMzrykQ0biN9C1uabKLuLhXarG1pFqgJO2lJH18zX3U5JG2wPQLCC6Smacefo5oIKLrZfoVRYnkOzUewh6DOAZiLZEgA54bicqqNFyoxzbVou58lcvo843wLROQeX4N3Y1Ihm2zRsJRRi3djFHu6IEssfcnecOkh26QskdZSfKIv0FxKif4X/3O1ce4ba0RxKn4Ob5SywVjojk71IwDzymOWgC5sdAoVlHo1f5SvgsFuN6qKlJtfBBshn+4YyHvvlWZ4q01/tsYXsdQql24I5nWLPnEs1vPun3hHsCabR5FbkbBrxaOlTBBGKju2iJVBZ8gtV1yW5mmyfD1BUAUtCIx5mML9dxbuaawbRwVo+IfxWJdmbzNMRNGO27bA2VSBC5dFyCDrK5Hb971kmO0QzGciT3Cy3gqAxjH4/K74dYu5rwBMrdLk6dpvDV+egTjruKo3I18gAZj0m4PptyX5pIcvJtpf6WYZacSyuG+zY29kpPCqGGBiOmaj5JCNvUCJCIMDExvZz/HQAc0v24KM1+Dp7KIrqluQXeCQytuUvohhskFQTBin5qyhPa0H/MYVsPPkYISqfUKEG6oe8Itrqc0CJ5FyrrheS65F/h1uDVzTwn6U7nhzy58LLr4+arDx7k0WFnN3t+F9a4pa/KUh9f3+a+EJD1PsEpewF+ZEgowb5vU92IPOrbz2iSBJ4GpM9E4S1RgykQJmvRkZ6DiiLdwBZrlqzSZzioQ4Fa3LgSgYCNURCbM3mZF5uKNqcipDxOdB3LN7DsN6FrJOmL5f04iy3PIyON4b7b6aj2ivgV+t7ujHGDnGkWgjeW8EjdMOZ349rwGtEEUkMzSU/RHP6Q/HOjEt8ffTyoaqC18RwkK+Mnlc4VOsIydLvRDy1cl/Yj1BUllanxHdgFsD3aHQ7cAyvSxGwHxCdcNwaQ/lrTCAsRC+u1+5V5ssGd5JFOsjcg6nYO6hBxZq2rGDbMNKWjWjx4iV4iNAFKumCjaI311PMH7ul5SRkdWbfQS+4sdmYKQ2VCv8KLl0S4T0YpNjDjfTxXSjGjjWSbGKna7c+5smvlEdz+FpRcz3Ov6dVMU8oaN4Nm9s7IFtPX/3sOI/8hob5FdvhiwlEG6lS4LHbUCTZ28G0xi0CLMBme1KJXDiqJO2HUPElYKIqYE80NLGfd26g3J37HyVVFftoGfy4Ge+K5ncyeGkQgLqlnX9zat/fjJto790d/IyN2D9hDHS7am7aE9zd+HBghkALfQacFwMU+kWjIO2LFl7JnqeLwsNYH5vDcowYKRFZ6la4Dv2GBB7MnMK5f+uRDNFmO6VyiC8jy6jhUU+H+cyXZ1aAdDw6WT8WIlMz+LB/XhyCqdCDwZ2pBHlKJzf6t8Qo6R6EQHfiYlh6eZ7E+zLwqA7QODl/WOws15ypEz0PbgBNSZiJKMIQWDCNmL9dXz//oVhcb3OUMSleFOS7QdSb1fcrVNAFx7n5QZOda6n0G9zPQFsoHuF0/uCQJY9eZlri6xCf1bcwmaEla2blupNRKcU+V2xlVi0rBr/wz3IUqKbfECQEbbYmHofd7TW8bdskUWDlTWZa+XXYKIAZzU5IwUk6PU999NmRBAE2kbnSdaVjBvZQr4Nkc2VDFK3ETW9jXz+FOGjTSYF3yGk7oOAozPmqG2wK3Otm0iGIcYfbMa5xfKDqrXfHL2cMXv/YG0k8/XKDG6DUlIOHJT8aMLwIVoCqOUWhdHFZ/VAHPmPxqra4kdyRSGvqDneV1GH7rZ9NgD0KUs7EVRZXbL5q6MFVTkWNWjFiMcrXcwzxaAkJvmoXLoHPEsder8UHOq7eoWIXrPQwfkLgp8+CFvOJnKjjpPatsH2j1Gu9ccDxmLDDkcm9OAb9qlWvqt+SB5hgONC4sB7ojhbP5nab7uL87RSToEb11ApAJOd9Lffc3N+VkH4CtSHVZawxAdtUNOgndD3W3itCXnAchjTQE41QWQzfIvWAoneWCxAeoqBbQoCdRcehM4vKQ+NO4ELZEhUb6jtsJyXye/sRc73n2JI7J2VXMsaGXuAiQXIIqPa+YKlfs1ssRWZ+5EftIekIQ/CjLxyflMzgBgrUIOB/ShlKv6RllHDBw8vM7aAqlDCtxMkLauMfWh3vsRjQ7fq/EXx6rIKT1ZImA1S4cv7CLoYrNgsdD3iCfD2PrcCrVvq0Kh/KpLbjkx+xcJSDb9PJpG3QezLAQcFRBLAdb0jAcQTgUwcSfjGn7zHIhLHfiNCo+lERIBi1Rr2c1Ezm6LtMZALR4+3SHtbKkMLYMFuMXyesTVsHEvry8JmBXJEl/rhXDebYfW7wmlACmzDmmU0oJT9b51EOr4vNqrC0o6YeE8ZhemnBofSkWV4sEXiMeGjtAAnC1wmOOiTRZsETThOdZZq6OTJl7GVh6HhcqHLa9xU0lkOrhvUKXCUYm7q6a501RZSPrTk7B8BDgDVhZ7tCGexD1QNNtqjyYF2OX0YjWbyuDjcHHwGjcRk+gDhN6VCZI6XBk2cEAIZ3FL0IG2ndZz7TeS7VYkUwjRxvIjEejV56mMCXpVaXq7dUgOHL7jOKh+EVMCB/5hSKjveGkAnWbJQ8pOZbBoW14A73dJlyO7mt7A4k5TwQlBaluWfVju1/u8y7rk1eLOgvc6escUw+JCHFVvGL70xDKqLT+WtDbbS6zA2BoSKLbRLmYxTwFcQXFooOU5Q10sAOv4TDB6DBYzm8jGKzW/qYsnu2GlD542FWmgGAtw6uXyDqHgMpu8+njT5puh7Y9vrmSVsAGVBeGAoanZquIawWP3EC+CrRocNgQrgUzmcuDcsiGAuyKNQqCHZSS4TgJzvohPm9NYadT6Yt/pxf9sbRzQrWZjtHgzVe114809un7cGkZlUA1DaW1WEQ0SS/hfZvLGKPHUGG1phnKX46BViTimpuAYZi6SAbojUmUS2AT33+T8suUzZvLn4MnYqCofWPr0VEuPLnbqXWtfbkwdFrcJT4jV+lHDewQ4lhRHleRq1fS/u/BpDMAw38pXS0X0HecOjLk+rn8nSgFek3V+KDj7HPeuidobHaeDDuybhK37sZxwXdxzBemWNGY6c8n1IfJE2hSA4NduTQ2iAG9I2V3pPHx5VXsQJsNH3UhJfxdDM3BrHfRodjij3kBNL777CsHiM2R5QcXBnySFAqAoO2MPKq9LBRe+kR28IZohQnhvqZ5lUaB8B3r8EoSOPMZCi4Vs99OiHnIxZzRhBSK5+rxEaLSv8nAO4r/G0iyRoD+e32G36tGWdqUb2W+u1PTQ6GfwfWvXihrhlopE3LW/jNmA702RoEtRDhgATU+zSPI4+sRcar9Pj8R3QTRv/LbxcQp0wLc6vROQZChIYCxKJcRAOgrmbUDQdHlTc1G/IlBFiuBaWroqGz23fJIvApEE9WKkQfoxIJWdZIT2ilkhJpHe3woP00y5h2x00PeMhQ1ejDAnqIYD2kfS4y+bWHpgLiSf9JvUFqmNiOZ9fxV/tBRJyFPTyDUFMcfvwFdrxYIerGTPJfds6dDLnAACXd0R64mYF0yUft3eCHul9WtGNGkNrqIjhJUDsSNYaIHo4bdApOnmGmXV0B9rg/kuCcELDZxpL7SFLOCPww/qlNy+5fZzJdCl224hRu7HMekV8FyDcASzwoKHMxzR/bH5MnLN7jdfr/cWZyv8GjRXiE28ej2rRC7jsc+EKUtZAmHsfOMEsx3Gg87otIlgaEdazYi36OQGxsPHC4yQDyKj9y2NLb3xUo9qMjQWUH6Ww597dWSQeLUXht2b9ccOk2BGK5y8yp5Zm7arar0T5f6/fDzvoFW1uQFZLhs/uLNn2eh8g7AiB+UoiWxJo2zkNwLWKzrUHa0UHLd+C8bDUYfH50ft1HivesyjzZQXHjgQSDTBALfh7E6PRQBzqN5VML6Y5KQzxSjYI8hf1mPXQPzX/AUU0uyHCmeChyLQ8AJRoz4AmcxHYPdwBVBGCU1nPvtDn5jCToAkIpLvuguC1S5ybARBXwYgHJCpzYglJXtQEKl0CruuIjHKRGxXEzwhkT4TvG+PIYAXzyl26jF7hUGGhAoBOuFz7UAXsWKknRlslcgyJabqm9E8h4+2G98uwjAfTRCEdDIkAAAA");
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: inset 0 1px 0 rgba(170,126,105,.08);
+  content: "";
+  transform: none;
+}
+
+.experience.theme-joyeria-aurora .campaign-visual::after {
+  position: absolute;
+  top: 86px;
+  right: 18px;
+  width: 92px;
+  height: 190px;
+  border: 0;
+  border-radius: 60% 40% 60% 30%;
+  background:
+    radial-gradient(circle at 48% 20%, rgba(197,142,126,.52) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 42%, rgba(197,142,126,.42) 0 2px, transparent 3px),
+    linear-gradient(78deg, transparent 48%, rgba(197,142,126,.35) 49% 50%, transparent 51%);
+  content: "";
+  opacity: .7;
+  transform: rotate(8deg);
+}
+
+.experience.theme-joyeria-aurora .campaign-visual .mystery-object,
+.experience.theme-joyeria-aurora .campaign-index,
+.experience.theme-joyeria-aurora .campaign-caption {
+  display: none !important;
+}
+
+/* CTA and microcopy match the approved mockup. */
+.experience.theme-joyeria-aurora .campaign-action {
+  position: absolute;
+  right: 28px;
+  bottom: 34px;
+  left: 28px;
+  z-index: 25;
+  display: grid;
+  gap: 12px;
+  padding: 0;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .button {
+  min-height: 56px;
+  border: 0;
+  border-radius: 6px;
+  background: #dda697;
+  box-shadow: 0 10px 24px rgba(154,102,87,.12);
+  color: #fffaf7;
+  font-size: .71rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .button:hover {
+  background: #d49788;
+  transform: translateY(-1px);
+}
+
+.experience.theme-joyeria-aurora .campaign-action .trust-line {
+  margin: 0;
+  color: #8b7369;
+  font-size: 0;
+  text-align: center;
+}
+
+.experience.theme-joyeria-aurora .campaign-action .trust-line::before {
+  content: "Es rápido, fácil y mágico ✨";
+  font-size: .57rem;
+  letter-spacing: .01em;
+}
+
+.experience.theme-joyeria-aurora .premium-signature {
+  display: none;
+}
+
+@media (max-width: 390px) {
+  .experience.theme-joyeria-aurora .campaign-copy {
+    top: 142px;
+    left: 24px;
+    width: 73%;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy h1::before,
+  .experience.theme-joyeria-aurora .campaign-copy h1::after {
+    font-size: clamp(2.9rem, 14vw, 3.72rem);
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy h1::after {
+    top: 49px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy .lead {
+    top: 190px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-visual::before {
+    bottom: 112px;
+    height: 278px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action {
+    right: 22px;
+    bottom: 28px;
+    left: 22px;
+  }
+}
+
+@media (max-height: 760px) {
+  .experience.theme-joyeria-aurora .campaign-copy {
+    top: 124px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy h1::before,
+  .experience.theme-joyeria-aurora .campaign-copy h1::after {
+    font-size: clamp(2.7rem, 12.7vw, 3.45rem);
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy h1::after {
+    top: 45px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-copy .lead {
+    top: 174px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-visual::before {
+    bottom: 105px;
+    height: 250px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action {
+    bottom: 22px;
+  }
+
+  .experience.theme-joyeria-aurora .campaign-action .button {
+    min-height: 50px;
+  }
+}
