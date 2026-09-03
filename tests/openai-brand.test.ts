@@ -134,9 +134,23 @@ describe("OpenAI brand assistant", () => {
       captured = error;
     }
 
-    expect(captured).toMatchObject({ diagnosticCode, upstreamStatus: status });
+    expect(captured).toMatchObject({ diagnosticCode, upstreamStatus: status, upstreamCode: code });
     expect(String((captured as Error).message)).not.toContain(privateUpstreamMessage);
     expect(String((captured as Error).message)).not.toContain(String(environment.OPENAI_API_KEY));
+  });
+
+  it("drops malformed upstream error codes instead of reflecting them", async () => {
+    const fetchImpl = vi.fn(async () => errorResponse(400, "bad code with spaces <secret>")) as unknown as typeof fetch;
+
+    let captured: unknown;
+    try {
+      await generateOpenAiBrandDraft(input, { environment, fetchImpl });
+    } catch (error) {
+      captured = error;
+    }
+
+    expect(captured).toMatchObject({ diagnosticCode: "invalid_request", upstreamStatus: 400 });
+    expect((captured as { upstreamCode?: string }).upstreamCode).toBeUndefined();
   });
 
   it("classifies an aborted OpenAI call as timeout", async () => {
