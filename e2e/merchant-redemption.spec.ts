@@ -77,6 +77,8 @@ test("public reward stays read-only and authenticated Moka staff can redeem and 
   expect(merchantCookie?.sameSite).toBe("Strict");
   expect(merchantCookie?.secure).toBe(true);
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
+  await expect(page.getByTestId("reward-filter-available")).toHaveClass(/is-active/);
+  await expect(page.getByTestId("merchant-reward-list")).toContainText(reward.shortCode);
 
   await page.getByTestId("reward-code").fill(reward.shortCode.toLowerCase());
   await page.getByRole("button", { name: /Buscar premio/ }).click();
@@ -86,6 +88,9 @@ test("public reward stays read-only and authenticated Moka staff can redeem and 
   await page.getByTestId("merchant-redeem").click();
   await expect(page.getByTestId("merchant-reward-status")).toHaveText("Canjeado");
   await expect(page.getByTestId("merchant-redeem")).toHaveCount(0);
+  await expect(page.getByTestId("merchant-reward-list")).not.toContainText(reward.shortCode);
+  await page.getByTestId("reward-filter-redeemed").click();
+  await expect(page.getByTestId("merchant-reward-list")).toContainText(reward.shortCode);
 
   await page.getByRole("link", { name: "Resumen" }).click();
   await expect(page).toHaveURL(/\/comercio\/moka\/panel$/);
