@@ -18,6 +18,7 @@ interface BrandFailure {
   error?: string;
   diagnosticCode?: string;
   upstreamStatus?: number;
+  upstreamCode?: string;
 }
 
 const MAX_LOGO_BYTES = 700 * 1024;
@@ -121,6 +122,7 @@ export function MerchantOnboarding() {
         const diagnostic = [
           payload.diagnosticCode ? `código ${payload.diagnosticCode}` : "",
           typeof payload.upstreamStatus === "number" ? `OpenAI HTTP ${payload.upstreamStatus}` : "",
+          payload.upstreamCode ? `OpenAI ${payload.upstreamCode}` : "",
         ].filter(Boolean).join(" · ");
         setBrandError(`${payload.error ?? "No se pudo generar la identidad"}${diagnostic ? ` (${diagnostic})` : ""}`);
         return;
