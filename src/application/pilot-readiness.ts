@@ -1,4 +1,3 @@
-import "server-only";
 import { DEFAULT_OPENAI_BRAND_MODEL } from "@/ai/openai-brand";
 import type { Repository } from "@/persistence/repository";
 import { createMerchantSessionToken } from "@/security/merchant-auth";
