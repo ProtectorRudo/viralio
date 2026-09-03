@@ -1,0 +1,383 @@
+/* VIRALIO-020A — Premium foundations.
+   This layer deliberately removes generic "AI UI" signals without changing product behavior. */
+
+:root {
+  --font-ui: "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  --space-0: 0;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-control: .625rem;
+  --radius-panel: .875rem;
+  --radius-shell: 1rem;
+  --radius-status: 999px;
+
+  --motion-instant: 90ms;
+  --motion-fast: 150ms;
+  --motion-base: 420ms;
+  --motion-slow: 760ms;
+  --ease-standard: cubic-bezier(.2, .72, .2, 1);
+  --ease-enter: cubic-bezier(.16, 1, .3, 1);
+
+  --shadow-card: 0 24px 72px color-mix(in srgb, var(--color-text) 9%, transparent);
+  --shadow-button: none;
+  --shadow-soft: 0 10px 30px color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-kerning: normal;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary, #5f5148);
+  outline-offset: 3px;
+}
+
+/* Canvas: flatter, quieter, more like a designed campaign surface than an AI gradient demo. */
+.experience {
+  padding: clamp(0px, 1.2vw, 16px);
+  background: var(--color-canvas);
+  font-family: var(--font-body, var(--font-ui));
+}
+
+.experience::before {
+  opacity: .42;
+}
+
+.experience .ambient {
+  opacity: .12;
+  filter: none;
+}
+
+.experience .ambient-one,
+.experience .ambient-two {
+  border-color: color-mix(in srgb, var(--color-text) 9%, transparent);
+}
+
+/* Shell: restrained edge and depth; premium should not depend on a floating card effect. */
+.experience-card {
+  width: min(100%, 468px);
+  padding: clamp(20px, 5vw, 28px) clamp(19px, 5vw, 28px) 18px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, var(--color-border));
+  border-radius: var(--radius-shell, 1rem);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.experience-card::after {
+  display: none;
+}
+
+/* Brand header: hairline editorial treatment instead of decorative gradient lines. */
+.merchant-brand {
+  min-height: 48px;
+  gap: 13px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  flex-basis: 40px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
+  border-radius: var(--brand-mark-radius, 50%);
+  background: var(--color-text);
+  box-shadow: none;
+}
+
+.brand-mark span {
+  font: 500 1.08rem/1 var(--font-display);
+  letter-spacing: -.02em;
+}
+
+.brand-copy {
+  gap: 4px;
+  line-height: 1.08;
+}
+
+.brand-copy strong {
+  font-size: .78rem;
+  font-weight: 680;
+  letter-spacing: .115em;
+}
+
+.brand-copy small {
+  font-size: .64rem;
+  font-weight: 500;
+  letter-spacing: .025em;
+}
+
+.brand-line {
+  display: none;
+}
+
+/* Typography: higher contrast, less indiscriminate bold, more editorial rhythm. */
+.stage {
+  padding-top: clamp(30px, 7vh, 56px);
+  animation: premium-stage-enter var(--motion-base) var(--ease-enter) both;
+}
+
+.stage-copy {
+  row-gap: 0;
+}
+
+.eyebrow {
+  margin-bottom: 13px;
+  font-size: .64rem;
+  font-weight: 680;
+  letter-spacing: .19em;
+  line-height: 1.25;
+}
+
+.stage h1 {
+  max-width: 400px;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 9vw, 3.35rem);
+  font-weight: var(--display-weight, 500);
+  letter-spacing: var(--display-tracking, -.038em);
+  line-height: .99;
+}
+
+.lead {
+  max-width: 350px;
+  margin: 18px auto 27px;
+  font-size: .94rem;
+  font-weight: 430;
+  line-height: 1.66;
+}
+
+.trust-line,
+.friend-note,
+.share-guidance {
+  font-weight: 480;
+}
+
+/* Controls: quiet, tactile, and precise. Shadows are no longer the source of hierarchy. */
+.button {
+  min-height: 54px;
+  gap: 9px;
+  padding: 13px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control, .625rem);
+  font-size: .9rem;
+  font-weight: 680;
+  letter-spacing: .005em;
+  box-shadow: none;
+  transition:
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.button-primary {
+  border-color: color-mix(in srgb, var(--color-primary) 88%, var(--color-text));
+  background: var(--color-primary);
+  box-shadow: none;
+}
+
+.button-primary:hover {
+  background: var(--color-primary-hover);
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+.button-secondary {
+  border-color: color-mix(in srgb, var(--color-text) 14%, var(--color-border));
+  background: transparent;
+}
+
+.button-secondary:hover {
+  border-color: color-mix(in srgb, var(--color-text) 24%, var(--color-border));
+  background: color-mix(in srgb, var(--color-text) 4%, var(--color-surface));
+  transform: none;
+}
+
+.button-whatsapp {
+  border-color: #145b3e;
+  background: #176b47;
+  box-shadow: none;
+}
+
+.button-whatsapp:hover {
+  background: #145f40;
+  transform: translateY(-1px);
+}
+
+.button-primary:active,
+.button-secondary:active,
+.button-whatsapp:active {
+  transform: translateY(0) scale(.992);
+}
+
+.whatsapp-icon {
+  border-width: 1px;
+  opacity: .92;
+}
+
+/* Forms: lower radius, no inset/glow styling, clearer focus. */
+.merchant-form {
+  gap: 9px;
+}
+
+.merchant-form label {
+  font-size: .66rem;
+  font-weight: 650;
+  letter-spacing: .105em;
+}
+
+.merchant-form input {
+  min-height: 54px;
+  padding: 0 15px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 14%, var(--color-border));
+  border-radius: var(--radius-control, .625rem);
+  background: var(--color-surface);
+  font-size: .96rem;
+  font-weight: 560;
+  letter-spacing: .02em;
+  box-shadow: none;
+}
+
+.merchant-form input:focus,
+.merchant-form input:focus-visible {
+  border-color: color-mix(in srgb, var(--color-primary) 72%, var(--color-text));
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+/* Existing decorative objects become materially quieter until 020B replaces their composition. */
+.mystery-halo {
+  box-shadow: 0 0 0 14px color-mix(in srgb, var(--color-accent) 4%, transparent);
+}
+
+.mystery-medallion {
+  border-color: color-mix(in srgb, var(--color-text) 15%, var(--color-border));
+  background: var(--color-surface);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
+.mystery-tag {
+  border-radius: var(--radius-status);
+  box-shadow: none;
+}
+
+.pass-stack > span,
+.pass-stack > svg {
+  border-color: color-mix(in srgb, var(--color-text) 11%, var(--color-border));
+  background: var(--color-surface);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+
+/* Reward and merchant operational surfaces lose synthetic gradients/glow. */
+.reward-ticket,
+.merchant-reward-result,
+.merchant-reward-feed {
+  border-color: color-mix(in srgb, var(--color-text) 11%, var(--color-border));
+  border-radius: var(--radius-panel, .875rem);
+  background: var(--color-surface);
+  box-shadow: none;
+}
+
+.public-code strong,
+.reward-ticket strong,
+.reward-ticket b,
+.merchant-reward-row small {
+  font-family: var(--font-code);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-badge,
+.status-pill {
+  border-radius: var(--radius-status);
+  font-weight: 680;
+  letter-spacing: .055em;
+}
+
+.merchant-reward-row {
+  border-radius: var(--radius-control, .625rem);
+  box-shadow: none;
+}
+
+.merchant-reward-filters button,
+.merchant-panel-tab {
+  border-radius: var(--radius-control, .625rem);
+  font-weight: 620;
+}
+
+@keyframes premium-stage-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* On phones the experience should feel native/full-bleed, not like a card inside a browser. */
+@media (max-width: 520px) {
+  .experience-card {
+    min-height: 100dvh;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .stage {
+    padding-top: clamp(28px, 6vh, 48px);
+  }
+}
+
+@media (max-width: 380px) {
+  .experience-card {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .stage h1 {
+    font-size: clamp(2.05rem, 10vw, 2.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .stage {
+    animation: none !important;
+  }
+
+  .button,
+  .merchant-form input {
+    transition-duration: 0ms !important;
+  }
+}
