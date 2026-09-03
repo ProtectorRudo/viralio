@@ -9,6 +9,7 @@ import "./viralio-010.css";
 import "./viralio-019.css";
 import "./viralio-020a.css";
 import "./viralio-020b.css";
+import "./viralio-020b-wheel.css";
 
 export const metadata: Metadata = {
   title: "Viralio · Experiencias que se comparten",
