@@ -1,4 +1,8 @@
-/* VIRALIO-020B R2 — reduced motion remains reduced, but no longer collapses into a 100ms jump. */
+/* VIRALIO-020B R2 — final visual cleanup + reduced-motion alternative. */
+
+.experience .ambient {
+  display: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .experience .wheel-frame.is-spinning.is-reduced .wheel-svg {
