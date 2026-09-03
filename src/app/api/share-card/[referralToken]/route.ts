@@ -5,7 +5,7 @@ import { viralio } from "@/application";
 export const runtime = "nodejs";
 
 function textStyle(color: string, size: number, weight = 700): React.CSSProperties {
-  return { color, fontSize: size, fontWeight: weight, lineHeight: 1.08, letterSpacing: "-0.02em" };
+  return { color, fontSize: size, fontWeight: weight, lineHeight: 1.02, letterSpacing: "-0.025em" };
 }
 
 export async function GET(request: Request, context: { params: Promise<{ referralToken: string }> }) {
@@ -15,9 +15,10 @@ export async function GET(request: Request, context: { params: Promise<{ referra
     const origin = new URL(request.url).origin;
     const referralUrl = `${origin}/${merchant.slug}?ref=${encodeURIComponent(referralToken)}`;
     const p = merchant.theme.palette;
-    const angular = merchant.theme.stylePreset === "urban" || merchant.theme.stylePreset === "minimal";
-    const dark = merchant.theme.category === "barber" || p.canvas === "#111111" || p.canvas === "#000000";
     const logo = merchant.theme.logoDataUrl;
+    const editorial = merchant.theme.fontPreset === "editorial" || merchant.theme.stylePreset === "luxury";
+    const displayFont = editorial ? "Georgia, serif" : "Arial, sans-serif";
+    const bodyFont = "Arial, sans-serif";
 
     const tree = React.createElement(
       "div",
@@ -27,94 +28,182 @@ export async function GET(request: Request, context: { params: Promise<{ referra
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "96px 84px 82px",
-          background: dark
-            ? `linear-gradient(155deg, ${p.canvas} 0%, ${p.surface} 56%, ${p.canvasAccent} 135%)`
-            : `linear-gradient(155deg, ${p.surfaceRaised} 0%, ${p.canvas} 54%, ${p.canvasAccent} 145%)`,
+          padding: "78px 72px 68px",
+          background: p.canvas,
           color: p.text,
           position: "relative",
           overflow: "hidden",
-          fontFamily: merchant.theme.fontPreset === "editorial" ? "Georgia, serif" : "Arial, sans-serif",
+          fontFamily: bodyFont,
         },
       },
       React.createElement("div", {
         style: {
-          position: "absolute", width: 760, height: 760, borderRadius: 999,
-          border: `2px solid ${p.accent}`, opacity: 0.22, right: -350, top: -270,
+          position: "absolute",
+          inset: 42,
+          border: `2px solid ${p.border}`,
+          opacity: 0.88,
         },
       }),
       React.createElement("div", {
         style: {
-          position: "absolute", width: 580, height: 580, borderRadius: 999,
-          border: `2px solid ${p.accentSecondary}`, opacity: 0.16, left: -300, bottom: 180,
+          position: "absolute",
+          top: 238,
+          bottom: 238,
+          left: 556,
+          width: 2,
+          background: p.border,
+          opacity: 0.65,
         },
       }),
       React.createElement(
         "div",
-        { style: { display: "flex", alignItems: "center", gap: 26 } },
+        {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingBottom: 34,
+            borderBottom: `2px solid ${p.border}`,
+          },
+        },
         React.createElement(
           "div",
-          {
-            style: {
-              width: 112, height: 112, borderRadius: angular ? 24 : 999, display: "flex",
-              alignItems: "center", justifyContent: "center", background: logo ? p.surfaceRaised : p.primary,
-              color: p.onPrimary, fontSize: 48, fontWeight: 800, boxShadow: "0 22px 55px rgba(0,0,0,.18)",
-              border: logo ? `2px solid ${p.border}` : "none",
-              overflow: "hidden",
+          { style: { display: "flex", alignItems: "center", gap: 22 } },
+          React.createElement(
+            "div",
+            {
+              style: {
+                width: 82,
+                height: 82,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: `2px solid ${p.text}`,
+                borderRadius: 999,
+                background: p.surface,
+                color: p.text,
+                fontFamily: displayFont,
+                fontSize: 34,
+                fontWeight: 600,
+                overflow: "hidden",
+              },
             },
-          },
-          logo
-            ? React.createElement("img", { src: logo, width: 86, height: 86, alt: "", style: { objectFit: "contain" } })
-            : merchant.theme.monogram,
+            logo
+              ? React.createElement("img", { src: logo, width: 62, height: 62, alt: "", style: { objectFit: "contain" } })
+              : merchant.theme.monogram,
+          ),
+          React.createElement(
+            "div",
+            { style: { display: "flex", flexDirection: "column", gap: 7 } },
+            React.createElement("div", { style: { color: p.text, fontSize: 29, fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase" } }, merchant.theme.displayName),
+            React.createElement("div", { style: { color: p.textMuted, fontSize: 20, letterSpacing: "0.06em" } }, "INVITACIÓN PRIVADA"),
+          ),
         ),
         React.createElement(
           "div",
-          { style: { display: "flex", flexDirection: "column", gap: 7 } },
-          React.createElement("div", { style: { ...textStyle(p.text, 42, 800), textTransform: "uppercase", letterSpacing: "0.08em" } }, merchant.theme.displayName),
-          React.createElement("div", { style: { color: p.textMuted, fontSize: 24, letterSpacing: "0.05em" } }, "PASE SORPRESA · VIRALIO"),
+          { style: { display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5 } },
+          React.createElement("span", { style: { color: p.textMuted, fontSize: 18, letterSpacing: "0.12em" } }, "EDICIÓN"),
+          React.createElement("strong", { style: { color: p.text, fontSize: 28, fontWeight: 500, letterSpacing: "0.05em" } }, "01 / V"),
         ),
       ),
       React.createElement(
         "div",
-        { style: { display: "flex", flexDirection: "column", gap: 42, marginTop: 70 } },
+        {
+          style: {
+            display: "flex",
+            flex: 1,
+            alignItems: "stretch",
+            padding: "92px 0 74px",
+          },
+        },
         React.createElement(
           "div",
           {
             style: {
-              width: 330, height: 330, borderRadius: angular ? 54 : 999,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              border: `2px solid ${p.border}`, background: p.surfaceRaised,
-              boxShadow: "0 35px 90px rgba(0,0,0,.17)", color: p.primary,
-              fontSize: 156, fontWeight: 800,
+              width: "58%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              paddingRight: 54,
             },
           },
-          "?",
+          React.createElement("div", { style: { color: p.primary, fontSize: 22, fontWeight: 700, letterSpacing: "0.17em", textTransform: "uppercase", marginBottom: 30 } }, "HAY ALGO PARA VOS"),
+          React.createElement("div", { style: { ...textStyle(p.text, 78, editorial ? 500 : 720), maxWidth: 530, fontFamily: displayFont } }, merchant.theme.socialHeadline),
+          React.createElement("div", { style: { color: p.textMuted, fontSize: 31, lineHeight: 1.42, maxWidth: 510, marginTop: 34 } }, merchant.theme.socialSubcopy),
+          React.createElement(
+            "div",
+            {
+              style: {
+                display: "flex",
+                width: 190,
+                marginTop: 54,
+                paddingTop: 18,
+                borderTop: `2px solid ${p.accent}`,
+                color: p.textMuted,
+                fontSize: 19,
+                lineHeight: 1.35,
+              },
+            },
+            "Abrí tu propia oportunidad",
+          ),
         ),
-        React.createElement("div", { style: { ...textStyle(p.primary, 30, 800), textTransform: "uppercase", letterSpacing: "0.16em" } }, "HAY ALGO PARA VOS"),
-        React.createElement("div", { style: { ...textStyle(p.text, 86, merchant.theme.stylePreset === "bold" ? 850 : 750), maxWidth: 850 } }, merchant.theme.socialHeadline),
-        React.createElement("div", { style: { color: p.textMuted, fontSize: 38, lineHeight: 1.35, maxWidth: 820 } }, merchant.theme.socialSubcopy),
+        React.createElement(
+          "div",
+          {
+            style: {
+              width: "42%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              justifyContent: "center",
+              paddingLeft: 54,
+            },
+          },
+          React.createElement(
+            "div",
+            {
+              style: {
+                width: 278,
+                height: 278,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: `2px solid ${p.accent}`,
+                borderRadius: 999,
+                background: p.surface,
+                color: p.text,
+                position: "relative",
+              },
+            },
+            React.createElement("div", { style: { fontFamily: displayFont, fontSize: 104, fontWeight: 400, lineHeight: 1 } }, "?"),
+            React.createElement("div", { style: { position: "absolute", top: -22, right: -6, color: p.textMuted, fontSize: 18, letterSpacing: "0.08em" } }, "PASE · 01"),
+          ),
+          React.createElement("div", { style: { width: 278, marginTop: 24, color: p.textMuted, fontSize: 18, lineHeight: 1.4, textAlign: "right" } }, "La recompensa de quien comparte permanece oculta."),
+        ),
       ),
       React.createElement(
         "div",
-        { style: { display: "flex", flexDirection: "column", gap: 24 } },
-        React.createElement(
-          "div",
-          {
-            style: {
-              display: "flex", flexDirection: "column", gap: 10, padding: "30px 34px",
-              border: `2px solid ${p.border}`, borderRadius: angular ? 18 : 28, background: p.surface,
-            },
+        {
+          style: {
+            display: "flex",
+            flexDirection: "column",
+            gap: 28,
+            paddingTop: 34,
+            borderTop: `2px solid ${p.border}`,
           },
-          React.createElement("div", { style: { color: p.textMuted, fontSize: 21, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" } }, "Abrí tu pase"),
-          React.createElement("div", { style: { color: p.text, fontSize: 25, lineHeight: 1.3 } }, referralUrl),
-        ),
+        },
         React.createElement(
           "div",
-          { style: { display: "flex", alignItems: "center", justifyContent: "space-between", color: p.textMuted, fontSize: 22 } },
-          React.createElement("span", null, "Tu sorpresa es distinta. El premio de quien comparte no se revela."),
-          React.createElement("span", { style: { color: p.text, fontWeight: 800 } }, "Viralio"),
+          { style: { display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 28 } },
+          React.createElement(
+            "div",
+            { style: { display: "flex", flexDirection: "column", gap: 9, maxWidth: 760 } },
+            React.createElement("span", { style: { color: p.textMuted, fontSize: 17, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase" } }, "ABRÍ TU PASE"),
+            React.createElement("span", { style: { color: p.text, fontSize: 22, lineHeight: 1.35, wordBreak: "break-all" } }, referralUrl),
+          ),
+          React.createElement("span", { style: { color: p.text, fontSize: 25, fontWeight: 800, letterSpacing: "0.05em" } }, "VIRALIO"),
         ),
+        React.createElement("div", { style: { color: p.textMuted, fontSize: 17, lineHeight: 1.35 } }, "Una invitación de la marca. Tu oportunidad es independiente y el premio de quien comparte no se revela."),
       ),
     );
 
