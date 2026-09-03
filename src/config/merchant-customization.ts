@@ -1,3 +1,4 @@
+import { validateMerchantBrandProfile } from "@/brand/brand-engine";
 import type { Merchant, MerchantCustomization, MerchantExperienceCopy, PrizeDefinition } from "@/domain/types";
 
 const copyLimits: Record<keyof MerchantExperienceCopy, number> = {
@@ -108,11 +109,13 @@ export function validateMerchantCustomization(value: unknown, base: Merchant): M
       socialHeadline: text(copy.socialHeadline, "socialHeadline"),
       socialSubcopy: text(copy.socialSubcopy, "socialSubcopy"),
     },
+    brand: candidate.brand === undefined ? undefined : validateMerchantBrandProfile(candidate.brand),
   };
 }
 
 export function applyMerchantCustomization(merchant: Merchant, customization?: MerchantCustomization): Merchant {
   if (!customization) return merchant;
+  const brand = customization.brand;
   return {
     ...merchant,
     name: customization.copy.displayName,
@@ -122,6 +125,13 @@ export function applyMerchantCustomization(merchant: Merchant, customization?: M
     theme: {
       ...merchant.theme,
       ...customization.copy,
+      ...(brand ? {
+        logoDataUrl: brand.logoDataUrl,
+        stylePreset: brand.stylePreset,
+        fontPreset: brand.fontPreset,
+        tone: brand.tone,
+        palette: { ...brand.palette, wheel: [...brand.palette.wheel] },
+      } : {}),
     },
   };
 }
