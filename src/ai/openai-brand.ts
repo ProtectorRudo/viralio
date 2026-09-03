@@ -19,12 +19,19 @@ export type BrandAiDiagnosticCode =
 export class BrandAiError extends Error {
   readonly diagnosticCode: BrandAiDiagnosticCode;
   readonly upstreamStatus?: number;
+  readonly upstreamCode?: string;
 
-  constructor(diagnosticCode: BrandAiDiagnosticCode, message: string, upstreamStatus?: number) {
+  constructor(
+    diagnosticCode: BrandAiDiagnosticCode,
+    message: string,
+    upstreamStatus?: number,
+    upstreamCode?: string,
+  ) {
     super(message);
     this.name = "BrandAiError";
     this.diagnosticCode = diagnosticCode;
     this.upstreamStatus = upstreamStatus;
+    this.upstreamCode = upstreamCode;
   }
 }
 
@@ -203,23 +210,28 @@ function normalizeRawDraft(value: unknown): RawBrandDraft {
   };
 }
 
+function sanitizeUpstreamCode(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  return /^[A-Za-z0-9_.-]{1,80}$/.test(value) ? value : undefined;
+}
+
 async function upstreamErrorCode(response: Response): Promise<string | undefined> {
   try {
     const payload = await response.json() as { error?: { code?: unknown } };
-    return typeof payload?.error?.code === "string" ? payload.error.code : undefined;
+    return sanitizeUpstreamCode(payload?.error?.code);
   } catch {
     return undefined;
   }
 }
 
 function classifyUpstreamFailure(status: number, code?: string): BrandAiError {
-  if (status === 401) return new BrandAiError("auth", "OpenAI authentication failed", status);
-  if (status === 403) return new BrandAiError("permission", "OpenAI permission denied", status);
-  if (status === 404 || code === "model_not_found") return new BrandAiError("model_access", "OpenAI model is unavailable", status);
-  if (status === 429 && code === "insufficient_quota") return new BrandAiError("quota", "OpenAI quota is unavailable", status);
-  if (status === 429) return new BrandAiError("rate_limit", "OpenAI rate limit reached", status);
-  if (status >= 400 && status < 500) return new BrandAiError("invalid_request", "OpenAI rejected the request", status);
-  return new BrandAiError("upstream", "OpenAI is temporarily unavailable", status);
+  if (status === 401) return new BrandAiError("auth", "OpenAI authentication failed", status, code);
+  if (status === 403) return new BrandAiError("permission", "OpenAI permission denied", status, code);
+  if (status === 404 || code === "model_not_found") return new BrandAiError("model_access", "OpenAI model is unavailable", status, code);
+  if (status === 429 && code === "insufficient_quota") return new BrandAiError("quota", "OpenAI quota is unavailable", status, code);
+  if (status === 429) return new BrandAiError("rate_limit", "OpenAI rate limit reached", status, code);
+  if (status >= 400 && status < 500) return new BrandAiError("invalid_request", "OpenAI rejected the request", status, code);
+  return new BrandAiError("upstream", "OpenAI is temporarily unavailable", status, code);
 }
 
 export async function generateOpenAiBrandDraft(
