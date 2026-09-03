@@ -42,6 +42,7 @@ function validPublicAppUrl(raw) {
       && !local
       && !url.username
       && !url.password
+      && !url.search
       && !url.hash;
   } catch {
     return false;
@@ -60,7 +61,10 @@ function validMerchantPins(raw) {
     const value = JSON.parse(raw);
     if (!value || typeof value !== "object" || Array.isArray(value)) return false;
     return Object.entries(value).every(([slug, pin]) =>
-      slug.trim().length > 0 && typeof pin === "string" && /^\d{4,12}$/.test(pin),
+      slug.trim().length > 0
+      && typeof pin === "string"
+      && /^\d{4,12}$/.test(pin)
+      && !/^(\d)\1+$/.test(pin),
     );
   } catch {
     return false;
