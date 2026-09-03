@@ -3,6 +3,8 @@ node_modules/
 out/
 data/*.json
 !data/.gitkeep
+backups/
+*.dump
 playwright-report/
 test-results/
 *.tsbuildinfo
