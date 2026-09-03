@@ -1,0 +1,13 @@
+/* VIRALIO-020B R2 — reduced motion remains reduced, but no longer collapses into a 100ms jump. */
+
+@media (prefers-reduced-motion: reduce) {
+  .experience .wheel-frame.is-spinning.is-reduced .wheel-svg {
+    transition-property: transform !important;
+    transition-duration: 1200ms !important;
+    transition-timing-function: cubic-bezier(.2, .7, .2, 1) !important;
+  }
+
+  .experience .wheel-frame.is-spinning.is-reduced .wheel-pointer {
+    animation: none !important;
+  }
+}
