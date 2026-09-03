@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MerchantOnboarding } from "@/ui/merchant-onboarding";
+import { PilotReadinessPanel } from "@/ui/pilot-readiness-panel";
 
 export const metadata: Metadata = {
   title: "Alta de comercio · Viralio",
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function MerchantOnboardingPage() {
-  return <MerchantOnboarding />;
+  return (
+    <>
+      <PilotReadinessPanel />
+      <MerchantOnboarding />
+    </>
+  );
 }
