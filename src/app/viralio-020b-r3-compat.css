@@ -1,0 +1,23 @@
+/* R3 compatibility: the immersive Aurora composition applies to LANDING only.
+   Share, wheel and reward keep their current verified layout until the landing direction is approved. */
+
+.experience.theme-joyeria-aurora .experience-card:not(:has(.premium-campaign-stage)) {
+  padding: 0 clamp(22px, 6vw, 30px) 22px;
+}
+
+.experience.theme-joyeria-aurora .experience-card:not(:has(.premium-campaign-stage)) .premium-brand-header {
+  position: relative;
+  min-height: 108px;
+  padding: 23px 0 17px;
+  border-bottom: 1px solid rgba(68, 47, 44, .1);
+  pointer-events: auto;
+}
+
+.experience.theme-joyeria-aurora .experience-card:not(:has(.premium-campaign-stage)) .premium-signature {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  margin-top: auto;
+  padding-top: 16px;
+}
