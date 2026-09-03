@@ -5,7 +5,7 @@ import type { Merchant, Reward, Session, ShareChannel } from "@/domain/types";
 import { BrandIcon } from "@/ui/brand-icon";
 import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
-import { PremiumWheel, SPIN_DURATION_MS } from "@/ui/premium-wheel";
+import { PremiumWheel, REDUCED_SPIN_DURATION_MS, SPIN_DURATION_MS } from "@/ui/premium-wheel";
 
 type SessionPayload = { session: Session; merchant: Merchant };
 
@@ -147,7 +147,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     try {
       const result = await json<{ reward: Reward }>(`/api/sessions/${payload.session.id}/spin`, { method: "POST" });
       setSpinReward(result.reward);
-      await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 100 : SPIN_DURATION_MS));
+      await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? REDUCED_SPIN_DURATION_MS : SPIN_DURATION_MS));
       setReward(result.reward);
       setPayload({ ...payload, session: { ...payload.session, state: "REWARDED", rewardId: result.reward.id } });
     } catch (reason) { setError((reason as Error).message); }
@@ -178,7 +178,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       style={merchantThemeStyle(merchant)}
       data-merchant={merchant.slug}
       data-brand-style={merchant.theme.stylePreset ?? "template"}
-      data-design-version="020b"
+      data-design-version="020b-r2"
     >
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
