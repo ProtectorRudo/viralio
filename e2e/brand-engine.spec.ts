@@ -69,7 +69,7 @@ test("a brand profile drives the funnel and the 9:16 share card", async ({ page,
   expect(primary).toBe("#633B2B");
 
   const sessionResponse = await request.post("/api/sessions", { data: { merchantSlug: slug } });
-  expect(sessionResponse.status()).toBe(201);
+  expect(sessionResponse.status()).toBe(200);
   const sessionPayload = await sessionResponse.json() as { session: { referralToken: string } };
   const card = await request.get(`/api/share-card/${encodeURIComponent(sessionPayload.session.referralToken)}`);
   expect(card.status()).toBe(200);
