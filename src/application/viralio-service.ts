@@ -21,6 +21,7 @@ import type {
   MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
+  MerchantMetricsWindow,
   Reward,
   Session,
   ShareChannel,
@@ -318,10 +319,10 @@ export class ViralioService {
     });
   }
 
-  async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
+  async getMerchantMetrics(merchantId: string, window?: MerchantMetricsWindow): Promise<MerchantMetrics> {
     return this.repository.transaction(async (transaction) => {
       if (!await this.resolveMerchantBaseById(transaction, merchantId)) throw new Error("Merchant not found");
-      return transaction.getMerchantMetrics(merchantId);
+      return transaction.getMerchantMetrics(merchantId, window);
     });
   }
 
