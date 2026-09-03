@@ -1,9 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-function header(response: Awaited<ReturnType<typeof fetch>>, name: string) {
-  return response.headers.get(name) ?? "";
-}
-
 test("public pages ship baseline security headers without breaking the consumer experience", async ({ page, request }) => {
   const response = await request.get("/moka");
   expect(response.status()).toBe(200);
