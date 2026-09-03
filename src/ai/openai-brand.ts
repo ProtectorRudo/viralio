@@ -76,16 +76,19 @@ interface RawBrandDraft {
   copy: GeneratedBrandCopy;
 }
 
+// OpenAI Structured Outputs intentionally receives only keywords from its supported
+// JSON Schema subset. Length/uniqueness constraints are enforced again below by
+// Viralio before a generated draft is accepted or persisted.
 const copyProperties = {
-  heroEyebrow: { type: "string", minLength: 2, maxLength: 80 },
-  heroTitle: { type: "string", minLength: 2, maxLength: 100 },
-  heroCopy: { type: "string", minLength: 2, maxLength: 220 },
-  mysteryLabel: { type: "string", minLength: 2, maxLength: 60 },
-  shareTitle: { type: "string", minLength: 2, maxLength: 100 },
-  shareCopy: { type: "string", minLength: 2, maxLength: 220 },
-  referralCopy: { type: "string", minLength: 2, maxLength: 220 },
-  socialHeadline: { type: "string", minLength: 2, maxLength: 100 },
-  socialSubcopy: { type: "string", minLength: 2, maxLength: 180 },
+  heroEyebrow: { type: "string" },
+  heroTitle: { type: "string" },
+  heroCopy: { type: "string" },
+  mysteryLabel: { type: "string" },
+  shareTitle: { type: "string" },
+  shareCopy: { type: "string" },
+  referralCopy: { type: "string" },
+  socialHeadline: { type: "string" },
+  socialSubcopy: { type: "string" },
 } as const;
 
 export const BRAND_DRAFT_SCHEMA = {
@@ -95,13 +98,12 @@ export const BRAND_DRAFT_SCHEMA = {
   properties: {
     stylePreset: { type: "string", enum: ["editorial", "minimal", "luxury", "bold", "warm", "urban"] },
     fontPreset: { type: "string", enum: ["editorial", "modern", "geometric", "humanist"] },
-    tone: { type: "string", minLength: 3, maxLength: 120 },
+    tone: { type: "string" },
     keywords: {
       type: "array",
       minItems: 2,
       maxItems: 6,
-      uniqueItems: true,
-      items: { type: "string", minLength: 2, maxLength: 28 },
+      items: { type: "string" },
     },
     colors: {
       type: "object",
