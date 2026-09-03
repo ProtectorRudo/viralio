@@ -1,8 +1,11 @@
+import { normalizeLogoDataUrl, templateBrandProfile, validateMerchantBrandProfile } from "@/brand/brand-engine";
 import { getMerchantBySlug } from "@/config/merchants";
 import type {
   Merchant,
   MerchantAccount,
+  MerchantBrandProfile,
   MerchantCustomization,
+  MerchantExperienceCopy,
   MerchantTemplate,
 } from "@/domain/types";
 
@@ -12,6 +15,9 @@ export interface MerchantOnboardingInput {
   template: MerchantTemplate;
   whatsappNumber: string;
   pin: string;
+  logoDataUrl?: string;
+  brand?: MerchantBrandProfile;
+  brandCopy?: Partial<MerchantExperienceCopy>;
 }
 
 const reservedSlugs = new Set([
@@ -25,10 +31,10 @@ const reservedSlugs = new Set([
   "validar",
 ]);
 
-function cleanText(value: unknown, label: string, max: number): string {
+function cleanText(value: unknown, label: string, max: number, min = 2): string {
   if (typeof value !== "string") throw new Error(`Invalid ${label}`);
   const normalized = value.trim().replace(/\s+/g, " ");
-  if (normalized.length < 2 || normalized.length > max) throw new Error(`Invalid ${label}`);
+  if (normalized.length < min || normalized.length > max) throw new Error(`Invalid ${label}`);
   return normalized;
 }
 
@@ -47,6 +53,29 @@ function normalizeWhatsapp(value: unknown): string {
   return normalized;
 }
 
+const generatedCopyLimits: Partial<Record<keyof MerchantExperienceCopy, number>> = {
+  heroEyebrow: 80,
+  heroTitle: 100,
+  heroCopy: 220,
+  mysteryLabel: 60,
+  shareTitle: 100,
+  shareCopy: 220,
+  referralCopy: 220,
+  socialHeadline: 100,
+  socialSubcopy: 180,
+};
+
+function parseBrandCopy(value: unknown): Partial<MerchantExperienceCopy> | undefined {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid brand copy");
+  const candidate = value as Record<string, unknown>;
+  const result: Partial<MerchantExperienceCopy> = {};
+  for (const [key, limit] of Object.entries(generatedCopyLimits) as Array<[keyof MerchantExperienceCopy, number]>) {
+    if (candidate[key] !== undefined) result[key] = cleanText(candidate[key], `brand copy ${key}`, limit);
+  }
+  return result;
+}
+
 export function parseMerchantOnboarding(value: unknown): MerchantOnboardingInput {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid merchant onboarding");
   const candidate = value as Record<string, unknown>;
@@ -59,6 +88,9 @@ export function parseMerchantOnboarding(value: unknown): MerchantOnboardingInput
     template,
     whatsappNumber: normalizeWhatsapp(candidate.whatsappNumber),
     pin: candidate.pin,
+    logoDataUrl: normalizeLogoDataUrl(candidate.logoDataUrl),
+    brand: candidate.brand === undefined ? undefined : validateMerchantBrandProfile(candidate.brand),
+    brandCopy: parseBrandCopy(candidate.brandCopy),
   };
 }
 
@@ -97,36 +129,42 @@ export function merchantFromAccount(account: MerchantAccount): Merchant {
 export function defaultCustomizationForAccount(
   account: MerchantAccount,
   whatsappNumber: string,
+  options: { brand?: MerchantBrandProfile; brandCopy?: Partial<MerchantExperienceCopy>; logoDataUrl?: string } = {},
 ): MerchantCustomization {
   const name = account.name;
-  if (account.template === "coffee") {
-    return {
-      whatsappNumber,
-      rewardValidityDays: 7,
-      prizes: [
-        { id: "upgrade", name: "Upgrade de bebida", probability: 35 },
-        { id: "medialuna", name: "Acompañamiento gratis en tu próxima visita", probability: 30 },
-        { id: "discount_10", name: "10% en tu próxima visita", probability: 20 },
-        { id: "free_coffee", name: "Bebida gratis", probability: 14 },
-        { id: "special", name: `Premio especial ${name}`, probability: 1 },
-      ],
-      copy: {
-        displayName: name,
-        shortName: shortName(name),
-        heroEyebrow: "Un detalle hecho para vos",
-        heroTitle: "Hay algo especial esperando",
-        heroCopy: `Descubrí la sorpresa que ${name} preparó para tu próxima visita.`,
-        mysteryLabel: `Sorpresa ${shortName(name)}`,
-        shareTitle: "Compartí tu pase para abrirlo",
-        shareCopy: "Elegí dónde compartir tu pase. La sorpresa que te toca sigue siendo sólo tuya.",
-        referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
-        socialHeadline: `${name} dejó una sorpresa esperando`,
-        socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
-      },
-    };
-  }
+  const baseMerchant = merchantFromAccount(account);
+  const fallbackBrand = templateBrandProfile(baseMerchant.theme);
+  const brand: MerchantBrandProfile = options.brand ?? {
+    ...fallbackBrand,
+    source: options.logoDataUrl ? "manual" : "template",
+    logoDataUrl: options.logoDataUrl,
+  };
 
-  return {
+  const customization: MerchantCustomization = account.template === "coffee" ? {
+    whatsappNumber,
+    rewardValidityDays: 7,
+    prizes: [
+      { id: "upgrade", name: "Upgrade de bebida", probability: 35 },
+      { id: "medialuna", name: "Acompañamiento gratis en tu próxima visita", probability: 30 },
+      { id: "discount_10", name: "10% en tu próxima visita", probability: 20 },
+      { id: "free_coffee", name: "Bebida gratis", probability: 14 },
+      { id: "special", name: `Premio especial ${name}`, probability: 1 },
+    ],
+    copy: {
+      displayName: name,
+      shortName: shortName(name),
+      heroEyebrow: "Un detalle hecho para vos",
+      heroTitle: "Hay algo especial esperando",
+      heroCopy: `Descubrí la sorpresa que ${name} preparó para tu próxima visita.`,
+      mysteryLabel: `Sorpresa ${shortName(name)}`,
+      shareTitle: "Compartí tu pase para abrirlo",
+      shareCopy: "Elegí dónde compartir tu pase. La sorpresa que te toca sigue siendo sólo tuya.",
+      referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
+      socialHeadline: `${name} dejó una sorpresa esperando`,
+      socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
+    },
+    brand,
+  } : {
     whatsappNumber,
     rewardValidityDays: 10,
     prizes: [
@@ -149,7 +187,18 @@ export function defaultCustomizationForAccount(
       socialHeadline: `Hay un pase privado de ${name} para vos`,
       socialSubcopy: "Entrá, abrilo y descubrí tu beneficio.",
     },
+    brand,
   };
+
+  if (options.brandCopy) {
+    customization.copy = {
+      ...customization.copy,
+      ...options.brandCopy,
+      displayName: name,
+      shortName: shortName(name),
+    };
+  }
+  return customization;
 }
 
 export function merchantExperiencePath(slug: string): string {
