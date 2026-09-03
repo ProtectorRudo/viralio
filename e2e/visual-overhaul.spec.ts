@@ -15,13 +15,13 @@ async function noHorizontalOverflow(page: import("@playwright/test").Page) {
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.width);
 }
 
-test("premium funnel uses campaign, poster, wheel hardware and voucher without changing the gate", async ({ page }) => {
+test("Soft Prestige funnel uses campaign, poster, wheel hardware and voucher without changing the gate", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await enableShare(page);
   await page.goto("/moka");
 
-  await expect(page.locator("main")).toHaveAttribute("data-design-version", "020b");
+  await expect(page.locator("main")).toHaveAttribute("data-design-version", "020b-r2");
   await expect(page.getByTestId("brand-campaign-frame")).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await noHorizontalOverflow(page);
@@ -34,7 +34,8 @@ test("premium funnel uses campaign, poster, wheel hardware and voucher without c
   const wheel = page.getByTestId("premium-wheel");
   await expect(wheel.locator(".wheel-bezel")).toBeVisible();
   await expect(wheel.locator(".wheel-center-cap")).toBeVisible();
-  await expect(wheel).toHaveAttribute("data-spin-turns", "9");
+  await expect(wheel).toHaveAttribute("data-spin-turns", "1");
+  await expect(wheel).toHaveAttribute("data-spin-duration-ms", "1200");
 
   const spinResponse = page.waitForResponse((response) => response.url().endsWith("/spin") && response.request().method() === "POST");
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
