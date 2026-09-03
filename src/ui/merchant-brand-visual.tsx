@@ -7,11 +7,13 @@ export function MerchantBrandVisual({
   mode = "symbol",
   className = "",
   decorative = true,
+  size = 54,
 }: {
   merchant: Merchant;
   mode?: "mark" | "symbol";
   className?: string;
   decorative?: boolean;
+  size?: number;
 }) {
   if (merchant.theme.logoDataUrl) {
     return (
@@ -19,10 +21,10 @@ export function MerchantBrandVisual({
         className={className}
         src={merchant.theme.logoDataUrl}
         alt={decorative ? "" : `Logo de ${merchant.theme.displayName}`}
-        width={180}
-        height={180}
+        width={size}
+        height={size}
         unoptimized
-        style={{ objectFit: "contain" }}
+        style={{ width: size, height: size, objectFit: "contain" }}
       />
     );
   }
