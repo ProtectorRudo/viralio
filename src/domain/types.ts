@@ -23,6 +23,42 @@ export interface PrizeDefinition {
 
 export type MerchantCategory = "coffee" | "barber";
 export type MerchantTemplate = MerchantCategory;
+export type BrandSource = "template" | "manual" | "openai";
+export type BrandStylePreset = "editorial" | "minimal" | "luxury" | "bold" | "warm" | "urban";
+export type BrandFontPreset = "editorial" | "modern" | "geometric" | "humanist";
+
+export interface MerchantBrandPalette {
+  canvas: string;
+  canvasAccent: string;
+  surface: string;
+  surfaceRaised: string;
+  text: string;
+  textMuted: string;
+  primary: string;
+  primaryHover: string;
+  onPrimary: string;
+  accent: string;
+  accentSecondary: string;
+  border: string;
+  success: string;
+  warning: string;
+  danger: string;
+  wheel: readonly string[];
+}
+
+export interface MerchantBrandProfile {
+  source: BrandSource;
+  logoDataUrl?: string;
+  stylePreset: BrandStylePreset;
+  fontPreset: BrandFontPreset;
+  tone: string;
+  keywords: string[];
+  palette: MerchantBrandPalette;
+  ai?: {
+    model: string;
+    generatedAt: string;
+  };
+}
 
 export interface MerchantTheme {
   displayName: string;
@@ -38,24 +74,11 @@ export interface MerchantTheme {
   referralCopy: string;
   socialHeadline: string;
   socialSubcopy: string;
-  palette: {
-    canvas: string;
-    canvasAccent: string;
-    surface: string;
-    surfaceRaised: string;
-    text: string;
-    textMuted: string;
-    primary: string;
-    primaryHover: string;
-    onPrimary: string;
-    accent: string;
-    accentSecondary: string;
-    border: string;
-    success: string;
-    warning: string;
-    danger: string;
-    wheel: readonly string[];
-  };
+  logoDataUrl?: string;
+  stylePreset?: BrandStylePreset;
+  fontPreset?: BrandFontPreset;
+  tone?: string;
+  palette: MerchantBrandPalette;
 }
 
 export interface Merchant {
@@ -87,6 +110,7 @@ export interface MerchantCustomization {
   rewardValidityDays: number;
   prizes: PrizeDefinition[];
   copy: MerchantExperienceCopy;
+  brand?: MerchantBrandProfile;
 }
 
 export interface MerchantSettingsRecord {
