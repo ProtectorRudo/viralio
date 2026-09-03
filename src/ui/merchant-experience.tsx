@@ -185,7 +185,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       <section className="experience-card" aria-live="polite">
         <header className="merchant-brand premium-brand-header">
           <span className="brand-mark"><MerchantBrandVisual merchant={merchant} mode="mark" size={30} /></span>
-          <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>{merchant.theme.tone ?? merchant.businessType ?? "Experiencia Viralio"}</small></span>
+          <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>{merchant.theme.tone ?? merchant.theme.businessType ?? "Experiencia Viralio"}</small></span>
           <span className="brand-edition" aria-hidden="true">V / 01</span>
         </header>
 
