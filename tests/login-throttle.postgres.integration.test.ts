@@ -20,7 +20,11 @@ const environment: NodeJS.ProcessEnv = {
 };
 
 const sql = databaseUrl
-  ? postgres(databaseUrl, { max: 2, onnotice: () => undefined })
+  ? postgres(databaseUrl, {
+      max: 2,
+      transform: postgres.camel,
+      onnotice: () => undefined,
+    })
   : undefined;
 
 function database() {
