@@ -5,11 +5,18 @@ import type {
   MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
+  MerchantMetricsWindow,
   MerchantSettingsRecord,
   Reward,
   Session,
 } from "@/domain/types";
 import type { TransactionRepository, UniqueValueKind } from "./repository";
+
+function sessionFallsInWindow(session: Session, window?: MerchantMetricsWindow): boolean {
+  if (!window) return true;
+  if (window.from && session.createdAt < window.from) return false;
+  return session.createdAt < window.to;
+}
 
 export class ArrayTransaction implements TransactionRepository {
   constructor(private readonly database: Database) {
@@ -86,10 +93,17 @@ export class ArrayTransaction implements TransactionRepository {
     this.database.events.push(event);
   }
 
-  async getMerchantMetrics(merchantId: string): Promise<MerchantMetrics> {
-    const sessions = this.database.sessions.filter((session) => session.merchantId === merchantId);
-    const rewards = this.database.rewards.filter((reward) => reward.merchantId === merchantId);
-    const events = this.database.events.filter((event) => event.merchantId === merchantId);
+  async getMerchantMetrics(merchantId: string, window?: MerchantMetricsWindow): Promise<MerchantMetrics> {
+    const sessions = this.database.sessions.filter((session) =>
+      session.merchantId === merchantId && sessionFallsInWindow(session, window),
+    );
+    const sessionIds = new Set(sessions.map((session) => session.id));
+    const rewards = this.database.rewards.filter((reward) =>
+      reward.merchantId === merchantId && sessionIds.has(reward.sessionId),
+    );
+    const events = this.database.events.filter((event) =>
+      event.merchantId === merchantId && Boolean(event.sessionId && sessionIds.has(event.sessionId)),
+    );
     const shareChannels: MerchantMetrics["shareChannels"] = {
       whatsapp: 0,
       whatsapp_status: 0,
