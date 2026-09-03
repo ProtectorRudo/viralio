@@ -10,6 +10,14 @@ export function BrandIcon({ category, className = "" }: { category: MerchantCate
       </svg>
     );
   }
+  if (category === "generic") {
+    return (
+      <svg className={className} viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 8l5.6 15.7L54 30l-16.4 6.3L32 52l-5.6-15.7L10 30l16.4-6.3L32 8Z" />
+        <circle cx="32" cy="30" r="5" />
+      </svg>
+    );
+  }
   return (
     <svg className={className} viewBox="0 0 64 64" aria-hidden="true">
       <path d="M16 24h32v16a12 12 0 0 1-12 12h-8a12 12 0 0 1-12-12V24Z" />

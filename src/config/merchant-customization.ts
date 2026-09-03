@@ -22,6 +22,14 @@ function text(value: unknown, field: keyof MerchantExperienceCopy): string {
   return normalized;
 }
 
+function businessType(value: unknown, fallback: string): string {
+  if (value === undefined) return fallback;
+  if (typeof value !== "string") throw new Error("Invalid businessType");
+  const normalized = value.trim().replace(/\s+/g, " ");
+  if (normalized.length < 2 || normalized.length > 60 || /[<>]/.test(normalized)) throw new Error("Invalid businessType");
+  return normalized;
+}
+
 function whatsapp(value: unknown): string {
   if (typeof value !== "string") throw new Error("Invalid whatsappNumber");
   const normalized = value.replace(/\D/g, "");
@@ -68,6 +76,7 @@ export function defaultMerchantCustomization(merchant: Merchant): MerchantCustom
   return {
     whatsappNumber: merchant.whatsappNumber,
     rewardValidityDays: merchant.rewardValidityDays,
+    businessType: merchant.theme.businessType ?? (merchant.theme.category === "coffee" ? "Café / gastronomía" : merchant.theme.category === "barber" ? "Barbería / peluquería" : "Comercio"),
     prizes: merchant.prizes.map((prize) => ({ ...prize })),
     copy: {
       displayName: merchant.theme.displayName,
@@ -92,9 +101,11 @@ export function validateMerchantCustomization(value: unknown, base: Merchant): M
     throw new Error("Invalid merchant settings");
   }
   const copy = candidate.copy as Partial<MerchantExperienceCopy>;
+  const fallbackBusinessType = base.theme.businessType ?? (base.theme.category === "coffee" ? "Café / gastronomía" : base.theme.category === "barber" ? "Barbería / peluquería" : "Comercio");
   return {
     whatsappNumber: whatsapp(candidate.whatsappNumber),
     rewardValidityDays: validity(candidate.rewardValidityDays),
+    businessType: businessType(candidate.businessType, fallbackBusinessType),
     prizes: prizes(candidate.prizes, base),
     copy: {
       displayName: text(copy.displayName, "displayName"),
@@ -116,6 +127,7 @@ export function validateMerchantCustomization(value: unknown, base: Merchant): M
 export function applyMerchantCustomization(merchant: Merchant, customization?: MerchantCustomization): Merchant {
   if (!customization) return merchant;
   const brand = customization.brand;
+  const visibleBusinessType = customization.businessType ?? merchant.theme.businessType;
   return {
     ...merchant,
     name: customization.copy.displayName,
@@ -125,11 +137,12 @@ export function applyMerchantCustomization(merchant: Merchant, customization?: M
     theme: {
       ...merchant.theme,
       ...customization.copy,
+      businessType: visibleBusinessType,
       ...(brand ? {
         logoDataUrl: brand.logoDataUrl,
         stylePreset: brand.stylePreset,
         fontPreset: brand.fontPreset,
-        tone: brand.tone,
+        tone: visibleBusinessType ?? brand.tone,
         palette: { ...brand.palette, wheel: [...brand.palette.wheel] },
       } : {}),
     },

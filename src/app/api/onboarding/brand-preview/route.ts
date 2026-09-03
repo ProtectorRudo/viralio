@@ -15,12 +15,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Clave de alta inválida" }, { status: 401 });
     }
     const template = body.template;
-    if (template !== "coffee" && template !== "barber") {
+    if (template !== "coffee" && template !== "barber" && template !== "generic") {
       return NextResponse.json({ error: "Datos de marca inválidos" }, { status: 400 });
     }
     const draft = await generateOpenAiBrandDraft({
       name: body.name as string,
       template,
+      businessType: body.businessType as string,
       brief: body.brief as string,
       logoDataUrl: body.logoDataUrl as string | undefined,
     });

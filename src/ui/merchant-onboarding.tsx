@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { MerchantBrandProfile, MerchantExperienceCopy } from "@/domain/types";
+import type { MerchantBrandProfile, MerchantExperienceCopy, MerchantTemplate } from "@/domain/types";
 
 interface OnboardingResult {
   merchant: { id: string; slug: string; name: string };
@@ -27,6 +27,13 @@ function slugify(value: string): string {
     .slice(0, 40);
 }
 
+function inferTemplate(value: string): MerchantTemplate {
+  const normalized = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (/cafe|cafeter|gastronom|restaurant|resto|panader|pasteler|helader|bar\b|comida/.test(normalized)) return "coffee";
+  if (/barber|peluquer|salon de belleza|salon belleza|hair|corte de pelo/.test(normalized)) return "barber";
+  return "generic";
+}
+
 function fileDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -41,7 +48,8 @@ export function MerchantOnboarding() {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
-  const [template, setTemplate] = useState<"coffee" | "barber">("coffee");
+  const [businessType, setBusinessType] = useState("Café / gastronomía");
+  const [template, setTemplate] = useState<MerchantTemplate>("coffee");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [pin, setPin] = useState("");
   const [logoDataUrl, setLogoDataUrl] = useState("");
@@ -63,6 +71,12 @@ export function MerchantOnboarding() {
     setName(value);
     invalidateDraft();
     if (!slugTouched) setSlug(slugify(value));
+  }
+
+  function changeBusinessType(value: string) {
+    setBusinessType(value);
+    setTemplate(inferTemplate(value));
+    invalidateDraft();
   }
 
   async function changeLogo(file?: File) {
@@ -92,7 +106,7 @@ export function MerchantOnboarding() {
       const response = await fetch("/api/onboarding/brand-preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ onboardingKey, name, template, brief: brandBrief, logoDataUrl: logoDataUrl || undefined }),
+        body: JSON.stringify({ onboardingKey, name, template, businessType, brief: brandBrief, logoDataUrl: logoDataUrl || undefined }),
       });
       const payload = await response.json() as BrandDraft & { error?: string };
       if (!response.ok) {
@@ -121,6 +135,7 @@ export function MerchantOnboarding() {
           name,
           slug,
           template,
+          businessType,
           whatsappNumber,
           pin,
           logoDataUrl: logoDataUrl || undefined,
@@ -147,6 +162,8 @@ export function MerchantOnboarding() {
     setName("");
     setSlug("");
     setSlugTouched(false);
+    setBusinessType("Café / gastronomía");
+    setTemplate("coffee");
     setWhatsappNumber("");
     setLogoDataUrl("");
     setBrandBrief("");
@@ -168,7 +185,7 @@ export function MerchantOnboarding() {
         <div className="onboarding-hero">
           <p className="eyebrow">Nuevo comercio</p>
           <h1>De marca real a experiencia Viralio.</h1>
-          <p>Cargá su identidad y ChatGPT propone un funnel coherente con el comercio, sin tocar código.</p>
+          <p>Indicá qué negocio es realmente. ChatGPT y el Brand Engine adaptan la experiencia sin obligarlo a entrar en una plantilla ajena.</p>
         </div>
 
         {!result ? (
@@ -182,24 +199,42 @@ export function MerchantOnboarding() {
             </section>
 
             <section className="onboarding-section">
-              <div className="onboarding-section-title"><span>02</span><div><strong>Identidad</strong><small>Marca, logo y rubro del comercio</small></div></div>
+              <div className="onboarding-section-title"><span>02</span><div><strong>Identidad</strong><small>Marca, logo y rubro real del comercio</small></div></div>
               <div className="onboarding-grid">
                 <label>
                   Nombre del comercio
-                  <input data-testid="onboarding-name" value={name} onChange={(event) => changeName(event.target.value)} placeholder="Ej. Bruma Café" required maxLength={60} />
+                  <input data-testid="onboarding-name" value={name} onChange={(event) => changeName(event.target.value)} placeholder="Ej. Lumen Joyas" required maxLength={60} />
                 </label>
                 <label>
-                  Rubro / plantilla base
-                  <select data-testid="onboarding-template" value={template} onChange={(event) => { setTemplate(event.target.value as "coffee" | "barber"); invalidateDraft(); }}>
-                    <option value="coffee">Café / gastronomía</option>
-                    <option value="barber">Barbería / peluquería</option>
-                  </select>
+                  Rubro real
+                  <input data-testid="onboarding-business-type" list="viralio-business-types" value={businessType} onChange={(event) => changeBusinessType(event.target.value)} placeholder="Ej. Joyería" required minLength={2} maxLength={60} />
+                  <datalist id="viralio-business-types">
+                    <option value="Café / gastronomía" />
+                    <option value="Barbería / peluquería" />
+                    <option value="Joyería" />
+                    <option value="Indumentaria" />
+                    <option value="Centro de estética" />
+                    <option value="Gimnasio" />
+                    <option value="Pet shop" />
+                    <option value="Librería" />
+                    <option value="Panadería / pastelería" />
+                    <option value="Tienda de decoración" />
+                  </datalist>
                 </label>
               </div>
               <label>
                 URL corta
-                <div className="slug-input"><span>/</span><input data-testid="onboarding-slug" value={slug} onChange={(event) => { setSlugTouched(true); setSlug(slugify(event.target.value)); }} placeholder="bruma-cafe" required /></div>
+                <div className="slug-input"><span>/</span><input data-testid="onboarding-slug" value={slug} onChange={(event) => { setSlugTouched(true); setSlug(slugify(event.target.value)); }} placeholder="lumen-joyas" required /></div>
                 <small className="field-hint">Quedará como: viralio / {previewSlug || "tu-comercio"}</small>
+              </label>
+              <label>
+                Fallback técnico detectado
+                <select data-testid="onboarding-template" value={template} onChange={(event) => { setTemplate(event.target.value as MerchantTemplate); invalidateDraft(); }}>
+                  <option value="generic">Universal</option>
+                  <option value="coffee">Gastronomía</option>
+                  <option value="barber">Peluquería / barbería</option>
+                </select>
+                <small className="field-hint">Sólo se usa como respaldo si ChatGPT no está disponible. El rubro real de arriba manda en la identidad.</small>
               </label>
 
               <div className="onboarding-grid">
@@ -210,7 +245,7 @@ export function MerchantOnboarding() {
                 </label>
                 <label>
                   Breve descripción de la marca
-                  <textarea data-testid="brand-brief" value={brandBrief} onChange={(event) => { setBrandBrief(event.target.value); invalidateDraft(); }} maxLength={700} rows={4} placeholder="Ej. Café de especialidad de barrio, cálido, artesanal, público joven-adulto, queremos vernos premium sin ser pretenciosos." />
+                  <textarea data-testid="brand-brief" value={brandBrief} onChange={(event) => { setBrandBrief(event.target.value); invalidateDraft(); }} maxLength={700} rows={4} placeholder="Ej. Joyería minimalista y cálida, piezas delicadas, público joven-adulto, estética premium sin verse ostentosa." />
                 </label>
               </div>
 
@@ -229,14 +264,14 @@ export function MerchantOnboarding() {
                 Generar identidad con ChatGPT
               </label>
               {useAiBranding && (
-                <button className="onboarding-secondary" data-testid="generate-brand" type="button" onClick={() => void generateBrand()} disabled={brandBusy || !onboardingKey || name.trim().length < 2 || brandBrief.trim().length < 3}>
+                <button className="onboarding-secondary" data-testid="generate-brand" type="button" onClick={() => void generateBrand()} disabled={brandBusy || !onboardingKey || name.trim().length < 2 || businessType.trim().length < 2 || brandBrief.trim().length < 3}>
                   {brandBusy ? "ChatGPT está diseñando…" : brandDraft ? "Regenerar identidad con ChatGPT" : "Generar identidad con ChatGPT"}
                 </button>
               )}
 
               {brandDraft && (
                 <div data-testid="brand-preview" style={{ display: "grid", gap: 14, padding: 16, border: `1px solid ${brandDraft.brand.palette.border}`, borderRadius: 18, background: brandDraft.brand.palette.canvas, color: brandDraft.brand.palette.text }}>
-                  <div><strong>{brandDraft.brand.stylePreset.toUpperCase()}</strong> · {brandDraft.brand.fontPreset} · <small>{brandDraft.brand.tone}</small></div>
+                  <div><strong>{businessType}</strong> · {brandDraft.brand.stylePreset.toUpperCase()} · {brandDraft.brand.fontPreset} · <small>{brandDraft.brand.tone}</small></div>
                   <div style={{ display: "flex", gap: 8 }} aria-label="Paleta sugerida">
                     {[brandDraft.brand.palette.primary, brandDraft.brand.palette.accent, brandDraft.brand.palette.accentSecondary, brandDraft.brand.palette.canvas, brandDraft.brand.palette.surface].map((color) => (
                       <span key={color} title={color} style={{ width: 34, height: 34, borderRadius: 999, background: color, border: `1px solid ${brandDraft.brand.palette.border}` }} />
@@ -247,7 +282,7 @@ export function MerchantOnboarding() {
                   <small>Story/Estado: {brandDraft.copy.socialHeadline}</small>
                 </div>
               )}
-              {!useAiBranding && <p className="field-hint">Sin IA, Viralio usa la plantilla segura y conserva el logo cargado. Podés personalizar después.</p>}
+              {!useAiBranding && <p className="field-hint">Sin IA, Viralio usa un fallback seguro coherente con el rubro y conserva el logo cargado. Podés personalizar después.</p>}
             </section>
 
             <section className="onboarding-section">
@@ -288,7 +323,7 @@ export function MerchantOnboarding() {
           </section>
         )}
 
-        <footer className="onboarding-footer"><span>VIRALIO</span><small>Brand Engine · identidad asistida por ChatGPT</small></footer>
+        <footer className="onboarding-footer"><span>VIRALIO</span><small>Brand Engine · cualquier rubro · ChatGPT</small></footer>
       </section>
     </main>
   );

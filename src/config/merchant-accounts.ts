@@ -13,6 +13,7 @@ export interface MerchantOnboardingInput {
   name: string;
   slug: string;
   template: MerchantTemplate;
+  businessType: string;
   whatsappNumber: string;
   pin: string;
   logoDataUrl?: string;
@@ -35,6 +36,7 @@ function cleanText(value: unknown, label: string, max: number, min = 2): string 
   if (typeof value !== "string") throw new Error(`Invalid ${label}`);
   const normalized = value.trim().replace(/\s+/g, " ");
   if (normalized.length < min || normalized.length > max) throw new Error(`Invalid ${label}`);
+  if (/[<>]/.test(normalized)) throw new Error(`Invalid ${label}`);
   return normalized;
 }
 
@@ -51,6 +53,13 @@ function normalizeWhatsapp(value: unknown): string {
   const normalized = value.replace(/\D/g, "");
   if (!/^\d{8,18}$/.test(normalized)) throw new Error("Invalid whatsappNumber");
   return normalized;
+}
+
+export function inferMerchantTemplate(businessType: string): MerchantTemplate {
+  const normalized = businessType.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (/cafe|cafeter|gastronom|restaurant|resto|panader|pasteler|helader|bar\b|comida/.test(normalized)) return "coffee";
+  if (/barber|peluquer|salon de belleza|salon belleza|hair|corte de pelo/.test(normalized)) return "barber";
+  return "generic";
 }
 
 const generatedCopyLimits: Partial<Record<keyof MerchantExperienceCopy, number>> = {
@@ -79,13 +88,16 @@ function parseBrandCopy(value: unknown): Partial<MerchantExperienceCopy> | undef
 export function parseMerchantOnboarding(value: unknown): MerchantOnboardingInput {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid merchant onboarding");
   const candidate = value as Record<string, unknown>;
-  const template = candidate.template;
-  if (template !== "coffee" && template !== "barber") throw new Error("Invalid template");
+  const businessType = cleanText(candidate.businessType ?? (candidate.template === "barber" ? "Barbería / peluquería" : "Café / gastronomía"), "businessType", 60);
+  const inferred = inferMerchantTemplate(businessType);
+  const explicit = candidate.template;
+  const template = explicit === "coffee" || explicit === "barber" || explicit === "generic" ? explicit : inferred;
   if (typeof candidate.pin !== "string" || !/^\d{4,12}$/.test(candidate.pin)) throw new Error("Invalid pin");
   return {
     name: cleanText(candidate.name, "name", 60),
     slug: normalizeMerchantSlug(candidate.slug),
     template,
+    businessType,
     whatsappNumber: normalizeWhatsapp(candidate.whatsappNumber),
     pin: candidate.pin,
     logoDataUrl: normalizeLogoDataUrl(candidate.logoDataUrl),
@@ -94,7 +106,62 @@ export function parseMerchantOnboarding(value: unknown): MerchantOnboardingInput
   };
 }
 
+function genericTemplateBase(): Merchant {
+  const seed = getMerchantBySlug("moka");
+  if (!seed) throw new Error("Merchant template not found");
+  return {
+    ...seed,
+    id: "template_generic",
+    slug: "generic",
+    name: "Comercio",
+    rewardValidityDays: 10,
+    prizes: [
+      { id: "benefit_1", name: "Beneficio sorpresa", probability: 30 },
+      { id: "discount_10", name: "10% en tu próxima visita", probability: 25 },
+      { id: "bonus", name: "Extra especial en tu próxima visita", probability: 20 },
+      { id: "gift", name: "Regalo sorpresa", probability: 15 },
+      { id: "special", name: "Premio especial", probability: 10 },
+    ],
+    theme: {
+      ...seed.theme,
+      category: "generic",
+      businessType: "Comercio",
+      displayName: "Comercio",
+      shortName: "Comercio",
+      monogram: "V",
+      heroEyebrow: "Un detalle para vos",
+      heroTitle: "Hay una sorpresa esperando",
+      heroCopy: "Abrí tu pase y descubrí un beneficio para tu próxima visita.",
+      mysteryLabel: "Pase sorpresa",
+      shareTitle: "Compartí tu pase para abrirlo",
+      shareCopy: "Elegí dónde compartirlo. Tu premio sigue siendo privado.",
+      referralCopy: "Me dejaron un pase sorpresa. Hay otro esperando por vos.",
+      socialHeadline: "Hay una sorpresa esperando por vos",
+      socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
+      palette: {
+        canvas: "#F2F0EC",
+        canvasAccent: "#D7D1C7",
+        surface: "#FFFEFB",
+        surfaceRaised: "#FFFFFF",
+        text: "#22211F",
+        textMuted: "#6B6861",
+        primary: "#42484A",
+        primaryHover: "#353A3C",
+        onPrimary: "#FFFFFF",
+        accent: "#9A7A56",
+        accentSecondary: "#687B72",
+        border: "#D9D5CE",
+        success: "#24734B",
+        warning: "#996018",
+        danger: "#A63C3C",
+        wheel: ["#42484A", "#765B43", "#52675E", "#66594D", "#354E49"],
+      },
+    },
+  };
+}
+
 function templateBase(template: MerchantTemplate): Merchant {
+  if (template === "generic") return genericTemplateBase();
   const merchant = getMerchantBySlug(template === "coffee" ? "moka" : "atlas-barber");
   if (!merchant) throw new Error("Merchant template not found");
   return merchant;
@@ -121,8 +188,38 @@ export function merchantFromAccount(account: MerchantAccount): Merchant {
       displayName: account.name,
       shortName: shortName(account.name),
       monogram: monogram(account.name),
+      businessType: account.businessType,
     },
     prizes: base.prizes.map((prize) => ({ ...prize })),
+  };
+}
+
+function genericCustomization(account: MerchantAccount, whatsappNumber: string, brand: MerchantBrandProfile): MerchantCustomization {
+  const name = account.name;
+  return {
+    whatsappNumber,
+    rewardValidityDays: 10,
+    prizes: [
+      { id: "benefit_1", name: "Beneficio sorpresa", probability: 30 },
+      { id: "discount_10", name: "10% en tu próxima visita", probability: 25 },
+      { id: "bonus", name: "Extra especial en tu próxima visita", probability: 20 },
+      { id: "gift", name: "Regalo sorpresa", probability: 15 },
+      { id: "special", name: `Premio especial ${name}`, probability: 10 },
+    ],
+    copy: {
+      displayName: name,
+      shortName: shortName(name),
+      heroEyebrow: "Un detalle para vos",
+      heroTitle: "Hay una sorpresa esperando",
+      heroCopy: `Descubrí el beneficio que ${name} preparó para tu próxima visita.`,
+      mysteryLabel: `Pase ${shortName(name)}`,
+      shareTitle: "Compartí tu pase para abrirlo",
+      shareCopy: "Elegí dónde compartirlo. Tu premio sigue siendo privado.",
+      referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
+      socialHeadline: `${name} dejó una sorpresa esperando`,
+      socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
+    },
+    brand,
   };
 }
 
@@ -140,7 +237,7 @@ export function defaultCustomizationForAccount(
     logoDataUrl: options.logoDataUrl,
   };
 
-  const customization: MerchantCustomization = account.template === "coffee" ? {
+  const customization: MerchantCustomization = account.template === "generic" ? genericCustomization(account, whatsappNumber, brand) : account.template === "coffee" ? {
     whatsappNumber,
     rewardValidityDays: 7,
     prizes: [

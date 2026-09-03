@@ -73,6 +73,7 @@ export class ViralioService {
       slug: input.slug,
       name: input.name,
       template: input.template,
+      businessType: input.businessType,
       ...credentials,
       createdAt,
     };

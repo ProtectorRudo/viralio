@@ -23,6 +23,7 @@ export interface OpenAiBrandDraft {
 export interface BrandAssistantInput {
   name: string;
   template: MerchantTemplate;
+  businessType?: string;
   brief: string;
   logoDataUrl?: string;
 }
@@ -95,8 +96,14 @@ export const BRAND_DRAFT_SCHEMA = {
 function cleanInput(value: unknown, label: string, min: number, max: number): string {
   if (typeof value !== "string") throw new Error(`Invalid ${label}`);
   const normalized = value.trim().replace(/\s+/g, " ");
-  if (normalized.length < min || normalized.length > max) throw new Error(`Invalid ${label}`);
+  if (normalized.length < min || normalized.length > max || /[<>]/.test(normalized)) throw new Error(`Invalid ${label}`);
   return normalized;
+}
+
+function defaultBusinessType(template: MerchantTemplate): string {
+  if (template === "coffee") return "Café / gastronomía";
+  if (template === "barber") return "Barbería / peluquería";
+  return "Comercio";
 }
 
 function modelName(environment: NodeJS.ProcessEnv): string {
@@ -180,8 +187,9 @@ export async function generateOpenAiBrandDraft(
   const fetchImpl = options.fetchImpl ?? fetch;
   const now = options.now ?? (() => new Date());
   const name = cleanInput(input.name, "merchant name", 2, 60);
+  const businessType = cleanInput(input.businessType ?? defaultBusinessType(input.template), "business type", 2, 60);
   const brief = cleanInput(input.brief, "brand brief", 3, 700);
-  if (input.template !== "coffee" && input.template !== "barber") throw new Error("Invalid merchant template");
+  if (input.template !== "coffee" && input.template !== "barber" && input.template !== "generic") throw new Error("Invalid merchant template");
   const logoDataUrl = normalizeLogoDataUrl(input.logoDataUrl);
   const model = modelName(environment);
   const controller = new AbortController();
@@ -189,7 +197,7 @@ export async function generateOpenAiBrandDraft(
 
   const userContent: Array<Record<string, unknown>> = [{
     type: "input_text",
-    text: `Comercio: ${name}\nRubro base: ${input.template}\nBrief de marca: ${brief}`,
+    text: `Comercio: ${name}\nRubro real: ${businessType}\nFallback técnico: ${input.template}\nBrief de marca: ${brief}`,
   }];
   if (logoDataUrl) userContent.push({ type: "input_image", image_url: logoDataUrl, detail: "high" });
 
@@ -208,7 +216,7 @@ export async function generateOpenAiBrandDraft(
             role: "developer",
             content: [{
               type: "input_text",
-              text: "Sos el director de marca de Viralio. Diseñá una identidad premium, profesional y fiel al negocio para un funnel móvil de recompensas. Evitá estética de casino, kermés o plantilla genérica. Devolvé sólo el schema solicitado. Los colores deben ser #RRGGBB. No cambies premios, probabilidades ni reglas del producto. El copy debe sonar natural en español rioplatense y funcionar también aislado en una Story/Estado 9:16.",
+              text: "Sos el director de marca de Viralio. Diseñá una identidad premium, profesional y fiel al rubro REAL del negocio para un funnel móvil de recompensas. No dejes que el fallback técnico coffee/barber/generic contamine la identidad si contradice el rubro real. Evitá estética de casino, kermés o plantilla genérica. Devolvé sólo el schema solicitado. Los colores deben ser #RRGGBB. No cambies premios, probabilidades ni reglas del producto. El copy debe sonar natural en español rioplatense y funcionar también aislado en una Story/Estado 9:16.",
             }],
           },
           { role: "user", content: userContent },
