@@ -81,7 +81,11 @@ export class ViralioService {
       if (await transaction.getMerchantAccountBySlug(account.slug)) throw new Error("Merchant already exists");
       const base = merchantFromAccount(account);
       const customization = validateMerchantCustomization(
-        defaultCustomizationForAccount(account, input.whatsappNumber),
+        defaultCustomizationForAccount(account, input.whatsappNumber, {
+          brand: input.brand,
+          brandCopy: input.brandCopy,
+          logoDataUrl: input.logoDataUrl,
+        }),
         base,
       );
       await transaction.insertMerchantAccount(account);

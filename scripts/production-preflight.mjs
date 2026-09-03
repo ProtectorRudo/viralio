@@ -55,6 +55,14 @@ function strongSecret(value, minimumLength) {
     && !PLACEHOLDER_PATTERN.test(value);
 }
 
+function validOpenAiKey(value) {
+  return strongSecret(value, 20) && !/\s/.test(value);
+}
+
+function validOpenAiModel(value) {
+  return !value || /^[A-Za-z0-9._-]{2,80}$/.test(value.trim());
+}
+
 function validMerchantPins(raw) {
   if (!raw) return true;
   try {
@@ -82,6 +90,8 @@ export function validateProductionEnvironment(environment = process.env) {
     result("auth secret is strong", strongSecret(authSecret, 32)),
     result("onboarding key is strong", strongSecret(onboardingKey, 24)),
     result("auth and onboarding secrets are distinct", Boolean(authSecret && onboardingKey && authSecret !== onboardingKey)),
+    result("OpenAI API key is configured", validOpenAiKey(environment.OPENAI_API_KEY)),
+    result("OpenAI brand model is valid", validOpenAiModel(environment.OPENAI_BRAND_MODEL)),
     result("legacy merchant PIN JSON is valid when configured", validMerchantPins(environment.VIRALIO_MERCHANT_PINS)),
   ];
 }

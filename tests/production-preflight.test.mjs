@@ -7,6 +7,8 @@ const validEnvironment = {
   NEXT_PUBLIC_APP_URL: "https://app.viralio.example",
   VIRALIO_AUTH_SECRET: "auth-secret-that-is-long-random-and-production-safe-123",
   VIRALIO_ONBOARDING_KEY: "different-onboarding-key-long-enough-456",
+  OPENAI_API_KEY: "sk-production-shaped-openai-key-for-preflight-only",
+  OPENAI_BRAND_MODEL: "gpt-5.6-terra",
   VIRALIO_MERCHANT_PINS: JSON.stringify({ moka: "246810", "atlas-barber": "135790" }),
 };
 
@@ -37,6 +39,16 @@ describe("production preflight environment", () => {
       ...validEnvironment,
       VIRALIO_ONBOARDING_KEY: validEnvironment.VIRALIO_AUTH_SECRET,
     })).toContain("auth and onboarding secrets are distinct");
+  });
+
+  it("requires the server-side OpenAI key and validates the optional model override", () => {
+    expect(failedNames({ ...validEnvironment, OPENAI_API_KEY: "" }))
+      .toContain("OpenAI API key is configured");
+    expect(failedNames({ ...validEnvironment, OPENAI_API_KEY: "replace-with-openai-key-long-enough" }))
+      .toContain("OpenAI API key is configured");
+    expect(failedNames({ ...validEnvironment, OPENAI_BRAND_MODEL: "bad model name" }))
+      .toContain("OpenAI brand model is valid");
+    expect(failedNames({ ...validEnvironment, OPENAI_BRAND_MODEL: "" })).toEqual([]);
   });
 
   it("allows no legacy PIN JSON but rejects malformed or trivial configured PINs", () => {

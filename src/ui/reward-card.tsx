@@ -1,5 +1,5 @@
 import type { Merchant, Reward, RewardStatus } from "@/domain/types";
-import { BrandIcon } from "@/ui/brand-icon";
+import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
 
 const labels: Record<RewardStatus, string> = { AVAILABLE: "Disponible", REDEEMED: "Canjeado", EXPIRED: "Vencido" };
@@ -16,12 +16,12 @@ export function RewardCard({ reward, merchant, initialStatus }: {
       <div className="ambient ambient-one" aria-hidden="true" /><div className="ambient ambient-two" aria-hidden="true" />
       <section className="experience-card public-card">
         <header className="merchant-brand">
-          <span className="brand-mark"><span>{merchant.theme.monogram}</span></span>
+          <span className="brand-mark"><MerchantBrandVisual merchant={merchant} mode="mark" size={30} /></span>
           <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>Tarjeta oficial de premio</small></span>
           <span className="brand-line" aria-hidden="true" />
         </header>
         <div className="stage">
-          <div className="reward-seal"><BrandIcon category={merchant.theme.category} /><span>Premio<br />Viralio</span></div>
+          <div className="reward-seal"><MerchantBrandVisual merchant={merchant} size={40} /><span>Premio<br />Viralio</span></div>
           <p className="eyebrow public-intro">Tu premio en {merchant.theme.shortName}</p>
           <span className={`status-badge status-${initialStatus.toLowerCase()}`} data-testid="reward-status">{labels[initialStatus]}</span>
           <h1>{reward.prizeName}</h1>
