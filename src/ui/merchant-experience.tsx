@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Merchant, Reward, Session, ShareChannel } from "@/domain/types";
 import { BrandIcon } from "@/ui/brand-icon";
+import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
 import { PremiumWheel } from "@/ui/premium-wheel";
 
@@ -172,13 +173,13 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
   const shareDisabled = Boolean(shareBusy);
 
   return (
-    <main className={`experience theme-${merchant.slug}`} style={merchantThemeStyle(merchant)} data-merchant={merchant.slug}>
+    <main className={`experience theme-${merchant.slug}`} style={merchantThemeStyle(merchant)} data-merchant={merchant.slug} data-brand-style={merchant.theme.stylePreset ?? "template"}>
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
       <section className="experience-card" aria-live="polite">
         <header className="merchant-brand">
-          <span className="brand-mark"><span>{merchant.theme.monogram}</span></span>
-          <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>{merchant.theme.category === "coffee" ? "Café de especialidad" : "Barbería contemporánea"}</small></span>
+          <span className="brand-mark"><MerchantBrandVisual merchant={merchant} mode="mark" size={30} /></span>
+          <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>{merchant.theme.tone ?? (merchant.theme.category === "coffee" ? "Café de especialidad" : "Barbería contemporánea")}</small></span>
           <span className="brand-line" aria-hidden="true" />
         </header>
 
@@ -195,7 +196,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
           <div className="stage landing-stage" data-testid="landing-stage">
             <div className="mystery-object" aria-label={merchant.theme.mysteryLabel}>
               <span className="mystery-halo" aria-hidden="true" />
-              <span className="mystery-medallion"><BrandIcon category={merchant.theme.category} /></span>
+              <span className="mystery-medallion"><MerchantBrandVisual merchant={merchant} size={54} /></span>
               <span className="mystery-tag">PASE · 01</span>
             </div>
             <div className="stage-copy">
@@ -256,7 +257,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         {payload?.session.state === "REWARDED" && reward && (
           <div className="stage reward-stage" data-testid="reward-stage">
             <div className="celebration" aria-hidden="true"><i /><i /><i /><i /><span>✦</span></div>
-            <div className="reward-seal"><BrandIcon category={merchant.theme.category} /><span>Premio<br />revelado</span></div>
+            <div className="reward-seal"><MerchantBrandVisual merchant={merchant} size={40} /><span>Premio<br />revelado</span></div>
             <div className="stage-copy compact">
               <p className="eyebrow success">Es tuyo</p>
               <h1>{reward.prizeName}</h1>
