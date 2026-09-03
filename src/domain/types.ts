@@ -109,6 +109,7 @@ export interface MerchantExperienceCopy {
 export interface MerchantCustomization {
   whatsappNumber: string;
   rewardValidityDays: number;
+  businessType?: string;
   prizes: PrizeDefinition[];
   copy: MerchantExperienceCopy;
   brand?: MerchantBrandProfile;
@@ -125,7 +126,7 @@ export interface MerchantAccount {
   slug: string;
   name: string;
   template: MerchantTemplate;
-  businessType: string;
+  businessType?: string;
   pinSalt: string;
   pinHash: string;
   createdAt: string;
