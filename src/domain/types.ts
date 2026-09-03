@@ -150,6 +150,21 @@ export interface MerchantMetrics {
   shareChannels: Record<ShareChannel, number>;
 }
 
+export type MerchantMetricsPeriod = "7d" | "30d" | "90d" | "all";
+
+export interface MerchantMetricsWindow {
+  from?: string;
+  to: string;
+}
+
+export interface MerchantMetricsReport {
+  period: MerchantMetricsPeriod;
+  current: MerchantMetrics;
+  previous?: MerchantMetrics;
+  currentWindow: MerchantMetricsWindow;
+  previousWindow?: MerchantMetricsWindow;
+}
+
 export interface Database {
   sessions: Session[];
   rewards: Reward[];
