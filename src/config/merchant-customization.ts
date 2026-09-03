@@ -127,6 +127,7 @@ export function validateMerchantCustomization(value: unknown, base: Merchant): M
 export function applyMerchantCustomization(merchant: Merchant, customization?: MerchantCustomization): Merchant {
   if (!customization) return merchant;
   const brand = customization.brand;
+  const visibleBusinessType = customization.businessType ?? merchant.theme.businessType;
   return {
     ...merchant,
     name: customization.copy.displayName,
@@ -136,12 +137,12 @@ export function applyMerchantCustomization(merchant: Merchant, customization?: M
     theme: {
       ...merchant.theme,
       ...customization.copy,
-      businessType: customization.businessType ?? merchant.theme.businessType,
+      businessType: visibleBusinessType,
       ...(brand ? {
         logoDataUrl: brand.logoDataUrl,
         stylePreset: brand.stylePreset,
         fontPreset: brand.fontPreset,
-        tone: brand.tone,
+        tone: visibleBusinessType ?? brand.tone,
         palette: { ...brand.palette, wheel: [...brand.palette.wheel] },
       } : {}),
     },
