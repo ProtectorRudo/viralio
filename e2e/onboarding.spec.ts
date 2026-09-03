@@ -55,9 +55,26 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
   await page.goto(`/comercio/${slug}/configuracion`);
   await expect(page.getByTestId("merchant-settings-panel")).toBeVisible();
   await expect(page.getByTestId("probability-total")).toContainText("100%");
+
+  await page.goto(`/comercio/${slug}/activacion`);
+  await expect(page.getByTestId("merchant-activation-kit")).toBeVisible();
+  await expect(page.getByTestId("activation-public-url")).toContainText(`/${slug}`);
+  await expect(page.getByTestId("activation-qr")).toBeVisible();
+  await expect(page.getByTestId("activation-poster")).toBeVisible();
+
+  const qr = await page.request.get("/api/merchant/activation/qr");
+  expect(qr.status()).toBe(200);
+  expect(qr.headers()["content-type"]).toContain("image/svg+xml");
+  const svg = await qr.text();
+  expect(svg).toContain("<svg");
+  expect(svg).toContain("<path");
+
+  const download = await page.request.get("/api/merchant/activation/qr?download=1");
+  expect(download.status()).toBe(200);
+  expect(download.headers()["content-disposition"]).toContain(`viralio-${slug}-qr.svg`);
 });
 
-test("onboarding rejects cross-origin writes", async ({ request }) => {
+test("onboarding and activation assets enforce their security boundary", async ({ request }) => {
   const response = await request.post("http://127.0.0.1:3000/api/onboarding/merchants", {
     data: {
       onboardingKey: "ci-viralio-onboarding-key-with-24-characters",
@@ -70,4 +87,7 @@ test("onboarding rejects cross-origin writes", async ({ request }) => {
     headers: { origin: "https://evil.example" },
   });
   expect(response.status()).toBe(403);
+
+  const qr = await request.get("http://127.0.0.1:3000/api/merchant/activation/qr");
+  expect(qr.status()).toBe(401);
 });
