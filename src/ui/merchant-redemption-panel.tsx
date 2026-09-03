@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Merchant, RewardStatus } from "@/domain/types";
 import { BrandIcon } from "@/ui/brand-icon";
@@ -14,10 +14,23 @@ interface MerchantRewardView {
   redeemedAt?: string;
 }
 
+interface MerchantRewardListItem extends MerchantRewardView {
+  status: RewardStatus;
+}
+
+type RewardFilter = RewardStatus | "ALL";
+
 const labels: Record<RewardStatus, string> = {
   AVAILABLE: "Disponible",
   REDEEMED: "Canjeado",
   EXPIRED: "Vencido",
+};
+
+const filterLabels: Record<RewardFilter, string> = {
+  AVAILABLE: "Vigentes",
+  REDEEMED: "Canjeados",
+  EXPIRED: "Vencidos",
+  ALL: "Todos",
 };
 
 function formatDate(value: string): string {
@@ -30,8 +43,43 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
   const [code, setCode] = useState("");
   const [reward, setReward] = useState<MerchantRewardView>();
   const [status, setStatus] = useState<RewardStatus>();
+  const [filter, setFilter] = useState<RewardFilter>("AVAILABLE");
+  const [rewardList, setRewardList] = useState<MerchantRewardListItem[]>([]);
+  const [listBusy, setListBusy] = useState(false);
+  const [listError, setListError] = useState("");
+  const [listVersion, setListVersion] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!authenticated) {
+      setRewardList([]);
+      return undefined;
+    }
+
+    let cancelled = false;
+    async function loadList() {
+      setListBusy(true);
+      setListError("");
+      try {
+        const response = await fetch(`/api/merchant/rewards?status=${filter}`, { cache: "no-store" });
+        const result = await response.json() as { rewards?: MerchantRewardListItem[]; error?: string };
+        if (!response.ok || !result.rewards) throw new Error(result.error ?? "No pudimos cargar los canjes");
+        if (!cancelled) setRewardList(result.rewards);
+      } catch (reason) {
+        if (!cancelled) setListError((reason as Error).message);
+      } finally {
+        if (!cancelled) setListBusy(false);
+      }
+    }
+
+    void loadList();
+    const interval = window.setInterval(() => { void loadList(); }, 60_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [authenticated, filter, listVersion]);
 
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -84,6 +132,7 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
       }
       setReward(result.reward);
       setStatus(result.status);
+      setListVersion((version) => version + 1);
     } finally { setBusy(false); }
   }
 
@@ -91,9 +140,16 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
     setBusy(true); setError("");
     try {
       await fetch("/api/merchant/logout", { method: "POST" });
-      setReward(undefined); setStatus(undefined); setCode("");
+      setReward(undefined); setStatus(undefined); setCode(""); setRewardList([]);
       router.refresh();
     } finally { setBusy(false); }
+  }
+
+  function selectFromList(item: MerchantRewardListItem) {
+    setReward(item);
+    setStatus(item.status);
+    setCode(item.shortCode);
+    setError("");
   }
 
   return (
@@ -121,8 +177,8 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
           ) : (
             <>
               <p className="eyebrow public-intro">Canje autenticado</p>
-              <h1>Validar premio</h1>
-              <p className="lead">Ingresá el código de 8 caracteres que muestra el cliente.</p>
+              <h1>Canjes</h1>
+              <p className="lead">Los premios vigentes aparecen primero. Los vencidos salen solos de esta vista y quedan guardados en el historial.</p>
               <nav className="merchant-panel-switch" aria-label="Panel del comercio">
                 <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/panel`}>Resumen</Link>
                 <span className="merchant-panel-tab is-active" aria-current="page">Canjes</span>
@@ -130,8 +186,41 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
                 <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/activacion`}>Activación</Link>
                 <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
               </nav>
-              <form onSubmit={lookup} className="merchant-form" data-testid="merchant-reward-search">
-                <label htmlFor="reward-code">Código del premio</label>
+
+              <section className="merchant-reward-feed" data-testid="merchant-reward-feed" aria-label="Lista de canjes">
+                <div className="merchant-reward-feed-head">
+                  <div><strong>Premios</strong><small>Se actualiza automáticamente</small></div>
+                  {listBusy && <span className="merchant-feed-loading">Actualizando…</span>}
+                </div>
+                <div className="merchant-reward-filters" role="group" aria-label="Filtrar premios">
+                  {(Object.keys(filterLabels) as RewardFilter[]).map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={filter === value ? "is-active" : ""}
+                      data-testid={`reward-filter-${value.toLowerCase()}`}
+                      onClick={() => setFilter(value)}
+                    >
+                      {filterLabels[value]}
+                    </button>
+                  ))}
+                </div>
+                {listError && <p className="error merchant-feed-error" role="alert">{listError}</p>}
+                {!listError && !listBusy && rewardList.length === 0 && (
+                  <p className="merchant-feed-empty">No hay premios en esta categoría.</p>
+                )}
+                <div className="merchant-reward-list" data-testid="merchant-reward-list">
+                  {rewardList.map((item) => (
+                    <button key={`${item.shortCode}-${item.status}`} type="button" className="merchant-reward-row" onClick={() => selectFromList(item)}>
+                      <span><strong>{item.prizeName}</strong><small>{item.shortCode} · vence {formatDate(item.expiresAt)}</small></span>
+                      <span className={`status-badge status-${item.status.toLowerCase()}`}>{labels[item.status]}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <form onSubmit={lookup} className="merchant-form merchant-code-lookup" data-testid="merchant-reward-search">
+                <label htmlFor="reward-code">Buscar por código</label>
                 <input id="reward-code" data-testid="reward-code" inputMode="text" autoCapitalize="characters" autoComplete="off" value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="AB12CD34" required maxLength={8} />
                 <button className="button button-primary" disabled={busy} type="submit">{busy ? "Buscando…" : "Buscar premio"}</button>
               </form>
