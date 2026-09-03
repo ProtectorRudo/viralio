@@ -40,6 +40,7 @@ const sensitiveSources = [
   "/premio/:path*",
   "/validar/:path*",
   "/api/merchant/:path*",
+  "/api/onboarding/:path*",
   "/api/rewards/:path*",
   "/api/sessions/:path*",
   "/api/share-card/:path*",
