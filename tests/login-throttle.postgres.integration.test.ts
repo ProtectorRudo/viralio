@@ -23,11 +23,16 @@ const sql = databaseUrl
   ? postgres(databaseUrl, { max: 2, onnotice: () => undefined })
   : undefined;
 
+function database() {
+  if (!sql) throw new Error("DATABASE_URL is required for PostgreSQL integration tests");
+  return sql;
+}
+
 const describePostgres = databaseUrl ? describe : describe.skip;
 
 describePostgres("merchant login throttle on PostgreSQL", () => {
   beforeEach(async () => {
-    await sql!`DELETE FROM merchant_login_throttles`;
+    await database()`DELETE FROM merchant_login_throttles`;
     await closeMerchantLoginThrottleStore();
   });
 
@@ -53,7 +58,7 @@ describePostgres("merchant login throttle on PostgreSQL", () => {
     expect(decisions.some((decision) => decision.blocked)).toBe(true);
     expect((await checkMerchantLoginThrottle(key, now, environment)).blocked).toBe(true);
 
-    const rows = await sql!<Array<{ throttleKey: string; failureCount: number; blockedUntil: Date | null }>>`
+    const rows = await database()<Array<{ throttleKey: string; failureCount: number; blockedUntil: Date | null }>>`
       SELECT throttle_key, failure_count, blocked_until
       FROM merchant_login_throttles
       WHERE throttle_key = ${key}
@@ -79,7 +84,7 @@ describePostgres("merchant login throttle on PostgreSQL", () => {
     expect((await checkMerchantLoginThrottle(atlasKey, now, environment)).blocked).toBe(false);
 
     await clearMerchantLoginThrottle(mokaKey, environment);
-    const count = await sql!<{ count: number }[]>`
+    const count = await database()<{ count: number }[]>`
       SELECT count(*)::int AS count FROM merchant_login_throttles WHERE throttle_key = ${mokaKey}
     `;
     expect(count[0]?.count).toBe(0);
@@ -97,7 +102,7 @@ describePostgres("merchant login throttle on PostgreSQL", () => {
     expect((await checkMerchantLoginThrottle(key, afterBlock, environment)).blocked).toBe(false);
     await recordMerchantLoginFailure(key, afterBlock, environment);
 
-    const rows = await sql!<{ failureCount: number; blockedUntil: Date | null }[]>`
+    const rows = await database()<{ failureCount: number; blockedUntil: Date | null }[]>`
       SELECT failure_count, blocked_until FROM merchant_login_throttles WHERE throttle_key = ${key}
     `;
     expect(rows[0]?.failureCount).toBe(1);
