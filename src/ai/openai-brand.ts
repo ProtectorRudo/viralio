@@ -3,6 +3,31 @@ import type { MerchantBrandProfile, MerchantTemplate } from "@/domain/types";
 
 export const DEFAULT_OPENAI_BRAND_MODEL = "gpt-5.6-terra";
 
+export type BrandAiDiagnosticCode =
+  | "not_configured"
+  | "auth"
+  | "permission"
+  | "model_access"
+  | "quota"
+  | "rate_limit"
+  | "invalid_request"
+  | "upstream"
+  | "network"
+  | "timeout"
+  | "invalid_response";
+
+export class BrandAiError extends Error {
+  readonly diagnosticCode: BrandAiDiagnosticCode;
+  readonly upstreamStatus?: number;
+
+  constructor(diagnosticCode: BrandAiDiagnosticCode, message: string, upstreamStatus?: number) {
+    super(message);
+    this.name = "BrandAiError";
+    this.diagnosticCode = diagnosticCode;
+    this.upstreamStatus = upstreamStatus;
+  }
+}
+
 export interface GeneratedBrandCopy {
   heroEyebrow: string;
   heroTitle: string;
@@ -108,13 +133,17 @@ function defaultBusinessType(template: MerchantTemplate): string {
 
 function modelName(environment: NodeJS.ProcessEnv): string {
   const model = environment.OPENAI_BRAND_MODEL?.trim() || DEFAULT_OPENAI_BRAND_MODEL;
-  if (!/^[A-Za-z0-9._-]{2,80}$/.test(model)) throw new Error("Brand AI is not configured");
+  if (!/^[A-Za-z0-9._-]{2,80}$/.test(model)) {
+    throw new BrandAiError("not_configured", "Brand AI is not configured");
+  }
   return model;
 }
 
 function apiKey(environment: NodeJS.ProcessEnv): string {
   const key = environment.OPENAI_API_KEY?.trim() ?? "";
-  if (!key || key.length < 20) throw new Error("Brand AI is not configured");
+  if (!key || key.length < 20) {
+    throw new BrandAiError("not_configured", "Brand AI is not configured");
+  }
   return key;
 }
 
@@ -172,6 +201,25 @@ function normalizeRawDraft(value: unknown): RawBrandDraft {
     colors: candidate.colors as RawBrandDraft["colors"],
     copy: normalizeCopy(candidate.copy),
   };
+}
+
+async function upstreamErrorCode(response: Response): Promise<string | undefined> {
+  try {
+    const payload = await response.json() as { error?: { code?: unknown } };
+    return typeof payload?.error?.code === "string" ? payload.error.code : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function classifyUpstreamFailure(status: number, code?: string): BrandAiError {
+  if (status === 401) return new BrandAiError("auth", "OpenAI authentication failed", status);
+  if (status === 403) return new BrandAiError("permission", "OpenAI permission denied", status);
+  if (status === 404 || code === "model_not_found") return new BrandAiError("model_access", "OpenAI model is unavailable", status);
+  if (status === 429 && code === "insufficient_quota") return new BrandAiError("quota", "OpenAI quota is unavailable", status);
+  if (status === 429) return new BrandAiError("rate_limit", "OpenAI rate limit reached", status);
+  if (status >= 400 && status < 500) return new BrandAiError("invalid_request", "OpenAI rejected the request", status);
+  return new BrandAiError("upstream", "OpenAI is temporarily unavailable", status);
 }
 
 export async function generateOpenAiBrandDraft(
@@ -233,13 +281,16 @@ export async function generateOpenAiBrandDraft(
       signal: controller.signal,
     });
 
-    if (!response.ok) throw new Error("Brand AI is temporarily unavailable");
+    if (!response.ok) {
+      throw classifyUpstreamFailure(response.status, await upstreamErrorCode(response));
+    }
+
     const payload = await response.json() as unknown;
     let parsed: unknown;
     try {
       parsed = JSON.parse(outputText(payload));
     } catch {
-      throw new Error("Brand AI returned an invalid response");
+      throw new BrandAiError("invalid_response", "Brand AI returned an invalid response");
     }
     const draft = normalizeRawDraft(parsed);
     const brand = buildMerchantBrandProfile({
@@ -254,8 +305,14 @@ export async function generateOpenAiBrandDraft(
     });
     return { brand, copy: draft.copy };
   } catch (error) {
-    if ((error as Error).name === "AbortError") throw new Error("Brand AI timed out");
-    throw error;
+    if (error instanceof BrandAiError) throw error;
+    if ((error as Error).name === "AbortError") {
+      throw new BrandAiError("timeout", "Brand AI timed out");
+    }
+    if (error instanceof TypeError) {
+      throw new BrandAiError("network", "Brand AI network request failed");
+    }
+    throw new BrandAiError("invalid_response", "Brand AI returned an invalid response");
   } finally {
     clearTimeout(timer);
   }
