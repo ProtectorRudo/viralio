@@ -5,7 +5,7 @@ import type { Merchant, Reward, Session, ShareChannel } from "@/domain/types";
 import { BrandIcon } from "@/ui/brand-icon";
 import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
-import { PremiumWheel } from "@/ui/premium-wheel";
+import { PremiumWheel, SPIN_DURATION_MS } from "@/ui/premium-wheel";
 
 type SessionPayload = { session: Session; merchant: Merchant };
 
@@ -147,7 +147,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     try {
       const result = await json<{ reward: Reward }>(`/api/sessions/${payload.session.id}/spin`, { method: "POST" });
       setSpinReward(result.reward);
-      await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 100 : 4100));
+      await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 100 : SPIN_DURATION_MS));
       setReward(result.reward);
       setPayload({ ...payload, session: { ...payload.session, state: "REWARDED", rewardId: result.reward.id } });
     } catch (reason) { setError((reason as Error).message); }
@@ -212,11 +212,19 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         {payload?.session.state === "UNLOCK" && (
           <div className="stage share-stage" data-testid="unlock-stage">
             <div className="pass-stack" aria-hidden="true"><span /><span /><BrandIcon category={merchant.theme.category} /></div>
+            <div className="share-progress" data-testid="share-progress" aria-label="Compartir, girar y guardar premio">
+              <span className="is-active"><b>1</b><small>Compartí</small></span>
+              <i aria-hidden="true" />
+              <span><b>2</b><small>Girá</small></span>
+              <i aria-hidden="true" />
+              <span><b>3</b><small>Guardá</small></span>
+            </div>
             <div className="stage-copy">
-              <p className="eyebrow">Elegí tu destino</p>
+              <p className="eyebrow">Paso 1 de 3 · Compartí para desbloquear</p>
               <h1>{merchant.theme.shareTitle}</h1>
               <p className="lead">{merchant.theme.shareCopy}</p>
             </div>
+            <p className="share-unlock-note"><strong>Compartí y habilitá la ruleta.</strong> Tu premio sigue oculto en lo que compartís.</p>
             <div className="story-grid" aria-label="Compartir en estados e historias">
               <button className="story-option story-whatsapp" data-testid="whatsapp-status-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("whatsapp_status")}>
                 <span className="story-icon" aria-hidden="true">W</span>
@@ -243,7 +251,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
             <div className="stage-copy compact">
               <p className="eyebrow success"><span aria-hidden="true">✓</span> Pase desbloqueado</p>
               <h1>Ahora sí: que gire</h1>
-              <p className="lead">Más inercia, mismo resultado protegido por servidor.</p>
+              <p className="lead">Gira con más inercia y desacelera de a poco. El resultado sigue protegido por servidor.</p>
             </div>
             <PremiumWheel merchant={merchant} reward={spinReward} spinning={spinning} reducedMotion={reducedMotion} />
             <button className="button button-primary spin-button" disabled={spinning} onClick={spin}>
