@@ -14,7 +14,7 @@ function jsonNoStore(payload: unknown, status = 200) {
 function publicBrandAiMessage(error: BrandAiError): string {
   switch (error.diagnosticCode) {
     case "not_configured":
-      return "Brand Engine no está configurado para producción";
+      return "ChatGPT para Brand Engine no está configurado para producción";
     case "auth":
       return "OpenAI rechazó la API key configurada";
     case "permission":
