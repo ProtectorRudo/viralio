@@ -173,14 +173,20 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
   const shareDisabled = Boolean(shareBusy);
 
   return (
-    <main className={`experience theme-${merchant.slug}`} style={merchantThemeStyle(merchant)} data-merchant={merchant.slug} data-brand-style={merchant.theme.stylePreset ?? "template"}>
+    <main
+      className={`experience theme-${merchant.slug}`}
+      style={merchantThemeStyle(merchant)}
+      data-merchant={merchant.slug}
+      data-brand-style={merchant.theme.stylePreset ?? "template"}
+      data-design-version="020b"
+    >
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
       <section className="experience-card" aria-live="polite">
-        <header className="merchant-brand">
+        <header className="merchant-brand premium-brand-header">
           <span className="brand-mark"><MerchantBrandVisual merchant={merchant} mode="mark" size={30} /></span>
-          <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>{merchant.theme.tone ?? (merchant.theme.category === "coffee" ? "Café de especialidad" : "Barbería contemporánea")}</small></span>
-          <span className="brand-line" aria-hidden="true" />
+          <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>{merchant.theme.tone ?? merchant.theme.businessType ?? "Experiencia Viralio"}</small></span>
+          <span className="brand-edition" aria-hidden="true">V / 01</span>
         </header>
 
         {!payload && (
@@ -193,67 +199,95 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         )}
 
         {payload?.session.state === "LANDING" && (
-          <div className="stage landing-stage" data-testid="landing-stage">
-            <div className="mystery-object" aria-label={merchant.theme.mysteryLabel}>
-              <span className="mystery-halo" aria-hidden="true" />
-              <span className="mystery-medallion"><MerchantBrandVisual merchant={merchant} size={54} /></span>
-              <span className="mystery-tag">PASE · 01</span>
+          <div className="stage landing-stage premium-campaign-stage" data-testid="landing-stage">
+            <div className="campaign-frame" data-testid="brand-campaign-frame">
+              <div className="campaign-copy stage-copy">
+                <p className="eyebrow">{merchant.theme.heroEyebrow}</p>
+                <h1>{merchant.theme.heroTitle}</h1>
+                <p className="lead">{merchant.theme.heroCopy}</p>
+              </div>
+              <div className="campaign-visual">
+                <span className="campaign-index" aria-hidden="true">01</span>
+                <div className="mystery-object" aria-label={merchant.theme.mysteryLabel}>
+                  <span className="mystery-halo" aria-hidden="true" />
+                  <span className="mystery-medallion"><MerchantBrandVisual merchant={merchant} size={58} /></span>
+                </div>
+                <span className="campaign-caption">{merchant.theme.mysteryLabel}</span>
+              </div>
             </div>
-            <div className="stage-copy">
-              <p className="eyebrow">{merchant.theme.heroEyebrow}</p>
-              <h1>{merchant.theme.heroTitle}</h1>
-              <p className="lead">{merchant.theme.heroCopy}</p>
+            <div className="campaign-action">
+              <button className="button button-primary" onClick={unlock}>Descubrir mi premio <span aria-hidden="true">→</span></button>
+              <p className="trust-line">Pase personal · premio guardado automáticamente</p>
             </div>
-            <button className="button button-primary" onClick={unlock}>Descubrir mi premio <span aria-hidden="true">→</span></button>
-            <p className="trust-line"><span aria-hidden="true">✦</span> Tu premio es único y queda guardado</p>
           </div>
         )}
 
         {payload?.session.state === "UNLOCK" && (
-          <div className="stage share-stage" data-testid="unlock-stage">
-            <div className="pass-stack" aria-hidden="true"><span /><span /><BrandIcon category={merchant.theme.category} /></div>
-            <div className="share-progress" data-testid="share-progress" aria-label="Compartir, girar y guardar premio">
-              <span className="is-active"><b>1</b><small>Compartí</small></span>
-              <i aria-hidden="true" />
-              <span><b>2</b><small>Girá</small></span>
-              <i aria-hidden="true" />
-              <span><b>3</b><small>Guardá</small></span>
+          <div className="stage share-stage premium-share-stage" data-testid="unlock-stage">
+            <div className="share-editorial-head">
+              <div className="share-progress" data-testid="share-progress" aria-label="Compartir, girar y guardar premio">
+                <span className="is-active"><b>1</b><small>Compartí</small></span>
+                <i aria-hidden="true" />
+                <span><b>2</b><small>Girá</small></span>
+                <i aria-hidden="true" />
+                <span><b>3</b><small>Guardá</small></span>
+              </div>
+              <div className="stage-copy share-copy">
+                <p className="eyebrow">Primero, hacelo circular</p>
+                <h1>{merchant.theme.shareTitle}</h1>
+                <p className="lead">{merchant.theme.shareCopy}</p>
+              </div>
             </div>
-            <div className="stage-copy">
-              <p className="eyebrow">Paso 1 de 3 · Compartí para desbloquear</p>
-              <h1>{merchant.theme.shareTitle}</h1>
-              <p className="lead">{merchant.theme.shareCopy}</p>
+
+            <div className="share-poster-preview" data-testid="share-poster-preview" aria-label="Vista previa de la pieza para compartir">
+              <div className="share-poster-top">
+                <span>{merchant.theme.shortName}</span>
+                <small>INVITACIÓN · 01</small>
+              </div>
+              <div className="share-poster-mark"><MerchantBrandVisual merchant={merchant} size={42} /></div>
+              <div className="share-poster-copy">
+                <strong>{merchant.theme.socialHeadline}</strong>
+                <span>{merchant.theme.socialSubcopy}</span>
+              </div>
+              <div className="share-poster-foot"><span>Tu premio no aparece</span><b>Viralio</b></div>
             </div>
-            <p className="share-unlock-note"><strong>Compartí y habilitá la ruleta.</strong> Tu premio sigue oculto en lo que compartís.</p>
-            <div className="story-grid" aria-label="Compartir en estados e historias">
+
+            <div className="story-grid premium-story-grid" aria-label="Compartir en estados e historias">
               <button className="story-option story-whatsapp" data-testid="whatsapp-status-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("whatsapp_status")}>
+                <span className="story-sequence" aria-hidden="true">01</span>
                 <span className="story-icon" aria-hidden="true">W</span>
-                <span><strong>Estado de WhatsApp</strong><small>{shareBusy === "whatsapp_status" ? "Preparando pase…" : "Pieza 9:16 lista para publicar"}</small></span>
+                <span><strong>Estado de WhatsApp</strong><small>{shareBusy === "whatsapp_status" ? "Preparando pieza…" : "Compartir pieza 9:16"}</small></span>
+                <span className="story-arrow" aria-hidden="true">↗</span>
               </button>
               <button className="story-option story-instagram" data-testid="instagram-story-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("instagram_story")}>
+                <span className="story-sequence" aria-hidden="true">02</span>
                 <span className="story-icon" aria-hidden="true">◎</span>
-                <span><strong>Instagram Stories</strong><small>{shareBusy === "instagram_story" ? "Preparando pase…" : "Abrí el menú y elegí Instagram"}</small></span>
+                <span><strong>Instagram Stories</strong><small>{shareBusy === "instagram_story" ? "Preparando pieza…" : "Abrir menú de compartir"}</small></span>
+                <span className="story-arrow" aria-hidden="true">↗</span>
               </button>
             </div>
+
             <div className="share-actions" aria-label="Otras opciones para compartir">
               <button className="button button-whatsapp" disabled={shareDisabled} onClick={() => share("whatsapp")}>
-                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Envío directo</small>Enviar por WhatsApp</span>
+                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Enviar por WhatsApp</span>
               </button>
               <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
             </div>
-            <p className="share-guidance"><span aria-hidden="true">✦</span> En Estado/Stories tu teléfono abre el menú para compartir. Elegís el destino; Viralio nunca afirma una publicación que no puede confirmar.</p>
-            <p className="friend-note"><span aria-hidden="true">◎</span> Tu contacto recibe su propia oportunidad. Tu premio sigue oculto.</p>
+            <p className="share-guidance">La ruleta se habilita cuando iniciás una acción de compartir. Viralio no afirma una publicación que no puede verificar.</p>
           </div>
         )}
 
         {payload?.session.state === "SHARED" && (
-          <div className="stage wheel-stage" data-testid="wheel-stage">
-            <div className="stage-copy compact">
-              <p className="eyebrow success"><span aria-hidden="true">✓</span> Pase desbloqueado</p>
+          <div className="stage wheel-stage premium-wheel-stage" data-testid="wheel-stage">
+            <div className="stage-sequence" aria-hidden="true"><span>02</span><i /></div>
+            <div className="stage-copy compact wheel-copy">
+              <p className="eyebrow success">Pase desbloqueado</p>
               <h1>Ahora sí: que gire</h1>
-              <p className="lead">Gira con más inercia y desacelera de a poco. El resultado sigue protegido por servidor.</p>
+              <p className="lead">Tu premio está en juego. Dejá que la ruleta haga el resto.</p>
             </div>
-            <PremiumWheel merchant={merchant} reward={spinReward} spinning={spinning} reducedMotion={reducedMotion} />
+            <div className="wheel-object-shell">
+              <PremiumWheel merchant={merchant} reward={spinReward} spinning={spinning} reducedMotion={reducedMotion} />
+            </div>
             <button className="button button-primary spin-button" disabled={spinning} onClick={spin}>
               {spinning ? <><span className="button-spinner" aria-hidden="true" /> Revelando…</> : <>Girar la ruleta <span aria-hidden="true">→</span></>}
             </button>
@@ -263,27 +297,31 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         )}
 
         {payload?.session.state === "REWARDED" && reward && (
-          <div className="stage reward-stage" data-testid="reward-stage">
-            <div className="celebration" aria-hidden="true"><i /><i /><i /><i /><span>✦</span></div>
-            <div className="reward-seal"><MerchantBrandVisual merchant={merchant} size={40} /><span>Premio<br />revelado</span></div>
-            <div className="stage-copy compact">
+          <div className="stage reward-stage premium-reveal-stage" data-testid="reward-stage">
+            <div className="stage-sequence reward-sequence" aria-hidden="true"><span>03</span><i /></div>
+            <div className="reward-reveal-brand">
+              <MerchantBrandVisual merchant={merchant} size={44} />
+              <span>{merchant.theme.shortName}</span>
+            </div>
+            <div className="stage-copy compact reward-copy">
               <p className="eyebrow success">Es tuyo</p>
               <h1>{reward.prizeName}</h1>
-              <p className="lead">Un detalle de {merchant.theme.displayName} para disfrutar en tu próxima visita.</p>
+              <p className="lead">Un detalle de {merchant.theme.displayName} para tu próxima visita.</p>
             </div>
-            <div className="reward-ticket">
-              <div><span>Código único</span><strong>{reward.shortCode}</strong></div>
-              <div className="ticket-divider" aria-hidden="true" />
-              <div><span>Válido hasta</span><b>{formatDate(reward.expiresAt)}</b></div>
-              <span className="status-pill">Disponible</span>
+            <div className="reward-ticket reward-voucher" data-testid="reward-voucher">
+              <div className="voucher-head"><span>PREMIO · VIRALIO</span><small>V / REWARD</small></div>
+              <div className="voucher-code"><span>Código único</span><strong>{reward.shortCode}</strong></div>
+              <div className="voucher-foot"><span>Válido hasta <b>{formatDate(reward.expiresAt)}</b></span><span className="status-pill">Disponible</span></div>
             </div>
-            <button className="button button-whatsapp reward-whatsapp" onClick={saveInWhatsapp}><span className="whatsapp-icon" aria-hidden="true">↗</span> Guardar premio en WhatsApp</button>
-            <a className="button button-secondary button-link" href={`/premio/${reward.token}`}>Ver tarjeta del premio</a>
+            <div className="reward-actions">
+              <button className="button button-whatsapp reward-whatsapp" onClick={saveInWhatsapp}><span className="whatsapp-icon" aria-hidden="true">↗</span> Guardar premio en WhatsApp</button>
+              <a className="button button-secondary button-link" href={`/premio/${reward.token}`}>Ver tarjeta del premio</a>
+            </div>
           </div>
         )}
 
         {payload && error && <p className="error" role="alert">{error}</p>}
-        <footer className="viralio-signature"><span>Powered by</span> <strong><i aria-hidden="true">V</i> Viralio</strong></footer>
+        <footer className="viralio-signature premium-signature"><span>Experience by</span> <strong><i aria-hidden="true">V</i> Viralio</strong></footer>
       </section>
     </main>
   );

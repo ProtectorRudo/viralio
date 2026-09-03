@@ -1,0 +1,775 @@
+/* VIRALIO-020B — Customer funnel premium composition.
+   Editorial hierarchy first. Decorative effects are intentionally restrained. */
+
+.premium-brand-header .brand-edition {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .57rem;
+  letter-spacing: .12em;
+}
+
+.premium-campaign-stage,
+.premium-share-stage,
+.premium-wheel-stage,
+.premium-reveal-stage {
+  width: 100%;
+  align-items: stretch;
+  text-align: left;
+}
+
+/* Landing — a campaign composition, not a centered app card. */
+.premium-campaign-stage {
+  justify-content: space-between;
+  gap: clamp(28px, 6vh, 52px);
+}
+
+.campaign-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(118px, .78fr);
+  width: 100%;
+  min-height: clamp(420px, 58vh, 530px);
+  align-items: end;
+  gap: 20px;
+  padding: clamp(20px, 5vw, 28px) 0 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+.campaign-copy {
+  align-self: end;
+  justify-items: start;
+  text-align: left;
+}
+
+.campaign-copy h1 {
+  max-width: 8.5ch;
+  font-size: clamp(2.8rem, 12vw, 4.65rem);
+  line-height: .91;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.campaign-copy .lead {
+  max-width: 29ch;
+  margin: 22px 0 0;
+  font-size: .91rem;
+  line-height: 1.62;
+  text-align: left;
+}
+
+.campaign-visual {
+  position: relative;
+  display: grid;
+  min-height: 310px;
+  align-content: center;
+  justify-items: end;
+  border-left: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+.campaign-index {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: color-mix(in srgb, var(--color-text) 18%, transparent);
+  font-family: var(--font-code);
+  font-size: clamp(3.3rem, 15vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -.08em;
+  line-height: .8;
+}
+
+.campaign-visual .mystery-object {
+  width: 148px;
+  height: 210px;
+  margin: 28px -2px 0 0;
+}
+
+.campaign-visual .mystery-halo {
+  inset: 32px 2px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background:
+    linear-gradient(var(--color-accent), var(--color-accent)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(90deg, var(--color-accent), var(--color-accent)) 0 50% / 100% 1px no-repeat;
+  opacity: .22;
+  animation: none;
+}
+
+.campaign-visual .mystery-medallion {
+  width: 112px;
+  height: 112px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 28%, var(--color-border));
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: none;
+  animation: premium-token-float 5.4s var(--ease-standard) infinite;
+}
+
+.campaign-caption {
+  max-width: 120px;
+  margin-top: -22px;
+  color: var(--color-text-muted);
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .13em;
+  line-height: 1.35;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.campaign-action {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+}
+
+.campaign-action .button {
+  max-width: 100%;
+}
+
+.campaign-action .trust-line {
+  margin-top: 11px;
+  font-size: .64rem;
+  text-align: left;
+}
+
+/* Share — make the actual social piece the visual anchor. */
+.premium-share-stage {
+  justify-content: flex-start;
+  gap: 20px;
+  padding-top: 26px;
+}
+
+.share-editorial-head {
+  display: grid;
+  gap: 22px;
+}
+
+.premium-share-stage .share-progress {
+  width: 100%;
+  margin: 0;
+  padding: 0 0 13px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+  border-radius: 0;
+  background: transparent;
+}
+
+.premium-share-stage .share-progress > span b {
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-family: var(--font-code);
+  font-size: .58rem;
+  font-weight: 500;
+}
+
+.premium-share-stage .share-progress > span.is-active b {
+  border: 0;
+  background: none;
+}
+
+.share-copy {
+  justify-items: start;
+  text-align: left;
+}
+
+.share-copy h1 {
+  max-width: 10ch;
+  font-size: clamp(2.45rem, 10.5vw, 3.75rem);
+  text-align: left;
+}
+
+.share-copy .lead {
+  max-width: 34ch;
+  margin: 16px 0 0;
+  text-align: left;
+}
+
+.share-poster-preview {
+  position: relative;
+  display: grid;
+  min-height: 318px;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+  padding: 19px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 16%, var(--color-border));
+  background: color-mix(in srgb, var(--color-canvas) 58%, var(--color-surface));
+  overflow: hidden;
+}
+
+.share-poster-preview::before {
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  left: 54%;
+  width: 1px;
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+  content: "";
+}
+
+.share-poster-top,
+.share-poster-foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.share-poster-top span {
+  font-size: .69rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.share-poster-top small,
+.share-poster-foot {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .54rem;
+  letter-spacing: .08em;
+}
+
+.share-poster-mark {
+  position: absolute;
+  top: 72px;
+  right: 20px;
+  display: grid;
+  width: 92px;
+  height: 92px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+
+.share-poster-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  max-width: 62%;
+  align-self: center;
+  gap: 12px;
+}
+
+.share-poster-copy strong {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  font-weight: var(--display-weight, 500);
+  letter-spacing: -.04em;
+  line-height: .98;
+}
+
+.share-poster-copy span {
+  color: var(--color-text-muted);
+  font-size: .72rem;
+  line-height: 1.5;
+}
+
+.share-poster-foot b {
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  letter-spacing: .04em;
+}
+
+.premium-story-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  width: 100%;
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+}
+
+.premium-story-grid .story-option {
+  display: grid;
+  grid-template-columns: 24px 34px 1fr 20px;
+  min-height: 70px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 2px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text);
+  box-shadow: none;
+  text-align: left;
+}
+
+.premium-story-grid .story-option:hover {
+  background: color-mix(in srgb, var(--color-text) 3%, transparent);
+  transform: none;
+}
+
+.story-sequence {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .55rem;
+}
+
+.premium-story-grid .story-icon {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text);
+  font-size: .74rem;
+}
+
+.premium-story-grid .story-whatsapp .story-icon {
+  border: 1px solid #176b47;
+  color: #176b47;
+}
+
+.premium-story-grid .story-instagram .story-icon {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 70%, var(--color-text));
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.premium-story-grid .story-option strong {
+  font-size: .78rem;
+  font-weight: 650;
+}
+
+.premium-story-grid .story-option small {
+  margin-top: 3px;
+  color: var(--color-text-muted);
+  font-size: .61rem;
+  font-weight: 450;
+}
+
+.story-arrow {
+  color: var(--color-text-muted);
+  font-size: .9rem;
+  text-align: right;
+}
+
+.premium-share-stage .share-actions {
+  display: grid;
+  gap: 0;
+}
+
+.premium-share-stage .share-guidance {
+  max-width: none;
+  margin: -3px 0 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--color-border);
+  font-size: .59rem;
+  line-height: 1.55;
+  text-align: left;
+}
+
+/* Wheel — treat it as a physical object, not a generic SVG chart. */
+.premium-wheel-stage {
+  justify-content: flex-start;
+  padding-top: 26px;
+}
+
+.stage-sequence {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .57rem;
+  letter-spacing: .08em;
+}
+
+.stage-sequence i {
+  height: 1px;
+  flex: 1;
+  background: color-mix(in srgb, var(--color-text) 11%, transparent);
+}
+
+.wheel-copy {
+  justify-items: start;
+  text-align: left;
+}
+
+.wheel-copy h1,
+.wheel-copy .lead {
+  text-align: left;
+}
+
+.wheel-copy h1 {
+  max-width: 9ch;
+}
+
+.wheel-copy .lead {
+  margin: 13px 0 6px;
+}
+
+.wheel-object-shell {
+  position: relative;
+  display: grid;
+  width: 100%;
+  place-items: center;
+  margin: 2px 0 3px;
+  padding: 22px 0 8px;
+}
+
+.wheel-object-shell::before {
+  position: absolute;
+  width: min(84vw, 330px);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--color-text) 9%, transparent);
+  border-radius: 50%;
+  content: "";
+}
+
+.premium-wheel-stage .wheel-frame {
+  width: min(75vw, 294px);
+  margin: 10px auto 20px;
+  filter: none;
+}
+
+.premium-wheel-stage .wheel-aura {
+  display: none;
+}
+
+.premium-wheel-stage .wheel-rim {
+  fill: var(--color-text);
+  stroke: color-mix(in srgb, var(--color-accent) 70%, var(--color-text));
+  stroke-width: 2.2;
+}
+
+.premium-wheel-stage .wheel-segment {
+  stroke: color-mix(in srgb, var(--color-surface) 62%, var(--color-text));
+  stroke-width: 1.05;
+}
+
+.premium-wheel-stage .wheel-label {
+  fill: var(--color-on-primary);
+  font-size: 8.4px;
+  font-weight: 650;
+  letter-spacing: .005em;
+  paint-order: normal;
+  stroke: none;
+}
+
+.premium-wheel-stage .wheel-hub-ring {
+  fill: var(--color-surface);
+  stroke: color-mix(in srgb, var(--color-text) 68%, var(--color-accent));
+  stroke-width: 2.5;
+  filter: none;
+}
+
+.premium-wheel-stage .wheel-pointer {
+  top: -10px;
+  width: 31px;
+  height: 44px;
+  filter: none;
+}
+
+.premium-wheel-stage .wheel-pointer::before {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-surface);
+}
+
+.premium-wheel-stage .wheel-pointer span {
+  top: 16px;
+  border-top-width: 20px;
+  border-right-width: 9px;
+  border-left-width: 9px;
+}
+
+/* Reveal — voucher becomes the hero object; no confetti/glow needed. */
+.premium-reveal-stage {
+  justify-content: flex-start;
+  gap: 18px;
+  padding-top: 26px;
+}
+
+.reward-sequence {
+  margin-bottom: 2px;
+}
+
+.reward-reveal-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--color-text-muted);
+  font-size: .65rem;
+  font-weight: 650;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.reward-reveal-brand > :first-child {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text) 15%, transparent);
+  border-radius: 50%;
+}
+
+.reward-copy {
+  justify-items: start;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.reward-copy h1 {
+  max-width: 9ch;
+  font-size: clamp(2.9rem, 12vw, 4.4rem);
+  line-height: .91;
+  text-align: left;
+}
+
+.reward-copy .lead {
+  max-width: 31ch;
+  margin: 16px 0 0;
+  text-align: left;
+}
+
+.reward-voucher {
+  display: grid;
+  width: 100%;
+  gap: 0;
+  margin: 6px 0 0;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--color-text) 20%, var(--color-border));
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.voucher-head,
+.voucher-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 15px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .55rem;
+  letter-spacing: .07em;
+}
+
+.voucher-head {
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+}
+
+.voucher-code {
+  display: grid;
+  gap: 7px;
+  padding: 26px 15px 28px;
+}
+
+.voucher-code span {
+  color: var(--color-text-muted);
+  font-size: .61rem;
+  font-weight: 600;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.voucher-code strong {
+  font-family: var(--font-code);
+  font-size: clamp(2rem, 9vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+.voucher-foot {
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+}
+
+.voucher-foot b {
+  color: var(--color-text);
+  font-weight: 560;
+}
+
+.reward-actions {
+  display: grid;
+  width: 100%;
+  gap: 0;
+}
+
+.premium-reveal-stage .celebration,
+.premium-reveal-stage .reward-seal {
+  display: none;
+}
+
+.premium-signature {
+  opacity: .72;
+}
+
+/* Public reward card shares the same voucher language. */
+.public-reward-stage {
+  width: 100%;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding-top: 30px;
+  text-align: left;
+}
+
+.public-reward-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 34px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+}
+
+.public-reward-kicker .eyebrow {
+  margin: 0;
+}
+
+.public-reward-stage h1 {
+  max-width: 9ch;
+  margin-bottom: 28px;
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  line-height: .91;
+  text-align: left;
+}
+
+.public-reward-voucher {
+  display: grid;
+  gap: 0;
+  width: 100%;
+  margin-bottom: 22px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 20%, var(--color-border));
+  background: var(--color-surface);
+}
+
+.public-reward-voucher .public-code {
+  display: grid;
+  width: 100%;
+  gap: 8px;
+  padding: 28px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+.public-reward-voucher .public-code span,
+.public-reward-voucher .public-code small {
+  color: var(--color-text-muted);
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.public-reward-voucher .public-code strong {
+  font-size: clamp(2rem, 9vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: .08em;
+}
+
+.public-reward-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 15px;
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 11%, transparent);
+}
+
+.public-reward-meta small {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .55rem;
+  letter-spacing: .06em;
+}
+
+.public-reward-stage .state-message {
+  max-width: 34ch;
+  margin: 0;
+  padding: 15px 0 0 14px;
+  border-top: 0;
+  border-left: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: .72rem;
+  line-height: 1.55;
+  text-align: left;
+}
+
+/* Luxury gets the strongest editorial asymmetry without needing a separate template. */
+[data-brand-style="luxury"] .campaign-frame {
+  grid-template-columns: minmax(0, 1.35fr) minmax(112px, .65fr);
+}
+
+[data-brand-style="luxury"] .campaign-copy h1,
+[data-brand-style="luxury"] .reward-copy h1,
+[data-brand-style="luxury"] .share-copy h1 {
+  font-weight: 480;
+}
+
+[data-brand-style="luxury"] .share-poster-preview,
+[data-brand-style="luxury"] .reward-voucher,
+[data-brand-style="luxury"] .public-reward-voucher {
+  border-color: color-mix(in srgb, var(--color-accent) 36%, var(--color-text));
+}
+
+@keyframes premium-token-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-5px) rotate(1deg); }
+}
+
+@media (max-width: 390px) {
+  .campaign-frame {
+    grid-template-columns: minmax(0, 1.3fr) minmax(102px, .7fr);
+    gap: 12px;
+  }
+
+  .campaign-copy h1 {
+    font-size: clamp(2.5rem, 12vw, 3.35rem);
+  }
+
+  .campaign-visual .mystery-object {
+    width: 112px;
+  }
+
+  .campaign-visual .mystery-medallion {
+    width: 92px;
+    height: 92px;
+  }
+
+  .share-poster-preview {
+    min-height: 285px;
+  }
+
+  .share-poster-copy strong {
+    font-size: 1.7rem;
+  }
+
+  .share-poster-mark {
+    width: 76px;
+    height: 76px;
+  }
+}
+
+@media (min-width: 521px) {
+  .premium-campaign-stage,
+  .premium-share-stage,
+  .premium-wheel-stage,
+  .premium-reveal-stage,
+  .public-reward-stage {
+    min-height: 710px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campaign-visual .mystery-medallion {
+    animation: none !important;
+  }
+}

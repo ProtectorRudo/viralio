@@ -1,0 +1,97 @@
+/* VIRALIO-020B — stationary wheel hardware layered over the server-driven rotating SVG. */
+
+.premium-wheel-stage .wheel-bezel {
+  position: absolute;
+  inset: -8px;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--color-text) 22%, var(--color-border));
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.premium-wheel-stage .wheel-bezel::before {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+  border-radius: 50%;
+  content: "";
+}
+
+.premium-wheel-stage .wheel-bezel i {
+  position: absolute;
+  top: 3px;
+  left: calc(50% - .5px);
+  width: 1px;
+  height: 8px;
+  background: color-mix(in srgb, var(--color-text) 46%, var(--color-accent));
+  transform-origin: .5px calc((min(75vw, 294px) + 16px) / 2 - 3px);
+}
+
+.premium-wheel-stage .wheel-svg {
+  position: relative;
+  z-index: 0;
+}
+
+.premium-wheel-stage .wheel-svg .wheel-hub-ring,
+.premium-wheel-stage .wheel-svg .wheel-hub,
+.premium-wheel-stage .wheel-svg .wheel-monogram {
+  opacity: 0;
+}
+
+.premium-wheel-stage .wheel-center-cap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  width: 66px;
+  height: 66px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text) 52%, var(--color-accent));
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.premium-wheel-stage .wheel-center-cap::before {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+  border-radius: 50%;
+  content: "";
+}
+
+.premium-wheel-stage .wheel-center-cap span {
+  margin-top: -6px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: var(--display-weight, 500);
+  letter-spacing: -.03em;
+}
+
+.premium-wheel-stage .wheel-center-cap small {
+  position: absolute;
+  bottom: 10px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: .42rem;
+  letter-spacing: .14em;
+}
+
+[data-brand-style="luxury"] .wheel-center-cap,
+[data-brand-style="luxury"] .wheel-bezel {
+  border-color: color-mix(in srgb, var(--color-accent) 48%, var(--color-text));
+}
+
+@media (max-width: 380px) {
+  .premium-wheel-stage .wheel-center-cap {
+    width: 60px;
+    height: 60px;
+  }
+
+  .premium-wheel-stage .wheel-center-cap small {
+    bottom: 8px;
+  }
+}

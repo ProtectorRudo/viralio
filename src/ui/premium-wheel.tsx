@@ -50,6 +50,9 @@ export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
       role="img"
       aria-label={`Ruleta de ${merchant.name}. Premios: ${prizeList}`}
     >
+      <div className="wheel-bezel" aria-hidden="true">
+        {Array.from({ length: 12 }, (_, index) => <i key={index} style={{ transform: `rotate(${index * 30}deg)` }} />)}
+      </div>
       <div className="wheel-pointer" aria-hidden="true"><span /></div>
       <div className="wheel-aura" aria-hidden="true" />
       <svg
@@ -85,6 +88,10 @@ export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
         <circle cx="160" cy="160" r="31" className="wheel-hub" />
         <text x="160" y="166" textAnchor="middle" className="wheel-monogram">{merchant.theme.monogram}</text>
       </svg>
+      <div className="wheel-center-cap" aria-hidden="true">
+        <span>{merchant.theme.monogram}</span>
+        <small>V</small>
+      </div>
     </div>
   );
 }
