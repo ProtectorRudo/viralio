@@ -1,5 +1,6 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { getMerchantBySlug } from "@/config/merchants";
+import type { MerchantAccount } from "@/domain/types";
 
 export const MERCHANT_SESSION_COOKIE = "viralio_merchant_session";
 export const MERCHANT_SESSION_SECONDS = 8 * 60 * 60;
@@ -20,7 +21,7 @@ function secret(environment: NodeJS.ProcessEnv): string {
 
 function pins(environment: NodeJS.ProcessEnv): Record<string, string> {
   const raw = environment.VIRALIO_MERCHANT_PINS;
-  if (!raw) throw new Error("Merchant authentication is not configured");
+  if (!raw) return {};
   let value: unknown;
   try {
     value = JSON.parse(raw);
@@ -55,6 +56,44 @@ function signature(payload: string, environment: NodeJS.ProcessEnv): string {
 
 function firstHeaderValue(value: string | null): string | undefined {
   return value?.split(",")[0]?.trim() || undefined;
+}
+
+function derivePinHash(pin: string, salt: string, environment: NodeJS.ProcessEnv): string {
+  const material = `${pin}:${secret(environment)}`;
+  return scryptSync(material, Buffer.from(salt, "base64url"), 32).toString("base64url");
+}
+
+export function createMerchantPinCredentials(
+  pin: string,
+  environment: NodeJS.ProcessEnv = process.env,
+): Pick<MerchantAccount, "pinSalt" | "pinHash"> {
+  if (!/^\d{4,12}$/.test(pin)) throw new Error("Invalid pin");
+  const pinSalt = randomBytes(16).toString("base64url");
+  return { pinSalt, pinHash: derivePinHash(pin, pinSalt, environment) };
+}
+
+export function verifyMerchantAccountPin(
+  account: MerchantAccount,
+  submittedPin: string,
+  environment: NodeJS.ProcessEnv = process.env,
+): boolean {
+  if (!/^\d{4,12}$/.test(submittedPin)) return false;
+  try {
+    const calculated = derivePinHash(submittedPin, account.pinSalt, environment);
+    return constantTimeEqual(calculated, account.pinHash);
+  } catch {
+    return false;
+  }
+}
+
+export function verifyOnboardingKey(
+  submittedKey: string,
+  environment: NodeJS.ProcessEnv = process.env,
+): boolean {
+  const configured = environment.VIRALIO_ONBOARDING_KEY ?? "";
+  if (!configured) return false;
+  if (environment.NODE_ENV === "production" && configured.length < 24) return false;
+  return constantTimeEqual(submittedKey, configured);
 }
 
 export function verifyMerchantPin(
