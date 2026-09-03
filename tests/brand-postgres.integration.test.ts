@@ -67,14 +67,9 @@ postgresDescribe("Brand Profile PostgreSQL integration", () => {
     expect(restored.theme.heroTitle).toBe("Tu visita guarda una sorpresa");
     expect(restored.theme.socialHeadline).toContain("Bruma");
 
-    const rows = await sql<Array<{ source: string | null; model: string | null }>>`
-      SELECT
-        settings->'brand'->>'source' AS source,
-        settings->'brand'->'ai'->>'model' AS model
-      FROM merchant_settings
-      WHERE merchant_id = ${created.id}
-    `;
-    expect(rows[0]?.source).toBe("openai");
-    expect(rows[0]?.model).toBe("gpt-5.6-terra");
+    const customization = await service.getMerchantCustomization(created.id);
+    expect(customization.brand?.source).toBe("openai");
+    expect(customization.brand?.ai?.model).toBe("gpt-5.6-terra");
+    expect(customization.brand?.keywords).toEqual(["premium", "artesanal", "barrio"]);
   });
 });
