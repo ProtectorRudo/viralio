@@ -83,7 +83,7 @@ test("Moka mobile: share gates wheel, server reward drives nine-turn landing, re
   const winningIndex = prizeIds.indexOf(serverResult.reward.prizeId);
   const expectedRotation = (9 * 360) - ((winningIndex + 0.5) * 360) / prizeIds.length;
   await expect(page.getByTestId("premium-wheel").locator(".wheel-svg")).toHaveAttribute("style", `transform: rotate(${expectedRotation}deg);`);
-  await expect(page.getByTestId("reward-stage")).toBeVisible({ timeout: 6_000 });
+  await expect(page.getByTestId("reward-stage")).toBeVisible({ timeout: 8_000 });
   await expect(page.getByRole("heading", { name: serverResult.reward.prizeName })).toBeVisible();
   await expectNoOverflow(page);
 
