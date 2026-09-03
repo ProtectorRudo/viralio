@@ -82,6 +82,8 @@ jobs:
           NEXT_PUBLIC_APP_URL: https://viralio.example
           VIRALIO_AUTH_SECRET: ci-production-preflight-auth-secret-with-32-plus-characters
           VIRALIO_ONBOARDING_KEY: ci-production-preflight-onboarding-key-unique
+          OPENAI_API_KEY: sk-ci-fake-openai-key-never-used-by-preflight
+          OPENAI_BRAND_MODEL: gpt-5.6-terra
           VIRALIO_MERCHANT_PINS: '{"moka":"246810","atlas-barber":"135790"}'
 
   e2e:
