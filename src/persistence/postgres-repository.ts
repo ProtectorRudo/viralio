@@ -3,9 +3,11 @@ import type {
   AnalyticsEvent,
   EventName,
   FlowState,
+  MerchantAccount,
   MerchantCustomization,
   MerchantMetrics,
   MerchantSettingsRecord,
+  MerchantTemplate,
   Reward,
   Session,
   ShareChannel,
@@ -66,6 +68,16 @@ interface MerchantSettingsRow {
   updatedAt: Timestamp;
 }
 
+interface MerchantAccountRow {
+  merchantId: string;
+  slug: string;
+  name: string;
+  template: MerchantTemplate;
+  pinSalt: string;
+  pinHash: string;
+  createdAt: Timestamp;
+}
+
 function iso(value: Timestamp): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
@@ -104,6 +116,18 @@ function toReward(row: RewardRow): Reward {
     issuedAt: iso(row.issuedAt),
     expiresAt: iso(row.expiresAt),
     redeemedAt: row.redeemedAt ? iso(row.redeemedAt) : undefined,
+  };
+}
+
+function toMerchantAccount(row: MerchantAccountRow): MerchantAccount {
+  return {
+    id: row.merchantId,
+    slug: row.slug,
+    name: row.name,
+    template: row.template,
+    pinSalt: row.pinSalt,
+    pinHash: row.pinHash,
+    createdAt: iso(row.createdAt),
   };
 }
 
@@ -284,6 +308,37 @@ class PostgresTransaction implements TransactionRepository {
       whatsappSaves: eventRows[0]?.whatsappSaves ?? 0,
       shareChannels,
     };
+  }
+
+  async getMerchantAccountBySlug(slug: string): Promise<MerchantAccount | undefined> {
+    const rows = await this.sql<MerchantAccountRow[]>`
+      SELECT merchant_id, slug, name, template, pin_salt, pin_hash, created_at
+      FROM merchant_accounts
+      WHERE slug = ${slug}
+      LIMIT 1
+    `;
+    return rows[0] ? toMerchantAccount(rows[0]) : undefined;
+  }
+
+  async getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined> {
+    const rows = await this.sql<MerchantAccountRow[]>`
+      SELECT merchant_id, slug, name, template, pin_salt, pin_hash, created_at
+      FROM merchant_accounts
+      WHERE merchant_id = ${merchantId}
+      LIMIT 1
+    `;
+    return rows[0] ? toMerchantAccount(rows[0]) : undefined;
+  }
+
+  async insertMerchantAccount(account: MerchantAccount): Promise<void> {
+    await this.sql`
+      INSERT INTO merchant_accounts (
+        merchant_id, slug, name, template, pin_salt, pin_hash, created_at
+      ) VALUES (
+        ${account.id}, ${account.slug}, ${account.name}, ${account.template},
+        ${account.pinSalt}, ${account.pinHash}, ${account.createdAt}
+      )
+    `;
   }
 
   async getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined> {
