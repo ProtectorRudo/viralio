@@ -39,11 +39,13 @@ describe("production preflight environment", () => {
     })).toContain("auth and onboarding secrets are distinct");
   });
 
-  it("allows no legacy PIN JSON but rejects malformed configured PINs", () => {
+  it("allows no legacy PIN JSON but rejects malformed or trivial configured PINs", () => {
     expect(failedNames({ ...validEnvironment, VIRALIO_MERCHANT_PINS: "" })).toEqual([]);
     expect(failedNames({ ...validEnvironment, VIRALIO_MERCHANT_PINS: "not-json" }))
       .toContain("legacy merchant PIN JSON is valid when configured");
     expect(failedNames({ ...validEnvironment, VIRALIO_MERCHANT_PINS: JSON.stringify({ moka: "abc" }) }))
+      .toContain("legacy merchant PIN JSON is valid when configured");
+    expect(failedNames({ ...validEnvironment, VIRALIO_MERCHANT_PINS: JSON.stringify({ moka: "000000" }) }))
       .toContain("legacy merchant PIN JSON is valid when configured");
   });
 
