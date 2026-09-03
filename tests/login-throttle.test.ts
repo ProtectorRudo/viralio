@@ -6,6 +6,7 @@ import {
   loginThrottleDecision,
   merchantLoginThrottleKey,
   nextLoginThrottleState,
+  type LoginThrottleState,
 } from "@/security/login-throttle";
 
 const environment: NodeJS.ProcessEnv = {
@@ -36,20 +37,20 @@ describe("merchant login throttle", () => {
 
   it("blocks on the configured failure threshold and returns Retry-After", () => {
     const start = Date.parse("2026-09-03T01:00:00.000Z");
-    let state = undefined;
+    let state: LoginThrottleState | undefined;
     for (let attempt = 1; attempt <= MERCHANT_LOGIN_MAX_FAILURES; attempt += 1) {
       state = nextLoginThrottleState(state, "opaque-key", start + attempt * 1000);
     }
 
     const decision = loginThrottleDecision(state, start + MERCHANT_LOGIN_MAX_FAILURES * 1000);
-    expect(state.failureCount).toBe(MERCHANT_LOGIN_MAX_FAILURES);
+    expect(state?.failureCount).toBe(MERCHANT_LOGIN_MAX_FAILURES);
     expect(decision.blocked).toBe(true);
     expect(decision.retryAfterSeconds).toBe(MERCHANT_LOGIN_BLOCK_SECONDS);
   });
 
   it("allows a clean new window after the block expires", () => {
     const start = Date.parse("2026-09-03T01:00:00.000Z");
-    let state = undefined;
+    let state: LoginThrottleState | undefined;
     for (let attempt = 1; attempt <= MERCHANT_LOGIN_MAX_FAILURES; attempt += 1) {
       state = nextLoginThrottleState(state, "opaque-key", start);
     }
