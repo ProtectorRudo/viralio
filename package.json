@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "migrate": "node scripts/migrate.mjs",
-    "test:postgres": "vitest run tests/postgres.integration.test.ts tests/login-throttle.postgres.integration.test.ts",
+    "preflight:production": "node scripts/production-preflight.mjs",
+    "test:postgres": "vitest run tests/postgres.integration.test.ts tests/login-throttle.postgres.integration.test.ts tests/production-preflight.postgres.integration.test.mjs",
     "pretest:e2e": "next build",
     "test:e2e": "playwright test"
   },

@@ -76,6 +76,13 @@ jobs:
         run: npm run migrate
       - name: PostgreSQL integration and concurrency tests
         run: npm run test:postgres
+      - name: Production preflight against migrated PostgreSQL
+        run: npm run preflight:production
+        env:
+          NEXT_PUBLIC_APP_URL: https://viralio.example
+          VIRALIO_AUTH_SECRET: ci-production-preflight-auth-secret-with-32-plus-characters
+          VIRALIO_ONBOARDING_KEY: ci-production-preflight-onboarding-key-unique
+          VIRALIO_MERCHANT_PINS: '{"moka":"246810","atlas-barber":"135790"}'
 
   e2e:
     runs-on: ubuntu-latest

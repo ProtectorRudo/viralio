@@ -1,35 +1,34 @@
 # Viralio — Cloud deployment
 
-Viralio separa definitivamente dos superficies:
+Viralio separa dos superficies:
 
 - **GitHub Pages**: showroom estático bajo `showcase/`, sin datos reales.
-- **Aplicación Viralio**: Next.js con servidor, PostgreSQL y canje autenticado del comercio.
+- **Aplicación Viralio**: Next.js con servidor, PostgreSQL, alta de comercios, configuración y canje autenticado.
 
-## Variables de entorno
-
-Producción requiere:
+## Variables de entorno de producción
 
 ```text
 NODE_ENV=production
 VIRALIO_PERSISTENCE=postgres
-DATABASE_URL=postgres://...
+DATABASE_URL=postgresql://...
 NEXT_PUBLIC_APP_URL=https://app.example.com
 VIRALIO_AUTH_SECRET=<secreto aleatorio de al menos 32 caracteres>
-VIRALIO_MERCHANT_PINS={"moka":"<PIN_REAL>","atlas-barber":"<PIN_REAL>"}
+VIRALIO_ONBOARDING_KEY=<secreto distinto de al menos 24 caracteres>
+VIRALIO_MERCHANT_PINS=<opcional; sólo comercios demo/configurados legacy>
 ```
 
-`DATABASE_URL` acepta una connection string PostgreSQL estándar, incluida una URL de Supabase Postgres. Nunca debe guardarse en Git.
+Reglas:
 
-`VIRALIO_AUTH_SECRET` firma las sesiones de comercio mediante HMAC. Cambiar este secreto invalida todas las sesiones de comercio vigentes, lo cual también sirve como revocación global de emergencia.
+- `DATABASE_URL`, `VIRALIO_AUTH_SECRET`, `VIRALIO_ONBOARDING_KEY` y PINs son secretos. Nunca deben guardarse en Git ni usar prefijo `NEXT_PUBLIC_`.
+- `NEXT_PUBLIC_APP_URL` sí es pública y en producción debe ser HTTPS.
+- `VIRALIO_AUTH_SECRET` firma sesiones y participa en la derivación segura de credenciales de los comercios creados dinámicamente.
+- `VIRALIO_ONBOARDING_KEY` protege `/alta` y el endpoint de provisionamiento. Debe ser distinta de `VIRALIO_AUTH_SECRET`.
+- `VIRALIO_MERCHANT_PINS` ya no es obligatorio para comercios nuevos. Sólo mantiene acceso a comercios definidos por configuración, como demos. Si se usa, debe ser JSON `slug → PIN` numérico de 4 a 12 dígitos.
 
-`VIRALIO_MERCHANT_PINS` es un objeto JSON `slug → PIN` de 4 a 12 dígitos. Los valores reales deben existir únicamente como secretos/variables privadas del proveedor de despliegue. **Nunca usar `NEXT_PUBLIC_` para el secreto ni los PINs.**
+## Preparar la base
 
-En desarrollo local, si `VIRALIO_PERSISTENCE` se omite, se usa JSON. Para probar PostgreSQL localmente se puede definir explícitamente `VIRALIO_PERSISTENCE=postgres` y `DATABASE_URL`.
-
-## Crear / preparar la base
-
-1. Crear una base PostgreSQL vacía.
-2. Definir `DATABASE_URL` sólo en el entorno seguro donde se ejecutará la migración.
+1. Crear PostgreSQL administrado.
+2. Definir `DATABASE_URL` sólo en un entorno seguro.
 3. Ejecutar:
 
 ```bash
@@ -37,35 +36,75 @@ npm ci
 npm run migrate
 ```
 
-El migrador crea `viralio_schema_migrations` y aplica los archivos de `migrations/` en orden. Una migración aplicada no se ejecuta de nuevo.
+El migrador aplica `migrations/*.sql` en orden y registra el esquema cuando se ejecuta mediante el migrador de Viralio. La aplicación no modifica el esquema durante requests.
 
-La aplicación **no modifica el esquema durante requests**.
+El esquema actual incluye:
 
-## Canje seguro del comercio
+- sesiones, rewards y analytics;
+- settings por comercio;
+- cuentas dinámicas de comercio con PIN derivado mediante scrypt;
+- throttle persistente del login.
 
-VIRALIO-005 separa por diseño la tarjeta pública del cliente de la autoridad de canje.
+Todas las tablas de aplicación expuestas en `public` deben tener RLS habilitado sin policies públicas mientras Viralio acceda exclusivamente por la conexión PostgreSQL privada del backend.
 
-- `/premio/<token>` es público y de sólo lectura.
-- `/validar/<token>` es una ruta legacy que redirige a la tarjeta pública y no tiene capacidad de canje.
-- `PATCH /api/rewards/<token>` no existe.
-- el comercio ingresa a `/comercio/<slug>/canjes`;
-- el acceso exige el PIN privado de ese comercio;
-- una sesión válida se guarda en una cookie firmada `HttpOnly`, `SameSite=Strict`, `Secure` en producción y con una duración máxima de 8 horas;
-- el empleado busca el código corto visible del cliente y confirma el canje desde el panel;
-- la sesión de un comercio no puede consultar ni canjear rewards de otro comercio;
-- las escrituras sensibles exigen además un `Origin` same-origin.
+## Preflight obligatorio
 
-El token público del reward **nunca es una credencial de escritura**.
+Antes de promover un deployment a producción:
 
-## Verificación
+```bash
+npm run preflight:production
+```
 
-Con la aplicación levantada:
+El preflight comprueba sin imprimir valores sensibles:
+
+- persistencia PostgreSQL;
+- sintaxis de `DATABASE_URL` y conexión real;
+- URL pública HTTPS y no-local;
+- fortaleza/separación de secretos;
+- JSON de PINs legacy cuando exista;
+- presencia de todas las tablas requeridas;
+- RLS activo en todas esas tablas.
+
+Un solo `FAIL` invalida la promoción. El preflight **no aplica migraciones automáticamente**.
+
+## Canje seguro
+
+- `/premio/<token>` es público y sólo lectura.
+- `/validar/<token>` redirige a la tarjeta pública y no otorga autoridad de canje.
+- no existe escritura pública mediante `PATCH /api/rewards/<token>`.
+- el comercio entra por `/comercio/<slug>/canjes`.
+- la sesión se guarda en cookie firmada `HttpOnly`, `SameSite=Strict`, `Secure` en producción, TTL máximo 8 h.
+- escrituras sensibles exigen `Origin` same-origin.
+- el lookup/canje queda limitado al `merchantId` autenticado.
+- PostgreSQL serializa el canje y evita dobles redenciones.
+
+## Protección contra fuerza bruta
+
+El login de comercio mantiene throttle compartido en PostgreSQL:
+
+- 5 fallos dentro de 10 minutos;
+- bloqueo de 15 minutos;
+- respuesta `429` con `Retry-After`;
+- fingerprint HMAC por comercio + cliente;
+- no se persiste la IP en claro;
+- un login exitoso limpia el historial de ese comercio/cliente;
+- comercios/clientes distintos no comparten el bloqueo.
+
+En Vercel, la IP se toma del `x-forwarded-for` normalizado por la plataforma.
+
+## Seguridad HTTP
+
+La aplicación agrega headers de producción para reducir clickjacking, MIME sniffing, fuga de referrer y permisos innecesarios. Paneles, tokens y APIs transaccionales usan `Cache-Control: private, no-store`.
+
+El CSP se mantiene compatible con Next/Web Share y se verifica en Chromium dentro de CI.
+
+## Health check
 
 ```text
 GET /api/health
 ```
 
-Respuesta sana esperada en producción:
+Respuesta sana esperada:
 
 ```json
 {
@@ -76,19 +115,28 @@ Respuesta sana esperada en producción:
 }
 ```
 
-El endpoint no expone host, usuario, password ni connection string.
+Nunca debe exponer host, usuario, password ni connection string.
 
 ## Supabase
 
-Supabase se utiliza sólo como proveedor de PostgreSQL en esta etapa. Viralio no depende de APIs propietarias de Supabase para el dominio, por lo que la base puede migrarse a otro PostgreSQL compatible.
+Supabase se usa en esta etapa como PostgreSQL administrado. El dominio no depende de APIs propietarias de Supabase.
 
-Recomendaciones:
+Proyecto productivo actual: región `sa-east-1` para cercanía con Argentina.
 
-- usar la connection string indicada para workloads server-side;
-- exigir SSL cuando el proveedor lo requiera;
-- guardar `DATABASE_URL` como secreto del entorno;
-- aplicar migraciones fuera del request path;
-- no utilizar el filesystem del runtime como fuente de verdad.
+### Backups
+
+No asumir que **Supabase Free** ofrece el mismo acceso/retención de backups que planes pagos. Antes de tráfico comercial real debe existir una de estas dos garantías:
+
+1. plan con backups gestionados adecuados; o
+2. backup lógico off-site automatizado y restauración probada.
+
+Viralio incluye:
+
+```bash
+node scripts/backup-postgres.mjs
+```
+
+Ver `docs/BACKUP_RUNBOOK.md`. Los `.dump` son sensibles y están excluidos de Git.
 
 ## Vercel
 
@@ -97,54 +145,43 @@ Configuración esperada:
 - Framework: Next.js;
 - Install: `npm ci`;
 - Build: `npm run build`;
-- Production env: `VIRALIO_PERSISTENCE`, `DATABASE_URL`, `NEXT_PUBLIC_APP_URL`, `VIRALIO_AUTH_SECRET`, `VIRALIO_MERCHANT_PINS`;
-- migraciones: ejecutar `npm run migrate` de forma explícita antes de promover un esquema nuevo.
-
-El pool de Postgres.js se mantiene deliberadamente pequeño para un runtime serverless. La instancia se reutiliza dentro del proceso mediante el singleton de persistencia.
+- branch de producción: `main`;
+- variables privadas: `VIRALIO_PERSISTENCE`, `DATABASE_URL`, `VIRALIO_AUTH_SECRET`, `VIRALIO_ONBOARDING_KEY`, y opcionalmente `VIRALIO_MERCHANT_PINS`;
+- variable pública: `NEXT_PUBLIC_APP_URL`;
+- migraciones ejecutadas explícitamente antes de promover código que depende de un esquema nuevo;
+- `npm run preflight:production` obligatorio antes del smoke test final.
 
 ## Concurrencia
 
-PostgreSQL protege las invariantes críticas de Viralio en dos niveles:
+PostgreSQL protege las invariantes con locks y constraints:
 
-1. `SELECT ... FOR UPDATE` serializa operaciones sobre la misma sesión/recompensa, incluido el canje por código corto.
-2. Constraints únicos impiden estados imposibles incluso ante una carrera inesperada:
-   - `sessions.referral_token`;
-   - `rewards.token`;
-   - `rewards.short_code`;
-   - `rewards.session_id` (un reward por sesión).
-
-`reward_viewed` cuenta con un índice único parcial para deduplicar vistas concurrentes.
+- `SELECT ... FOR UPDATE` para sesión/reward;
+- advisory lock transaccional para intentos concurrentes de login sobre un fingerprint todavía inexistente;
+- unicidad de referral token, reward token, short code y reward por sesión.
 
 ## CI
 
-GitHub Actions levanta `postgres:16-alpine`, crea una base vacía, ejecuta migraciones y prueba concurrencia real de spin/redeem. Los E2E ejecutan la aplicación de producción contra PostgreSQL y usan únicamente credenciales ficticias exclusivas del CI.
+GitHub Actions levanta PostgreSQL, parte de base vacía, aplica todas las migraciones, prueba concurrencia y ejecuta la aplicación productiva con Chromium. Las credenciales del CI son ficticias.
 
-La suite de seguridad debe verificar, entre otros puntos:
+Gates mínimos:
 
-- token público sin poder de canje;
-- PIN incorrecto rechazado;
-- cookie manipulada o vencida rechazada;
-- aislamiento Moka/Atlas;
-- doble canje concurrente imposible;
-- login → búsqueda por código → canje → logout en navegador móvil.
+- unit/integration;
+- lint;
+- typecheck;
+- build;
+- PostgreSQL real;
+- E2E consumidor;
+- E2E comercio/canje;
+- E2E fuerza bruta;
+- E2E headers/CSP.
 
-## Rotación y recuperación
+## Gate antes del primer piloto comercial
 
-Si un PIN se compromete:
+Además de un CI verde y deploy HTTPS:
 
-1. cambiar sólo el PIN del slug afectado en `VIRALIO_MERCHANT_PINS`;
-2. redesplegar/reiniciar el entorno para que tome la nueva configuración;
-3. si también se desea invalidar inmediatamente todas las sesiones activas, rotar `VIRALIO_AUTH_SECRET`.
-
-Las migraciones se consideran forward-only durante el MVP. Ante una migración fallida:
-
-1. no desplegar el código que depende de ella;
-2. revisar el archivo SQL fallido;
-3. restaurar desde backup si una migración ya confirmada produjo un cambio no reversible;
-4. crear una nueva migración correctiva, en lugar de editar silenciosamente una migración ya aplicada en producción.
-
-Antes de un piloto real deben existir backups automáticos del proveedor PostgreSQL.
-
-## Alcance del acceso comercial actual
-
-El PIN por comercio es deliberadamente una autenticación mínima para el primer piloto. Todavía no implementa usuarios individuales, roles, 2FA ni recuperación de acceso. Esas capacidades pueden incorporarse sin volver a otorgar capacidad de escritura al token público del cliente.
+- repositorio privado;
+- estrategia de backup/restore resuelta;
+- secretos/PINs reales fuera de Git;
+- smoke test vivo consumidor + comercio;
+- revisar logs/runtime errors después del smoke;
+- T&C/promoción y tratamiento de datos revisados para el piloto.
