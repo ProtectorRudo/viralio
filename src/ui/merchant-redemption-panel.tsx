@@ -52,10 +52,7 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!authenticated) {
-      setRewardList([]);
-      return undefined;
-    }
+    if (!authenticated) return undefined;
 
     let cancelled = false;
     async function loadList() {
