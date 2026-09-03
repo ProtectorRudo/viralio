@@ -127,6 +127,7 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
                 <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/panel`}>Resumen</Link>
                 <span className="merchant-panel-tab is-active" aria-current="page">Canjes</span>
                 <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
+                <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/activacion`}>Activación</Link>
                 <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
               </nav>
               <form onSubmit={lookup} className="merchant-form" data-testid="merchant-reward-search">
