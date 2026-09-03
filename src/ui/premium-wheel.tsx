@@ -3,7 +3,7 @@ import type { Merchant, Reward } from "@/domain/types";
 const center = 160;
 const radius = 146;
 export const SPIN_TURNS = 9;
-export const SPIN_DURATION_MS = 5600;
+export const SPIN_DURATION_MS = 6600;
 
 function point(angle: number): [number, number] {
   const radians = (angle * Math.PI) / 180;
