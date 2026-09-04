@@ -7,6 +7,7 @@ import {
   BRAND_SHARE_COMPOSITIONS,
   BRAND_SURFACE_LANGUAGES,
   BRAND_VISUAL_MOODS,
+  defaultBrandArtDirection,
   normalizeBrandArtDirection,
 } from "@/brand/art-direction";
 import { buildMerchantBrandProfile, normalizeLogoDataUrl } from "@/brand/brand-engine";
@@ -88,9 +89,6 @@ interface RawBrandDraft {
   copy: GeneratedBrandCopy;
 }
 
-// OpenAI Structured Outputs intentionally receives only keywords from its supported
-// JSON Schema subset. Length/uniqueness constraints are enforced again below by
-// Viralio before a generated draft is accepted or persisted.
 const copyProperties = {
   heroEyebrow: { type: "string" },
   heroTitle: { type: "string" },
@@ -171,17 +169,13 @@ function defaultBusinessType(template: MerchantTemplate): string {
 
 function modelName(environment: NodeJS.ProcessEnv): string {
   const model = environment.OPENAI_BRAND_MODEL?.trim() || DEFAULT_OPENAI_BRAND_MODEL;
-  if (!/^[A-Za-z0-9._-]{2,80}$/.test(model)) {
-    throw new BrandAiError("not_configured", "Brand AI is not configured");
-  }
+  if (!/^[A-Za-z0-9._-]{2,80}$/.test(model)) throw new BrandAiError("not_configured", "Brand AI is not configured");
   return model;
 }
 
 function apiKey(environment: NodeJS.ProcessEnv): string {
   const key = environment.OPENAI_API_KEY?.trim() ?? "";
-  if (!key || key.length < 20) {
-    throw new BrandAiError("not_configured", "Brand AI is not configured");
-  }
+  if (!key || key.length < 20) throw new BrandAiError("not_configured", "Brand AI is not configured");
   return key;
 }
 
@@ -196,9 +190,7 @@ function outputText(payload: unknown): string {
     for (const part of content) {
       if (!part || typeof part !== "object") continue;
       const candidate = part as { type?: unknown; text?: unknown };
-      if (candidate.type === "output_text" && typeof candidate.text === "string" && candidate.text.trim()) {
-        return candidate.text;
-      }
+      if (candidate.type === "output_text" && typeof candidate.text === "string" && candidate.text.trim()) return candidate.text;
     }
   }
   throw new Error("Brand AI returned an invalid response");
@@ -219,25 +211,24 @@ function normalizeCopy(value: unknown): GeneratedBrandCopy {
     socialSubcopy: 180,
   };
   const result = {} as GeneratedBrandCopy;
-  for (const key of Object.keys(limits) as Array<keyof GeneratedBrandCopy>) {
-    result[key] = cleanInput(candidate[key], `brand copy ${key}`, 2, limits[key]);
-  }
+  for (const key of Object.keys(limits) as Array<keyof GeneratedBrandCopy>) result[key] = cleanInput(candidate[key], `brand copy ${key}`, 2, limits[key]);
   return result;
 }
 
 function normalizeRawDraft(value: unknown): RawBrandDraft {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Brand AI returned an invalid draft");
   const candidate = value as Record<string, unknown>;
-  if (!candidate.colors || typeof candidate.colors !== "object" || Array.isArray(candidate.colors)) {
-    throw new Error("Brand AI returned an invalid draft");
-  }
+  if (!candidate.colors || typeof candidate.colors !== "object" || Array.isArray(candidate.colors)) throw new Error("Brand AI returned an invalid draft");
+  const stylePreset = candidate.stylePreset as RawBrandDraft["stylePreset"];
   return {
-    stylePreset: candidate.stylePreset as RawBrandDraft["stylePreset"],
+    stylePreset,
     fontPreset: candidate.fontPreset as RawBrandDraft["fontPreset"],
     tone: candidate.tone as string,
     keywords: candidate.keywords as string[],
     colors: candidate.colors as RawBrandDraft["colors"],
-    artDirection: normalizeBrandArtDirection(candidate.artDirection),
+    artDirection: candidate.artDirection === undefined
+      ? defaultBrandArtDirection(stylePreset)
+      : normalizeBrandArtDirection(candidate.artDirection),
     copy: normalizeCopy(candidate.copy),
   };
 }
@@ -268,12 +259,7 @@ function classifyUpstreamFailure(status: number, code?: string): BrandAiError {
 
 export async function generateOpenAiBrandDraft(
   input: BrandAssistantInput,
-  options: {
-    environment?: NodeJS.ProcessEnv;
-    fetchImpl?: typeof fetch;
-    now?: () => Date;
-    timeoutMs?: number;
-  } = {},
+  options: { environment?: NodeJS.ProcessEnv; fetchImpl?: typeof fetch; now?: () => Date; timeoutMs?: number } = {},
 ): Promise<OpenAiBrandDraft> {
   const environment = options.environment ?? process.env;
   const fetchImpl = options.fetchImpl ?? fetch;
@@ -296,10 +282,7 @@ export async function generateOpenAiBrandDraft(
   try {
     const response = await fetchImpl("https://api.openai.com/v1/responses", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey(environment)}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${apiKey(environment)}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model,
         store: false,
@@ -313,21 +296,12 @@ export async function generateOpenAiBrandDraft(
           },
           { role: "user", content: userContent },
         ],
-        text: {
-          format: {
-            type: "json_schema",
-            name: "viralio_brand_draft",
-            strict: true,
-            schema: BRAND_DRAFT_SCHEMA,
-          },
-        },
+        text: { format: { type: "json_schema", name: "viralio_brand_draft", strict: true, schema: BRAND_DRAFT_SCHEMA } },
       }),
       signal: controller.signal,
     });
 
-    if (!response.ok) {
-      throw classifyUpstreamFailure(response.status, await upstreamErrorCode(response));
-    }
+    if (!response.ok) throw classifyUpstreamFailure(response.status, await upstreamErrorCode(response));
 
     const payload = await response.json() as unknown;
     let parsed: unknown;
@@ -351,12 +325,8 @@ export async function generateOpenAiBrandDraft(
     return { brand, copy: draft.copy };
   } catch (error) {
     if (error instanceof BrandAiError) throw error;
-    if ((error as Error).name === "AbortError") {
-      throw new BrandAiError("timeout", "Brand AI timed out");
-    }
-    if (error instanceof TypeError) {
-      throw new BrandAiError("network", "Brand AI network request failed");
-    }
+    if ((error as Error).name === "AbortError") throw new BrandAiError("timeout", "Brand AI timed out");
+    if (error instanceof TypeError) throw new BrandAiError("network", "Brand AI network request failed");
     throw new BrandAiError("invalid_response", "Brand AI returned an invalid response");
   } finally {
     clearTimeout(timer);
