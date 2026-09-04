@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 async function enableShare(page: Page) {
@@ -25,10 +26,10 @@ async function noHorizontalOverflow(page: Page) {
 }
 
 async function capture(page: Page, testInfo: TestInfo, name: string) {
-  await testInfo.attach(name, {
-    body: await page.screenshot({ fullPage: true }),
-    contentType: "image/png",
-  });
+  mkdirSync("visual-qa-evidence", { recursive: true });
+  const screenshotPath = `visual-qa-evidence/${name}.png`;
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  await testInfo.attach(name, { path: screenshotPath, contentType: "image/png" });
 }
 
 async function resetSession(page: Page) {
