@@ -25,6 +25,19 @@ async function noHorizontalOverflow(page: Page) {
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
 }
 
+async function expectStoryCopySeparated(page: Page) {
+  for (const testId of ["whatsapp-status-share", "instagram-story-share"]) {
+    const option = page.getByTestId(testId);
+    const title = option.locator("strong");
+    const subtitle = option.locator("small");
+    const [titleBox, subtitleBox] = await Promise.all([title.boundingBox(), subtitle.boundingBox()]);
+
+    expect(titleBox, `${testId} title must have a layout box`).not.toBeNull();
+    expect(subtitleBox, `${testId} subtitle must have a layout box`).not.toBeNull();
+    expect(subtitleBox!.y).toBeGreaterThanOrEqual(titleBox!.y + titleBox!.height + 2);
+  }
+}
+
 async function capture(page: Page, testInfo: TestInfo, name: string) {
   mkdirSync("visual-qa-evidence", { recursive: true });
   const screenshotPath = `visual-qa-evidence/${name}.png`;
@@ -42,6 +55,8 @@ async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
   await page.goto(`/${slug}`);
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
   await expect(page.getByTestId("share-poster-preview")).toBeVisible();
+  await expectStoryCopySeparated(page);
+  await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-share-390`);
   await page.getByTestId("native-share").click();
   await expect(page.getByTestId("wheel-stage")).toBeVisible();
