@@ -77,6 +77,8 @@ test("Aurora Story Builder unlocks the approved wheel after preparing the 9:16 p
   await expect(page).toHaveURL(new RegExp(`/story/${slug}/`));
   await expect(page.getByTestId("story-builder")).toBeVisible();
   await expect(page.getByTestId("story-preview")).toBeVisible();
+  await expect(page.getByTestId("story-preview")).toHaveClass(/is-ready/);
+  await expect(page.getByTestId("story-save")).toBeEnabled();
   await expectNoOverflow(page);
   await capture(page, testInfo, "aurora-story-builder-390");
 
