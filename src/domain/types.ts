@@ -26,6 +26,25 @@ export type MerchantTemplate = MerchantCategory;
 export type BrandSource = "template" | "manual" | "openai";
 export type BrandStylePreset = "editorial" | "minimal" | "luxury" | "bold" | "warm" | "urban";
 export type BrandFontPreset = "editorial" | "modern" | "geometric" | "humanist";
+export type BrandExperienceFamily = "editorial-luxury" | "warm-crafted" | "bold-contemporary" | "minimal-professional";
+export type BrandVisualMood = "editorial" | "warm-premium" | "minimal-luxury" | "bold-modern" | "crafted-artisanal" | "playful-refined" | "technical-premium";
+export type BrandLayoutMood = "centered-hero" | "asymmetrical-editorial" | "immersive-full-bleed" | "compact-premium";
+export type BrandShapeLanguage = "sharp" | "soft" | "organic" | "geometric";
+export type BrandSurfaceLanguage = "flat" | "paper-editorial" | "glass-subtle" | "material-metallic-subtle";
+export type BrandMotionMood = "calm" | "elegant" | "energetic" | "playful";
+export type BrandRewardObjectStyle = "medallion" | "voucher" | "seal" | "card" | "token";
+export type BrandShareComposition = "editorial-poster" | "product-card" | "minimal-quote" | "branded-announcement";
+
+export interface MerchantBrandArtDirection {
+  family: BrandExperienceFamily;
+  visualMood: BrandVisualMood;
+  layoutMood: BrandLayoutMood;
+  shapeLanguage: BrandShapeLanguage;
+  surfaceLanguage: BrandSurfaceLanguage;
+  motionMood: BrandMotionMood;
+  rewardObjectStyle: BrandRewardObjectStyle;
+  shareComposition: BrandShareComposition;
+}
 
 export interface MerchantBrandPalette {
   canvas: string;
@@ -54,6 +73,7 @@ export interface MerchantBrandProfile {
   tone: string;
   keywords: string[];
   palette: MerchantBrandPalette;
+  artDirection?: MerchantBrandArtDirection;
   ai?: {
     model: string;
     generatedAt: string;
@@ -79,6 +99,7 @@ export interface MerchantTheme {
   stylePreset?: BrandStylePreset;
   fontPreset?: BrandFontPreset;
   tone?: string;
+  artDirection?: MerchantBrandArtDirection;
   palette: MerchantBrandPalette;
 }
 

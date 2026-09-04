@@ -16,6 +16,16 @@ const rawDraft = {
     surface: "#FFFDF8",
     text: "#241C18",
   },
+  artDirection: {
+    family: "editorial-luxury",
+    visualMood: "minimal-luxury",
+    layoutMood: "asymmetrical-editorial",
+    shapeLanguage: "soft",
+    surfaceLanguage: "material-metallic-subtle",
+    motionMood: "elegant",
+    rewardObjectStyle: "voucher",
+    shareComposition: "editorial-poster",
+  },
   copy: {
     heroEyebrow: "Un detalle para vos",
     heroTitle: "Tu visita guarda una sorpresa",
@@ -101,6 +111,7 @@ describe("OpenAI brand assistant", () => {
     expect(apiInput.find((item) => item.role === "user")?.content.some((part) => part.type === "input_image" && part.image_url === tinyPng)).toBe(true);
     expect(result.brand.source).toBe("openai");
     expect(result.brand.ai?.model).toBe("gpt-5.6-terra");
+    expect(result.brand.artDirection).toEqual(rawDraft.artDirection);
     expect(result.copy.socialHeadline).toContain("Bruma");
   });
 
@@ -115,6 +126,13 @@ describe("OpenAI brand assistant", () => {
       type: "string",
       pattern: "^#[0-9A-Fa-f]{6}$",
     });
+    expect(BRAND_DRAFT_SCHEMA.required).toContain("artDirection");
+    expect(BRAND_DRAFT_SCHEMA.properties.artDirection).toMatchObject({
+      type: "object",
+      additionalProperties: false,
+    });
+    expect(BRAND_DRAFT_SCHEMA.properties.artDirection.properties.layoutMood.enum).toContain("asymmetrical-editorial");
+    expect(BRAND_DRAFT_SCHEMA.properties.artDirection.properties.rewardObjectStyle.enum).toContain("voucher");
   });
 
   it("still rejects drafts that violate Viralio local brand limits", async () => {
@@ -126,6 +144,10 @@ describe("OpenAI brand assistant", () => {
       ...rawDraft,
       keywords: ["premium", "Premium"],
     };
+    const arbitraryRendererInstruction = {
+      ...rawDraft,
+      artDirection: { ...rawDraft.artDirection, css: "body { display:none }" },
+    };
 
     const copyFetch = vi.fn(async () => responseFor(tooLongCopy)) as unknown as typeof fetch;
     await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl: copyFetch })).rejects.toMatchObject({
@@ -134,6 +156,11 @@ describe("OpenAI brand assistant", () => {
 
     const keywordFetch = vi.fn(async () => responseFor(duplicateKeywords)) as unknown as typeof fetch;
     await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl: keywordFetch })).rejects.toMatchObject({
+      diagnosticCode: "invalid_response",
+    });
+
+    const rendererFetch = vi.fn(async () => responseFor(arbitraryRendererInstruction)) as unknown as typeof fetch;
+    await expect(generateOpenAiBrandDraft(input, { environment, fetchImpl: rendererFetch })).rejects.toMatchObject({
       diagnosticCode: "invalid_response",
     });
   });
