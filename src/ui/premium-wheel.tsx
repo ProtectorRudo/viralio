@@ -4,6 +4,7 @@ const center = 160;
 const radius = 146;
 export const SPIN_TURNS = 9;
 export const SPIN_DURATION_MS = 5600;
+export const REDUCED_SPIN_DURATION_MS = 1600;
 
 function point(angle: number): [number, number] {
   const radians = (angle * Math.PI) / 180;
@@ -31,13 +32,21 @@ export function winningRotation(merchant: Merchant, reward?: Reward): number {
   return (SPIN_TURNS * 360) - ((index + 0.5) * 360) / merchant.prizes.length;
 }
 
+function displayedRotation(merchant: Merchant, reward: Reward | undefined, auroraReducedMotion: boolean): number {
+  const full = winningRotation(merchant, reward);
+  if (!reward || !auroraReducedMotion) return full;
+  const finalAngle = ((full % 360) + 360) % 360;
+  return 360 + finalAngle;
+}
+
 export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
   merchant: Merchant;
   reward?: Reward;
   spinning: boolean;
   reducedMotion: boolean;
 }) {
-  const rotation = winningRotation(merchant, reward);
+  const auroraReducedMotion = reducedMotion && merchant.slug === "joyeria-aurora";
+  const rotation = displayedRotation(merchant, reward, auroraReducedMotion);
   const prizeList = merchant.prizes.map((prize) => prize.name).join(", ");
 
   return (
@@ -45,8 +54,8 @@ export function PremiumWheel({ merchant, reward, spinning, reducedMotion }: {
       className={`wheel-frame${spinning ? " is-spinning" : ""}${reducedMotion ? " is-reduced" : ""}`}
       data-testid="premium-wheel"
       data-winning-prize={reward?.prizeName ?? ""}
-      data-spin-turns={SPIN_TURNS}
-      data-spin-duration-ms={SPIN_DURATION_MS}
+      data-spin-turns={auroraReducedMotion ? 1 : SPIN_TURNS}
+      data-spin-duration-ms={auroraReducedMotion ? REDUCED_SPIN_DURATION_MS : SPIN_DURATION_MS}
       role="img"
       aria-label={`Ruleta de ${merchant.name}. Premios: ${prizeList}`}
     >
