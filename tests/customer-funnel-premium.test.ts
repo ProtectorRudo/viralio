@@ -26,9 +26,11 @@ describe("VIRALIO-020B premium customer funnel", () => {
     expect(wheel).toContain("style={{ transform: `rotate(${rotation}deg)` }}");
   });
 
-  it("renders the social card as an editorial poster without revealing a prize", () => {
+  it("renders the social card from validated layouts without revealing a prize", () => {
     const shareCard = source("src/app/api/share-card/[referralToken]/route.ts");
-    expect(shareCard).toContain("INVITACIÓN PRIVADA");
+    const layouts = source("src/brand/share-card-layout.ts");
+    expect(shareCard).toContain("shareCardLayout(merchant.theme)");
+    expect(layouts).toContain("INVITACIÓN PRIVADA");
     expect(shareCard).toContain("La recompensa de quien comparte permanece oculta");
     expect(shareCard).not.toContain("linear-gradient");
     expect(shareCard).not.toContain("prizeName");
