@@ -81,7 +81,8 @@ describe("Brand Engine 2.0 art direction", () => {
     });
     expect(validateMerchantBrandProfile(brand).artDirection).toEqual(brand.artDirection);
 
-    const { artDirection: _removed, ...legacy } = brand;
+    const legacy = structuredClone(brand);
+    delete legacy.artDirection;
     expect(validateMerchantBrandProfile(legacy).artDirection).toBeUndefined();
   });
 });
