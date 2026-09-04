@@ -1,7 +1,9 @@
+import { defaultBrandArtDirection, normalizeBrandArtDirection } from "@/brand/art-direction";
 import type {
   BrandFontPreset,
   BrandSource,
   BrandStylePreset,
+  MerchantBrandArtDirection,
   MerchantBrandPalette,
   MerchantBrandProfile,
   MerchantTheme,
@@ -32,6 +34,7 @@ export interface BrandProposal {
   tone: string;
   keywords: string[];
   colors: BrandBaseColors;
+  artDirection?: MerchantBrandArtDirection;
   ai?: { model: string; generatedAt: string };
 }
 
@@ -211,10 +214,11 @@ function modelMetadata(value: unknown): MerchantBrandProfile["ai"] {
 }
 
 export function buildMerchantBrandProfile(proposal: BrandProposal): MerchantBrandProfile {
+  const stylePreset = brandStyle(proposal.stylePreset);
   return {
     source: brandSource(proposal.source),
     logoDataUrl: normalizeLogoDataUrl(proposal.logoDataUrl),
-    stylePreset: brandStyle(proposal.stylePreset),
+    stylePreset,
     fontPreset: brandFont(proposal.fontPreset),
     tone: normalizedTone(proposal.tone),
     keywords: normalizedKeywords(proposal.keywords),
@@ -226,6 +230,9 @@ export function buildMerchantBrandProfile(proposal: BrandProposal): MerchantBran
       surface: hex(proposal.colors.surface),
       text: hex(proposal.colors.text),
     }),
+    artDirection: proposal.artDirection === undefined
+      ? defaultBrandArtDirection(stylePreset)
+      : normalizeBrandArtDirection(proposal.artDirection),
     ai: modelMetadata(proposal.ai),
   };
 }
@@ -270,19 +277,22 @@ export function validateMerchantBrandProfile(value: unknown): MerchantBrandProfi
     tone: normalizedTone(candidate.tone),
     keywords: normalizedKeywords(candidate.keywords),
     palette: normalizedPalette,
+    artDirection: candidate.artDirection === undefined ? undefined : normalizeBrandArtDirection(candidate.artDirection),
     ai: modelMetadata(candidate.ai),
   };
 }
 
 export function templateBrandProfile(theme: MerchantTheme): MerchantBrandProfile {
+  const stylePreset: BrandStylePreset = theme.category === "coffee" ? "warm" : "urban";
   return {
     source: "template",
-    stylePreset: theme.category === "coffee" ? "warm" : "urban",
+    stylePreset,
     fontPreset: theme.category === "coffee" ? "editorial" : "modern",
     tone: theme.category === "coffee" ? "cálido, cuidado y contemporáneo" : "directo, premium y contemporáneo",
     keywords: theme.category === "coffee"
       ? ["cálido", "artesanal", "editorial"]
       : ["urbano", "preciso", "premium"],
     palette: { ...theme.palette, wheel: [...theme.palette.wheel] },
+    artDirection: theme.artDirection ?? defaultBrandArtDirection(stylePreset),
   };
 }
