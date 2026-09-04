@@ -32,6 +32,7 @@ async function capture(page: Page, testInfo: TestInfo, name: string) {
 }
 
 async function resetSession(page: Page) {
+  if (!page.url().startsWith("http")) await page.goto("/");
   await page.evaluate(() => localStorage.clear());
 }
 
@@ -83,7 +84,10 @@ test("final browser evidence stays responsive, accessible and materially distinc
       await page.goto(`/${merchant.slug}`);
       await expect(page.getByTestId("landing-stage")).toBeVisible();
       await noHorizontalOverflow(page);
-      await expect(page.locator("main")).toHaveCSS("--brand-family-density", merchant.density);
+      const density = await page.locator("main").evaluate((node) =>
+        getComputedStyle(node).getPropertyValue("--brand-family-density").trim(),
+      );
+      expect(density).toBe(merchant.density);
       await capture(page, testInfo, `${merchant.slug}-landing-${viewport.width}`);
     }
 
