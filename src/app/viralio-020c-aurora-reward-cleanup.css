@@ -1,0 +1,127 @@
+/* VIRALIO-020C — reward hierarchy cleanup after Mauro visual feedback.
+   Keep reward data and actions unchanged; only remove brittle absolute positioning. */
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy {
+  position: static;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: 100%;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy::before {
+  color: var(--aurora-rose);
+  content: "FELICIDADES";
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 8vw, 2.15rem);
+  font-weight: 450;
+  letter-spacing: .035em;
+  line-height: 1;
+}
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy::after {
+  order: 1;
+  margin-top: 0;
+  color: var(--aurora-muted);
+  content: "Este es tu premio";
+  font-family: var(--font-body);
+  font-size: .68rem;
+  font-weight: 500;
+}
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy h1 {
+  position: static !important;
+  order: 2;
+  width: 100%;
+  max-width: 12ch;
+  margin: 5px auto 0 !important;
+  color: var(--aurora-rose);
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 10vw, 3rem);
+  font-weight: 430;
+  letter-spacing: -.035em;
+  line-height: .96;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy h1::before {
+  content: none !important;
+}
+
+.theme-joyeria-aurora .reward-voucher {
+  position: relative;
+  display: grid;
+  width: min(100%, 302px);
+  min-height: 0;
+  align-self: center;
+  gap: 20px;
+  padding: 26px 22px !important;
+  border: 1px solid rgba(203, 146, 119, .55);
+  border-radius: 10px;
+  background: #fffaf6;
+  box-shadow: 0 12px 24px rgba(96, 60, 48, .08);
+  overflow: hidden;
+}
+
+.theme-joyeria-aurora .reward-voucher::before,
+.theme-joyeria-aurora .reward-voucher::after {
+  content: none !important;
+  display: none !important;
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-head {
+  position: static !important;
+  display: flex;
+  justify-content: center;
+  padding: 0 !important;
+  color: var(--aurora-ink);
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-head span::before {
+  content: "PREMIO VIRALIO";
+  font-size: .58rem;
+  letter-spacing: .14em;
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-code {
+  display: grid;
+  width: 100%;
+  gap: 7px;
+  margin: 0 !important;
+  padding: 18px 14px;
+  border: 1px solid rgba(203, 146, 119, .32);
+  background: #fff7f1;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-code strong {
+  font-size: clamp(1.55rem, 7vw, 1.9rem);
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-foot {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  color: var(--aurora-muted);
+  font-size: .68rem;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-foot b {
+  color: var(--aurora-ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+@media (max-height: 760px) {
+  .theme-joyeria-aurora .premium-reveal-stage .reward-copy h1 {
+    max-width: 13ch;
+    font-size: clamp(2rem, 9vw, 2.55rem);
+  }
+
+  .theme-joyeria-aurora .reward-voucher {
+    gap: 14px;
+    padding: 20px !important;
+  }
+}
