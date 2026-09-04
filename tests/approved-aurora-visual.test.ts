@@ -8,31 +8,40 @@ function source(file: string): string {
 }
 
 describe("approved Joyería Aurora visual contract", () => {
-  it("loads a dedicated reference layer after the shared funnel styles", () => {
+  it("loads Mauro feedback after the shared funnel and Aurora reference layers", () => {
     const layout = source("src/app/layout.tsx");
     expect(layout).toContain('import "./viralio-020b.css"');
     expect(layout).toContain('import "./viralio-020c-approved-aurora.css"');
     expect(layout).toContain('import "./viralio-020c-approved-aurora-motion.css"');
-    expect(layout.indexOf("viralio-020c-approved-aurora.css")).toBeGreaterThan(layout.indexOf("viralio-020b.css"));
+    expect(layout).toContain('import "./viralio-020c-aurora-feedback.css"');
+    expect(layout.indexOf("viralio-020c-aurora-feedback.css")).toBeGreaterThan(layout.indexOf("viralio-020c-approved-aurora.css"));
   });
 
-  it("uses the approved Aurora photography and four-screen primitives", () => {
-    const css = source("src/app/viralio-020c-approved-aurora.css");
-    expect(css).toContain("/brand/aurora-landing-jewelry.webp");
-    expect(css).toContain("/brand/aurora-share-jewelry.webp");
-    expect(css).toContain('content: "Hay algo"');
-    expect(css).toContain('content: "hermoso"');
-    expect(css).toContain('content: "Comparte para"');
-    expect(css).toContain('content: "¡Gira la ruleta!"');
-    expect(css).toContain('content: "¡FELICIDADES!"');
-    expect(css).toContain(".reward-voucher");
+  it("removes rejected photography and keeps Aurora typography, wheel and reward primitives", () => {
+    const baseCss = source("src/app/viralio-020c-approved-aurora.css");
+    const feedbackCss = source("src/app/viralio-020c-aurora-feedback.css");
+
+    expect(feedbackCss).toContain(".campaign-visual");
+    expect(feedbackCss).toContain("display: none !important");
+    expect(feedbackCss).toContain("background: none !important");
+    expect(feedbackCss).toContain('content: "Compartí la magia"');
+    expect(feedbackCss).toContain('content: "de Aurora"');
+    expect(feedbackCss).toContain(".premium-story-grid");
+    expect(feedbackCss).toContain("display: none !important");
+
+    expect(fs.existsSync(path.join(process.cwd(), "public/brand/aurora-landing-jewelry.webp"))).toBe(false);
+    expect(fs.existsSync(path.join(process.cwd(), "public/brand/aurora-share-jewelry.webp"))).toBe(false);
+
+    expect(baseCss).toContain('content: "¡Gira la ruleta!"');
+    expect(baseCss).toContain('content: "¡FELICIDADES!"');
+    expect(baseCss).toContain(".reward-voucher");
   });
 
   it("is scoped to Aurora and does not replace the shared engine", () => {
-    const css = source("src/app/viralio-020c-approved-aurora.css");
-    expect(css).toContain(".theme-joyeria-aurora");
-    expect(css).not.toContain(".theme-moka");
-    expect(css).not.toContain(".theme-atlas-barber");
+    const feedbackCss = source("src/app/viralio-020c-aurora-feedback.css");
+    expect(feedbackCss).toContain(".theme-joyeria-aurora");
+    expect(feedbackCss).not.toContain(".theme-moka");
+    expect(feedbackCss).not.toContain(".theme-atlas-barber");
   });
 
   it("keeps the normal nine-turn wheel and makes reduced motion visible rather than instant", () => {
