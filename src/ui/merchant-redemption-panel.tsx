@@ -150,9 +150,9 @@ export function MerchantRedemptionPanel({ merchant, authenticated }: { merchant:
   }
 
   return (
-    <main className={`experience theme-${merchant.slug}`} style={merchantThemeStyle(merchant)} data-merchant={merchant.slug}>
+    <main className={`experience merchant-redemption-shell theme-${merchant.slug}`} style={merchantThemeStyle(merchant)} data-merchant={merchant.slug}>
       <div className="ambient ambient-one" aria-hidden="true" /><div className="ambient ambient-two" aria-hidden="true" />
-      <section className="experience-card public-card">
+      <section className="experience-card public-card merchant-redemption-card">
         <header className="merchant-brand">
           <span className="brand-mark"><span>{merchant.theme.monogram}</span></span>
           <span className="brand-copy"><strong>{merchant.theme.displayName}</strong><small>Panel seguro de canjes</small></span>
