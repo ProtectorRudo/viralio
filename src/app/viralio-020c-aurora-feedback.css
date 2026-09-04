@@ -1,6 +1,6 @@
 /* VIRALIO-020C — Mauro feedback pass.
    Keep the approved wheel/reward work intact while simplifying Aurora landing/share.
-   No photographic assets are rendered here; browser-only share actions are labelled honestly. */
+   Aurora uses one clear sharing path: direct WhatsApp message to a contact. */
 
 .theme-joyeria-aurora .premium-brand-header .brand-copy small {
   order: -1;
@@ -118,7 +118,7 @@
   width: min(100%, 34ch);
   max-width: none;
   margin: 13px auto 0;
-  content: "Compartí el enlace y después girá la ruleta para descubrir tu premio.";
+  content: "Enviá el enlace a un contacto por WhatsApp y después girá la ruleta para descubrir tu premio.";
   white-space: normal;
   text-align: center;
 }
@@ -169,15 +169,22 @@
   line-height: 1.5;
 }
 
-/* Browser Web Share cannot target WhatsApp Status or Instagram Stories directly.
-   Hide those misleading destination-specific buttons for Aurora and keep the
-   working direct WhatsApp message + accurately-labelled generic share action. */
-.theme-joyeria-aurora .premium-story-grid {
+/* Aurora deliberately keeps a single sharing action: direct WhatsApp message.
+   Status, Stories and generic Web Share stay hidden for this approved funnel. */
+.theme-joyeria-aurora .premium-story-grid,
+.theme-joyeria-aurora [data-testid="native-share"] {
   display: none !important;
 }
 
 .theme-joyeria-aurora .share-actions {
+  display: grid;
+  grid-template-columns: 1fr;
   margin-top: 2px;
+}
+
+.theme-joyeria-aurora .share-actions .button-whatsapp {
+  width: 100%;
+  min-height: 58px;
 }
 
 .theme-joyeria-aurora .share-guidance {
@@ -189,7 +196,7 @@
 }
 
 .theme-joyeria-aurora .share-guidance::before {
-  content: "Compartí por WhatsApp o usá el menú de tu teléfono para otras apps. La ruleta se habilita después de iniciar una acción de compartir.";
+  content: "Se abre WhatsApp para que elijas un contacto. Al iniciar el envío, la ruleta queda habilitada.";
   font-size: .66rem;
 }
 
