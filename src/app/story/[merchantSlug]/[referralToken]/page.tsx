@@ -13,7 +13,9 @@ export default async function StoryBuilderPage({
   const { merchantSlug, referralToken } = await params;
   let merchant: Merchant;
   try {
-    merchant = await viralio.getMerchantForExperience(merchantSlug);
+    const context = await viralio.getShareContext(referralToken);
+    merchant = context.merchant;
+    if (merchant.slug !== merchantSlug) notFound();
   } catch {
     notFound();
   }
