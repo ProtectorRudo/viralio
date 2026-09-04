@@ -49,19 +49,30 @@
   content: none !important;
 }
 
-.theme-joyeria-aurora .reward-voucher {
+.theme-joyeria-aurora .reward-ticket.reward-voucher {
   position: relative;
   display: grid;
   width: min(100%, 302px);
   min-height: 0;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto auto auto;
+  grid-auto-flow: row;
+  align-items: stretch;
   align-self: center;
-  gap: 20px;
+  gap: 18px;
+  margin: 8px auto 14px;
   padding: 26px 22px !important;
   border: 1px solid rgba(203, 146, 119, .55);
   border-radius: 10px;
   background: #fffaf6;
   box-shadow: 0 12px 24px rgba(96, 60, 48, .08);
   overflow: hidden;
+}
+
+.theme-joyeria-aurora .reward-ticket.reward-voucher > * {
+  grid-column: 1 !important;
+  width: 100%;
+  min-width: 0;
 }
 
 .theme-joyeria-aurora .reward-voucher::before,
@@ -76,6 +87,7 @@
   justify-content: center;
   padding: 0 !important;
   color: var(--aurora-ink);
+  text-align: center;
 }
 
 .theme-joyeria-aurora .reward-voucher .voucher-head span::before {
@@ -96,22 +108,33 @@
 }
 
 .theme-joyeria-aurora .reward-voucher .voucher-code strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   font-size: clamp(1.55rem, 7vw, 1.9rem);
 }
 
 .theme-joyeria-aurora .reward-voucher .voucher-foot {
   display: flex;
+  width: 100%;
   justify-content: center;
   padding: 0;
   color: var(--aurora-muted);
   font-size: .68rem;
+  line-height: 1.45;
   text-align: center;
+  white-space: normal;
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-foot > span {
+  width: 100%;
+  white-space: normal;
 }
 
 .theme-joyeria-aurora .reward-voucher .voucher-foot b {
   color: var(--aurora-ink);
   font-family: var(--font-body);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 @media (max-height: 760px) {
@@ -120,7 +143,7 @@
     font-size: clamp(2rem, 9vw, 2.55rem);
   }
 
-  .theme-joyeria-aurora .reward-voucher {
+  .theme-joyeria-aurora .reward-ticket.reward-voucher {
     gap: 14px;
     padding: 20px !important;
   }
