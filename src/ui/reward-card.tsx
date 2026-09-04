@@ -1,5 +1,6 @@
 import type { Merchant, Reward, RewardStatus } from "@/domain/types";
 import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
+import { brandRenderDataAttributes } from "@/ui/brand-render-contract";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
 
 const labels: Record<RewardStatus, string> = { AVAILABLE: "Disponible", REDEEMED: "Canjeado", EXPIRED: "Vencido" };
@@ -18,6 +19,7 @@ export function RewardCard({ reward, merchant, initialStatus }: {
       data-merchant={merchant.slug}
       data-brand-style={merchant.theme.stylePreset ?? "template"}
       data-design-version="020b"
+      {...brandRenderDataAttributes(merchant.theme)}
     >
       <div className="ambient ambient-one" aria-hidden="true" /><div className="ambient ambient-two" aria-hidden="true" />
       <section className="experience-card public-card premium-public-card">
