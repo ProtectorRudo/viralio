@@ -125,3 +125,11 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run production responsive E2E
         run: npm run test:e2e
+      - name: Upload VIRALIO-020 visual QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: viralio-020-visual-qa
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 14
