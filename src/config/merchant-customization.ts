@@ -143,6 +143,7 @@ export function applyMerchantCustomization(merchant: Merchant, customization?: M
         stylePreset: brand.stylePreset,
         fontPreset: brand.fontPreset,
         tone: visibleBusinessType ?? brand.tone,
+        artDirection: brand.artDirection,
         palette: { ...brand.palette, wheel: [...brand.palette.wheel] },
       } : {}),
     },
