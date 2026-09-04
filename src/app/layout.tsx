@@ -13,6 +13,7 @@ import "./viralio-020b-wheel.css";
 import "./viralio-020f-brand-families.css";
 import "./viralio-020g-merchant-ui.css";
 import "./viralio-020i-reward-objects.css";
+import "./viralio-020j-visual-qa.css";
 
 export const metadata: Metadata = {
   title: "Viralio · Experiencias que se comparten",
