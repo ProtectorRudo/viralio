@@ -18,7 +18,7 @@ async function capture(page: Page, testInfo: TestInfo, name: string) {
   await testInfo.attach(name, { path, contentType: "image/png" });
 }
 
-test("Aurora Story Builder unlocks the approved wheel after preparing the 9:16 piece", async ({ page }, testInfo) => {
+test("Aurora uses WhatsApp-only sharing and keeps the approved wheel", async ({ page }, testInfo) => {
   const onboardingKey = process.env.VIRALIO_ONBOARDING_KEY;
   const merchantPins = process.env.VIRALIO_MERCHANT_PINS;
   if (!onboardingKey || !merchantPins) throw new Error("Aurora E2E requires onboarding and merchant test environment");
@@ -30,6 +30,10 @@ test("Aurora Story Builder unlocks the approved wheel after preparing the 9:16 p
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "share", { configurable: true, value: async () => undefined });
     Object.defineProperty(navigator, "canShare", { configurable: true, value: () => false });
+    Object.defineProperty(window, "open", {
+      configurable: true,
+      value: () => ({ location: { href: "" }, close: () => undefined }),
+    });
   });
 
   await page.goto("/alta");
@@ -68,30 +72,15 @@ test("Aurora Story Builder unlocks the approved wheel after preparing the 9:16 p
   expect(await poster.evaluate((node) => getComputedStyle(node, "::before").backgroundImage)).toBe("none");
   await expect(page.getByTestId("whatsapp-status-share")).toBeHidden();
   await expect(page.getByTestId("instagram-story-share")).toBeHidden();
-  await expect(page.getByRole("button", { name: /Enviar por WhatsApp/ })).toBeVisible();
-  await expect(page.getByTestId("native-share")).toHaveText(/Crear mi Story/);
+  await expect(page.getByTestId("native-share")).toBeHidden();
+  const whatsappButton = page.getByRole("button", { name: /Enviar por WhatsApp/ });
+  await expect(whatsappButton).toBeVisible();
   await expectNoOverflow(page);
-  await capture(page, testInfo, "aurora-feedback-share-390");
+  await capture(page, testInfo, "aurora-feedback-share-whatsapp-only-390");
 
-  await page.getByTestId("native-share").click();
-  await expect(page).toHaveURL(new RegExp(`/story/${slug}/`));
-  await expect(page.getByTestId("story-builder")).toBeVisible();
-  await expect(page.getByTestId("story-preview")).toBeVisible();
-  await expect(page.getByTestId("story-preview")).toHaveClass(/is-ready/);
-  await expect(page.getByTestId("story-save")).toBeEnabled();
-  await expectNoOverflow(page);
-  await capture(page, testInfo, "aurora-story-builder-390");
-
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByTestId("story-save").click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe(`viralio-${slug}-story.png`);
-  await expect(page.getByTestId("story-ready")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Abrir WhatsApp" })).toHaveAttribute("href", "whatsapp://send");
-  await expect(page.getByRole("link", { name: "Abrir Instagram" })).toHaveAttribute("href", "instagram://app");
-  await capture(page, testInfo, "aurora-story-builder-ready-390");
-
-  await page.getByRole("link", { name: /Continuar a la ruleta/ }).click();
+  const shareResponse = page.waitForResponse((response) => /\/api\/sessions\/[^/]+\/share$/.test(new URL(response.url()).pathname) && response.request().method() === "POST");
+  await whatsappButton.click();
+  expect((await shareResponse).status()).toBe(200);
   await expect(page.getByTestId("wheel-stage")).toBeVisible();
   await capture(page, testInfo, "aurora-feedback-wheel-390");
 
