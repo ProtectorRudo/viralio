@@ -13,6 +13,11 @@ async function enableShare(page: Page) {
   });
 }
 
+async function expectNoHorizontalOverflow(page: Page) {
+  const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+  expect(hasOverflow).toBe(false);
+}
+
 async function issueMokaReward(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -54,6 +59,8 @@ test("public reward stays read-only and authenticated Moka staff can redeem and 
   await page.goto("/comercio/moka/panel");
   await expect(page).toHaveURL(/\/comercio\/moka\/canjes$/);
   await expect(page.getByTestId("merchant-login-form")).toBeVisible();
+  await expect(page.locator("main.merchant-redemption-shell")).toBeVisible();
+  await expectNoHorizontalOverflow(page);
 
   await page.getByTestId("merchant-pin").fill("000000");
   const failedLoginPromise = page.waitForResponse((response) =>
@@ -79,6 +86,7 @@ test("public reward stays read-only and authenticated Moka staff can redeem and 
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
   await expect(page.getByTestId("reward-filter-available")).toHaveClass(/is-active/);
   await expect(page.getByTestId("merchant-reward-list")).toContainText(reward.shortCode);
+  await expectNoHorizontalOverflow(page);
 
   await page.getByTestId("reward-code").fill(reward.shortCode.toLowerCase());
   await page.getByRole("button", { name: /Buscar premio/ }).click();
@@ -98,12 +106,15 @@ test("public reward stays read-only and authenticated Moka staff can redeem and 
   await expect(page.getByTestId("metric-sessions")).toHaveText(/^[1-9]\d*$/);
   await expect(page.getByTestId("metric-shares")).toHaveText(/^[1-9]\d*$/);
   await expect(page.getByTestId("metric-redeemed")).toHaveText(/^[1-9]\d*$/);
+  await expectNoHorizontalOverflow(page);
 
   await page.getByRole("link", { name: "Configuración" }).click();
   await expect(page).toHaveURL(/\/comercio\/moka\/configuracion$/);
   await expect(page.getByTestId("merchant-settings-panel")).toBeVisible();
+  await expect(page.getByTestId("merchant-settings-preview")).toBeVisible();
   await expect(page.getByTestId("probability-total")).toContainText("100%");
   await expect(page.getByTestId("save-settings")).toBeEnabled();
+  await expectNoHorizontalOverflow(page);
 
   await page.getByRole("link", { name: "Canjes" }).click();
   await expect(page.getByTestId("merchant-reward-search")).toBeVisible();

@@ -125,6 +125,34 @@ export function MerchantSettingsPanel({
             <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
           </nav>
 
+          <aside className="merchant-settings-preview" data-testid="merchant-settings-preview" aria-label="Vista previa de la experiencia">
+            <div className="merchant-preview-meta">
+              <span>Vista previa</span>
+              <small>Se actualiza mientras editás</small>
+            </div>
+            <div className="merchant-preview-phone">
+              <div className="merchant-preview-brand">
+                <span>{merchant.theme.monogram}</span>
+                <strong>{customization.copy.displayName}</strong>
+              </div>
+              <div className="merchant-preview-hero">
+                <small>{customization.copy.heroEyebrow}</small>
+                <strong>{customization.copy.heroTitle}</strong>
+                <p>{customization.copy.heroCopy}</p>
+              </div>
+              <div className="merchant-preview-social">
+                <span>Pieza social</span>
+                <strong>{customization.copy.socialHeadline}</strong>
+                <p>{customization.copy.socialSubcopy}</p>
+              </div>
+              <div className="merchant-preview-stats">
+                <span><b>{customization.prizes.length}</b> premios</span>
+                <span><b>{customization.rewardValidityDays}</b> días</span>
+                <span className={probabilityTotal === 100 ? "is-valid" : "is-invalid"}><b>{probabilityTotal}%</b> total</span>
+              </div>
+            </div>
+          </aside>
+
           <form className="merchant-settings-form" onSubmit={save}>
             <section className="merchant-settings-section">
               <div className="merchant-settings-heading">
