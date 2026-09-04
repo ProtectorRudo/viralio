@@ -2,6 +2,10 @@
    Keep the approved wheel/reward work intact while simplifying Aurora landing/share.
    No photographic assets are rendered here; browser-only share actions are labelled honestly. */
 
+.theme-joyeria-aurora .premium-brand-header .brand-copy small {
+  order: -1;
+}
+
 .theme-joyeria-aurora .premium-campaign-stage {
   min-height: calc(100svh - 136px);
   justify-content: space-between;
@@ -15,14 +19,27 @@
 }
 
 .theme-joyeria-aurora .campaign-copy {
+  display: grid;
   width: 100%;
   max-width: 330px;
+  justify-items: center;
   padding-top: 0;
   text-align: center;
 }
 
 .theme-joyeria-aurora .campaign-copy h1,
 .theme-joyeria-aurora .campaign-copy .lead {
+  width: 100%;
+  max-width: none !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+
+.theme-joyeria-aurora .campaign-copy h1::before,
+.theme-joyeria-aurora .campaign-copy h1::after,
+.theme-joyeria-aurora .campaign-copy .lead::before {
+  width: 100%;
+  white-space: nowrap;
   text-align: center;
 }
 
@@ -44,11 +61,14 @@
 }
 
 .theme-joyeria-aurora .campaign-copy .lead::after {
-  max-width: 24ch;
+  display: block;
+  width: min(100%, 28ch);
+  max-width: none;
   margin: 30px auto 0;
   padding: 20px 0 0;
   border-top: 1px solid var(--aurora-line);
   border-left: 0;
+  color: #66524b;
   content: "Descubrí tu regalo exclusivo.";
   white-space: normal;
   text-align: center;
@@ -59,17 +79,48 @@
   background: none !important;
 }
 
+.theme-joyeria-aurora .share-copy {
+  display: grid;
+  width: 100%;
+  max-width: none !important;
+  justify-items: center;
+  text-align: center !important;
+}
+
+.theme-joyeria-aurora .share-copy h1,
+.theme-joyeria-aurora .share-copy .lead {
+  width: 100%;
+  max-width: none !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  text-align: center !important;
+}
+
+.theme-joyeria-aurora .share-copy h1::before,
+.theme-joyeria-aurora .share-copy h1::after {
+  width: 100%;
+  white-space: nowrap;
+  text-align: center;
+}
+
 .theme-joyeria-aurora .share-copy h1::before {
   content: "Compartí la magia";
+  font-size: clamp(1.8rem, 8.3vw, 2.05rem);
 }
 
 .theme-joyeria-aurora .share-copy h1::after {
   content: "de Aurora";
+  font-size: clamp(1.8rem, 8.3vw, 2.05rem);
 }
 
 .theme-joyeria-aurora .share-copy .lead::before {
-  max-width: 34ch;
+  display: block;
+  width: min(100%, 34ch);
+  max-width: none;
+  margin: 13px auto 0;
   content: "Compartí el enlace y después girá la ruleta para descubrir tu premio.";
+  white-space: normal;
+  text-align: center;
 }
 
 .theme-joyeria-aurora .share-poster-preview {
