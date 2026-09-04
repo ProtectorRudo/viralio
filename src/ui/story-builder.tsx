@@ -17,6 +17,7 @@ async function json<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export function StoryBuilder({ merchant, referralToken }: { merchant: Merchant; referralToken: string }) {
+  const [previewReady, setPreviewReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +25,7 @@ export function StoryBuilder({ merchant, referralToken }: { merchant: Merchant; 
   const returnUrl = `/${merchant.slug}`;
 
   async function saveStory() {
-    if (saving) return;
+    if (saving || !previewReady) return;
     setSaving(true);
     setError("");
     try {
@@ -74,7 +75,8 @@ export function StoryBuilder({ merchant, referralToken }: { merchant: Merchant; 
           <span>Formato vertical 9:16 · preparado por Viralio</span>
         </div>
 
-        <div className="story-builder-preview" data-testid="story-preview">
+        <div className={`story-builder-preview${previewReady ? " is-ready" : ""}`} data-testid="story-preview">
+          {!previewReady && <span className="story-builder-loading">Preparando Story…</span>}
           <Image
             src={imageUrl}
             alt={`Story de ${merchant.theme.displayName}`}
@@ -82,6 +84,7 @@ export function StoryBuilder({ merchant, referralToken }: { merchant: Merchant; 
             height={1920}
             unoptimized
             priority
+            onLoad={() => setPreviewReady(true)}
           />
         </div>
 
@@ -90,10 +93,10 @@ export function StoryBuilder({ merchant, referralToken }: { merchant: Merchant; 
             className="story-builder-save"
             type="button"
             data-testid="story-save"
-            disabled={saving || saved}
+            disabled={saving || saved || !previewReady}
             onClick={saveStory}
           >
-            {saving ? "Preparando imagen…" : saved ? "Imagen preparada ✓" : "Guardar imagen"}
+            {!previewReady ? "Preparando Story…" : saving ? "Preparando imagen…" : saved ? "Imagen preparada ✓" : "Guardar imagen"}
           </button>
 
           {!saved && (
