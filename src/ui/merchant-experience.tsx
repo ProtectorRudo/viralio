@@ -123,6 +123,10 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     setShareBusy(channel);
     try {
       if (channel === "native") {
+        if (merchant.slug === "joyeria-aurora") {
+          window.location.href = `/story/${merchant.slug}/${encodeURIComponent(payload.session.referralToken)}`;
+          return;
+        }
         if (!navigator.share) throw new Error("Tu navegador no ofrece el menú para compartir");
         await navigator.share({ title: `Pase sorpresa de ${merchant.name}`, text: merchant.theme.referralCopy, url: referralUrl });
         await registerShare(channel);
@@ -271,7 +275,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
               <button className="button button-whatsapp" disabled={shareDisabled} onClick={() => share("whatsapp")}>
                 <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Enviar por WhatsApp</span>
               </button>
-              <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
+              <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || (!nativeShare && merchant.slug !== "joyeria-aurora")} onClick={() => share("native")}><span aria-hidden="true">↗</span> {merchant.slug === "joyeria-aurora" ? "Crear mi Story" : "Compartir por otras apps"}</button>
             </div>
             <p className="share-guidance">La ruleta se habilita cuando iniciás una acción de compartir. Viralio no afirma una publicación que no puede verificar.</p>
           </div>
