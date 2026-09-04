@@ -1,0 +1,18 @@
+/* VIRALIO-020J — visual QA fixes discovered from real Chromium evidence.
+   Keep the correction isolated from the manually approved Aurora art direction. */
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option > span:nth-child(3) {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 3px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option strong,
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option small {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+}
