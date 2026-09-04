@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { Merchant, Reward, Session, ShareChannel } from "@/domain/types";
 import { BrandIcon } from "@/ui/brand-icon";
@@ -21,6 +22,7 @@ function formatDate(value: string): string {
 }
 
 export function MerchantExperience({ merchant: initialMerchant, referralToken }: { merchant: Merchant; referralToken?: string }) {
+  const router = useRouter();
   const storageKey = `viralio:${initialMerchant.slug}:session`;
   const [payload, setPayload] = useState<SessionPayload>();
   const [reward, setReward] = useState<Reward>();
@@ -124,7 +126,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     try {
       if (channel === "native") {
         if (merchant.slug === "joyeria-aurora") {
-          window.location.href = `/story/${merchant.slug}/${encodeURIComponent(payload.session.referralToken)}`;
+          router.push(`/story/${merchant.slug}/${encodeURIComponent(payload.session.referralToken)}`);
           return;
         }
         if (!navigator.share) throw new Error("Tu navegador no ofrece el menú para compartir");
