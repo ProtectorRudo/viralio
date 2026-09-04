@@ -1,0 +1,139 @@
+/* VIRALIO-020F — deterministic Brand Engine 2.0 family composition.
+   Only validated renderer variables are consumed here. No model-authored CSS/HTML
+   and no parsing of React's serialized style attribute. Aurora remains excluded
+   until its dedicated reference implementation passes Mauro's human visual gate. */
+
+.experience:not(.theme-joyeria-aurora) .premium-campaign-stage,
+.experience:not(.theme-joyeria-aurora) .premium-share-stage,
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage,
+.experience:not(.theme-joyeria-aurora) .premium-reveal-stage {
+  gap: 20px;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-frame {
+  min-height: var(--brand-campaign-min-height, clamp(420px, 58vh, 530px));
+  grid-template-columns: var(--brand-layout-columns, minmax(0, 1.22fr) minmax(118px, .78fr));
+  align-items: var(--brand-campaign-align-items, end);
+  gap: 20px;
+  padding-top: var(--brand-campaign-pad-top, 24px);
+  padding-bottom: var(--brand-campaign-pad-bottom, 24px);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy,
+.experience:not(.theme-joyeria-aurora) .campaign-copy h1,
+.experience:not(.theme-joyeria-aurora) .campaign-copy .lead,
+.experience:not(.theme-joyeria-aurora) .share-copy,
+.experience:not(.theme-joyeria-aurora) .share-copy h1,
+.experience:not(.theme-joyeria-aurora) .share-copy .lead,
+.experience:not(.theme-joyeria-aurora) .wheel-copy,
+.experience:not(.theme-joyeria-aurora) .wheel-copy h1,
+.experience:not(.theme-joyeria-aurora) .wheel-copy .lead,
+.experience:not(.theme-joyeria-aurora) .reward-copy,
+.experience:not(.theme-joyeria-aurora) .reward-copy h1,
+.experience:not(.theme-joyeria-aurora) .reward-copy .lead {
+  text-align: var(--brand-layout-copy-align, left);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy {
+  max-width: var(--brand-layout-copy-max, 26rem);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy h1 {
+  max-width: var(--brand-heading-max, 9ch);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy .lead {
+  margin-top: var(--brand-lead-margin-top, 18px);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual {
+  width: var(--brand-campaign-visual-width, 100%);
+  min-height: var(--brand-campaign-visual-min-height, 280px);
+  justify-self: center;
+  margin-inline: var(--brand-campaign-visual-margin-inline, 0px);
+  border-left: var(--brand-campaign-visual-border, 0px solid transparent);
+  transform: scale(var(--brand-layout-media-scale, 1));
+  transform-origin: center bottom;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell {
+  transform: scale(var(--brand-layout-media-scale, 1));
+  transform-origin: center center;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-preview {
+  width: var(--brand-share-width, 100%);
+  min-height: 0;
+  margin-inline: auto;
+  aspect-ratio: var(--brand-share-aspect, 9 / 16);
+  border-width: var(--brand-share-border-width, 1px);
+  border-radius: var(--brand-shape-radius, var(--radius-panel));
+  box-shadow: var(--brand-share-shadow, none);
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-copy {
+  max-width: var(--brand-share-copy-width, 62%);
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-voucher {
+  border-radius: var(--brand-reward-radius, var(--radius-panel));
+  box-shadow: var(--brand-share-shadow, none);
+}
+
+.experience:not(.theme-joyeria-aurora) .button,
+.experience:not(.theme-joyeria-aurora) .story-option,
+.experience:not(.theme-joyeria-aurora) .reward-ticket,
+.experience:not(.theme-joyeria-aurora) .share-poster-preview {
+  transition-duration: var(--brand-motion-duration, var(--motion-interaction));
+}
+
+.experience:not(.theme-joyeria-aurora) .button,
+.experience:not(.theme-joyeria-aurora) .story-option {
+  border-radius: var(--brand-shape-radius, var(--radius-control));
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+  width: min(75vw, 294px);
+  transform: scale(var(--brand-layout-media-scale, 1));
+  transform-origin: center;
+}
+
+/* The same semantic markup now produces materially different composition because
+   family/layout/shape/share/reward values are finite renderer inputs, not CSS text. */
+.experience:not(.theme-joyeria-aurora) .share-poster-preview::before {
+  opacity: var(--brand-visual-decoration, .3);
+}
+
+.experience:not(.theme-joyeria-aurora) .mystery-medallion {
+  border-radius: var(--brand-reward-radius, 50%);
+}
+
+@media (max-width: 520px) {
+  .experience:not(.theme-joyeria-aurora) .campaign-frame {
+    grid-template-columns: 1fr;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-copy {
+    width: 100%;
+    max-width: min(100%, var(--brand-layout-copy-max, 26rem));
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-visual,
+  .experience:not(.theme-joyeria-aurora) .wheel-object-shell,
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+    transform: scale(var(--brand-layout-media-scale-mobile, 1));
+  }
+
+  .experience:not(.theme-joyeria-aurora) .share-poster-preview {
+    max-height: 430px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience:not(.theme-joyeria-aurora) .button,
+  .experience:not(.theme-joyeria-aurora) .story-option,
+  .experience:not(.theme-joyeria-aurora) .reward-ticket,
+  .experience:not(.theme-joyeria-aurora) .share-poster-preview {
+    transition-duration: .01ms !important;
+  }
+}
