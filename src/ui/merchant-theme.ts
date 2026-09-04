@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { BrandFontPreset, BrandStylePreset, Merchant } from "@/domain/types";
+import { brandRenderVariables } from "@/ui/brand-render-contract";
 
 type ThemeProperties = CSSProperties & Record<`--${string}`, string>;
 
@@ -130,5 +131,6 @@ export function merchantThemeStyle(merchant: Merchant): ThemeProperties {
     "--font-display": fonts.display,
     "--font-body": fonts.body,
     ...styleTokens[stylePreset],
+    ...brandRenderVariables(merchant.theme),
   };
 }
