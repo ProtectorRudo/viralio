@@ -16,10 +16,11 @@ export function PreviewFreshSessionBoundary({
   const [ready, setReady] = useState(!forceFreshSession);
 
   useEffect(() => {
-    if (forceFreshSession) {
-      localStorage.removeItem(`viralio:${merchant.slug}:session`);
-    }
-    setReady(true);
+    if (!forceFreshSession) return;
+
+    localStorage.removeItem(`viralio:${merchant.slug}:session`);
+    const timer = window.setTimeout(() => setReady(true), 0);
+    return () => window.clearTimeout(timer);
   }, [forceFreshSession, merchant.slug]);
 
   if (!ready) return null;
