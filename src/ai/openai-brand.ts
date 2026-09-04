@@ -1,5 +1,16 @@
+import {
+  BRAND_EXPERIENCE_FAMILIES,
+  BRAND_LAYOUT_MOODS,
+  BRAND_MOTION_MOODS,
+  BRAND_REWARD_OBJECT_STYLES,
+  BRAND_SHAPE_LANGUAGES,
+  BRAND_SHARE_COMPOSITIONS,
+  BRAND_SURFACE_LANGUAGES,
+  BRAND_VISUAL_MOODS,
+  normalizeBrandArtDirection,
+} from "@/brand/art-direction";
 import { buildMerchantBrandProfile, normalizeLogoDataUrl } from "@/brand/brand-engine";
-import type { MerchantBrandProfile, MerchantTemplate } from "@/domain/types";
+import type { MerchantBrandArtDirection, MerchantBrandProfile, MerchantTemplate } from "@/domain/types";
 
 export const DEFAULT_OPENAI_BRAND_MODEL = "gpt-5.6-terra";
 
@@ -73,6 +84,7 @@ interface RawBrandDraft {
     surface: string;
     text: string;
   };
+  artDirection: MerchantBrandArtDirection;
   copy: GeneratedBrandCopy;
 }
 
@@ -91,10 +103,21 @@ const copyProperties = {
   socialSubcopy: { type: "string" },
 } as const;
 
+const artDirectionProperties = {
+  family: { type: "string", enum: [...BRAND_EXPERIENCE_FAMILIES] },
+  visualMood: { type: "string", enum: [...BRAND_VISUAL_MOODS] },
+  layoutMood: { type: "string", enum: [...BRAND_LAYOUT_MOODS] },
+  shapeLanguage: { type: "string", enum: [...BRAND_SHAPE_LANGUAGES] },
+  surfaceLanguage: { type: "string", enum: [...BRAND_SURFACE_LANGUAGES] },
+  motionMood: { type: "string", enum: [...BRAND_MOTION_MOODS] },
+  rewardObjectStyle: { type: "string", enum: [...BRAND_REWARD_OBJECT_STYLES] },
+  shareComposition: { type: "string", enum: [...BRAND_SHARE_COMPOSITIONS] },
+} as const;
+
 export const BRAND_DRAFT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["stylePreset", "fontPreset", "tone", "keywords", "colors", "copy"],
+  required: ["stylePreset", "fontPreset", "tone", "keywords", "colors", "artDirection", "copy"],
   properties: {
     stylePreset: { type: "string", enum: ["editorial", "minimal", "luxury", "bold", "warm", "urban"] },
     fontPreset: { type: "string", enum: ["editorial", "modern", "geometric", "humanist"] },
@@ -117,6 +140,12 @@ export const BRAND_DRAFT_SCHEMA = {
         surface: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
         text: { type: "string", pattern: "^#[0-9A-Fa-f]{6}$" },
       },
+    },
+    artDirection: {
+      type: "object",
+      additionalProperties: false,
+      required: Object.keys(artDirectionProperties),
+      properties: artDirectionProperties,
     },
     copy: {
       type: "object",
@@ -208,6 +237,7 @@ function normalizeRawDraft(value: unknown): RawBrandDraft {
     tone: candidate.tone as string,
     keywords: candidate.keywords as string[],
     colors: candidate.colors as RawBrandDraft["colors"],
+    artDirection: normalizeBrandArtDirection(candidate.artDirection),
     copy: normalizeCopy(candidate.copy),
   };
 }
@@ -278,7 +308,7 @@ export async function generateOpenAiBrandDraft(
             role: "developer",
             content: [{
               type: "input_text",
-              text: "Sos el director de marca de Viralio. Diseñá una identidad premium, profesional y fiel al rubro REAL del negocio para un funnel móvil de recompensas. No dejes que el fallback técnico coffee/barber/generic contamine la identidad si contradice el rubro real. Evitá estética de casino, kermés o plantilla genérica. Devolvé sólo el schema solicitado. Los colores deben ser #RRGGBB. No cambies premios, probabilidades ni reglas del producto. El copy debe sonar natural en español rioplatense y funcionar también aislado en una Story/Estado 9:16.",
+              text: "Sos el director de marca de Viralio. Diseñá una identidad premium, profesional y fiel al rubro REAL del negocio para un funnel móvil de recompensas. No dejes que el fallback técnico coffee/barber/generic contamine la identidad si contradice el rubro real. Elegí únicamente los presets y tokens enumerados en artDirection: nunca escribas CSS, HTML, clases, URLs ni código. Viralio controla la composición final. Evitá estética de casino, kermés o plantilla genérica. Las cuatro familias de experiencia posibles son Editorial Luxury, Warm Crafted, Bold Contemporary y Minimal Professional; elegí la más fiel al comercio y usá los demás campos para matizarla. Devolvé sólo el schema solicitado. Los colores deben ser #RRGGBB. No cambies premios, probabilidades ni reglas del producto. El copy debe sonar natural en español rioplatense y funcionar también aislado en una Story/Estado 9:16.",
             }],
           },
           { role: "user", content: userContent },
@@ -315,6 +345,7 @@ export async function generateOpenAiBrandDraft(
       tone: draft.tone,
       keywords: draft.keywords,
       colors: draft.colors,
+      artDirection: draft.artDirection,
       ai: { model, generatedAt: now().toISOString() },
     });
     return { brand, copy: draft.copy };
