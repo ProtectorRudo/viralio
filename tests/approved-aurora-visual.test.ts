@@ -14,7 +14,7 @@ describe("approved Joyería Aurora visual contract", () => {
     expect(layout).toContain('import "./viralio-020c-approved-aurora.css"');
     expect(layout).toContain('import "./viralio-020c-approved-aurora-motion.css"');
     expect(layout).toContain('import "./viralio-020c-aurora-feedback.css"');
-    expect(layout).toContain('import "./viralio-020k-story-builder.css"');
+    expect(layout).not.toContain("viralio-020k-story-builder.css");
     expect(layout.indexOf("viralio-020c-aurora-feedback.css")).toBeGreaterThan(layout.indexOf("viralio-020c-approved-aurora.css"));
   });
 
@@ -27,8 +27,6 @@ describe("approved Joyería Aurora visual contract", () => {
     expect(feedbackCss).toContain("background: none !important");
     expect(feedbackCss).toContain('content: "Compartí la magia"');
     expect(feedbackCss).toContain('content: "de Aurora"');
-    expect(feedbackCss).toContain(".premium-story-grid");
-    expect(feedbackCss).toContain("display: none !important");
 
     expect(fs.existsSync(path.join(process.cwd(), "public/brand/aurora-landing-jewelry.webp"))).toBe(false);
     expect(fs.existsSync(path.join(process.cwd(), "public/brand/aurora-share-jewelry.webp"))).toBe(false);
@@ -38,18 +36,18 @@ describe("approved Joyería Aurora visual contract", () => {
     expect(baseCss).toContain(".reward-voucher");
   });
 
-  it("uses the Story Builder instead of pretending the browser can target Status or Stories directly", () => {
+  it("keeps WhatsApp message as Aurora's only sharing action", () => {
     const experience = source("src/ui/merchant-experience.tsx");
-    const builder = source("src/ui/story-builder.tsx");
-    const route = source("src/app/story/[merchantSlug]/[referralToken]/page.tsx");
+    const feedbackCss = source("src/app/viralio-020c-aurora-feedback.css");
 
-    expect(experience).toContain('merchant.slug === "joyeria-aurora" ? "Crear mi Story"');
-    expect(experience).toContain("/story/${merchant.slug}/${encodeURIComponent(payload.session.referralToken)}");
-    expect(builder).toContain("/api/share-card/${encodeURIComponent(referralToken)}");
-    expect(builder).toContain('body: JSON.stringify({ channel: "social" })');
-    expect(builder).toContain("Guardar imagen");
-    expect(builder).toContain("Continuar a la ruleta");
-    expect(route).toContain("<StoryBuilder merchant={merchant} referralToken={referralToken} />");
+    expect(experience).toContain("https://wa.me/?text=");
+    expect(experience).not.toContain("Crear mi Story");
+    expect(experience).not.toContain("/story/${merchant.slug}");
+    expect(feedbackCss).toContain('[data-testid="native-share"]');
+    expect(feedbackCss).toContain(".premium-story-grid");
+    expect(feedbackCss).toContain("direct WhatsApp message");
+    expect(fs.existsSync(path.join(process.cwd(), "src/ui/story-builder.tsx"))).toBe(false);
+    expect(fs.existsSync(path.join(process.cwd(), "src/app/viralio-020k-story-builder.css"))).toBe(false);
   });
 
   it("is scoped to Aurora and does not replace the shared engine", () => {
