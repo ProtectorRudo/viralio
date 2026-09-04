@@ -14,6 +14,7 @@ describe("approved Joyería Aurora visual contract", () => {
     expect(layout).toContain('import "./viralio-020c-approved-aurora.css"');
     expect(layout).toContain('import "./viralio-020c-approved-aurora-motion.css"');
     expect(layout).toContain('import "./viralio-020c-aurora-feedback.css"');
+    expect(layout).toContain('import "./viralio-020k-story-builder.css"');
     expect(layout.indexOf("viralio-020c-aurora-feedback.css")).toBeGreaterThan(layout.indexOf("viralio-020c-approved-aurora.css"));
   });
 
@@ -35,6 +36,20 @@ describe("approved Joyería Aurora visual contract", () => {
     expect(baseCss).toContain('content: "¡Gira la ruleta!"');
     expect(baseCss).toContain('content: "¡FELICIDADES!"');
     expect(baseCss).toContain(".reward-voucher");
+  });
+
+  it("uses the Story Builder instead of pretending the browser can target Status or Stories directly", () => {
+    const experience = source("src/ui/merchant-experience.tsx");
+    const builder = source("src/ui/story-builder.tsx");
+    const route = source("src/app/story/[merchantSlug]/[referralToken]/page.tsx");
+
+    expect(experience).toContain('merchant.slug === "joyeria-aurora" ? "Crear mi Story"');
+    expect(experience).toContain("/story/${merchant.slug}/${encodeURIComponent(payload.session.referralToken)}");
+    expect(builder).toContain("/api/share-card/${encodeURIComponent(referralToken)}");
+    expect(builder).toContain('body: JSON.stringify({ channel: "social" })');
+    expect(builder).toContain("Guardar imagen");
+    expect(builder).toContain("Continuar a la ruleta");
+    expect(route).toContain("<StoryBuilder merchant={merchant} referralToken={referralToken} />");
   });
 
   it("is scoped to Aurora and does not replace the shared engine", () => {
