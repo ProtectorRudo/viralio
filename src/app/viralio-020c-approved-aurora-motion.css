@@ -1,0 +1,8 @@
+/* Approved Aurora reduced-motion treatment.
+   Normal motion keeps the shared 5.6s / 9-turn contract.
+   Reduced motion is limited to one visible turn instead of an instant jump. */
+@media (prefers-reduced-motion: reduce) {
+  .theme-joyeria-aurora .wheel-frame.is-reduced .wheel-svg {
+    transition: transform 1600ms cubic-bezier(.18, .72, .18, 1) !important;
+  }
+}
