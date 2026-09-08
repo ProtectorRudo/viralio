@@ -1,0 +1,1025 @@
+/* VIRALIO-021 — Visual System v1
+   Universal customer-facing premium grammar.
+
+   Design contract:
+   - same high-end composition and interaction hierarchy for every merchant;
+   - merchant palette, typography, shape, layout and motion tokens keep each brand distinct;
+   - Aurora remains the human-approved reference and is intentionally excluded here;
+   - no model-authored CSS/HTML is consumed: only validated Brand Engine renderer tokens.
+*/
+
+.experience:not(.theme-joyeria-aurora) {
+  --v21-hairline: color-mix(in srgb, var(--color-text) 12%, transparent);
+  --v21-hairline-strong: color-mix(in srgb, var(--color-text) 20%, var(--color-border));
+  --v21-quiet: color-mix(in srgb, var(--color-text-muted) 86%, transparent);
+  --v21-tint: color-mix(in srgb, var(--color-primary) 8%, var(--color-canvas));
+  --v21-tint-strong: color-mix(in srgb, var(--color-primary) 16%, var(--color-canvas));
+  --v21-surface: color-mix(in srgb, var(--color-surface) 94%, var(--color-canvas));
+  --v21-surface-raised: color-mix(in srgb, var(--color-surface-raised) 96%, var(--color-canvas));
+  --v21-glow: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  --v21-shadow: 0 24px 70px color-mix(in srgb, var(--color-text) 10%, transparent);
+  --v21-soft-shadow: 0 12px 34px color-mix(in srgb, var(--color-text) 7%, transparent);
+  --v21-radius: var(--brand-shape-radius, var(--radius-panel));
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 14% 8%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 34%),
+    radial-gradient(circle at 88% 86%, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 36%),
+    var(--color-canvas);
+  color: var(--color-text);
+}
+
+.experience:not(.theme-joyeria-aurora) .ambient {
+  display: block;
+  position: fixed;
+  width: min(72vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(76px);
+  opacity: .13;
+  pointer-events: none;
+}
+
+.experience:not(.theme-joyeria-aurora) .ambient-one {
+  top: -28vw;
+  right: -30vw;
+  background: var(--color-accent);
+}
+
+.experience:not(.theme-joyeria-aurora) .ambient-two {
+  bottom: -34vw;
+  left: -32vw;
+  background: var(--color-primary);
+}
+
+.experience:not(.theme-joyeria-aurora) .experience-card {
+  position: relative;
+  width: min(100%, 440px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 0 28px 26px;
+  border-inline: 1px solid color-mix(in srgb, var(--color-text) 7%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 56%, var(--color-canvas)) 0%, var(--color-canvas) 18%, var(--color-canvas) 100%);
+  box-shadow: var(--v21-shadow);
+  overflow: hidden;
+}
+
+/* Brand masthead — restrained, recognisable and identical in hierarchy across rubrics. */
+.experience:not(.theme-joyeria-aurora) .premium-brand-header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  min-height: 104px;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--v21-hairline);
+  background: transparent;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-brand-header .brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--v21-hairline-strong);
+  border-radius: var(--brand-mark-radius, 50%);
+  background: var(--v21-surface-raised);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-text) 5%, transparent);
+  overflow: hidden;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-brand-header .brand-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-brand-header .brand-copy strong {
+  overflow: hidden;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: var(--display-weight, 520);
+  letter-spacing: -.02em;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-brand-header .brand-copy small {
+  overflow: hidden;
+  color: var(--v21-quiet);
+  font-size: .54rem;
+  font-weight: 650;
+  letter-spacing: .14em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-brand-header .brand-edition {
+  margin: 0;
+  color: var(--v21-quiet);
+  font-family: var(--font-code);
+  font-size: .5rem;
+  font-weight: 550;
+  letter-spacing: .13em;
+}
+
+/* Shared stage hierarchy. */
+.experience:not(.theme-joyeria-aurora) .premium-campaign-stage,
+.experience:not(.theme-joyeria-aurora) .premium-share-stage,
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage,
+.experience:not(.theme-joyeria-aurora) .premium-reveal-stage {
+  width: 100%;
+  min-height: calc(100svh - 130px);
+  padding: 24px 0 12px;
+  gap: 20px;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.experience:not(.theme-joyeria-aurora) .stage-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.experience:not(.theme-joyeria-aurora) .stage-copy .eyebrow,
+.experience:not(.theme-joyeria-aurora) .reward-copy .eyebrow {
+  margin: 0 0 11px;
+  color: var(--color-primary);
+  font-size: .58rem;
+  font-weight: 750;
+  letter-spacing: .14em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .stage-copy h1,
+.experience:not(.theme-joyeria-aurora) .reward-copy h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(2.65rem, 11vw, 4rem);
+  font-weight: var(--display-weight, 520);
+  letter-spacing: var(--display-tracking, -.04em);
+  line-height: .93;
+  text-wrap: balance;
+}
+
+.experience:not(.theme-joyeria-aurora) .stage-copy .lead,
+.experience:not(.theme-joyeria-aurora) .reward-copy .lead {
+  max-width: 34ch;
+  margin: 17px 0 0;
+  color: var(--v21-quiet);
+  font-size: .82rem;
+  font-weight: 440;
+  line-height: 1.58;
+}
+
+/* LANDING — editorial campaign composition instead of a generic app card. */
+.experience:not(.theme-joyeria-aurora) .premium-campaign-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-frame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: var(--brand-campaign-min-height, clamp(440px, 58vh, 530px));
+  grid-template-columns: var(--brand-layout-columns, minmax(0, 1.16fr) minmax(112px, .84fr));
+  align-items: var(--brand-campaign-align-items, end);
+  gap: 18px;
+  padding: var(--brand-campaign-pad-top, 28px) 0 var(--brand-campaign-pad-bottom, 26px);
+  border-bottom: 1px solid var(--v21-hairline);
+  overflow: hidden;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-frame::before {
+  position: absolute;
+  top: 24px;
+  right: -22%;
+  width: 72%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--v21-hairline-strong), transparent);
+  content: "";
+  transform: rotate(-23deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: var(--brand-layout-copy-max, 27rem);
+  align-self: end;
+  padding-bottom: 6px;
+  text-align: var(--brand-layout-copy-align, left);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy h1 {
+  max-width: var(--brand-heading-max, 9.5ch);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-copy .lead {
+  margin-top: var(--brand-lead-margin-top, 18px);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: var(--brand-campaign-visual-width, 100%);
+  min-height: var(--brand-campaign-visual-min-height, 300px);
+  align-content: center;
+  justify-items: center;
+  justify-self: center;
+  margin-inline: var(--brand-campaign-visual-margin-inline, 0);
+  border: var(--brand-campaign-visual-border, 1px solid var(--v21-hairline));
+  border-radius: var(--v21-radius);
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent 38%),
+    linear-gradient(155deg, var(--v21-surface-raised), var(--v21-tint));
+  box-shadow: var(--v21-soft-shadow);
+  transform: scale(var(--brand-layout-media-scale, 1));
+  transform-origin: center bottom;
+  overflow: hidden;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual::before {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  border-radius: calc(var(--v21-radius) * .72);
+  content: "";
+  pointer-events: none;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual::after {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: color-mix(in srgb, var(--color-text-muted) 75%, transparent);
+  content: "PRIVATE DROP / VIRALIO";
+  font-family: var(--font-code);
+  font-size: .43rem;
+  letter-spacing: .12em;
+  pointer-events: none;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-index {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  color: color-mix(in srgb, var(--color-primary) 46%, var(--color-text));
+  font-family: var(--font-code);
+  font-size: .55rem;
+  font-weight: 650;
+  letter-spacing: .15em;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual .mystery-object {
+  position: relative;
+  display: grid;
+  width: min(78%, 190px);
+  height: auto;
+  aspect-ratio: 1;
+  place-items: center;
+  margin: 0;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual .mystery-halo {
+  position: absolute;
+  inset: 2%;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 32%, transparent);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 57%, color-mix(in srgb, var(--color-accent) 9%, transparent) 58%, transparent 71%);
+  box-shadow: 0 0 52px var(--v21-glow);
+  opacity: .82;
+  animation: v21-halo-breathe 4.8s ease-in-out infinite;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-visual .mystery-medallion {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-items: center;
+  border: 1px solid var(--v21-hairline-strong);
+  border-radius: var(--brand-reward-radius, 50%);
+  background: var(--v21-surface-raised);
+  box-shadow: 0 18px 34px color-mix(in srgb, var(--color-text) 10%, transparent);
+  animation: v21-object-float 5.2s ease-in-out infinite;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-caption {
+  position: absolute;
+  right: 18px;
+  bottom: 28px;
+  left: 18px;
+  overflow: hidden;
+  color: var(--v21-quiet);
+  font-size: .5rem;
+  font-weight: 650;
+  letter-spacing: .12em;
+  text-align: left;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-action {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+}
+
+.experience:not(.theme-joyeria-aurora) .button-primary,
+.experience:not(.theme-joyeria-aurora) .spin-button {
+  min-height: 56px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 76%, var(--color-text));
+  border-radius: var(--brand-shape-radius, var(--radius-control));
+  background: var(--color-primary);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  color: var(--color-on-primary);
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .button-primary:hover,
+.experience:not(.theme-joyeria-aurora) .spin-button:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.experience:not(.theme-joyeria-aurora) .campaign-action .trust-line,
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage > .trust-line {
+  margin: 0;
+  color: var(--v21-quiet);
+  font-size: .57rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* SHARE — the share asset is the hero, not an afterthought. */
+.experience:not(.theme-joyeria-aurora) .premium-share-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 17px;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-editorial-head {
+  display: grid;
+  gap: 18px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-progress {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--v21-hairline);
+  background: transparent;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-progress > span {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  color: var(--v21-quiet);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-progress > span b {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid var(--v21-hairline-strong);
+  border-radius: 50%;
+  background: var(--v21-surface-raised);
+  font-family: var(--font-code);
+  font-size: .52rem;
+  font-weight: 650;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-progress > span.is-active b {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-progress > span small {
+  font-size: .47rem;
+  font-weight: 650;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-progress > i {
+  height: 1px;
+  background: var(--v21-hairline);
+}
+
+.experience:not(.theme-joyeria-aurora) .share-copy h1 {
+  max-width: 11ch;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-preview {
+  position: relative;
+  display: grid;
+  width: var(--brand-share-width, 100%);
+  min-height: 300px;
+  aspect-ratio: auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  margin: 0 auto;
+  padding: 18px;
+  border: var(--brand-share-border-width, 1px) solid var(--v21-hairline-strong);
+  border-radius: var(--brand-shape-radius, var(--radius-panel));
+  background:
+    radial-gradient(circle at 76% 28%, color-mix(in srgb, var(--color-accent) 24%, transparent), transparent 33%),
+    linear-gradient(150deg, var(--v21-surface-raised), var(--v21-tint-strong));
+  box-shadow: var(--brand-share-shadow, var(--v21-soft-shadow));
+  overflow: hidden;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-preview::before {
+  position: absolute;
+  top: -60px;
+  right: -56px;
+  width: 180px;
+  height: 180px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 36%, transparent);
+  border-radius: 50%;
+  content: "";
+  opacity: var(--brand-visual-decoration, .4);
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-preview::after {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 46px;
+  height: 1px;
+  background: var(--color-primary);
+  content: "";
+  opacity: .64;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-top,
+.experience:not(.theme-joyeria-aurora) .share-poster-foot {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-top span {
+  color: var(--color-text);
+  font-size: .62rem;
+  font-weight: 760;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-top small,
+.experience:not(.theme-joyeria-aurora) .share-poster-foot {
+  color: var(--v21-quiet);
+  font-family: var(--font-code);
+  font-size: .48rem;
+  letter-spacing: .08em;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-mark {
+  position: absolute;
+  top: 64px;
+  right: 20px;
+  z-index: 2;
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+  border: 1px solid var(--v21-hairline-strong);
+  border-radius: var(--brand-reward-radius, 50%);
+  background: color-mix(in srgb, var(--v21-surface-raised) 92%, transparent);
+  box-shadow: var(--v21-soft-shadow);
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  max-width: var(--brand-share-copy-width, 64%);
+  align-self: center;
+  gap: 10px;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-copy strong {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 7.6vw, 2.45rem);
+  font-weight: var(--display-weight, 520);
+  letter-spacing: var(--display-tracking, -.04em);
+  line-height: .98;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-copy span {
+  color: var(--v21-quiet);
+  font-size: .67rem;
+  line-height: 1.45;
+}
+
+.experience:not(.theme-joyeria-aurora) .share-poster-foot b {
+  color: var(--color-text);
+  font-weight: 650;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  width: 100%;
+  border: 0;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option {
+  display: grid;
+  min-height: 66px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 10px 11px;
+  border: 1px solid var(--v21-hairline);
+  border-radius: var(--brand-shape-radius, var(--radius-control));
+  background: var(--v21-surface-raised);
+  box-shadow: 0 7px 20px color-mix(in srgb, var(--color-text) 4%, transparent);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 34%, var(--color-border));
+  background: var(--v21-tint);
+  transform: translateY(-1px);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-sequence,
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-arrow,
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option small {
+  display: none;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-whatsapp .story-icon {
+  border: 1px solid #25a866;
+  color: #168951;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-instagram .story-icon {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 62%, var(--color-accent));
+  color: var(--color-primary);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-story-grid .story-option strong {
+  font-size: .61rem;
+  font-weight: 760;
+  letter-spacing: .025em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-actions .button {
+  min-height: 42px;
+  border-radius: var(--brand-shape-radius, var(--radius-control));
+  font-size: .63rem;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-share-stage .share-guidance {
+  margin: 0;
+  padding: 11px 0 0;
+  border: 0;
+  border-top: 1px solid var(--v21-hairline);
+  color: var(--v21-quiet);
+  font-size: .56rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* WHEEL — a tactile branded object with a deliberate reveal rhythm. */
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .stage-sequence {
+  margin-bottom: 17px;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-copy h1 {
+  max-width: 11ch;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-copy .lead {
+  margin-bottom: 0;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 370px;
+  place-items: center;
+  margin: 0;
+  padding: 14px 0 2px;
+  transform: scale(var(--brand-layout-media-scale, 1));
+  transform-origin: center;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell::before {
+  position: absolute;
+  width: min(84vw, 338px);
+  aspect-ratio: 1;
+  border: 1px solid var(--v21-hairline);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 54%, color-mix(in srgb, var(--color-accent) 5%, transparent) 55%, transparent 72%);
+  box-shadow: 0 0 54px color-mix(in srgb, var(--color-accent) 8%, transparent);
+  content: "";
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+  width: min(76vw, 304px);
+  margin: 0 auto;
+  filter: drop-shadow(0 16px 22px color-mix(in srgb, var(--color-text) 14%, transparent));
+  transition: filter 420ms ease;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel {
+  inset: -9px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 42%, var(--color-text));
+  background: color-mix(in srgb, var(--color-surface) 54%, transparent);
+  box-shadow:
+    inset 0 0 0 5px color-mix(in srgb, var(--color-surface) 78%, transparent),
+    0 5px 18px color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel::before {
+  border-color: color-mix(in srgb, var(--color-accent) 36%, transparent);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel i {
+  background: color-mix(in srgb, var(--color-accent) 56%, var(--color-text));
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-rim {
+  fill: var(--v21-surface-raised);
+  stroke: color-mix(in srgb, var(--color-accent) 62%, var(--color-text));
+  stroke-width: 3;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-segment {
+  stroke: color-mix(in srgb, var(--color-surface-raised) 58%, var(--color-text));
+  stroke-width: .95;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-label {
+  fill: var(--color-on-primary);
+  font-family: var(--font-body);
+  font-size: 8.2px;
+  font-weight: 720;
+  letter-spacing: .005em;
+  paint-order: stroke fill;
+  stroke: color-mix(in srgb, var(--color-text) 24%, transparent);
+  stroke-width: .25px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-center-cap {
+  width: 66px;
+  height: 66px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 58%, var(--color-text));
+  background: var(--v21-surface-raised);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-center-cap::before {
+  border-color: var(--v21-hairline);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-pointer::before {
+  background: var(--color-primary);
+  border-color: var(--v21-surface-raised);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-pointer span {
+  border-top-color: color-mix(in srgb, var(--color-primary) 82%, var(--color-text));
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .spin-button {
+  margin-top: 2px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame.is-spinning {
+  filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--color-accent) 24%, transparent));
+}
+
+/* REWARD — premium voucher: clear value, code and expiry, no casino confetti. */
+.experience:not(.theme-joyeria-aurora) .premium-reveal-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-sequence {
+  margin-bottom: 0;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-reveal-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--v21-quiet);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-reveal-brand > :first-child {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--v21-hairline);
+  border-radius: var(--brand-mark-radius, 50%);
+  background: var(--v21-surface-raised);
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-copy {
+  display: grid;
+  justify-items: start;
+  margin: 1px 0 0;
+  text-align: left;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-copy h1 {
+  max-width: 10ch;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-voucher {
+  position: relative;
+  display: grid;
+  width: 100%;
+  gap: 0;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 1px solid var(--v21-hairline-strong);
+  border-radius: var(--brand-reward-radius, var(--radius-panel));
+  background:
+    linear-gradient(145deg, var(--v21-surface-raised), var(--v21-tint));
+  box-shadow: var(--v21-soft-shadow);
+  overflow: hidden;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-voucher::before,
+.experience:not(.theme-joyeria-aurora) .reward-voucher::after {
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--v21-hairline-strong);
+  border-radius: 50%;
+  background: var(--color-canvas);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-voucher::before { left: -11px; }
+.experience:not(.theme-joyeria-aurora) .reward-voucher::after { right: -11px; }
+
+.experience:not(.theme-joyeria-aurora) .voucher-head,
+.experience:not(.theme-joyeria-aurora) .voucher-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  color: var(--v21-quiet);
+  font-family: var(--font-code);
+  font-size: .5rem;
+  letter-spacing: .08em;
+}
+
+.experience:not(.theme-joyeria-aurora) .voucher-head {
+  border-bottom: 1px dashed var(--v21-hairline-strong);
+}
+
+.experience:not(.theme-joyeria-aurora) .voucher-code {
+  display: grid;
+  gap: 8px;
+  padding: 27px 17px 29px;
+}
+
+.experience:not(.theme-joyeria-aurora) .voucher-code span {
+  color: var(--color-primary);
+  font-size: .56rem;
+  font-weight: 750;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.experience:not(.theme-joyeria-aurora) .voucher-code strong {
+  color: var(--color-text);
+  font-family: var(--font-code);
+  font-size: clamp(2rem, 9vw, 2.65rem);
+  font-weight: 520;
+  letter-spacing: .075em;
+  line-height: 1;
+}
+
+.experience:not(.theme-joyeria-aurora) .voucher-foot {
+  border-top: 1px dashed var(--v21-hairline-strong);
+}
+
+.experience:not(.theme-joyeria-aurora) .voucher-foot b {
+  color: var(--color-text);
+  font-weight: 650;
+}
+
+.experience:not(.theme-joyeria-aurora) .reward-actions {
+  display: grid;
+  width: 100%;
+  gap: 8px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-reveal-stage .celebration,
+.experience:not(.theme-joyeria-aurora) .premium-reveal-stage .reward-seal {
+  display: none;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-signature {
+  opacity: .68;
+}
+
+/* Brand Engine families keep the same quality bar while changing personality. */
+.experience:not(.theme-joyeria-aurora)[data-brand-style="luxury"] .campaign-visual,
+.experience:not(.theme-joyeria-aurora)[data-brand-style="editorial"] .campaign-visual {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--color-surface-raised) 98%, var(--color-accent)), var(--v21-tint));
+}
+
+.experience:not(.theme-joyeria-aurora)[data-brand-style="luxury"] .campaign-visual::before,
+.experience:not(.theme-joyeria-aurora)[data-brand-style="editorial"] .campaign-visual::before {
+  inset: 10px;
+}
+
+.experience:not(.theme-joyeria-aurora)[data-brand-style="bold"] .campaign-visual,
+.experience:not(.theme-joyeria-aurora)[data-brand-style="urban"] .campaign-visual {
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--color-primary) 15%, var(--color-surface)), var(--color-surface));
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.experience:not(.theme-joyeria-aurora)[data-brand-style="minimal"] .campaign-visual {
+  box-shadow: none;
+}
+
+@keyframes v21-object-float {
+  0%, 100% { transform: translateY(0) rotate(-.7deg); }
+  50% { transform: translateY(-7px) rotate(.7deg); }
+}
+
+@keyframes v21-halo-breathe {
+  0%, 100% { opacity: .55; transform: scale(.97); }
+  50% { opacity: .9; transform: scale(1.02); }
+}
+
+@media (max-width: 520px) {
+  .experience:not(.theme-joyeria-aurora) .campaign-frame {
+    grid-template-columns: 1fr;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-copy {
+    width: 100%;
+    max-width: min(100%, var(--brand-layout-copy-max, 27rem));
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-visual {
+    width: min(100%, 330px);
+    min-height: 236px;
+    margin-inline: auto;
+    transform: scale(var(--brand-layout-media-scale-mobile, 1));
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-visual .mystery-object {
+    width: min(62%, 166px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-caption {
+    bottom: 18px;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .wheel-object-shell,
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+    transform: scale(var(--brand-layout-media-scale-mobile, 1));
+  }
+}
+
+@media (max-width: 390px) {
+  .experience:not(.theme-joyeria-aurora) .experience-card {
+    padding-inline: 22px;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-brand-header {
+    min-height: 94px;
+    padding-top: 16px;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .stage-copy h1,
+  .experience:not(.theme-joyeria-aurora) .reward-copy h1 {
+    font-size: clamp(2.35rem, 11vw, 3.25rem);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .campaign-visual {
+    min-height: 218px;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .share-poster-preview {
+    min-height: 280px;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .share-poster-copy strong {
+    font-size: 1.65rem;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-story-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .wheel-object-shell {
+    min-height: 338px;
+  }
+}
+
+@media (min-width: 521px) {
+  .experience:not(.theme-joyeria-aurora) .experience-card {
+    min-height: 760px;
+    margin-block: 24px;
+    border: 1px solid var(--v21-hairline);
+    border-radius: 18px;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-campaign-stage,
+  .experience:not(.theme-joyeria-aurora) .premium-share-stage,
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage,
+  .experience:not(.theme-joyeria-aurora) .premium-reveal-stage {
+    min-height: 650px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience:not(.theme-joyeria-aurora) .campaign-visual .mystery-halo,
+  .experience:not(.theme-joyeria-aurora) .campaign-visual .mystery-medallion {
+    animation: none !important;
+  }
+
+  .experience:not(.theme-joyeria-aurora) .button,
+  .experience:not(.theme-joyeria-aurora) .story-option {
+    transition-duration: .01ms !important;
+  }
+}
