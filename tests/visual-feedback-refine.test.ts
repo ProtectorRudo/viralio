@@ -6,12 +6,12 @@ function read(relative: string): string {
   return fs.readFileSync(path.join(process.cwd(), relative), "utf8");
 }
 
-describe("VIRALIO-021F screenshot-driven refinement", () => {
+describe("VIRALIO-021G screenshot-driven refinement", () => {
   it("uses the approved QR-entry promise as real DOM copy", () => {
     const experience = read("src/ui/merchant-experience.tsx");
     expect(experience).toContain("<h1>Tenemos un regalo especial para vos</h1>");
     expect(experience).toContain("Descubrir mi regalo");
-    expect(experience).toContain('data-design-version="021f"');
+    expect(experience).toContain('data-design-version="021g"');
   });
 
   it("loads the final screenshot correction after every previous visual layer", () => {
@@ -27,15 +27,12 @@ describe("VIRALIO-021F screenshot-driven refinement", () => {
     expect(css).toContain("paint-order: stroke fill");
   });
 
-  it("uses the approved referral hierarchy and one WhatsApp action", () => {
+  it("uses a fluid mobile-safe referral headline and one WhatsApp action", () => {
     const experience = read("src/ui/merchant-experience.tsx");
     const css = read("src/app/viralio-021e-share-voucher-fix.css");
-    expect(experience).toContain('className="referral-primary-title"');
-    expect(experience).toContain('aria-label="Las buenas noticias también se comparten"');
-    expect(experience).toContain("<span>Las buenas</span>");
-    expect(experience).toContain("<span>noticias también</span>");
-    expect(experience).toContain("<span>se comparten</span>");
+    expect(experience).toContain('<h1 className="referral-primary-title">Las buenas noticias también se comparten</h1>');
     expect(experience).toContain('className="referral-supporting-title">Compartí tu regalo con otra persona</p>');
+    expect(experience).not.toContain("<span>noticias también</span>");
     expect(experience).toContain("La otra persona también recibe un regalo");
     expect(experience).toContain("<small>Enviar</small>");
     expect(experience).toContain('data-testid="whatsapp-share"');
@@ -44,10 +41,10 @@ describe("VIRALIO-021F screenshot-driven refinement", () => {
     expect(experience).not.toContain('data-testid="whatsapp-status-share"');
     expect(experience).not.toContain('data-testid="instagram-story-share"');
     expect(experience).not.toContain('data-testid="native-share"');
-    expect(css).toContain(".referral-primary-title");
-    expect(css).toContain("font-size: clamp(2.9rem, 11.6vw, 3.95rem)");
-    expect(css).toContain(".referral-supporting-title");
-    expect(css).toContain("font-size: clamp(1.08rem, 4.4vw, 1.28rem)");
+    expect(css).toContain("text-wrap: balance");
+    expect(css).toContain("white-space: normal");
+    expect(css).toContain("width: min(100%, 312px)");
+    expect(css).toContain("font-size: clamp(2.1rem, 8.6vw, 2.5rem)");
   });
 
   it("renders expiration as real visible DOM content", () => {
@@ -87,6 +84,8 @@ describe("VIRALIO-021F screenshot-driven refinement", () => {
     expect(legacyFix).toContain("@media (max-width: 390px)");
     expect(legacyFix).toContain("max-width: 100% !important");
     expect(legacyFix).toContain("border-radius: 24px !important");
+    expect(finalFix).toContain("@media (max-width: 360px)");
+    expect(finalFix).toContain("max-width: 292px");
     expect(finalFix).toContain("min-height: 88px");
   });
 });
