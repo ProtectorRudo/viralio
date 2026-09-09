@@ -6,14 +6,16 @@ function source(file: string): string {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
-describe("VIRALIO-021D premium customer funnel", () => {
+describe("VIRALIO-021E premium customer funnel", () => {
   it("uses editorial campaign, minimal WhatsApp sharing and voucher v3 primitives", () => {
     const experience = source("src/ui/merchant-experience.tsx");
-    expect(experience).toContain('data-design-version="021d"');
+    expect(experience).toContain('data-design-version="021e"');
     expect(experience).toContain('data-testid="brand-campaign-frame"');
     expect(experience).toContain('data-testid="whatsapp-share"');
-    expect(experience).toContain("La otra persona también recibe un regalo");
+    expect(experience).toContain("Las buenas noticias se comparten");
     expect(experience).toContain("Compartí tu regalo con otra persona");
+    expect(experience).toContain("La otra persona también recibe un regalo");
+    expect(experience).toContain("<small>Enviar</small>");
     expect(experience).not.toContain('data-testid="share-poster-preview"');
     expect(experience).toContain('className="reward-ticket reward-voucher reward-voucher-v2 reward-voucher-v3"');
     expect(experience).toContain('data-testid="reward-expiration"');
