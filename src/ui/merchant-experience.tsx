@@ -137,7 +137,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       style={merchantThemeStyle(merchant)}
       data-merchant={merchant.slug}
       data-brand-style={merchant.theme.stylePreset ?? "template"}
-      data-design-version="021d"
+      data-design-version="021e"
     >
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
@@ -184,12 +184,16 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         {payload?.session.state === "UNLOCK" && (
           <div className="stage share-stage premium-share-stage referral-gift-stage referral-gift-stage-minimal" data-testid="unlock-stage">
             <div className="stage-copy share-copy referral-minimal-copy">
-              <h1>La otra persona también recibe un regalo</h1>
+              <p className="eyebrow referral-minimal-eyebrow">Las buenas noticias se comparten</p>
+              <h1>Compartí tu regalo con otra persona</h1>
             </div>
             <div className="share-actions whatsapp-only-share referral-minimal-action" aria-label="Compartir regalo por WhatsApp">
               <button className="button button-whatsapp referral-whatsapp-button" data-testid="whatsapp-share" disabled={shareBusy} onClick={shareWhatsapp}>
                 <span className="whatsapp-icon" aria-hidden="true">↗</span>
-                <span>{shareBusy ? "Abriendo WhatsApp…" : "Compartí tu regalo con otra persona"}</span>
+                <span className="referral-whatsapp-copy">
+                  <strong>{shareBusy ? "Abriendo WhatsApp…" : "La otra persona también recibe un regalo"}</strong>
+                  {!shareBusy && <small>Enviar</small>}
+                </span>
               </button>
             </div>
           </div>
