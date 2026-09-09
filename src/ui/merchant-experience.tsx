@@ -184,7 +184,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         {payload?.session.state === "UNLOCK" && (
           <div className="stage share-stage premium-share-stage referral-gift-stage referral-gift-stage-minimal" data-testid="unlock-stage">
             <div className="stage-copy share-copy referral-minimal-copy">
-              <p className="eyebrow referral-minimal-eyebrow">Las buenas noticias se comparten</p>
+              <p className="eyebrow referral-minimal-eyebrow">Las buenas noticias también se comparten</p>
               <h1>Compartí tu regalo con otra persona</h1>
             </div>
             <div className="share-actions whatsapp-only-share referral-minimal-action" aria-label="Compartir regalo por WhatsApp">
