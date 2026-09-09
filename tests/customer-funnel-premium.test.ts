@@ -12,7 +12,7 @@ describe("VIRALIO-021E premium customer funnel", () => {
     expect(experience).toContain('data-design-version="021e"');
     expect(experience).toContain('data-testid="brand-campaign-frame"');
     expect(experience).toContain('data-testid="whatsapp-share"');
-    expect(experience).toContain("Las buenas noticias se comparten");
+    expect(experience).toContain("Las buenas noticias también se comparten");
     expect(experience).toContain("Compartí tu regalo con otra persona");
     expect(experience).toContain("La otra persona también recibe un regalo");
     expect(experience).toContain("<small>Enviar</small>");
