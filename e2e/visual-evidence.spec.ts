@@ -44,9 +44,10 @@ async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
   await resetSession(page);
   await page.goto(`/${slug}`);
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
-  await expect(page.getByTestId("share-poster-preview")).toBeVisible();
+  await expect(page.getByTestId("share-poster-preview")).toHaveCount(0);
   await expect(page.getByTestId("whatsapp-share")).toBeVisible();
   await expect(page.locator(".whatsapp-only-share button")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
   await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-share-390`);
   await openWhatsappAndContinue(page);
@@ -59,6 +60,7 @@ async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
   const payload = await (await spinResponse).json() as { reward: { token: string } };
   await expect(page.getByTestId("reward-stage")).toBeVisible();
   await expect(page.getByTestId("reward-expiration")).toBeVisible();
+  await expect(page.getByTestId("reward-voucher")).toHaveCSS("border-radius", "24px");
   await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-reward-390`);
 
