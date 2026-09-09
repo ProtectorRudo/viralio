@@ -13,9 +13,10 @@ describe("VIRALIO-021H professional share composition", () => {
     expect(layout.indexOf("viralio-021h-share-polish.css")).toBeGreaterThan(layout.indexOf("viralio-021e-share-voucher-fix.css"));
   });
 
-  it("keeps the share headline editorial but controlled", () => {
+  it("keeps the share headline deliberately half-sized and controlled", () => {
     const css = read("src/app/viralio-021h-share-polish.css");
-    expect(css).toContain("font-size: clamp(2rem, 8.8vw, 2.72rem)");
+    expect(css).toContain("font-size: clamp(1rem, 4.4vw, 1.36rem)");
+    expect(css).toContain("font-size: clamp(1rem, 4.275vw, 1.15rem)");
     expect(css).toContain("text-align: left");
     expect(css).toContain("text-wrap: balance");
     expect(css).toContain("width: min(100%, 348px)");
