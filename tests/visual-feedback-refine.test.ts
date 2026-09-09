@@ -6,7 +6,7 @@ function read(relative: string): string {
   return fs.readFileSync(path.join(process.cwd(), relative), "utf8");
 }
 
-describe("VIRALIO-021B product feedback refinement", () => {
+describe("VIRALIO-021B/C product feedback refinement", () => {
   it("uses the approved QR-entry promise as real DOM copy", () => {
     const experience = read("src/ui/merchant-experience.tsx");
     expect(experience).toContain("<h1>Tenemos un regalo especial para vos</h1>");
@@ -22,11 +22,12 @@ describe("VIRALIO-021B product feedback refinement", () => {
 
   it("keeps the customer wheel materially larger and prize labels contrast-protected", () => {
     const css = read("src/app/viralio-021b-feedback-refine.css");
-    expect(css).toContain("width: min(86vw, 338px)");
-    expect(css).toContain("font-size: 10.6px");
+    expect(css).toContain("width: min(90vw, 356px)");
+    expect(css).toContain("font-size: 11.7px");
+    expect(css).toContain("font-weight: 800");
     expect(css).toContain("paint-order: stroke fill");
-    expect(css).toContain("stroke: rgba(0, 0, 0, .58)");
-    expect(css).toContain("transform-origin: .5px calc((min(86vw, 338px) + 16px) / 2 - 3px)");
+    expect(css).toContain("stroke: rgba(0, 0, 0, .66)");
+    expect(css).toContain("transform-origin: .5px calc((min(90vw, 356px) + 16px) / 2 - 3px)");
   });
 
   it("preserves Aurora composition while adopting the new promise and clearer wheel labels", () => {
@@ -35,12 +36,25 @@ describe("VIRALIO-021B product feedback refinement", () => {
     expect(css).toContain('content: "Tenemos un"');
     expect(css).toContain('content: "regalo especial"');
     expect(css).toContain('content: "para vos"');
-    expect(css).toContain("font-size: 10.2px");
+    expect(css).toContain("font-size: 11px");
+  });
+
+  it("turns the server-driven reward into a premium voucher with explicit expiration hierarchy", () => {
+    const experience = read("src/ui/merchant-experience.tsx");
+    const css = read("src/app/viralio-021b-feedback-refine.css");
+
+    expect(experience).toContain("formatDate(reward.expiresAt)");
+    expect(css).toContain('content: "FECHA DE VENCIMIENTO"');
+    expect(css).toContain('content: "Usalo antes de esta fecha"');
+    expect(css).toContain(".premium-reveal-stage .voucher-foot > span:first-child b");
+    expect(css).toContain("border-radius: 26px");
+    expect(css).toContain("TU CÓDIGO DE PREMIO");
   });
 
   it("keeps a dedicated small-mobile refinement", () => {
     const css = read("src/app/viralio-021b-feedback-refine.css");
     expect(css).toContain("@media (max-width: 380px)");
-    expect(css).toContain("width: min(87vw, 316px)");
+    expect(css).toContain("width: min(92vw, 330px)");
+    expect(css).toContain("grid-template-columns: 1fr");
   });
 });
