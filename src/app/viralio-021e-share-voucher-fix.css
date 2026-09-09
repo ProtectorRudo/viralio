@@ -10,15 +10,18 @@
 }
 
 .experience .referral-gift-stage-minimal .referral-minimal-eyebrow {
-  margin: 0;
-  color: var(--color-primary);
-  font-family: var(--font-ui);
-  font-size: .72rem;
-  font-weight: 820;
-  letter-spacing: .12em;
-  line-height: 1.25;
+  display: block;
+  max-width: 16ch;
+  margin: 0 auto;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 5.8vw, 2rem);
+  font-weight: 650;
+  letter-spacing: -.025em;
+  line-height: 1.06;
   text-align: center;
-  text-transform: uppercase;
+  text-transform: none;
+  text-wrap: balance;
 }
 
 .experience .referral-gift-stage-minimal .referral-minimal-copy h1 {
@@ -107,6 +110,11 @@
 
   .experience .referral-gift-stage-minimal .referral-minimal-copy {
     gap: 14px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-minimal-eyebrow {
+    max-width: 15ch;
+    font-size: clamp(1.35rem, 5.9vw, 1.72rem);
   }
 
   .experience .referral-gift-stage-minimal .referral-minimal-copy h1 {
