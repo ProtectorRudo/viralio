@@ -29,7 +29,8 @@ describe("VIRALIO-021E screenshot-driven refinement", () => {
 
   it("uses the approved referral hierarchy and one WhatsApp action", () => {
     const experience = read("src/ui/merchant-experience.tsx");
-    expect(experience).toContain("Las buenas noticias se comparten");
+    const css = read("src/app/viralio-021e-share-voucher-fix.css");
+    expect(experience).toContain("Las buenas noticias también se comparten");
     expect(experience).toContain("Compartí tu regalo con otra persona");
     expect(experience).toContain("La otra persona también recibe un regalo");
     expect(experience).toContain("<small>Enviar</small>");
@@ -39,6 +40,9 @@ describe("VIRALIO-021E screenshot-driven refinement", () => {
     expect(experience).not.toContain('data-testid="whatsapp-status-share"');
     expect(experience).not.toContain('data-testid="instagram-story-share"');
     expect(experience).not.toContain('data-testid="native-share"');
+    expect(css).toContain("font-family: var(--font-display)");
+    expect(css).toContain("font-size: clamp(1.45rem, 5.8vw, 2rem)");
+    expect(css).toContain("text-transform: none");
   });
 
   it("renders expiration as real visible DOM content", () => {
