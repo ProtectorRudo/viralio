@@ -6,18 +6,19 @@ function read(relative: string): string {
   return fs.readFileSync(path.join(process.cwd(), relative), "utf8");
 }
 
-describe("VIRALIO-021D screenshot-driven refinement", () => {
+describe("VIRALIO-021E screenshot-driven refinement", () => {
   it("uses the approved QR-entry promise as real DOM copy", () => {
     const experience = read("src/ui/merchant-experience.tsx");
     expect(experience).toContain("<h1>Tenemos un regalo especial para vos</h1>");
     expect(experience).toContain("Descubrir mi regalo");
-    expect(experience).toContain('data-design-version="021d"');
+    expect(experience).toContain('data-design-version="021e"');
   });
 
-  it("loads the screenshot correction after every previous visual layer", () => {
+  it("loads the final screenshot correction after every previous visual layer", () => {
     const layout = read("src/app/layout.tsx");
     expect(layout).toContain('import "./viralio-021d-mobile-refine.css"');
-    expect(layout.indexOf("viralio-021d-mobile-refine.css")).toBeGreaterThan(layout.indexOf("viralio-021b-feedback-refine.css"));
+    expect(layout).toContain('import "./viralio-021e-share-voucher-fix.css"');
+    expect(layout.indexOf("viralio-021e-share-voucher-fix.css")).toBeGreaterThan(layout.indexOf("viralio-021d-mobile-refine.css"));
   });
 
   it("keeps the customer wheel materially larger and prize labels contrast-protected", () => {
@@ -26,14 +27,15 @@ describe("VIRALIO-021D screenshot-driven refinement", () => {
     expect(css).toContain("paint-order: stroke fill");
   });
 
-  it("makes sharing title-plus-WhatsApp only", () => {
+  it("uses the approved referral hierarchy and one WhatsApp action", () => {
     const experience = read("src/ui/merchant-experience.tsx");
-    expect(experience).toContain("La otra persona también recibe un regalo");
+    expect(experience).toContain("Las buenas noticias se comparten");
     expect(experience).toContain("Compartí tu regalo con otra persona");
+    expect(experience).toContain("La otra persona también recibe un regalo");
+    expect(experience).toContain("<small>Enviar</small>");
     expect(experience).toContain('data-testid="whatsapp-share"');
     expect(experience).not.toContain('data-testid="share-poster-preview"');
     expect(experience).not.toContain("Abrí este pase y recibí tu regalo");
-    expect(experience).not.toContain("Viralio habilita la ruleta al iniciar el envío");
     expect(experience).not.toContain('data-testid="whatsapp-status-share"');
     expect(experience).not.toContain('data-testid="instagram-story-share"');
     expect(experience).not.toContain('data-testid="native-share"');
@@ -61,10 +63,21 @@ describe("VIRALIO-021D screenshot-driven refinement", () => {
     expect(css).toContain("color: #fff !important");
   });
 
-  it("keeps a dedicated small-mobile correction", () => {
-    const css = read("src/app/viralio-021d-mobile-refine.css");
-    expect(css).toContain("@media (max-width: 390px)");
-    expect(css).toContain("max-width: 100% !important");
-    expect(css).toContain("border-radius: 24px !important");
+  it("keeps the availability badge inside the voucher footer", () => {
+    const css = read("src/app/viralio-021e-share-voucher-fix.css");
+    expect(css).toContain("position: static !important");
+    expect(css).toContain("min-height: 28px !important");
+    expect(css).toContain("white-space: nowrap !important");
+    expect(css).toContain("overflow: visible !important");
+    expect(css).toContain("min-height: 54px !important");
+  });
+
+  it("keeps dedicated small-mobile corrections", () => {
+    const legacyFix = read("src/app/viralio-021d-mobile-refine.css");
+    const finalFix = read("src/app/viralio-021e-share-voucher-fix.css");
+    expect(legacyFix).toContain("@media (max-width: 390px)");
+    expect(legacyFix).toContain("max-width: 100% !important");
+    expect(legacyFix).toContain("border-radius: 24px !important");
+    expect(finalFix).toContain("min-height: 88px");
   });
 });
