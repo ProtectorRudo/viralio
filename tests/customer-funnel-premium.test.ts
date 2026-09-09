@@ -6,14 +6,17 @@ function source(file: string): string {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
-describe("VIRALIO-020B premium customer funnel", () => {
-  it("uses editorial campaign, share poster and voucher primitives", () => {
+describe("VIRALIO-021C premium customer funnel", () => {
+  it("uses editorial campaign, recipient-value share card and voucher v2 primitives", () => {
     const experience = source("src/ui/merchant-experience.tsx");
-    expect(experience).toContain('data-design-version="020b"');
+    expect(experience).toContain('data-design-version="021c"');
     expect(experience).toContain('data-testid="brand-campaign-frame"');
     expect(experience).toContain('data-testid="share-poster-preview"');
+    expect(experience).toContain('data-testid="whatsapp-share"');
+    expect(experience).toContain("La otra persona también recibe un regalo");
     expect(experience).toContain('data-testid="reward-voucher"');
-    expect(experience).toContain("Viralio no afirma una publicación que no puede verificar");
+    expect(experience).toContain('data-testid="reward-expiration"');
+    expect(experience).toContain("Viralio habilita la ruleta al iniciar el envío");
   });
 
   it("keeps the shared wheel server-driven while adding stationary premium hardware", () => {
@@ -26,7 +29,7 @@ describe("VIRALIO-020B premium customer funnel", () => {
     expect(wheel).toContain("style={{ transform: `rotate(${rotation}deg)` }}");
   });
 
-  it("renders the social card from validated layouts without revealing a prize", () => {
+  it("renders the social card from validated layouts without revealing the sender prize", () => {
     const shareCard = source("src/app/api/share-card/[referralToken]/route.ts");
     const layouts = source("src/brand/share-card-layout.ts");
     expect(shareCard).toContain("shareCardLayout(merchant.theme)");
@@ -37,9 +40,11 @@ describe("VIRALIO-020B premium customer funnel", () => {
     expect(shareCard).not.toContain("reward.prize");
   });
 
-  it("keeps the public reward card read-only and presents it as an official voucher", () => {
+  it("keeps the public reward card read-only with an explicit expiration block", () => {
     const rewardCard = source("src/ui/reward-card.tsx");
     expect(rewardCard).toContain('data-testid="public-reward-voucher"');
+    expect(rewardCard).toContain('data-testid="public-reward-expiration"');
+    expect(rewardCard).toContain("FECHA DE VENCIMIENTO");
     expect(rewardCard).toContain("panel seguro del comercio");
     expect(rewardCard).not.toContain("Marcar como canjeado");
   });
