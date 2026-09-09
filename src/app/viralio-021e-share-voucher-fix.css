@@ -1,4 +1,4 @@
-/* VIRALIO-021E/F — screenshot-driven finishing pass.
+/* VIRALIO-021E/G — screenshot-driven finishing pass.
    Share hierarchy + clipped availability badge correction. */
 
 .experience .referral-gift-stage-minimal {
@@ -6,26 +6,36 @@
 }
 
 .experience .referral-gift-stage-minimal .referral-minimal-copy {
-  gap: 18px;
+  width: 100%;
+  min-width: 0;
+  gap: 16px;
 }
 
 .experience .referral-gift-stage-minimal .referral-primary-title {
-  width: 100%;
-  max-width: 350px;
+  box-sizing: border-box;
+  width: min(100%, 330px);
+  max-width: 330px;
+  min-width: 0;
   margin: 0 auto;
+  padding-inline: 2px;
   color: var(--color-text);
   font-family: var(--font-display);
-  font-size: clamp(2.9rem, 11.6vw, 3.95rem);
+  font-size: clamp(2.2rem, 8.8vw, 3.05rem);
   font-weight: 650;
-  letter-spacing: -.045em;
-  line-height: .92;
+  letter-spacing: -.04em;
+  line-height: .96;
   text-align: center;
   text-transform: none;
+  text-wrap: balance;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .experience .referral-gift-stage-minimal .referral-primary-title span {
-  display: block;
-  white-space: nowrap;
+  display: inline;
+  white-space: normal;
 }
 
 .experience .referral-gift-stage-minimal .referral-supporting-title {
@@ -33,10 +43,10 @@
   margin: 0 auto;
   color: color-mix(in srgb, var(--color-text) 68%, transparent);
   font-family: var(--font-ui);
-  font-size: clamp(1.08rem, 4.4vw, 1.28rem);
+  font-size: clamp(1.05rem, 4.1vw, 1.22rem);
   font-weight: 650;
   letter-spacing: -.01em;
-  line-height: 1.28;
+  line-height: 1.3;
   text-align: center;
   text-wrap: balance;
 }
@@ -120,17 +130,20 @@
   }
 
   .experience .referral-gift-stage-minimal .referral-minimal-copy {
-    gap: 16px;
+    gap: 14px;
   }
 
   .experience .referral-gift-stage-minimal .referral-primary-title {
-    max-width: 330px;
-    font-size: clamp(2.65rem, 11.1vw, 3.2rem);
+    width: min(100%, 312px);
+    max-width: 312px;
+    padding-inline: 4px;
+    font-size: clamp(2.1rem, 8.6vw, 2.5rem);
+    line-height: .98;
   }
 
   .experience .referral-gift-stage-minimal .referral-supporting-title {
     max-width: 25ch;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
   }
 
   .experience .referral-gift-stage-minimal .referral-whatsapp-button {
@@ -141,5 +154,13 @@
   .experience .reward-voucher-v2 .voucher-v2-foot {
     min-height: 56px !important;
     padding: 12px 13px 13px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .experience .referral-gift-stage-minimal .referral-primary-title {
+    width: min(100%, 292px);
+    max-width: 292px;
+    font-size: 2rem;
   }
 }
