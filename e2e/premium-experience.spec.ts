@@ -5,6 +5,16 @@ async function expectNoOverflow(page: Page) {
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.width);
 }
 
+async function expectStatusInsideVoucher(page: Page) {
+  const voucher = page.getByTestId("reward-voucher");
+  const status = voucher.locator(".status-pill");
+  const [voucherBox, statusBox] = await Promise.all([voucher.boundingBox(), status.boundingBox()]);
+  expect(voucherBox).not.toBeNull();
+  expect(statusBox).not.toBeNull();
+  expect(statusBox!.y).toBeGreaterThanOrEqual(voucherBox!.y - 1);
+  expect(statusBox!.y + statusBox!.height).toBeLessThanOrEqual(voucherBox!.y + voucherBox!.height + 1);
+}
+
 async function sendReferralAndReachWheel(page: Page) {
   await page.context().route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }));
   const popupPromise = page.waitForEvent("popup");
@@ -33,13 +43,14 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   await expectNoOverflow(page);
 
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
-  await expect(page.getByRole("heading", { name: "La otra persona también recibe un regalo" })).toBeVisible();
+  await expect(page.getByText("Las buenas noticias se comparten")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
   await expect(page.getByTestId("whatsapp-share")).toBeVisible();
   await expect(page.getByTestId("share-poster-preview")).toHaveCount(0);
   await expect(page.getByTestId("whatsapp-status-share")).toHaveCount(0);
   await expect(page.getByTestId("instagram-story-share")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /La otra persona también recibe un regalo Enviar/ })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
 
   const sharePopupPromise = page.waitForEvent("popup");
@@ -67,12 +78,15 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   await expect(page.getByTestId("reward-expiration")).toContainText("FECHA DE VENCIMIENTO");
   await expect(page.getByTestId("reward-expiration")).toContainText(/\d{2}\/\d{2}\/\d{4}/);
   await expect(page.getByTestId("reward-voucher")).toHaveCSS("border-radius", "24px");
+  await expect(page.getByTestId("reward-voucher").locator(".status-pill")).toBeVisible();
+  await expectStatusInsideVoucher(page);
   await expectNoOverflow(page);
 
   await page.reload();
   await expect(page.getByTestId("reward-stage")).toBeVisible();
   await expect(page.getByText(serverResult.reward.shortCode)).toBeVisible();
   await expect(page.getByTestId("reward-expiration")).toBeVisible();
+  await expectStatusInsideVoucher(page);
 
   const popupPromise = page.waitForEvent("popup");
   await page.getByRole("button", { name: "Guardar premio en WhatsApp" }).click();
@@ -85,15 +99,15 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   expect(decoded).toContain("/premio/");
 });
 
-test("share stage is title plus one WhatsApp action", async ({ page }) => {
+test("share stage uses the approved hierarchy plus one WhatsApp action", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/moka");
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
 
-  await expect(page.getByText("La otra persona también recibe un regalo")).toBeVisible();
-  await expect(page.getByText("Abrí este pase y recibí tu regalo")).toHaveCount(0);
+  await expect(page.getByText("Las buenas noticias se comparten")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
   await expect(page.locator(".whatsapp-only-share button")).toHaveCount(1);
-  await expect(page.getByRole("button", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /La otra persona también recibe un regalo Enviar/ })).toBeVisible();
 });
 
 test("Atlas Barber uses the shared engine and the same explicit premium voucher contract", async ({ page, context }) => {
@@ -111,6 +125,7 @@ test("Atlas Barber uses the shared engine and the same explicit premium voucher 
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
   await expect(page.getByTestId("reward-stage")).toBeVisible();
   await expect(page.getByTestId("reward-expiration")).toBeVisible();
+  await expectStatusInsideVoucher(page);
   await expectNoOverflow(page);
   await page.getByRole("link", { name: "Ver tarjeta del premio" }).click();
   await expect(page.locator("main")).toHaveAttribute("data-merchant", "atlas-barber");
@@ -142,5 +157,6 @@ test("reduced motion keeps the complete flow operable", async ({ page }) => {
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
   await expect(page.getByTestId("reward-stage")).toBeVisible();
   await expect(page.getByTestId("reward-expiration")).toBeVisible();
+  await expectStatusInsideVoucher(page);
   await expectNoOverflow(page);
 });
