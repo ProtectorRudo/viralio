@@ -35,9 +35,11 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
   await expect(page.getByRole("heading", { name: "La otra persona también recibe un regalo" })).toBeVisible();
   await expect(page.getByTestId("whatsapp-share")).toBeVisible();
+  await expect(page.getByTestId("share-poster-preview")).toHaveCount(0);
   await expect(page.getByTestId("whatsapp-status-share")).toHaveCount(0);
   await expect(page.getByTestId("instagram-story-share")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
 
   const sharePopupPromise = page.waitForEvent("popup");
@@ -64,6 +66,7 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   await expect(page.getByRole("heading", { name: serverResult.reward.prizeName })).toBeVisible();
   await expect(page.getByTestId("reward-expiration")).toContainText("FECHA DE VENCIMIENTO");
   await expect(page.getByTestId("reward-expiration")).toContainText(/\d{2}\/\d{2}\/\d{4}/);
+  await expect(page.getByTestId("reward-voucher")).toHaveCSS("border-radius", "24px");
   await expectNoOverflow(page);
 
   await page.reload();
@@ -82,16 +85,15 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   expect(decoded).toContain("/premio/");
 });
 
-test("share stage has one action and makes recipient value explicit", async ({ page, context }) => {
+test("share stage is title plus one WhatsApp action", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await context.route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }));
   await page.goto("/moka");
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
 
   await expect(page.getByText("La otra persona también recibe un regalo")).toBeVisible();
-  await expect(page.getByText("Abrí este pase y recibí tu regalo")).toBeVisible();
+  await expect(page.getByText("Abrí este pase y recibí tu regalo")).toHaveCount(0);
   await expect(page.locator(".whatsapp-only-share button")).toHaveCount(1);
-  await expect(page.getByRole("button", { name: /Enviar regalo por WhatsApp/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
 });
 
 test("Atlas Barber uses the shared engine and the same explicit premium voucher contract", async ({ page, context }) => {
