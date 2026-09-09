@@ -415,9 +415,27 @@
   text-align: right;
 }
 
-/* Public reward page uses exactly the same ticket anatomy. */
-.public-reward-stage .public-reward-voucher.reward-voucher-v2 {
-  margin-top: 16px;
+/* Public reward page uses exactly the same ticket anatomy.
+   These selectors intentionally outrank the legacy seal/token/card object shapes from VIRALIO-020I. */
+.experience .public-reward-stage .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="voucher"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="card"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="token"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="seal"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="medallion"] .public-reward-voucher.reward-voucher-v2 {
+  width: 100%;
+  max-width: none;
+  aspect-ratio: auto;
+  align-content: normal;
+  justify-items: stretch;
+  margin: 16px 0 22px;
+  padding: 0;
+  border: 1px solid var(--ticket-line);
+  border-radius: 28px;
+  background: var(--ticket-bg);
+  box-shadow: 0 26px 58px rgba(39, 30, 23, .14), 0 3px 10px rgba(39, 30, 23, .06);
+  color: var(--ticket-ink);
+  text-align: left;
 }
 
 .public-reward-stage .state-message {
@@ -453,7 +471,8 @@
     border-radius: 22px;
   }
 
-  .reward-voucher-v2 {
+  .reward-voucher-v2,
+  .experience .public-reward-stage .public-reward-voucher.reward-voucher-v2 {
     border-radius: 22px;
   }
 
