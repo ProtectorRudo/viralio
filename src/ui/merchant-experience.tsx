@@ -26,19 +26,15 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
   const [reward, setReward] = useState<Reward>();
   const [spinReward, setSpinReward] = useState<Reward>();
   const [spinning, setSpinning] = useState(false);
-  const [shareBusy, setShareBusy] = useState<ShareChannel>();
+  const [shareBusy, setShareBusy] = useState(false);
   const [error, setError] = useState("");
-  const [nativeShare, setNativeShare] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updateMotion = () => setReducedMotion(media.matches);
     media.addEventListener("change", updateMotion);
-    const capabilityCheck = window.setTimeout(() => {
-      updateMotion();
-      setNativeShare(typeof navigator.share === "function");
-    }, 0);
+    const capabilityCheck = window.setTimeout(updateMotion, 0);
     const sessionId = localStorage.getItem(storageKey) ?? undefined;
     json<SessionPayload>("/api/sessions", {
       method: "POST",
@@ -79,64 +75,29 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     setPayload({ ...payload, session: result.session });
   }
 
-  async function shareToSocialDestination(channel: "whatsapp_status" | "instagram_story") {
-    if (!payload) return;
+  async function shareWhatsapp() {
+    if (!payload || shareBusy) return;
     setError("");
-    setShareBusy(channel);
+    setShareBusy(true);
+    const popup = window.open("about:blank", "_blank");
     try {
-      if (!navigator.share) {
-        throw new Error("Tu navegador no puede abrir el menú para compartir. Usá Enviar por WhatsApp como alternativa.");
-      }
-
-      const baseShare: ShareData = {
-        title: `Pase sorpresa de ${merchant.name}`,
-        text: merchant.theme.referralCopy,
-        url: referralUrl,
-      };
-      let shareData: ShareData = baseShare;
-
-      try {
-        const response = await fetch(`/api/share-card/${encodeURIComponent(payload.session.referralToken)}`);
-        if (response.ok) {
-          const blob = await response.blob();
-          const file = new File([blob], `viralio-${merchant.slug}-pase.png`, { type: blob.type || "image/png" });
-          if (typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
-            shareData = { title: baseShare.title, text: baseShare.text, files: [file] };
-          }
-        }
-      } catch {
-        shareData = baseShare;
-      }
-
-      await navigator.share(shareData);
-      await registerShare(channel);
-    } catch (reason) {
-      if ((reason as DOMException).name !== "AbortError") setError((reason as Error).message);
-    } finally {
-      setShareBusy(undefined);
-    }
-  }
-
-  async function share(channel: "whatsapp" | "native") {
-    if (!payload) return;
-    setError("");
-    setShareBusy(channel);
-    try {
-      if (channel === "native") {
-        if (!navigator.share) throw new Error("Tu navegador no ofrece el menú para compartir");
-        await navigator.share({ title: `Pase sorpresa de ${merchant.name}`, text: merchant.theme.referralCopy, url: referralUrl });
-        await registerShare(channel);
-        return;
-      }
-      const popup = window.open("about:blank", "_blank");
-      await registerShare(channel);
-      const target = `https://wa.me/?text=${encodeURIComponent(`${merchant.theme.referralCopy}\n${referralUrl}`)}`;
+      await registerShare("whatsapp");
+      const shareMessage = [
+        `🎁 Te comparto un regalo de ${merchant.theme.displayName}.`,
+        "",
+        "Me dieron este pase para compartir y cuando lo abras vos también recibís tu propio regalo.",
+        "",
+        "Abrilo y descubrí qué te toca:",
+        referralUrl,
+      ].join("\n");
+      const target = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
       if (popup) popup.location.href = target;
       else window.location.href = target;
     } catch (reason) {
-      if ((reason as DOMException).name !== "AbortError") setError((reason as Error).message);
+      popup?.close();
+      setError((reason as Error).message);
     } finally {
-      setShareBusy(undefined);
+      setShareBusy(false);
     }
   }
 
@@ -170,15 +131,13 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
     }
   }
 
-  const shareDisabled = Boolean(shareBusy);
-
   return (
     <main
       className={`experience theme-${merchant.slug}`}
       style={merchantThemeStyle(merchant)}
       data-merchant={merchant.slug}
       data-brand-style={merchant.theme.stylePreset ?? "template"}
-      data-design-version="020b"
+      data-design-version="021c"
     >
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
@@ -223,57 +182,42 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         )}
 
         {payload?.session.state === "UNLOCK" && (
-          <div className="stage share-stage premium-share-stage" data-testid="unlock-stage">
+          <div className="stage share-stage premium-share-stage referral-gift-stage" data-testid="unlock-stage">
             <div className="share-editorial-head">
               <div className="share-progress" data-testid="share-progress" aria-label="Compartir, girar y guardar premio">
-                <span className="is-active"><b>1</b><small>Compartí</small></span>
+                <span className="is-active"><b>1</b><small>Regalá</small></span>
                 <i aria-hidden="true" />
                 <span><b>2</b><small>Girá</small></span>
                 <i aria-hidden="true" />
                 <span><b>3</b><small>Guardá</small></span>
               </div>
               <div className="stage-copy share-copy">
-                <p className="eyebrow">Primero, hacelo circular</p>
-                <h1>{merchant.theme.shareTitle}</h1>
-                <p className="lead">{merchant.theme.shareCopy}</p>
+                <p className="eyebrow">Compartí algo que vale la pena abrir</p>
+                <h1>La otra persona también recibe un regalo</h1>
+                <p className="lead">Enviále tu pase por WhatsApp. Cuando lo abra, recibe su propio regalo de {merchant.theme.displayName}; y vos desbloqueás tu ruleta.</p>
               </div>
             </div>
 
-            <div className="share-poster-preview" data-testid="share-poster-preview" aria-label="Vista previa de la pieza para compartir">
+            <div className="share-poster-preview referral-gift-card" data-testid="share-poster-preview" aria-label="Vista previa del regalo que recibirá la otra persona">
               <div className="share-poster-top">
-                <span>{merchant.theme.shortName}</span>
-                <small>INVITACIÓN · 01</small>
+                <span>UN REGALO PARA VOS</span>
+                <small>{merchant.theme.shortName}</small>
               </div>
-              <div className="share-poster-mark"><MerchantBrandVisual merchant={merchant} size={42} /></div>
+              <div className="share-poster-mark"><MerchantBrandVisual merchant={merchant} size={48} /></div>
               <div className="share-poster-copy">
-                <strong>{merchant.theme.socialHeadline}</strong>
-                <span>{merchant.theme.socialSubcopy}</span>
+                <strong>Abrí este pase y recibí tu regalo</strong>
+                <span>{merchant.theme.displayName} preparó una sorpresa para vos.</span>
               </div>
-              <div className="share-poster-foot"><span>Tu premio no aparece</span><b>Viralio</b></div>
+              <div className="share-poster-foot"><span>Te lo compartieron para que vos también ganes</span><b>Viralio</b></div>
             </div>
 
-            <div className="story-grid premium-story-grid" aria-label="Compartir en estados e historias">
-              <button className="story-option story-whatsapp" data-testid="whatsapp-status-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("whatsapp_status")}>
-                <span className="story-sequence" aria-hidden="true">01</span>
-                <span className="story-icon" aria-hidden="true">W</span>
-                <span><strong>Estado de WhatsApp</strong><small>{shareBusy === "whatsapp_status" ? "Preparando pieza…" : "Compartir pieza 9:16"}</small></span>
-                <span className="story-arrow" aria-hidden="true">↗</span>
-              </button>
-              <button className="story-option story-instagram" data-testid="instagram-story-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("instagram_story")}>
-                <span className="story-sequence" aria-hidden="true">02</span>
-                <span className="story-icon" aria-hidden="true">◎</span>
-                <span><strong>Instagram Stories</strong><small>{shareBusy === "instagram_story" ? "Preparando pieza…" : "Abrir menú de compartir"}</small></span>
-                <span className="story-arrow" aria-hidden="true">↗</span>
+            <div className="share-actions whatsapp-only-share" aria-label="Compartir regalo por WhatsApp">
+              <button className="button button-whatsapp referral-whatsapp-button" data-testid="whatsapp-share" disabled={shareBusy} onClick={shareWhatsapp}>
+                <span className="whatsapp-icon" aria-hidden="true">↗</span>
+                <span><small>{shareBusy ? "Preparando regalo…" : "La otra persona también recibe uno"}</small>{shareBusy ? "Abriendo WhatsApp…" : "Enviar regalo por WhatsApp"}</span>
               </button>
             </div>
-
-            <div className="share-actions" aria-label="Otras opciones para compartir">
-              <button className="button button-whatsapp" disabled={shareDisabled} onClick={() => share("whatsapp")}>
-                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Enviar por WhatsApp</span>
-              </button>
-              <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
-            </div>
-            <p className="share-guidance">La ruleta se habilita cuando iniciás una acción de compartir. Viralio no afirma una publicación que no puede verificar.</p>
+            <p className="share-guidance">Al tocar el botón se abre WhatsApp con tu link personal. Viralio habilita la ruleta al iniciar el envío.</p>
           </div>
         )}
 
@@ -308,11 +252,39 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
               <h1>{reward.prizeName}</h1>
               <p className="lead">Un detalle de {merchant.theme.displayName} para tu próxima visita.</p>
             </div>
-            <div className="reward-ticket reward-voucher" data-testid="reward-voucher">
-              <div className="voucher-head"><span>PREMIO · VIRALIO</span><small>V / REWARD</small></div>
-              <div className="voucher-code"><span>Código único</span><strong>{reward.shortCode}</strong></div>
-              <div className="voucher-foot"><span>Válido hasta <b>{formatDate(reward.expiresAt)}</b></span><span className="status-pill">Disponible</span></div>
-            </div>
+
+            <article className="reward-ticket reward-voucher reward-voucher-v2" data-testid="reward-voucher">
+              <header className="voucher-v2-head">
+                <div className="voucher-v2-brand"><MerchantBrandVisual merchant={merchant} mode="mark" size={28} /><span>{merchant.theme.shortName}</span></div>
+                <span className="voucher-v2-type">CUPÓN DE REGALO</span>
+              </header>
+
+              <section className="voucher-v2-prize">
+                <span className="voucher-v2-label">TU REGALO</span>
+                <strong>{reward.prizeName}</strong>
+                <small>Presentá este cupón para canjearlo.</small>
+              </section>
+
+              <div className="voucher-v2-divider" aria-hidden="true"><span /></div>
+
+              <section className="voucher-v2-details">
+                <div className="voucher-v2-detail voucher-v2-code">
+                  <span>CÓDIGO DE CANJE</span>
+                  <strong>{reward.shortCode}</strong>
+                </div>
+                <div className="voucher-v2-detail voucher-v2-expiration" data-testid="reward-expiration">
+                  <span>FECHA DE VENCIMIENTO</span>
+                  <strong>{formatDate(reward.expiresAt)}</strong>
+                  <small>Canjealo hasta ese día inclusive.</small>
+                </div>
+              </section>
+
+              <footer className="voucher-v2-foot">
+                <span className="status-pill">Disponible</span>
+                <small>Premio único · protegido por Viralio</small>
+              </footer>
+            </article>
+
             <div className="reward-actions">
               <button className="button button-whatsapp reward-whatsapp" onClick={saveInWhatsapp}><span className="whatsapp-icon" aria-hidden="true">↗</span> Guardar premio en WhatsApp</button>
               <a className="button button-secondary button-link" href={`/premio/${reward.token}`}>Ver tarjeta del premio</a>
