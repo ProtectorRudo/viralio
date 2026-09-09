@@ -1,0 +1,64 @@
+/* Final fidelity pass for the approved Aurora reward reference.
+   The dynamic prize name becomes the main voucher value, while the code stays secondary. */
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy::after {
+  display: block;
+  margin-top: 5px;
+  color: var(--aurora-muted);
+  content: "Este es tu premio";
+  font-family: var(--font-body);
+  font-size: .68rem;
+  font-weight: 500;
+}
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy h1 {
+  position: absolute;
+  top: 178px;
+  right: 18px;
+  left: 18px;
+  z-index: 6;
+  display: block;
+  margin: 0;
+  color: var(--aurora-rose);
+  font-family: var(--font-display);
+  font-size: clamp(2.15rem, 10vw, 3.2rem);
+  font-weight: 430;
+  letter-spacing: -.035em;
+  line-height: .94;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .premium-reveal-stage .reward-copy h1::before {
+  content: none;
+}
+
+.theme-joyeria-aurora .reward-voucher {
+  padding-top: 150px;
+}
+
+.theme-joyeria-aurora .reward-voucher::before {
+  top: 25px;
+  content: "✦\A DISFRUTA";
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-head {
+  position: absolute;
+  top: 76px;
+  right: 20px;
+  left: 20px;
+  padding: 0;
+}
+
+.theme-joyeria-aurora .reward-voucher .voucher-code {
+  margin-top: auto;
+}
+
+@media (max-height: 760px) {
+  .theme-joyeria-aurora .premium-reveal-stage .reward-copy h1 {
+    top: 148px;
+    font-size: clamp(1.9rem, 9vw, 2.65rem);
+  }
+
+  .theme-joyeria-aurora .reward-voucher {
+    padding-top: 128px;
+  }
+}

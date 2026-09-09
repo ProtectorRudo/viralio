@@ -1,0 +1,507 @@
+/* VIRALIO-021B/021C — product feedback refinement.
+   Bigger tactile wheel, explicit referral gift proposition and a real premium reward voucher.
+   Funnel, reward issuance and redemption logic remain server-driven. */
+
+/* Universal QR-entry promise. Aurora keeps its approved composition but adopts the new copy. */
+.theme-joyeria-aurora .campaign-copy h1::before {
+  content: "Tenemos un";
+}
+
+.theme-joyeria-aurora .campaign-copy h1::after {
+  content: "regalo especial";
+}
+
+.theme-joyeria-aurora .campaign-copy .lead::before {
+  content: "para vos";
+}
+
+/* Bigger wheel and genuinely readable prize labels. */
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+  width: min(90vw, 356px);
+  margin: 4px auto 20px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel i {
+  transform-origin: .5px calc((min(90vw, 356px) + 16px) / 2 - 3px);
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell {
+  min-height: 402px;
+  padding-top: 8px;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell::before {
+  width: min(98vw, 392px);
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-label {
+  fill: #fff;
+  stroke: rgba(0, 0, 0, .68);
+  stroke-width: 1.95px;
+  paint-order: stroke fill;
+  font-family: var(--font-body);
+  font-size: 11.9px;
+  font-weight: 820;
+  letter-spacing: .001em;
+  text-rendering: geometricPrecision;
+}
+
+.theme-joyeria-aurora .premium-wheel-stage .wheel-frame {
+  width: min(90vw, 356px);
+}
+
+.theme-joyeria-aurora .premium-wheel-stage .wheel-label {
+  fill: #3f2d28;
+  stroke: rgba(255, 252, 249, .96);
+  stroke-width: 1.7px;
+  paint-order: stroke fill;
+  font-size: 11.2px;
+  font-weight: 740;
+  text-rendering: geometricPrecision;
+}
+
+/* Referral stage: one proposition, one action. */
+.referral-gift-stage .share-editorial-head {
+  margin-bottom: 16px;
+}
+
+.referral-gift-stage .share-copy h1 {
+  max-width: 12ch;
+  margin-inline: auto;
+}
+
+.referral-gift-stage .share-copy .lead {
+  max-width: 34ch;
+  margin-inline: auto;
+}
+
+.referral-gift-stage .referral-gift-card {
+  position: relative;
+  display: grid;
+  min-height: 300px;
+  padding: 20px;
+  border: 1px solid #e5ddd5;
+  border-radius: 26px;
+  background: #fffdf9;
+  color: #211d19;
+  box-shadow: 0 20px 46px rgba(39, 30, 23, .12);
+  overflow: hidden;
+}
+
+.referral-gift-stage .referral-gift-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: var(--color-primary);
+  content: "";
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-top {
+  color: #211d19;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-top > span {
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .14em;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-top small {
+  color: #756c65;
+  font-weight: 700;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-mark {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  margin: 18px 0 12px;
+  border: 1px solid #e8dfd8;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(39, 30, 23, .09);
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-copy {
+  align-self: center;
+  display: grid;
+  gap: 8px;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-copy strong {
+  max-width: 12ch;
+  color: #211d19;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 7vw, 2.25rem);
+  font-weight: 720;
+  letter-spacing: -.035em;
+  line-height: .98;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-copy span {
+  max-width: 29ch;
+  color: #675f59;
+  font-size: .92rem;
+  line-height: 1.45;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-foot {
+  align-self: end;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid #ece4dd;
+  color: #675f59;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-foot span {
+  max-width: 24ch;
+  font-size: .72rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.referral-gift-stage .referral-gift-card .share-poster-foot b {
+  color: #211d19;
+  font-size: .74rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.referral-gift-stage .whatsapp-only-share {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.referral-gift-stage .referral-whatsapp-button {
+  width: 100%;
+  min-height: 68px;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 1rem;
+  box-shadow: 0 14px 30px rgba(19, 90, 55, .17);
+}
+
+.referral-gift-stage .referral-whatsapp-button > span:last-child {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.referral-gift-stage .referral-whatsapp-button small {
+  display: block;
+  font-size: .68rem;
+  font-weight: 650;
+  opacity: .82;
+}
+
+.referral-gift-stage .share-guidance {
+  max-width: 35ch;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* Reward Voucher V2 — fixed neutral ticket palette guarantees readability across every merchant theme. */
+.reward-voucher-v2 {
+  --ticket-bg: #fffdf9;
+  --ticket-ink: #211d19;
+  --ticket-muted: #756c65;
+  --ticket-line: #e6ddd5;
+  position: relative;
+  display: grid;
+  width: 100%;
+  margin: 10px 0 2px;
+  padding: 0;
+  border: 1px solid var(--ticket-line);
+  border-radius: 28px;
+  background: var(--ticket-bg);
+  color: var(--ticket-ink);
+  box-shadow: 0 26px 58px rgba(39, 30, 23, .14), 0 3px 10px rgba(39, 30, 23, .06);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.reward-voucher-v2::before {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 5px;
+  background: var(--color-primary);
+  content: "";
+}
+
+.reward-voucher-v2 .voucher-v2-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 15px;
+  border-bottom: 1px solid var(--ticket-line);
+}
+
+.reward-voucher-v2 .voucher-v2-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.reward-voucher-v2 .voucher-v2-brand > span {
+  overflow: hidden;
+  color: var(--ticket-ink);
+  font-size: .82rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reward-voucher-v2 .voucher-v2-type {
+  flex: none;
+  color: var(--ticket-muted);
+  font-size: .61rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.reward-voucher-v2 .voucher-v2-prize {
+  display: grid;
+  gap: 7px;
+  padding: 27px 20px 25px;
+}
+
+.reward-voucher-v2 .voucher-v2-label,
+.reward-voucher-v2 .voucher-v2-detail > span {
+  color: var(--ticket-muted);
+  font-size: .64rem;
+  font-weight: 850;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.reward-voucher-v2 .voucher-v2-prize > strong {
+  max-width: 15ch;
+  color: var(--ticket-ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 7.6vw, 2.6rem);
+  font-weight: 720;
+  letter-spacing: -.04em;
+  line-height: .98;
+}
+
+.reward-voucher-v2 .voucher-v2-prize > small {
+  color: var(--ticket-muted);
+  font-size: .78rem;
+  line-height: 1.4;
+}
+
+.reward-voucher-v2 .voucher-v2-divider {
+  position: relative;
+  height: 23px;
+}
+
+.reward-voucher-v2 .voucher-v2-divider::before,
+.reward-voucher-v2 .voucher-v2-divider::after {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--ticket-line);
+  border-radius: 50%;
+  background: var(--color-canvas, #f4f0eb);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.reward-voucher-v2 .voucher-v2-divider::before {
+  left: -12px;
+}
+
+.reward-voucher-v2 .voucher-v2-divider::after {
+  right: -12px;
+}
+
+.reward-voucher-v2 .voucher-v2-divider > span {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  left: 16px;
+  border-top: 1px dashed #d4c9c0;
+}
+
+.reward-voucher-v2 .voucher-v2-details {
+  display: grid;
+  gap: 12px;
+  padding: 8px 20px 22px;
+}
+
+.reward-voucher-v2 .voucher-v2-detail {
+  display: grid;
+  gap: 7px;
+  padding: 15px 16px;
+  border: 1px solid var(--ticket-line);
+  border-radius: 17px;
+  background: #fff;
+}
+
+.reward-voucher-v2 .voucher-v2-code strong {
+  color: var(--ticket-ink);
+  font-family: var(--font-code);
+  font-size: clamp(1.8rem, 8vw, 2.45rem);
+  font-weight: 720;
+  letter-spacing: .09em;
+  line-height: 1;
+}
+
+.reward-voucher-v2 .voucher-v2-expiration {
+  border-color: #211d19;
+  background: #211d19;
+}
+
+.reward-voucher-v2 .voucher-v2-expiration > span {
+  color: #cfc6be;
+}
+
+.reward-voucher-v2 .voucher-v2-expiration > strong {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 7.3vw, 2.35rem);
+  font-weight: 720;
+  letter-spacing: -.025em;
+  line-height: 1;
+}
+
+.reward-voucher-v2 .voucher-v2-expiration > small {
+  color: #ded6cf;
+  font-size: .76rem;
+  line-height: 1.35;
+}
+
+.reward-voucher-v2 .voucher-v2-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 20px 18px;
+  border-top: 1px solid var(--ticket-line);
+  background: #f8f4ef;
+}
+
+.reward-voucher-v2 .voucher-v2-foot .status-pill,
+.reward-voucher-v2 .voucher-v2-foot .status-badge {
+  padding: 7px 10px;
+  border: 1px solid #cfc5bc;
+  border-radius: 999px;
+  background: #fff;
+  color: #3b342f;
+  font-size: .61rem;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.reward-voucher-v2 .voucher-v2-foot > small {
+  color: var(--ticket-muted);
+  font-size: .66rem;
+  line-height: 1.3;
+  text-align: right;
+}
+
+/* Public reward page uses exactly the same ticket anatomy.
+   These selectors intentionally outrank the legacy seal/token/card object shapes from VIRALIO-020I. */
+.experience .public-reward-stage .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="voucher"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="card"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="token"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="seal"] .public-reward-voucher.reward-voucher-v2,
+.experience:not(.theme-joyeria-aurora)[data-reward-object="medallion"] .public-reward-voucher.reward-voucher-v2 {
+  width: 100%;
+  max-width: none;
+  aspect-ratio: auto;
+  align-content: normal;
+  justify-items: stretch;
+  margin: 16px 0 22px;
+  padding: 0;
+  border: 1px solid var(--ticket-line);
+  border-radius: 28px;
+  background: var(--ticket-bg);
+  box-shadow: 0 26px 58px rgba(39, 30, 23, .14), 0 3px 10px rgba(39, 30, 23, .06);
+  color: var(--ticket-ink);
+  text-align: left;
+}
+
+.public-reward-stage .state-message {
+  margin-top: 18px;
+}
+
+@media (max-width: 380px) {
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame,
+  .theme-joyeria-aurora .premium-wheel-stage .wheel-frame {
+    width: min(92vw, 330px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel i {
+    transform-origin: .5px calc((min(92vw, 330px) + 16px) / 2 - 3px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .wheel-object-shell::before {
+    width: min(99vw, 360px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-label {
+    font-size: 10.9px;
+    stroke-width: 1.8px;
+  }
+
+  .theme-joyeria-aurora .premium-wheel-stage .wheel-label {
+    font-size: 10.6px;
+  }
+
+  .referral-gift-stage .referral-gift-card {
+    min-height: 280px;
+    padding: 17px;
+    border-radius: 22px;
+  }
+
+  .reward-voucher-v2,
+  .experience .public-reward-stage .public-reward-voucher.reward-voucher-v2 {
+    border-radius: 22px;
+  }
+
+  .reward-voucher-v2 .voucher-v2-head,
+  .reward-voucher-v2 .voucher-v2-prize,
+  .reward-voucher-v2 .voucher-v2-details,
+  .reward-voucher-v2 .voucher-v2-foot {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .reward-voucher-v2 .voucher-v2-head {
+    align-items: flex-start;
+  }
+
+  .reward-voucher-v2 .voucher-v2-type {
+    max-width: 11ch;
+    text-align: right;
+  }
+
+  .reward-voucher-v2 .voucher-v2-foot {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience .premium-wheel-stage .wheel-frame,
+  .reward-voucher-v2,
+  .referral-gift-card {
+    transition: none !important;
+  }
+}

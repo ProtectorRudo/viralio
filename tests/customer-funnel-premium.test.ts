@@ -6,14 +6,19 @@ function source(file: string): string {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
-describe("VIRALIO-020B premium customer funnel", () => {
-  it("uses editorial campaign, share poster and voucher primitives", () => {
+describe("VIRALIO-021G premium customer funnel", () => {
+  it("uses editorial campaign, minimal WhatsApp sharing and voucher v3 primitives", () => {
     const experience = source("src/ui/merchant-experience.tsx");
-    expect(experience).toContain('data-design-version="020b"');
+    expect(experience).toContain('data-design-version="021g"');
     expect(experience).toContain('data-testid="brand-campaign-frame"');
-    expect(experience).toContain('data-testid="share-poster-preview"');
-    expect(experience).toContain('data-testid="reward-voucher"');
-    expect(experience).toContain("Viralio no afirma una publicación que no puede verificar");
+    expect(experience).toContain('data-testid="whatsapp-share"');
+    expect(experience).toContain('<h1 className="referral-primary-title">Las buenas noticias también se comparten</h1>');
+    expect(experience).toContain('className="referral-supporting-title">Compartí tu regalo con otra persona</p>');
+    expect(experience).toContain("La otra persona también recibe un regalo");
+    expect(experience).toContain("<small>Enviar</small>");
+    expect(experience).not.toContain('data-testid="share-poster-preview"');
+    expect(experience).toContain('className="reward-ticket reward-voucher reward-voucher-v2 reward-voucher-v3"');
+    expect(experience).toContain('data-testid="reward-expiration"');
   });
 
   it("keeps the shared wheel server-driven while adding stationary premium hardware", () => {
@@ -26,20 +31,17 @@ describe("VIRALIO-020B premium customer funnel", () => {
     expect(wheel).toContain("style={{ transform: `rotate(${rotation}deg)` }}");
   });
 
-  it("renders the social card from validated layouts without revealing a prize", () => {
+  it("keeps referral links free of the sender reward", () => {
     const shareCard = source("src/app/api/share-card/[referralToken]/route.ts");
-    const layouts = source("src/brand/share-card-layout.ts");
-    expect(shareCard).toContain("shareCardLayout(merchant.theme)");
-    expect(layouts).toContain("INVITACIÓN PRIVADA");
-    expect(shareCard).toContain("La recompensa de quien comparte permanece oculta");
-    expect(shareCard).not.toContain("linear-gradient");
     expect(shareCard).not.toContain("prizeName");
     expect(shareCard).not.toContain("reward.prize");
   });
 
-  it("keeps the public reward card read-only and presents it as an official voucher", () => {
+  it("keeps the public reward card read-only with an explicit expiration block", () => {
     const rewardCard = source("src/ui/reward-card.tsx");
     expect(rewardCard).toContain('data-testid="public-reward-voucher"');
+    expect(rewardCard).toContain('data-testid="public-reward-expiration"');
+    expect(rewardCard).toContain("FECHA DE VENCIMIENTO");
     expect(rewardCard).toContain("panel seguro del comercio");
     expect(rewardCard).not.toContain("Marcar como canjeado");
   });

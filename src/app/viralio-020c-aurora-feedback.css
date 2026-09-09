@@ -1,0 +1,223 @@
+/* VIRALIO-020C — Mauro feedback pass.
+   Keep the approved wheel/reward work intact while simplifying Aurora landing/share.
+   Aurora uses one clear sharing path: direct WhatsApp message to a contact. */
+
+.theme-joyeria-aurora .premium-brand-header .brand-copy small {
+  order: -1;
+}
+
+.theme-joyeria-aurora .premium-campaign-stage {
+  min-height: calc(100svh - 136px);
+  justify-content: space-between;
+}
+
+.theme-joyeria-aurora .campaign-frame {
+  display: grid;
+  min-height: 430px;
+  place-items: center;
+  padding: 18px 0 36px;
+}
+
+.theme-joyeria-aurora .campaign-copy {
+  display: grid;
+  width: 100%;
+  max-width: 330px;
+  justify-items: center;
+  padding-top: 0;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .campaign-copy h1,
+.theme-joyeria-aurora .campaign-copy .lead {
+  width: 100%;
+  max-width: none !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+
+.theme-joyeria-aurora .campaign-copy h1::before,
+.theme-joyeria-aurora .campaign-copy h1::after,
+.theme-joyeria-aurora .campaign-copy .lead::before {
+  width: 100%;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .campaign-copy h1::before {
+  font-size: clamp(2.65rem, 11vw, 3.55rem);
+  line-height: .98;
+}
+
+.theme-joyeria-aurora .campaign-copy h1::after {
+  margin-top: 3px;
+  font-size: clamp(2.65rem, 11vw, 3.55rem);
+  line-height: .98;
+}
+
+.theme-joyeria-aurora .campaign-copy .lead::before {
+  margin-top: 3px;
+  font-size: clamp(2.65rem, 11vw, 3.55rem);
+  line-height: .98;
+}
+
+.theme-joyeria-aurora .campaign-copy .lead::after {
+  display: block;
+  width: min(100%, 28ch);
+  max-width: none;
+  margin: 30px auto 0;
+  padding: 20px 0 0;
+  border-top: 1px solid var(--aurora-line);
+  border-left: 0;
+  color: #66524b;
+  content: "Descubrí tu regalo exclusivo.";
+  white-space: normal;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .campaign-visual {
+  display: none !important;
+  background: none !important;
+}
+
+.theme-joyeria-aurora .share-copy {
+  display: grid;
+  width: 100%;
+  max-width: none !important;
+  justify-items: center;
+  text-align: center !important;
+}
+
+.theme-joyeria-aurora .share-copy h1,
+.theme-joyeria-aurora .share-copy .lead {
+  width: 100%;
+  max-width: none !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  text-align: center !important;
+}
+
+.theme-joyeria-aurora .share-copy h1::before,
+.theme-joyeria-aurora .share-copy h1::after {
+  width: 100%;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .share-copy h1::before {
+  content: "Compartí la magia";
+  font-size: clamp(1.8rem, 8.3vw, 2.05rem);
+}
+
+.theme-joyeria-aurora .share-copy h1::after {
+  content: "de Aurora";
+  font-size: clamp(1.8rem, 8.3vw, 2.05rem);
+}
+
+.theme-joyeria-aurora .share-copy .lead::before {
+  display: block;
+  width: min(100%, 34ch);
+  max-width: none;
+  margin: 13px auto 0;
+  content: "Enviá el enlace a un contacto por WhatsApp y después girá la ruleta para descubrir tu premio.";
+  white-space: normal;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .share-poster-preview {
+  display: grid;
+  min-height: 236px;
+  place-items: center;
+  padding: 30px 24px;
+  border: 1px solid rgba(196, 151, 129, .28);
+  border-radius: 12px;
+  background: #fffaf6;
+  box-shadow: none;
+}
+
+.theme-joyeria-aurora .share-poster-preview::before,
+.theme-joyeria-aurora .share-poster-preview::after {
+  content: none !important;
+  background: none !important;
+}
+
+.theme-joyeria-aurora .share-poster-copy {
+  position: static;
+  display: grid;
+  max-width: 260px;
+  gap: 10px;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .share-poster-copy::before {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--aurora-gold);
+  content: "✦  AURORA  ✦";
+  font-family: var(--font-body);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+
+.theme-joyeria-aurora .share-poster-copy strong {
+  font-size: clamp(1.85rem, 8.5vw, 2.4rem);
+  line-height: 1;
+}
+
+.theme-joyeria-aurora .share-poster-copy span {
+  font-size: .72rem;
+  line-height: 1.5;
+}
+
+/* Aurora deliberately keeps a single sharing action: direct WhatsApp message.
+   Status, Stories and generic Web Share stay hidden for this approved funnel. */
+.theme-joyeria-aurora .premium-story-grid,
+.theme-joyeria-aurora [data-testid="native-share"] {
+  display: none !important;
+}
+
+.theme-joyeria-aurora .share-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 2px;
+}
+
+.theme-joyeria-aurora .share-actions .button-whatsapp {
+  width: 100%;
+  min-height: 58px;
+}
+
+.theme-joyeria-aurora .share-guidance {
+  margin-top: 8px;
+  color: var(--aurora-muted);
+  font-size: 0;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.theme-joyeria-aurora .share-guidance::before {
+  content: "Se abre WhatsApp para que elijas un contacto. Al iniciar el envío, la ruleta queda habilitada.";
+  font-size: .66rem;
+}
+
+@media (max-height: 760px) {
+  .theme-joyeria-aurora .campaign-frame {
+    min-height: 350px;
+    padding-top: 6px;
+  }
+
+  .theme-joyeria-aurora .campaign-copy h1::before,
+  .theme-joyeria-aurora .campaign-copy h1::after,
+  .theme-joyeria-aurora .campaign-copy .lead::before {
+    font-size: clamp(2.25rem, 10vw, 3rem);
+  }
+
+  .theme-joyeria-aurora .campaign-copy .lead::after {
+    margin-top: 22px;
+  }
+
+  .theme-joyeria-aurora .share-poster-preview {
+    min-height: 202px;
+    padding: 22px 20px;
+  }
+}

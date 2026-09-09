@@ -1,13 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
-async function enableShare(page: Page) {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", { configurable: true, value: async () => undefined });
-    Object.defineProperty(navigator, "canShare", { configurable: true, value: () => false });
-  });
-}
-
 function cssDurationMs(value: string): number {
   const values = value.split(",").map((part) => part.trim()).filter(Boolean).map((part) => {
     if (part.endsWith("ms")) return Number.parseFloat(part);
@@ -25,19 +18,6 @@ async function noHorizontalOverflow(page: Page) {
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
 }
 
-async function expectStoryCopySeparated(page: Page) {
-  for (const testId of ["whatsapp-status-share", "instagram-story-share"]) {
-    const option = page.getByTestId(testId);
-    const title = option.locator("strong");
-    const subtitle = option.locator("small");
-    const [titleBox, subtitleBox] = await Promise.all([title.boundingBox(), subtitle.boundingBox()]);
-
-    expect(titleBox, `${testId} title must have a layout box`).not.toBeNull();
-    expect(subtitleBox, `${testId} subtitle must have a layout box`).not.toBeNull();
-    expect(subtitleBox!.y).toBeGreaterThanOrEqual(titleBox!.y + titleBox!.height + 2);
-  }
-}
-
 async function capture(page: Page, testInfo: TestInfo, name: string) {
   mkdirSync("visual-qa-evidence", { recursive: true });
   const screenshotPath = `visual-qa-evidence/${name}.png`;
@@ -50,16 +30,29 @@ async function resetSession(page: Page) {
   await page.evaluate(() => localStorage.clear());
 }
 
+async function openWhatsappAndContinue(page: Page) {
+  await page.context().route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }));
+  const popupPromise = page.waitForEvent("popup");
+  await page.getByTestId("whatsapp-share").click();
+  const popup = await popupPromise;
+  await expect.poll(() => popup.url()).toContain("wa.me");
+  await popup.close();
+  await expect(page.getByTestId("wheel-stage")).toBeVisible();
+}
+
 async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
   await resetSession(page);
   await page.goto(`/${slug}`);
-  await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
-  await expect(page.getByTestId("share-poster-preview")).toBeVisible();
-  await expectStoryCopySeparated(page);
+  await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
+  await expect(page.getByTestId("share-poster-preview")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Las buenas noticias también se comparten" })).toBeVisible();
+  await expect(page.locator(".referral-supporting-title")).toHaveText("Compartí tu regalo con otra persona");
+  await expect(page.getByTestId("whatsapp-share")).toBeVisible();
+  await expect(page.locator(".whatsapp-only-share button")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: /La otra persona también recibe un regalo Enviar/ })).toBeVisible();
   await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-share-390`);
-  await page.getByTestId("native-share").click();
-  await expect(page.getByTestId("wheel-stage")).toBeVisible();
+  await openWhatsappAndContinue(page);
   await capture(page, testInfo, `${slug}-wheel-390`);
 
   const spinResponse = page.waitForResponse((response) =>
@@ -68,11 +61,14 @@ async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
   const payload = await (await spinResponse).json() as { reward: { token: string } };
   await expect(page.getByTestId("reward-stage")).toBeVisible();
+  await expect(page.getByTestId("reward-expiration")).toBeVisible();
+  await expect(page.getByTestId("reward-voucher")).toHaveCSS("border-radius", "24px");
   await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-reward-390`);
 
   await page.goto(`/premio/${payload.reward.token}`);
   await expect(page.getByTestId("public-reward-voucher")).toBeVisible();
+  await expect(page.getByTestId("public-reward-expiration")).toBeVisible();
   await expect(page.getByRole("button", { name: /Marcar como canjeado/i })).toHaveCount(0);
   await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-public-reward-390`);
@@ -80,7 +76,6 @@ async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
 }
 
 test("final browser evidence stays responsive, accessible and materially distinct", async ({ page }, testInfo) => {
-  await enableShare(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
 
   const merchants = [
@@ -120,7 +115,7 @@ test("final browser evidence stays responsive, accessible and materially distinc
       Math.round(visualBox?.width ?? 0),
     ].join("|"));
 
-    const primary = page.getByRole("button", { name: /Descubrir mi premio/ });
+    const primary = page.getByRole("button", { name: /Descubrir mi regalo/ });
     await page.keyboard.press("Tab");
     await expect(primary).toBeFocused();
     const focus = await primary.evaluate((node) => {
