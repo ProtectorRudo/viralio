@@ -1,0 +1,329 @@
+/* VIRALIO-021D — screenshot-driven mobile correction.
+   Minimal referral share + hard reset of legacy reward-object geometry.
+   Loaded last on purpose: this layer is the final customer-facing contract. */
+
+/* Share: exactly one idea and one action. */
+.experience .referral-gift-stage-minimal {
+  min-height: calc(100svh - 118px);
+  justify-content: center;
+  align-content: center;
+  gap: 34px;
+  padding-top: 36px;
+  padding-bottom: 42px;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-copy {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+  justify-items: center;
+  text-align: center;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-copy h1 {
+  max-width: 9ch;
+  margin: 0 auto;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 13vw, 4.4rem);
+  font-weight: 650;
+  letter-spacing: -.045em;
+  line-height: .92;
+  text-wrap: balance;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-action {
+  width: min(100%, 350px);
+  margin: 0 auto;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-button {
+  min-height: 68px;
+  width: 100%;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 22px;
+  font-size: .98rem;
+  font-weight: 780;
+  line-height: 1.18;
+  text-align: center;
+  box-shadow: 0 14px 30px rgba(17, 89, 58, .18);
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-button > span:last-child {
+  display: block;
+  max-width: 240px;
+}
+
+/* Voucher V3: forcibly neutralize every previous seal/token/medallion geometry. */
+.experience .premium-reveal-stage .reward-voucher.reward-voucher-v2,
+.experience .premium-reveal-stage .reward-voucher-v3,
+.experience .premium-public-card .public-reward-voucher.reward-voucher-v2,
+.experience[data-reward-object="seal"] .public-reward-voucher.reward-voucher-v2,
+.experience[data-reward-object="medallion"] .public-reward-voucher.reward-voucher-v2,
+.experience[data-reward-object="token"] .public-reward-voucher.reward-voucher-v2,
+.experience[data-reward-object="card"] .public-reward-voucher.reward-voucher-v2,
+.experience[data-reward-object="voucher"] .public-reward-voucher.reward-voucher-v2 {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: min(100%, 370px) !important;
+  max-width: 370px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  align-content: normal !important;
+  justify-items: stretch !important;
+  margin: 8px auto 6px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(40, 31, 26, .14) !important;
+  border-radius: 28px !important;
+  background: #fffaf5 !important;
+  color: #211d19 !important;
+  box-shadow: 0 18px 48px rgba(35, 26, 22, .14) !important;
+  overflow: hidden !important;
+  text-align: left !important;
+  transform: none !important;
+}
+
+.experience .reward-voucher-v2::before,
+.experience .reward-voucher-v2::after {
+  display: none !important;
+  content: none !important;
+}
+
+.experience .reward-voucher-v2 > *,
+.experience .reward-voucher-v2 .voucher-v2-head,
+.experience .reward-voucher-v2 .voucher-v2-prize,
+.experience .reward-voucher-v2 .voucher-v2-details,
+.experience .reward-voucher-v2 .voucher-v2-detail,
+.experience .reward-voucher-v2 .voucher-v2-foot {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+  text-align: left !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 15px 17px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(40, 31, 26, .10) !important;
+  border-radius: 0 !important;
+  background: #f7f0e9 !important;
+  color: #211d19 !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  min-width: 0 !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-brand > :first-child {
+  flex: 0 0 auto !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-brand span,
+.experience .reward-voucher-v2 .voucher-v2-type,
+.experience .reward-voucher-v2 .voucher-v2-label,
+.experience .reward-voucher-v2 .voucher-v2-detail > span {
+  color: #716862 !important;
+  font-family: var(--font-ui) !important;
+  font-size: .68rem !important;
+  font-weight: 820 !important;
+  letter-spacing: .13em !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-brand span {
+  color: #211d19 !important;
+  letter-spacing: .08em !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-type {
+  flex: 0 0 auto !important;
+  font-size: .58rem !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-prize {
+  display: grid !important;
+  gap: 7px !important;
+  padding: 19px 17px 17px !important;
+  border: 0 !important;
+  background: #fffaf5 !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-prize strong {
+  display: block !important;
+  color: #211d19 !important;
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.55rem, 7vw, 2rem) !important;
+  font-weight: 650 !important;
+  letter-spacing: -.025em !important;
+  line-height: 1.02 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-divider {
+  display: none !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-details {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+  padding: 0 13px 13px !important;
+  background: #fffaf5 !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-detail {
+  display: grid !important;
+  gap: 7px !important;
+  padding: 14px 15px !important;
+  border: 1px solid rgba(40, 31, 26, .11) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-code strong {
+  display: block !important;
+  color: #211d19 !important;
+  font-family: var(--font-code) !important;
+  font-size: clamp(2rem, 10vw, 2.75rem) !important;
+  font-weight: 620 !important;
+  letter-spacing: .08em !important;
+  line-height: .95 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-expiration {
+  padding: 15px !important;
+  border-color: #211d19 !important;
+  background: #211d19 !important;
+  color: #fff !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-expiration > span {
+  color: rgba(255,255,255,.70) !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-expiration strong {
+  display: block !important;
+  color: #fff !important;
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.75rem, 8vw, 2.25rem) !important;
+  font-weight: 680 !important;
+  letter-spacing: -.02em !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-expiration small {
+  display: block !important;
+  color: rgba(255,255,255,.72) !important;
+  font-family: var(--font-ui) !important;
+  font-size: .76rem !important;
+  line-height: 1.35 !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-foot {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 13px 16px 14px !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(40, 31, 26, .09) !important;
+  border-radius: 0 !important;
+  background: #f7f0e9 !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-foot small {
+  color: #716862 !important;
+  font-family: var(--font-ui) !important;
+  font-size: .66rem !important;
+  line-height: 1.25 !important;
+  text-align: right !important;
+}
+
+.experience .reward-voucher-v2 .status-pill,
+.experience .reward-voucher-v2 .status-badge {
+  width: max-content !important;
+  padding: 6px 9px !important;
+  border: 1px solid rgba(27, 120, 78, .22) !important;
+  border-radius: 999px !important;
+  background: rgba(27, 120, 78, .08) !important;
+  color: #176d49 !important;
+  font-size: .62rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .05em !important;
+  text-transform: uppercase !important;
+}
+
+/* Keep the reveal compact enough that the primary save action remains visible on phones. */
+.experience .premium-reveal-stage {
+  gap: 15px;
+}
+
+.experience .premium-reveal-stage .reward-copy h1 {
+  font-size: clamp(2.7rem, 11vw, 4rem);
+}
+
+@media (max-width: 390px) {
+  .experience .referral-gift-stage-minimal {
+    min-height: calc(100svh - 108px);
+    gap: 28px;
+    padding-top: 28px;
+    padding-bottom: 34px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-minimal-copy h1 {
+    font-size: clamp(2.75rem, 13vw, 3.7rem);
+  }
+
+  .experience .premium-reveal-stage .reward-voucher.reward-voucher-v2,
+  .experience .premium-public-card .public-reward-voucher.reward-voucher-v2 {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px !important;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-head {
+    padding: 13px 14px !important;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-prize {
+    padding: 16px 14px 14px !important;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-details {
+    padding: 0 10px 10px !important;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-detail {
+    padding: 13px !important;
+    border-radius: 16px !important;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-code strong {
+    font-size: clamp(1.85rem, 9.5vw, 2.5rem) !important;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-expiration strong {
+    font-size: clamp(1.65rem, 7.8vw, 2.05rem) !important;
+  }
+}
