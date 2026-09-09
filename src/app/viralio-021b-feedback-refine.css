@@ -1,0 +1,95 @@
+/* VIRALIO-021B — product feedback refinement.
+   Bigger tactile wheel, clearer prize labels and the approved QR-entry promise.
+   This layer intentionally refines VIRALIO-021 without changing funnel logic. */
+
+/* Universal QR-entry promise. Aurora keeps its approved composition but adopts the new copy. */
+.theme-joyeria-aurora .campaign-copy h1::before {
+  content: "Tenemos un";
+}
+
+.theme-joyeria-aurora .campaign-copy h1::after {
+  content: "regalo especial";
+}
+
+.theme-joyeria-aurora .campaign-copy .lead::before {
+  content: "para vos";
+}
+
+/* Generic Brand Engine families: make the wheel materially larger without overflowing the mobile shell. */
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+  width: min(86vw, 338px);
+  margin: 6px auto 18px;
+}
+
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel i {
+  transform-origin: .5px calc((min(86vw, 338px) + 16px) / 2 - 3px);
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell {
+  min-height: 386px;
+  padding-top: 10px;
+}
+
+.experience:not(.theme-joyeria-aurora) .wheel-object-shell::before {
+  width: min(94vw, 366px);
+}
+
+/* Prize labels: larger, heavier and contrast-protected across both light and dark brand palettes. */
+.experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-label {
+  fill: #fff;
+  stroke: rgba(0, 0, 0, .58);
+  stroke-width: 1.65px;
+  paint-order: stroke fill;
+  font-family: var(--font-body);
+  font-size: 10.6px;
+  font-weight: 760;
+  letter-spacing: .004em;
+  text-rendering: geometricPrecision;
+}
+
+/* Aurora already had a larger wheel than the generic renderer; increase it slightly and sharpen labels. */
+.theme-joyeria-aurora .premium-wheel-stage .wheel-frame {
+  width: min(86vw, 342px);
+}
+
+.theme-joyeria-aurora .premium-wheel-stage .wheel-label {
+  fill: #49352f;
+  stroke: rgba(255, 250, 246, .82);
+  stroke-width: 1.35px;
+  paint-order: stroke fill;
+  font-size: 10.2px;
+  font-weight: 650;
+  text-rendering: geometricPrecision;
+}
+
+@media (max-width: 380px) {
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-frame {
+    width: min(87vw, 316px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-bezel i {
+    transform-origin: .5px calc((min(87vw, 316px) + 16px) / 2 - 3px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .wheel-object-shell::before {
+    width: min(96vw, 342px);
+  }
+
+  .experience:not(.theme-joyeria-aurora) .premium-wheel-stage .wheel-label {
+    font-size: 10px;
+  }
+
+  .theme-joyeria-aurora .premium-wheel-stage .wheel-frame {
+    width: min(87vw, 316px);
+  }
+
+  .theme-joyeria-aurora .premium-wheel-stage .wheel-label {
+    font-size: 9.7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience .premium-wheel-stage .wheel-frame {
+    transition: none !important;
+  }
+}
