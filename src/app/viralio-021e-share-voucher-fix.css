@@ -1,0 +1,125 @@
+/* VIRALIO-021E — screenshot-driven finishing pass.
+   Share hierarchy + clipped availability badge correction. */
+
+.experience .referral-gift-stage-minimal {
+  gap: 30px;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-copy {
+  gap: 16px;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-eyebrow {
+  margin: 0;
+  color: var(--color-primary);
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 820;
+  letter-spacing: .12em;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-copy h1 {
+  max-width: 10ch;
+  font-size: clamp(2.8rem, 12.2vw, 4.05rem);
+  line-height: .94;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-action {
+  width: min(100%, 370px);
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-button {
+  min-height: 84px;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 25px;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-button .whatsapp-icon {
+  flex: 0 0 auto;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-copy {
+  display: grid !important;
+  max-width: 270px !important;
+  gap: 4px;
+  justify-items: start;
+  text-align: left;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-copy strong {
+  font-size: .98rem;
+  font-weight: 820;
+  letter-spacing: -.01em;
+  line-height: 1.16;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-copy small {
+  font-size: .76rem;
+  font-weight: 760;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-transform: uppercase;
+  opacity: .82;
+}
+
+/* The legacy status styles positioned the badge against the voucher edge.
+   Keep it inside the footer and guarantee its full line box is visible. */
+.experience .reward-voucher-v2 .status-pill,
+.experience .reward-voucher-v2 .status-badge {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto !important;
+  flex: 0 0 auto !important;
+  align-self: center !important;
+  width: max-content !important;
+  min-width: max-content !important;
+  height: auto !important;
+  min-height: 28px !important;
+  margin: 0 !important;
+  padding: 7px 10px !important;
+  border-radius: 999px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  clip: auto !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
+.experience .reward-voucher-v2 .voucher-v2-foot {
+  min-height: 54px !important;
+  padding: 12px 16px 13px !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 390px) {
+  .experience .referral-gift-stage-minimal {
+    gap: 26px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-minimal-copy {
+    gap: 14px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-minimal-copy h1 {
+    font-size: clamp(2.6rem, 11.8vw, 3.45rem);
+  }
+
+  .experience .referral-gift-stage-minimal .referral-whatsapp-button {
+    min-height: 88px;
+    padding: 17px 18px;
+  }
+
+  .experience .reward-voucher-v2 .voucher-v2-foot {
+    min-height: 56px !important;
+    padding: 12px 13px 13px !important;
+  }
+}
