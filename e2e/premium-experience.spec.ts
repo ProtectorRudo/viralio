@@ -43,7 +43,7 @@ test("Moka mobile: WhatsApp referral gates wheel, reward persists and expiration
   await expectNoOverflow(page);
 
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
-  await expect(page.getByText("Las buenas noticias se comparten")).toBeVisible();
+  await expect(page.getByText("Las buenas noticias también se comparten")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
   await expect(page.getByTestId("whatsapp-share")).toBeVisible();
   await expect(page.getByTestId("share-poster-preview")).toHaveCount(0);
@@ -104,7 +104,7 @@ test("share stage uses the approved hierarchy plus one WhatsApp action", async (
   await page.goto("/moka");
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
 
-  await expect(page.getByText("Las buenas noticias se comparten")).toBeVisible();
+  await expect(page.getByText("Las buenas noticias también se comparten")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
   await expect(page.locator(".whatsapp-only-share button")).toHaveCount(1);
   await expect(page.getByRole("button", { name: /La otra persona también recibe un regalo Enviar/ })).toBeVisible();
