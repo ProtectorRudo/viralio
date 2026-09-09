@@ -137,7 +137,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       style={merchantThemeStyle(merchant)}
       data-merchant={merchant.slug}
       data-brand-style={merchant.theme.stylePreset ?? "template"}
-      data-design-version="021f"
+      data-design-version="021g"
     >
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
@@ -184,11 +184,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         {payload?.session.state === "UNLOCK" && (
           <div className="stage share-stage premium-share-stage referral-gift-stage referral-gift-stage-minimal" data-testid="unlock-stage">
             <div className="stage-copy share-copy referral-minimal-copy">
-              <h1 className="referral-primary-title" aria-label="Las buenas noticias también se comparten">
-                <span>Las buenas</span>
-                <span>noticias también</span>
-                <span>se comparten</span>
-              </h1>
+              <h1 className="referral-primary-title">Las buenas noticias también se comparten</h1>
               <p className="referral-supporting-title">Compartí tu regalo con otra persona</p>
             </div>
             <div className="share-actions whatsapp-only-share referral-minimal-action" aria-label="Compartir regalo por WhatsApp">
