@@ -23,10 +23,10 @@ describe("VIRALIO-021B/C product feedback refinement", () => {
   it("keeps the customer wheel materially larger and prize labels contrast-protected", () => {
     const css = read("src/app/viralio-021b-feedback-refine.css");
     expect(css).toContain("width: min(90vw, 356px)");
-    expect(css).toContain("font-size: 11.7px");
-    expect(css).toContain("font-weight: 800");
+    expect(css).toContain("font-size: 11.9px");
+    expect(css).toContain("font-weight: 820");
     expect(css).toContain("paint-order: stroke fill");
-    expect(css).toContain("stroke: rgba(0, 0, 0, .66)");
+    expect(css).toContain("stroke: rgba(0, 0, 0, .68)");
     expect(css).toContain("transform-origin: .5px calc((min(90vw, 356px) + 16px) / 2 - 3px)");
   });
 
@@ -36,25 +36,41 @@ describe("VIRALIO-021B/C product feedback refinement", () => {
     expect(css).toContain('content: "Tenemos un"');
     expect(css).toContain('content: "regalo especial"');
     expect(css).toContain('content: "para vos"');
-    expect(css).toContain("font-size: 11px");
+    expect(css).toContain("font-size: 11.2px");
   });
 
-  it("turns the server-driven reward into a premium voucher with explicit expiration hierarchy", () => {
+  it("makes referral sharing explicitly valuable to the recipient and WhatsApp-only", () => {
     const experience = read("src/ui/merchant-experience.tsx");
+    expect(experience).toContain("La otra persona también recibe un regalo");
+    expect(experience).toContain("vos también recibís tu propio regalo");
+    expect(experience).toContain('data-testid="whatsapp-share"');
+    expect(experience).toContain("Enviar regalo por WhatsApp");
+    expect(experience).not.toContain('data-testid="whatsapp-status-share"');
+    expect(experience).not.toContain('data-testid="instagram-story-share"');
+    expect(experience).not.toContain('data-testid="native-share"');
+  });
+
+  it("renders expiration as real visible DOM content in both reward surfaces", () => {
+    const experience = read("src/ui/merchant-experience.tsx");
+    const publicReward = read("src/ui/reward-card.tsx");
     const css = read("src/app/viralio-021b-feedback-refine.css");
 
+    expect(experience).toContain('data-testid="reward-expiration"');
+    expect(experience).toContain("FECHA DE VENCIMIENTO");
+    expect(experience).toContain("Canjealo hasta ese día inclusive.");
     expect(experience).toContain("formatDate(reward.expiresAt)");
-    expect(css).toContain('content: "FECHA DE VENCIMIENTO"');
-    expect(css).toContain('content: "Usalo antes de esta fecha"');
-    expect(css).toContain(".premium-reveal-stage .voucher-foot > span:first-child b");
-    expect(css).toContain("border-radius: 26px");
-    expect(css).toContain("TU CÓDIGO DE PREMIO");
+    expect(publicReward).toContain('data-testid="public-reward-expiration"');
+    expect(publicReward).toContain("FECHA DE VENCIMIENTO");
+    expect(publicReward).toContain("date(reward.expiresAt)");
+    expect(css).toContain(".reward-voucher-v2 .voucher-v2-expiration");
+    expect(css).toContain("background: #211d19");
+    expect(css).toContain("color: #fff");
   });
 
   it("keeps a dedicated small-mobile refinement", () => {
     const css = read("src/app/viralio-021b-feedback-refine.css");
     expect(css).toContain("@media (max-width: 380px)");
     expect(css).toContain("width: min(92vw, 330px)");
-    expect(css).toContain("grid-template-columns: 1fr");
+    expect(css).toContain("min-height: 280px");
   });
 });
