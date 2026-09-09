@@ -203,7 +203,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
             <div className="campaign-frame" data-testid="brand-campaign-frame">
               <div className="campaign-copy stage-copy">
                 <p className="eyebrow">{merchant.theme.heroEyebrow}</p>
-                <h1>{merchant.theme.heroTitle}</h1>
+                <h1>Tenemos un regalo especial para vos</h1>
                 <p className="lead">{merchant.theme.heroCopy}</p>
               </div>
               <div className="campaign-visual">
@@ -216,7 +216,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
               </div>
             </div>
             <div className="campaign-action">
-              <button className="button button-primary" onClick={unlock}>Descubrir mi premio <span aria-hidden="true">→</span></button>
+              <button className="button button-primary" onClick={unlock}>Descubrir mi regalo <span aria-hidden="true">→</span></button>
               <p className="trust-line">Pase personal · premio guardado automáticamente</p>
             </div>
           </div>
