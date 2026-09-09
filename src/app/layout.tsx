@@ -22,6 +22,7 @@ import "./viralio-020c-aurora-reward-cleanup.css";
 import "./viralio-021-visual-system.css";
 import "./viralio-021b-feedback-refine.css";
 import "./viralio-021d-mobile-refine.css";
+import "./viralio-021e-share-voucher-fix.css";
 
 export const metadata: Metadata = {
   title: "Viralio · Experiencias que se comparten",
