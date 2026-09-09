@@ -1,0 +1,149 @@
+/* VIRALIO-021H — final share-stage polish.
+   Screenshot-driven editorial composition: professional, compact and mobile-safe. */
+
+.experience .referral-gift-stage-minimal {
+  align-content: start;
+  justify-content: stretch;
+  gap: 26px;
+  padding-top: clamp(44px, 7svh, 68px);
+  padding-bottom: 54px;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-copy {
+  width: min(100%, 348px);
+  max-width: 348px;
+  margin: 0 auto;
+  gap: 13px;
+  justify-items: start;
+  text-align: left;
+}
+
+.experience .referral-gift-stage-minimal .referral-primary-title {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8.8vw, 2.72rem);
+  font-weight: 650;
+  letter-spacing: -.035em;
+  line-height: .99;
+  text-align: left;
+  text-wrap: balance;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.experience .referral-gift-stage-minimal .referral-supporting-title {
+  width: 100%;
+  max-width: 30ch;
+  margin: 0;
+  color: color-mix(in srgb, var(--color-text) 64%, transparent);
+  font-family: var(--font-ui);
+  font-size: clamp(.98rem, 3.9vw, 1.08rem);
+  font-weight: 620;
+  letter-spacing: -.012em;
+  line-height: 1.34;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.experience .referral-gift-stage-minimal .referral-minimal-action {
+  width: min(100%, 348px);
+  margin: 4px auto 0;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-button {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+  width: 100%;
+  min-height: 78px;
+  gap: 13px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  text-align: left;
+  box-shadow: 0 12px 26px rgba(17, 89, 58, .16);
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-button .whatsapp-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  font-size: 1rem;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-copy {
+  display: grid !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  gap: 4px;
+  justify-items: start;
+  text-align: left;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-copy strong {
+  max-width: 25ch;
+  font-size: .95rem;
+  font-weight: 790;
+  letter-spacing: -.012em;
+  line-height: 1.16;
+}
+
+.experience .referral-gift-stage-minimal .referral-whatsapp-copy small {
+  font-size: .72rem;
+  font-weight: 780;
+  letter-spacing: .09em;
+  line-height: 1;
+  text-transform: uppercase;
+  opacity: .78;
+}
+
+@media (max-width: 390px) {
+  .experience .referral-gift-stage-minimal {
+    gap: 23px;
+    padding-top: 40px;
+    padding-bottom: 46px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-minimal-copy,
+  .experience .referral-gift-stage-minimal .referral-minimal-action {
+    width: min(100%, 326px);
+    max-width: 326px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-primary-title {
+    font-size: clamp(2rem, 8.55vw, 2.3rem);
+    line-height: 1;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-supporting-title {
+    font-size: .98rem;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-whatsapp-button {
+    min-height: 76px;
+    padding: 13px 15px;
+    border-radius: 19px;
+  }
+}
+
+@media (max-width: 360px) {
+  .experience .referral-gift-stage-minimal .referral-minimal-copy,
+  .experience .referral-gift-stage-minimal .referral-minimal-action {
+    width: min(100%, 304px);
+    max-width: 304px;
+  }
+
+  .experience .referral-gift-stage-minimal .referral-primary-title {
+    font-size: 2rem;
+  }
+}
