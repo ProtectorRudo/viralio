@@ -6,12 +6,12 @@ function read(relative: string): string {
   return fs.readFileSync(path.join(process.cwd(), relative), "utf8");
 }
 
-describe("VIRALIO-021E screenshot-driven refinement", () => {
+describe("VIRALIO-021F screenshot-driven refinement", () => {
   it("uses the approved QR-entry promise as real DOM copy", () => {
     const experience = read("src/ui/merchant-experience.tsx");
     expect(experience).toContain("<h1>Tenemos un regalo especial para vos</h1>");
     expect(experience).toContain("Descubrir mi regalo");
-    expect(experience).toContain('data-design-version="021e"');
+    expect(experience).toContain('data-design-version="021f"');
   });
 
   it("loads the final screenshot correction after every previous visual layer", () => {
@@ -30,8 +30,12 @@ describe("VIRALIO-021E screenshot-driven refinement", () => {
   it("uses the approved referral hierarchy and one WhatsApp action", () => {
     const experience = read("src/ui/merchant-experience.tsx");
     const css = read("src/app/viralio-021e-share-voucher-fix.css");
-    expect(experience).toContain("Las buenas noticias también se comparten");
-    expect(experience).toContain("Compartí tu regalo con otra persona");
+    expect(experience).toContain('className="referral-primary-title"');
+    expect(experience).toContain('aria-label="Las buenas noticias también se comparten"');
+    expect(experience).toContain("<span>Las buenas</span>");
+    expect(experience).toContain("<span>noticias también</span>");
+    expect(experience).toContain("<span>se comparten</span>");
+    expect(experience).toContain('className="referral-supporting-title">Compartí tu regalo con otra persona</p>');
     expect(experience).toContain("La otra persona también recibe un regalo");
     expect(experience).toContain("<small>Enviar</small>");
     expect(experience).toContain('data-testid="whatsapp-share"');
@@ -40,9 +44,10 @@ describe("VIRALIO-021E screenshot-driven refinement", () => {
     expect(experience).not.toContain('data-testid="whatsapp-status-share"');
     expect(experience).not.toContain('data-testid="instagram-story-share"');
     expect(experience).not.toContain('data-testid="native-share"');
-    expect(css).toContain("font-family: var(--font-display)");
-    expect(css).toContain("font-size: clamp(1.45rem, 5.8vw, 2rem)");
-    expect(css).toContain("text-transform: none");
+    expect(css).toContain(".referral-primary-title");
+    expect(css).toContain("font-size: clamp(2.9rem, 11.6vw, 3.95rem)");
+    expect(css).toContain(".referral-supporting-title");
+    expect(css).toContain("font-size: clamp(1.08rem, 4.4vw, 1.28rem)");
   });
 
   it("renders expiration as real visible DOM content", () => {
