@@ -85,9 +85,9 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       const shareMessage = [
         `🎁 Te comparto un regalo de ${merchant.theme.displayName}.`,
         "",
-        "Me dieron este pase para compartir y cuando lo abras vos también recibís tu propio regalo.",
+        "Cuando abras este link vos también recibís tu propio regalo.",
         "",
-        "Abrilo y descubrí qué te toca:",
+        "Descubrí qué te toca:",
         referralUrl,
       ].join("\n");
       const target = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
@@ -137,7 +137,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       style={merchantThemeStyle(merchant)}
       data-merchant={merchant.slug}
       data-brand-style={merchant.theme.stylePreset ?? "template"}
-      data-design-version="021c"
+      data-design-version="021d"
     >
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
@@ -182,42 +182,16 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
         )}
 
         {payload?.session.state === "UNLOCK" && (
-          <div className="stage share-stage premium-share-stage referral-gift-stage" data-testid="unlock-stage">
-            <div className="share-editorial-head">
-              <div className="share-progress" data-testid="share-progress" aria-label="Compartir, girar y guardar premio">
-                <span className="is-active"><b>1</b><small>Regalá</small></span>
-                <i aria-hidden="true" />
-                <span><b>2</b><small>Girá</small></span>
-                <i aria-hidden="true" />
-                <span><b>3</b><small>Guardá</small></span>
-              </div>
-              <div className="stage-copy share-copy">
-                <p className="eyebrow">Compartí algo que vale la pena abrir</p>
-                <h1>La otra persona también recibe un regalo</h1>
-                <p className="lead">Enviále tu pase por WhatsApp. Cuando lo abra, recibe su propio regalo de {merchant.theme.displayName}; y vos desbloqueás tu ruleta.</p>
-              </div>
+          <div className="stage share-stage premium-share-stage referral-gift-stage referral-gift-stage-minimal" data-testid="unlock-stage">
+            <div className="stage-copy share-copy referral-minimal-copy">
+              <h1>La otra persona también recibe un regalo</h1>
             </div>
-
-            <div className="share-poster-preview referral-gift-card" data-testid="share-poster-preview" aria-label="Vista previa del regalo que recibirá la otra persona">
-              <div className="share-poster-top">
-                <span>UN REGALO PARA VOS</span>
-                <small>{merchant.theme.shortName}</small>
-              </div>
-              <div className="share-poster-mark"><MerchantBrandVisual merchant={merchant} size={48} /></div>
-              <div className="share-poster-copy">
-                <strong>Abrí este pase y recibí tu regalo</strong>
-                <span>{merchant.theme.displayName} preparó una sorpresa para vos.</span>
-              </div>
-              <div className="share-poster-foot"><span>Te lo compartieron para que vos también ganes</span><b>Viralio</b></div>
-            </div>
-
-            <div className="share-actions whatsapp-only-share" aria-label="Compartir regalo por WhatsApp">
+            <div className="share-actions whatsapp-only-share referral-minimal-action" aria-label="Compartir regalo por WhatsApp">
               <button className="button button-whatsapp referral-whatsapp-button" data-testid="whatsapp-share" disabled={shareBusy} onClick={shareWhatsapp}>
                 <span className="whatsapp-icon" aria-hidden="true">↗</span>
-                <span><small>{shareBusy ? "Preparando regalo…" : "La otra persona también recibe uno"}</small>{shareBusy ? "Abriendo WhatsApp…" : "Enviar regalo por WhatsApp"}</span>
+                <span>{shareBusy ? "Abriendo WhatsApp…" : "Compartí tu regalo con otra persona"}</span>
               </button>
             </div>
-            <p className="share-guidance">Al tocar el botón se abre WhatsApp con tu link personal. Viralio habilita la ruleta al iniciar el envío.</p>
           </div>
         )}
 
@@ -253,7 +227,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
               <p className="lead">Un detalle de {merchant.theme.displayName} para tu próxima visita.</p>
             </div>
 
-            <article className="reward-ticket reward-voucher reward-voucher-v2" data-testid="reward-voucher">
+            <article className="reward-ticket reward-voucher reward-voucher-v2 reward-voucher-v3" data-testid="reward-voucher">
               <header className="voucher-v2-head">
                 <div className="voucher-v2-brand"><MerchantBrandVisual merchant={merchant} mode="mark" size={28} /><span>{merchant.theme.shortName}</span></div>
                 <span className="voucher-v2-type">CUPÓN DE REGALO</span>
@@ -262,10 +236,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
               <section className="voucher-v2-prize">
                 <span className="voucher-v2-label">TU REGALO</span>
                 <strong>{reward.prizeName}</strong>
-                <small>Presentá este cupón para canjearlo.</small>
               </section>
-
-              <div className="voucher-v2-divider" aria-hidden="true"><span /></div>
 
               <section className="voucher-v2-details">
                 <div className="voucher-v2-detail voucher-v2-code">
