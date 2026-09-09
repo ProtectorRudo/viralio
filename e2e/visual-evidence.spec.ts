@@ -45,9 +45,11 @@ async function completeFlow(page: Page, slug: string, testInfo: TestInfo) {
   await page.goto(`/${slug}`);
   await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
   await expect(page.getByTestId("share-poster-preview")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Las buenas noticias también se comparten" })).toBeVisible();
+  await expect(page.locator(".referral-supporting-title")).toHaveText("Compartí tu regalo con otra persona");
   await expect(page.getByTestId("whatsapp-share")).toBeVisible();
   await expect(page.locator(".whatsapp-only-share button")).toHaveCount(1);
-  await expect(page.getByRole("button", { name: "Compartí tu regalo con otra persona" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /La otra persona también recibe un regalo Enviar/ })).toBeVisible();
   await noHorizontalOverflow(page);
   await capture(page, testInfo, `${slug}-share-390`);
   await openWhatsappAndContinue(page);
