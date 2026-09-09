@@ -20,6 +20,7 @@ import "./viralio-020c-approved-aurora-refine.css";
 import "./viralio-020c-aurora-feedback.css";
 import "./viralio-020c-aurora-reward-cleanup.css";
 import "./viralio-021-visual-system.css";
+import "./viralio-021b-feedback-refine.css";
 
 export const metadata: Metadata = {
   title: "Viralio · Experiencias que se comparten",
