@@ -1,0 +1,36 @@
+.wheel-label{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:50%;
+  height:24px;
+  transform-origin:0 50%;
+  transform:rotate(var(--a)) translateX(29px);
+}
+
+.wheel-label b{
+  display:block;
+  width:112px;
+  padding:0 4px;
+  color:#fffaf4;
+  font-size:.62rem;
+  font-weight:800;
+  line-height:1.08;
+  letter-spacing:.01em;
+  text-align:center;
+  text-wrap:balance;
+  text-shadow:0 1px 3px rgba(0,0,0,.58);
+  transform:translateY(-50%) rotate(90deg);
+  transform-origin:center;
+}
+
+.wheel-label-dark b{
+  color:#3a261c;
+  text-shadow:0 1px 0 rgba(255,255,255,.24);
+  font-weight:900;
+}
+
+@media (max-width:360px){
+  .wheel-label{transform:rotate(var(--a)) translateX(26px)}
+  .wheel-label b{width:98px;font-size:.55rem}
+}
