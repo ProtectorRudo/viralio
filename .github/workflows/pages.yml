@@ -33,12 +33,17 @@ jobs:
         run: |
           test -f showcase/index.html
           test -f showcase/moka/index.html
+          test -f showcase/moka/moka.css
+          test -f showcase/moka/moka.js
           test -f showcase/atlas-barber/index.html
+          test -f showcase/atlas-barber/atlas.css
+          test -f showcase/atlas-barber/atlas.js
           test -f showcase/luna-atelier/index.html
           test -f showcase/luna-atelier/luna.css
           test -f showcase/luna-atelier/luna.js
           test -f showcase/assets/styles.css
-          node --check showcase/assets/app.js
+          node --check showcase/moka/moka.js
+          node --check showcase/atlas-barber/atlas.js
           node --check showcase/luna-atelier/luna.js
       - name: Upload showroom artifact
         uses: actions/upload-pages-artifact@v3
