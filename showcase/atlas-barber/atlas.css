@@ -1,0 +1,80 @@
+@import url('../moka/moka.css?v=20260910');
+
+:root{
+  --paper:#14171b;
+  --paper-soft:#1b1f24;
+  --paper-light:#232830;
+  --ink:#f4efe8;
+  --muted:#a7a29c;
+  --terracotta:#c69a56;
+  --terracotta-dark:#a97c3f;
+  --caramel:#9a6a42;
+  --sage:#7f8a91;
+  --line:#353c45;
+  --whatsapp:#1f7a50;
+}
+
+html,body{background:#0d1013;color-scheme:dark}
+body{color:var(--ink);background:#0d1013}
+
+.atlas-page{
+  background:
+    radial-gradient(circle at 12% 8%,rgba(198,154,86,.16),transparent 32rem),
+    radial-gradient(circle at 88% 88%,rgba(79,92,105,.22),transparent 29rem),
+    #0f1216;
+}
+.atlas-page:after{border-color:rgba(255,255,255,.05);box-shadow:0 0 0 58px rgba(255,255,255,.012),0 0 0 116px rgba(255,255,255,.008)}
+
+.phone{
+  border-color:rgba(255,255,255,.08);
+  background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 16%),var(--paper-soft);
+  box-shadow:0 36px 100px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.04)
+}
+.phone:before{opacity:.2}
+.brand-mark{border-color:#7a603e;background:#0f1216;color:#f4dfbd;box-shadow:0 8px 20px rgba(0,0,0,.28)}
+.brand-copy small,.lead,.micro,.powered,.good-news,.share-gift-bottom,.voucher-note{color:var(--muted)}
+.brand-line{background:linear-gradient(90deg,var(--line),transparent)}
+
+.kicker{color:#d4ad6d}
+.primary{background:#c69a56;color:#111316;box-shadow:0 14px 34px rgba(198,154,86,.2)}
+.primary:hover{background:#d5aa68;box-shadow:0 17px 38px rgba(198,154,86,.26)}
+.powered b{color:#f5efe7}
+
+.gift-orbit{border-color:rgba(198,154,86,.2)}
+.gift-core{border-color:rgba(198,154,86,.34);background:linear-gradient(145deg,#262c33,#15191e);box-shadow:inset 0 0 0 9px #1b2026,0 22px 46px rgba(0,0,0,.28)}
+.gift-core svg{stroke:#d1a25e}
+.gift-tag{border-color:rgba(198,154,86,.28);background:#15191e;color:#d6b47f;box-shadow:0 8px 22px rgba(0,0,0,.17)}
+
+.share-gift{border-color:rgba(198,154,86,.24);background:linear-gradient(160deg,#262b31,#15191e);box-shadow:0 20px 38px rgba(0,0,0,.25)}
+.share-gift:before{border-color:rgba(198,154,86,.12)}
+.share-gift-top{color:#c3a77c}
+.share-seal{background:#0e1114;color:#f4ddb7;box-shadow:0 10px 22px rgba(0,0,0,.28)}
+.share-explain{border-color:#353c45;background:rgba(255,255,255,.025)}
+.share-explain-icon{background:#262b31;color:#d4ad6d}
+.whatsapp{background:#1f7a50;color:#fff;box-shadow:0 14px 33px rgba(31,122,80,.22)}
+.whatsapp:hover{background:#176440;box-shadow:0 17px 38px rgba(31,122,80,.28)}
+
+.wheel-stage .kicker,.reward-stage .kicker{color:#d4ad6d}
+.wheel{border-color:#0b0e11;background:conic-gradient(from -90deg,#b88645 0 72deg,#49545f 72deg 144deg,#8f5f3c 144deg 216deg,#26303a 216deg 288deg,#d5b47b 288deg 360deg);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 0 0 1px rgba(198,154,86,.24)}
+.wheel:after{border-color:rgba(255,255,255,.1)}
+.pointer:before{border-color:#1b1f24;background:#0b0e11}
+.pointer:after{border-top-color:#0b0e11}
+.wheel-center{border-color:#1b1f24;background:#0b0e11;color:#f3ddb7;box-shadow:0 6px 16px rgba(0,0,0,.32)}
+.wheel-label b{color:#fffaf2;text-shadow:0 1px 3px rgba(0,0,0,.65)}
+.wheel-label-dark b{color:#251b11;text-shadow:none}
+
+.reward-burst:before,.reward-burst:after{border-color:rgba(198,154,86,.22)}
+.reward-medal{background:#0e1114;color:#f2d8ad;box-shadow:0 14px 28px rgba(0,0,0,.28)}
+.reward-stage h1{color:#e1b56e}
+.voucher{border-color:rgba(198,154,86,.2);background:#15191e;box-shadow:0 17px 34px rgba(0,0,0,.24)}
+.voucher-top{border-bottom-color:rgba(198,154,86,.2);color:#b29b7c}
+.voucher-brand{color:#f2dab5}
+.voucher-main small{color:#988f84}
+.voucher-prize strong{color:#e1b56e}
+.voucher-code strong{color:#f4efe8}
+.voucher-expiration{background:#090c0f;color:#fff7ec}
+.restart{border-color:#353c45;color:#aaa49d}
+
+@media (max-width:520px){
+  .atlas-page{background:var(--paper-soft)}
+}
