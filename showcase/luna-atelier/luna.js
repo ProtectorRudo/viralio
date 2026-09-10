@@ -10,6 +10,7 @@
     { name: '$5.000 de descuento', wheelLabel: '$5.000 OFF', darkLabel: true },
   ];
 
+  const storeWhatsapp = (new URLSearchParams(window.location.search).get('storeWa') || '').replace(/\D/g, '');
   let selectedPrize = null;
   let spinning = false;
 
@@ -165,11 +166,13 @@
   function expirationDate() {
     const date = new Date();
     date.setDate(date.getDate() + 7);
-    return new Intl.DateTimeFormat('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(date);
+    return new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+  }
+
+  function saveGift(prize) {
+    const message = `Hola LUNA Atelier 👋 Quiero guardar mi regalo de Viralio.\n🎁 Premio: ${prize.name}\n🎟️ Código: ${prize.code}\n📅 Vence: ${expirationDate()}`;
+    const base = storeWhatsapp ? `https://wa.me/${storeWhatsapp}` : 'https://wa.me/';
+    window.open(`${base}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   }
 
   function renderReward() {
@@ -185,7 +188,7 @@
         <div class="stage-copy">
           <p class="kicker">Este regalo es tuyo</p>
           <h1>${prize.name}</h1>
-          <p class="lead">Guardá este voucher y presentalo en LUNA Atelier antes de la fecha de vencimiento.</p>
+          <p class="lead">Guardalo por WhatsApp y presentalo en LUNA Atelier antes de la fecha de vencimiento.</p>
         </div>
         <article class="voucher" aria-label="Voucher de premio LUNA Atelier">
           <div class="voucher-top"><span class="voucher-brand">LUNA</span><span>REGALO VIRALIO</span></div>
@@ -196,9 +199,12 @@
           <div class="voucher-expiration"><small>FECHA DE VENCIMIENTO</small><strong>${expirationDate()}</strong></div>
           <div class="voucher-note">Válido por 7 días · Un uso · Presentá este voucher al momento de canjear.</div>
         </article>
+        <button class="primary whatsapp" id="save-gift">${whatsappIcon}<span>Guardar mi regalo</span></button>
+        <p class="micro">Se abre el WhatsApp del local con tu premio y código listos.</p>
         <button class="restart" id="restart-demo">Volver a empezar</button>
       </div>`);
 
+    document.querySelector('#save-gift')?.addEventListener('click', () => saveGift(prize));
     document.querySelector('#restart-demo')?.addEventListener('click', renderLanding);
   }
 
