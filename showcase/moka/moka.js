@@ -3,11 +3,11 @@
   if (!app) return;
 
   const prizes = [
-    'Upgrade de café',
-    'Medialuna gratis',
-    '10% en tu próxima visita',
-    'Café gratis',
-    'Premio especial Moka',
+    { name: 'Upgrade de café', wheelLabel: 'Upgrade' },
+    { name: 'Medialuna gratis', wheelLabel: 'Medialuna' },
+    { name: '10% en tu próxima visita', wheelLabel: '10% OFF', darkLabel: true },
+    { name: 'Café gratis', wheelLabel: 'Café gratis' },
+    { name: 'Premio especial Moka', wheelLabel: 'Especial Moka' },
   ];
 
   let selectedPrize = null;
@@ -107,7 +107,8 @@
   function wheelMarkup() {
     const labels = prizes.map((prize, index) => {
       const angle = index * 72 + 36;
-      return `<span class="wheel-label" style="--a:${angle}deg"><b>${prize}</b></span>`;
+      const darkClass = prize.darkLabel ? ' wheel-label-dark' : '';
+      return `<span class="wheel-label${darkClass}" style="--a:${angle}deg"><b>${prize.wheelLabel}</b></span>`;
     }).join('');
 
     return `
@@ -147,8 +148,9 @@
     }
 
     const index = Math.floor(Math.random() * prizes.length);
+    const prize = prizes[index];
     selectedPrize = {
-      name: prizes[index],
+      name: prize.name,
       index,
       code: `MOKA-${Math.random().toString(36).slice(2, 7).toUpperCase()}`,
     };
@@ -176,7 +178,7 @@
   function renderReward() {
     spinning = false;
     const prize = selectedPrize || {
-      name: prizes[0],
+      name: prizes[0].name,
       code: `MOKA-${Math.random().toString(36).slice(2, 7).toUpperCase()}`,
     };
 
