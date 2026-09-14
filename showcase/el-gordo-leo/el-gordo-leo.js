@@ -6,11 +6,11 @@
   const VALIDITY_DAYS = 7;
   const SPIN_MS = 3600;
   const prizes = [
-    { id: "discount_5", label: "5% de descuento", wheel: "5%", probability: 35, midpoint: 63 },
-    { id: "discount_10", label: "10% de descuento", wheel: "10%", probability: 25, midpoint: 171 },
-    { id: "discount_15", label: "15% de descuento", wheel: "15%", probability: 10, midpoint: 234 },
-    { id: "cassata", label: "Helado cassata de regalo", wheel: "CASSATA", probability: 15, midpoint: 279 },
-    { id: "bombon", label: "Bombón escocés de regalo", wheel: "BOMBÓN", probability: 15, midpoint: 333 },
+    { id: "discount_5", label: "5% de descuento", wheel: "5%", probability: 35, midpoint: 36 },
+    { id: "discount_10", label: "10% de descuento", wheel: "10%", probability: 25, midpoint: 108 },
+    { id: "discount_15", label: "15% de descuento", wheel: "15%", probability: 10, midpoint: 180 },
+    { id: "cassata", label: "Helado cassata de regalo", wheel: "CASSATA", probability: 15, midpoint: 252 },
+    { id: "bombon", label: "Bombón escocés de regalo", wheel: "BOMBÓN", probability: 15, midpoint: 324 },
   ];
 
   const query = new URLSearchParams(window.location.search);
