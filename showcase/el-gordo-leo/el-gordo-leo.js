@@ -126,36 +126,22 @@
     unlockWheel();
   }
 
-  async function nativeShare() {
-    if (!navigator.share) return shareWhatsApp();
-    try {
-      await navigator.share({ title: "Pase de El Gordo Leo", text: referralText() });
-      unlockWheel();
-    } catch (error) {
-      if (error?.name !== "AbortError") shareWhatsApp();
-    }
-  }
-
   function renderShare() {
     shell(`
       <section class="stage">
         ${steps(1)}
         <p class="kicker">Paso 1 de 3</p>
-        <h1>Compartilo y abrí la ruleta.</h1>
-        <p class="lead">Mandale el pase a alguien. Tu premio sigue siendo privado: cada persona gira el suyo.</p>
+        <h1>Antes de descubrir el tuyo, regalale uno a alguien.</h1>
+        <p class="lead">Compartilo por WhatsApp. La otra persona también recibe su propio regalo y el tuyo sigue siendo solo tuyo.</p>
         <div class="share-poster">
           <small>MINI MERCADO · EL GORDO LEO</small>
           <b>Hay un premio esperando.</b>
           <span>5%, 10%, 15% o regalos para la próxima compra.</span>
         </div>
         <button class="whatsapp" id="share-wa">Compartir por WhatsApp <span aria-hidden="true">↗</span></button>
-        <button class="secondary" id="share-native">Compartir por otra app</button>
-        <p class="trust">La ruleta se habilita cuando iniciás una acción de compartir.</p>
+        <p class="trust">La ruleta se habilita cuando compartís el pase por WhatsApp.</p>
       </section>`);
     document.getElementById("share-wa").addEventListener("click", shareWhatsApp);
-    const native = document.getElementById("share-native");
-    if (!navigator.share) native.textContent = "Copiar / compartir por WhatsApp";
-    native.addEventListener("click", nativeShare);
   }
 
   function wheelMarkup() {
