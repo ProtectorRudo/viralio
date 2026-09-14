@@ -41,10 +41,14 @@ jobs:
           test -f showcase/luna-atelier/index.html
           test -f showcase/luna-atelier/luna.css
           test -f showcase/luna-atelier/luna.js
+          test -f showcase/el-gordo-leo/index.html
+          test -f showcase/el-gordo-leo/el-gordo-leo.css
+          test -f showcase/el-gordo-leo/el-gordo-leo.js
           test -f showcase/assets/styles.css
           node --check showcase/moka/moka.js
           node --check showcase/atlas-barber/atlas.js
           node --check showcase/luna-atelier/luna.js
+          node --check showcase/el-gordo-leo/el-gordo-leo.js
       - name: Upload showroom artifact
         uses: actions/upload-pages-artifact@v3
         with:
