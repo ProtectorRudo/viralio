@@ -208,23 +208,18 @@
     document.getElementById("spin").addEventListener("click", spin);
   }
 
-  function couponMessage(marketingOptIn) {
-    const consent = marketingOptIn ? "\n\n✅ También quiero recibir ofertas y beneficios de El Gordo Leo por WhatsApp." : "";
-    return `Hola Mini Mercado El Gordo Leo 👋\nParticipé en Viralio y gané: ${state.prizeLabel}.\nCupón: ${state.code}\nVálido hasta: ${formatDate(state.expiresAt)}.\nLo voy a usar en mi próxima compra.${consent}`;
+  function couponMessage() {
+    return `Hola Mini Mercado El Gordo Leo 👋\nParticipé en Viralio y gané: ${state.prizeLabel}.\nCupón: ${state.code}\nVálido hasta: ${formatDate(state.expiresAt)}.\nLo voy a usar en mi próxima compra.`;
   }
 
   function sendCoupon() {
-    const optIn = document.getElementById("offers-optin").checked;
-    state.marketingOptIn = optIn;
     state.sentAt = new Date().toISOString();
     saveState();
-    const target = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(couponMessage(optIn))}`;
+    const target = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(couponMessage())}`;
     window.open(target, "_blank", "noopener,noreferrer");
     const saved = document.getElementById("saved-note");
     saved.hidden = false;
-    saved.textContent = optIn
-      ? "Listo: el mensaje incluye tu cupón y tu autorización para recibir ofertas."
-      : "Listo: tu cupón está preparado para enviárselo al comercio.";
+    saved.textContent = "Listo: tu cupón está preparado para enviárselo al comercio.";
   }
 
   function renderReward() {
@@ -241,7 +236,6 @@
           <div class="coupon-row"><span>Vence <b>${formatDate(state.expiresAt)}</b></span><span>Estado <b>Disponible</b></span></div>
         </div>
         <p class="rules"><b>Condiciones:</b> válido para la próxima compra, un premio por persona y no acumulable con otros premios o promociones.</p>
-        <label class="optin"><input type="checkbox" id="offers-optin" ${state.marketingOptIn ? "checked" : ""}><span><b>Quiero recibir ofertas y beneficios por WhatsApp.</b><br>Es opcional. Podés enviar el cupón aunque no lo marques.</span></label>
         <div class="saved" id="saved-note" ${state.sentAt ? "" : "hidden"}>Tu cupón ya fue preparado para WhatsApp.</div>
         <button class="whatsapp" id="send-coupon">Enviar mi cupón al negocio <span aria-hidden="true">↗</span></button>
         <p class="trust">Al tocar el botón se abre WhatsApp con el mensaje listo. Vos decidís si lo enviás.</p>
