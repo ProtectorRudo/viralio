@@ -93,7 +93,7 @@
     shell(`
       <section class="stage">
         <p class="kicker">Hay algo para vos</p>
-        <h1>Tu próxima compra puede venir con premio.</h1>
+        <h1>Tenemos un regalo para vos.</h1>
         <p class="lead">El Gordo Leo preparó beneficios para clientes. Abrí tu pase, compartilo y descubrí qué te toca.</p>
         <div class="hero-card" aria-hidden="true">
           <span class="tiny">PASE · EL GORDO LEO</span>
