@@ -13,6 +13,19 @@
     { id: "bombon", label: "Bombón escocés de regalo", wheel: "BOMBÓN", probability: 15, midpoint: 333 },
   ];
 
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("reset") === "1") {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Si el navegador bloquea localStorage, igual continuamos desde landing.
+    }
+    query.delete("reset");
+    const nextQuery = query.toString();
+    const cleanUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`;
+    window.history.replaceState(null, "", cleanUrl);
+  }
+
   const app = document.getElementById("app");
   let state = loadState() || { stage: "landing" };
   let spinTarget = null;
