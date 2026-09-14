@@ -5,16 +5,31 @@ import { SPIN_TURNS, winningRotation } from "@/ui/premium-wheel";
 import type { Reward } from "@/domain/types";
 
 describe("merchant theming", () => {
-  it("configures two independent brands for the same engine", () => {
+  it("configures independent brands for the same engine", () => {
     const moka = getMerchantBySlug("moka");
     const atlas = getMerchantBySlug("atlas-barber");
-    expect(merchants).toHaveLength(2);
+    const leo = getMerchantBySlug("el-gordo-leo");
+    expect(merchants).toHaveLength(3);
     expect(moka?.theme.category).toBe("coffee");
     expect(atlas?.theme.category).toBe("barber");
+    expect(leo?.theme.category).toBe("generic");
+    expect(leo?.name).toBe("Mini Mercado El Gordo Leo");
+    expect(leo?.whatsappNumber).toBe("5492236818230");
+    expect(leo?.rewardValidityDays).toBe(7);
+    expect(leo?.prizes.map(({ id, probability }) => ({ id, probability }))).toEqual([
+      { id: "discount_5", probability: 35 },
+      { id: "discount_10", probability: 25 },
+      { id: "discount_15", probability: 10 },
+      { id: "cassata", probability: 15 },
+      { id: "bombon", probability: 15 },
+    ]);
     expect(moka?.theme.palette.primary).not.toBe(atlas?.theme.palette.primary);
+    expect(leo?.theme.palette.primary).not.toBe(moka?.theme.palette.primary);
     expect(moka?.theme.socialHeadline).toMatch(/Moka/);
     expect(atlas?.theme.socialHeadline).toMatch(/Atlas/);
+    expect(leo?.theme.socialHeadline).toMatch(/Gordo Leo/);
     expect(getMerchantById("merchant_atlas")).toBe(atlas);
+    expect(getMerchantById("merchant_el_gordo_leo")).toBe(leo);
   });
 
   it("exposes only validated color tokens as CSS variables", () => {
