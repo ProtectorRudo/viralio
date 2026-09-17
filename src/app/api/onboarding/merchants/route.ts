@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       experiencePath: merchantExperiencePath(merchant.slug),
       qrPath: `/q/${merchant.slug}`,
       panelPath: `/comercio/${merchant.slug}/canjes`,
+      activationPath: `/comercio/${merchant.slug}/activacion`,
     }, { status: 201 });
   } catch (error) {
     const message = (error as Error).message;
