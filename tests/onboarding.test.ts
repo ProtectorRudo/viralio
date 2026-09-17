@@ -26,6 +26,14 @@ const bruma = {
   pin: "482619",
 } as const;
 
+const pilotPrizes = [
+  { name: "5% en tu próxima compra", probability: 40 },
+  { name: "10% en tu próxima compra", probability: 30 },
+  { name: "15% en tu próxima compra", probability: 15 },
+  { name: "Helado de regalo", probability: 10 },
+  { name: "Bombón de regalo", probability: 5 },
+] as const;
+
 describe("merchant onboarding", () => {
   it("creates a durable merchant account with hashed PIN and usable default campaign", async () => {
     const { repository, service } = setup();
@@ -47,12 +55,42 @@ describe("merchant onboarding", () => {
     expect(await service.authenticateDynamicMerchant(bruma.slug, "000000", authEnvironment)).toBeUndefined();
   });
 
+  it("creates account, rewards and validity atomically in one transaction", async () => {
+    const { repository, service } = setup();
+    const merchant = await service.createMerchant({
+      ...bruma,
+      rewardValidityDays: 14,
+      prizes: pilotPrizes,
+    }, authEnvironment);
+
+    expect(merchant.rewardValidityDays).toBe(14);
+    expect(merchant.prizes.map((prize) => prize.name)).toEqual(pilotPrizes.map((prize) => prize.name));
+    expect(merchant.prizes.map((prize) => prize.probability)).toEqual(pilotPrizes.map((prize) => prize.probability));
+    expect(repository.database.merchantAccounts).toHaveLength(1);
+    expect(repository.database.merchantSettings).toHaveLength(1);
+  });
+
+  it("does not leave a merchant behind when reward onboarding is invalid", async () => {
+    const { repository, service } = setup();
+
+    await expect(service.createMerchant({
+      ...bruma,
+      prizes: [
+        { name: "Premio A", probability: 50 },
+        { name: "Premio B", probability: 50 },
+      ],
+    }, authEnvironment)).rejects.toThrow(/Invalid prizes/);
+
+    expect(repository.database.merchantAccounts).toHaveLength(0);
+    expect(repository.database.merchantSettings).toHaveLength(0);
+  });
+
   it("runs the standard referral and reward flow for a merchant that never existed in source code", async () => {
     const { service } = setup();
     const merchant = await service.createMerchant(bruma, authEnvironment);
     const { session } = await service.startSession(merchant.slug);
     await service.unlock(session.id);
-    await service.initiateShare(session.id, "whatsapp_status");
+    await service.initiateShare(session.id, "whatsapp");
     const reward = await service.spin(session.id);
 
     expect(reward.merchantId).toBe(merchant.id);
