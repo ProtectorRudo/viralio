@@ -25,5 +25,5 @@ export function publicOriginFromRequest(
 
 export function merchantPublicUrl(origin: string, slug: string): string {
   const normalizedOrigin = new URL(origin).origin;
-  return `${normalizedOrigin}/${encodeURIComponent(slug)}`;
+  return `${normalizedOrigin}/q/${encodeURIComponent(slug)}`;
 }
