@@ -1,6 +1,7 @@
 export type FlowState = "LANDING" | "UNLOCK" | "SHARED" | "REWARDED";
 export type RewardStatus = "AVAILABLE" | "REDEEMED" | "EXPIRED";
 export type ShareChannel = "whatsapp" | "whatsapp_status" | "instagram_story" | "native" | "social";
+export type ShareMode = "whatsapp_only" | "multi";
 
 export type EventName =
   | "qr_opened"
@@ -87,6 +88,7 @@ export interface MerchantTheme {
   monogram: string;
   category: MerchantCategory;
   businessType?: string;
+  shareMode?: ShareMode;
   heroEyebrow: string;
   heroTitle: string;
   heroCopy: string;

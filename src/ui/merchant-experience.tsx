@@ -171,6 +171,7 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
   }
 
   const shareDisabled = Boolean(shareBusy);
+  const whatsappOnly = merchant.theme.shareMode === "whatsapp_only";
 
   return (
     <main
@@ -252,28 +253,36 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
               <div className="share-poster-foot"><span>Tu premio no aparece</span><b>Viralio</b></div>
             </div>
 
-            <div className="story-grid premium-story-grid" aria-label="Compartir en estados e historias">
-              <button className="story-option story-whatsapp" data-testid="whatsapp-status-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("whatsapp_status")}>
-                <span className="story-sequence" aria-hidden="true">01</span>
-                <span className="story-icon" aria-hidden="true">W</span>
-                <span><strong>Estado de WhatsApp</strong><small>{shareBusy === "whatsapp_status" ? "Preparando pieza…" : "Compartir pieza 9:16"}</small></span>
-                <span className="story-arrow" aria-hidden="true">↗</span>
-              </button>
-              <button className="story-option story-instagram" data-testid="instagram-story-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("instagram_story")}>
-                <span className="story-sequence" aria-hidden="true">02</span>
-                <span className="story-icon" aria-hidden="true">◎</span>
-                <span><strong>Instagram Stories</strong><small>{shareBusy === "instagram_story" ? "Preparando pieza…" : "Abrir menú de compartir"}</small></span>
-                <span className="story-arrow" aria-hidden="true">↗</span>
-              </button>
-            </div>
+            {!whatsappOnly && (
+              <div className="story-grid premium-story-grid" aria-label="Compartir en estados e historias">
+                <button className="story-option story-whatsapp" data-testid="whatsapp-status-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("whatsapp_status")}>
+                  <span className="story-sequence" aria-hidden="true">01</span>
+                  <span className="story-icon" aria-hidden="true">W</span>
+                  <span><strong>Estado de WhatsApp</strong><small>{shareBusy === "whatsapp_status" ? "Preparando pieza…" : "Compartir pieza 9:16"}</small></span>
+                  <span className="story-arrow" aria-hidden="true">↗</span>
+                </button>
+                <button className="story-option story-instagram" data-testid="instagram-story-share" disabled={shareDisabled} onClick={() => shareToSocialDestination("instagram_story")}>
+                  <span className="story-sequence" aria-hidden="true">02</span>
+                  <span className="story-icon" aria-hidden="true">◎</span>
+                  <span><strong>Instagram Stories</strong><small>{shareBusy === "instagram_story" ? "Preparando pieza…" : "Abrir menú de compartir"}</small></span>
+                  <span className="story-arrow" aria-hidden="true">↗</span>
+                </button>
+              </div>
+            )}
 
-            <div className="share-actions" aria-label="Otras opciones para compartir">
+            <div className="share-actions" aria-label="Compartir regalo">
               <button className="button button-whatsapp" disabled={shareDisabled} onClick={() => share("whatsapp")}>
-                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Enviar por WhatsApp</span>
+                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Compartir por WhatsApp</span>
               </button>
-              <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
+              {!whatsappOnly && (
+                <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
+              )}
             </div>
-            <p className="share-guidance">La ruleta se habilita cuando iniciás una acción de compartir. Viralio no afirma una publicación que no puede verificar.</p>
+            <p className="share-guidance">
+              {whatsappOnly
+                ? "La ruleta se habilita cuando iniciás el envío por WhatsApp. Viralio no afirma un envío que WhatsApp no puede confirmar."
+                : "La ruleta se habilita cuando iniciás una acción de compartir. Viralio no afirma una publicación que no puede verificar."}
+            </p>
           </div>
         )}
 
