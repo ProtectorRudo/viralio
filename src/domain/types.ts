@@ -3,6 +3,7 @@ export type RewardStatus = "AVAILABLE" | "REDEEMED" | "EXPIRED";
 export type ShareChannel = "whatsapp" | "whatsapp_status" | "instagram_story" | "native" | "social";
 
 export type EventName =
+  | "qr_opened"
   | "landing_viewed"
   | "unlock_viewed"
   | "share_channel_selected"
@@ -189,6 +190,8 @@ export interface AnalyticsEvent {
 }
 
 export interface MerchantMetrics {
+  qrScans: number;
+  starts: number;
   sessions: number;
   referredSessions: number;
   shares: number;
