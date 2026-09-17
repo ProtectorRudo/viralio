@@ -4,6 +4,7 @@ import { applyMerchantCustomization, validateMerchantCustomization } from "@/con
 import { merchants } from "@/config/merchants";
 import type { Merchant, MerchantMetrics } from "@/domain/types";
 import { repository } from "@/persistence";
+import type { TransactionRepository } from "@/persistence/repository";
 
 export interface OperatorMerchantOverview {
   merchant: Merchant;
@@ -12,10 +13,7 @@ export interface OperatorMerchantOverview {
   createdAt?: string;
 }
 
-async function resolvedMerchant(
-  transaction: Parameters<Parameters<typeof repository.transaction>[0]>[0],
-  base: Merchant,
-): Promise<Merchant> {
+async function resolvedMerchant(transaction: TransactionRepository, base: Merchant): Promise<Merchant> {
   const stored = await transaction.getMerchantSettings(base.id);
   if (!stored) return base;
   const customization = validateMerchantCustomization(stored.customization, base);
