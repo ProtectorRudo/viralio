@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { MerchantBrandProfile, MerchantExperienceCopy, MerchantTemplate } from "@/domain/types";
 
@@ -413,7 +414,7 @@ export function MerchantOnboarding({ operatorAuthenticated = false }: MerchantOn
               <strong data-testid="created-panel-path">{result.panelPath}</strong>
               <a href={result.panelPath}>Ir al panel →</a>
             </div>
-            {operatorAuthenticated && <a className="onboarding-secondary" href="/operador">Volver a todos los comercios</a>}
+            {operatorAuthenticated && <Link className="onboarding-secondary" href="/operador">Volver a todos los comercios</Link>}
             <button className="onboarding-secondary" onClick={reset}>Crear otro comercio</button>
           </section>
         )}
