@@ -3,7 +3,8 @@ import { expect, test } from "@playwright/test";
 const slug = "bruma-ci";
 const pin = "482619";
 
-test("operator can onboard a new merchant and the merchant immediately runs the real Viralio flow", async ({ page }) => {
+test("operator can onboard a new merchant and the merchant immediately runs the real Viralio flow", async ({ page, context }) => {
+  await context.route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }));
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "share", {
       configurable: true,
@@ -36,7 +37,12 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
   await page.goto(`/${slug}`);
   await expect(page.getByText("Bruma CI", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
-  await page.getByTestId("native-share").click();
+  await expect(page.getByTestId("native-share")).toHaveCount(0);
+  await expect(page.getByTestId("whatsapp-status-share")).toHaveCount(0);
+  await expect(page.getByTestId("instagram-story-share")).toHaveCount(0);
+  const popupPromise = page.waitForEvent("popup");
+  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  await popupPromise;
   await expect(page.getByTestId("wheel-stage")).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
