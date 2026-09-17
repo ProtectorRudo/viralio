@@ -17,7 +17,7 @@ test("El Gordo Leo dynamic pilot uses approved copy and WhatsApp-only sharing", 
   await expect(page.getByTestId("native-share")).toHaveCount(0);
 
   const popupPromise = page.waitForEvent("popup");
-  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  await page.getByRole("button", { name: "Enviar regalo por WhatsApp a un amigo" }).click();
   const popup = await popupPromise;
 
   await expect(page.getByTestId("wheel-stage")).toBeVisible();
