@@ -19,6 +19,10 @@ interface MerchantOperationsRow {
   referredSessions: number;
 }
 
+function experiencePath(slug: string): string {
+  return slug === "el-gordo-leo" ? `/${slug}` : `/experiencia/${slug}`;
+}
+
 export function OperationsHub() {
   const [key, setKey] = useState("");
   const [merchants, setMerchants] = useState<MerchantOperationsRow[] | null>(null);
@@ -107,9 +111,9 @@ export function OperationsHub() {
                     </div>
                     <div className={styles.actions}>
                       <Link className={`${styles.action} ${styles.actionPrimary}`} href={`/comercio/${merchant.slug}/canjes`}>Resultados y canjes</Link>
+                      <Link className={styles.action} href={`/comercio/${merchant.slug}/activacion`}>Kit</Link>
                       <Link className={styles.action} href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
-                      <Link className={styles.action} href={`/q/${merchant.slug}`} target="_blank" rel="noreferrer">QR</Link>
-                      <Link className={styles.action} href={`/${merchant.slug}`} target="_blank" rel="noreferrer">Experiencia</Link>
+                      <Link className={styles.action} href={experiencePath(merchant.slug)} target="_blank" rel="noreferrer">Experiencia</Link>
                     </div>
                   </article>
                 ))}
