@@ -3,8 +3,8 @@ import { randomUUID } from "node:crypto";
 import { getMerchantBySlug } from "@/config/merchants";
 import { repository } from "@/persistence";
 
-export async function recordQrOpen(merchantSlug: string): Promise<void> {
-  await repository.transaction(async (transaction) => {
+export async function recordQrOpen(merchantSlug: string): Promise<string> {
+  return repository.transaction(async (transaction) => {
     const configured = getMerchantBySlug(merchantSlug);
     const account = configured ? undefined : await transaction.getMerchantAccountBySlug(merchantSlug);
     const merchantId = configured?.id ?? account?.id;
@@ -16,5 +16,6 @@ export async function recordQrOpen(merchantSlug: string): Promise<void> {
       merchantId,
       timestamp: new Date().toISOString(),
     });
+    return merchantId;
   });
 }
