@@ -145,6 +145,8 @@ postgresDescribe("PostgresRepository integration", () => {
     await instance.initiateShare(atlas.session.id, "whatsapp");
 
     expect(await instance.getMerchantMetrics("merchant_moka")).toEqual({
+      qrScans: 0,
+      starts: 2,
       sessions: 2,
       referredSessions: 1,
       shares: 2,
@@ -162,6 +164,7 @@ postgresDescribe("PostgresRepository integration", () => {
 
     const atlasMetrics = await instance.getMerchantMetrics("merchant_atlas");
     expect(atlasMetrics.sessions).toBe(1);
+    expect(atlasMetrics.starts).toBe(1);
     expect(atlasMetrics.shares).toBe(1);
     expect(atlasMetrics.rewardsIssued).toBe(0);
     expect(atlasMetrics.shareChannels.whatsapp).toBe(1);
