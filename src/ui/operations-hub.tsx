@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import styles from "./operations-hub.module.css";
 
@@ -87,7 +88,7 @@ export function OperationsHub() {
                 <span className={styles.summaryItem}><strong>{totals.shares}</strong> compartidos</span>
                 <span className={styles.summaryItem}><strong>{totals.rewardsRedeemed}</strong> canjes</span>
               </div>
-              <a className={styles.newLink} href="/alta">+ Nuevo comercio</a>
+              <Link className={styles.newLink} href="/alta">+ Nuevo comercio</Link>
             </div>
 
             {merchants.length === 0 ? <div className={styles.empty}>Todavía no hay comercios dados de alta.</div> : (
@@ -105,10 +106,10 @@ export function OperationsHub() {
                       <div className={styles.metric}><strong>{merchant.rewardsRedeemed}</strong><span>Canjes</span></div>
                     </div>
                     <div className={styles.actions}>
-                      <a className={`${styles.action} ${styles.actionPrimary}`} href={`/comercio/${merchant.slug}/canjes`}>Resultados y canjes</a>
-                      <a className={styles.action} href={`/comercio/${merchant.slug}/configuracion`}>Configuración</a>
-                      <a className={styles.action} href={`/q/${merchant.slug}`} target="_blank" rel="noreferrer">QR</a>
-                      <a className={styles.action} href={`/${merchant.slug}`} target="_blank" rel="noreferrer">Experiencia</a>
+                      <Link className={`${styles.action} ${styles.actionPrimary}`} href={`/comercio/${merchant.slug}/canjes`}>Resultados y canjes</Link>
+                      <Link className={styles.action} href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
+                      <Link className={styles.action} href={`/q/${merchant.slug}`} target="_blank" rel="noreferrer">QR</Link>
+                      <Link className={styles.action} href={`/${merchant.slug}`} target="_blank" rel="noreferrer">Experiencia</Link>
                     </div>
                   </article>
                 ))}
