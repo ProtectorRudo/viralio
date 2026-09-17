@@ -36,6 +36,9 @@ describe("merchant onboarding", () => {
     expect(merchant.whatsappNumber).toBe("5492215550000");
     expect(merchant.prizes.reduce((sum, prize) => sum + prize.probability, 0)).toBe(100);
     expect(merchant.theme.heroCopy).toContain("Bruma Café");
+    expect(merchant.theme.shareMode).toBe("whatsapp_only");
+    expect(merchant.theme.shareTitle).toBe("Antes de descubrir el tuyo, regalale uno a alguien.");
+    expect(merchant.theme.shareCopy).toContain("Compartilo por WhatsApp");
 
     expect(repository.database.merchantAccounts).toHaveLength(1);
     const account = repository.database.merchantAccounts[0];
@@ -52,7 +55,7 @@ describe("merchant onboarding", () => {
     const merchant = await service.createMerchant(bruma, authEnvironment);
     const { session } = await service.startSession(merchant.slug);
     await service.unlock(session.id);
-    await service.initiateShare(session.id, "whatsapp_status");
+    await service.initiateShare(session.id, "whatsapp");
     const reward = await service.spin(session.id);
 
     expect(reward.merchantId).toBe(merchant.id);
