@@ -38,11 +38,11 @@ test("new merchant can be born with real prizes and validity in the same onboard
   await page.goto(`/comercio/${slug}/configuracion`);
   await expect(page.getByTestId("merchant-settings-panel")).toBeVisible();
   await expect(page.getByTestId("probability-total")).toContainText("100%");
-  await expect(page.getByText("5% en tu próxima compra", { exact: true })).toBeVisible();
-  await expect(page.getByText("10% en tu próxima compra", { exact: true })).toBeVisible();
-  await expect(page.getByText("15% en tu próxima compra", { exact: true })).toBeVisible();
-  await expect(page.getByText("Helado de regalo", { exact: true })).toBeVisible();
-  await expect(page.getByText("Bombón de regalo", { exact: true })).toBeVisible();
+  await expect(page.getByDisplayValue("5% en tu próxima compra")).toBeVisible();
+  await expect(page.getByDisplayValue("10% en tu próxima compra")).toBeVisible();
+  await expect(page.getByDisplayValue("15% en tu próxima compra")).toBeVisible();
+  await expect(page.getByDisplayValue("Helado de regalo")).toBeVisible();
+  await expect(page.getByDisplayValue("Bombón de regalo")).toBeVisible();
 
   const validity = page.locator('input[type="number"][min="1"][max="90"]').first();
   await expect(validity).toHaveValue("14");
