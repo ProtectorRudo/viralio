@@ -22,8 +22,20 @@ interface BrandFailure {
   upstreamCode?: string;
 }
 
+interface OnboardingPrize {
+  name: string;
+  probability: number;
+}
+
 const MAX_LOGO_BYTES = 700 * 1024;
 const LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+const INITIAL_PRIZES: OnboardingPrize[] = [
+  { name: "5% en tu próxima compra", probability: 40 },
+  { name: "10% en tu próxima compra", probability: 30 },
+  { name: "15% en tu próxima compra", probability: 15 },
+  { name: "Regalo sorpresa", probability: 10 },
+  { name: "Premio especial", probability: 5 },
+];
 
 function slugify(value: string): string {
   return value
@@ -51,6 +63,10 @@ function fileDataUrl(file: File): Promise<string> {
   });
 }
 
+function freshInitialPrizes(): OnboardingPrize[] {
+  return INITIAL_PRIZES.map((prize) => ({ ...prize }));
+}
+
 export function MerchantOnboarding() {
   const [onboardingKey, setOnboardingKey] = useState("");
   const [name, setName] = useState("");
@@ -66,11 +82,14 @@ export function MerchantOnboarding() {
   const [brandDraft, setBrandDraft] = useState<BrandDraft>();
   const [brandBusy, setBrandBusy] = useState(false);
   const [brandError, setBrandError] = useState("");
+  const [rewardValidityDays, setRewardValidityDays] = useState(10);
+  const [prizes, setPrizes] = useState<OnboardingPrize[]>(freshInitialPrizes);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<OnboardingResult>();
 
   const previewSlug = useMemo(() => slug || slugify(name), [name, slug]);
+  const probabilityTotal = useMemo(() => prizes.reduce((sum, prize) => sum + (Number.isFinite(prize.probability) ? prize.probability : 0), 0), [prizes]);
 
   function invalidateDraft() {
     setBrandDraft(undefined);
@@ -87,6 +106,11 @@ export function MerchantOnboarding() {
     setBusinessType(value);
     setTemplate(inferTemplate(value));
     invalidateDraft();
+  }
+
+  function updatePrize(index: number, patch: Partial<OnboardingPrize>) {
+    setPrizes((current) => current.map((prize, prizeIndex) => prizeIndex === index ? { ...prize, ...patch } : prize));
+    setError("");
   }
 
   async function changeLogo(file?: File) {
@@ -138,6 +162,10 @@ export function MerchantOnboarding() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (probabilityTotal !== 100) {
+      setError("Las probabilidades de los premios deben sumar exactamente 100%.");
+      return;
+    }
     setBusy(true);
     setError("");
     setResult(undefined);
@@ -153,6 +181,8 @@ export function MerchantOnboarding() {
           businessType,
           whatsappNumber,
           pin,
+          rewardValidityDays,
+          prizes,
           logoDataUrl: logoDataUrl || undefined,
           brand: brandDraft?.brand,
           brandCopy: brandDraft?.copy,
@@ -185,6 +215,8 @@ export function MerchantOnboarding() {
     setBrandDraft(undefined);
     setBrandError("");
     setUseAiBranding(true);
+    setRewardValidityDays(10);
+    setPrizes(freshInitialPrizes());
   }
 
   return (
@@ -317,7 +349,38 @@ export function MerchantOnboarding() {
               <p className="onboarding-security-note"><span aria-hidden="true">◆</span> El PIN no se guarda en texto plano. La API key de OpenAI tampoco llega al navegador.</p>
             </section>
 
-            <button className="onboarding-submit" data-testid="create-merchant" type="submit" disabled={busy || brandBusy}>{busy ? "Creando comercio…" : "Crear comercio y campaña"}</button>
+            <section className="onboarding-section" data-testid="onboarding-prizes">
+              <div className="onboarding-section-title"><span>05</span><div><strong>Premios iniciales</strong><small>Dejá el comercio listo para usar desde el primer QR</small></div></div>
+              <div className="onboarding-grid">
+                <label>
+                  Vigencia del premio
+                  <div className="slug-input"><input data-testid="onboarding-validity" type="number" min={1} max={90} value={rewardValidityDays} onChange={(event) => setRewardValidityDays(Number(event.target.value))} required /><span>días</span></div>
+                  <small className="field-hint">Recomendación inicial: entre 7 y 14 días para empujar la recompra.</small>
+                </label>
+                <div>
+                  <strong>Total de probabilidades</strong>
+                  <div data-testid="onboarding-probability-total" style={{ marginTop: 8, fontSize: 24, fontWeight: 800 }}>{probabilityTotal}%</div>
+                  <small className="field-hint">Debe sumar exactamente 100%.</small>
+                </div>
+              </div>
+              <div style={{ display: "grid", gap: 10 }}>
+                {prizes.map((prize, index) => (
+                  <div key={index} className="onboarding-grid" data-testid={`onboarding-prize-${index + 1}`}>
+                    <label>
+                      Premio {index + 1}
+                      <input value={prize.name} maxLength={90} onChange={(event) => updatePrize(index, { name: event.target.value })} required />
+                    </label>
+                    <label>
+                      Probabilidad
+                      <div className="slug-input"><input type="number" min={0} max={100} value={prize.probability} onChange={(event) => updatePrize(index, { probability: Number(event.target.value) })} required /><span>%</span></div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <small className="field-hint">Buscá alto valor percibido y bajo costo real. Los premios se pueden editar después desde Configuración.</small>
+            </section>
+
+            <button className="onboarding-submit" data-testid="create-merchant" type="submit" disabled={busy || brandBusy || probabilityTotal !== 100}>{busy ? "Creando comercio…" : "Crear comercio y campaña"}</button>
             {error && <p className="onboarding-error" role="alert">{error}</p>}
           </form>
         ) : (
