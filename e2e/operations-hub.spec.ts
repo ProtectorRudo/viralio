@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const onboardingKey = process.env.VIRALIO_ONBOARDING_KEY;
 const slug = "operacion-ci";
 
-test("operations hub stays private and lists real plus onboarded merchants", async ({ page, request }) => {
+test("operations hub stays private, filters periods and lists real plus onboarded merchants", async ({ page, request }) => {
   test.skip(!onboardingKey, "VIRALIO_ONBOARDING_KEY is required for operations E2E");
 
   const unauthorized = await request.post("/api/operacion/merchants", {
@@ -11,6 +11,12 @@ test("operations hub stays private and lists real plus onboarded merchants", asy
     data: { onboardingKey: "wrong-key" },
   });
   expect(unauthorized.status()).toBe(401);
+
+  const invalidPeriod = await request.post("/api/operacion/merchants", {
+    headers: { origin: "http://127.0.0.1:3000" },
+    data: { onboardingKey, period: "year" },
+  });
+  expect(invalidPeriod.status()).toBe(400);
 
   const created = await request.post("/api/onboarding/merchants", {
     headers: { origin: "http://127.0.0.1:3000" },
@@ -33,6 +39,8 @@ test("operations hub stays private and lists real plus onboarded merchants", asy
   await page.getByTestId("operations-key").fill(onboardingKey!);
   await page.getByTestId("operations-submit").click();
 
+  await expect(page.getByTestId("operations-period-7d")).toHaveAttribute("aria-pressed", "true");
+
   const pilotCard = page.getByTestId("operations-merchant-el-gordo-leo");
   await expect(pilotCard).toBeVisible();
   await expect(pilotCard).toContainText("Mini Mercado El Gordo Leo");
@@ -49,4 +57,9 @@ test("operations hub stays private and lists real plus onboarded merchants", asy
   await expect(card.getByRole("link", { name: "Configuración" })).toHaveAttribute("href", `/comercio/${slug}/configuracion`);
   await expect(card.getByRole("link", { name: "Experiencia" })).toHaveAttribute("href", `/experiencia/${slug}`);
   await expect(card.getByRole("link", { name: "QR" })).toHaveCount(0);
+
+  await page.getByTestId("operations-period-all").click();
+  await expect(page.getByTestId("operations-period-all")).toHaveAttribute("aria-pressed", "true");
+  await expect(pilotCard).toBeVisible();
+  await expect(card).toBeVisible();
 });
