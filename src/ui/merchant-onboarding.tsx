@@ -6,6 +6,7 @@ import type { MerchantBrandProfile, MerchantExperienceCopy, MerchantTemplate } f
 interface OnboardingResult {
   merchant: { id: string; slug: string; name: string };
   experiencePath: string;
+  qrPath: string;
   panelPath: string;
 }
 
@@ -329,6 +330,11 @@ export function MerchantOnboarding() {
               <span>Experiencia del cliente</span>
               <strong data-testid="created-experience-path">{result.experiencePath}</strong>
               <a href={result.experiencePath} target="_blank" rel="noreferrer">Abrir experiencia ↗</a>
+            </div>
+            <div className="onboarding-link-card">
+              <span>QR para imprimir · mide escaneos</span>
+              <strong data-testid="created-qr-path">{result.qrPath}</strong>
+              <a href={result.qrPath} target="_blank" rel="noreferrer">Probar entrada por QR ↗</a>
             </div>
             <div className="onboarding-link-card">
               <span>Acceso del comercio</span>
