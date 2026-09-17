@@ -21,6 +21,9 @@ export interface MerchantOnboardingInput {
   brandCopy?: Partial<MerchantExperienceCopy>;
 }
 
+const CONVERSION_SHARE_TITLE = "Antes de descubrir el tuyo, regalale uno a alguien.";
+const CONVERSION_SHARE_COPY = "Compartilo por WhatsApp. La otra persona también recibe su propio regalo y el tuyo sigue siendo solo tuyo.";
+
 const reservedSlugs = new Set([
   "api",
   "alta",
@@ -126,6 +129,7 @@ function genericTemplateBase(): Merchant {
       ...seed.theme,
       category: "generic",
       businessType: "Comercio",
+      shareMode: "whatsapp_only",
       displayName: "Comercio",
       shortName: "Comercio",
       monogram: "V",
@@ -133,8 +137,8 @@ function genericTemplateBase(): Merchant {
       heroTitle: "Hay una sorpresa esperando",
       heroCopy: "Abrí tu pase y descubrí un beneficio para tu próxima visita.",
       mysteryLabel: "Pase sorpresa",
-      shareTitle: "Compartí tu pase para abrirlo",
-      shareCopy: "Elegí dónde compartirlo. Tu premio sigue siendo privado.",
+      shareTitle: CONVERSION_SHARE_TITLE,
+      shareCopy: CONVERSION_SHARE_COPY,
       referralCopy: "Me dejaron un pase sorpresa. Hay otro esperando por vos.",
       socialHeadline: "Hay una sorpresa esperando por vos",
       socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
@@ -189,6 +193,7 @@ export function merchantFromAccount(account: MerchantAccount): Merchant {
       shortName: shortName(account.name),
       monogram: monogram(account.name),
       businessType: account.businessType,
+      shareMode: "whatsapp_only",
     },
     prizes: base.prizes.map((prize) => ({ ...prize })),
   };
@@ -213,8 +218,8 @@ function genericCustomization(account: MerchantAccount, whatsappNumber: string, 
       heroTitle: "Hay una sorpresa esperando",
       heroCopy: `Descubrí el beneficio que ${name} preparó para tu próxima visita.`,
       mysteryLabel: `Pase ${shortName(name)}`,
-      shareTitle: "Compartí tu pase para abrirlo",
-      shareCopy: "Elegí dónde compartirlo. Tu premio sigue siendo privado.",
+      shareTitle: CONVERSION_SHARE_TITLE,
+      shareCopy: CONVERSION_SHARE_COPY,
       referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
       socialHeadline: `${name} dejó una sorpresa esperando`,
       socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
@@ -254,8 +259,8 @@ export function defaultCustomizationForAccount(
       heroTitle: "Hay algo especial esperando",
       heroCopy: `Descubrí la sorpresa que ${name} preparó para tu próxima visita.`,
       mysteryLabel: `Sorpresa ${shortName(name)}`,
-      shareTitle: "Compartí tu pase para abrirlo",
-      shareCopy: "Elegí dónde compartir tu pase. La sorpresa que te toca sigue siendo sólo tuya.",
+      shareTitle: CONVERSION_SHARE_TITLE,
+      shareCopy: CONVERSION_SHARE_COPY,
       referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
       socialHeadline: `${name} dejó una sorpresa esperando`,
       socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
@@ -278,8 +283,8 @@ export function defaultCustomizationForAccount(
       heroTitle: "Tu estilo tiene una sorpresa",
       heroCopy: `Abrí tu pase privado y descubrí un beneficio de ${name}.`,
       mysteryLabel: `Pase ${shortName(name)}`,
-      shareTitle: "Pasá el código. Abrí tu beneficio.",
-      shareCopy: "Elegí dónde compartir tu pase para que alguien de tu círculo encuentre el suyo.",
+      shareTitle: CONVERSION_SHARE_TITLE,
+      shareCopy: CONVERSION_SHARE_COPY,
       referralCopy: `${name} me dio un pase privado. Hay otro esperando por vos.`,
       socialHeadline: `Hay un pase privado de ${name} para vos`,
       socialSubcopy: "Entrá, abrilo y descubrí tu beneficio.",
@@ -293,6 +298,8 @@ export function defaultCustomizationForAccount(
       ...options.brandCopy,
       displayName: name,
       shortName: shortName(name),
+      shareTitle: CONVERSION_SHARE_TITLE,
+      shareCopy: CONVERSION_SHARE_COPY,
     };
   }
   return customization;
