@@ -7,6 +7,7 @@ test("new merchant onboarding returns dynamic experience, tracked QR and panel p
 
   const slug = `piloto-${Date.now()}`;
   const response = await request.post("/api/onboarding/merchants", {
+    headers: { origin: "http://127.0.0.1:3000" },
     data: {
       onboardingKey,
       name: "Piloto Viralio",
