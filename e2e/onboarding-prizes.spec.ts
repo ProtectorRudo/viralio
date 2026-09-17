@@ -47,10 +47,8 @@ test("new merchant can be born with real prizes and validity in the same onboard
   await expect(prizeRows.nth(3).locator("input").first()).toHaveValue("Helado de regalo");
   await expect(prizeRows.nth(4).locator("input").first()).toHaveValue("Bombón de regalo");
 
-  const validity = page.locator("input").filter({ has: page.locator("xpath=..") });
-  const dayInput = page.locator('.merchant-settings-number input').first();
+  const dayInput = page.locator(".merchant-settings-number input").first();
   await expect(dayInput).toHaveValue("14");
-  void validity;
 });
 
 test("onboarding rejects invalid prize totals before creating the merchant", async ({ request }) => {
