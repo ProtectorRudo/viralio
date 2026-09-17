@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { getOperatorMerchantOverviews } from "@/application/operator-service";
 import {
@@ -53,7 +54,7 @@ export default async function OperatorPage() {
             <h1>Todo Viralio desde un solo lugar.</h1>
             <p className={styles.heroCopy}>Revisá resultados y entrá a cada comercio sin buscar URLs ni pedir su PIN. Lo importante para vender, medir y operar está acá.</p>
           </div>
-          <a className={styles.primaryAction} href="/alta">+ Nuevo comercio</a>
+          <Link className={styles.primaryAction} href="/alta">+ Nuevo comercio</Link>
         </section>
 
         <section className={styles.summary} aria-label="Resumen de comercios reales">
