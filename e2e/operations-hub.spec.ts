@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const onboardingKey = process.env.VIRALIO_ONBOARDING_KEY;
 const slug = "operacion-ci";
 
-test("operations hub stays private and lists onboarded merchants", async ({ page, request }) => {
+test("operations hub stays private and lists real plus onboarded merchants", async ({ page, request }) => {
   test.skip(!onboardingKey, "VIRALIO_ONBOARDING_KEY is required for operations E2E");
 
   const unauthorized = await request.post("/api/operacion/merchants", {
@@ -28,9 +28,15 @@ test("operations hub stays private and lists onboarded merchants", async ({ page
   await page.goto("/operacion");
   await expect(page.getByTestId("operations-hub")).toBeVisible();
   await expect(page.getByTestId(`operations-merchant-${slug}`)).toHaveCount(0);
+  await expect(page.getByTestId("operations-merchant-el-gordo-leo")).toHaveCount(0);
 
   await page.getByTestId("operations-key").fill(onboardingKey!);
   await page.getByTestId("operations-submit").click();
+
+  const pilotCard = page.getByTestId("operations-merchant-el-gordo-leo");
+  await expect(pilotCard).toBeVisible();
+  await expect(pilotCard).toContainText("Mini Mercado El Gordo Leo");
+  await expect(pilotCard).toContainText("Mini mercado");
 
   const card = page.getByTestId(`operations-merchant-${slug}`);
   await expect(card).toBeVisible();
