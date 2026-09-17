@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { getMerchantBySlug } from "@/config/merchants";
 
 export interface MerchantOperationsRow {
   id: string;
@@ -21,6 +22,16 @@ interface MerchantOperationsDbRow {
   name: string;
   businessType: string;
   createdAt: Date | string;
+  qrScans: number;
+  starts: number;
+  shares: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  whatsappSaves: number;
+  referredSessions: number;
+}
+
+interface MerchantMetricsDbRow {
   qrScans: number;
   starts: number;
   shares: number;
@@ -87,10 +98,44 @@ export async function listMerchantOperations(
       ORDER BY ma.created_at DESC, ma.name ASC
     `;
 
-    return rows.map((row) => ({
+    const dynamicRows: MerchantOperationsRow[] = rows.map((row) => ({
       ...row,
       createdAt: iso(row.createdAt),
     }));
+
+    const legacyPilot = getMerchantBySlug("el-gordo-leo");
+    if (!legacyPilot || dynamicRows.some((merchant) => merchant.slug === legacyPilot.slug)) {
+      return dynamicRows;
+    }
+
+    const [metrics] = await sql<MerchantMetricsDbRow[]>`
+      SELECT
+        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'qr_opened')::int AS qr_scans,
+        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'unlock_viewed')::int AS starts,
+        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'share_initiated')::int AS shares,
+        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'whatsapp_save_clicked')::int AS whatsapp_saves,
+        (SELECT count(*) FROM rewards WHERE merchant_id = ${legacyPilot.id})::int AS rewards_issued,
+        (SELECT count(*) FROM rewards WHERE merchant_id = ${legacyPilot.id} AND redeemed_at IS NOT NULL)::int AS rewards_redeemed,
+        (SELECT count(*) FROM sessions WHERE merchant_id = ${legacyPilot.id} AND referred_by IS NOT NULL)::int AS referred_sessions
+    `;
+
+    return [
+      {
+        id: legacyPilot.id,
+        slug: legacyPilot.slug,
+        name: legacyPilot.name,
+        businessType: legacyPilot.theme.businessType ?? "Mini mercado",
+        createdAt: "2026-09-14T00:00:00.000Z",
+        qrScans: metrics?.qrScans ?? 0,
+        starts: metrics?.starts ?? 0,
+        shares: metrics?.shares ?? 0,
+        rewardsIssued: metrics?.rewardsIssued ?? 0,
+        rewardsRedeemed: metrics?.rewardsRedeemed ?? 0,
+        whatsappSaves: metrics?.whatsappSaves ?? 0,
+        referredSessions: metrics?.referredSessions ?? 0,
+      },
+      ...dynamicRows,
+    ];
   } finally {
     await sql.end({ timeout: 5 });
   }
