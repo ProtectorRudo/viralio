@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const slug = "lumen-joyas-ci";
 
-test("a new non-template business keeps its real category through the complete funnel", async ({ page, request }) => {
+test("a new non-template business keeps its real category through the complete funnel", async ({ page, request, context }) => {
   const create = await request.post("/api/onboarding/merchants", {
     headers: { origin: "http://127.0.0.1:3000" },
     data: {
@@ -16,25 +16,21 @@ test("a new non-template business keeps its real category through the complete f
   });
   expect(create.status()).toBe(201);
 
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", {
-      configurable: true,
-      value: async () => undefined,
-    });
-    Object.defineProperty(navigator, "canShare", {
-      configurable: true,
-      value: () => false,
-    });
-  });
+  await context.route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }));
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto(`/${slug}`);
+  await page.goto(`/experiencia/${slug}`);
 
   await expect(page.locator(".experience")).toHaveAttribute("data-merchant", slug);
   await expect(page.getByText("Joyería", { exact: true })).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/Café de especialidad|Barbería contemporánea/i);
 
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
-  await page.getByTestId("native-share").click();
+  await expect(page.getByTestId("native-share")).toHaveCount(0);
+  await expect(page.getByTestId("instagram-story-share")).toHaveCount(0);
+  const popupPromise = page.waitForEvent("popup");
+  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  const popup = await popupPromise;
+  await expect.poll(() => popup.url()).toContain("wa.me/");
   await expect(page.getByTestId("wheel-stage")).toBeVisible();
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
   await expect(page.getByTestId("reward-stage")).toBeVisible();

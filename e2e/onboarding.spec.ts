@@ -3,17 +3,8 @@ import { expect, test } from "@playwright/test";
 const slug = "bruma-ci";
 const pin = "482619";
 
-test("operator can onboard a new merchant and the merchant immediately runs the real Viralio flow", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", {
-      configurable: true,
-      value: async () => undefined,
-    });
-    Object.defineProperty(navigator, "canShare", {
-      configurable: true,
-      value: () => false,
-    });
-  });
+test("operator can onboard a new merchant and the merchant immediately runs the real Viralio flow", async ({ page, context }) => {
+  await context.route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }));
 
   await page.goto("/alta");
   await expect(page.getByTestId("merchant-onboarding")).toBeVisible();
@@ -30,13 +21,22 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
   await page.getByTestId("create-merchant").click();
   expect((await createResponse).status()).toBe(201);
   await expect(page.getByTestId("onboarding-success")).toBeVisible();
-  await expect(page.getByTestId("created-experience-path")).toHaveText(`/${slug}`);
+  await expect(page.getByTestId("created-experience-path")).toHaveText(`/experiencia/${slug}`);
+  await expect(page.getByTestId("created-qr-path")).toHaveText(`/q/${slug}`);
   await expect(page.getByTestId("created-panel-path")).toHaveText(`/comercio/${slug}/canjes`);
 
-  await page.goto(`/${slug}`);
+  await page.goto(`/q/${slug}`);
+  await expect(page).toHaveURL(new RegExp(`/experiencia/${slug}$`));
   await expect(page.getByText("Bruma CI", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
-  await page.getByTestId("native-share").click();
+  await expect(page.getByRole("heading", { name: "Antes de descubrir el tuyo, regalale uno a alguien." })).toBeVisible();
+  await expect(page.getByTestId("whatsapp-status-share")).toHaveCount(0);
+  await expect(page.getByTestId("instagram-story-share")).toHaveCount(0);
+  await expect(page.getByTestId("native-share")).toHaveCount(0);
+
+  const popupPromise = page.waitForEvent("popup");
+  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  await popupPromise;
   await expect(page.getByTestId("wheel-stage")).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.getByRole("button", { name: /Girar la ruleta/ }).click();
@@ -50,6 +50,7 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
 
   await page.goto(`/comercio/${slug}/panel`);
   await expect(page.getByTestId("merchant-dashboard")).toBeVisible();
+  await expect(page.getByTestId("metric-qr-scans")).toHaveText(/^[1-9]\d*$/);
   await expect(page.getByTestId("metric-sessions")).toHaveText(/^[1-9]\d*$/);
 
   await page.goto(`/comercio/${slug}/configuracion`);
@@ -58,7 +59,7 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
 
   await page.goto(`/comercio/${slug}/activacion`);
   await expect(page.getByTestId("merchant-activation-kit")).toBeVisible();
-  await expect(page.getByTestId("activation-public-url")).toContainText(`/${slug}`);
+  await expect(page.getByTestId("activation-public-url")).toContainText(`/q/${slug}`);
   await expect(page.getByTestId("activation-qr")).toBeVisible();
   await expect(page.getByTestId("activation-poster")).toBeVisible();
 

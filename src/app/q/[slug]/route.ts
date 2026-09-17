@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { recordQrOpen } from "@/analytics/qr-entry";
+import { merchantExperiencePath } from "@/config/merchant-accounts";
+import { getMerchantBySlug } from "@/config/merchants";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +10,10 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const target = new URL(`/${encodeURIComponent(slug)}`, request.url);
+  const experiencePath = getMerchantBySlug(slug)
+    ? `/${encodeURIComponent(slug)}`
+    : merchantExperiencePath(slug);
+  const target = new URL(experiencePath, request.url);
 
   try {
     await recordQrOpen(slug);

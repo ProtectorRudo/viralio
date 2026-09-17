@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { merchantExperiencePath } from "@/config/merchant-accounts";
 import type { Merchant } from "@/domain/types";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
 
 export function MerchantActivationKit({ merchant }: { merchant: Merchant }) {
-  const relativePath = `/${merchant.slug}`;
+  const qrPath = `/q/${merchant.slug}`;
+  const experiencePath = merchantExperiencePath(merchant.slug);
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
     try {
-      const publicUrl = new URL(relativePath, window.location.origin).href;
+      const publicUrl = new URL(qrPath, window.location.origin).href;
       await navigator.clipboard.writeText(publicUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
@@ -37,7 +39,7 @@ export function MerchantActivationKit({ merchant }: { merchant: Merchant }) {
             <div>
               <p className="eyebrow">Llevá gente a tu Viralio</p>
               <h1>Tu campaña ya puede vivir en el mostrador.</h1>
-              <p>Usá el QR, compartí el enlace o imprimí el cartel. Todo apunta a la experiencia pública de {merchant.theme.shortName}.</p>
+              <p>Usá el QR, compartí el enlace o imprimí el cartel. Todo apunta a la experiencia pública de {merchant.theme.shortName} y queda medido por Viralio.</p>
             </div>
             <span className="activation-live">LISTO PARA USAR</span>
           </div>
@@ -47,24 +49,24 @@ export function MerchantActivationKit({ merchant }: { merchant: Merchant }) {
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/canjes`}>Canjes</Link>
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
             <span className="merchant-panel-tab is-active" aria-current="page">Activación</span>
-            <Link className="merchant-panel-tab" href={relativePath}>Ver experiencia</Link>
+            <Link className="merchant-panel-tab" href={experiencePath}>Ver experiencia</Link>
           </nav>
 
           <section className="activation-grid">
             <article className="activation-panel activation-link-panel">
-              <p className="eyebrow">01 · Enlace público</p>
-              <h2>Una URL simple para compartir.</h2>
+              <p className="eyebrow">01 · Enlace medible</p>
+              <h2>El enlace que conviene compartir e imprimir.</h2>
               <div className="activation-url" data-testid="activation-public-url">
-                <span>{relativePath}</span>
+                <span>{qrPath}</span>
                 <button type="button" onClick={copyLink} data-testid="copy-activation-link">{copied ? "Copiado ✓" : "Copiar enlace"}</button>
               </div>
-              <p className="activation-help">Al copiar, Viralio agrega automáticamente el dominio actual. Podés pegarlo en bio, WhatsApp, Google Business, redes o cualquier pieza digital.</p>
+              <p className="activation-help">Este enlace registra la entrada antes de abrir la experiencia. Usalo en el QR, WhatsApp, Google Business, redes o cualquier pieza del comercio.</p>
             </article>
 
             <article className="activation-panel activation-qr-panel">
               <div>
                 <p className="eyebrow">02 · QR vectorial</p>
-                <h2>Escaneable y listo para imprimir.</h2>
+                <h2>Escaneable, medible y listo para imprimir.</h2>
                 <p className="activation-help">SVG en blanco y negro para máxima lectura y calidad en cualquier tamaño.</p>
               </div>
               <div className="activation-qr-frame" data-testid="activation-qr">
@@ -90,7 +92,7 @@ export function MerchantActivationKit({ merchant }: { merchant: Merchant }) {
               <div className="poster-qr-wrap">
                 <object data="/api/merchant/activation/qr" type="image/svg+xml" aria-label={`QR imprimible de ${merchant.name}`} />
                 <strong>ESCANEÁ ACÁ</strong>
-                <small>{relativePath}</small>
+                <small>{qrPath}</small>
               </div>
               <div className="poster-footer"><span>Una experiencia de</span><strong>VIRALIO</strong></div>
             </div>
