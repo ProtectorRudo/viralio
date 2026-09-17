@@ -30,10 +30,12 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
   await page.getByTestId("create-merchant").click();
   expect((await createResponse).status()).toBe(201);
   await expect(page.getByTestId("onboarding-success")).toBeVisible();
-  await expect(page.getByTestId("created-experience-path")).toHaveText(`/${slug}`);
+  await expect(page.getByTestId("created-experience-path")).toHaveText(`/experiencia/${slug}`);
+  await expect(page.getByTestId("created-qr-path")).toHaveText(`/q/${slug}`);
   await expect(page.getByTestId("created-panel-path")).toHaveText(`/comercio/${slug}/canjes`);
 
-  await page.goto(`/${slug}`);
+  await page.goto(`/q/${slug}`);
+  await expect(page).toHaveURL(new RegExp(`/experiencia/${slug}$`));
   await expect(page.getByText("Bruma CI", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
   await page.getByTestId("native-share").click();
@@ -50,6 +52,7 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
 
   await page.goto(`/comercio/${slug}/panel`);
   await expect(page.getByTestId("merchant-dashboard")).toBeVisible();
+  await expect(page.getByTestId("metric-qr-scans")).toHaveText(/^[1-9]\d*$/);
   await expect(page.getByTestId("metric-sessions")).toHaveText(/^[1-9]\d*$/);
 
   await page.goto(`/comercio/${slug}/configuracion`);
@@ -58,7 +61,7 @@ test("operator can onboard a new merchant and the merchant immediately runs the 
 
   await page.goto(`/comercio/${slug}/activacion`);
   await expect(page.getByTestId("merchant-activation-kit")).toBeVisible();
-  await expect(page.getByTestId("activation-public-url")).toContainText(`/${slug}`);
+  await expect(page.getByTestId("activation-public-url")).toContainText(`/q/${slug}`);
   await expect(page.getByTestId("activation-qr")).toBeVisible();
   await expect(page.getByTestId("activation-poster")).toBeVisible();
 
