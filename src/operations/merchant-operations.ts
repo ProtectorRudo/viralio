@@ -77,21 +77,21 @@ export async function listMerchantOperations(
       LEFT JOIN LATERAL (
         SELECT
           count(*) FILTER (WHERE name = 'qr_opened') AS qr_scans,
-          count(*) FILTER (WHERE name = 'unlock_viewed') AS starts,
-          count(*) FILTER (WHERE name = 'share_initiated') AS shares,
-          count(*) FILTER (WHERE name = 'whatsapp_save_clicked') AS whatsapp_saves
+          count(DISTINCT session_id) FILTER (WHERE name = 'unlock_viewed' AND session_id IS NOT NULL) AS starts,
+          count(DISTINCT session_id) FILTER (WHERE name = 'share_initiated' AND session_id IS NOT NULL) AS shares,
+          count(DISTINCT session_id) FILTER (WHERE name = 'whatsapp_save_clicked' AND session_id IS NOT NULL) AS whatsapp_saves
         FROM analytics_events
         WHERE merchant_id = ma.merchant_id
       ) events ON true
       LEFT JOIN LATERAL (
         SELECT
-          count(*) AS rewards_issued,
-          count(*) FILTER (WHERE redeemed_at IS NOT NULL) AS rewards_redeemed
+          count(DISTINCT session_id) AS rewards_issued,
+          count(DISTINCT session_id) FILTER (WHERE redeemed_at IS NOT NULL) AS rewards_redeemed
         FROM rewards
         WHERE merchant_id = ma.merchant_id
       ) rewards ON true
       LEFT JOIN LATERAL (
-        SELECT count(*) FILTER (WHERE referred_by IS NOT NULL) AS referred_sessions
+        SELECT count(DISTINCT id) FILTER (WHERE referred_by IS NOT NULL) AS referred_sessions
         FROM sessions
         WHERE merchant_id = ma.merchant_id
       ) sessions ON true
@@ -111,12 +111,12 @@ export async function listMerchantOperations(
     const [metrics] = await sql<MerchantMetricsDbRow[]>`
       SELECT
         (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'qr_opened')::int AS qr_scans,
-        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'unlock_viewed')::int AS starts,
-        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'share_initiated')::int AS shares,
-        (SELECT count(*) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'whatsapp_save_clicked')::int AS whatsapp_saves,
-        (SELECT count(*) FROM rewards WHERE merchant_id = ${legacyPilot.id})::int AS rewards_issued,
-        (SELECT count(*) FROM rewards WHERE merchant_id = ${legacyPilot.id} AND redeemed_at IS NOT NULL)::int AS rewards_redeemed,
-        (SELECT count(*) FROM sessions WHERE merchant_id = ${legacyPilot.id} AND referred_by IS NOT NULL)::int AS referred_sessions
+        (SELECT count(DISTINCT session_id) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'unlock_viewed' AND session_id IS NOT NULL)::int AS starts,
+        (SELECT count(DISTINCT session_id) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'share_initiated' AND session_id IS NOT NULL)::int AS shares,
+        (SELECT count(DISTINCT session_id) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'whatsapp_save_clicked' AND session_id IS NOT NULL)::int AS whatsapp_saves,
+        (SELECT count(DISTINCT session_id) FROM rewards WHERE merchant_id = ${legacyPilot.id})::int AS rewards_issued,
+        (SELECT count(DISTINCT session_id) FROM rewards WHERE merchant_id = ${legacyPilot.id} AND redeemed_at IS NOT NULL)::int AS rewards_redeemed,
+        (SELECT count(DISTINCT id) FROM sessions WHERE merchant_id = ${legacyPilot.id} AND referred_by IS NOT NULL)::int AS referred_sessions
     `;
 
     return [
