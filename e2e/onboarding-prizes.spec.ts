@@ -38,14 +38,19 @@ test("new merchant can be born with real prizes and validity in the same onboard
   await page.goto(`/comercio/${slug}/configuracion`);
   await expect(page.getByTestId("merchant-settings-panel")).toBeVisible();
   await expect(page.getByTestId("probability-total")).toContainText("100%");
-  await expect(page.getByDisplayValue("5% en tu próxima compra")).toBeVisible();
-  await expect(page.getByDisplayValue("10% en tu próxima compra")).toBeVisible();
-  await expect(page.getByDisplayValue("15% en tu próxima compra")).toBeVisible();
-  await expect(page.getByDisplayValue("Helado de regalo")).toBeVisible();
-  await expect(page.getByDisplayValue("Bombón de regalo")).toBeVisible();
 
-  const validity = page.locator('input[type="number"][min="1"][max="90"]').first();
-  await expect(validity).toHaveValue("14");
+  const prizeRows = page.locator(".merchant-prize-row");
+  await expect(prizeRows).toHaveCount(5);
+  await expect(prizeRows.nth(0).locator("input").first()).toHaveValue("5% en tu próxima compra");
+  await expect(prizeRows.nth(1).locator("input").first()).toHaveValue("10% en tu próxima compra");
+  await expect(prizeRows.nth(2).locator("input").first()).toHaveValue("15% en tu próxima compra");
+  await expect(prizeRows.nth(3).locator("input").first()).toHaveValue("Helado de regalo");
+  await expect(prizeRows.nth(4).locator("input").first()).toHaveValue("Bombón de regalo");
+
+  const validity = page.locator("input").filter({ has: page.locator("xpath=..") });
+  const dayInput = page.locator('.merchant-settings-number input').first();
+  await expect(dayInput).toHaveValue("14");
+  void validity;
 });
 
 test("onboarding rejects invalid prize totals before creating the merchant", async ({ request }) => {
