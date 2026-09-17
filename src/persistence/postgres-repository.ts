@@ -53,6 +53,8 @@ interface MerchantRewardMetricsRow {
 }
 
 interface MerchantEventMetricsRow {
+  qrScans: number;
+  starts: number;
   shares: number;
   whatsappSaves: number;
 }
@@ -276,6 +278,8 @@ class PostgresTransaction implements TransactionRepository {
     `;
     const eventRows = await this.sql<MerchantEventMetricsRow[]>`
       SELECT
+        count(*) FILTER (WHERE name = 'qr_opened')::int AS qr_scans,
+        count(*) FILTER (WHERE name = 'unlock_viewed')::int AS starts,
         count(*) FILTER (WHERE name = 'share_initiated')::int AS shares,
         count(*) FILTER (WHERE name = 'whatsapp_save_clicked')::int AS whatsapp_saves
       FROM analytics_events
@@ -302,6 +306,8 @@ class PostgresTransaction implements TransactionRepository {
     }
 
     return {
+      qrScans: eventRows[0]?.qrScans ?? 0,
+      starts: eventRows[0]?.starts ?? 0,
       sessions: sessionRows[0]?.sessions ?? 0,
       referredSessions: sessionRows[0]?.referredSessions ?? 0,
       shares: eventRows[0]?.shares ?? 0,
