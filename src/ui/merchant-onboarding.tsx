@@ -6,7 +6,11 @@ import type { MerchantBrandProfile, MerchantExperienceCopy, MerchantTemplate } f
 interface OnboardingResult {
   merchant: { id: string; slug: string; name: string };
   experiencePath: string;
+  qrPath: string;
+  qrUrl: string;
+  qrDataUrl: string;
   panelPath: string;
+  activationPath: string;
 }
 
 interface BrandDraft {
@@ -324,9 +328,18 @@ export function MerchantOnboarding() {
             <div className="success-mark" aria-hidden="true">✓</div>
             <p className="eyebrow">Comercio activado</p>
             <h2>{result.merchant.name} ya existe en Viralio.</h2>
-            <p>La campaña y su identidad visual quedaron guardadas. El mismo Brand Engine se usa en funnel, premios y piezas para compartir.</p>
+            <p>La campaña quedó lista con tracking, QR y panel. El flujo de conversión usa WhatsApp y la identidad visual se adapta al comercio.</p>
+
+            <div className="onboarding-link-card" data-testid="created-qr-card">
+              <span>QR oficial para imprimir</span>
+              <img data-testid="created-qr-image" src={result.qrDataUrl} alt={`QR Viralio de ${result.merchant.name}`} width={220} height={220} style={{ width: 220, height: 220, maxWidth: "100%", background: "#fff", padding: 12, borderRadius: 16 }} />
+              <strong data-testid="created-qr-url">{result.qrUrl}</strong>
+              <small>Este es el enlace que debe usar el QR físico. Registra el escaneo antes de abrir la experiencia.</small>
+              <a data-testid="download-created-qr" href={result.qrDataUrl} download={`viralio-${result.merchant.slug}-qr.svg`}>Descargar QR SVG ↓</a>
+            </div>
+
             <div className="onboarding-link-card">
-              <span>Experiencia del cliente</span>
+              <span>Experiencia directa para revisar</span>
               <strong data-testid="created-experience-path">{result.experiencePath}</strong>
               <a href={result.experiencePath} target="_blank" rel="noreferrer">Abrir experiencia ↗</a>
             </div>
@@ -334,6 +347,11 @@ export function MerchantOnboarding() {
               <span>Acceso del comercio</span>
               <strong data-testid="created-panel-path">{result.panelPath}</strong>
               <a href={result.panelPath}>Ir al panel →</a>
+            </div>
+            <div className="onboarding-link-card">
+              <span>Material de activación</span>
+              <strong data-testid="created-activation-path">{result.activationPath}</strong>
+              <small>Después de ingresar con el PIN, el comercio puede volver a descargar su QR y cartel.</small>
             </div>
             <button className="onboarding-secondary" onClick={reset}>Crear otro comercio</button>
           </section>
