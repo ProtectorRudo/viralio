@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createQrEntry, QR_ENTRY_COOKIE } from "@/analytics/qr-attribution";
 import { recordQrOpen } from "@/analytics/qr-entry";
 import { merchantExperiencePath } from "@/config/merchant-accounts";
 import { getMerchantBySlug } from "@/config/merchants";
@@ -16,8 +17,17 @@ export async function GET(
   const target = new URL(experiencePath, request.url);
 
   try {
-    await recordQrOpen(slug);
-    return NextResponse.redirect(target, 307);
+    const merchantId = await recordQrOpen(slug);
+    const entryToken = await createQrEntry(merchantId);
+    const response = NextResponse.redirect(target, 307);
+    response.cookies.set(QR_ENTRY_COOKIE, entryToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 10 * 60,
+    });
+    return response;
   } catch {
     return NextResponse.redirect(new URL("/", request.url), 307);
   }
