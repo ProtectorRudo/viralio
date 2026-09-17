@@ -60,10 +60,11 @@ test("Atlas showroom uses the same engine with a distinct theme", async ({ page 
 test("El Gordo Leo pilot completes share, wheel and coupon flow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${SHOWROOM}/el-gordo-leo/`);
-  await expect(page.getByRole("heading", { name: "Tu próxima compra puede venir con premio." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
 
-  await expect(page.getByRole("heading", { name: /Compartilo y abrí la ruleta/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Antes de descubrir el tuyo, regalale uno a alguien/ })).toBeVisible();
+  await expect(page.getByText(/La otra persona también recibe su propio regalo/)).toBeVisible();
   await page.getByRole("button", { name: /Compartir por WhatsApp/ }).click();
 
   await expect(page.getByRole("heading", { name: /Ahora sí/ })).toBeVisible();
@@ -73,7 +74,7 @@ test("El Gordo Leo pilot completes share, wheel and coupon flow", async ({ page 
 
   await expect(page.getByText(/Es para usar en tu próxima compra/)).toBeVisible({ timeout: 5_000 });
   await expect(page.locator(".coupon-code")).toHaveText(/^LEO-[A-Z2-9]{6}$/);
-  await expect(page.getByRole("checkbox", { name: /Quiero recibir ofertas/ })).not.toBeChecked();
+  await expect(page.getByRole("checkbox")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Enviar mi cupón al negocio/ })).toBeVisible();
   await expectNoOverflow(page);
 });
