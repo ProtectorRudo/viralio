@@ -32,6 +32,9 @@ const reservedSlugs = new Set([
   "validar",
 ]);
 
+const whatsappOnlyShareTitle = "Antes de descubrir el tuyo, regalale uno a alguien.";
+const whatsappOnlyShareCopy = "Compartilo por WhatsApp. La otra persona recibe su propio regalo y el tuyo sigue siendo solo tuyo.";
+
 function cleanText(value: unknown, label: string, max: number, min = 2): string {
   if (typeof value !== "string") throw new Error(`Invalid ${label}`);
   const normalized = value.trim().replace(/\s+/g, " ");
@@ -134,8 +137,8 @@ function genericTemplateBase(): Merchant {
       heroTitle: "Hay una sorpresa esperando",
       heroCopy: "Abrí tu pase y descubrí un beneficio para tu próxima visita.",
       mysteryLabel: "Pase sorpresa",
-      shareTitle: "Antes de descubrir el tuyo, regalale uno a alguien.",
-      shareCopy: "Compartilo por WhatsApp. La otra persona recibe su propio regalo y el tuyo sigue siendo solo tuyo.",
+      shareTitle: whatsappOnlyShareTitle,
+      shareCopy: whatsappOnlyShareCopy,
       referralCopy: "Me dejaron un pase sorpresa. Hay otro esperando por vos.",
       socialHeadline: "Hay una sorpresa esperando por vos",
       socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
@@ -215,8 +218,8 @@ function genericCustomization(account: MerchantAccount, whatsappNumber: string, 
       heroTitle: "Hay una sorpresa esperando",
       heroCopy: `Descubrí el beneficio que ${name} preparó para tu próxima visita.`,
       mysteryLabel: `Pase ${shortName(name)}`,
-      shareTitle: "Antes de descubrir el tuyo, regalale uno a alguien.",
-      shareCopy: "Compartilo por WhatsApp. La otra persona recibe su propio regalo y el tuyo sigue siendo solo tuyo.",
+      shareTitle: whatsappOnlyShareTitle,
+      shareCopy: whatsappOnlyShareCopy,
       referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
       socialHeadline: `${name} dejó una sorpresa esperando`,
       socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
@@ -256,8 +259,8 @@ export function defaultCustomizationForAccount(
       heroTitle: "Hay algo especial esperando",
       heroCopy: `Descubrí la sorpresa que ${name} preparó para tu próxima visita.`,
       mysteryLabel: `Sorpresa ${shortName(name)}`,
-      shareTitle: "Antes de descubrir el tuyo, regalale uno a alguien.",
-      shareCopy: "Compartilo por WhatsApp. La otra persona recibe su propio regalo y el tuyo sigue siendo solo tuyo.",
+      shareTitle: whatsappOnlyShareTitle,
+      shareCopy: whatsappOnlyShareCopy,
       referralCopy: `${name} me dejó un pase sorpresa. Hay otro esperando por vos.`,
       socialHeadline: `${name} dejó una sorpresa esperando`,
       socialSubcopy: "Abrí tu propio pase y descubrí qué te toca.",
@@ -280,8 +283,8 @@ export function defaultCustomizationForAccount(
       heroTitle: "Tu estilo tiene una sorpresa",
       heroCopy: `Abrí tu pase privado y descubrí un beneficio de ${name}.`,
       mysteryLabel: `Pase ${shortName(name)}`,
-      shareTitle: "Antes de descubrir el tuyo, regalale uno a alguien.",
-      shareCopy: "Compartilo por WhatsApp. La otra persona recibe su propio regalo y el tuyo sigue siendo solo tuyo.",
+      shareTitle: whatsappOnlyShareTitle,
+      shareCopy: whatsappOnlyShareCopy,
       referralCopy: `${name} me dio un pase privado. Hay otro esperando por vos.`,
       socialHeadline: `Hay un pase privado de ${name} para vos`,
       socialSubcopy: "Entrá, abrilo y descubrí tu beneficio.",
@@ -297,6 +300,12 @@ export function defaultCustomizationForAccount(
       shortName: shortName(name),
     };
   }
+
+  if (baseMerchant.theme.shareMode === "whatsapp_only") {
+    customization.copy.shareTitle = whatsappOnlyShareTitle;
+    customization.copy.shareCopy = whatsappOnlyShareCopy;
+  }
+
   return customization;
 }
 
