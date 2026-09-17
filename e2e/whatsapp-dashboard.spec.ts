@@ -28,6 +28,7 @@ test("WhatsApp-only merchant dashboard hides irrelevant channels and surfaces gr
   await page.goto(`/comercio/${slug}/canjes`);
   await page.getByTestId("merchant-pin").fill(pin);
   await page.getByRole("button", { name: /Ingresar al panel/ }).click();
+  await expect(page.getByTestId("merchant-reward-search")).toBeVisible();
 
   await page.goto(`/comercio/${slug}/panel`);
   await expect(page.getByTestId("merchant-dashboard")).toBeVisible();
