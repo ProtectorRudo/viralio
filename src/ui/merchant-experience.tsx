@@ -171,7 +171,8 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
   }
 
   const shareDisabled = Boolean(shareBusy);
-  const whatsappOnly = merchant.theme.shareMode === "whatsapp_only";
+  const whatsappOnly = merchant.theme.shareMode === "whatsapp_only"
+    || (merchant.theme.shareMode === undefined && merchant.slug !== "moka" && merchant.slug !== "atlas-barber");
 
   return (
     <main
