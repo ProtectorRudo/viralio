@@ -91,7 +91,7 @@ export async function listMerchantOperations(
         WHERE merchant_id = ma.merchant_id
       ) rewards ON true
       LEFT JOIN LATERAL (
-        SELECT count(DISTINCT session_id) FILTER (WHERE referred_by IS NOT NULL) AS referred_sessions
+        SELECT count(DISTINCT id) FILTER (WHERE referred_by IS NOT NULL) AS referred_sessions
         FROM sessions
         WHERE merchant_id = ma.merchant_id
       ) sessions ON true
@@ -116,7 +116,7 @@ export async function listMerchantOperations(
         (SELECT count(DISTINCT session_id) FROM analytics_events WHERE merchant_id = ${legacyPilot.id} AND name = 'whatsapp_save_clicked' AND session_id IS NOT NULL)::int AS whatsapp_saves,
         (SELECT count(DISTINCT session_id) FROM rewards WHERE merchant_id = ${legacyPilot.id})::int AS rewards_issued,
         (SELECT count(DISTINCT session_id) FROM rewards WHERE merchant_id = ${legacyPilot.id} AND redeemed_at IS NOT NULL)::int AS rewards_redeemed,
-        (SELECT count(DISTINCT session_id) FROM sessions WHERE merchant_id = ${legacyPilot.id} AND referred_by IS NOT NULL)::int AS referred_sessions
+        (SELECT count(DISTINCT id) FROM sessions WHERE merchant_id = ${legacyPilot.id} AND referred_by IS NOT NULL)::int AS referred_sessions
     `;
 
     return [
