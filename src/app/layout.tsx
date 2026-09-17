@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./viralio-public-landing.css";
 import "./viralio-003.css";
 import "./viralio-005.css";
 import "./viralio-007.css";
@@ -16,15 +17,15 @@ import "./viralio-020i-reward-objects.css";
 import "./viralio-020j-visual-qa.css";
 
 export const metadata: Metadata = {
-  title: "Viralio · Experiencias que se comparten",
-  description: "Descubrí y guardá recompensas únicas de tus comercios favoritos.",
+  title: "Viralio · Dale a tus clientes una razón para volver",
+  description: "Viralio ayuda a comercios físicos a generar recomendaciones por WhatsApp y motivos concretos para que sus clientes vuelvan.",
   manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#251a14",
+  themeColor: "#0d1110",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
