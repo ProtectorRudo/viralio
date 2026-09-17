@@ -37,13 +37,16 @@ test("operations hub stays private and lists real plus onboarded merchants", asy
   await expect(pilotCard).toBeVisible();
   await expect(pilotCard).toContainText("Mini Mercado El Gordo Leo");
   await expect(pilotCard).toContainText("Mini mercado");
+  await expect(pilotCard.getByRole("link", { name: "Kit" })).toHaveAttribute("href", "/comercio/el-gordo-leo/activacion");
+  await expect(pilotCard.getByRole("link", { name: "Experiencia" })).toHaveAttribute("href", "/el-gordo-leo");
 
   const card = page.getByTestId(`operations-merchant-${slug}`);
   await expect(card).toBeVisible();
   await expect(card).toContainText("Comercio Operación CI");
   await expect(card).toContainText("Kiosco");
   await expect(card.getByRole("link", { name: "Resultados y canjes" })).toHaveAttribute("href", `/comercio/${slug}/canjes`);
+  await expect(card.getByRole("link", { name: "Kit" })).toHaveAttribute("href", `/comercio/${slug}/activacion`);
   await expect(card.getByRole("link", { name: "Configuración" })).toHaveAttribute("href", `/comercio/${slug}/configuracion`);
-  await expect(card.getByRole("link", { name: "QR" })).toHaveAttribute("href", `/q/${slug}`);
-  await expect(card.getByRole("link", { name: "Experiencia" })).toHaveAttribute("href", `/${slug}`);
+  await expect(card.getByRole("link", { name: "Experiencia" })).toHaveAttribute("href", `/experiencia/${slug}`);
+  await expect(card.getByRole("link", { name: "QR" })).toHaveCount(0);
 });
