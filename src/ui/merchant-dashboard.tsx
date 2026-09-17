@@ -21,7 +21,7 @@ function number(value: number): string {
 }
 
 export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; metrics: MerchantMetrics }) {
-  const shareRate = percent(metrics.shares, metrics.sessions);
+  const shareRate = percent(metrics.shares, metrics.starts);
   const referralRate = percent(metrics.referredSessions, metrics.sessions);
   const redemptionRate = percent(metrics.rewardsRedeemed, metrics.rewardsIssued);
 
@@ -46,7 +46,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
             <div>
               <p className="eyebrow">Rendimiento de la experiencia</p>
               <h1>Tu Viralio, en números.</h1>
-              <p className="lead">Una vista simple de cuánto participa la gente, cuánto comparte y cuántos premios vuelven al local.</p>
+              <p className="lead">Cuánta gente llega, empieza, comparte y vuelve al local con un premio.</p>
             </div>
             <div className="merchant-dashboard-seal" aria-hidden="true">
               <BrandIcon category={merchant.theme.category} />
@@ -64,19 +64,19 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
 
           <section className="merchant-kpi-grid" aria-label="Indicadores principales">
             <article className="merchant-kpi merchant-kpi-primary">
-              <span>Participantes</span>
-              <strong data-testid="metric-sessions">{number(metrics.sessions)}</strong>
-              <small>personas que iniciaron la experiencia</small>
+              <span>Escaneos del QR</span>
+              <strong data-testid="metric-qr-scans">{number(metrics.qrScans)}</strong>
+              <small>entradas desde el QR físico del comercio</small>
             </article>
             <article className="merchant-kpi">
-              <span>Llegaron por referido</span>
-              <strong data-testid="metric-referrals">{number(metrics.referredSessions)}</strong>
-              <small>{referralRate}% del total</small>
+              <span>Iniciaron</span>
+              <strong data-testid="metric-starts">{number(metrics.starts)}</strong>
+              <small>personas que avanzaron desde la portada</small>
             </article>
             <article className="merchant-kpi">
               <span>Compartieron</span>
               <strong data-testid="metric-shares">{number(metrics.shares)}</strong>
-              <small>{shareRate}% de los participantes</small>
+              <small>{shareRate}% de quienes iniciaron</small>
             </article>
             <article className="merchant-kpi">
               <span>Premios canjeados</span>
@@ -91,11 +91,11 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
               <span className="merchant-live-pill">Datos reales</span>
             </div>
             <div className="merchant-funnel">
-              <div className="merchant-funnel-step"><strong>{number(metrics.sessions)}</strong><span>Participaron</span></div>
+              <div className="merchant-funnel-step"><strong data-testid="metric-sessions">{number(metrics.sessions)}</strong><span>Visitas</span></div>
+              <i aria-hidden="true">→</i>
+              <div className="merchant-funnel-step"><strong>{number(metrics.starts)}</strong><span>Iniciaron</span></div>
               <i aria-hidden="true">→</i>
               <div className="merchant-funnel-step"><strong>{number(metrics.shares)}</strong><span>Compartieron</span></div>
-              <i aria-hidden="true">→</i>
-              <div className="merchant-funnel-step"><strong>{number(metrics.referredSessions)}</strong><span>Llegaron referidos</span></div>
               <i aria-hidden="true">→</i>
               <div className="merchant-funnel-step"><strong>{number(metrics.rewardsRedeemed)}</strong><span>Canjearon</span></div>
             </div>
@@ -104,7 +104,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
           <section className="merchant-dashboard-section">
             <div className="merchant-section-heading">
               <div><p className="eyebrow">Difusión</p><h2>Dónde eligen compartir</h2></div>
-              <div className="merchant-share-summary"><strong>{shareRate}%</strong><span>tasa de difusión</span></div>
+              <div className="merchant-share-summary"><strong>{shareRate}%</strong><span>tasa sobre quienes iniciaron</span></div>
             </div>
             <div className="merchant-channel-list">
               {channelLabels.map(({ channel, label, hint }) => {
@@ -122,9 +122,9 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
           </section>
 
           <section className="merchant-dashboard-section merchant-outcome-grid">
-            <article><span>Premios emitidos</span><strong>{number(metrics.rewardsIssued)}</strong><small>después de girar la ruleta</small></article>
+            <article><span>Llegaron recomendados</span><strong data-testid="metric-referrals">{number(metrics.referredSessions)}</strong><small>{referralRate}% de las visitas registradas</small></article>
+            <article><span>Premios emitidos</span><strong>{number(metrics.rewardsIssued)}</strong><small>beneficios realmente generados</small></article>
             <article><span>Guardados en WhatsApp</span><strong>{number(metrics.whatsappSaves)}</strong><small>intención de conservar el premio</small></article>
-            <article><span>Tasa de canje</span><strong>{redemptionRate}%</strong><small>premios emitidos que volvieron al local</small></article>
           </section>
         </div>
 
