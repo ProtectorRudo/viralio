@@ -22,7 +22,7 @@ test("WhatsApp-only merchant dashboard hides irrelevant channels and surfaces gr
   await expect(page).toHaveURL(new RegExp(`/experiencia/${slug}$`));
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
   const popupPromise = page.waitForEvent("popup");
-  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  await page.getByRole("button", { name: "Enviar regalo por WhatsApp a un amigo" }).click();
   await popupPromise;
 
   await page.goto(`/comercio/${slug}/canjes`);
