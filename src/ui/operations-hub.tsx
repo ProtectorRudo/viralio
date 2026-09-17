@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import styles from "./operations-hub.module.css";
 
+type OperationsPeriod = "today" | "7d" | "30d" | "all";
+
 interface MerchantOperationsRow {
   id: string;
   slug: string;
@@ -25,6 +27,13 @@ interface FunnelStage {
   value: number;
   previous?: number;
 }
+
+const PERIOD_OPTIONS: Array<{ value: OperationsPeriod; label: string }> = [
+  { value: "today", label: "Hoy" },
+  { value: "7d", label: "7 días" },
+  { value: "30d", label: "30 días" },
+  { value: "all", label: "Todo" },
+];
 
 function experiencePath(slug: string): string {
   return slug === "el-gordo-leo" ? `/${slug}` : `/experiencia/${slug}`;
@@ -48,6 +57,7 @@ function funnelStages(merchant: MerchantOperationsRow): FunnelStage[] {
 
 export function OperationsHub() {
   const [key, setKey] = useState("");
+  const [period, setPeriod] = useState<OperationsPeriod>("7d");
   const [merchants, setMerchants] = useState<MerchantOperationsRow[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -62,25 +72,29 @@ export function OperationsHub() {
     }), { qrScans: 0, shares: 0, rewardsRedeemed: 0, referredSessions: 0 });
   }, [merchants]);
 
-  async function load(event: FormEvent) {
-    event.preventDefault();
+  async function fetchMerchants(nextPeriod: OperationsPeriod) {
     setBusy(true);
     setError("");
     try {
       const response = await fetch("/api/operacion/merchants", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ onboardingKey: key }),
+        body: JSON.stringify({ onboardingKey: key, period: nextPeriod }),
       });
       const payload = await response.json() as { merchants?: MerchantOperationsRow[]; error?: string };
       if (!response.ok || !payload.merchants) throw new Error(payload.error ?? "No pudimos cargar los comercios");
+      setPeriod(nextPeriod);
       setMerchants(payload.merchants);
     } catch (reason) {
       setError((reason as Error).message);
-      setMerchants(null);
     } finally {
       setBusy(false);
     }
+  }
+
+  async function load(event: FormEvent) {
+    event.preventDefault();
+    await fetchMerchants(period);
   }
 
   return (
@@ -109,6 +123,29 @@ export function OperationsHub() {
           </form>
         ) : (
           <>
+            <div className={styles.periodBar}>
+              <div>
+                <strong>Período</strong>
+                <span>El embudo sigue a quienes empezaron en ese lapso.</span>
+              </div>
+              <div className={styles.periodOptions} role="group" aria-label="Período de métricas">
+                {PERIOD_OPTIONS.map((option) => (
+                  <button
+                    className={`${styles.periodButton} ${period === option.value ? styles.periodButtonActive : ""}`}
+                    data-testid={`operations-period-${option.value}`}
+                    key={option.value}
+                    type="button"
+                    aria-pressed={period === option.value}
+                    disabled={busy}
+                    onClick={() => void fetchMerchants(option.value)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {error && <p className={styles.error} role="alert">{error}</p>}
+
             <div className={styles.toolbar}>
               <div className={styles.summary}>
                 <span className={styles.summaryItem}><strong>{merchants.length}</strong> comercios</span>
