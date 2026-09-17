@@ -6,7 +6,7 @@ import { merchantThemeStyle } from "@/ui/merchant-theme";
 const channelLabels: Array<{ channel: ShareChannel; label: string; hint: string }> = [
   { channel: "whatsapp_status", label: "Estado de WhatsApp", hint: "Difusión pública" },
   { channel: "instagram_story", label: "Instagram Stories", hint: "Difusión pública" },
-  { channel: "whatsapp", label: "WhatsApp directo", hint: "Conversación" },
+  { channel: "whatsapp", label: "WhatsApp directo", hint: "Recomendación a otra persona" },
   { channel: "native", label: "Otras apps", hint: "Compartir del teléfono" },
   { channel: "social", label: "Red social", hint: "Destino social" },
 ];
@@ -21,9 +21,13 @@ function number(value: number): string {
 }
 
 export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; metrics: MerchantMetrics }) {
+  const whatsappOnly = merchant.theme.shareMode === "whatsapp_only";
   const shareRate = percent(metrics.shares, metrics.starts);
   const referralRate = percent(metrics.referredSessions, metrics.sessions);
   const redemptionRate = percent(metrics.rewardsRedeemed, metrics.rewardsIssued);
+  const visibleChannels = whatsappOnly
+    ? channelLabels.filter(({ channel }) => channel === "whatsapp")
+    : channelLabels;
 
   return (
     <main
@@ -46,7 +50,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
             <div>
               <p className="eyebrow">Rendimiento de la experiencia</p>
               <h1>Tu Viralio, en números.</h1>
-              <p className="lead">Cuánta gente llega, empieza, comparte y vuelve al local con un premio.</p>
+              <p className="lead">Cuánta gente escanea, recomienda tu negocio, llega recomendada y usa sus premios.</p>
             </div>
             <div className="merchant-dashboard-seal" aria-hidden="true">
               <BrandIcon category={merchant.theme.category} />
@@ -69,14 +73,14 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
               <small>entradas desde el QR físico del comercio</small>
             </article>
             <article className="merchant-kpi">
-              <span>Iniciaron</span>
-              <strong data-testid="metric-starts">{number(metrics.starts)}</strong>
-              <small>personas que avanzaron desde la portada</small>
-            </article>
-            <article className="merchant-kpi">
-              <span>Compartieron</span>
+              <span>{whatsappOnly ? "Compartieron por WhatsApp" : "Compartieron"}</span>
               <strong data-testid="metric-shares">{number(metrics.shares)}</strong>
               <small>{shareRate}% de quienes iniciaron</small>
+            </article>
+            <article className="merchant-kpi">
+              <span>Llegaron recomendados</span>
+              <strong data-testid="metric-referrals">{number(metrics.referredSessions)}</strong>
+              <small>{referralRate}% de las visitas registradas</small>
             </article>
             <article className="merchant-kpi">
               <span>Premios canjeados</span>
@@ -93,7 +97,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
             <div className="merchant-funnel">
               <div className="merchant-funnel-step"><strong data-testid="metric-sessions">{number(metrics.sessions)}</strong><span>Visitas</span></div>
               <i aria-hidden="true">→</i>
-              <div className="merchant-funnel-step"><strong>{number(metrics.starts)}</strong><span>Iniciaron</span></div>
+              <div className="merchant-funnel-step"><strong data-testid="metric-starts">{number(metrics.starts)}</strong><span>Iniciaron</span></div>
               <i aria-hidden="true">→</i>
               <div className="merchant-funnel-step"><strong>{number(metrics.shares)}</strong><span>Compartieron</span></div>
               <i aria-hidden="true">→</i>
@@ -103,11 +107,14 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
 
           <section className="merchant-dashboard-section">
             <div className="merchant-section-heading">
-              <div><p className="eyebrow">Difusión</p><h2>Dónde eligen compartir</h2></div>
+              <div>
+                <p className="eyebrow">{whatsappOnly ? "Recomendaciones" : "Difusión"}</p>
+                <h2>{whatsappOnly ? "WhatsApp es tu canal de crecimiento" : "Dónde eligen compartir"}</h2>
+              </div>
               <div className="merchant-share-summary"><strong>{shareRate}%</strong><span>tasa sobre quienes iniciaron</span></div>
             </div>
             <div className="merchant-channel-list">
-              {channelLabels.map(({ channel, label, hint }) => {
+              {visibleChannels.map(({ channel, label, hint }) => {
                 const count = metrics.shareChannels[channel];
                 const channelPercent = percent(count, metrics.shares);
                 return (
@@ -122,7 +129,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
           </section>
 
           <section className="merchant-dashboard-section merchant-outcome-grid">
-            <article><span>Llegaron recomendados</span><strong data-testid="metric-referrals">{number(metrics.referredSessions)}</strong><small>{referralRate}% de las visitas registradas</small></article>
+            <article><span>Personas que iniciaron</span><strong>{number(metrics.starts)}</strong><small>avanzaron desde la portada</small></article>
             <article><span>Premios emitidos</span><strong>{number(metrics.rewardsIssued)}</strong><small>beneficios realmente generados</small></article>
             <article><span>Guardados en WhatsApp</span><strong>{number(metrics.whatsappSaves)}</strong><small>intención de conservar el premio</small></article>
           </section>
