@@ -27,6 +27,10 @@ interface OnboardingPrize {
   probability: number;
 }
 
+interface MerchantOnboardingProps {
+  operatorAuthenticated?: boolean;
+}
+
 const MAX_LOGO_BYTES = 700 * 1024;
 const LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const INITIAL_PRIZES: OnboardingPrize[] = [
@@ -67,7 +71,7 @@ function freshInitialPrizes(): OnboardingPrize[] {
   return INITIAL_PRIZES.map((prize) => ({ ...prize }));
 }
 
-export function MerchantOnboarding() {
+export function MerchantOnboarding({ operatorAuthenticated = false }: MerchantOnboardingProps) {
   const [onboardingKey, setOnboardingKey] = useState("");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -90,6 +94,7 @@ export function MerchantOnboarding() {
 
   const previewSlug = useMemo(() => slug || slugify(name), [name, slug]);
   const probabilityTotal = useMemo(() => prizes.reduce((sum, prize) => sum + (Number.isFinite(prize.probability) ? prize.probability : 0), 0), [prizes]);
+  const hasOperatorAccess = operatorAuthenticated || onboardingKey.trim().length > 0;
 
   function invalidateDraft() {
     setBrandDraft(undefined);
@@ -240,10 +245,14 @@ export function MerchantOnboarding() {
           <form className="onboarding-form" onSubmit={submit}>
             <section className="onboarding-section">
               <div className="onboarding-section-title"><span>01</span><div><strong>Acceso de operador</strong><small>Protege el alta de cuentas nuevas</small></div></div>
-              <label>
-                Clave privada de alta
-                <input data-testid="onboarding-key" type="password" autoComplete="off" value={onboardingKey} onChange={(event) => setOnboardingKey(event.target.value)} required />
-              </label>
+              {operatorAuthenticated ? (
+                <p className="onboarding-security-note" data-testid="operator-session-active"><span aria-hidden="true">◆</span> Sesión de operador activa. No hace falta volver a ingresar la clave.</p>
+              ) : (
+                <label>
+                  Clave privada de alta
+                  <input data-testid="onboarding-key" type="password" autoComplete="off" value={onboardingKey} onChange={(event) => setOnboardingKey(event.target.value)} required />
+                </label>
+              )}
             </section>
 
             <section className="onboarding-section">
@@ -312,7 +321,7 @@ export function MerchantOnboarding() {
                 Generar identidad con ChatGPT
               </label>
               {useAiBranding && (
-                <button className="onboarding-secondary" data-testid="generate-brand" type="button" onClick={() => void generateBrand()} disabled={brandBusy || !onboardingKey || name.trim().length < 2 || businessType.trim().length < 2 || brandBrief.trim().length < 3}>
+                <button className="onboarding-secondary" data-testid="generate-brand" type="button" onClick={() => void generateBrand()} disabled={brandBusy || !hasOperatorAccess || name.trim().length < 2 || businessType.trim().length < 2 || brandBrief.trim().length < 3}>
                   {brandBusy ? "ChatGPT está diseñando…" : brandDraft ? "Regenerar identidad con ChatGPT" : "Generar identidad con ChatGPT"}
                 </button>
               )}
@@ -404,6 +413,7 @@ export function MerchantOnboarding() {
               <strong data-testid="created-panel-path">{result.panelPath}</strong>
               <a href={result.panelPath}>Ir al panel →</a>
             </div>
+            {operatorAuthenticated && <a className="onboarding-secondary" href="/operador">Volver a todos los comercios</a>}
             <button className="onboarding-secondary" onClick={reset}>Crear otro comercio</button>
           </section>
         )}
