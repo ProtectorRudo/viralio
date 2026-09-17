@@ -9,35 +9,28 @@ import {
 
 const destinations = new Set(["panel", "configuracion", "activacion", "canjes"]);
 
-function firstHeaderValue(value: string | null): string | undefined {
-  return value?.split(",")[0]?.trim() || undefined;
-}
-
-function publicUrl(request: Request, pathname: string): URL {
-  const requestUrl = new URL(request.url);
-  const host = firstHeaderValue(request.headers.get("x-forwarded-host"))
-    ?? firstHeaderValue(request.headers.get("host"))
-    ?? requestUrl.host;
-  const protocol = firstHeaderValue(request.headers.get("x-forwarded-proto"))
-    ?? requestUrl.protocol.slice(0, -1);
-  return new URL(pathname, `${protocol}://${host}`);
+function sameOriginRedirect(pathname: string): NextResponse {
+  return new NextResponse(null, {
+    status: 307,
+    headers: { Location: pathname },
+  });
 }
 
 export async function GET(request: Request) {
   if (!operatorSessionFromRequest(request)) {
-    return NextResponse.redirect(publicUrl(request, "/operador"));
+    return sameOriginRedirect("/operador");
   }
 
   const url = new URL(request.url);
   const slug = url.searchParams.get("slug")?.trim() ?? "";
   const destination = url.searchParams.get("destino")?.trim() ?? "panel";
   if (!slug || !destinations.has(destination)) {
-    return NextResponse.redirect(publicUrl(request, "/operador"));
+    return sameOriginRedirect("/operador");
   }
 
   try {
     const merchant = await viralio.getMerchantForExperience(slug);
-    const response = NextResponse.redirect(publicUrl(request, `/comercio/${merchant.slug}/${destination}`));
+    const response = sameOriginRedirect(`/comercio/${merchant.slug}/${destination}`);
     response.cookies.set(
       MERCHANT_SESSION_COOKIE,
       createMerchantSessionToken(merchant.id),
@@ -45,6 +38,6 @@ export async function GET(request: Request) {
     );
     return response;
   } catch {
-    return NextResponse.redirect(publicUrl(request, "/operador"));
+    return sameOriginRedirect("/operador");
   }
 }
