@@ -28,7 +28,7 @@ test("a new non-template business keeps its real category through the complete f
   await expect(page.getByTestId("native-share")).toHaveCount(0);
   await expect(page.getByTestId("instagram-story-share")).toHaveCount(0);
   const popupPromise = page.waitForEvent("popup");
-  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  await page.getByRole("button", { name: "Enviar regalo por WhatsApp a un amigo" }).click();
   const popup = await popupPromise;
   await expect.poll(() => popup.url()).toContain("wa.me/");
   await expect(page.getByTestId("wheel-stage")).toBeVisible();

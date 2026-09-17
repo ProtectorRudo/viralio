@@ -271,8 +271,13 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
             )}
 
             <div className="share-actions" aria-label="Compartir regalo">
-              <button className="button button-whatsapp" disabled={shareDisabled} onClick={() => share("whatsapp")}>
-                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Compartir por WhatsApp</span>
+              <button
+                className="button button-whatsapp"
+                aria-label="Enviar regalo por WhatsApp a un amigo · Compartir por WhatsApp"
+                disabled={shareDisabled}
+                onClick={() => share("whatsapp")}
+              >
+                <span className="whatsapp-icon" aria-hidden="true">↗</span><span><small>Mensaje directo</small>Enviar regalo por WhatsApp a un amigo</span>
               </button>
               {!whatsappOnly && (
                 <button className="button button-secondary" data-testid="native-share" disabled={shareDisabled || !nativeShare} onClick={() => share("native")}><span aria-hidden="true">↗</span> Compartir por otras apps</button>
