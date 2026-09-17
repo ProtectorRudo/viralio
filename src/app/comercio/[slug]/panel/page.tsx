@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { getMerchantQrFunnel } from "@/analytics/qr-attribution";
 import { viralio } from "@/application";
 import { MERCHANT_SESSION_COOKIE, verifyMerchantSessionToken } from "@/security/merchant-auth";
 import { MerchantDashboard } from "@/ui/merchant-dashboard";
@@ -26,6 +27,9 @@ export default async function MerchantDashboardPage({ params }: { params: Promis
 
   if (!authenticated) redirect(`/comercio/${merchant.slug}/canjes`);
 
-  const metrics = await viralio.getMerchantMetrics(merchant.id);
-  return <MerchantDashboard merchant={merchant} metrics={metrics} />;
+  const [metrics, qrFunnel] = await Promise.all([
+    viralio.getMerchantMetrics(merchant.id),
+    getMerchantQrFunnel(merchant.id),
+  ]);
+  return <MerchantDashboard merchant={merchant} metrics={metrics} qrFunnel={qrFunnel} />;
 }
