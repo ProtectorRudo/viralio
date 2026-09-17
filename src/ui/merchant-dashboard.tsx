@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { MerchantQrFunnel } from "@/analytics/qr-attribution";
+import { merchantExperiencePath } from "@/config/merchant-accounts";
 import type { Merchant, MerchantMetrics, ShareChannel } from "@/domain/types";
 import { BrandIcon } from "@/ui/brand-icon";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
@@ -20,11 +22,29 @@ function number(value: number): string {
   return new Intl.NumberFormat("es-AR").format(value);
 }
 
-export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; metrics: MerchantMetrics }) {
+function drop(previous: number, current: number): number {
+  return Math.max(0, previous - current);
+}
+
+export function MerchantDashboard({
+  merchant,
+  metrics,
+  qrFunnel,
+}: {
+  merchant: Merchant;
+  metrics: MerchantMetrics;
+  qrFunnel: MerchantQrFunnel;
+}) {
   const whatsappOnly = merchant.theme.shareMode === "whatsapp_only";
   const shareRate = percent(metrics.shares, metrics.starts);
   const referralRate = percent(metrics.referredSessions, metrics.sessions);
   const redemptionRate = percent(metrics.rewardsRedeemed, metrics.rewardsIssued);
+  const qrArrivalRate = percent(qrFunnel.visitors, qrFunnel.scans);
+  const qrStartRate = percent(qrFunnel.started, qrFunnel.visitors);
+  const qrShareRate = percent(qrFunnel.shared, qrFunnel.started);
+  const qrRewardRate = percent(qrFunnel.rewarded, qrFunnel.shared);
+  const qrSaveRate = percent(qrFunnel.saved, qrFunnel.rewarded);
+  const qrRedeemRate = percent(qrFunnel.redeemed, qrFunnel.rewarded);
   const visibleChannels = whatsappOnly
     ? channelLabels.filter(({ channel }) => channel === "whatsapp")
     : channelLabels;
@@ -63,7 +83,7 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/canjes`}>Canjes</Link>
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
             <Link className="merchant-panel-tab" href={`/comercio/${merchant.slug}/activacion`}>Activación</Link>
-            <Link className="merchant-panel-tab" href={`/${merchant.slug}`}>Ver experiencia</Link>
+            <Link className="merchant-panel-tab" href={merchantExperiencePath(merchant.slug)}>Ver experiencia</Link>
           </nav>
 
           <section className="merchant-kpi-grid" aria-label="Indicadores principales">
@@ -91,18 +111,55 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
 
           <section className="merchant-dashboard-section merchant-funnel-section">
             <div className="merchant-section-heading">
-              <div><p className="eyebrow">Embudo Viralio</p><h2>De una visita a una nueva visita</h2></div>
-              <span className="merchant-live-pill">Datos reales</span>
+              <div>
+                <p className="eyebrow">Embudo QR atribuido</p>
+                <h2>Dónde avanzan y dónde se pierden.</h2>
+              </div>
+              <span className="merchant-live-pill">{number(qrFunnel.scans)} escaneos medibles</span>
             </div>
             <div className="merchant-funnel">
-              <div className="merchant-funnel-step"><strong data-testid="metric-sessions">{number(metrics.sessions)}</strong><span>Visitas</span></div>
+              <div className="merchant-funnel-step">
+                <strong data-testid="metric-funnel-qr-visitors">{number(qrFunnel.visitors)}</strong>
+                <span>Entraron desde QR</span>
+                <span>{qrArrivalRate}% de escaneos</span>
+              </div>
               <i aria-hidden="true">→</i>
-              <div className="merchant-funnel-step"><strong data-testid="metric-starts">{number(metrics.starts)}</strong><span>Iniciaron</span></div>
+              <div className="merchant-funnel-step">
+                <strong data-testid="metric-funnel-started">{number(qrFunnel.started)}</strong>
+                <span>Iniciaron</span>
+                <span>{qrStartRate}% avanzó · {number(drop(qrFunnel.visitors, qrFunnel.started))} abandonos</span>
+              </div>
               <i aria-hidden="true">→</i>
-              <div className="merchant-funnel-step"><strong>{number(metrics.shares)}</strong><span>Compartieron</span></div>
+              <div className="merchant-funnel-step">
+                <strong data-testid="metric-funnel-shared">{number(qrFunnel.shared)}</strong>
+                <span>Compartieron</span>
+                <span>{qrShareRate}% avanzó · {number(drop(qrFunnel.started, qrFunnel.shared))} abandonos</span>
+              </div>
               <i aria-hidden="true">→</i>
-              <div className="merchant-funnel-step"><strong>{number(metrics.rewardsRedeemed)}</strong><span>Canjearon</span></div>
+              <div className="merchant-funnel-step">
+                <strong data-testid="metric-funnel-rewarded">{number(qrFunnel.rewarded)}</strong>
+                <span>Obtuvieron premio</span>
+                <span>{qrRewardRate}% completó · {number(drop(qrFunnel.shared, qrFunnel.rewarded))} abandonos</span>
+              </div>
             </div>
+          </section>
+
+          <section className="merchant-dashboard-section merchant-outcome-grid" aria-label="Resultados del embudo QR">
+            <article>
+              <span>Guardaron su premio</span>
+              <strong data-testid="metric-funnel-saved">{number(qrFunnel.saved)}</strong>
+              <small>{qrSaveRate}% de quienes obtuvieron premio</small>
+            </article>
+            <article>
+              <span>Volvieron y canjearon</span>
+              <strong data-testid="metric-funnel-redeemed">{number(qrFunnel.redeemed)}</strong>
+              <small>{qrRedeemRate}% de quienes obtuvieron premio</small>
+            </article>
+            <article>
+              <span>Nuevos receptores</span>
+              <strong>{number(metrics.referredSessions)}</strong>
+              <small>personas que entraron desde una recomendación</small>
+            </article>
           </section>
 
           <section className="merchant-dashboard-section">
@@ -129,9 +186,9 @@ export function MerchantDashboard({ merchant, metrics }: { merchant: Merchant; m
           </section>
 
           <section className="merchant-dashboard-section merchant-outcome-grid">
-            <article><span>Personas que iniciaron</span><strong>{number(metrics.starts)}</strong><small>avanzaron desde la portada</small></article>
+            <article><span>Personas que iniciaron</span><strong data-testid="metric-starts">{number(metrics.starts)}</strong><small>todas las fuentes de tráfico</small></article>
             <article><span>Premios emitidos</span><strong>{number(metrics.rewardsIssued)}</strong><small>beneficios realmente generados</small></article>
-            <article><span>Guardados en WhatsApp</span><strong>{number(metrics.whatsappSaves)}</strong><small>intención de conservar el premio</small></article>
+            <article><span>Guardados en WhatsApp</span><strong>{number(metrics.whatsappSaves)}</strong><small>intención total de conservar el premio</small></article>
           </section>
         </div>
 
