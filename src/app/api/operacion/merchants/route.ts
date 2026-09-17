@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
-import { listMerchantOperations } from "@/operations/merchant-operations";
+import { listMerchantOperations, type OperationsPeriod } from "@/operations/merchant-operations";
 import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
+
+const PERIODS: OperationsPeriod[] = ["today", "7d", "30d", "all"];
+
+function isOperationsPeriod(value: unknown): value is OperationsPeriod {
+  return typeof value === "string" && PERIODS.includes(value as OperationsPeriod);
+}
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) {
@@ -13,8 +19,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Clave inválida" }, { status: 401 });
     }
 
-    const merchants = await listMerchantOperations();
-    return NextResponse.json({ merchants });
+    const period = body.period ?? "all";
+    if (!isOperationsPeriod(period)) {
+      return NextResponse.json({ error: "Período inválido" }, { status: 400 });
+    }
+
+    const merchants = await listMerchantOperations(undefined, period);
+    return NextResponse.json({ merchants, period });
   } catch {
     return NextResponse.json({ error: "No pudimos cargar los comercios" }, { status: 500 });
   }
