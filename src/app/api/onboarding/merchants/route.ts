@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { viralio } from "@/application";
 import { merchantExperiencePath } from "@/config/merchant-accounts";
-import type { PrizeDefinition } from "@/domain/types";
 import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
+
+interface OnboardingPrizeInput {
+  name: string;
+  probability: number;
+}
 
 function parseRewardValidityDays(value: unknown): number | undefined {
   if (value === undefined) return undefined;
@@ -12,28 +16,30 @@ function parseRewardValidityDays(value: unknown): number | undefined {
   return value;
 }
 
-function parsePrizes(value: unknown): PrizeDefinition[] | undefined {
+function parsePrizes(value: unknown): OnboardingPrizeInput[] | undefined {
   if (value === undefined) return undefined;
-  if (!Array.isArray(value) || value.length < 2 || value.length > 8) throw new Error("Invalid prizes");
+  if (!Array.isArray(value) || value.length !== 5) throw new Error("Invalid prizes");
 
-  const prizes = value.map((candidate, index): PrizeDefinition => {
+  const prizes = value.map((candidate): OnboardingPrizeInput => {
     if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) throw new Error("Invalid prizes");
     const record = candidate as Record<string, unknown>;
     if (typeof record.name !== "string") throw new Error("Invalid prize name");
     const name = record.name.trim().replace(/\s+/g, " ");
     if (name.length < 2 || name.length > 90 || /[<>]/.test(name)) throw new Error("Invalid prize name");
-    if (typeof record.probability !== "number" || !Number.isFinite(record.probability) || record.probability < 0 || record.probability > 100) {
+    if (
+      typeof record.probability !== "number" ||
+      !Number.isInteger(record.probability) ||
+      record.probability < 0 ||
+      record.probability > 100
+    ) {
       throw new Error("Invalid prize probability");
     }
-    return {
-      id: `prize_${index + 1}`,
-      name,
-      probability: record.probability,
-    };
+    return { name, probability: record.probability };
   });
 
-  const total = prizes.reduce((sum, prize) => sum + prize.probability, 0);
-  if (Math.abs(total - 100) > 0.0001) throw new Error("Prize probabilities must total 100");
+  if (prizes.reduce((sum, prize) => sum + prize.probability, 0) !== 100) {
+    throw new Error("Prize probabilities must total 100");
+  }
   return prizes;
 }
 
@@ -66,7 +72,13 @@ export async function POST(request: Request) {
       const customization = await viralio.getMerchantCustomization(merchant.id);
       merchant = await viralio.updateMerchantCustomization(merchant.id, {
         ...customization,
-        prizes: prizes ?? customization.prizes,
+        prizes: prizes
+          ? customization.prizes.map((prize, index) => ({
+              ...prize,
+              name: prizes[index]!.name,
+              probability: prizes[index]!.probability,
+            }))
+          : customization.prizes,
         rewardValidityDays: rewardValidityDays ?? customization.rewardValidityDays,
       });
     }
