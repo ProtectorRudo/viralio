@@ -105,6 +105,8 @@ export class ArrayTransaction implements TransactionRepository {
     }
 
     return {
+      qrScans: events.filter((event) => event.name === "qr_opened").length,
+      starts: events.filter((event) => event.name === "unlock_viewed").length,
       sessions: sessions.length,
       referredSessions: sessions.filter((session) => Boolean(session.referredBy)).length,
       shares: events.filter((event) => event.name === "share_initiated").length,
