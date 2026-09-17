@@ -4,6 +4,7 @@ import {
   merchantFromAccount,
   parseMerchantOnboarding,
 } from "@/config/merchant-accounts";
+import { parseMerchantOnboardingRewardOverrides } from "@/config/merchant-onboarding-rewards";
 import {
   applyMerchantCustomization,
   defaultMerchantCustomization,
@@ -65,6 +66,7 @@ export class ViralioService {
 
   async createMerchant(value: unknown, environment: NodeJS.ProcessEnv = process.env): Promise<Merchant> {
     const input = parseMerchantOnboarding(value);
+    const rewardOverrides = parseMerchantOnboardingRewardOverrides(value);
     if (getMerchantBySlug(input.slug)) throw new Error("Merchant already exists");
     const credentials = createMerchantPinCredentials(input.pin, environment);
     const createdAt = this.now().toISOString();
@@ -81,14 +83,22 @@ export class ViralioService {
     return this.repository.transaction(async (transaction) => {
       if (await transaction.getMerchantAccountBySlug(account.slug)) throw new Error("Merchant already exists");
       const base = merchantFromAccount(account);
-      const customization = validateMerchantCustomization(
-        defaultCustomizationForAccount(account, input.whatsappNumber, {
-          brand: input.brand,
-          brandCopy: input.brandCopy,
-          logoDataUrl: input.logoDataUrl,
-        }),
-        base,
-      );
+      const draft = defaultCustomizationForAccount(account, input.whatsappNumber, {
+        brand: input.brand,
+        brandCopy: input.brandCopy,
+        logoDataUrl: input.logoDataUrl,
+      });
+      if (rewardOverrides.prizes) {
+        draft.prizes = draft.prizes.map((prize, index) => ({
+          ...prize,
+          name: rewardOverrides.prizes![index]!.name,
+          probability: rewardOverrides.prizes![index]!.probability,
+        }));
+      }
+      if (rewardOverrides.rewardValidityDays !== undefined) {
+        draft.rewardValidityDays = rewardOverrides.rewardValidityDays;
+      }
+      const customization = validateMerchantCustomization(draft, base);
       await transaction.insertMerchantAccount(account);
       await transaction.upsertMerchantSettings(account.id, customization, createdAt);
       return applyMerchantCustomization(base, customization);
