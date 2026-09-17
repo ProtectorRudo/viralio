@@ -23,21 +23,26 @@ async function resolvedMerchant(transaction: TransactionRepository, base: Mercha
 export async function getOperatorMerchantOverviews(): Promise<OperatorMerchantOverview[]> {
   return repository.transaction(async (transaction) => {
     const dynamicAccounts = await transaction.listMerchantAccounts();
-    const configured = await Promise.all(merchants.map(async (base) => ({
-      merchant: await resolvedMerchant(transaction, base),
-      metrics: await transaction.getMerchantMetrics(base.id),
-      source: "configured" as const,
-    })));
-    const dynamic = await Promise.all(dynamicAccounts.map(async (account) => {
+    const overviews: OperatorMerchantOverview[] = [];
+
+    for (const account of dynamicAccounts) {
       const base = merchantFromAccount(account);
-      return {
+      overviews.push({
         merchant: await resolvedMerchant(transaction, base),
         metrics: await transaction.getMerchantMetrics(account.id),
-        source: "onboarding" as const,
+        source: "onboarding",
         createdAt: account.createdAt,
-      };
-    }));
+      });
+    }
 
-    return [...dynamic, ...configured];
+    for (const base of merchants) {
+      overviews.push({
+        merchant: await resolvedMerchant(transaction, base),
+        metrics: await transaction.getMerchantMetrics(base.id),
+        source: "configured",
+      });
+    }
+
+    return overviews;
   });
 }
