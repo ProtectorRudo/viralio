@@ -1,0 +1,97 @@
+import postgres from "postgres";
+
+export interface MerchantOperationsRow {
+  id: string;
+  slug: string;
+  name: string;
+  businessType: string;
+  createdAt: string;
+  qrScans: number;
+  starts: number;
+  shares: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  whatsappSaves: number;
+  referredSessions: number;
+}
+
+interface MerchantOperationsDbRow {
+  id: string;
+  slug: string;
+  name: string;
+  businessType: string;
+  createdAt: Date | string;
+  qrScans: number;
+  starts: number;
+  shares: number;
+  rewardsIssued: number;
+  rewardsRedeemed: number;
+  whatsappSaves: number;
+  referredSessions: number;
+}
+
+function iso(value: Date | string): string {
+  return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+export async function listMerchantOperations(
+  databaseUrl = process.env.DATABASE_URL ?? "",
+): Promise<MerchantOperationsRow[]> {
+  if (!databaseUrl) throw new Error("DATABASE_URL is required for operations");
+
+  const sql = postgres(databaseUrl, {
+    max: 1,
+    connect_timeout: 10,
+    idle_timeout: 5,
+    transform: postgres.camel,
+    onnotice: () => undefined,
+  });
+
+  try {
+    const rows = await sql<MerchantOperationsDbRow[]>`
+      SELECT
+        ma.merchant_id AS id,
+        ma.slug,
+        ma.name,
+        ma.business_type,
+        ma.created_at,
+        COALESCE(events.qr_scans, 0)::int AS qr_scans,
+        COALESCE(events.starts, 0)::int AS starts,
+        COALESCE(events.shares, 0)::int AS shares,
+        COALESCE(events.whatsapp_saves, 0)::int AS whatsapp_saves,
+        COALESCE(rewards.rewards_issued, 0)::int AS rewards_issued,
+        COALESCE(rewards.rewards_redeemed, 0)::int AS rewards_redeemed,
+        COALESCE(sessions.referred_sessions, 0)::int AS referred_sessions
+      FROM merchant_accounts ma
+      LEFT JOIN LATERAL (
+        SELECT
+          count(*) FILTER (WHERE name = 'qr_opened') AS qr_scans,
+          count(*) FILTER (WHERE name = 'unlock_viewed') AS starts,
+          count(*) FILTER (WHERE name = 'share_initiated') AS shares,
+          count(*) FILTER (WHERE name = 'whatsapp_save_clicked') AS whatsapp_saves
+        FROM analytics_events
+        WHERE merchant_id = ma.merchant_id
+      ) events ON true
+      LEFT JOIN LATERAL (
+        SELECT
+          count(*) AS rewards_issued,
+          count(*) FILTER (WHERE redeemed_at IS NOT NULL) AS rewards_redeemed
+        FROM rewards
+        WHERE merchant_id = ma.merchant_id
+      ) rewards ON true
+      LEFT JOIN LATERAL (
+        SELECT count(*) FILTER (WHERE referred_by IS NOT NULL) AS referred_sessions
+        FROM sessions
+        WHERE merchant_id = ma.merchant_id
+      ) sessions ON true
+      ORDER BY ma.created_at DESC, ma.name ASC
+    `;
+
+    return rows.map((row) => ({
+      ...row,
+      createdAt: iso(row.createdAt),
+    }));
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
+}
