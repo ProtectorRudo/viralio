@@ -1,17 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-
-async function enableShare(page: Page) {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", {
-      configurable: true,
-      value: async () => undefined,
-    });
-    Object.defineProperty(navigator, "canShare", {
-      configurable: true,
-      value: () => false,
-    });
-  });
-}
+import { completeGiftFlow } from "./gift-flow";
 
 async function expectNoHorizontalOverflow(page: Page) {
   const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
@@ -21,22 +9,7 @@ async function expectNoHorizontalOverflow(page: Page) {
 async function issueMokaReward(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await enableShare(page);
-  await page.goto("/moka");
-  await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
-  await page.getByTestId("native-share").click();
-  await expect(page.getByTestId("wheel-stage")).toBeVisible();
-
-  const responsePromise = page.waitForResponse((response) =>
-    response.url().endsWith("/spin") && response.request().method() === "POST",
-  );
-  await page.getByRole("button", { name: /Girar la ruleta/ }).click();
-  const response = await responsePromise;
-  const result = await response.json() as {
-    reward: { token: string; shortCode: string; prizeName: string };
-  };
-  await expect(page.getByTestId("reward-stage")).toBeVisible();
-  return result.reward;
+  return completeGiftFlow(page, "/moka?reset=1");
 }
 
 test("public reward stays read-only and authenticated Moka staff can redeem and open control center", async ({ page, request }) => {
