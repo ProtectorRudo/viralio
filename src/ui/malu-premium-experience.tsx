@@ -35,8 +35,8 @@ function MaluScratchCard({
   onContinue: (reward: Reward) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rewardRef = useRef<Reward>();
-  const preparingRef = useRef<Promise<Reward>>();
+  const rewardRef = useRef<Reward | undefined>(undefined);
+  const preparingRef = useRef<Promise<Reward> | undefined>(undefined);
   const drawingRef = useRef(false);
   const lastPointRef = useRef({ x: 0, y: 0 });
   const lastCheckRef = useRef(0);
