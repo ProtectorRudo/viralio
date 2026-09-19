@@ -180,14 +180,14 @@ function MaluScratchCard({
   }, [ensureReward, merchant.theme.shortName]);
 
   return (
-    <div className="malu-scratch-wrap">
+    <div className="malu-scratch-wrap" data-testid="gift-scratch-wrap">
       <div className="malu-scratch-card">
         <div className="malu-scratch-under">
           <span>Tu regalo de {merchant.theme.shortName}</span>
           <strong>{reward?.prizeName ?? (preparing ? "Preparando tu regalo…" : "Tu sorpresa")}</strong>
           <small>{reward ? "para tu próxima visita" : "seguí raspando"}</small>
         </div>
-        <canvas ref={canvasRef} className="malu-scratch-canvas" aria-label="Raspá para descubrir tu regalo" />
+        <canvas ref={canvasRef} className="malu-scratch-canvas" data-testid="gift-scratch-canvas" aria-label="Raspá para descubrir tu regalo" />
       </div>
       <p className="malu-scratch-hint">
         {scratchError ? scratchError : scratchedEnough ? "🎁 ¡Lo encontraste!" : "☝️ Raspá con el dedo para descubrirlo"}
@@ -335,7 +335,7 @@ export function MaluPremiumExperience({
       className="malu-experience"
       style={merchantThemeStyle(merchant)}
       data-merchant={merchant.slug}
-      data-design-version="malu-gift-v1"
+      data-design-version="gift-premium-v1"
     >
       <section className="malu-shell">
         <header className="malu-header">
@@ -355,7 +355,7 @@ export function MaluPremiumExperience({
         )}
 
         {state === "LANDING" && (
-          <div className="malu-stage malu-home">
+          <div className="malu-stage malu-home" data-testid="gift-landing-stage">
             <div className="malu-home-copy">
               <p className="malu-eyebrow">Un detalle para vos</p>
               <h1>Tenemos un regalo para vos.</h1>
@@ -377,7 +377,7 @@ export function MaluPremiumExperience({
         )}
 
         {state === "UNLOCK" && (
-          <div className="malu-stage malu-share">
+          <div className="malu-stage malu-share" data-testid="gift-share-stage">
             <p className="malu-eyebrow">Antes de descubrir el tuyo</p>
             <h1>Regalale uno a alguien.</h1>
             <p className="malu-lead">Compartilo por WhatsApp. La otra persona también recibe su propio regalo y el tuyo sigue siendo solo tuyo.</p>
@@ -404,7 +404,7 @@ export function MaluPremiumExperience({
         )}
 
         {state === "SHARED" && (
-          <div className="malu-stage malu-scratch-stage">
+          <div className="malu-stage malu-scratch-stage" data-testid="gift-scratch-stage">
             <p className="malu-eyebrow">Ahora sí</p>
             <h1>Tu regalo está acá.</h1>
             <p className="malu-lead">Raspá la tarjeta con el dedo para descubrirlo.</p>
@@ -417,13 +417,13 @@ export function MaluPremiumExperience({
         )}
 
         {state === "REWARDED" && reward && (
-          <div className="malu-stage malu-reward">
+          <div className="malu-stage malu-reward" data-testid="gift-reward-stage">
             <div className="malu-heart">♡</div>
             <p className="malu-eyebrow">Un regalo de {merchant.theme.shortName}</p>
             <h1>Gracias por elegirnos.</h1>
             <p className="malu-lead">Este regalo es para tu próxima visita. Una linda excusa para volver.</p>
 
-            <div className="malu-coupon">
+            <div className="malu-coupon" data-testid="gift-reward-voucher">
               <small>TU REGALO PERSONAL</small>
               <strong>{reward.prizeName}</strong>
               <span>para tu próxima visita</span>
