@@ -37,6 +37,7 @@ function MaluScratchCard({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rewardRef = useRef<Reward | undefined>(undefined);
   const preparingRef = useRef<Promise<Reward> | undefined>(undefined);
+  const prepareRewardRef = useRef(prepareReward);
   const drawingRef = useRef(false);
   const lastPointRef = useRef({ x: 0, y: 0 });
   const lastCheckRef = useRef(0);
@@ -46,12 +47,16 @@ function MaluScratchCard({
   const [preparing, setPreparing] = useState(false);
   const [scratchError, setScratchError] = useState("");
 
+  useEffect(() => {
+    prepareRewardRef.current = prepareReward;
+  }, [prepareReward]);
+
   const ensureReward = useCallback(async () => {
     if (rewardRef.current) return rewardRef.current;
     if (preparingRef.current) return preparingRef.current;
     setPreparing(true);
     setScratchError("");
-    const promise = prepareReward()
+    const promise = prepareRewardRef.current()
       .then((result) => {
         rewardRef.current = result;
         setReward(result);
@@ -67,7 +72,7 @@ function MaluScratchCard({
       });
     preparingRef.current = promise;
     return promise;
-  }, [prepareReward]);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -176,7 +181,7 @@ function MaluScratchCard({
       canvas.removeEventListener("pointerup", end);
       canvas.removeEventListener("pointercancel", end);
     };
-  }, [ensureReward, merchant.theme.shortName]);
+  }, [merchant.theme.shortName]);
 
   return (
     <div className="malu-scratch-wrap" data-testid="gift-scratch-wrap">
