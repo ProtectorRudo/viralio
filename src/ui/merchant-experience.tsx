@@ -6,6 +6,7 @@ import { BrandIcon } from "@/ui/brand-icon";
 import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
 import { PremiumWheel, SPIN_DURATION_MS } from "@/ui/premium-wheel";
+import { MaluPremiumExperience } from "@/ui/malu-premium-experience";
 
 type SessionPayload = { session: Session; merchant: Merchant };
 
@@ -20,7 +21,7 @@ function formatDate(value: string): string {
   return new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(value));
 }
 
-export function MerchantExperience({ merchant: initialMerchant, referralToken }: { merchant: Merchant; referralToken?: string }) {
+function DefaultMerchantExperience({ merchant: initialMerchant, referralToken }: { merchant: Merchant; referralToken?: string }) {
   const storageKey = `viralio:${initialMerchant.slug}:session`;
   const [payload, setPayload] = useState<SessionPayload>();
   const [reward, setReward] = useState<Reward>();
@@ -339,4 +340,11 @@ export function MerchantExperience({ merchant: initialMerchant, referralToken }:
       </section>
     </main>
   );
+}
+
+export function MerchantExperience({ merchant, referralToken }: { merchant: Merchant; referralToken?: string }) {
+  if (merchant.slug === "malu-cafe-jardin") {
+    return <MaluPremiumExperience merchant={merchant} referralToken={referralToken} />;
+  }
+  return <DefaultMerchantExperience merchant={merchant} referralToken={referralToken} />;
 }
