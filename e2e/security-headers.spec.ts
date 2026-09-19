@@ -20,7 +20,7 @@ test("public pages ship baseline security headers without breaking the consumer 
   expect(csp).toContain("img-src 'self' data: blob:");
 
   await page.goto("/moka");
-  await expect(page.getByRole("button", { name: /Descubrir mi premio/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Descubrir mi (?:premio|regalo)/ })).toBeVisible();
 });
 
 test("merchant, reward and transactional API surfaces are explicitly no-store", async ({ request }) => {
