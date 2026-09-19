@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f6efe6" />
+  <title>Brisa Panadería — Tenemos un regalo para vos</title>
+  <meta name="description" content="Descubrí tu regalo de Brisa Panadería." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#2d1b18;
+      --wine:#7b2f24;
+      --wine2:#9d4936;
+      --cream:#f7f0e6;
+      --paper:#fffaf3;
+      --caramel:#c78f62;
+      --green:#4d725b;
+      --muted:#7c6c64;
+      --line:rgba(72,40,29,.12);
+      --shadow:0 26px 70px rgba(73,41,29,.16);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:
+      radial-gradient(circle at 15% 0%, rgba(199,143,98,.16), transparent 34rem),
+      linear-gradient(180deg,#fbf6ef 0%,#f3eadf 100%);
+      color:var(--ink);font-family:"DM Sans",system-ui,sans-serif}
+    body{min-height:100svh;display:flex;justify-content:center}
+    button{font:inherit}
+    .app{width:min(100%,480px);min-height:100svh;position:relative;overflow:hidden;background:rgba(255,250,243,.78);box-shadow:0 0 0 1px rgba(65,37,27,.04)}
+    .topbar{height:76px;display:flex;align-items:center;justify-content:center;padding:10px 20px;position:relative;z-index:4}
+    .brand{display:flex;align-items:center;gap:9px;color:var(--wine)}
+    .brand-mark{width:28px;height:36px}
+    .brand-name{font-family:"Playfair Display",serif;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:.9}
+    .brand-sub{font-size:8px;letter-spacing:.26em;text-transform:uppercase;margin-top:4px;color:#9a6958;font-weight:700}
+    .step{display:none;min-height:calc(100svh - 76px);padding:8px 24px 32px;animation:in .45s cubic-bezier(.2,.7,.2,1)}
+    .step.active{display:flex;flex-direction:column}
+    @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    h1,h2{font-family:"Playfair Display",serif;margin:0;letter-spacing:-.035em}
+    h1{font-size:42px;line-height:.98}
+    h2{font-size:35px;line-height:1.02}
+    p{margin:0;color:var(--muted);line-height:1.55}
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--wine2);margin-bottom:14px}
+    .hero-photo{position:relative;margin:26px -24px 0;height:47svh;min-height:340px;max-height:470px;overflow:hidden;background:#c89b73}
+    .hero-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.88) contrast(.97)}
+    .hero-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(25,10,4,.02) 45%,rgba(33,17,11,.72) 100%)}
+    .hero-copy{position:absolute;z-index:2;left:24px;right:24px;bottom:25px;color:white}
+    .hero-copy .mini{font-size:13px;color:rgba(255,255,255,.82);margin-top:8px}
+    .gift-seal{position:absolute;top:18px;right:18px;z-index:2;width:72px;height:72px;border-radius:50%;background:rgba(255,250,243,.94);display:grid;place-items:center;box-shadow:0 8px 25px rgba(34,13,5,.14);transform:rotate(7deg)}
+    .gift-seal span{font-family:"Playfair Display",serif;color:var(--wine);font-size:12px;text-align:center;line-height:1.05;font-weight:700}
+    .cta{border:0;border-radius:18px;min-height:58px;padding:0 22px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s ease,box-shadow .15s ease,opacity .2s;background:linear-gradient(135deg,var(--wine2),var(--wine));color:white;box-shadow:0 14px 28px rgba(123,47,36,.24)}
+    .cta:active{transform:scale(.985)}
+    .cta.whatsapp{background:#1f9f59;box-shadow:0 14px 28px rgba(31,159,89,.2)}
+    .cta.secondary{background:transparent;color:var(--wine);box-shadow:none;border:1px solid rgba(123,47,36,.18)}
+    .spacer{flex:1}
+    .home-bottom{padding-top:18px}
+    .fine{font-size:12px;text-align:center;color:#9b8c84;margin-top:12px}
+    .share-card{margin-top:26px;border-radius:26px;overflow:hidden;background:white;box-shadow:var(--shadow);border:1px solid rgba(69,38,26,.07)}
+    .share-image{height:195px;background:
+      linear-gradient(0deg,rgba(58,26,16,.52),rgba(58,26,16,.02)),
+      url("https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1000&q=84") center/cover}
+    .share-preview{padding:18px 18px 20px}
+    .share-preview strong{display:block;font-family:"Playfair Display",serif;font-size:22px;color:var(--ink);margin-bottom:6px}
+    .share-preview p{font-size:14px}
+    .share-note{display:flex;gap:11px;align-items:flex-start;margin:20px 2px 24px;padding:15px 16px;border-radius:18px;background:#f2eadf;border:1px solid rgba(73,44,32,.06)}
+    .share-note .icon{font-size:20px}
+    .share-note p{font-size:13px;color:#695951}
+    .wa-badge{display:inline-flex;align-items:center;gap:7px;color:#1d8c50;font-size:12px;font-weight:700;letter-spacing:.04em;margin-bottom:10px}
+    .scratch-wrap{margin-top:28px}
+    .scratch-card{height:340px;border-radius:28px;position:relative;overflow:hidden;background:linear-gradient(150deg,#713126,#9d4a36);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.2)}
+    .reward-under{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:35px;background:
+      radial-gradient(circle at 50% 35%,rgba(255,255,255,.12),transparent 13rem),
+      linear-gradient(145deg,#6e2d22,#a2533d);color:white}
+    .reward-under .tiny{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.76}
+    .reward-under .big{font-family:"Playfair Display",serif;font-size:52px;line-height:.92;margin:16px 0 10px;letter-spacing:-.04em}
+    .reward-under .desc{font-size:16px;color:rgba(255,255,255,.86)}
+    #scratchCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;transition:opacity .55s ease}
+    .scratch-hint{text-align:center;margin-top:16px;font-size:14px;color:#745f55;display:flex;justify-content:center;align-items:center;gap:7px}
+    .hidden{display:none!important}
+    .reveal-next{margin-top:18px}
+    .celebrate{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;margin:12px auto 22px;background:#f2e4d8;border:1px solid rgba(123,47,36,.08);font-size:35px}
+    .thanks{text-align:center}
+    .thanks p{font-size:15px;max-width:340px;margin:12px auto 0}
+    .coupon{margin:30px 0 22px;border-radius:28px;background:linear-gradient(145deg,#7c3025,#a44e39);color:white;padding:28px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow);text-align:center}
+    .coupon:before,.coupon:after{content:"";position:absolute;top:50%;width:24px;height:24px;border-radius:50%;background:var(--paper);transform:translateY(-50%)}
+    .coupon:before{left:-12px}.coupon:after{right:-12px}
+    .coupon .label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.75;font-weight:700}
+    .coupon .main{font-family:"Playfair Display",serif;font-size:38px;line-height:1.02;margin:12px auto 8px;max-width:290px}
+    .coupon .sub{font-size:14px;color:rgba(255,255,255,.83)}
+    .coupon .dash{border-top:1px dashed rgba(255,255,255,.35);margin:23px -6px 18px}
+    .coupon .valid{font-size:12px;opacity:.75}
+    .success-note{font-size:12px;text-align:center;margin-top:12px;color:#6f635c}
+    .powered{text-align:center;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#ad9c92;padding:18px}
+    .return-banner{display:none}
+    .demo-reset{position:absolute;z-index:10;top:22px;right:15px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(65,37,27,.11);background:rgba(255,255,255,.72);backdrop-filter:blur(8px);color:#826f64;cursor:pointer;font-size:15px}
+    .modal{position:fixed;inset:0;z-index:30;background:rgba(35,18,12,.5);display:none;align-items:flex-end;justify-content:center;padding:18px;backdrop-filter:blur(4px)}
+    .modal.open{display:flex}
+    .sheet{width:min(100%,440px);background:#fffaf4;border-radius:26px;padding:24px;box-shadow:0 30px 80px rgba(30,15,8,.3);animation:sheet .3s ease}
+    @keyframes sheet{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+    .sheet h3{font-family:"Playfair Display",serif;font-size:26px;margin:0 0 8px}
+    .sheet p{font-size:14px}
+    .sheet .msg{margin:18px 0;padding:15px;border-radius:17px;background:#dff7d8;color:#24492e;font-size:14px;line-height:1.45;border:1px solid #c8ecc2}
+    @media(min-width:481px){body{padding:24px}.app{min-height:calc(100svh - 48px);border-radius:32px}.step{min-height:calc(100svh - 124px)}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <button class="demo-reset" aria-label="Reiniciar demo" onclick="resetDemo()">↻</button>
+
+    <header class="topbar">
+      <div class="brand" aria-label="Brisa Panadería">
+        <svg class="brand-mark" viewBox="0 0 30 42" fill="none" aria-hidden="true">
+          <path d="M15 40C15 29 15 18 15 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M14.8 13C9.7 12.2 7 8.9 5.7 5.5c4.3.3 7.4 2.5 9.1 7.5Z" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M15.2 20.7c5.1-.8 7.8-4.1 9.1-7.5-4.3.3-7.4 2.5-9.1 7.5Z" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M14.8 27.7c-5.1-.8-7.8-4.1-9.1-7.5 4.3.3 7.4 2.5 9.1 7.5Z" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M15.2 34.8c5.1-.8 7.8-4.1 9.1-7.5-4.3.3-7.4 2.5-9.1 7.5Z" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+        <div>
+          <div class="brand-name">Brisa</div>
+          <div class="brand-sub">Panadería</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="step active" data-step="home">
+      <div class="eyebrow">Un detalle para vos</div>
+      <h1>Tenemos un regalo para vos.</h1>
+      <div class="hero-photo">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=88" alt="Pan artesanal recién horneado">
+        <div class="gift-seal"><span>HECHO<br>CON CARIÑO</span></div>
+        <div class="hero-copy">
+          <h2>Gracias por elegir Brisa.</h2>
+          <div class="mini">Tu regalo tarda menos de un minuto.</div>
+        </div>
+      </div>
+      <div class="home-bottom">
+        <button class="cta" onclick="go('share')">Descubrir mi regalo <span>→</span></button>
+        <div class="fine">Sin registros. Sin instalar nada.</div>
+      </div>
+    </section>
+
+    <section class="step" data-step="share">
+      <div class="eyebrow">Antes de descubrir el tuyo</div>
+      <h2>Regalale uno a alguien.</h2>
+      <p style="margin-top:12px">Compartilo por WhatsApp. La otra persona también recibe su propio regalo y el tuyo sigue siendo solo tuyo.</p>
+
+      <div class="share-card">
+        <div class="share-image"></div>
+        <div class="share-preview">
+          <div class="wa-badge">● MENSAJE QUE VA A RECIBIR</div>
+          <strong>Un regalo de Brisa 🎁</strong>
+          <p>“Te mandé un regalo de Brisa Panadería. A mí también me dieron uno por compartirlo. Abrí el tuyo acá 👇”</p>
+        </div>
+      </div>
+
+      <div class="share-note">
+        <div class="icon">♡</div>
+        <p>No es una publicidad: es un regalo de alguien que pensó en vos.</p>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="cta whatsapp" onclick="shareGift()">Compartir por WhatsApp</button>
+      <div class="fine">Después volvé acá para descubrir el tuyo.</div>
+    </section>
+
+    <section class="step" data-step="scratch">
+      <div class="eyebrow">Ahora sí</div>
+      <h2>Tu regalo está acá.</h2>
+      <p style="margin-top:10px">Raspá la tarjeta con el dedo para descubrirlo.</p>
+
+      <div class="scratch-wrap">
+        <div class="scratch-card">
+          <div class="reward-under">
+            <div class="tiny">Tu regalo Brisa</div>
+            <div class="big">2 medialunas</div>
+            <div class="desc">de regalo en tu próxima compra</div>
+          </div>
+          <canvas id="scratchCanvas"></canvas>
+        </div>
+        <div class="scratch-hint" id="scratchHint">☝️ Raspá para descubrir</div>
+        <button class="cta reveal-next hidden" id="revealNext" onclick="go('reward')">Guardar mi regalo</button>
+      </div>
+      <div class="spacer"></div>
+    </section>
+
+    <section class="step" data-step="reward">
+      <div class="celebrate">♡</div>
+      <div class="thanks">
+        <div class="eyebrow">Un mimo de Brisa</div>
+        <h2>Gracias por elegirnos.</h2>
+        <p>Este regalo es para tu próxima visita. Ojalá sea la excusa perfecta para volver a compartir algo rico.</p>
+      </div>
+
+      <div class="coupon">
+        <div class="label">Tu regalo personal</div>
+        <div class="main">2 medialunas de regalo</div>
+        <div class="sub">en tu próxima compra</div>
+        <div class="dash"></div>
+        <div class="valid" id="validUntil">Válido por 14 días</div>
+      </div>
+
+      <button class="cta" onclick="saveCoupon()">Guardar cupón</button>
+      <div class="success-note">Mostralo en caja cuando vuelvas. Este regalo es personal.</div>
+      <div class="spacer"></div>
+      <div class="powered">Experiencia impulsada por VIRALIO</div>
+    </section>
+  </main>
+
+  <div class="modal" id="saveModal" aria-hidden="true">
+    <div class="sheet">
+      <h3>Regalo guardado ✓</h3>
+      <p>En una implementación real, este paso puede guardar el cupón en WhatsApp o en el teléfono del cliente.</p>
+      <div class="msg">🎁 Guardé mi regalo de Brisa Panadería: 2 medialunas de regalo en mi próxima compra.</div>
+      <button class="cta" onclick="closeModal()">Listo</button>
+    </div>
+  </div>
+
+<script>
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const key = 'viralio-brisa-step-v1';
+
+  function go(name){
+    steps.forEach(s => s.classList.toggle('active', s.dataset.step === name));
+    localStorage.setItem(key,name);
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(name === 'scratch') setTimeout(initScratch,120);
+  }
+
+  function shareGift(){
+    localStorage.setItem(key,'scratch');
+    const giftLink = location.origin + location.pathname + '?regalo=amigo';
+    const msg = '🎁 Te mandé un regalo de Brisa Panadería.\\nA mí también me dieron uno por compartirlo.\\nAbrí el tuyo acá 👇\\n' + giftLink;
+    const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    if(/Android|iPhone|iPad/i.test(navigator.userAgent)){
+      location.href = url;
+    }else{
+      window.open(url,'_blank','noopener');
+      setTimeout(() => go('scratch'),400);
+    }
+  }
+
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && localStorage.getItem(key)==='scratch'){
+      go('scratch');
+    }
+  });
+
+  function resetDemo(){
+    localStorage.removeItem(key);
+    history.replaceState({},'',location.pathname);
+    go('home');
+  }
+
+  function saveCoupon(){
+    document.getElementById('saveModal').classList.add('open');
+    document.getElementById('saveModal').setAttribute('aria-hidden','false');
+  }
+  function closeModal(){
+    document.getElementById('saveModal').classList.remove('open');
+    document.getElementById('saveModal').setAttribute('aria-hidden','true');
+  }
+
+  const expiration = new Date();
+  expiration.setDate(expiration.getDate()+14);
+  document.getElementById('validUntil').textContent = 'Válido hasta el ' +
+    new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long'}).format(expiration);
+
+  let scratchReady=false, drawing=false, moves=0;
+  function initScratch(){
+    if(scratchReady) return;
+    const canvas=document.getElementById('scratchCanvas');
+    if(!canvas) return;
+    const rect=canvas.getBoundingClientRect();
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(dpr,dpr);
+
+    const g=ctx.createLinearGradient(0,0,rect.width,rect.height);
+    g.addColorStop(0,'#d3a277'); g.addColorStop(.52,'#b77452'); g.addColorStop(1,'#8e4433');
+    ctx.fillStyle=g; ctx.fillRect(0,0,rect.width,rect.height);
+
+    ctx.fillStyle='rgba(255,250,243,.92)';
+    ctx.textAlign='center';
+    ctx.font='600 13px "DM Sans"';
+    ctx.fillText('DESLIZÁ EL DEDO',rect.width/2,rect.height/2-16);
+    ctx.font='600 34px "Playfair Display"';
+    ctx.fillText('Descubrí tu regalo',rect.width/2,rect.height/2+25);
+    ctx.font='500 12px "DM Sans"';
+    ctx.fillText('Brisa Panadería',rect.width/2,rect.height-34);
+
+    ctx.globalCompositeOperation='destination-out';
+
+    const scratch=(ev)=>{
+      if(!drawing) return;
+      ev.preventDefault();
+      const r=canvas.getBoundingClientRect();
+      const p=ev.touches?ev.touches[0]:ev;
+      const x=p.clientX-r.left,y=p.clientY-r.top;
+      ctx.beginPath();ctx.arc(x,y,28,0,Math.PI*2);ctx.fill();
+      moves++;
+      if(moves>42) finishScratch(canvas);
+    };
+    canvas.addEventListener('pointerdown',e=>{drawing=true;scratch(e)});
+    canvas.addEventListener('pointermove',scratch);
+    window.addEventListener('pointerup',()=>drawing=false);
+    scratchReady=true;
+  }
+
+  function finishScratch(canvas){
+    if(canvas.dataset.done) return;
+    canvas.dataset.done='1';
+    canvas.style.opacity='0';
+    document.getElementById('scratchHint').textContent='🎁 ¡Este regalo es para vos!';
+    setTimeout(()=>{
+      canvas.style.display='none';
+      document.getElementById('revealNext').classList.remove('hidden');
+    },520);
+  }
+
+  const incoming = new URLSearchParams(location.search).get('regalo');
+  if(incoming){
+    localStorage.removeItem(key);
+    go('home');
+  }else{
+    const saved=localStorage.getItem(key);
+    if(saved && ['home','share','scratch','reward'].includes(saved)) go(saved);
+  }
+</script>
+</body>
+</html>
