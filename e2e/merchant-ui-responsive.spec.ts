@@ -21,8 +21,8 @@ test("tracked QR entry and merchant backoffice stay measurable and responsive", 
 
   await page.goto("/q/moka");
   await expect(page).toHaveURL(/\/moka$/);
-  await expect(page.getByRole("button", { name: /Descubrir mi premio/ })).toBeVisible();
-  await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
+  await expect(page.getByRole("button", { name: /Descubrir mi (?:premio|regalo)/ })).toBeVisible();
+  await page.getByRole("button", { name: /Descubrir mi (?:premio|regalo)/ }).click();
 
   await loginMoka(page);
 
