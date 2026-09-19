@@ -311,3 +311,146 @@
   .malu-scratch-card{height:300px}
   .malu-share-photo{height:145px}
 }
+
+
+/* ATLAS BARBER · PREMIUM GIFT OVERRIDES */
+.malu-experience[data-merchant="atlas-barber"]{
+  color:#f3efe6;
+  background:
+    radial-gradient(circle at 78% 8%,rgba(208,163,74,.13),transparent 28rem),
+    radial-gradient(circle at 5% 92%,rgba(124,158,178,.08),transparent 30rem),
+    linear-gradient(180deg,#070b0f 0%,#111821 100%);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-shell{
+  background:rgba(10,15,20,.96);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-brand-copy strong{
+  color:#d0a34a;
+  letter-spacing:.01em;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-brand-copy small{
+  color:#8997a4;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-stage h1,
+.malu-experience[data-merchant="atlas-barber"] .malu-stage h2{
+  color:#f3efe6;
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:800;
+  letter-spacing:-.045em;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-eyebrow{
+  color:#d0a34a;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-lead{
+  color:#aab5bf;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-hero{
+  background:#101821;
+  border-top:1px solid rgba(208,163,74,.14);
+  border-bottom:1px solid rgba(208,163,74,.14);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-hero-photo,
+.malu-experience[data-merchant="atlas-barber"] .malu-share-photo{
+  background-image:
+    linear-gradient(0deg,rgba(5,8,11,.76),rgba(5,8,11,.06) 58%),
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20900%20900%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230a0e12%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23171d24%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23262f39%22%2F%3E%3C%2FlinearGradient%3E%0A%3ClinearGradient%20id%3D%22gold%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23f0cf7b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23a8792e%22%2F%3E%3C%2FlinearGradient%3E%0A%3Cfilter%20id%3D%22glow%22%3E%3CfeGaussianBlur%20stdDeviation%3D%2214%22%2F%3E%3C%2Ffilter%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%22900%22%20height%3D%22900%22%20fill%3D%22url(%23bg)%22%2F%3E%0A%3Ccircle%20cx%3D%22690%22%20cy%3D%22170%22%20r%3D%22165%22%20fill%3D%22%23d0a34a%22%20opacity%3D%22.08%22%20filter%3D%22url(%23glow)%22%2F%3E%0A%3Ccircle%20cx%3D%22180%22%20cy%3D%22710%22%20r%3D%22190%22%20fill%3D%22%237c9eb2%22%20opacity%3D%22.07%22%20filter%3D%22url(%23glow)%22%2F%3E%0A%3Crect%20x%3D%22565%22%20y%3D%22105%22%20width%3D%22210%22%20height%3D%22330%22%20rx%3D%2226%22%20fill%3D%22%23111820%22%20stroke%3D%22%23d0a34a%22%20stroke-width%3D%228%22%2F%3E%0A%3Crect%20x%3D%22594%22%20y%3D%22136%22%20width%3D%22152%22%20height%3D%22270%22%20rx%3D%2216%22%20fill%3D%22%2325313b%22%2F%3E%0A%3Cpath%20d%3D%22M670%20180v180M625%20270h90%22%20stroke%3D%22%23d0a34a%22%20stroke-width%3D%225%22%20opacity%3D%22.45%22%2F%3E%0A%3Cg%20transform%3D%22translate(150%20335)%22%3E%0A%3Cpath%20d%3D%22M150%2090c0-55%2044-100%20100-100s100%2045%20100%20100v74H150z%22%20fill%3D%22%23c6943e%22%2F%3E%0A%3Crect%20x%3D%22130%22%20y%3D%22145%22%20width%3D%22240%22%20height%3D%22160%22%20rx%3D%2245%22%20fill%3D%22%231f2932%22%20stroke%3D%22%23d0a34a%22%20stroke-width%3D%2210%22%2F%3E%0A%3Crect%20x%3D%2292%22%20y%3D%22185%22%20width%3D%2262%22%20height%3D%2295%22%20rx%3D%2222%22%20fill%3D%22%23273541%22%2F%3E%0A%3Crect%20x%3D%22346%22%20y%3D%22185%22%20width%3D%2262%22%20height%3D%2295%22%20rx%3D%2222%22%20fill%3D%22%23273541%22%2F%3E%0A%3Crect%20x%3D%22210%22%20y%3D%22300%22%20width%3D%2280%22%20height%3D%22120%22%20rx%3D%2222%22%20fill%3D%22%231a2229%22%2F%3E%0A%3Cpath%20d%3D%22M250%20420v95M190%20515h120%22%20stroke%3D%22%23d0a34a%22%20stroke-width%3D%2216%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3Cellipse%20cx%3D%22250%22%20cy%3D%22535%22%20rx%3D%22120%22%20ry%3D%2222%22%20fill%3D%22%2305080b%22%20opacity%3D%22.65%22%2F%3E%0A%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate(72%2080)%22%3E%0A%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2252%22%20height%3D%22240%22%20rx%3D%2226%22%20fill%3D%22%23f2f2f2%22%2F%3E%0A%3Cpath%20d%3D%22M8%2018l36%2032M8%2072l36%2032M8%20126l36%2032M8%20180l36%2032%22%20stroke%3D%22%23c44c45%22%20stroke-width%3D%2218%22%2F%3E%0A%3Cpath%20d%3D%22M8%2045l36%2032M8%2099l36%2032M8%20153l36%2032%22%20stroke%3D%22%234d7f9d%22%20stroke-width%3D%2218%22%2F%3E%0A%3Crect%20x%3D%22-6%22%20y%3D%22-10%22%20width%3D%2264%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22url(%23gold)%22%2F%3E%0A%3Crect%20x%3D%22-6%22%20y%3D%22232%22%20width%3D%2264%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22url(%23gold)%22%2F%3E%0A%3C%2Fg%3E%0A%3Ctext%20x%3D%22450%22%20y%3D%22790%22%20text-anchor%3D%22middle%22%20fill%3D%22%23d0a34a%22%20font-size%3D%2252%22%20font-family%3D%22Georgia%2Cserif%22%20letter-spacing%3D%2212%22%3EATLAS%3C%2Ftext%3E%0A%3Ctext%20x%3D%22450%22%20y%3D%22834%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f3efe6%22%20opacity%3D%22.62%22%20font-size%3D%2220%22%20font-family%3D%22Arial%2Csans-serif%22%20letter-spacing%3D%227%22%3EBARBER%3C%2Ftext%3E%0A%3C%2Fsvg%3E");
+  background-position:center;
+  background-size:cover;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-gift-seal{
+  background:rgba(9,14,19,.94);
+  color:#d0a34a;
+  border:1px solid rgba(208,163,74,.34);
+  box-shadow:0 14px 35px rgba(0,0,0,.34);
+  font-family:Arial,Helvetica,sans-serif;
+  letter-spacing:.08em;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-hero-logo{
+  background:rgba(12,18,24,.92);
+  color:#d0a34a;
+  border:1px solid rgba(208,163,74,.28);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-button-primary{
+  background:linear-gradient(135deg,#e0b75f,#b68432);
+  color:#17130b;
+  box-shadow:0 14px 32px rgba(208,163,74,.18);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-fine{
+  color:#788590;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-share-card{
+  border-color:rgba(208,163,74,.18);
+  background:#121a22;
+  box-shadow:0 24px 60px rgba(0,0,0,.28);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-share-body small{
+  color:#d0a34a;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-share-body strong{
+  color:#f3efe6;
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:800;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-share-body p{
+  color:#aab5bf;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-prosocial-note{
+  background:#111922;
+  border-color:rgba(208,163,74,.14);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-prosocial-note span{
+  color:#d0a34a;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-prosocial-note p{
+  color:#9eabb6;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-scratch-card{
+  border-color:rgba(208,163,74,.32);
+  background:linear-gradient(145deg,#151c23,#080c10);
+  box-shadow:0 28px 70px rgba(0,0,0,.38);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-scratch-under{
+  color:#f3efe6;
+  background:
+    radial-gradient(circle at 50% 28%,rgba(208,163,74,.15),transparent 13rem),
+    linear-gradient(145deg,#151d25,#090d11);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-scratch-under strong{
+  color:#f1cc78;
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:850;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-scratch-hint{
+  color:#96a3ae;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-heart{
+  background:#111922;
+  color:#d0a34a;
+  border-color:rgba(208,163,74,.2);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-coupon{
+  color:#f3efe6;
+  background:
+    linear-gradient(145deg,#1b2530,#0b1015);
+  border:1px solid rgba(208,163,74,.34);
+  box-shadow:0 28px 70px rgba(0,0,0,.34);
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-coupon:before,
+.malu-experience[data-merchant="atlas-barber"] .malu-coupon:after{
+  background:#0a0f14;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-coupon strong{
+  color:#e3bb66;
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:850;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-loading-mark{
+  border-color:rgba(208,163,74,.2);
+  color:#d0a34a;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-footer{
+  color:#66737e;
+}
+.malu-experience[data-merchant="atlas-barber"] .malu-footer strong{
+  color:#b6934c;
+}
