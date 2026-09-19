@@ -279,8 +279,11 @@
 
   function saveCoupon(){
     const msg =
-      'Hola Brisa Panadería 👋\n' +
-      'Guardé mi regalo de Viralio: 2 medialunas de regalo en mi próxima compra. 🎁';
+      'Hola Brisa Panadería 👋\n\n' +
+      'Quiero guardar mi regalo de Viralio 🎁\n\n' +
+      '🎁 Premio: 2 medialunas de regalo\n' +
+      '📅 Válido hasta: ' + expirationLabel + '\n\n' +
+      'Lo voy a presentar en mi próxima compra.';
     const url = 'https://wa.me/' + MERCHANT_PHONE_WA + '?text=' + encodeURIComponent(msg);
     window.location.href = url;
   }
@@ -291,8 +294,12 @@
 
   const expiration = new Date();
   expiration.setDate(expiration.getDate()+14);
-  document.getElementById('validUntil').textContent = 'Válido hasta el ' +
-    new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long'}).format(expiration);
+  const expirationLabel = new Intl.DateTimeFormat('es-AR',{
+    day:'numeric',
+    month:'long',
+    year:'numeric'
+  }).format(expiration);
+  document.getElementById('validUntil').textContent = 'Válido hasta el ' + expirationLabel;
 
   let scratchReady = false;
   let drawing = false;
