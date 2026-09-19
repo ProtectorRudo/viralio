@@ -216,8 +216,13 @@ export function MaluPremiumExperience({
   const [scratchReward, setScratchReward] = useState<Reward>();
 
   useEffect(() => {
-    const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
-    if (resetRequested) localStorage.removeItem(storageKey);
+    const currentUrl = new URL(window.location.href);
+    const resetRequested = currentUrl.searchParams.get("reset") === "1";
+    if (resetRequested) {
+      localStorage.removeItem(storageKey);
+      currentUrl.searchParams.delete("reset");
+      window.history.replaceState({}, "", currentUrl.pathname + currentUrl.search + currentUrl.hash);
+    }
     const sessionId = resetRequested ? undefined : (localStorage.getItem(storageKey) ?? undefined);
     json<SessionPayload>("/api/sessions", {
       method: "POST",
