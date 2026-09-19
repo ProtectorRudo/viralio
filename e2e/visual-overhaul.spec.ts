@@ -19,7 +19,7 @@ test("premium funnel uses campaign, poster, wheel hardware and voucher without c
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await enableShare(page);
-  await page.goto("/moka");
+  await page.goto("/atlas-barber");
 
   await expect(page.locator("main")).toHaveAttribute("data-design-version", "020b");
   await expect(page.getByTestId("brand-campaign-frame")).toBeVisible();
