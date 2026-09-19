@@ -10,8 +10,8 @@ async function enableShare(page: Page) {
 
 async function issueReward(page: Page, slug: string): Promise<string> {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  if (slug === "moka") {
-    return (await completeGiftFlow(page, "/moka?reset=1")).token;
+  if (slug === "moka" || slug === "atlas-barber") {
+    return (await completeGiftFlow(page, `/${slug}?reset=1`)).token;
   }
   await enableShare(page);
   await page.goto(`/${slug}`);
