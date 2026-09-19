@@ -48,6 +48,21 @@ export async function scratchGift(page: Page): Promise<GiftReward> {
   }
   await page.mouse.up();
 
+  const transparentRatio = await canvas.evaluate((node) => {
+    const canvas = node as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return 0;
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let transparent = 0;
+    let sampled = 0;
+    for (let i = 3; i < pixels.length; i += 80) {
+      sampled++;
+      if (pixels[i] < 45) transparent++;
+    }
+    return sampled ? transparent / sampled : 0;
+  });
+  expect(transparentRatio).toBeGreaterThan(.72);
+
   const response = await spinResponse;
   const payload = await response.json() as { reward: GiftReward };
   await expect(page.getByRole("button", { name: /Guardar mi regalo/ })).toBeVisible();
