@@ -42,6 +42,65 @@ async function shareCalls(page: Page): Promise<ShareCall[]> {
   return page.evaluate(() => (window as Window & { __viralioShareCalls?: ShareCall[] }).__viralioShareCalls ?? []);
 }
 
+test("Moka scratch progress stays visible while the reward loads in the background", async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await context.route("https://wa.me/**", (route) =>
+    route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }),
+  );
+  await page.route("**/api/sessions/*/spin", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await route.continue();
+  });
+
+  await page.goto("/moka?reset=1");
+  await page.getByRole("button", { name: /Descubrir mi regalo/ }).click();
+  await page.getByRole("button", { name: "Compartir por WhatsApp" }).click();
+  await expect(page.getByTestId("gift-scratch-stage")).toBeVisible();
+
+  const canvas = page.getByTestId("gift-scratch-canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("Scratch canvas has no layout box");
+
+  const spinResponse = page.waitForResponse((response) =>
+    response.url().endsWith("/spin") && response.request().method() === "POST",
+  );
+
+  const left = box.x + 28;
+  const right = box.x + box.width - 28;
+  const top = box.y + 70;
+
+  await page.mouse.move(left, top);
+  await page.mouse.down();
+  for (let row = 0; row < 4; row++) {
+    const y = top + row * 34;
+    await page.mouse.move(row % 2 === 0 ? right : left, y, { steps: 14 });
+  }
+  await page.mouse.up();
+
+  const scratchedRatio = async () => canvas.evaluate((node) => {
+    const scratch = node as HTMLCanvasElement;
+    const ctx = scratch.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return 0;
+    const pixels = ctx.getImageData(0, 0, scratch.width, scratch.height).data;
+    let transparent = 0;
+    let sampled = 0;
+    for (let i = 3; i < pixels.length; i += 80) {
+      sampled++;
+      if (pixels[i] < 45) transparent++;
+    }
+    return sampled ? transparent / sampled : 0;
+  });
+
+  const beforeReward = await scratchedRatio();
+  expect(beforeReward).toBeGreaterThan(.08);
+
+  await spinResponse;
+  await page.waitForTimeout(250);
+
+  const afterReward = await scratchedRatio();
+  expect(afterReward).toBeGreaterThanOrEqual(beforeReward * .85);
+});
+
 test("Moka mobile: premium gift flow uses WhatsApp, real scratch reveal, persistence and complete coupon message", async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await context.route("https://wa.me/**", (route) =>
