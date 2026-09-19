@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { completeGiftFlow } from "./gift-flow";
 
 async function enableShare(page: Page) {
   await page.addInitScript(() => {
@@ -9,6 +10,9 @@ async function enableShare(page: Page) {
 
 async function issueReward(page: Page, slug: string): Promise<string> {
   await page.emulateMedia({ reducedMotion: "reduce" });
+  if (slug === "moka") {
+    return (await completeGiftFlow(page, "/moka?reset=1")).token;
+  }
   await enableShare(page);
   await page.goto(`/${slug}`);
   await page.getByRole("button", { name: /Descubrir mi premio/ }).click();
