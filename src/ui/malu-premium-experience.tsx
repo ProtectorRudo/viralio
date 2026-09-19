@@ -132,7 +132,6 @@ function MaluScratchCard({
     };
 
     const begin = (event: PointerEvent) => {
-      if (completeRef.current) return;
       event.preventDefault();
       drawingRef.current = true;
       canvas.setPointerCapture?.(event.pointerId);
@@ -145,7 +144,7 @@ function MaluScratchCard({
     };
 
     const move = (event: PointerEvent) => {
-      if (!drawingRef.current || completeRef.current) return;
+      if (!drawingRef.current) return;
       event.preventDefault();
       const p = point(event);
       ctx.lineWidth = 34;
@@ -190,7 +189,7 @@ function MaluScratchCard({
         <canvas ref={canvasRef} className="malu-scratch-canvas" data-testid="gift-scratch-canvas" aria-label="Raspá para descubrir tu regalo" />
       </div>
       <p className="malu-scratch-hint">
-        {scratchError ? scratchError : scratchedEnough ? "🎁 ¡Lo encontraste!" : "☝️ Raspá con el dedo para descubrirlo"}
+        {scratchError ? scratchError : scratchedEnough ? "🎁 ¡Lo encontraste! Podés seguir raspando." : "☝️ Raspá con el dedo para descubrirlo"}
       </p>
       {scratchedEnough && reward && (
         <button className="malu-button malu-button-primary" onClick={() => onContinue(reward)}>
