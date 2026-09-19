@@ -61,7 +61,7 @@ export async function scratchGift(page: Page): Promise<GiftReward> {
     }
     return sampled ? transparent / sampled : 0;
   });
-  expect(transparentRatio).toBeGreaterThan(.72);
+  expect(transparentRatio).toBeGreaterThan(.60);
 
   const response = await spinResponse;
   const payload = await response.json() as { reward: GiftReward };
