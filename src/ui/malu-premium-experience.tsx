@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Merchant, Reward, Session } from "@/domain/types";
 import { MerchantBrandVisual } from "@/ui/merchant-brand-visual";
 import { merchantThemeStyle } from "@/ui/merchant-theme";
@@ -46,7 +46,7 @@ function MaluScratchCard({
   const [preparing, setPreparing] = useState(false);
   const [scratchError, setScratchError] = useState("");
 
-  const ensureReward = async () => {
+  const ensureReward = useCallback(async () => {
     if (rewardRef.current) return rewardRef.current;
     if (preparingRef.current) return preparingRef.current;
     setPreparing(true);
@@ -67,7 +67,7 @@ function MaluScratchCard({
       });
     preparingRef.current = promise;
     return promise;
-  };
+  }, [prepareReward]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -177,7 +177,7 @@ function MaluScratchCard({
       canvas.removeEventListener("pointerup", end);
       canvas.removeEventListener("pointercancel", end);
     };
-  }, [merchant.theme.shortName]);
+  }, [ensureReward, merchant.theme.shortName]);
 
   return (
     <div className="malu-scratch-wrap">
