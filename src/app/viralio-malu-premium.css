@@ -1,0 +1,313 @@
+.malu-experience{
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:0;
+  color:#34231f;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(182,139,103,.18),transparent 34rem),
+    linear-gradient(180deg,#fbf6ef 0%,#f1e7dc 100%);
+}
+.malu-shell{
+  width:min(100%,480px);
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+  background:rgba(255,250,244,.92);
+}
+.malu-header{
+  height:76px;
+  flex:0 0 76px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:10px 52px 10px 20px;
+  position:relative;
+  z-index:3;
+}
+.malu-brand-mark{display:grid;place-items:center;color:var(--color-primary)}
+.malu-brand-copy{display:grid;gap:2px;line-height:1}
+.malu-brand-copy strong{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:1.05rem;
+  letter-spacing:-.02em;
+  color:var(--color-primary);
+}
+.malu-brand-copy small{
+  font-size:.56rem;
+  font-weight:750;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  color:#927a6e;
+}
+.malu-stage{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:12px 24px 30px;
+  animation:malu-in .42s cubic-bezier(.2,.7,.2,1) both;
+}
+.malu-stage h1,.malu-stage h2{
+  margin:0;
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:-.045em;
+  color:#33201c;
+}
+.malu-stage h1{font-size:clamp(2.35rem,10.5vw,3.05rem);line-height:.98}
+.malu-stage h2{font-size:2rem;line-height:1.02}
+.malu-eyebrow{
+  margin:0 0 13px;
+  color:var(--color-primary);
+  font-size:.67rem;
+  font-weight:850;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.malu-lead{
+  margin:12px 0 0;
+  color:#7b6b64;
+  font-size:.93rem;
+  line-height:1.55;
+}
+.malu-home-copy{padding-top:4px}
+.malu-hero{
+  position:relative;
+  height:min(48dvh,465px);
+  min-height:335px;
+  margin:25px -24px 19px;
+  overflow:hidden;
+  background:#b99a80;
+}
+.malu-hero-photo,.malu-share-photo{
+  background-image:
+    linear-gradient(0deg,rgba(42,26,18,.62),rgba(42,26,18,.04) 58%),
+    url("https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1100&q=86");
+  background-position:center;
+  background-size:cover;
+}
+.malu-hero-photo{position:absolute;inset:0}
+.malu-gift-seal{
+  position:absolute;
+  top:18px;
+  right:18px;
+  width:74px;
+  height:74px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(255,250,244,.94);
+  color:var(--color-primary);
+  box-shadow:0 9px 25px rgba(40,20,12,.16);
+  font:700 .65rem/1.05 Georgia,"Times New Roman",serif;
+  text-align:center;
+  transform:rotate(6deg);
+}
+.malu-hero-overlay{
+  position:absolute;
+  left:24px;right:24px;bottom:24px;
+  color:white;
+}
+.malu-hero-logo{
+  width:52px;height:52px;
+  display:grid;place-items:center;
+  margin-bottom:13px;
+  border-radius:50%;
+  background:rgba(255,250,244,.92);
+  color:var(--color-primary);
+}
+.malu-hero-overlay h2{color:#fff}
+.malu-hero-overlay p{margin:7px 0 0;color:rgba(255,255,255,.82);font-size:.82rem}
+.malu-button{
+  width:100%;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  border:0;
+  border-radius:18px;
+  padding:0 20px;
+  cursor:pointer;
+  font-weight:800;
+  transition:transform .16s ease,opacity .16s ease,box-shadow .16s ease;
+}
+.malu-button:active{transform:scale(.985)}
+.malu-button:disabled{cursor:wait;opacity:.68}
+.malu-button-primary{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--color-primary) 82%,#a75d45),var(--color-primary));
+  color:var(--color-on-primary);
+  box-shadow:0 14px 30px color-mix(in srgb,var(--color-primary) 24%,transparent);
+}
+.malu-button-whatsapp{
+  margin-top:auto;
+  background:#1f9f59;
+  color:white;
+  box-shadow:0 14px 28px rgba(31,159,89,.2);
+}
+.malu-fine{
+  margin:11px 0 0;
+  color:#a08e84;
+  text-align:center;
+  font-size:.7rem;
+}
+.malu-share h1{max-width:390px}
+.malu-share-card{
+  margin:25px 0 18px;
+  overflow:hidden;
+  border:1px solid rgba(73,41,29,.08);
+  border-radius:26px;
+  background:white;
+  box-shadow:0 24px 60px rgba(68,39,26,.13);
+}
+.malu-share-photo{height:183px}
+.malu-share-body{padding:17px 18px 20px}
+.malu-share-body small{
+  display:block;
+  margin-bottom:8px;
+  color:#208a50;
+  font-size:.61rem;
+  font-weight:850;
+  letter-spacing:.07em;
+}
+.malu-share-body strong{
+  display:block;
+  color:#33201c;
+  font:700 1.25rem Georgia,"Times New Roman",serif;
+}
+.malu-share-body p{
+  margin:7px 0 0;
+  color:#75655d;
+  font-size:.79rem;
+  line-height:1.45;
+}
+.malu-prosocial-note{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin:0 0 20px;
+  padding:14px 15px;
+  border:1px solid rgba(75,44,30,.06);
+  border-radius:17px;
+  background:#f2e9df;
+}
+.malu-prosocial-note span{font-size:1.2rem;color:var(--color-primary)}
+.malu-prosocial-note p{margin:0;color:#6e5b52;font-size:.76rem;line-height:1.45}
+.malu-scratch-stage{padding-top:22px}
+.malu-scratch-wrap{margin-top:25px}
+.malu-scratch-card{
+  height:355px;
+  overflow:hidden;
+  position:relative;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.25);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--color-primary) 88%,#592b22),color-mix(in srgb,var(--color-primary) 70%,#bd7559));
+  box-shadow:0 25px 65px rgba(68,36,24,.17);
+}
+.malu-scratch-under{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px;
+  text-align:center;
+  color:white;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(255,255,255,.12),transparent 13rem),
+    linear-gradient(145deg,color-mix(in srgb,var(--color-primary) 91%,#532920),color-mix(in srgb,var(--color-primary) 72%,#bc755a));
+}
+.malu-scratch-under span{
+  font-size:.63rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase;opacity:.78
+}
+.malu-scratch-under strong{
+  max-width:320px;
+  margin:15px 0 10px;
+  font:700 clamp(2.15rem,10vw,3.15rem)/.95 Georgia,"Times New Roman",serif;
+  letter-spacing:-.04em;
+}
+.malu-scratch-under small{font-size:.9rem;opacity:.82}
+.malu-scratch-canvas{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  touch-action:none;
+  cursor:crosshair;
+}
+.malu-scratch-hint{
+  min-height:22px;
+  margin:14px 0 17px;
+  color:#78645a;
+  text-align:center;
+  font-size:.79rem;
+}
+.malu-reward{align-items:center;text-align:center;padding-top:16px}
+.malu-heart{
+  width:76px;height:76px;
+  display:grid;place-items:center;
+  margin:0 auto 21px;
+  border:1px solid rgba(91,52,38,.08);
+  border-radius:50%;
+  background:#f1e3d7;
+  color:var(--color-primary);
+  font-size:2rem;
+}
+.malu-reward .malu-lead{max-width:340px}
+.malu-coupon{
+  width:100%;
+  margin:28px 0 21px;
+  padding:27px 23px;
+  overflow:hidden;
+  position:relative;
+  border-radius:28px;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--color-primary) 92%,#5d2c23),color-mix(in srgb,var(--color-primary) 72%,#be7559));
+  color:#fff;
+  box-shadow:0 24px 60px color-mix(in srgb,var(--color-primary) 20%,transparent);
+}
+.malu-coupon:before,.malu-coupon:after{
+  content:"";position:absolute;top:51%;
+  width:24px;height:24px;border-radius:50%;
+  background:#fffaf4;transform:translateY(-50%)
+}
+.malu-coupon:before{left:-12px}.malu-coupon:after{right:-12px}
+.malu-coupon small{
+  display:block;font-size:.6rem;font-weight:850;letter-spacing:.16em;opacity:.78
+}
+.malu-coupon strong{
+  display:block;max-width:330px;margin:13px auto 9px;
+  font:700 clamp(1.85rem,8.5vw,2.65rem)/1 Georgia,"Times New Roman",serif;
+  letter-spacing:-.035em;
+}
+.malu-coupon>span{font-size:.8rem;opacity:.82}
+.malu-coupon>i{display:block;border-top:1px dashed rgba(255,255,255,.35);margin:21px -4px 16px}
+.malu-coupon>div{display:flex;justify-content:space-between;gap:12px;font-size:.66rem;opacity:.8}
+.malu-loading{align-items:center;justify-content:center;text-align:center}
+.malu-loading-mark{
+  width:94px;height:94px;display:grid;place-items:center;margin-bottom:24px;
+  border:1px solid rgba(90,51,37,.1);border-radius:50%;color:var(--color-primary)
+}
+.malu-error{
+  position:absolute;left:20px;right:20px;bottom:55px;z-index:8;
+  padding:11px 13px;margin:0;
+  border:1px solid rgba(160,57,48,.18);border-radius:13px;
+  background:#fff3f0;color:#9d3933;text-align:center;font-size:.76rem
+}
+.malu-footer{
+  padding:13px 20px 18px;
+  color:#ac9a91;
+  text-align:center;
+  font-size:.59rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.malu-footer strong{color:#6d5b52}
+@keyframes malu-in{from{opacity:0;transform:translateY(10px)}}
+@media(min-width:481px){
+  .malu-experience{padding:24px}
+  .malu-shell{min-height:calc(100dvh - 48px);border-radius:32px;box-shadow:0 26px 80px rgba(63,35,23,.15)}
+}
+@media(max-height:780px){
+  .malu-hero{height:42dvh;min-height:300px;margin-top:17px}
+  .malu-stage h1{font-size:2.25rem}
+  .malu-scratch-card{height:300px}
+  .malu-share-photo{height:145px}
+}
