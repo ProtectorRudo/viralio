@@ -61,6 +61,8 @@ export const merchants: Merchant[] = [
       shortName: "Atlas",
       monogram: "A",
       category: "barber",
+      businessType: "Barbería contemporánea",
+      shareMode: "whatsapp_only",
       heroEyebrow: "Tu próximo corte empieza acá",
       heroTitle: "Tu estilo tiene una sorpresa",
       heroCopy: "Abrí tu pase privado y descubrí un beneficio para tu próxima visita.",
