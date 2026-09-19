@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { BrandAiError, generateOpenAiBrandDraft } from "@/ai/openai-brand";
-import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
+import { isSameOrigin, operatorSessionFromRequest, verifyOnboardingKey } from "@/security/merchant-auth";
 
 export const runtime = "nodejs";
 
@@ -46,7 +46,9 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json() as Record<string, unknown>;
-    if (typeof body.onboardingKey !== "string" || !verifyOnboardingKey(body.onboardingKey)) {
+    const operatorAuthenticated = Boolean(operatorSessionFromRequest(request));
+    const keyAuthenticated = typeof body.onboardingKey === "string" && verifyOnboardingKey(body.onboardingKey);
+    if (!operatorAuthenticated && !keyAuthenticated) {
       return jsonNoStore({ error: "Clave de alta inválida" }, 401);
     }
     const template = body.template;
