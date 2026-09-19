@@ -216,7 +216,9 @@ export function MaluPremiumExperience({
   const [scratchReward, setScratchReward] = useState<Reward>();
 
   useEffect(() => {
-    const sessionId = localStorage.getItem(storageKey) ?? undefined;
+    const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+    if (resetRequested) localStorage.removeItem(storageKey);
+    const sessionId = resetRequested ? undefined : (localStorage.getItem(storageKey) ?? undefined);
     json<SessionPayload>("/api/sessions", {
       method: "POST",
       body: JSON.stringify({
