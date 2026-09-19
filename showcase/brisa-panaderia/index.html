@@ -203,7 +203,7 @@
       </div>
 
       <button class="cta" onclick="saveCoupon()">Guardar cupón</button>
-      <div class="success-note">Mostralo en caja cuando vuelvas. Este regalo es personal.</div>
+      <div class="success-note">Al guardarlo, se envía por WhatsApp al comercio · 2215869910</div>
       <div class="spacer"></div>
       <div class="powered">Experiencia impulsada por VIRALIO</div>
     </section>
@@ -220,7 +220,9 @@
 
 <script>
   const steps = Array.from(document.querySelectorAll('.step'));
-  const key = 'viralio-brisa-step-v1';
+  const key = 'viralio-brisa-step-v2';
+  const MERCHANT_PHONE_DISPLAY = '2215869910';
+  const MERCHANT_PHONE_WA = '5492215869910';
 
   function go(name){
     steps.forEach(s => s.classList.toggle('active', s.dataset.step === name));
@@ -248,15 +250,39 @@
     }
   });
 
+  function resetScratchState(){
+    scratchReady = false;
+    drawing = false;
+    lastX = 0;
+    lastY = 0;
+    lastProgressCheck = 0;
+    const canvas = document.getElementById('scratchCanvas');
+    if(canvas){
+      canvas.style.display = 'block';
+      canvas.style.opacity = '1';
+      canvas.removeAttribute('data-done');
+      const ctx = canvas.getContext('2d');
+      if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    const hint = document.getElementById('scratchHint');
+    if(hint) hint.textContent = '☝️ Raspá para descubrir';
+    const next = document.getElementById('revealNext');
+    if(next) next.classList.add('hidden');
+  }
+
   function resetDemo(){
     localStorage.removeItem(key);
     history.replaceState({},'',location.pathname);
+    resetScratchState();
     go('home');
   }
 
   function saveCoupon(){
-    document.getElementById('saveModal').classList.add('open');
-    document.getElementById('saveModal').setAttribute('aria-hidden','false');
+    const msg =
+      'Hola Brisa Panadería 👋\n' +
+      'Guardé mi regalo de Viralio: 2 medialunas de regalo en mi próxima compra. 🎁';
+    const url = 'https://wa.me/' + MERCHANT_PHONE_WA + '?text=' + encodeURIComponent(msg);
+    window.location.href = url;
   }
   function closeModal(){
     document.getElementById('saveModal').classList.remove('open');
@@ -268,57 +294,124 @@
   document.getElementById('validUntil').textContent = 'Válido hasta el ' +
     new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long'}).format(expiration);
 
-  let scratchReady=false, drawing=false, moves=0;
+  let scratchReady = false;
+  let drawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let lastProgressCheck = 0;
+  const SCRATCH_RADIUS = 18;
+  const SCRATCH_THRESHOLD = 0.46;
+
   function initScratch(){
     if(scratchReady) return;
-    const canvas=document.getElementById('scratchCanvas');
+    const canvas = document.getElementById('scratchCanvas');
     if(!canvas) return;
-    const rect=canvas.getBoundingClientRect();
-    const dpr=Math.min(window.devicePixelRatio||1,2);
-    canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-    const ctx=canvas.getContext('2d');
-    ctx.scale(dpr,dpr);
 
-    const g=ctx.createLinearGradient(0,0,rect.width,rect.height);
-    g.addColorStop(0,'#d3a277'); g.addColorStop(.52,'#b77452'); g.addColorStop(1,'#8e4433');
-    ctx.fillStyle=g; ctx.fillRect(0,0,rect.width,rect.height);
+    canvas.style.display = 'block';
+    canvas.style.opacity = '1';
+    canvas.removeAttribute('data-done');
 
-    ctx.fillStyle='rgba(255,250,243,.92)';
-    ctx.textAlign='center';
-    ctx.font='600 13px "DM Sans"';
-    ctx.fillText('DESLIZÁ EL DEDO',rect.width/2,rect.height/2-16);
-    ctx.font='600 34px "Playfair Display"';
-    ctx.fillText('Descubrí tu regalo',rect.width/2,rect.height/2+25);
-    ctx.font='500 12px "DM Sans"';
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    const g = ctx.createLinearGradient(0,0,rect.width,rect.height);
+    g.addColorStop(0,'#d3a277');
+    g.addColorStop(.52,'#b77452');
+    g.addColorStop(1,'#8e4433');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,rect.width,rect.height);
+
+    ctx.fillStyle = 'rgba(255,250,243,.94)';
+    ctx.textAlign = 'center';
+    ctx.font = '600 13px "DM Sans"';
+    ctx.fillText('DESLIZÁ EL DEDO',rect.width/2,rect.height/2-18);
+    ctx.font = '600 32px "Playfair Display"';
+    ctx.fillText('Descubrí tu regalo',rect.width/2,rect.height/2+24);
+    ctx.font = '500 12px "DM Sans"';
     ctx.fillText('Brisa Panadería',rect.width/2,rect.height-34);
 
-    ctx.globalCompositeOperation='destination-out';
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-    const scratch=(ev)=>{
+    function point(ev){
+      const r = canvas.getBoundingClientRect();
+      return { x: ev.clientX-r.left, y: ev.clientY-r.top };
+    }
+
+    function scratchedPercent(){
+      const pixels = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      let transparent = 0;
+      let sampled = 0;
+      for(let i=3;i<pixels.length;i+=64){
+        sampled++;
+        if(pixels[i] < 40) transparent++;
+      }
+      return sampled ? transparent / sampled : 0;
+    }
+
+    function checkProgress(){
+      const now = performance.now();
+      if(now-lastProgressCheck < 130) return;
+      lastProgressCheck = now;
+      if(scratchedPercent() >= SCRATCH_THRESHOLD) finishScratch(canvas);
+    }
+
+    function begin(ev){
+      if(canvas.dataset.done) return;
+      ev.preventDefault();
+      drawing = true;
+      canvas.setPointerCapture?.(ev.pointerId);
+      const p = point(ev);
+      lastX = p.x;
+      lastY = p.y;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,SCRATCH_RADIUS*.55,0,Math.PI*2);
+      ctx.fill();
+      checkProgress();
+    }
+
+    function move(ev){
       if(!drawing) return;
       ev.preventDefault();
-      const r=canvas.getBoundingClientRect();
-      const p=ev.touches?ev.touches[0]:ev;
-      const x=p.clientX-r.left,y=p.clientY-r.top;
-      ctx.beginPath();ctx.arc(x,y,28,0,Math.PI*2);ctx.fill();
-      moves++;
-      if(moves>42) finishScratch(canvas);
-    };
-    canvas.addEventListener('pointerdown',e=>{drawing=true;scratch(e)});
-    canvas.addEventListener('pointermove',scratch);
-    window.addEventListener('pointerup',()=>drawing=false);
-    scratchReady=true;
+      const p = point(ev);
+      ctx.lineWidth = SCRATCH_RADIUS*2;
+      ctx.beginPath();
+      ctx.moveTo(lastX,lastY);
+      ctx.lineTo(p.x,p.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,SCRATCH_RADIUS,0,Math.PI*2);
+      ctx.fill();
+      lastX = p.x;
+      lastY = p.y;
+      checkProgress();
+    }
+
+    function end(ev){
+      if(!drawing) return;
+      drawing = false;
+      try{ canvas.releasePointerCapture?.(ev.pointerId); }catch(_){}
+      checkProgress();
+    }
+
+    canvas.addEventListener('pointerdown',begin,{passive:false});
+    canvas.addEventListener('pointermove',move,{passive:false});
+    canvas.addEventListener('pointerup',end,{passive:false});
+    canvas.addEventListener('pointercancel',end,{passive:false});
+    scratchReady = true;
   }
 
   function finishScratch(canvas){
     if(canvas.dataset.done) return;
-    canvas.dataset.done='1';
-    canvas.style.opacity='0';
-    document.getElementById('scratchHint').textContent='🎁 ¡Este regalo es para vos!';
-    setTimeout(()=>{
-      canvas.style.display='none';
-      document.getElementById('revealNext').classList.remove('hidden');
-    },520);
+    canvas.dataset.done = '1';
+    document.getElementById('scratchHint').textContent = '🎁 ¡Lo encontraste! Podés seguir raspando.';
+    document.getElementById('revealNext').classList.remove('hidden');
   }
 
   const incoming = new URLSearchParams(location.search).get('regalo');
