@@ -12,6 +12,8 @@ export const merchants: Merchant[] = [
       shortName: "Moka",
       monogram: "M",
       category: "coffee",
+      businessType: "Café de especialidad",
+      shareMode: "whatsapp_only",
       heroEyebrow: "Un ritual hecho para vos",
       heroTitle: "Hay algo especial esperando",
       heroCopy: "Descubrí el detalle que Moka preparó para tu próxima pausa.",
