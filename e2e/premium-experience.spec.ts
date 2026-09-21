@@ -57,13 +57,13 @@ test("Moka scratch progress stays visible while the reward loads in the backgrou
   expect(afterReward).toBeGreaterThanOrEqual(beforeReward * .85);
 });
 
-test("Moka mobile: premium gift flow uses WhatsApp, real scratch reveal, persistence and complete coupon message", async ({ page, context }) => {
+test("Moka direct demo starts fresh on every visit and does not keep the previous coupon in local storage", async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await context.route("https://wa.me/**", (route) =>
     route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }),
   );
 
-  await page.goto("/moka?reset=1");
+  await page.goto("/moka");
   await expect(page.locator("main")).toHaveAttribute("data-merchant", "moka");
   await expect(page.locator("main")).toHaveAttribute("data-design-version", "gift-premium-v1");
   await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
@@ -71,13 +71,12 @@ test("Moka mobile: premium gift flow uses WhatsApp, real scratch reveal, persist
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 
-  const reward = await completeGiftFlow(page, "/moka?reset=1");
+  const reward = await completeGiftFlow(page, "/moka");
   await expect(page.getByTestId("gift-reward-voucher")).toContainText(reward.prizeName);
   await expect(page.getByTestId("gift-reward-voucher")).toContainText(reward.shortCode);
 
-  await page.reload();
-  await expect(page.getByTestId("gift-reward-stage")).toBeVisible();
-  await expect(page.getByText(reward.shortCode)).toBeVisible();
+  const storedSession = await page.evaluate(() => localStorage.getItem("viralio:moka:session"));
+  expect(storedSession).toBeNull();
 
   const popupPromise = page.waitForEvent("popup");
   await page.getByRole("button", { name: "Guardar cupón en WhatsApp" }).click();
@@ -89,6 +88,10 @@ test("Moka mobile: premium gift flow uses WhatsApp, real scratch reveal, persist
   expect(decoded).toContain("Válido hasta:");
   expect(decoded).toContain("Código:");
   expect(decoded).toContain(reward.shortCode);
+
+  await page.goto("/moka");
+  await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
+  await expect(page.getByText(reward.shortCode)).toHaveCount(0);
 });
 
 test("Atlas Barber uses the new premium WhatsApp and scratch experience with its own dark-gold skin", async ({ page, context }) => {
