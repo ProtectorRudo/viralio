@@ -213,6 +213,7 @@ export function MaluPremiumExperience({
   referralToken?: string;
 }) {
   const storageKey = `viralio:${initialMerchant.slug}:session`;
+  const isEphemeralDemo = initialMerchant.slug === "moka" && !referralToken;
   const [payload, setPayload] = useState<SessionPayload>();
   const [reward, setReward] = useState<Reward>();
   const [error, setError] = useState("");
@@ -222,12 +223,16 @@ export function MaluPremiumExperience({
   useEffect(() => {
     const currentUrl = new URL(window.location.href);
     const resetRequested = currentUrl.searchParams.get("reset") === "1";
-    if (resetRequested) {
+    if (resetRequested || isEphemeralDemo) {
       localStorage.removeItem(storageKey);
+    }
+    if (resetRequested) {
       currentUrl.searchParams.delete("reset");
       window.history.replaceState({}, "", currentUrl.pathname + currentUrl.search + currentUrl.hash);
     }
-    const sessionId = resetRequested ? undefined : (localStorage.getItem(storageKey) ?? undefined);
+    const sessionId = resetRequested || isEphemeralDemo
+      ? undefined
+      : (localStorage.getItem(storageKey) ?? undefined);
     json<SessionPayload>("/api/sessions", {
       method: "POST",
       body: JSON.stringify({
@@ -237,7 +242,7 @@ export function MaluPremiumExperience({
       }),
     })
       .then(async (result) => {
-        localStorage.setItem(storageKey, result.session.id);
+        if (!isEphemeralDemo) localStorage.setItem(storageKey, result.session.id);
         setPayload(result);
         if (result.session.state === "REWARDED") {
           const existing = await json<{ reward: Reward }>(`/api/sessions/${result.session.id}/spin`, {
@@ -247,7 +252,7 @@ export function MaluPremiumExperience({
         }
       })
       .catch((reason: Error) => setError(reason.message));
-  }, [initialMerchant.slug, referralToken, storageKey]);
+  }, [initialMerchant.slug, isEphemeralDemo, referralToken, storageKey]);
 
   const merchant = payload?.merchant ?? initialMerchant;
   const referralUrl = useMemo(() => {
