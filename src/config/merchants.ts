@@ -218,7 +218,7 @@ export const merchants: Merchant[] = [
       stylePreset: "bold",
       fontPreset: "humanist",
       tone: "Todo para tu mascota",
-      logoDataUrl: "/brands/saimond.svg",
+      logoDataUrl: "/brands/saimond-original.jpg",
       heroEyebrow: "Un mimo para tu mascota",
       heroTitle: "Tenemos un regalo para vos.",
       heroCopy: "Saimond preparó un beneficio para tu próxima compra. Descubrilo en menos de un minuto.",
