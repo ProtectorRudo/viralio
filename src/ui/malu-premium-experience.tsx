@@ -92,6 +92,11 @@ function MaluScratchCard({
       gradient.addColorStop(.52, "#10171c");
       gradient.addColorStop(.76, "#d8321f");
       gradient.addColorStop(1, "#f2a900");
+    } else if (merchant.slug === "saimond") {
+      gradient.addColorStop(0, "#b8eaff");
+      gradient.addColorStop(.34, "#63c5ee");
+      gradient.addColorStop(.67, "#8c0028");
+      gradient.addColorStop(1, "#ffd20a");
     } else {
       gradient.addColorStop(0, "#d8b58f");
       gradient.addColorStop(.48, "#b98966");

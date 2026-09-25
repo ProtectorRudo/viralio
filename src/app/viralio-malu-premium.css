@@ -613,3 +613,146 @@
 .malu-experience[data-merchant="volga"] .malu-footer strong{
   color:#d8a334;
 }
+
+
+/* SAIMOND PETSHOP · PREMIUM GIFT OVERRIDES */
+.malu-experience[data-merchant="saimond"]{
+  color:#0b2a54;
+  background:
+    radial-gradient(circle at 85% 4%,rgba(255,210,10,.24),transparent 24rem),
+    radial-gradient(circle at 5% 88%,rgba(140,0,40,.12),transparent 26rem),
+    linear-gradient(180deg,#dff5ff 0%,#bfe9fa 100%);
+}
+.malu-experience[data-merchant="saimond"] .malu-shell{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,210,10,.11),transparent 18rem),
+    linear-gradient(180deg,rgba(248,253,255,.98),rgba(230,247,255,.98));
+  border:1px solid rgba(11,42,84,.08);
+}
+.malu-experience[data-merchant="saimond"] .malu-header{
+  border-bottom:1px solid rgba(11,42,84,.08);
+}
+.malu-experience[data-merchant="saimond"] .malu-brand-mark img{
+  border-radius:50%;
+  filter:drop-shadow(0 8px 18px rgba(11,42,84,.18));
+}
+.malu-experience[data-merchant="saimond"] .malu-brand-copy strong{
+  color:#8c0028;
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;
+  font-weight:800;
+}
+.malu-experience[data-merchant="saimond"] .malu-brand-copy small{
+  color:#0b2a54;
+}
+.malu-experience[data-merchant="saimond"] .malu-stage h1,
+.malu-experience[data-merchant="saimond"] .malu-stage h2{
+  color:#0b2a54;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.malu-experience[data-merchant="saimond"] .malu-eyebrow{
+  color:#8c0028;
+}
+.malu-experience[data-merchant="saimond"] .malu-lead{
+  color:#486580;
+}
+.malu-experience[data-merchant="saimond"] .malu-hero{
+  background:#65c7ee;
+  border-top:1px solid rgba(140,0,40,.08);
+  border-bottom:1px solid rgba(11,42,84,.09);
+}
+.malu-experience[data-merchant="saimond"] .malu-hero-photo,
+.malu-experience[data-merchant="saimond"] .malu-share-photo{
+  background-image:
+    linear-gradient(0deg,rgba(9,35,67,.58),rgba(9,35,67,.03) 62%),
+    radial-gradient(circle at 50% 38%,rgba(255,255,255,.32),transparent 15rem),
+    url("/brands/saimond.svg");
+  background-size:auto,auto,min(78%,390px);
+  background-repeat:no-repeat;
+  background-position:center,center,center 46%;
+}
+.malu-experience[data-merchant="saimond"] .malu-gift-seal{
+  background:#ffd20a;
+  color:#8c0028;
+  border:1px solid rgba(140,0,40,.12);
+  box-shadow:0 14px 32px rgba(11,42,84,.16);
+}
+.malu-experience[data-merchant="saimond"] .malu-hero-logo{
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(255,255,255,.7);
+}
+.malu-experience[data-merchant="saimond"] .malu-button-primary{
+  background:linear-gradient(135deg,#9f0733,#790020);
+  color:white;
+  box-shadow:0 14px 30px rgba(140,0,40,.18);
+}
+.malu-experience[data-merchant="saimond"] .malu-share-card{
+  border-color:rgba(11,42,84,.08);
+  background:#fff;
+  box-shadow:0 24px 60px rgba(11,42,84,.14);
+}
+.malu-experience[data-merchant="saimond"] .malu-share-body small{
+  color:#1188e8;
+}
+.malu-experience[data-merchant="saimond"] .malu-share-body strong{
+  color:#8c0028;
+}
+.malu-experience[data-merchant="saimond"] .malu-share-body p{
+  color:#486580;
+}
+.malu-experience[data-merchant="saimond"] .malu-prosocial-note{
+  background:#edf9ff;
+  border-color:rgba(17,136,232,.13);
+}
+.malu-experience[data-merchant="saimond"] .malu-prosocial-note span{
+  color:#8c0028;
+}
+.malu-experience[data-merchant="saimond"] .malu-prosocial-note p{
+  color:#486580;
+}
+.malu-experience[data-merchant="saimond"] .malu-scratch-card{
+  border-color:rgba(140,0,40,.18);
+  background:linear-gradient(145deg,#8c0028,#5e001b);
+  box-shadow:0 26px 65px rgba(11,42,84,.17);
+}
+.malu-experience[data-merchant="saimond"] .malu-scratch-under{
+  color:white;
+  background:
+    radial-gradient(circle at 50% 25%,rgba(255,210,10,.24),transparent 13rem),
+    linear-gradient(145deg,#8c0028,#6f001f);
+}
+.malu-experience[data-merchant="saimond"] .malu-scratch-under strong{
+  color:#ffd20a;
+}
+.malu-experience[data-merchant="saimond"] .malu-scratch-hint{
+  color:#486580;
+}
+.malu-experience[data-merchant="saimond"] .malu-heart{
+  background:#fff7ca;
+  color:#8c0028;
+  border-color:rgba(140,0,40,.1);
+}
+.malu-experience[data-merchant="saimond"] .malu-coupon{
+  color:white;
+  background:
+    radial-gradient(circle at 84% 16%,rgba(255,210,10,.26),transparent 12rem),
+    linear-gradient(145deg,#95032e,#71001f);
+  box-shadow:0 26px 64px rgba(140,0,40,.19);
+}
+.malu-experience[data-merchant="saimond"] .malu-coupon:before,
+.malu-experience[data-merchant="saimond"] .malu-coupon:after{
+  background:#eefaff;
+}
+.malu-experience[data-merchant="saimond"] .malu-coupon strong{
+  color:#ffd20a;
+}
+.malu-experience[data-merchant="saimond"] .malu-loading-mark{
+  border-color:rgba(140,0,40,.13);
+  color:#8c0028;
+}
+.malu-experience[data-merchant="saimond"] .malu-footer{
+  color:#6d8aa0;
+}
+.malu-experience[data-merchant="saimond"] .malu-footer strong{
+  color:#8c0028;
+}
