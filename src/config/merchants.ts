@@ -150,7 +150,7 @@ export const merchants: Merchant[] = [
       { id: "cassata", name: "Helado cassata de regalo en tu próxima compra", probability: 15 },
       { id: "bombon", name: "Bombón escocés de regalo en tu próxima compra", probability: 15 },
     ],
-  },,
+  },
   {
     id: "merchant_volga",
     slug: "volga",
