@@ -178,7 +178,7 @@ test("Saimond uses the branded petshop flow with one 10% reward and 30-day valid
   await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
-  await expect(root.locator('img[src="/brands/saimond.svg"]').first()).toBeVisible();
+  await expect(root.locator('img[src="/brands/saimond-original.jpg"]').first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
   const reward = await completeGiftFlow(page, "/experiencia/saimond?reset=1");
