@@ -189,7 +189,7 @@ function MaluScratchCard({
       canvas.removeEventListener("pointerup", end);
       canvas.removeEventListener("pointercancel", end);
     };
-  }, [ensureReward, merchant.theme.shortName]);
+  }, [ensureReward, merchant.slug, merchant.theme.shortName]);
 
   return (
     <div className="malu-scratch-wrap" data-testid="gift-scratch-wrap">
