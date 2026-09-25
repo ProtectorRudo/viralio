@@ -163,6 +163,39 @@ test("Volga uses the metallic premium flow, WhatsApp-only sharing and 30-day rew
   expect(decoded).toContain(reward.shortCode);
 });
 
+test("Saimond uses the branded petshop flow with one 10% reward and 30-day validity", async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await context.route("https://wa.me/**", (route) =>
+    route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }),
+  );
+
+  await page.goto("/experiencia/saimond?reset=1");
+  const root = page.locator("main");
+  await expect(root).toHaveAttribute("data-merchant", "saimond");
+  await expect(root).toHaveAttribute("data-design-version", "gift-premium-v1");
+  expect(await root.evaluate((node) => getComputedStyle(node).getPropertyValue("--color-primary").trim())).toBe("#8C0028");
+  await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
+  await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
+  await expect(page.getByTestId("native-share")).toHaveCount(0);
+  await expect(root.locator('img[src="/brands/saimond.svg"]').first()).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+
+  const reward = await completeGiftFlow(page, "/experiencia/saimond?reset=1");
+  expect(reward.prizeName).toBe("10% de descuento en tu próxima compra");
+  await expect(page.getByTestId("gift-reward-voucher")).toContainText("10% de descuento en tu próxima compra");
+  await expect(page.getByTestId("gift-reward-voucher")).toContainText(reward.shortCode);
+
+  const popupPromise = page.waitForEvent("popup");
+  await page.getByRole("button", { name: "Guardar cupón en WhatsApp" }).click();
+  const popup = await popupPromise;
+  await expect.poll(() => popup.url()).toContain("wa.me/5492645845990");
+  const decoded = decodeURIComponent(popup.url());
+  expect(decoded).toContain("Saimond");
+  expect(decoded).toContain("10% de descuento en tu próxima compra");
+  expect(decoded).toContain(reward.shortCode);
+});
+
 test("premium gift landings stay contained at required mobile and desktop widths", async ({ page }) => {
   const viewports = [
     { width: 360, height: 800 },
@@ -171,7 +204,7 @@ test("premium gift landings stay contained at required mobile and desktop widths
     { width: 430, height: 932 },
     { width: 1280, height: 800 },
   ];
-  for (const path of ["/moka?reset=1", "/atlas-barber?reset=1", "/experiencia/volga?reset=1"]) {
+  for (const path of ["/moka?reset=1", "/atlas-barber?reset=1", "/experiencia/volga?reset=1", "/experiencia/saimond?reset=1"]) {
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       await page.goto(path);
