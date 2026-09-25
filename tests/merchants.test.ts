@@ -9,13 +9,23 @@ describe("merchant theming", () => {
     const moka = getMerchantBySlug("moka");
     const atlas = getMerchantBySlug("atlas-barber");
     const leo = getMerchantBySlug("el-gordo-leo");
-    expect(merchants).toHaveLength(3);
+    const volga = getMerchantBySlug("volga");
+    expect(merchants).toHaveLength(4);
     expect(moka?.theme.category).toBe("coffee");
     expect(atlas?.theme.category).toBe("barber");
     expect(leo?.theme.category).toBe("generic");
     expect(leo?.name).toBe("Mini Mercado El Gordo Leo");
     expect(leo?.whatsappNumber).toBe("5492236818230");
     expect(leo?.rewardValidityDays).toBe(7);
+    expect(volga?.name).toBe("Volga");
+    expect(volga?.whatsappNumber).toBe("5493544568000");
+    expect(volga?.rewardValidityDays).toBe(30);
+    expect(volga?.theme.businessType).toBe("Almacén");
+    expect(volga?.prizes.map(({ id, probability }) => ({ id, probability }))).toEqual([
+      { id: "nuts_20", probability: 34 },
+      { id: "deli_10", probability: 33 },
+      { id: "beer_10", probability: 33 },
+    ]);
     expect(leo?.prizes.map(({ id, probability }) => ({ id, probability }))).toEqual([
       { id: "discount_5", probability: 35 },
       { id: "discount_10", probability: 25 },
@@ -30,6 +40,7 @@ describe("merchant theming", () => {
     expect(leo?.theme.socialHeadline).toMatch(/Gordo Leo/);
     expect(getMerchantById("merchant_atlas")).toBe(atlas);
     expect(getMerchantById("merchant_el_gordo_leo")).toBe(leo);
+    expect(getMerchantById("merchant_volga")).toBe(volga);
   });
 
   it("exposes only validated color tokens as CSS variables", () => {

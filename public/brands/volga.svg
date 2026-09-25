@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">Volga</title>
+  <desc id="desc">Marca Volga inspirada en el emblema de trigo metálico negro, rojo y dorado.</desc>
+  <defs>
+    <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset=".16" stop-color="#708796"/>
+      <stop offset=".32" stop-color="#e7f1f7"/>
+      <stop offset=".53" stop-color="#304552"/>
+      <stop offset=".72" stop-color="#d9e7ef"/>
+      <stop offset="1" stop-color="#6a7d89"/>
+    </linearGradient>
+    <linearGradient id="darkChrome" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dce9f0"/>
+      <stop offset=".18" stop-color="#142735"/>
+      <stop offset=".48" stop-color="#02080d"/>
+      <stop offset=".75" stop-color="#345267"/>
+      <stop offset="1" stop-color="#e2edf3"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6b45"/>
+      <stop offset=".22" stop-color="#e52813"/>
+      <stop offset=".58" stop-color="#8a0905"/>
+      <stop offset=".82" stop-color="#ef3517"/>
+      <stop offset="1" stop-color="#ff9a62"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff19a"/>
+      <stop offset=".22" stop-color="#ffc42f"/>
+      <stop offset=".52" stop-color="#8d4e00"/>
+      <stop offset=".78" stop-color="#ffb20f"/>
+      <stop offset="1" stop-color="#fff3a6"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity=".65"/>
+    </filter>
+  </defs>
+  <rect width="640" height="640" rx="48" fill="#020303"/>
+  <g transform="translate(320 44)" filter="url(#soft)" stroke-linejoin="round">
+    <path d="M-8 222C-80 181-110 122-104 49-42 75-10 124-8 222Z" fill="url(#darkChrome)" stroke="url(#chrome)" stroke-width="8"/>
+    <path d="M8 222C80 181 110 122 104 49 42 75 10 124 8 222Z" fill="url(#darkChrome)" stroke="url(#chrome)" stroke-width="8"/>
+    <path d="M-13 329C-94 287-125 226-118 151-47 179-15 231-13 329Z" fill="url(#red)" stroke="#ff6c35" stroke-width="8" filter="url(#glow)"/>
+    <path d="M13 329C94 287 125 226 118 151 47 179 15 231 13 329Z" fill="url(#red)" stroke="#ff6c35" stroke-width="8" filter="url(#glow)"/>
+    <path d="M-18 443C-104 397-138 335-130 258-52 287-20 342-18 443Z" fill="url(#gold)" stroke="#ffd94f" stroke-width="8" filter="url(#glow)"/>
+    <path d="M18 443C104 397 138 335 130 258 52 287 20 342 18 443Z" fill="url(#gold)" stroke="#ffd94f" stroke-width="8" filter="url(#glow)"/>
+    <path d="M0 32V446" stroke="url(#chrome)" stroke-width="14" stroke-linecap="round"/>
+  </g>
+  <text x="320" y="575" text-anchor="middle" fill="url(#chrome)" font-family="Georgia, 'Times New Roman', serif" font-size="118" font-weight="700" letter-spacing="-8">Volga</text>
+</svg>
