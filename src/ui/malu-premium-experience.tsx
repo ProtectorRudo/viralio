@@ -86,9 +86,17 @@ function MaluScratchCard({
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
-    gradient.addColorStop(0, "#d8b58f");
-    gradient.addColorStop(.48, "#b98966");
-    gradient.addColorStop(1, "#8f5d45");
+    if (merchant.slug === "volga") {
+      gradient.addColorStop(0, "#dce8ee");
+      gradient.addColorStop(.28, "#516875");
+      gradient.addColorStop(.52, "#10171c");
+      gradient.addColorStop(.76, "#d8321f");
+      gradient.addColorStop(1, "#f2a900");
+    } else {
+      gradient.addColorStop(0, "#d8b58f");
+      gradient.addColorStop(.48, "#b98966");
+      gradient.addColorStop(1, "#8f5d45");
+    }
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, rect.width, rect.height);
 
