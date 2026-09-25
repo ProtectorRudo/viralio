@@ -375,7 +375,7 @@ export function MaluPremiumExperience({
 
         {!payload && (
           <div className="malu-stage malu-loading">
-            <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={50} /></div>
+            <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
             <p className="malu-eyebrow">Preparando algo para vos</p>
             <h1>Tu regalo está por aparecer.</h1>
           </div>
