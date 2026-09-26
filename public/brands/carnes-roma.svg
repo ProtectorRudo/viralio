@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-labelledby="title desc">
+  <title id="title">Carnes Roma</title>
+  <desc id="desc">Identidad de Carnes Roma en negro, blanco y naranja.</desc>
+  <defs>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff7a1a"/>
+      <stop offset="1" stop-color="#e55200"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <rect x="18" y="18" width="764" height="764" rx="38" fill="#050505" stroke="#f4f4f4" stroke-width="12"/>
+  <circle cx="400" cy="388" r="266" fill="none" stroke="#f2f2f2" stroke-width="9"/>
+  <g fill="none" stroke="url(#orange)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M208 205c-32 20-55 50-67 88 30-9 55-7 75 4-26 25-42 55-47 90 28-14 54-17 76-9-18 27-26 56-24 89 25-17 49-24 72-21-9 29-9 57-1 86"/>
+    <path d="M592 205c32 20 55 50 67 88-30-9-55-7-75 4 26 25 42 55 47 90-28-14-54-17-76-9 18 27 26 56 24 89-25-17-49-24-72-21 9 29 9 57 1 86"/>
+    <path d="M292 532c33 20 69 30 108 30s75-10 108-30"/>
+  </g>
+  <g transform="translate(265 215)" fill="url(#orange)" filter="url(#shadow)">
+    <path d="M22 190h116V72H72C56 72 42 84 42 100v90H22zm32-88h54v18H54v-18zm0 34h54v18H54v-18z"/>
+    <path d="M151 190h116V94c0-14-11-26-26-26h-90v122zm20-88h74v18h-74v-18zm0 34h74v18h-74v-18z"/>
+    <path d="M62 64c18-24 40-39 67-45v171H62V64zm118 0c28 7 50 22 67 45v81h-67V64z"/>
+    <path d="M70 183v-44h18v44zm31 0v-44h18v44zm70 0v-44h18v44zm31 0v-44h18v44z"/>
+  </g>
+  <text x="400" y="560" text-anchor="middle" fill="url(#orange)" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700" letter-spacing="4">CARNES</text>
+  <text x="400" y="644" text-anchor="middle" fill="url(#orange)" font-family="Georgia, 'Times New Roman', serif" font-size="88" font-weight="700" letter-spacing="5">ROMA</text>
+</svg>
