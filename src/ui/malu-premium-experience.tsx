@@ -97,6 +97,11 @@ function MaluScratchCard({
       gradient.addColorStop(.34, "#63c5ee");
       gradient.addColorStop(.67, "#8c0028");
       gradient.addColorStop(1, "#ffd20a");
+    } else if (merchant.slug === "carnes-roma") {
+      gradient.addColorStop(0, "#f6f6f6");
+      gradient.addColorStop(.32, "#f06a12");
+      gradient.addColorStop(.68, "#2a160c");
+      gradient.addColorStop(1, "#080808");
     } else {
       gradient.addColorStop(0, "#d8b58f");
       gradient.addColorStop(.48, "#b98966");
@@ -375,7 +380,7 @@ export function MaluPremiumExperience({
 
         {!payload && (
           <div className="malu-stage malu-loading">
-            <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
+            <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" || merchant.slug === "carnes-roma" ? 88 : 50} /></div>
             <p className="malu-eyebrow">Preparando algo para vos</p>
             <h1>Tu regalo está por aparecer.</h1>
           </div>
