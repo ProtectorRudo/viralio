@@ -371,7 +371,9 @@ export function MaluPremiumExperience({
     >
       <section className="malu-shell">
         <header className="malu-header">
-          <div className="malu-brand-mark"><MerchantBrandVisual merchant={merchant} size={38} /></div>
+          {merchant.slug !== "carnes-roma" && (
+            <div className="malu-brand-mark"><MerchantBrandVisual merchant={merchant} size={38} /></div>
+          )}
           <div className="malu-brand-copy">
             <strong>{merchant.theme.displayName}</strong>
             <small>{merchant.theme.businessType ?? merchant.theme.tone ?? "Café & jardín"}</small>
@@ -380,7 +382,11 @@ export function MaluPremiumExperience({
 
         {!payload && (
           <div className="malu-stage malu-loading">
-            <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" || merchant.slug === "carnes-roma" ? 88 : 50} /></div>
+            {merchant.slug === "carnes-roma" ? (
+              <div className="malu-loading-mark malu-loading-wordmark" aria-hidden="true">ROMA</div>
+            ) : (
+              <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
+            )}
             <p className="malu-eyebrow">Preparando algo para vos</p>
             <h1>Tu regalo está por aparecer.</h1>
           </div>
@@ -396,7 +402,9 @@ export function MaluPremiumExperience({
               <div className="malu-hero-photo" aria-hidden="true" />
               <div className="malu-gift-seal">HECHO<br />PARA VOS</div>
               <div className="malu-hero-overlay">
-                <div className="malu-hero-logo"><MerchantBrandVisual merchant={merchant} size={46} /></div>
+                {merchant.slug !== "carnes-roma" && (
+                  <div className="malu-hero-logo"><MerchantBrandVisual merchant={merchant} size={46} /></div>
+                )}
                 <h2>Gracias por elegir {merchant.theme.shortName}.</h2>
                 <p>Tu regalo tarda menos de un minuto.</p>
               </div>

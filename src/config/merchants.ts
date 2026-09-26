@@ -267,7 +267,6 @@ export const merchants: Merchant[] = [
       stylePreset: "bold",
       fontPreset: "editorial",
       tone: "Carnicería",
-      logoDataUrl: "/brands/carnes-roma-original.png",
       heroEyebrow: "Un regalo para vos",
       heroTitle: "Tenemos un regalo para vos.",
       heroCopy: "Carnes Roma preparó un beneficio para tu próxima compra. Descubrilo en menos de un minuto.",
