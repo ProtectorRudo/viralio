@@ -125,6 +125,10 @@ export class ArrayTransaction implements TransactionRepository {
     return this.database.merchantAccounts.find((account) => account.id === merchantId);
   }
 
+  async listMerchantAccounts(): Promise<MerchantAccount[]> {
+    return [...this.database.merchantAccounts].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  }
+
   async insertMerchantAccount(account: MerchantAccount): Promise<void> {
     if (this.database.merchantAccounts.some((candidate) => candidate.id === account.id || candidate.slug === account.slug)) {
       throw new Error("Merchant already exists");

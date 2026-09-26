@@ -338,6 +338,15 @@ class PostgresTransaction implements TransactionRepository {
     return rows[0] ? toMerchantAccount(rows[0]) : undefined;
   }
 
+  async listMerchantAccounts(): Promise<MerchantAccount[]> {
+    const rows = await this.sql<MerchantAccountRow[]>`
+      SELECT merchant_id, slug, name, template, business_type, pin_salt, pin_hash, created_at
+      FROM merchant_accounts
+      ORDER BY created_at DESC
+    `;
+    return rows.map(toMerchantAccount);
+  }
+
   async insertMerchantAccount(account: MerchantAccount): Promise<void> {
     await this.sql`
       INSERT INTO merchant_accounts (
