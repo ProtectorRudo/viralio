@@ -211,7 +211,7 @@ test("Carnes Roma uses the branded butcher shop flow with one 10% reward", async
   await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
-  await expect(root.locator('img[src="/brands/carnes-roma.svg"]').first()).toBeVisible();
+  await expect(root.locator('img[src="/brands/carnes-roma-original.webp"]').first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
   const reward = await completeGiftFlow(page, "/experiencia/carnes-roma?reset=1");
