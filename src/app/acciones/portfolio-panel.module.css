@@ -1,0 +1,347 @@
+.portfolio,
+.skeleton {
+  min-height: 170px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.heading h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  letter-spacing: -0.025em;
+}
+
+.heading p {
+  margin: 0;
+  max-width: 670px;
+  color: #78847f;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.refreshButton,
+.positionForm button,
+.holdingRow button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 11px;
+  min-height: 38px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #dce4e0;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.refreshButton {
+  background: #e9fff5;
+  border-color: transparent;
+  color: #07110c;
+}
+
+.refreshButton:disabled,
+.positionForm button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.positionForm {
+  display: grid;
+  grid-template-columns: 0.7fr 0.7fr 1fr auto;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.positionForm label {
+  display: grid;
+  gap: 6px;
+}
+
+.positionForm label span {
+  color: #68736e;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 850;
+}
+
+.positionForm input {
+  min-width: 0;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  outline: none;
+  background: #0b0f10;
+  color: #f2f6f4;
+  font-size: 12px;
+}
+
+.positionForm input:focus {
+  border-color: rgba(66, 211, 146, 0.55);
+}
+
+.positionForm button {
+  align-self: end;
+  min-height: 40px;
+  background: rgba(66, 211, 146, 0.1);
+  border-color: rgba(66, 211, 146, 0.18);
+  color: #8ceab7;
+}
+
+.notice {
+  margin: 12px 2px 0;
+  color: #86918c;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.summaryGrid > div {
+  display: grid;
+  gap: 5px;
+  padding: 13px;
+  min-height: 72px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.summaryGrid span {
+  color: #65706b;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 800;
+}
+
+.summaryGrid strong {
+  align-self: end;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.sizingCard {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 18px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(66, 211, 146, 0.16);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(66, 211, 146, 0.08), transparent 18rem),
+    rgba(66, 211, 146, 0.035);
+}
+
+.sizingCard > div {
+  display: grid;
+  gap: 3px;
+}
+
+.sizingCard span {
+  color: #65be8d;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 900;
+}
+
+.sizingCard h4 {
+  margin: 0;
+  color: #e8f8ef;
+  font-size: 15px;
+}
+
+.capacity {
+  align-self: center;
+  color: #78e5a9;
+  font-size: 25px;
+  letter-spacing: -0.04em;
+}
+
+.sizingCard p,
+.sizingCard small {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.sizingCard p {
+  color: #8e9b95;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.sizingCard small {
+  color: #5f6a65;
+  font-size: 9px;
+}
+
+.holdings {
+  display: grid;
+  gap: 6px;
+}
+
+.holdingsHeader,
+.holdingRow {
+  display: grid;
+  grid-template-columns: 1.35fr 0.8fr 0.9fr 0.65fr 0.65fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.holdingsHeader {
+  padding: 0 12px 4px;
+  color: #59645f;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 850;
+}
+
+.holdingRow {
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.018);
+  color: #cfd7d3;
+  font-size: 10px;
+}
+
+.holdingRow > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.holdingRow strong {
+  font-size: 12px;
+}
+
+.holdingRow > div:first-child span {
+  color: #6f7a75;
+  font-size: 9px;
+}
+
+.holdingRow button {
+  min-height: 31px;
+  padding-inline: 9px;
+  color: #bd8d8d;
+  background: transparent;
+}
+
+.positive {
+  color: #6fdda0;
+  font-weight: 800;
+}
+
+.negative {
+  color: #f58f8f;
+  font-weight: 800;
+}
+
+.asOf {
+  margin: 10px 2px 0;
+  color: #59635f;
+  font-size: 9px;
+}
+
+.blank {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  min-height: 132px;
+  margin-top: 14px;
+  padding: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+}
+
+.blank strong {
+  font-size: 13px;
+}
+
+.blank p {
+  max-width: 520px;
+  margin: 7px 0 0;
+  color: #707b76;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+  .summaryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .holdingsHeader,
+  .holdingRow {
+    grid-template-columns: 1.2fr 0.8fr 0.85fr 0.65fr 0.65fr;
+  }
+
+  .holdingsHeader span:last-child,
+  .holdingRow button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .holdingsHeader span:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .positionForm {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .positionForm label:first-child,
+  .positionForm button {
+    grid-column: 1 / -1;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sizingCard {
+    grid-template-columns: 1fr;
+  }
+
+  .capacity {
+    justify-self: start;
+  }
+
+  .holdingsHeader {
+    display: none;
+  }
+
+  .holdingRow {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .holdingRow > div:first-child,
+  .holdingRow button {
+    grid-column: 1 / -1;
+  }
+}

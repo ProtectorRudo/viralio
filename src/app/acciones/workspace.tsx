@@ -9,9 +9,10 @@ import {
   type SavedThesis,
   type ThesisAction,
 } from "@/acciones/thesis";
+import PortfolioPanel from "./portfolio-panel";
 import styles from "./workspace.module.css";
 
-type WorkspaceTab = "radar" | "watchlist" | "theses";
+type WorkspaceTab = "radar" | "watchlist" | "theses" | "portfolio";
 
 type RadarResponse = {
   items?: StockMindAnalysis[];
@@ -207,7 +208,7 @@ export default function StockMindWorkspace({
       <div className={styles.workspaceHead}>
         <div>
           <span className={styles.eyebrow}>Workspace</span>
-          <h2>Radar y seguimiento</h2>
+          <h2>Radar, seguimiento y cartera</h2>
         </div>
 
         {analysis ? (
@@ -267,6 +268,15 @@ export default function StockMindWorkspace({
           onClick={() => setTab("theses")}
         >
           Tesis <span>{theses.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "portfolio"}
+          className={tab === "portfolio" ? styles.activeTab : ""}
+          onClick={() => setTab("portfolio")}
+        >
+          Cartera
         </button>
       </div>
 
@@ -376,6 +386,12 @@ export default function StockMindWorkspace({
               <p>Analizá una acción y tocá “Agregar favorito”.</p>
             </div>
           )}
+        </div>
+      ) : null}
+
+      {tab === "portfolio" ? (
+        <div className={styles.panel}>
+          <PortfolioPanel analysis={analysis} disabled={disabled} />
         </div>
       ) : null}
 
