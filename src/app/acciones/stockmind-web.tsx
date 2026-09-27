@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { EngineResult, StockMindAnalysis } from "@/acciones/stockmind";
+import StockMindWorkspace from "./workspace";
 import styles from "./acciones.module.css";
 
 const QUICK_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "MELI"];
@@ -271,7 +272,7 @@ export default function StockMindWeb() {
             <div className={styles.mark}>S</div>
             <div>
               <strong>StockMind</strong>
-              <span>Web · motor v0.25</span>
+              <span>Web · motor v0.26</span>
             </div>
           </div>
           <Link className={styles.viralioLink} href="/">
@@ -320,6 +321,12 @@ export default function StockMindWeb() {
             {error ? <p className={styles.error}>{error}</p> : null}
           </form>
         </section>
+
+        <StockMindWorkspace
+          analysis={analysis}
+          onAnalyze={(symbol) => void runAnalysis(symbol)}
+          disabled={loading}
+        />
 
         {loading ? (
           <section className={styles.loadingPanel}>
@@ -465,7 +472,7 @@ export default function StockMindWeb() {
             Los resultados son probabilísticos, no garantizan retornos ni sustituyen
             tu propio criterio.
           </p>
-          <span>StockMind Web · v0.25</span>
+          <span>StockMind Web · v0.26</span>
         </footer>
       </section>
     </main>
