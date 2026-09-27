@@ -345,3 +345,160 @@
     grid-column: 1 / -1;
   }
 }
+
+
+.stressSection {
+  margin: 0 0 16px;
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.stressHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 13px;
+}
+
+.stressHeading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.stressHeading span {
+  color: #c79867;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 900;
+}
+
+.stressHeading h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #e7ece9;
+}
+
+.stressHeading button {
+  min-height: 36px;
+  padding: 0 11px;
+  border-radius: 10px;
+  border: 1px solid rgba(211, 161, 101, 0.22);
+  background: rgba(211, 161, 101, 0.08);
+  color: #e1b57f;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.stressHeading button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.stressGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.stressCard {
+  padding: 13px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: #0b0f10;
+}
+
+.stressCardTop {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 11px;
+}
+
+.stressCardTop > div {
+  display: grid;
+  gap: 3px;
+}
+
+.stressCardTop strong {
+  font-size: 11px;
+}
+
+.stressCardTop > div span {
+  color: #65706b;
+  font-size: 8px;
+}
+
+.stressCardTop .coverageBadge {
+  width: fit-content;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #87928d;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.stressCard dl {
+  display: grid;
+  gap: 0;
+  margin: 0 0 10px;
+}
+
+.stressCard dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stressCard dt {
+  color: #68736e;
+  font-size: 8px;
+}
+
+.stressCard dd {
+  margin: 0;
+  color: #d2d9d5;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.stressCard p,
+.stressCard small,
+.stressNote {
+  margin: 0;
+  color: #78837e;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.stressCard small {
+  display: block;
+  margin-top: 7px;
+  color: #59645f;
+}
+
+.stressNote {
+  padding: 4px 0 1px;
+}
+
+@media (max-width: 900px) {
+  .stressGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .stressHeading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
