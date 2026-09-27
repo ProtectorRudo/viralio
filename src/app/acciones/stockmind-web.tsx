@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { EngineResult, StockMindAnalysis } from "@/acciones/stockmind";
 import styles from "./acciones.module.css";
@@ -272,9 +273,9 @@ export default function StockMindWeb() {
               <span>Web · motor v0.25</span>
             </div>
           </div>
-          <a className={styles.viralioLink} href="/">
+          <Link className={styles.viralioLink} href="/">
             viralio.net
-          </a>
+          </Link>
         </header>
 
         <section className={styles.hero}>
