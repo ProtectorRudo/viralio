@@ -8,6 +8,7 @@ import {
   type PortfolioReport,
 } from "@/acciones/portfolio";
 import type { StockMindAnalysis } from "@/acciones/stockmind";
+import type { PortfolioStressReport } from "@/acciones/stress";
 import styles from "./portfolio-panel.module.css";
 
 const PORTFOLIO_KEY = "stockmind.portfolio.v1";
@@ -66,6 +67,8 @@ export default function PortfolioPanel({
   const [shares, setShares] = useState("");
   const [avgCost, setAvgCost] = useState("");
   const [loading, setLoading] = useState(false);
+  const [stressLoading, setStressLoading] = useState(false);
+  const [stressReport, setStressReport] = useState<PortfolioStressReport | null>(null);
   const [notice, setNotice] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
@@ -95,6 +98,7 @@ export default function PortfolioPanel({
       .sort((a, b) => a.ticker.localeCompare(b.ticker));
 
     setPositions(clean);
+    setStressReport(null);
     window.localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(clean));
   }
 
@@ -174,6 +178,39 @@ export default function PortfolioPanel({
     setAvgCost("");
     setNotice(`${cleanTicker} guardada en la cartera.`);
     void refresh(next);
+  }
+
+  async function runStress() {
+    if (!positions.length || stressLoading) return;
+
+    setStressLoading(true);
+    setNotice("");
+
+    try {
+      const response = await fetch("/api/acciones/stress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ positions }),
+      });
+
+      const payload = (await response.json()) as PortfolioStressReport | { error?: string };
+      if (!response.ok || !("scenarios" in payload)) {
+        const message = "error" in payload ? payload.error : undefined;
+        throw new Error(message || "No se pudo correr el stress histórico.");
+      }
+
+      setStressReport(payload);
+      setNotice("Stress histórico actualizado.");
+    } catch (error) {
+      setNotice(
+        error instanceof Error
+          ? error.message
+          : "No se pudo correr el stress histórico.",
+      );
+    } finally {
+      setStressLoading(false);
+    }
   }
 
   function removePosition(removeTicker: string) {
@@ -303,6 +340,89 @@ export default function PortfolioPanel({
               </small>
             </article>
           ) : null}
+
+          <section className={styles.stressSection}>
+            <div className={styles.stressHeading}>
+              <div>
+                <span>Stress histórico</span>
+                <h4>¿Cómo habría atravesado esta cartera otros shocks?</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => void runStress()}
+                disabled={stressLoading || disabled || !positions.length}
+              >
+                {stressLoading
+                  ? "Reconstruyendo…"
+                  : stressReport
+                    ? "Actualizar stress"
+                    : "Correr stress"}
+              </button>
+            </div>
+
+            {stressReport?.scenarios.length ? (
+              <div className={styles.stressGrid}>
+                {stressReport.scenarios.map((scenario) => (
+                  <article key={scenario.name} className={styles.stressCard}>
+                    <div className={styles.stressCardTop}>
+                      <div>
+                        <strong>{scenario.name}</strong>
+                        <span>
+                          {scenario.startDate} → {scenario.endDate}
+                        </span>
+                      </div>
+                      <span className={styles.coverageBadge}>
+                        {formatPercent(scenario.coverage)} cobertura
+                      </span>
+                    </div>
+
+                    <dl>
+                      <div>
+                        <dt>Retorno cartera</dt>
+                        <dd>{formatPercent(scenario.portfolioReturn)}</dd>
+                      </div>
+                      <div>
+                        <dt>Drawdown</dt>
+                        <dd>{formatPercent(scenario.maxDrawdown)}</dd>
+                      </div>
+                      <div>
+                        <dt>Parte cubierta</dt>
+                        <dd>{formatPercent(scenario.coveredSubportfolioReturn)}</dd>
+                      </div>
+                    </dl>
+
+                    {scenario.topLossContributors.length ? (
+                      <p>
+                        Mayor impacto:{" "}
+                        {scenario.topLossContributors
+                          .map(
+                            ([ticker, contribution]) =>
+                              `${ticker} ${formatPercent(contribution)}`,
+                          )
+                          .join(" · ")}
+                      </p>
+                    ) : (
+                      <p>Sin historia suficiente para reconstruir este escenario.</p>
+                    )}
+
+                    {scenario.missingTickers.length ? (
+                      <small>
+                        Sin cobertura histórica: {scenario.missingTickers.join(", ")}
+                      </small>
+                    ) : (
+                      <small>Cobertura histórica completa de las posiciones actuales.</small>
+                    )}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.stressNote}>
+                Reproduce crisis reales con precios históricos de las posiciones
+                actuales. Los activos sin historia suficiente quedan explícitamente
+                fuera; no se fabrican retornos.
+              </p>
+            )}
+          </section>
 
           <div className={styles.holdings}>
             <div className={styles.holdingsHeader}>
