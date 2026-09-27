@@ -272,7 +272,7 @@ export default function StockMindWeb() {
             <div className={styles.mark}>S</div>
             <div>
               <strong>StockMind</strong>
-              <span>Web · motor v0.28</span>
+              <span>Web · motor v0.29</span>
             </div>
           </div>
           <Link className={styles.viralioLink} href="/">
@@ -472,7 +472,7 @@ export default function StockMindWeb() {
             Los resultados son probabilísticos, no garantizan retornos ni sustituyen
             tu propio criterio.
           </p>
-          <span>StockMind Web · v0.28</span>
+          <span>StockMind Web · v0.29</span>
         </footer>
       </section>
     </main>
