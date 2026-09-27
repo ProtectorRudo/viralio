@@ -291,3 +291,208 @@ export function summarizeCrossSectionalBacktest(
     periodsDetail: periods,
   };
 }
+
+
+export type CrossSectionalRobustnessCell = {
+  topN: number;
+  scoreThreshold: number;
+  developmentExcessReturn: number;
+  validationExcessReturn: number;
+  validationCagr: number | null;
+  validationBenchmarkCagr: number | null;
+  validationMaxDrawdown: number | null;
+  validationCoverage: number;
+  validationSelectedCount: number;
+  stablePositive: boolean;
+};
+
+export type CrossSectionalRobustnessReport = {
+  splitDate: string | null;
+  developmentPeriods: number;
+  validationPeriods: number;
+  chosenDevelopment: CrossSectionalBacktestResult;
+  chosenValidation: CrossSectionalBacktestResult;
+  cells: CrossSectionalRobustnessCell[];
+  positiveValidationShare: number;
+  stablePositiveShare: number;
+  medianValidationExcessReturn: number | null;
+  parameterCount: number;
+};
+
+function medianNumber(values: number[]): number | null {
+  const clean = values.filter((value) => Number.isFinite(value));
+  if (!clean.length) return null;
+  const sorted = [...clean].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function uniqueBounded(
+  values: number[],
+  min: number,
+  max: number,
+): number[] {
+  return [...new Set(
+    values.map((value) =>
+      Math.max(min, Math.min(max, Math.round(value))),
+    ),
+  )].sort((a, b) => a - b);
+}
+
+function subPlan(
+  plan: CrossSectionalPlan,
+  periods: CrossSectionalPeriodPlan[],
+): CrossSectionalPlan {
+  return {
+    ...plan,
+    periods,
+  };
+}
+
+export function analyzeCrossSectionalRobustness(
+  plan: CrossSectionalPlan,
+  evaluations: CrossSectionalEvaluation[],
+  options: {
+    topN: number;
+    scoreThreshold: number;
+    transactionCostBps: number;
+    developmentShare?: number;
+  },
+): CrossSectionalRobustnessReport {
+  if (plan.periods.length < 4) {
+    const chosen = summarizeCrossSectionalBacktest(
+      plan,
+      evaluations,
+      options,
+    );
+    return {
+      splitDate: null,
+      developmentPeriods: plan.periods.length,
+      validationPeriods: 0,
+      chosenDevelopment: chosen,
+      chosenValidation: summarizeCrossSectionalBacktest(
+        { ...plan, periods: [] },
+        evaluations,
+        options,
+      ),
+      cells: [],
+      positiveValidationShare: 0,
+      stablePositiveShare: 0,
+      medianValidationExcessReturn: null,
+      parameterCount: 0,
+    };
+  }
+
+  const requestedShare = Number(options.developmentShare ?? 0.6);
+  const developmentShare = Math.max(0.5, Math.min(0.75, requestedShare));
+  const rawSplit = Math.round(plan.periods.length * developmentShare);
+  const splitIndex = Math.max(
+    2,
+    Math.min(plan.periods.length - 2, rawSplit),
+  );
+  const developmentPeriods = plan.periods.slice(0, splitIndex);
+  const validationPeriods = plan.periods.slice(splitIndex);
+  const developmentPlan = subPlan(plan, developmentPeriods);
+  const validationPlan = subPlan(plan, validationPeriods);
+
+  const topNs = uniqueBounded(
+    [options.topN - 5, options.topN, options.topN + 5],
+    1,
+    30,
+  );
+  const thresholds = uniqueBounded(
+    [
+      options.scoreThreshold - 6,
+      options.scoreThreshold - 3,
+      options.scoreThreshold,
+      options.scoreThreshold + 3,
+      options.scoreThreshold + 6,
+    ],
+    55,
+    90,
+  );
+
+  const cells: CrossSectionalRobustnessCell[] = [];
+
+  for (const topN of topNs) {
+    for (const scoreThreshold of thresholds) {
+      const params = {
+        topN,
+        scoreThreshold,
+        transactionCostBps: options.transactionCostBps,
+      };
+      const development = summarizeCrossSectionalBacktest(
+        developmentPlan,
+        evaluations,
+        params,
+      );
+      const validation = summarizeCrossSectionalBacktest(
+        validationPlan,
+        evaluations,
+        params,
+      );
+      const developmentExcessReturn =
+        development.cumulativeReturn -
+        development.benchmarkCumulativeReturn;
+      const validationExcessReturn =
+        validation.cumulativeReturn -
+        validation.benchmarkCumulativeReturn;
+
+      cells.push({
+        topN,
+        scoreThreshold,
+        developmentExcessReturn,
+        validationExcessReturn,
+        validationCagr: validation.cagr,
+        validationBenchmarkCagr: validation.benchmarkCagr,
+        validationMaxDrawdown: validation.maxDrawdown,
+        validationCoverage: validation.averageCoverage,
+        validationSelectedCount: validation.averageSelectedCount,
+        stablePositive:
+          developmentExcessReturn > 0 && validationExcessReturn > 0,
+      });
+    }
+  }
+
+  const chosenOptions = {
+    topN: options.topN,
+    scoreThreshold: options.scoreThreshold,
+    transactionCostBps: options.transactionCostBps,
+  };
+  const chosenDevelopment = summarizeCrossSectionalBacktest(
+    developmentPlan,
+    evaluations,
+    chosenOptions,
+  );
+  const chosenValidation = summarizeCrossSectionalBacktest(
+    validationPlan,
+    evaluations,
+    chosenOptions,
+  );
+
+  const positiveValidation = cells.filter(
+    (cell) => cell.validationExcessReturn > 0,
+  ).length;
+  const stablePositive = cells.filter((cell) => cell.stablePositive).length;
+
+  return {
+    splitDate: validationPeriods[0]?.signalDate ?? null,
+    developmentPeriods: developmentPeriods.length,
+    validationPeriods: validationPeriods.length,
+    chosenDevelopment,
+    chosenValidation,
+    cells,
+    positiveValidationShare: cells.length
+      ? positiveValidation / cells.length
+      : 0,
+    stablePositiveShare: cells.length
+      ? stablePositive / cells.length
+      : 0,
+    medianValidationExcessReturn: medianNumber(
+      cells.map((cell) => cell.validationExcessReturn),
+    ),
+    parameterCount: cells.length,
+  };
+}

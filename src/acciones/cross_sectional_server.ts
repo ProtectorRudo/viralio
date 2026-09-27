@@ -176,7 +176,6 @@ async function evaluateTicker(
     qqq: MarketPoint[];
     vix: MarketPoint[];
   },
-  scoreThreshold: number,
 ): Promise<{
   rows: CrossSectionalEvaluation[];
   failure?: string;
@@ -275,7 +274,7 @@ async function evaluateTicker(
         passes: passesStrongFilters(
           engines,
           composed.compositeScore,
-          scoreThreshold,
+          55,
         ),
         forwardReturn: exit.price / entry.close - 1,
         proxyExit: exit.proxy,
@@ -314,11 +313,6 @@ export async function evaluateCrossSectionalBatch(options: {
     throw new Error("El lote no contiene tickers válidos.");
   }
 
-  const scoreThreshold = clamp(
-    Number(options.scoreThreshold) || 72,
-    55,
-    90,
-  );
   const { plan, spy, qqq, vix } = await loadPlanContext(
     options.years,
     options.cadence,
@@ -341,7 +335,6 @@ export async function evaluateCrossSectionalBatch(options: {
           qqq: qqq.points,
           vix: vix.points,
         },
-        scoreThreshold,
       );
       evaluations.push(...result.rows);
       if (result.failure) {

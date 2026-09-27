@@ -2,12 +2,14 @@
 
 import { useRef, useState } from "react";
 import {
+  analyzeCrossSectionalRobustness,
   summarizeCrossSectionalBacktest,
   type CrossSectionalBacktestResult,
   type CrossSectionalBatchResult,
   type CrossSectionalCadence,
   type CrossSectionalEvaluation,
   type CrossSectionalPlan,
+  type CrossSectionalRobustnessReport,
 } from "@/acciones/cross_sectional_core";
 import styles from "./cross-sectional-panel.module.css";
 
@@ -38,9 +40,10 @@ function exportResult(
   result: CrossSectionalBacktestResult,
   plan: CrossSectionalPlan,
   failures: CrossSectionalBatchResult["failures"],
+  robustness: CrossSectionalRobustnessReport | null,
 ) {
   const payload = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     methodology: "CROSS_SECTIONAL_PIT_BATCHED",
     source: plan.source,
@@ -52,6 +55,7 @@ function exportResult(
       transactionCostBps: result.transactionCostBps,
     },
     summary: result,
+    robustness,
     failures,
   };
 
@@ -85,6 +89,8 @@ export default function CrossSectionalPanel({
   const [failures, setFailures] = useState<
     CrossSectionalBatchResult["failures"]
   >([]);
+  const [robustness, setRobustness] =
+    useState<CrossSectionalRobustnessReport | null>(null);
   const [processedTickers, setProcessedTickers] = useState(0);
   const [evaluationsCount, setEvaluationsCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -106,6 +112,7 @@ export default function CrossSectionalPanel({
     setNotice("");
     setResult(null);
     setFailures([]);
+    setRobustness(null);
     setProcessedTickers(0);
     setEvaluationsCount(0);
 
@@ -148,7 +155,7 @@ export default function CrossSectionalPanel({
                   years: planPayload.years,
                   cadence: planPayload.cadence,
                   tickers,
-                  scoreThreshold,
+                  scoreThreshold: 55,
                 }),
               },
             );
@@ -188,8 +195,19 @@ export default function CrossSectionalPanel({
         },
       );
 
+      const robustnessReport = analyzeCrossSectionalRobustness(
+        planPayload,
+        allEvaluations,
+        {
+          topN,
+          scoreThreshold,
+          transactionCostBps,
+        },
+      );
+
       setFailures(allFailures);
       setResult(summary);
+      setRobustness(robustnessReport);
       setNotice(
         `Backtest transversal completado: ${planPayload.tickers.length} tickers históricos recorridos, cobertura media ${pct(
           summary.averageCoverage,
@@ -231,7 +249,7 @@ export default function CrossSectionalPanel({
           <button
             type="button"
             className={styles.exportButton}
-            onClick={() => exportResult(result, plan, failures)}
+            onClick={() => exportResult(result, plan, failures, robustness)}
           >
             Exportar JSON
           </button>
@@ -414,6 +432,102 @@ export default function CrossSectionalPanel({
               limpia del universo completo.
             </p>
           </div>
+
+          {robustness && robustness.validationPeriods > 0 ? (
+            <section className={styles.robustnessSection}>
+              <div className={styles.robustnessHeading}>
+                <div>
+                  <span>Robustez · holdout diagnóstico</span>
+                  <h4>¿La señal aguanta cambios razonables de parámetros?</h4>
+                  <p>
+                    Primeros {robustness.developmentPeriods} períodos como desarrollo
+                    y últimos {robustness.validationPeriods} como validación. Se prueban
+                    {robustness.parameterCount} combinaciones cercanas de Top-N y umbral
+                    sin volver a descargar datos ni cambiar la evidencia PIT.
+                  </p>
+                </div>
+                <strong>
+                  corte {robustness.splitDate ?? "—"}
+                </strong>
+              </div>
+
+              <div className={styles.holdoutGrid}>
+                <article>
+                  <span>Desarrollo · exceso</span>
+                  <strong>
+                    {pct(
+                      robustness.chosenDevelopment.cumulativeReturn -
+                        robustness.chosenDevelopment.benchmarkCumulativeReturn,
+                    )}
+                  </strong>
+                </article>
+                <article>
+                  <span>Validación · exceso</span>
+                  <strong>
+                    {pct(
+                      robustness.chosenValidation.cumulativeReturn -
+                        robustness.chosenValidation.benchmarkCumulativeReturn,
+                    )}
+                  </strong>
+                </article>
+                <article>
+                  <span>Validación · CAGR</span>
+                  <strong>{pct(robustness.chosenValidation.cagr)}</strong>
+                </article>
+                <article>
+                  <span>Validación · drawdown</span>
+                  <strong>{pct(robustness.chosenValidation.maxDrawdown)}</strong>
+                </article>
+                <article>
+                  <span>Celdas que superan SPY</span>
+                  <strong>{pct(robustness.positiveValidationShare)}</strong>
+                </article>
+                <article>
+                  <span>Positivas en ambos tramos</span>
+                  <strong>{pct(robustness.stablePositiveShare)}</strong>
+                </article>
+                <article>
+                  <span>Exceso mediano validación</span>
+                  <strong>{pct(robustness.medianValidationExcessReturn)}</strong>
+                </article>
+                <article>
+                  <span>Cobertura validación</span>
+                  <strong>{pct(robustness.chosenValidation.averageCoverage)}</strong>
+                </article>
+              </div>
+
+              <div className={styles.robustnessTable}>
+                <div className={styles.robustnessHeader}>
+                  <span>Top-N</span>
+                  <span>Umbral</span>
+                  <span>Exceso desarrollo</span>
+                  <span>Exceso validación</span>
+                  <span>CAGR validación</span>
+                  <span>Estable</span>
+                </div>
+                {robustness.cells.map((cell) => (
+                  <div
+                    key={`${cell.topN}-${cell.scoreThreshold}`}
+                    className={styles.robustnessRow}
+                  >
+                    <span>{cell.topN}</span>
+                    <span>{cell.scoreThreshold}</span>
+                    <span>{pct(cell.developmentExcessReturn)}</span>
+                    <span>{pct(cell.validationExcessReturn)}</span>
+                    <span>{pct(cell.validationCagr)}</span>
+                    <span>{cell.stablePositive ? "Sí" : "No"}</span>
+                  </div>
+                ))}
+              </div>
+
+              <p className={styles.robustnessNote}>
+                El holdout es una defensa contra sobreajuste, no una garantía. Si
+                cambiás reglas después de mirar este tramo final, deja de ser un
+                conjunto realmente intocado y debe volver a validarse con datos
+                futuros.
+              </p>
+            </section>
+          ) : null}
 
           <div className={styles.periodTable}>
             <div className={styles.periodHeader}>
