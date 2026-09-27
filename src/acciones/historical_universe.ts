@@ -10,11 +10,15 @@ type Dataset = {
   source: {
     repository: string;
     commit: string;
+    snapshotBlobSha: string;
     generatedAt: string;
     license: string;
+    baselineDate: string;
     currentSnapshotDate: string;
+    recommendedWebStartDate: string;
+    note: string;
   };
-  currentSymbols: string[];
+  baselineSymbols: string[];
   changes: ChangeRow[];
 };
 
@@ -31,16 +35,21 @@ export function sp500MembersAsOf(asOf: string): string[] {
     throw new Error("Fecha de universo inválida.");
   }
 
-  const set = new Set(typed.currentSymbols.map((symbol) => symbol.toUpperCase()));
+  if (asOf < typed.source.baselineDate) {
+    return [];
+  }
 
-  for (let index = typed.changes.length - 1; index >= 0; index -= 1) {
-    const change = typed.changes[index];
-    if (change.date <= asOf) break;
+  const set = new Set(
+    typed.baselineSymbols.map((symbol) => symbol.toUpperCase()),
+  );
 
-    for (const symbol of change.added) {
+  for (const change of typed.changes) {
+    if (change.date > asOf) break;
+
+    for (const symbol of change.removed) {
       set.delete(symbol.toUpperCase());
     }
-    for (const symbol of change.removed) {
+    for (const symbol of change.added) {
       set.add(symbol.toUpperCase());
     }
   }
@@ -73,7 +82,10 @@ export function sp500UniverseDiagnostics(asOf: string) {
     dottedSymbols: dotted,
     sourceRepository: typed.source.repository,
     sourceCommit: typed.source.commit,
+    snapshotBlobSha: typed.source.snapshotBlobSha,
+    baselineDate: typed.source.baselineDate,
     snapshotDate: typed.source.currentSnapshotDate,
+    recommendedWebStartDate: typed.source.recommendedWebStartDate,
   };
 }
 

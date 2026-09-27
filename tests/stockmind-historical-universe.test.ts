@@ -22,10 +22,16 @@ describe("StockMind historical S&P 500 universe", () => {
     }
   });
 
-  it("keeps plausible historical index sizes", () => {
-    for (const date of ["2001-01-31", "2010-12-31", "2020-12-31", "2026-09-21"]) {
+  it("keeps plausible sizes throughout the web backtest window", () => {
+    for (const date of [
+      "2018-12-31",
+      "2020-12-31",
+      "2022-12-30",
+      "2024-12-31",
+      "2026-09-21",
+    ]) {
       const count = sp500MembersAsOf(date).length;
-      expect(count).toBeGreaterThanOrEqual(480);
+      expect(count).toBeGreaterThanOrEqual(490);
       expect(count).toBeLessThanOrEqual(515);
     }
   });
@@ -35,20 +41,23 @@ describe("StockMind historical S&P 500 universe", () => {
     expect(normalizeProviderTicker("BF.B")).toBe("BF-B");
   });
 
-  it("builds a union that includes removed constituents", () => {
+  it("builds a union that retains companies later removed from the index", () => {
     const union = new Set(
-      sp500UniverseUnion(["2008-09-30", "2026-09-21"]),
+      sp500UniverseUnion(["2024-09-22", "2026-09-21"]),
     );
 
-    expect(union.has("LEHMQ")).toBe(true);
+    expect(union.has("AAL")).toBe(true);
     expect(union.has("AAPL")).toBe(true);
   });
 
-  it("exposes pinned source metadata", () => {
+  it("exposes the pinned full-snapshot source metadata", () => {
     const diagnostics = sp500UniverseDiagnostics("2026-09-21");
     expect(diagnostics.sourceCommit).toBe(
       "019beba2644764db88219cee6a8c43b8aae4904e",
     );
-    expect(diagnostics.snapshotDate).toBe("2026-09-27");
+    expect(diagnostics.snapshotBlobSha).toBe(
+      "cbe4a55138732c8e2a656ca2fc42b4765bef35ff",
+    );
+    expect(diagnostics.recommendedWebStartDate).toBe("2018-01-01");
   });
 });
