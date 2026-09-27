@@ -241,8 +241,9 @@ export default function StockMindWeb() {
         { cache: "no-store" },
       );
       const payload = (await response.json()) as StockMindAnalysis | { error?: string };
-      if (!response.ok || "error" in payload) {
-        throw new Error("error" in payload ? payload.error || "No se pudo analizar." : "No se pudo analizar.");
+      if (!response.ok || !("ticker" in payload)) {
+        const message = "error" in payload ? payload.error : undefined;
+        throw new Error(message || "No se pudo analizar.");
       }
       setAnalysis(payload);
     } catch (reason) {
