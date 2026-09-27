@@ -43,7 +43,7 @@ describe("StockMind historical S&P 500 universe", () => {
 
   it("builds a union that retains companies later removed from the index", () => {
     const union = new Set(
-      sp500UniverseUnion(["2024-09-22", "2026-09-21"]),
+      sp500UniverseUnion(["2024-09-21", "2026-09-21"]),
     );
 
     expect(union.has("AAL")).toBe(true);
