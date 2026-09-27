@@ -81,9 +81,13 @@ export default function StockMindWorkspace({
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setWatchlist(readJson<string[]>(WATCHLIST_KEY, []));
-    setTheses(readJson<SavedThesis[]>(THESES_KEY, []));
-    setHydrated(true);
+    const timer = window.setTimeout(() => {
+      setWatchlist(readJson<string[]>(WATCHLIST_KEY, []));
+      setTheses(readJson<SavedThesis[]>(THESES_KEY, []));
+      setHydrated(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   function persistWatchlist(next: string[]) {
