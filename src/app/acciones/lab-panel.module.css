@@ -384,3 +384,267 @@
     display: none;
   }
 }
+
+
+.headingActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.saveRunButton {
+  min-height: 40px;
+  padding: 0 13px;
+  border-radius: 11px;
+  border: 1px solid rgba(126, 200, 255, 0.2);
+  background: rgba(126, 200, 255, 0.09);
+  color: #a8d9ff;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.compareSection {
+  margin-top: 11px;
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(135, 117, 255, 0.06), transparent 22rem),
+    rgba(255, 255, 255, 0.016);
+}
+
+.compareHeading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.compareHeading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.compareHeading span {
+  color: #a99cff;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 900;
+}
+
+.compareHeading h4 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.compareHeading p {
+  max-width: 700px;
+  margin: 0;
+  color: #707c76;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.compareHeading > strong {
+  color: #786eb2;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.compareControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.compareControls label {
+  display: grid;
+  gap: 5px;
+}
+
+.compareControls label span {
+  color: #65706b;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 850;
+}
+
+.compareControls select {
+  min-width: 0;
+  height: 38px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  outline: none;
+  background: #0b0f10;
+  color: #dfe6e2;
+  font-size: 9px;
+}
+
+.comparisonCard {
+  padding: 13px;
+  margin-bottom: 10px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: #0b0f10;
+}
+
+.comparisonStatus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 11px;
+}
+
+.comparisonStatus > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.compatible {
+  color: #73dda0;
+  border: 1px solid rgba(66, 211, 146, 0.2);
+  background: rgba(66, 211, 146, 0.07);
+}
+
+.incompatible {
+  color: #f3bc76;
+  border: 1px solid rgba(243, 188, 118, 0.2);
+  background: rgba(243, 188, 118, 0.07);
+}
+
+.comparisonStatus small {
+  color: #626d68;
+  font-size: 8px;
+}
+
+.compatibilityIssues {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  color: #b18c68;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.deltaGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.deltaGrid article {
+  display: grid;
+  gap: 5px;
+  min-height: 62px;
+  padding: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.deltaGrid span {
+  color: #626d68;
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+}
+
+.deltaGrid strong {
+  align-self: end;
+  font-size: 12px;
+}
+
+.savedRuns {
+  display: grid;
+  gap: 6px;
+}
+
+.savedRunRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.savedRunRow > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.savedRunRow strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #afb8b3;
+  font-size: 9px;
+}
+
+.savedRunRow span {
+  color: #626d68;
+  font-size: 8px;
+}
+
+.savedRunRow button {
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: transparent;
+  color: #ad7f7f;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.compareEmpty {
+  margin: 0;
+  padding: 10px 0 2px;
+  color: #6d7872;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+@media (max-width: 680px) {
+  .headingActions {
+    justify-content: flex-start;
+  }
+
+  .compareHeading,
+  .comparisonStatus {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .compareControls,
+  .deltaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .savedRunRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .savedRunRow button {
+    width: fit-content;
+  }
+}

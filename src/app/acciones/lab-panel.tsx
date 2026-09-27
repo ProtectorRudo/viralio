@@ -1,12 +1,28 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { StockMindAnalysis } from "@/acciones/stockmind";
 import type {
   WalkForwardObservation,
   WalkForwardResult,
 } from "@/acciones/walkforward";
+import {
+  compareWalkForwardRuns,
+  type SavedWalkForwardRun,
+} from "@/acciones/walkforward_compare";
 import styles from "./lab-panel.module.css";
+
+const RUNS_KEY = "stockmind.labRuns.v1";
+
+function readRuns(): SavedWalkForwardRun[] {
+  try {
+    const raw = window.localStorage.getItem(RUNS_KEY);
+    const parsed = raw ? (JSON.parse(raw) as SavedWalkForwardRun[]) : [];
+    return Array.isArray(parsed) ? parsed.slice(0, 12) : [];
+  } catch {
+    return [];
+  }
+}
 
 function pct(value: number | null | undefined, digits = 1) {
   if (value == null || !Number.isFinite(value)) return "—";
@@ -69,6 +85,66 @@ export default function LabPanel({
   const [result, setResult] = useState<WalkForwardResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
+  const [savedRuns, setSavedRuns] = useState<SavedWalkForwardRun[]>([]);
+  const [runsHydrated, setRunsHydrated] = useState(false);
+  const [leftRunId, setLeftRunId] = useState("");
+  const [rightRunId, setRightRunId] = useState("");
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const runs = readRuns();
+      setSavedRuns(runs);
+      setLeftRunId(runs[1]?.id ?? runs[0]?.id ?? "");
+      setRightRunId(runs[0]?.id ?? "");
+      setRunsHydrated(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function persistRuns(next: SavedWalkForwardRun[]) {
+    const limited = next.slice(0, 12);
+    setSavedRuns(limited);
+    window.localStorage.setItem(RUNS_KEY, JSON.stringify(limited));
+  }
+
+  function saveRun() {
+    if (!result) return;
+
+    const createdAt = new Date().toISOString();
+    const run: SavedWalkForwardRun = {
+      id: `${createdAt}-${result.ticker}-${result.scoreThreshold}`,
+      createdAt,
+      label: `${result.ticker} · U${result.scoreThreshold} · ${result.historyYears}a · ${new Date(
+        createdAt,
+      ).toLocaleString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`,
+      result,
+    };
+
+    const next = [run, ...savedRuns.filter((item) => item.id !== run.id)];
+    persistRuns(next);
+
+    if (!rightRunId) {
+      setRightRunId(run.id);
+    } else {
+      setLeftRunId(rightRunId);
+      setRightRunId(run.id);
+    }
+
+    setNotice("Corrida guardada en este navegador.");
+  }
+
+  function removeRun(id: string) {
+    const next = savedRuns.filter((item) => item.id !== id);
+    persistRuns(next);
+    if (leftRunId === id) setLeftRunId(next[1]?.id ?? next[0]?.id ?? "");
+    if (rightRunId === id) setRightRunId(next[0]?.id ?? "");
+  }
 
   async function run(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
@@ -127,6 +203,14 @@ export default function LabPanel({
 
   const recent = result?.observationsDetail.slice(-12).reverse() ?? [];
 
+  const comparison = useMemo(() => {
+    const left = savedRuns.find((run) => run.id === leftRunId);
+    const right = savedRuns.find((run) => run.id === rightRunId);
+    return left && right && left.id !== right.id
+      ? compareWalkForwardRuns(left, right)
+      : null;
+  }, [savedRuns, leftRunId, rightRunId]);
+
   return (
     <div className={styles.lab}>
       <div className={styles.heading}>
@@ -139,13 +223,22 @@ export default function LabPanel({
           </p>
         </div>
         {result ? (
-          <button
-            type="button"
-            className={styles.exportButton}
-            onClick={() => exportJson(result)}
-          >
-            Exportar JSON
-          </button>
+          <div className={styles.headingActions}>
+            <button
+              type="button"
+              className={styles.exportButton}
+              onClick={() => exportJson(result)}
+            >
+              Exportar JSON
+            </button>
+            <button
+              type="button"
+              className={styles.saveRunButton}
+              onClick={saveRun}
+            >
+              Guardar corrida
+            </button>
+          </div>
         ) : null}
       </div>
 
@@ -358,6 +451,162 @@ export default function LabPanel({
               <ObservationRow key={row.date} row={row} />
             ))}
           </section>
+
+          {runsHydrated ? (
+            <section className={styles.compareSection}>
+              <div className={styles.compareHeading}>
+                <div>
+                  <span>Historial local</span>
+                  <h4>Comparar corridas del mismo experimento</h4>
+                  <p>
+                    El umbral puede cambiar; ticker, período, frecuencia, costos y
+                    fechas deben coincidir para considerar la comparación limpia.
+                  </p>
+                </div>
+                <strong>{savedRuns.length}/12 guardadas</strong>
+              </div>
+
+              {savedRuns.length >= 2 ? (
+                <>
+                  <div className={styles.compareControls}>
+                    <label>
+                      <span>Base</span>
+                      <select
+                        value={leftRunId}
+                        onChange={(event) => setLeftRunId(event.target.value)}
+                      >
+                        <option value="">Elegir corrida</option>
+                        {savedRuns.map((run) => (
+                          <option key={run.id} value={run.id}>
+                            {run.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>Nueva</span>
+                      <select
+                        value={rightRunId}
+                        onChange={(event) => setRightRunId(event.target.value)}
+                      >
+                        <option value="">Elegir corrida</option>
+                        {savedRuns.map((run) => (
+                          <option key={run.id} value={run.id}>
+                            {run.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+
+                  {comparison ? (
+                    <div className={styles.comparisonCard}>
+                      <div className={styles.comparisonStatus}>
+                        <span
+                          className={
+                            comparison.compatible
+                              ? styles.compatible
+                              : styles.incompatible
+                          }
+                        >
+                          {comparison.compatible
+                            ? "Comparación limpia"
+                            : "Parámetros no equivalentes"}
+                        </span>
+                        <small>
+                          {comparison.commonObservations} fechas comunes ·{" "}
+                          {comparison.changedSignalDates} señales cambiaron
+                        </small>
+                      </div>
+
+                      {!comparison.compatible ? (
+                        <ul className={styles.compatibilityIssues}>
+                          {comparison.compatibilityIssues.map((issue) => (
+                            <li key={issue}>{issue}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+
+                      <div className={styles.deltaGrid}>
+                        <article>
+                          <span>Δ umbral</span>
+                          <strong>{comparison.thresholdDelta >= 0 ? "+" : ""}{comparison.thresholdDelta}</strong>
+                        </article>
+                        <article>
+                          <span>Δ retorno acum.</span>
+                          <strong className={resultTone(comparison.cumulativeReturnDelta)}>
+                            {pct(comparison.cumulativeReturnDelta)}
+                          </strong>
+                        </article>
+                        <article>
+                          <span>Δ CAGR</span>
+                          <strong className={resultTone(comparison.cagrDelta)}>
+                            {pct(comparison.cagrDelta)}
+                          </strong>
+                        </article>
+                        <article>
+                          <span>Δ drawdown</span>
+                          <strong className={resultTone(comparison.maxDrawdownDelta)}>
+                            {pct(comparison.maxDrawdownDelta)}
+                          </strong>
+                        </article>
+                        <article>
+                          <span>Δ exposición</span>
+                          <strong>{pct(comparison.exposureDelta)}</strong>
+                        </article>
+                        <article>
+                          <span>Δ hit rate</span>
+                          <strong className={resultTone(comparison.hitRateDelta)}>
+                            {pct(comparison.hitRateDelta)}
+                          </strong>
+                        </article>
+                        <article>
+                          <span>Δ alpha +20d</span>
+                          <strong className={resultTone(comparison.medianAlpha20dDelta)}>
+                            {pct(comparison.medianAlpha20dDelta)}
+                          </strong>
+                        </article>
+                        <article>
+                          <span>Acuerdo señales</span>
+                          <strong>{pct(comparison.signalAgreement)}</strong>
+                        </article>
+                        <article>
+                          <span>RMSE retorno período</span>
+                          <strong>{pct(comparison.periodReturnRmse)}</strong>
+                        </article>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className={styles.savedRuns}>
+                    {savedRuns.map((run) => (
+                      <div key={run.id} className={styles.savedRunRow}>
+                        <div>
+                          <strong>{run.label}</strong>
+                          <span>
+                            Ret. {pct(run.result.cumulativeReturn)} · CAGR{" "}
+                            {pct(run.result.cagr)} · DD{" "}
+                            {pct(run.result.maxDrawdown)}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeRun(run.id)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className={styles.compareEmpty}>
+                  Guardá al menos dos corridas para comparar parámetros o futuras
+                  versiones del motor.
+                </p>
+              )}
+            </section>
+          ) : null}
 
           <div className={styles.methodology}>
             <strong>Disciplina PIT</strong>
