@@ -10,6 +10,7 @@ import {
   compareWalkForwardRuns,
   type SavedWalkForwardRun,
 } from "@/acciones/walkforward_compare";
+import CrossSectionalPanel from "./cross-sectional-panel";
 import styles from "./lab-panel.module.css";
 
 const RUNS_KEY = "stockmind.labRuns.v1";
@@ -607,6 +608,8 @@ export default function LabPanel({
               )}
             </section>
           ) : null}
+
+          <CrossSectionalPanel disabled={disabled} />
 
           <div className={styles.methodology}>
             <strong>Disciplina PIT</strong>
