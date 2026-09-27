@@ -240,7 +240,7 @@ function normalizedShape(values: number[]): number[] {
 async function fetchYahooSeries(symbol: string, range = "10y"): Promise<MarketSeries> {
   const encoded = encodeURIComponent(symbol);
   const url =
-    \`https://query1.finance.yahoo.com/v8/finance/chart/\${encoded}?range=\${range}&interval=1d&events=div%2Csplits&includeAdjustedClose=true\`;
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?range=${range}&interval=1d&events=div%2Csplits&includeAdjustedClose=true`;
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
@@ -249,7 +249,7 @@ async function fetchYahooSeries(symbol: string, range = "10y"): Promise<MarketSe
     next: { revalidate: 900 },
   });
   if (!response.ok) {
-    throw new Error(\`Yahoo no devolvió precios para \${symbol}\`);
+    throw new Error(`Yahoo no devolvió precios para ${symbol}`);
   }
 
   const payload = (await response.json()) as {
@@ -273,7 +273,7 @@ async function fetchYahooSeries(symbol: string, range = "10y"): Promise<MarketSe
 
   const result = payload.chart?.result?.[0];
   if (!result) {
-    throw new Error(payload.chart?.error?.description || \`Sin historial para \${symbol}\`);
+    throw new Error(payload.chart?.error?.description || `Sin historial para ${symbol}`);
   }
 
   const timestamps = result.timestamp || [];
@@ -298,7 +298,7 @@ async function fetchYahooSeries(symbol: string, range = "10y"): Promise<MarketSe
     });
   }
 
-  if (points.length < 20) throw new Error(\`Historial insuficiente para \${symbol}\`);
+  if (points.length < 20) throw new Error(`Historial insuficiente para ${symbol}`);
 
   return {
     symbol: result.meta?.symbol || symbol,
@@ -330,11 +330,11 @@ async function fetchSecTicker(ticker: string): Promise<{ cik: string; title: str
       };
     }
   }
-  throw new Error(\`SEC no encontró CIK para \${ticker}\`);
+  throw new Error(`SEC no encontró CIK para ${ticker}`);
 }
 
 async function fetchCompanyFacts(cik: string): Promise<Record<string, unknown>> {
-  const response = await fetch(\`https://data.sec.gov/api/xbrl/companyfacts/CIK\${cik}.json\`, {
+  const response = await fetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`, {
     headers: {
       Accept: "application/json",
       "User-Agent": "StockMind-Web/0.25 https://viralio.net/acciones",
@@ -403,7 +403,7 @@ function eligibleEntries(
 function dedupeIntervals(entries: EligibleFact[]): EligibleFact[] {
   const best = new Map<string, EligibleFact>();
   for (const row of entries) {
-    const key = \`\${row.start || ""}|\${row.end}\`;
+    const key = `${row.start || ""}|${row.end}`;
     const prior = best.get(key);
     if (!prior || row.filedMs > prior.filedMs) best.set(key, row);
   }
@@ -667,20 +667,20 @@ export function analyzeFundamental(f: FundamentalSnapshot): EngineResult {
   if (roic !== null) {
     if (roic >= 0.2) {
       score += 18;
-      reasons.push(\`ROIC alto (\${(roic * 100).toFixed(1)}%)\`);
+      reasons.push(`ROIC alto (${(roic * 100).toFixed(1)}%)`);
     } else if (roic >= 0.12) {
       score += 10;
-      reasons.push(\`ROIC sólido (\${(roic * 100).toFixed(1)}%)\`);
+      reasons.push(`ROIC sólido (${(roic * 100).toFixed(1)}%)`);
     } else if (roic < 0.06) {
       score -= 12;
-      risks.push(\`ROIC bajo (\${(roic * 100).toFixed(1)}%)\`);
+      risks.push(`ROIC bajo (${(roic * 100).toFixed(1)}%)`);
     }
   }
 
   if (fcfMargin !== null) {
     if (fcfMargin >= 0.15) {
       score += 12;
-      reasons.push(\`margen FCF fuerte (\${(fcfMargin * 100).toFixed(1)}%)\`);
+      reasons.push(`margen FCF fuerte (${(fcfMargin * 100).toFixed(1)}%)`);
     } else if (fcfMargin >= 0.08) {
       score += 7;
     } else if (fcfMargin < 0) {
@@ -702,7 +702,7 @@ export function analyzeFundamental(f: FundamentalSnapshot): EngineResult {
   if (revenueCagr !== null) {
     if (revenueCagr >= 0.08) {
       score += 8;
-      reasons.push(\`ventas creciendo \${(revenueCagr * 100).toFixed(1)}% anual\`);
+      reasons.push(`ventas creciendo ${(revenueCagr * 100).toFixed(1)}% anual`);
     } else if (revenueCagr >= 0.03) {
       score += 4;
     } else if (revenueCagr < 0) {
@@ -737,7 +737,7 @@ export function analyzeFundamental(f: FundamentalSnapshot): EngineResult {
       reasons.push("sin dilución neta reciente");
     } else if (dilution > 0.08) {
       score -= 7;
-      risks.push(\`dilución acumulada \${(dilution * 100).toFixed(1)}%\`);
+      risks.push(`dilución acumulada ${(dilution * 100).toFixed(1)}%`);
     }
   }
 
@@ -756,7 +756,7 @@ export function analyzeFundamental(f: FundamentalSnapshot): EngineResult {
   score = clamp(score, 0, 100);
 
   let summary = reasons.slice(0, 3).join("; ") || "fundamentos mixtos o datos limitados";
-  if (risks.length) summary += \`. Riesgo: \${risks[0]}\`;
+  if (risks.length) summary += `. Riesgo: ${risks[0]}`;
 
   return {
     name: "Fundamental",
@@ -864,9 +864,9 @@ export function analyzeValuation(f: FundamentalSnapshot): EngineResult {
     name: "Valuation",
     score: clamp(score, 0, 100),
     confidence,
-    summary: \`DCF conservador: valor estimado \${intrinsicPerShare.toFixed(
+    summary: `DCF conservador: valor estimado ${intrinsicPerShare.toFixed(
       2,
-    )} vs precio \${price.toFixed(2)}; margen de seguridad \${(marginOfSafety * 100).toFixed(1)}%\`,
+    )} vs precio ${price.toFixed(2)}; margen de seguridad ${(marginOfSafety * 100).toFixed(1)}%`,
     details: {
       current_price: price,
       intrinsic_value_per_share: intrinsicPerShare,
@@ -991,7 +991,7 @@ export function analyzeSeasonality(points: MarketPoint[]): EngineResult {
     name: "Seasonality",
     score,
     confidence,
-    summary: \`Mes \${currentMonth}: positivo en \${Math.round(winRate * 100)}% de \${sample.length} observaciones completas; mediana \${(med * 100).toFixed(1)}%\`,
+    summary: `Mes ${currentMonth}: positivo en ${Math.round(winRate * 100)}% de ${sample.length} observaciones completas; mediana ${(med * 100).toFixed(1)}%`,
     details: {
       month: currentMonth,
       samples: sample.length,
@@ -1058,7 +1058,7 @@ export function analyzeAnalogs(
     name: "Historical analogs",
     score,
     confidence,
-    summary: \`\${Math.round(wins * best.length)}/\${best.length} análogos terminaron positivos a \${horizon} ruedas; mediana \${(med * 100).toFixed(1)}%\`,
+    summary: `${Math.round(wins * best.length)}/${best.length} análogos terminaron positivos a ${horizon} ruedas; mediana ${(med * 100).toFixed(1)}%`,
     details: {
       samples: best.length,
       win_rate: wins,
@@ -1094,7 +1094,7 @@ export function analyzeRisk(points: MarketPoint[]): EngineResult {
     name: "Risk",
     score: clamp(score, 0, 100),
     confidence: 0.8,
-    summary: \`volatilidad anualizada \${(vol * 100).toFixed(1)}%; drawdown actual \${(currentDd * 100).toFixed(1)}%\`,
+    summary: `volatilidad anualizada ${(vol * 100).toFixed(1)}%; drawdown actual ${(currentDd * 100).toFixed(1)}%`,
     details: {
       annualized_volatility: vol,
       current_drawdown: currentDd,
@@ -1144,10 +1144,10 @@ export function analyzeRegime(
 
   if (mom63 > 0) {
     score += 10;
-    reasons.push(\`momentum trimestral +\${(mom63 * 100).toFixed(1)}%\`);
+    reasons.push(`momentum trimestral +${(mom63 * 100).toFixed(1)}%`);
   } else {
     score -= 10;
-    reasons.push(\`momentum trimestral \${(mom63 * 100).toFixed(1)}%\`);
+    reasons.push(`momentum trimestral ${(mom63 * 100).toFixed(1)}%`);
   }
 
   if (drawdown <= -0.2) score -= 18;
@@ -1177,8 +1177,8 @@ export function analyzeRegime(
   const completeness = 1 + Number(qqqAbove200 !== null) + Number(vixLevel !== null);
   const confidence = clamp(0.65 + 0.1 * completeness, 0.65, 0.9);
 
-  let summary = \`\${regime}: \${reasons.slice(0, 3).join("; ")}\`;
-  if (vixLevel !== null) summary += \`; VIX \${vixLevel.toFixed(1)}\`;
+  let summary = `${regime}: ${reasons.slice(0, 3).join("; ")}`;
+  if (vixLevel !== null) summary += `; VIX ${vixLevel.toFixed(1)}`;
 
   return {
     name: "Market regime",
@@ -1225,10 +1225,10 @@ function analyzeDataQuality(
   details.market_age_days = ageDays;
   if (ageDays > 14) {
     score -= 30;
-    issues.push(\`precios desactualizados (\${ageDays} días)\`);
+    issues.push(`precios desactualizados (${ageDays} días)`);
   } else if (ageDays > 7) {
     score -= 15;
-    issues.push(\`precios con \${ageDays} días de antigüedad\`);
+    issues.push(`precios con ${ageDays} días de antigüedad`);
   }
 
   if (points.length < 220) {
@@ -1256,13 +1256,13 @@ function analyzeDataQuality(
     details.fundamental_completeness = completeness;
     if (completeness < 0.4) {
       score -= 35;
-      issues.push(\`fundamentales muy incompletos (\${Math.round(completeness * 100)}%)\`);
+      issues.push(`fundamentales muy incompletos (${Math.round(completeness * 100)}%)`);
     } else if (completeness < 0.65) {
       score -= 20;
-      issues.push(\`fundamentales incompletos (\${Math.round(completeness * 100)}%)\`);
+      issues.push(`fundamentales incompletos (${Math.round(completeness * 100)}%)`);
     } else if (completeness < 0.85) {
       score -= 8;
-      issues.push(\`fundamentales parciales (\${Math.round(completeness * 100)}%)\`);
+      issues.push(`fundamentales parciales (${Math.round(completeness * 100)}%)`);
     }
     details.source_publication_date = fundamentals.sourcePublicationDate;
     details.as_of_date = fundamentals.asOfDate;
@@ -1276,8 +1276,8 @@ function analyzeDataQuality(
       : score >= 65
         ? "Datos utilizables con algunas limitaciones"
         : score >= 45
-          ? \`Calidad de datos limitada: \${issues.slice(0, 3).join("; ")}\`
-          : \`Datos insuficientes o poco confiables: \${issues.slice(0, 3).join("; ")}\`;
+          ? `Calidad de datos limitada: ${issues.slice(0, 3).join("; ")}`
+          : `Datos insuficientes o poco confiables: ${issues.slice(0, 3).join("; ")}`;
 
   details.issues = issues;
   return { name: "Data quality", score, confidence: 0.95, summary, details };
@@ -1343,8 +1343,8 @@ function compose(ticker: string, engines: EngineResult[]): {
     compositeScore: clamp(compositeScore, 0, 100),
     confidence: clamp(confidence, 0, 1),
     signal,
-    reasons: positive.filter((engine) => engine.score >= 58).map((engine) => \`\${engine.name}: \${engine.summary}\`),
-    risks: negative.filter((engine) => engine.score <= 48).map((engine) => \`\${engine.name}: \${engine.summary}\`),
+    reasons: positive.filter((engine) => engine.score >= 58).map((engine) => `${engine.name}: ${engine.summary}`),
+    risks: negative.filter((engine) => engine.score <= 48).map((engine) => `${engine.name}: ${engine.summary}`),
   };
 }
 
@@ -1392,7 +1392,7 @@ export async function analyzeTicker(rawTicker: string): Promise<StockMindAnalysi
         name: "Fundamental",
         score: 50,
         confidence: 0.1,
-        summary: \`Datos fundamentales no disponibles: \${fundamentalError}\`,
+        summary: `Datos fundamentales no disponibles: ${fundamentalError}`,
         details: {},
       },
       {
