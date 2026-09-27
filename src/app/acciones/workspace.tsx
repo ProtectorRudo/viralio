@@ -9,10 +9,11 @@ import {
   type SavedThesis,
   type ThesisAction,
 } from "@/acciones/thesis";
+import LabPanel from "./lab-panel";
 import PortfolioPanel from "./portfolio-panel";
 import styles from "./workspace.module.css";
 
-type WorkspaceTab = "radar" | "watchlist" | "theses" | "portfolio";
+type WorkspaceTab = "radar" | "watchlist" | "theses" | "portfolio" | "lab";
 
 type RadarResponse = {
   items?: StockMindAnalysis[];
@@ -208,7 +209,7 @@ export default function StockMindWorkspace({
       <div className={styles.workspaceHead}>
         <div>
           <span className={styles.eyebrow}>Workspace</span>
-          <h2>Radar, seguimiento y cartera</h2>
+          <h2>Radar, seguimiento, cartera y laboratorio</h2>
         </div>
 
         {analysis ? (
@@ -277,6 +278,15 @@ export default function StockMindWorkspace({
           onClick={() => setTab("portfolio")}
         >
           Cartera
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "lab"}
+          className={tab === "lab" ? styles.activeTab : ""}
+          onClick={() => setTab("lab")}
+        >
+          Lab PIT
         </button>
       </div>
 
@@ -395,6 +405,16 @@ export default function StockMindWorkspace({
         </div>
       ) : null}
 
+      {tab === "lab" ? (
+        <div className={styles.panel}>
+          <LabPanel
+            key={analysis?.ticker ?? "stockmind-lab"}
+            analysis={analysis}
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
+
       {tab === "theses" ? (
         <div className={styles.panel}>
           <div className={styles.panelHeading}>
@@ -474,8 +494,9 @@ export default function StockMindWorkspace({
       ) : null}
 
       <p className={styles.storageNote}>
-        Favoritos y tesis se guardan sólo en este navegador. No se mezclan con los
-        datos comerciales de Viralio.
+        Favoritos, tesis y cartera se guardan sólo en este navegador. No se mezclan
+        con los datos comerciales de Viralio. El Lab procesa la simulación sin
+        guardar tu configuración en la base.
       </p>
     </section>
   );

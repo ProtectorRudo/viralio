@@ -28,7 +28,7 @@ export type StockMindAnalysis = {
   fundamentalSource: string;
 };
 
-type MarketPoint = {
+export type MarketPoint = {
   date: string;
   close: number;
   high: number;
@@ -36,14 +36,14 @@ type MarketPoint = {
   volume: number;
 };
 
-type MarketSeries = {
+export type MarketSeries = {
   symbol: string;
   currency: string;
   exchange: string;
   points: MarketPoint[];
 };
 
-type FundamentalSnapshot = {
+export type FundamentalSnapshot = {
   ticker: string;
   sharesOutstanding: number | null;
   revenueTtm: number | null;
@@ -237,7 +237,7 @@ function normalizedShape(values: number[]): number[] {
   return logReturns.map((value) => (value - avg) / sigma);
 }
 
-async function fetchYahooSeries(symbol: string, range = "10y"): Promise<MarketSeries> {
+export async function fetchYahooSeries(symbol: string, range = "10y"): Promise<MarketSeries> {
   const encoded = encodeURIComponent(symbol);
   const url =
     `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?range=${range}&interval=1d&events=div%2Csplits&includeAdjustedClose=true`;
@@ -343,6 +343,41 @@ async function fetchCompanyFacts(cik: string): Promise<Record<string, unknown>> 
   });
   if (!response.ok) throw new Error("SEC Company Facts no disponible");
   return (await response.json()) as Record<string, unknown>;
+}
+
+const SEC_FACTS_CACHE = new Map<
+  string,
+  Promise<{ title: string; facts: Record<string, unknown> }>
+>();
+
+async function loadSecFactsForTicker(
+  ticker: string,
+): Promise<{ title: string; facts: Record<string, unknown> }> {
+  const key = ticker.trim().toUpperCase();
+  let pending = SEC_FACTS_CACHE.get(key);
+
+  if (!pending) {
+    pending = (async () => {
+      const { cik, title } = await fetchSecTicker(key);
+      const payload = await fetchCompanyFacts(cik);
+      const factsObject = payload.facts;
+      if (!factsObject || typeof factsObject !== "object") {
+        throw new Error("SEC sin facts utilizables");
+      }
+      return {
+        title,
+        facts: factsObject as Record<string, unknown>,
+      };
+    })();
+    SEC_FACTS_CACHE.set(key, pending);
+  }
+
+  try {
+    return await pending;
+  } catch (error) {
+    SEC_FACTS_CACHE.delete(key);
+    throw error;
+  }
 }
 
 function getConcept(
@@ -529,16 +564,18 @@ function instantHistory(
     .map((row) => ({ end: row.end, value: row.value }));
 }
 
-async function fetchFundamentals(
+export async function fetchFundamentals(
   ticker: string,
   currentPrice: number,
+  cutoffDate?: string,
 ): Promise<FundamentalSnapshot> {
-  const { cik, title } = await fetchSecTicker(ticker);
-  const payload = await fetchCompanyFacts(cik);
-  const factsObject = payload.facts;
-  if (!factsObject || typeof factsObject !== "object") throw new Error("SEC sin facts utilizables");
-  const facts = factsObject as Record<string, unknown>;
-  const cutoffMs = Date.now();
+  const { title, facts } = await loadSecFactsForTicker(ticker);
+  const cutoffMs = cutoffDate
+    ? Date.parse(`${cutoffDate}T23:59:59Z`)
+    : Date.now();
+  if (!Number.isFinite(cutoffMs)) {
+    throw new Error("Fecha de corte SEC inválida");
+  }
 
   const revenue = ttm(facts, REVENUE, cutoffMs, "USD");
   const netIncome = ttm(facts, NET_INCOME, cutoffMs, "USD");
@@ -625,7 +662,7 @@ async function fetchFundamentals(
     dilutedSharesHistory: sharesHistory,
     currentPrice,
     marketCap,
-    asOfDate: new Date().toISOString().slice(0, 10),
+    asOfDate: cutoffDate || new Date().toISOString().slice(0, 10),
     sourcePublicationDate: publicationDates.at(-1) ?? null,
     dataSource: "SEC EDGAR",
     companyName: title,
@@ -1199,10 +1236,11 @@ export function analyzeRegime(
   };
 }
 
-function analyzeDataQuality(
+export function analyzeDataQuality(
   points: MarketPoint[],
   fundamentals: FundamentalSnapshot | null,
   fundamentalError: string | null,
+  referenceDate?: string,
 ): EngineResult {
   let score = 100;
   const issues: string[] = [];
@@ -1219,8 +1257,21 @@ function analyzeDataQuality(
   }
 
   const latest = new Date(points.at(-1)!.date + "T00:00:00Z");
-  const today = new Date();
-  const ageDays = Math.max(0, Math.floor((Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()) - latest.getTime()) / 86400000));
+  const reference = referenceDate
+    ? new Date(`${referenceDate}T00:00:00Z`)
+    : new Date();
+  const ageDays = Math.max(
+    0,
+    Math.floor(
+      (Date.UTC(
+        reference.getUTCFullYear(),
+        reference.getUTCMonth(),
+        reference.getUTCDate(),
+      ) -
+        latest.getTime()) /
+        86400000,
+    ),
+  );
   details.latest_market_date = points.at(-1)!.date;
   details.market_age_days = ageDays;
   if (ageDays > 14) {
@@ -1283,7 +1334,7 @@ function analyzeDataQuality(
   return { name: "Data quality", score, confidence: 0.95, summary, details };
 }
 
-function compose(ticker: string, engines: EngineResult[]): {
+export function composeStockMind(ticker: string, engines: EngineResult[]): {
   compositeScore: number;
   confidence: number;
   signal: Signal;
@@ -1407,7 +1458,7 @@ export async function analyzeTicker(rawTicker: string): Promise<StockMindAnalysi
 
   const quality = analyzeDataQuality(stock.points, fundamentals, fundamentalError);
   const engines = [...fundamentalEngines, ...marketEngines, quality];
-  const composed = compose(ticker, engines);
+  const composed = composeStockMind(ticker, engines);
 
   const sparkline = stock.points
     .slice(-126)
