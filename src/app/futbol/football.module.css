@@ -332,6 +332,217 @@
   font-size: 27px;
 }
 
+.valuePanel {
+  max-width: 1180px;
+  margin: 14px auto 0;
+  padding: 22px;
+  border: 1px solid #25463a;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(12, 33, 26, 0.98), rgba(8, 22, 17, 0.98));
+}
+
+.valuePanel h3 {
+  margin: 5px 0 0;
+  font-size: 24px;
+}
+
+.valueRule {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #10291f;
+  color: #8ff0c3;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.valueIntro {
+  margin: 12px 0 0;
+  color: #819b90;
+  font-size: 13px;
+}
+
+.valueGrid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.valueCard {
+  padding: 16px;
+  border: 1px solid #1c3c30;
+  border-radius: 16px;
+  background: #0b1c16;
+}
+
+.valueCard_positive {
+  border-color: #42c990;
+  background: rgba(39, 124, 88, 0.16);
+}
+
+.valueCard_warning {
+  border-color: #b48c45;
+  background: rgba(161, 116, 40, 0.13);
+}
+
+.valueCard_negative {
+  border-color: #824342;
+  background: rgba(121, 52, 50, 0.13);
+}
+
+.valueCard_neutral {
+  border-color: #27483c;
+}
+
+.valueCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.valueCardTop span {
+  color: #799388;
+  font-size: 12px;
+}
+
+.valueCardTop strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 27px;
+}
+
+.valueBadge {
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #dff8ed !important;
+  font-size: 10px !important;
+  font-weight: 900;
+}
+
+.oddsNumbers {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.oddsNumbers > div {
+  padding: 11px;
+  border-radius: 12px;
+  background: #081611;
+}
+
+.oddsNumbers span,
+.bookmakerInput span {
+  display: block;
+  color: #728b80;
+  font-size: 10px;
+}
+
+.oddsNumbers strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 21px;
+}
+
+.minimumOdds strong {
+  color: #8ff0c3;
+}
+
+.bookmakerInput {
+  display: block;
+  margin-top: 12px;
+}
+
+.bookmakerInput input {
+  width: 100%;
+  margin-top: 6px;
+  box-sizing: border-box;
+  border: 1px solid #28483c;
+  border-radius: 12px;
+  background: #07130f;
+  color: #f3fbf7;
+  padding: 12px;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.edgeLine {
+  margin-top: 10px;
+  color: #849c91;
+  font-size: 11px;
+}
+
+.edgeLine b {
+  color: #eef8f3;
+}
+
+.valueLegend {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: #6f887d;
+  font-size: 11px;
+}
+
+.valueLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.valueLegend i {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 999px;
+}
+
+.legendRed {
+  background: #bb5f5b;
+}
+
+.legendAmber {
+  background: #d6a54f;
+}
+
+.legendGreen {
+  background: #54e0a4;
+}
+
+.fixturePrediction {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.fixturePrediction span {
+  margin: 0;
+  padding: 7px 5px;
+  border-radius: 9px;
+  background: #081711;
+  color: #e7f7ef;
+  text-align: center;
+  font-size: 10px;
+}
+
+.fixturePrediction b {
+  display: inline;
+  color: #54e0a4;
+}
+
+.fixturePrediction small {
+  display: block;
+  margin-top: 2px;
+  color: #789186;
+  font-size: 9px;
+}
+
 .gridTwo {
   margin-top: 14px;
   display: grid;
@@ -605,7 +816,8 @@
 
   .probabilityGrid,
   .marketGrid,
-  .fixtureGrid {
+  .fixtureGrid,
+  .valueGrid {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -635,7 +847,8 @@
   .probabilityGrid,
   .marketGrid,
   .metricPair,
-  .fixtureGrid {
+  .fixtureGrid,
+  .valueGrid {
     grid-template-columns: 1fr;
   }
 
