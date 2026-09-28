@@ -246,6 +246,7 @@ function reviewLabel(reason: string | null) {
   if (reason === "model_divergence") return "REVISAR MODELO";
   if (reason === "thin_market") return "MERCADO FINO";
   if (reason === "stale_model") return "MODELO DESACTUALIZADO";
+  if (reason === "extreme_longshot_value") return "LONGSHOT · REVISAR";
   return "A REVISAR";
 }
 
