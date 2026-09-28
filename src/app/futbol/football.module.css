@@ -486,6 +486,40 @@
   color: #eef8f3;
 }
 
+.quickValueMarkets {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.quickValueMarkets > div {
+  padding: 11px;
+  border: 1px solid #1d3b30;
+  border-radius: 12px;
+  background: #091711;
+}
+
+.quickValueMarkets span {
+  display: block;
+  color: #738c81;
+  font-size: 10px;
+}
+
+.quickValueMarkets strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 18px;
+}
+
+.quickValueMarkets small {
+  display: block;
+  margin-top: 3px;
+  color: #8ff0c3;
+  font-size: 10px;
+  font-weight: 800;
+}
+
 .valueLegend {
   margin-top: 14px;
   display: flex;
@@ -823,7 +857,8 @@
   .probabilityGrid,
   .marketGrid,
   .fixtureGrid,
-  .valueGrid {
+  .valueGrid,
+  .quickValueMarkets {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -854,7 +889,8 @@
   .marketGrid,
   .metricPair,
   .fixtureGrid,
-  .valueGrid {
+  .valueGrid,
+  .quickValueMarkets {
     grid-template-columns: 1fr;
   }
 
