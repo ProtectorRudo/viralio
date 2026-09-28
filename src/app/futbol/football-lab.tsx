@@ -45,6 +45,10 @@ const TEAMS: TeamPreset[] = [
   { name: "Estudiantes", short: "EST", primary: "#d51f2b", secondary: "#ffffff" },
   { name: "River Plate", short: "RIV", primary: "#ffffff", secondary: "#d71920" },
   { name: "Racing Club", short: "RAC", primary: "#78c7f2", secondary: "#ffffff" },
+  { name: "FC København", short: "FCK", primary: "#ffffff", secondary: "#1f3f91" },
+  { name: "FC Midtjylland", short: "FCM", primary: "#111111", secondary: "#d71920" },
+  { name: "Brøndby IF", short: "BIF", primary: "#f2dc24", secondary: "#1d3d86" },
+  { name: "AGF", short: "AGF", primary: "#ffffff", secondary: "#111111" },
 ];
 
 function pct(value: number) {
@@ -365,7 +369,11 @@ export default function FootballLab() {
       </section>
 
       <footer className={styles.footer}>
-        Motor activo: {data?.source === "football-simulator" ? "football-simulator" : "Monte Carlo integrado en Viralio"}.
+        Motor activo: {data?.source === "football-simulator"
+          ? "football-simulator"
+          : data?.source === "viralio-learned"
+            ? "modelo aprendido promovido"
+            : "Monte Carlo integrado en Viralio"}.
         {data?.modelVersion ? ` Modelo ${data.modelVersion} · ${data.competitionKey ?? "competencia sin etiqueta"} · validado en ${data.validationAlignedPredictions ?? "—"} partidos alineados.` : " Los parámetros de fuerza todavía se calibrarán con el feed histórico productivo."}
       </footer>
     </main>
