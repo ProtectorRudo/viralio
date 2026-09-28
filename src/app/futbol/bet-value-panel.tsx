@@ -7,11 +7,10 @@ import {
   expectedValueEdge,
   fairOdds,
   impliedProbability,
-  isHighModelMarketDivergence,
+  isHighProbabilityDivergence,
   isThinBookmakerMarket,
   minimumValueOdds,
   parseDecimalOdds,
-  probabilityEdge,
 } from "./bet-value";
 import upcomingFixtures from "./upcoming-denmark-271.json";
 import upcomingOdds from "./upcoming-denmark-271-odds.json";
@@ -53,13 +52,24 @@ type OddsQuote = {
   movement?: "up" | "down" | "flat";
 };
 
+type NoVigConsensus = {
+  probabilities: Record<string, number>;
+  overround: number;
+};
+
 type FixtureOdds = {
   "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
   double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
   secondary: {
     over_2_5: OddsQuote | null;
+    under_2_5?: OddsQuote | null;
     btts_yes: OddsQuote | null;
     btts_no: OddsQuote | null;
+  };
+  market_consensus?: {
+    "1X2_no_vig"?: NoVigConsensus | null;
+    goals_2_5_no_vig?: NoVigConsensus | null;
+    btts_no_vig?: NoVigConsensus | null;
   };
 };
 
@@ -186,12 +196,26 @@ export default function BetValuePanel({
                 ? selectedFixtureOdds?.["1X2"]?.["X"] ?? null
                 : selectedFixtureOdds?.["1X2"]?.["2"] ?? null;
           const hasOverride = oddsOverrides[overrideKey] !== undefined;
-          const highDivergence =
+          const outcomeConsensusKey =
+            outcome.key === "home"
+              ? "1"
+              : outcome.key === "draw"
+                ? "X"
+                : "2";
+          const marketProbability =
             bookmaker === null
+              ? null
+              : hasOverride
+                ? impliedProbability(bookmaker)
+                : selectedFixtureOdds?.market_consensus?.["1X2_no_vig"]
+                    ?.probabilities[outcomeConsensusKey] ??
+                  impliedProbability(bookmaker);
+          const highDivergence =
+            marketProbability === null
               ? false
-              : isHighModelMarketDivergence(
+              : isHighProbabilityDivergence(
                   outcome.probability,
-                  bookmaker,
+                  marketProbability,
                   dataConfidence,
                 );
           const thinMarket =
@@ -214,12 +238,10 @@ export default function BetValuePanel({
             bookmaker === null
               ? null
               : expectedValueEdge(outcome.probability, bookmaker);
-          const marketProbability =
-            bookmaker === null ? null : impliedProbability(bookmaker);
           const probabilityGap =
-            bookmaker === null
+            marketProbability === null
               ? null
-              : probabilityEdge(outcome.probability, bookmaker);
+              : outcome.probability - marketProbability;
 
           return (
             <article
@@ -312,12 +334,14 @@ export default function BetValuePanel({
                 : selectedFixtureOdds?.double_chance?.["12"] ?? null;
           const hasOverride =
             doubleChanceOverrides[overrideKey] !== undefined;
+          const marketProbability =
+            bookmaker === null ? null : impliedProbability(bookmaker);
           const highDivergence =
-            bookmaker === null
+            marketProbability === null
               ? false
-              : isHighModelMarketDivergence(
+              : isHighProbabilityDivergence(
                   market.probability,
-                  bookmaker,
+                  marketProbability,
                   dataConfidence,
                 );
           const thinMarket =
@@ -340,12 +364,10 @@ export default function BetValuePanel({
             bookmaker === null
               ? null
               : expectedValueEdge(market.probability, bookmaker);
-          const marketProbability =
-            bookmaker === null ? null : impliedProbability(bookmaker);
           const probabilityGap =
-            bookmaker === null
+            marketProbability === null
               ? null
-              : probabilityEdge(market.probability, bookmaker);
+              : market.probability - marketProbability;
 
           return (
             <article
@@ -424,12 +446,24 @@ export default function BetValuePanel({
           const minimum = minimumValueOdds(market.probability, edgeBuffer);
           const actual = market.quote?.value ?? null;
           const status = classifyValue(actual, fair, minimum);
-          const highDivergence =
+          const quickConsensusProbability =
+            market.label === "+2.5 goles"
+              ? selectedFixtureOdds?.market_consensus?.goals_2_5_no_vig
+                  ?.probabilities.over ?? null
+              : market.label === "Ambos marcan"
+                ? selectedFixtureOdds?.market_consensus?.btts_no_vig
+                    ?.probabilities.yes ?? null
+                : null;
+          const marketProbability =
             actual === null
+              ? null
+              : quickConsensusProbability ?? impliedProbability(actual);
+          const highDivergence =
+            marketProbability === null
               ? false
-              : isHighModelMarketDivergence(
+              : isHighProbabilityDivergence(
                   market.probability,
-                  actual,
+                  marketProbability,
                   dataConfidence,
                 );
           const thinMarket = market.quote
