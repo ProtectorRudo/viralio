@@ -421,7 +421,7 @@ export const merchants: Merchant[] = [
       shareCopy: "Compartilo por WhatsApp. La otra persona también recibe su propio regalo y el tuyo sigue siendo solo tuyo.",
       referralCopy: "Te mandé un regalo de Los chiquis 🐾🎁 Abrilo y descubrí tu beneficio.",
       socialHeadline: "Hay un regalo de Los chiquis esperando por vos",
-      socialSubcopy: "Abrilo y descubrí tu beneficio para la próxima sesión de tu mascota.",
+      socialSubcopy: "Peluquería canina Los chiquis: abrilo y descubrí tu beneficio para la próxima sesión de tu mascota.",
       palette: {
         canvas: "#F5F4EF",
         canvasAccent: "#D8E7DF",
