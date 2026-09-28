@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { simulateLearned } from "../api/futbol/learned-model";
-import { minimumValueOdds } from "./bet-value";
+import { confidenceAdjustedEdgeBuffer, minimumValueOdds } from "./bet-value";
 import upcomingDenmark from "./upcoming-denmark-271.json";
 import styles from "./football.module.css";
 
@@ -35,7 +35,10 @@ export default function UpcomingFixtures({
           seed: fixture.fixture_id,
           scenario: "base",
         });
-        return { fixture, prediction };
+        const edgeBuffer = prediction
+          ? confidenceAdjustedEdgeBuffer(prediction.confidence)
+          : 0.05;
+        return { fixture, prediction, edgeBuffer };
       }),
     [fixtures],
   );
@@ -59,7 +62,7 @@ export default function UpcomingFixtures({
       </div>
 
       <div className={styles.fixtureGrid}>
-        {cards.map(({ fixture, prediction }) => (
+        {cards.map(({ fixture, prediction, edgeBuffer }) => (
           <button
             type="button"
             className={
@@ -88,15 +91,15 @@ export default function UpcomingFixtures({
                 <div className={styles.fixturePrediction}>
                   <span>
                     <b>1</b> {(prediction.homeWin * 100).toFixed(0)}%
-                    <small>mín {minimumValueOdds(prediction.homeWin).toFixed(2)}</small>
+                    <small>mín {minimumValueOdds(prediction.homeWin, edgeBuffer).toFixed(2)}</small>
                   </span>
                   <span>
                     <b>X</b> {(prediction.draw * 100).toFixed(0)}%
-                    <small>mín {minimumValueOdds(prediction.draw).toFixed(2)}</small>
+                    <small>mín {minimumValueOdds(prediction.draw, edgeBuffer).toFixed(2)}</small>
                   </span>
                   <span>
                     <b>2</b> {(prediction.awayWin * 100).toFixed(0)}%
-                    <small>mín {minimumValueOdds(prediction.awayWin).toFixed(2)}</small>
+                    <small>mín {minimumValueOdds(prediction.awayWin, edgeBuffer).toFixed(2)}</small>
                   </span>
                 </div>
 
@@ -104,19 +107,19 @@ export default function UpcomingFixtures({
                   <span>
                     <b>1X</b>
                     <small>
-                      mín {minimumValueOdds(prediction.homeWin + prediction.draw).toFixed(2)}
+                      mín {minimumValueOdds(prediction.homeWin + prediction.draw, edgeBuffer).toFixed(2)}
                     </small>
                   </span>
                   <span>
                     <b>X2</b>
                     <small>
-                      mín {minimumValueOdds(prediction.draw + prediction.awayWin).toFixed(2)}
+                      mín {minimumValueOdds(prediction.draw + prediction.awayWin, edgeBuffer).toFixed(2)}
                     </small>
                   </span>
                   <span>
                     <b>12</b>
                     <small>
-                      mín {minimumValueOdds(prediction.homeWin + prediction.awayWin).toFixed(2)}
+                      mín {minimumValueOdds(prediction.homeWin + prediction.awayWin, edgeBuffer).toFixed(2)}
                     </small>
                   </span>
                 </div>
