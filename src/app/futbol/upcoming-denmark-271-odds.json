@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T16:02:48.649297+00:00",
+  "generated_at": "2026-09-28T16:12:12.528362+00:00",
   "league_id": 271,
   "fixtures": {
     "19713905": {
@@ -11,19 +11,28 @@
           "value": 1.52,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.52,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X": {
           "value": 4.71,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 4.71,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "2": {
           "value": 5.75,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 5.75,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "double_chance": {
@@ -31,19 +40,28 @@
           "value": 1.14,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.14,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X2": {
           "value": 2.62,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.62,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "12": {
           "value": 1.2,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.2,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "secondary": {
@@ -51,19 +69,28 @@
           "value": 1.44,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.44,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_yes": {
           "value": 1.53,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.53,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_no": {
           "value": 2.37,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.37,
+          "delta": 0.0,
+          "movement": "flat"
         }
       }
     },
@@ -76,19 +103,28 @@
           "value": 2.23,
           "bookmaker_id": 16,
           "bookmaker": "Marathonbet",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.23,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X": {
           "value": 3.69,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 3.69,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "2": {
           "value": 3.16,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 3.16,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "double_chance": {
@@ -96,19 +132,28 @@
           "value": 1.36,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.36,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X2": {
           "value": 1.66,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.66,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "12": {
           "value": 1.3,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.3,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "secondary": {
@@ -116,19 +161,28 @@
           "value": 1.92,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.92,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_yes": {
           "value": 1.61,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.61,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_no": {
           "value": 2.2,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.2,
+          "delta": 0.0,
+          "movement": "flat"
         }
       }
     },
@@ -141,19 +195,28 @@
           "value": 3.35,
           "bookmaker_id": 16,
           "bookmaker": "Marathonbet",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 3.35,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X": {
           "value": 3.63,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 3.63,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "2": {
           "value": 2.11,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.11,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "double_chance": {
@@ -161,19 +224,28 @@
           "value": 1.72,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.72,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X2": {
           "value": 1.36,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.36,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "12": {
           "value": 1.28,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.28,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "secondary": {
@@ -181,19 +253,28 @@
           "value": 1.82,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.82,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_yes": {
           "value": 1.57,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.57,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_no": {
           "value": 2.25,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.25,
+          "delta": 0.0,
+          "movement": "flat"
         }
       }
     },
@@ -206,19 +287,28 @@
           "value": 1.74,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.74,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X": {
           "value": 4.18,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 4.18,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "2": {
           "value": 4.2,
           "bookmaker_id": 16,
           "bookmaker": "Marathonbet",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 4.2,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "double_chance": {
@@ -226,19 +316,28 @@
           "value": 1.22,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.22,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X2": {
           "value": 2.05,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.05,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "12": {
           "value": 1.25,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.25,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "secondary": {
@@ -246,19 +345,28 @@
           "value": 1.6,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.6,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_yes": {
           "value": 1.57,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.57,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_no": {
           "value": 2.25,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.25,
+          "delta": 0.0,
+          "movement": "flat"
         }
       }
     },
@@ -271,19 +379,28 @@
           "value": 2.56,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.56,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X": {
           "value": 3.72,
           "bookmaker_id": 20,
           "bookmaker": "Pinnacle",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 3.72,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "2": {
           "value": 2.7,
           "bookmaker_id": 16,
           "bookmaker": "Marathonbet",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.7,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "double_chance": {
@@ -291,19 +408,28 @@
           "value": 1.5,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.5,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X2": {
           "value": 1.53,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.53,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "12": {
           "value": 1.28,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.28,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "secondary": {
@@ -311,19 +437,28 @@
           "value": 1.6,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.6,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_yes": {
           "value": 1.5,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.5,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_no": {
           "value": 2.5,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.5,
+          "delta": 0.0,
+          "movement": "flat"
         }
       }
     },
@@ -336,19 +471,28 @@
           "value": 1.6,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.6,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X": {
           "value": 4.15,
           "bookmaker_id": 16,
           "bookmaker": "Marathonbet",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 4.15,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "2": {
           "value": 4.9,
           "bookmaker_id": 16,
           "bookmaker": "Marathonbet",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 4.9,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "double_chance": {
@@ -356,19 +500,28 @@
           "value": 1.18,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.18,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "X2": {
           "value": 2.3,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.3,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "12": {
           "value": 1.22,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.22,
+          "delta": 0.0,
+          "movement": "flat"
         }
       },
       "secondary": {
@@ -376,19 +529,28 @@
           "value": 1.5,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.5,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_yes": {
           "value": 1.53,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 1.53,
+          "delta": 0.0,
+          "movement": "flat"
         },
         "btts_no": {
           "value": 2.37,
           "bookmaker_id": 2,
           "bookmaker": "bet365",
-          "updated_at": null
+          "updated_at": null,
+          "previous_value": 2.37,
+          "delta": 0.0,
+          "movement": "flat"
         }
       }
     },
