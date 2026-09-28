@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { simulateLearned } from "../api/futbol/learned-model";
 import upcomingDenmark from "./upcoming-denmark-271.json";
+import upcomingOdds from "./upcoming-denmark-271-odds.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -20,8 +21,20 @@ type UpcomingFixture = {
 };
 
 type MarketCandidate = {
-  label: string;
+  label: "1" | "X" | "2" | "1X" | "X2" | "12";
   probability: number;
+};
+
+type OddsQuote = {
+  value: number;
+  bookmaker_id: number | null;
+  bookmaker: string | null;
+  updated_at: string | null;
+};
+
+type FixtureOdds = {
+  "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
+  double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
 };
 
 function strongestMarket(
@@ -66,9 +79,17 @@ export default function ValueScanner() {
           prediction.awayWin,
         );
 
+        const oddsMap = upcomingOdds.fixtures as Record<string, FixtureOdds>;
+        const fixtureOdds = oddsMap[String(fixture.fixture_id)];
+        const quote =
+          market.label === "1" || market.label === "X" || market.label === "2"
+            ? fixtureOdds?.["1X2"]?.[market.label] ?? null
+            : fixtureOdds?.double_chance?.[market.label] ?? null;
+
         return {
           fixture,
           market,
+          quote,
           fair: fairOdds(market.probability),
           minimum: minimumValueOdds(market.probability),
         };
@@ -87,14 +108,24 @@ export default function ValueScanner() {
             Ingresá la cuota de la casa para validar si supera el mínimo.
           </p>
         </div>
-        <span className={styles.valueRule}>+5% edge mínimo</span>
+        <span className={styles.valueRule}>
+          cuotas reales · {new Date(upcomingOdds.generated_at).toLocaleString("es-AR", {
+            timeZone: "America/Argentina/Buenos_Aires",
+            day: "2-digit",
+            month: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
       </div>
 
       <div className={styles.scannerRows}>
         {rows.map((row) => {
           if (!row) return null;
 
-          const raw = bookmakerOdds[row.fixture.fixture_id] ?? "";
+          const raw =
+            bookmakerOdds[row.fixture.fixture_id] ??
+            (row.quote ? row.quote.value.toFixed(2) : "");
           const bookmaker = parseDecimalOdds(raw);
           const status = classifyValue(bookmaker, row.fair, row.minimum);
           const edge =
@@ -145,7 +176,7 @@ export default function ValueScanner() {
               </div>
 
               <label className={styles.scannerInput}>
-                <span>Casa</span>
+                <span>{row.quote?.bookmaker ?? "Casa"}</span>
                 <input
                   inputMode="decimal"
                   placeholder={row.minimum.toFixed(2)}
@@ -160,7 +191,7 @@ export default function ValueScanner() {
               </label>
 
               <span className={styles.scannerBadge}>
-                {status.label}
+                {row.quote ? status.label : "SIN CUOTA"}
                 {edge !== null ? (
                   <small>
                     {edge >= 0 ? "+" : ""}
