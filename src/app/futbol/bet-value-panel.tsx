@@ -66,7 +66,7 @@ export default function BetValuePanel({
           const fair = fairOdds(outcome.probability);
           const minimum = minimumValueOdds(outcome.probability);
           const bookmaker = parseDecimalOdds(odds[outcome.key]);
-          const status = classifyValue(bookmaker, minimum);
+          const status = classifyValue(bookmaker, fair, minimum);
           const expectedEdge =
             bookmaker === null
               ? null
