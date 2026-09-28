@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   classifyValue,
   expectedValueEdge,
@@ -8,11 +8,15 @@ import {
   minimumValueOdds,
   parseDecimalOdds,
 } from "./bet-value";
+import upcomingFixtures from "./upcoming-denmark-271.json";
+import upcomingOdds from "./upcoming-denmark-271-odds.json";
 import styles from "./football.module.css";
 
 type Props = {
   homeLabel: string;
   awayLabel: string;
+  homeTeamName: string;
+  awayTeamName: string;
   homeProbability: number;
   drawProbability: number;
   awayProbability: number;
@@ -30,9 +34,23 @@ type Outcome = {
 
 type DoubleChanceKey = "homeDraw" | "drawAway" | "homeAway";
 
+type OddsQuote = {
+  value: number;
+  bookmaker_id: number | null;
+  bookmaker: string | null;
+  updated_at: string | null;
+};
+
+type FixtureOdds = {
+  "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
+  double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
+};
+
 export default function BetValuePanel({
   homeLabel,
   awayLabel,
+  homeTeamName,
+  awayTeamName,
   homeProbability,
   drawProbability,
   awayProbability,
@@ -51,6 +69,34 @@ export default function BetValuePanel({
     drawAway: "",
     homeAway: "",
   });
+
+  const selectedFixtureOdds = useMemo(() => {
+    const fixture = upcomingFixtures.fixtures.find(
+      (item) =>
+        item.home_team === homeTeamName &&
+        item.away_team === awayTeamName,
+    );
+    if (!fixture) return null;
+
+    const oddsMap = upcomingOdds.fixtures as Record<string, FixtureOdds>;
+    return oddsMap[String(fixture.fixture_id)] ?? null;
+  }, [homeTeamName, awayTeamName]);
+
+  useEffect(() => {
+    setOdds({
+      home: selectedFixtureOdds?.["1X2"]?.["1"]?.value.toFixed(2) ?? "",
+      draw: selectedFixtureOdds?.["1X2"]?.["X"]?.value.toFixed(2) ?? "",
+      away: selectedFixtureOdds?.["1X2"]?.["2"]?.value.toFixed(2) ?? "",
+    });
+    setDoubleChanceOdds({
+      homeDraw:
+        selectedFixtureOdds?.double_chance?.["1X"]?.value.toFixed(2) ?? "",
+      drawAway:
+        selectedFixtureOdds?.double_chance?.["X2"]?.value.toFixed(2) ?? "",
+      homeAway:
+        selectedFixtureOdds?.double_chance?.["12"]?.value.toFixed(2) ?? "",
+    });
+  }, [selectedFixtureOdds]);
 
   const outcomes = useMemo<Outcome[]>(
     () => [
@@ -100,8 +146,9 @@ export default function BetValuePanel({
       </div>
 
       <p className={styles.valueIntro}>
-        Compará la cuota de la casa contra nuestro mínimo. Verde significa que la cuota
-        supera el umbral del modelo; no garantiza un resultado.
+        {selectedFixtureOdds
+          ? "Cuotas reales precargadas con el mejor precio disponible en el feed. Podés editarlas para comparar otra casa."
+          : "Compará la cuota de la casa contra nuestro mínimo. Verde significa que la cuota supera el umbral del modelo; no garantiza un resultado."}
       </p>
 
       <div className={styles.valueGrid}>
@@ -140,7 +187,13 @@ export default function BetValuePanel({
               </div>
 
               <label className={styles.bookmakerInput}>
-                <span>Cuota de la casa</span>
+                <span>
+                  {outcome.key === "home"
+                    ? selectedFixtureOdds?.["1X2"]?.["1"]?.bookmaker ?? "Cuota de la casa"
+                    : outcome.key === "draw"
+                      ? selectedFixtureOdds?.["1X2"]?.["X"]?.bookmaker ?? "Cuota de la casa"
+                      : selectedFixtureOdds?.["1X2"]?.["2"]?.bookmaker ?? "Cuota de la casa"}
+                </span>
                 <input
                   inputMode="decimal"
                   placeholder={minimum.toFixed(2)}
@@ -217,7 +270,13 @@ export default function BetValuePanel({
               </div>
 
               <label className={styles.bookmakerInput}>
-                <span>Cuota de la casa</span>
+                <span>
+                  {market.key === "homeDraw"
+                    ? selectedFixtureOdds?.double_chance?.["1X"]?.bookmaker ?? "Cuota de la casa"
+                    : market.key === "drawAway"
+                      ? selectedFixtureOdds?.double_chance?.["X2"]?.bookmaker ?? "Cuota de la casa"
+                      : selectedFixtureOdds?.double_chance?.["12"]?.bookmaker ?? "Cuota de la casa"}
+                </span>
                 <input
                   inputMode="decimal"
                   placeholder={minimum.toFixed(2)}
