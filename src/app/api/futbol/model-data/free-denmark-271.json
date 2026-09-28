@@ -1,0 +1,58 @@
+{
+  "schema_version": "team-profile-snapshot-v1",
+  "cutoff_at": "2026-09-28T23:59:59.999999+00:00",
+  "league": {
+    "corners_per_team": 4.91497975708502,
+    "goals_per_team": 1.5364372469635628,
+    "matches_used": 494,
+    "shots_per_team": 10,
+    "xg_per_team": 1.5364372469635628,
+    "yellows_per_team": 1.7656903765690377
+  },
+  "teams": {
+    "FC København": {
+      "attack_strength": 1.5904866177258814,
+      "defense_strength": 0.6206445970740805,
+      "xg_attack_strength": 1,
+      "xg_defense_strength": 1,
+      "corners_for": 5.030929586308611,
+      "corners_against": 4.662995951417004,
+      "yellows": 1.8698538102493365,
+      "matches_used": 20,
+      "data_completeness": 0.24375
+    },
+    "FC Midtjylland": {
+      "attack_strength": 1.126902970879491,
+      "defense_strength": 0.7425990259289442,
+      "xg_attack_strength": 1,
+      "xg_defense_strength": 1,
+      "corners_for": 5.379878367035784,
+      "corners_against": 4.302995951417004,
+      "yellows": 2.1026137413595434,
+      "matches_used": 20,
+      "data_completeness": 0.24375
+    },
+    "Brøndby IF": {
+      "attack_strength": 0.8560390357202794,
+      "defense_strength": 1.1257098672708634,
+      "xg_attack_strength": 1,
+      "xg_defense_strength": 1,
+      "corners_for": 5.388478260349773,
+      "corners_against": 5.142995951417004,
+      "yellows": 2.1588356085972675,
+      "matches_used": 20,
+      "data_completeness": 0.25
+    },
+    "AGF": {
+      "attack_strength": 0.896107636940831,
+      "defense_strength": 1.0939700258722493,
+      "xg_attack_strength": 1,
+      "xg_defense_strength": 1,
+      "corners_for": 6.093689835715152,
+      "corners_against": 3.7429959514170044,
+      "yellows": 1.5888134698847491,
+      "matches_used": 20,
+      "data_completeness": 0.25
+    }
+  }
+}
