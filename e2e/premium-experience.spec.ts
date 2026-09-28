@@ -246,7 +246,7 @@ test("Centro Estética Lindy keeps the premium Viralio structure with two surpri
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
   await expect(root.locator(".malu-brand-mark")).toBeVisible();
-  const logo = root.locator('img[src="/brands/centro-estetica-lindy-v2.png"]').first();
+  const logo = root.locator('img[src="/brands/centro-estetica-lindy-v3.webp"]').first();
   await expect(logo).toBeVisible();
   expect(await logo.evaluate((node) => {
     const image = node as HTMLImageElement;

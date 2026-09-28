@@ -1082,7 +1082,7 @@
   transform:translate(-50%,-50%);
   aspect-ratio:1;
   border-radius:50%;
-  background:url("/brands/centro-estetica-lindy-v2.png") center/contain no-repeat;
+  background:url("/brands/centro-estetica-lindy-v3.webp") center/contain no-repeat;
   filter:drop-shadow(0 18px 38px rgba(109,70,81,.16));
 }
 .malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-photo::after,
