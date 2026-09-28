@@ -1,0 +1,35 @@
+{
+  "by_market": [],
+  "generated_at": "2026-09-28T17:52:02.576147+00:00",
+  "observed_settlements": [],
+  "observed_summary": {
+    "average_clv": null,
+    "bets": 0,
+    "hit_rate": null,
+    "losses": 0,
+    "max_drawdown_units": 0.0,
+    "profit_units": 0.0,
+    "roi": null,
+    "staked_units": 0.0,
+    "wins": 0,
+    "yield": null
+  },
+  "schema_version": "football-performance-v1",
+  "settled_bets": [],
+  "source_history_generated_at": "2026-09-28T17:42:39.982816+00:00",
+  "source_history_schema": "football-signal-history-v2",
+  "source_results_generated_at": "2026-09-28T17:52:02.576147+00:00",
+  "staking": "flat 1 unit per actionable signal",
+  "summary": {
+    "average_clv": null,
+    "bets": 0,
+    "hit_rate": null,
+    "losses": 0,
+    "max_drawdown_units": 0.0,
+    "profit_units": 0.0,
+    "roi": null,
+    "staked_units": 0.0,
+    "wins": 0,
+    "yield": null
+  }
+}
