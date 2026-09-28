@@ -5,8 +5,10 @@ import {
   confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
   fairOdds,
+  impliedProbability,
   minimumValueOdds,
   parseDecimalOdds,
+  probabilityEdge,
 } from "../src/app/futbol/bet-value";
 
 describe("football betting value math", () => {
@@ -49,6 +51,11 @@ describe("football betting value math", () => {
     expect(confidenceAdjustedEdgeBuffer(100)).toBeCloseTo(0.05, 8);
     expect(confidenceAdjustedEdgeBuffer(50)).toBeCloseTo(0.075, 8);
     expect(confidenceAdjustedEdgeBuffer(0)).toBeCloseTo(0.10, 8);
+  });
+
+  it("compares model probability against bookmaker implied probability", () => {
+    expect(impliedProbability(2)).toBeCloseTo(0.5, 8);
+    expect(probabilityEdge(0.58, 2)).toBeCloseTo(0.08, 8);
   });
 
   it("accepts decimal odds with comma or dot", () => {
