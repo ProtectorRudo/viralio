@@ -85,6 +85,7 @@ function quoteFor(
 export default function ValueScanner() {
   const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
+  const [filter, setFilter] = useState<"all" | "value" | "strong">("all");
 
   const rows = useMemo(
     () =>
@@ -157,6 +158,12 @@ export default function ValueScanner() {
     (row) => row && row.edge != null && row.edge >= 0.10,
   );
   const topOpportunities = valueRows.slice(0, 3);
+  const visibleRows =
+    filter === "strong"
+      ? strongRows
+      : filter === "value"
+        ? valueRows
+        : rows;
 
   return (
     <section className={styles.scannerPanel}>
@@ -178,6 +185,30 @@ export default function ValueScanner() {
             minute: "2-digit",
           })}
         </span>
+      </div>
+
+      <div className={styles.scannerFilters}>
+        <button
+          type="button"
+          className={filter === "all" ? styles.scannerFilterActive : ""}
+          onClick={() => setFilter("all")}
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          className={filter === "value" ? styles.scannerFilterActive : ""}
+          onClick={() => setFilter("value")}
+        >
+          Con valor
+        </button>
+        <button
+          type="button"
+          className={filter === "strong" ? styles.scannerFilterActive : ""}
+          onClick={() => setFilter("strong")}
+        >
+          Valor fuerte
+        </button>
       </div>
 
       <div className={styles.scannerSummary}>
@@ -272,7 +303,7 @@ export default function ValueScanner() {
       )}
 
       <div className={styles.scannerRows}>
-        {rows.map((row) => {
+        {visibleRows.map((row) => {
           if (!row) return null;
 
           const raw =
