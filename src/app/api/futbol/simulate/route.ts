@@ -264,16 +264,15 @@ export async function POST(request: Request) {
   const backend = process.env.FOOTBALL_SIMULATOR_API_URL?.replace(/\/$/, "");
   const inputs = modelInputs(body);
 
-  if (body.scenario !== "without-star") {
-    const learned = simulateLearned({
-      homeTeam: body.homeTeam,
-      awayTeam: body.awayTeam,
-      simulations: inputs.simulations,
-      seed: inputs.seed,
-    });
-    if (learned) {
-      return NextResponse.json(learned);
-    }
+  const learned = simulateLearned({
+    homeTeam: body.homeTeam,
+    awayTeam: body.awayTeam,
+    simulations: inputs.simulations,
+    seed: inputs.seed,
+    scenario: body.scenario,
+  });
+  if (learned) {
+    return NextResponse.json(learned);
   }
 
   if (backend) {
