@@ -396,7 +396,7 @@ export function MaluPremiumExperience({
             {merchant.slug === "carnes-roma" ? (
               <div className="malu-loading-mark malu-loading-wordmark" aria-hidden="true">ROMA</div>
             ) : merchant.slug === "centro-estetica-lindy" ? (
-              <div className="malu-loading-mark malu-loading-monogram" aria-hidden="true">L</div>
+              <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={88} /></div>
             ) : (
               <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
             )}
