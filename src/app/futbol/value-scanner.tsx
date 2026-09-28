@@ -37,12 +37,12 @@ type FixtureOdds = {
   double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
 };
 
-function strongestMarket(
+function marketCandidates(
   home: number,
   draw: number,
   away: number,
-): MarketCandidate {
-  const candidates: MarketCandidate[] = [
+): MarketCandidate[] {
+  return [
     { label: "1", probability: home },
     { label: "X", probability: draw },
     { label: "2", probability: away },
@@ -50,8 +50,17 @@ function strongestMarket(
     { label: "X2", probability: draw + away },
     { label: "12", probability: home + away },
   ];
+}
 
-  return candidates.sort((a, b) => b.probability - a.probability)[0];
+function quoteFor(
+  fixtureOdds: FixtureOdds | undefined,
+  label: MarketCandidate["label"],
+) {
+  if (!fixtureOdds) return null;
+  if (label === "1" || label === "X" || label === "2") {
+    return fixtureOdds["1X2"][label];
+  }
+  return fixtureOdds.double_chance[label];
 }
 
 export default function ValueScanner() {
@@ -73,27 +82,46 @@ export default function ValueScanner() {
           return null;
         }
 
-        const market = strongestMarket(
+        const oddsMap = upcomingOdds.fixtures as Record<string, FixtureOdds>;
+        const fixtureOdds = oddsMap[String(fixture.fixture_id)];
+
+        const candidates = marketCandidates(
           prediction.homeWin,
           prediction.draw,
           prediction.awayWin,
-        );
+        ).map((market) => {
+          const quote = quoteFor(fixtureOdds, market.label);
+          const edge = quote
+            ? expectedValueEdge(market.probability, quote.value)
+            : null;
+          return { market, quote, edge };
+        });
 
-        const oddsMap = upcomingOdds.fixtures as Record<string, FixtureOdds>;
-        const fixtureOdds = oddsMap[String(fixture.fixture_id)];
-        const quote =
-          market.label === "1" || market.label === "X" || market.label === "2"
-            ? fixtureOdds?.["1X2"]?.[market.label] ?? null
-            : fixtureOdds?.double_chance?.[market.label] ?? null;
+        const withQuotes = candidates.filter((candidate) => candidate.quote);
+        const selected =
+          withQuotes.length > 0
+            ? withQuotes.sort(
+                (a, b) => (b.edge ?? -Infinity) - (a.edge ?? -Infinity),
+              )[0]
+            : candidates.sort(
+                (a, b) => b.market.probability - a.market.probability,
+              )[0];
 
         return {
           fixture,
-          market,
-          quote,
-          fair: fairOdds(market.probability),
-          minimum: minimumValueOdds(market.probability),
+          market: selected.market,
+          quote: selected.quote,
+          edge: selected.edge,
+          fair: fairOdds(selected.market.probability),
+          minimum: minimumValueOdds(selected.market.probability),
         };
-      }).filter(Boolean),
+      })
+        .filter(Boolean)
+        .sort(
+          (a, b) =>
+            ((b?.edge ?? -Infinity) as number) -
+            ((a?.edge ?? -Infinity) as number),
+        ),
     [fixtures],
   );
 
@@ -104,8 +132,8 @@ export default function ValueScanner() {
           <span className={styles.eyebrow}>ESCÁNER DE CUOTAS</span>
           <h3>¿Dónde mirar primero?</h3>
           <p className={styles.scannerIntro}>
-            Muestra el mercado 1X2/doble oportunidad de mayor probabilidad por partido.
-            Ingresá la cuota de la casa para validar si supera el mínimo.
+            Revisa 1, X, 2, 1X, X2 y 12 con cuotas reales y ordena por mayor edge
+            estimado. Podés editar la cuota si querés comparar otra casa.
           </p>
         </div>
         <span className={styles.valueRule}>
