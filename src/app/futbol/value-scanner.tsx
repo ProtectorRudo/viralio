@@ -5,6 +5,7 @@ import { simulateLearned } from "../api/futbol/learned-model";
 import upcomingDenmark from "./upcoming-denmark-271.json";
 import {
   classifyValue,
+  expectedValueEdge,
   fairOdds,
   minimumValueOdds,
   parseDecimalOdds,
@@ -96,6 +97,10 @@ export default function ValueScanner() {
           const raw = bookmakerOdds[row.fixture.fixture_id] ?? "";
           const bookmaker = parseDecimalOdds(raw);
           const status = classifyValue(bookmaker, row.fair, row.minimum);
+          const edge =
+            bookmaker === null
+              ? null
+              : expectedValueEdge(row.market.probability, bookmaker);
 
           return (
             <article
@@ -154,7 +159,15 @@ export default function ValueScanner() {
                 />
               </label>
 
-              <span className={styles.scannerBadge}>{status.label}</span>
+              <span className={styles.scannerBadge}>
+                {status.label}
+                {edge !== null ? (
+                  <small>
+                    {edge >= 0 ? "+" : ""}
+                    {(edge * 100).toFixed(1)}%
+                  </small>
+                ) : null}
+              </span>
             </article>
           );
         })}
