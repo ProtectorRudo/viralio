@@ -424,6 +424,29 @@ export default function BetValuePanel({
           const minimum = minimumValueOdds(market.probability, edgeBuffer);
           const actual = market.quote?.value ?? null;
           const status = classifyValue(actual, fair, minimum);
+          const highDivergence =
+            actual === null
+              ? false
+              : isHighModelMarketDivergence(
+                  market.probability,
+                  actual,
+                  dataConfidence,
+                );
+          const thinMarket = market.quote
+            ? isThinBookmakerMarket(market.quote.bookmaker_count)
+            : false;
+          const reviewReason = highDivergence
+            ? "model"
+            : thinMarket
+              ? "market"
+              : null;
+          const displayTone = reviewReason ? "warning" : status.tone;
+          const displayLabel =
+            reviewReason === "model"
+              ? "REVISAR MODELO"
+              : reviewReason === "market"
+                ? "MERCADO FINO"
+                : status.label;
           const edge =
             actual === null
               ? null
@@ -431,17 +454,27 @@ export default function BetValuePanel({
 
           return (
             <div
-              className={styles[`valueCard_${status.tone}`]}
+              className={styles[`valueCard_${displayTone}`]}
               key={market.label}
             >
               <span>{market.label}</span>
               <strong>{(market.probability * 100).toFixed(1)}%</strong>
               <small>mín {minimum.toFixed(2)}</small>
               {actual !== null ? (
-                <small>
-                  {market.quote?.bookmaker ?? "Casa"} {actual.toFixed(2)}
-                  {edge !== null ? ` · ${edge >= 0 ? "+" : ""}${(edge * 100).toFixed(1)}%` : ""}
-                </small>
+                <>
+                  <small>
+                    {market.quote?.bookmaker ?? "Casa"} {actual.toFixed(2)}
+                    {market.quote?.bookmaker_count
+                      ? ` · ${market.quote.bookmaker_count} casas`
+                      : ""}
+                  </small>
+                  <small>
+                    {displayLabel}
+                    {edge !== null
+                      ? ` · ${edge >= 0 ? "+" : ""}${(edge * 100).toFixed(1)}%`
+                      : ""}
+                  </small>
+                </>
               ) : (
                 <small>sin cuota real</small>
               )}
@@ -452,7 +485,7 @@ export default function BetValuePanel({
 
       <div className={styles.valueLegend}>
         <span><i className={styles.legendRed} /> por debajo del mínimo</span>
-        <span><i className={styles.legendAmber} /> alrededor del mínimo</span>
+        <span><i className={styles.legendAmber} /> justa / requiere revisión</span>
         <span><i className={styles.legendGreen} /> supera el mínimo</span>
       </div>
     </section>
