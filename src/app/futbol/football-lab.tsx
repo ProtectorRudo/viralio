@@ -39,6 +39,13 @@ type SimulationResult = {
   validationBrierDelta?: number | null;
   modelGeneratedAt?: string | null;
   profileCutoffAt?: string | null;
+  events?: Array<{
+    minute: number;
+    eventType: "goal" | "corner" | "yellow" | "red";
+    side: "home" | "away";
+    homeScore: number;
+    awayScore: number;
+  }>;
   note?: string;
 };
 
@@ -390,27 +397,54 @@ export default function FootballLab() {
         <div className={styles.panelHeader}>
           <div>
             <span className={styles.eyebrow}>UN MUNDO SIMULADO</span>
-            <h3>Ejemplo de cómo puede evolucionar uno de los futuros</h3>
+            <h3>
+              {data?.events?.length
+                ? "Secuencia generada con la misma seed del modelo"
+                : "Ejemplo visual del motor de eventos"}
+            </h3>
           </div>
           <span className={styles.seed}>seed {data?.seed ?? 42}</span>
         </div>
         <div className={styles.timeline}>
-          {[
-            ["18'", "🟨", away.short, "Amarilla"],
-            ["27'", "🚩", home.short, "Corner"],
-            ["34'", "⚽", home.short, "Gol · 1-0"],
-            ["63'", "🚩", away.short, "Corner"],
-            ["72'", "⚽", away.short, "Gol · 1-1"],
-            ["77'", "🟥", away.short, "Roja"],
-            ["90+4'", "⚽", home.short, "Gol · 2-1"],
-          ].map(([minute, icon, side, text]) => (
-            <div className={styles.timelineRow} key={String(minute)}>
-              <span className={styles.minute}>{minute}</span>
-              <span className={styles.eventIcon}>{icon}</span>
-              <strong>{side}</strong>
-              <span>{text}</span>
-            </div>
-          ))}
+          {(data?.events?.length
+            ? data.events
+            : [
+                { minute: 18, eventType: "yellow", side: "away", homeScore: 0, awayScore: 0 },
+                { minute: 27, eventType: "corner", side: "home", homeScore: 0, awayScore: 0 },
+                { minute: 34, eventType: "goal", side: "home", homeScore: 1, awayScore: 0 },
+                { minute: 72, eventType: "goal", side: "away", homeScore: 1, awayScore: 1 },
+              ]
+          ).slice(0, 14).map((event, index) => {
+            const side = event.side === "home" ? home.short : away.short;
+            const icon =
+              event.eventType === "goal"
+                ? "⚽"
+                : event.eventType === "corner"
+                  ? "🚩"
+                  : event.eventType === "red"
+                    ? "🟥"
+                    : "🟨";
+            const text =
+              event.eventType === "goal"
+                ? `Gol · ${event.homeScore}-${event.awayScore}`
+                : event.eventType === "corner"
+                  ? "Corner"
+                  : event.eventType === "red"
+                    ? "Roja"
+                    : "Amarilla";
+
+            return (
+              <div
+                className={styles.timelineRow}
+                key={`${event.minute}-${event.eventType}-${event.side}-${index}`}
+              >
+                <span className={styles.minute}>{event.minute}&apos;</span>
+                <span className={styles.eventIcon}>{icon}</span>
+                <strong>{side}</strong>
+                <span>{text}</span>
+              </div>
+            );
+          })}
         </div>
       </section>
 
