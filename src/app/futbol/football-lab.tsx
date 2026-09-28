@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./football.module.css";
 import UpcomingFixtures from "./upcoming-fixtures";
 import BetValuePanel from "./bet-value-panel";
+import ValueScanner from "./value-scanner";
 
 type TeamPreset = {
   name: string;
@@ -210,6 +211,8 @@ export default function FootballLab() {
           Probar modelo con datos reales
         </button>
       </section>
+
+      <ValueScanner />
 
       <UpcomingFixtures
         onSelect={loadUpcomingFixture}
