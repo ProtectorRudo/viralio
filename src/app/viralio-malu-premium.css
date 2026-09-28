@@ -998,3 +998,242 @@
 .malu-experience[data-merchant="carnes-roma"] .malu-footer strong{
   color:#ff7a1a;
 }
+
+
+/* CENTRO ESTÉTICA LINDY · PREMIUM GIFT EXPERIENCE */
+.malu-experience[data-merchant="centro-estetica-lindy"]{
+  color:#4d313a;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(183,110,121,.14),transparent 25rem),
+    radial-gradient(circle at 7% 88%,rgba(229,193,202,.22),transparent 28rem),
+    linear-gradient(180deg,#fbf6f7 0%,#f4e9ec 100%);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-shell{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,255,255,.70),transparent 20rem),
+    linear-gradient(180deg,rgba(255,253,252,.98),rgba(249,242,244,.98));
+  border:1px solid rgba(183,110,121,.13);
+  box-shadow:0 26px 80px rgba(94,57,68,.08);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-header{
+  border-bottom:1px solid rgba(183,110,121,.12);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-brand-mark{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.94),rgba(255,255,255,.50) 36%,transparent 37%),
+    linear-gradient(145deg,#e9cfd6,#b76e79);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:0 10px 24px rgba(116,70,83,.15);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-brand-mark > span{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:22px;
+  font-style:italic;
+  font-weight:700;
+  line-height:1;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-brand-copy strong{
+  color:#6d4651;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-brand-copy small{
+  color:#9a7983;
+  letter-spacing:.13em;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-stage h1,
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-stage h2{
+  color:#4d313a;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-eyebrow{
+  color:#a85f6c;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-lead{
+  color:#846b73;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero{
+  background:
+    radial-gradient(circle at 76% 18%,rgba(255,255,255,.78),transparent 14rem),
+    linear-gradient(180deg,#f7e9ed 0%,#edcfd6 100%);
+  border-top:1px solid rgba(183,110,121,.12);
+  border-bottom:1px solid rgba(183,110,121,.14);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-photo,
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-photo{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(255,255,255,.92),transparent 10rem),
+    linear-gradient(145deg,#f6e7eb 0%,#e9cbd2 52%,#d7aeb8 100%);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-photo::before,
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-photo::before{
+  content:"L";
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  border-radius:50%;
+  color:#fff;
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;
+  font-weight:700;
+  background:
+    radial-gradient(circle at 34% 28%,rgba(255,255,255,.45),transparent 26%),
+    linear-gradient(145deg,#c88390,#9f5d69);
+  border:1px solid rgba(255,255,255,.78);
+  outline:1px solid rgba(183,110,121,.20);
+  outline-offset:10px;
+  box-shadow:0 22px 54px rgba(109,70,81,.18);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-photo::after,
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-photo::after{
+  content:"CENTRO ESTÉTICA LINDY";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  color:#6d4651;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:700;
+  letter-spacing:.22em;
+  text-indent:.22em;
+  white-space:nowrap;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-photo::before{
+  width:186px;
+  font-size:78px;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-photo::after{
+  top:24%;
+  font-size:9px;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-photo::before{
+  width:124px;
+  font-size:52px;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-photo::after{
+  top:24%;
+  font-size:7px;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-gift-seal{
+  background:#fff8fa;
+  color:#a35d69;
+  border:1px solid rgba(183,110,121,.24);
+  box-shadow:0 12px 30px rgba(116,70,83,.10);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-logo{
+  background:#fff9fa;
+  border:1px solid rgba(183,110,121,.20);
+  color:#b76e79;
+  box-shadow:0 10px 24px rgba(116,70,83,.10);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-hero-logo > span{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:27px;
+  font-style:italic;
+  font-weight:700;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-button-primary{
+  background:linear-gradient(135deg,#ba727d,#a75d69);
+  color:#fff;
+  box-shadow:0 14px 34px rgba(167,93,105,.18);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-button-primary:hover{
+  background:linear-gradient(135deg,#ad6571,#9d5260);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-card{
+  background:#fffafc;
+  border-color:rgba(183,110,121,.15);
+  box-shadow:0 22px 58px rgba(94,57,68,.08);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-body small{
+  color:#a85f6c;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-body strong{
+  color:#4d313a;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-share-body p{
+  color:#846b73;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-prosocial-note{
+  background:#fff8fa;
+  border-color:rgba(183,110,121,.14);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-prosocial-note span{
+  color:#b76e79;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-prosocial-note p{
+  color:#846b73;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-scratch-card{
+  border-color:rgba(183,110,121,.20);
+  background:linear-gradient(145deg,#fffafb,#f2e3e7);
+  box-shadow:0 26px 68px rgba(94,57,68,.12);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-scratch-under{
+  color:#4d313a;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(255,255,255,.90),transparent 12rem),
+    linear-gradient(145deg,#fff9fb,#f0dfe4);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-scratch-under strong{
+  color:#a85f6c;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-scratch-hint{
+  color:#8a6b75;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-heart{
+  background:#fff7f9;
+  color:#b76e79;
+  border-color:rgba(183,110,121,.17);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-coupon{
+  color:#4d313a;
+  background:
+    radial-gradient(circle at 84% 16%,rgba(229,193,202,.30),transparent 12rem),
+    linear-gradient(145deg,#fffdfd,#f6eaed);
+  border:1px solid rgba(183,110,121,.24);
+  box-shadow:0 26px 66px rgba(94,57,68,.10);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-coupon:before,
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-coupon:after{
+  background:#f6eaed;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-coupon strong{
+  color:#a85f6c;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-loading-mark{
+  width:126px;
+  height:126px;
+  border-color:rgba(183,110,121,.26);
+  outline:1px solid rgba(255,255,255,.86);
+  outline-offset:8px;
+  background:
+    radial-gradient(circle at 32% 26%,rgba(255,255,255,.74),transparent 28%),
+    linear-gradient(145deg,#e8cbd2,#b76e79);
+  color:#fff;
+  box-shadow:0 18px 42px rgba(94,57,68,.12);
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-loading-monogram{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:52px;
+  font-style:italic;
+  font-weight:700;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-footer{
+  color:#a18790;
+}
+.malu-experience[data-merchant="centro-estetica-lindy"] .malu-footer strong{
+  color:#a85f6c;
+}
