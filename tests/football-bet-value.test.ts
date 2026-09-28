@@ -7,6 +7,7 @@ import {
   fairOdds,
   impliedProbability,
   isHighModelMarketDivergence,
+  isHighProbabilityDivergence,
   isThinBookmakerMarket,
   minimumValueOdds,
   parseDecimalOdds,
@@ -64,6 +65,12 @@ describe("football betting value math", () => {
     expect(isHighModelMarketDivergence(0.31, 5.0, 50)).toBe(true);
     expect(isHighModelMarketDivergence(0.30, 5.0, 85)).toBe(false);
     expect(isHighModelMarketDivergence(0.22, 5.0, 50)).toBe(false);
+  });
+
+  it("flags no-vig probability disagreement with the same gate", () => {
+    expect(isHighProbabilityDivergence(0.31, 0.20, 50)).toBe(true);
+    expect(isHighProbabilityDivergence(0.29, 0.20, 50)).toBe(false);
+    expect(isHighProbabilityDivergence(0.31, 0.20, 85)).toBe(false);
   });
 
   it("flags thin bookmaker coverage", () => {
