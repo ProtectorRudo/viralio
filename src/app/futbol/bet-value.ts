@@ -103,3 +103,21 @@ export function isThinBookmakerMarket(
 ) {
   return (bookmakerCount ?? 0) < minimumBookmakers;
 }
+
+
+export function oddsSnapshotAgeMinutes(
+  generatedAt: string,
+  nowMs = Date.now(),
+) {
+  const generatedMs = Date.parse(generatedAt);
+  if (!Number.isFinite(generatedMs)) return Number.POSITIVE_INFINITY;
+  return Math.max(0, (nowMs - generatedMs) / 60_000);
+}
+
+export function isOddsSnapshotStale(
+  generatedAt: string,
+  maxAgeMinutes = 90,
+  nowMs = Date.now(),
+) {
+  return oddsSnapshotAgeMinutes(generatedAt, nowMs) > maxAgeMinutes;
+}
