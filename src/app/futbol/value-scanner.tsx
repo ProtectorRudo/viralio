@@ -6,6 +6,7 @@ import upcomingDenmark from "./upcoming-denmark-271.json";
 import upcomingOdds from "./upcoming-denmark-271-odds.json";
 import {
   classifyValue,
+  confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
   fairOdds,
   minimumValueOdds,
@@ -100,6 +101,8 @@ export default function ValueScanner() {
         const oddsMap = upcomingOdds.fixtures as Record<string, FixtureOdds>;
         const fixtureOdds = oddsMap[String(fixture.fixture_id)];
 
+        const edgeBuffer = confidenceAdjustedEdgeBuffer(prediction.confidence);
+
         const candidates = marketCandidates(
           prediction.homeWin,
           prediction.draw,
@@ -130,7 +133,8 @@ export default function ValueScanner() {
           quote: selected.quote,
           edge: selected.edge,
           fair: fairOdds(selected.market.probability),
-          minimum: minimumValueOdds(selected.market.probability),
+          minimum: minimumValueOdds(selected.market.probability, edgeBuffer),
+          edgeBuffer,
         };
       })
         .filter(Boolean)
@@ -154,7 +158,7 @@ export default function ValueScanner() {
           </p>
         </div>
         <span className={styles.valueRule}>
-          cuotas reales · {new Date(upcomingOdds.generated_at).toLocaleString("es-AR", {
+          mínimo ajustado por confianza · {new Date(upcomingOdds.generated_at).toLocaleString("es-AR", {
             timeZone: "America/Argentina/Buenos_Aires",
             day: "2-digit",
             month: "2-digit",
