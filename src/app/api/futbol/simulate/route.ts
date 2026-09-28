@@ -23,6 +23,37 @@ const TEAM_PROFILES: Record<string, TeamProfile> = {
   "Racing Club": { attack: 1.10, defense: 0.94, cornersFor: 5.4, cornersAgainst: 4.8, yellows: 2.5 },
 };
 
+const DEFAULT_PROFILE: TeamProfile = {
+  attack: 1,
+  defense: 1,
+  cornersFor: 5,
+  cornersAgainst: 5,
+  yellows: 2.4,
+};
+
+function modelInputs(body: RequestBody) {
+  const home = TEAM_PROFILES[body.homeTeam] ?? DEFAULT_PROFILE;
+  const away = TEAM_PROFILES[body.awayTeam] ?? DEFAULT_PROFILE;
+  const scenarioFactor = body.scenario === "without-star" ? 0.88 : 1;
+  const homeLambda = Math.min(
+    Math.max(1.24 * home.attack * away.defense * 1.08 * scenarioFactor, 0.2),
+    4.5,
+  );
+  const awayLambda = Math.min(
+    Math.max(1.24 * away.attack * home.defense, 0.2),
+    4.5,
+  );
+
+  return {
+    home,
+    away,
+    homeLambda,
+    awayLambda,
+    simulations: Math.min(Math.max(body.simulations ?? 30000, 5000), 100000),
+    seed: body.seed ?? 42,
+  };
+}
+
 function hashSeed(input: string, seed: number) {
   let h = seed | 0;
   for (let i = 0; i < input.length; i += 1) {
@@ -54,15 +85,11 @@ function poisson(lambda: number, rng: () => number) {
 }
 
 function localFallback(body: RequestBody) {
-  const home = TEAM_PROFILES[body.homeTeam] ?? { attack: 1, defense: 1, cornersFor: 5, cornersAgainst: 5, yellows: 2.4 };
-  const away = TEAM_PROFILES[body.awayTeam] ?? { attack: 1, defense: 1, cornersFor: 5, cornersAgainst: 5, yellows: 2.4 };
-
-  const scenarioAttackFactor = body.scenario === "without-star" ? 0.88 : 1;
-  const homeLambda = Math.min(Math.max(1.24 * home.attack * away.defense * 1.08 * scenarioAttackFactor, 0.2), 4.5);
-  const awayLambda = Math.min(Math.max(1.24 * away.attack * home.defense, 0.2), 4.5);
-
-  const simulations = Math.min(Math.max(body.simulations ?? 30000, 5000), 100000);
-  const seed = hashSeed(`${body.homeTeam}|${body.awayTeam}|${body.scenario ?? "base"}`, body.seed ?? 42);
+  const inputs = modelInputs(body);
+  const seed = hashSeed(
+    `${body.homeTeam}|${body.awayTeam}|${body.scenario ?? "base"}`,
+    inputs.seed,
+  );
   const rng = mulberry32(seed);
 
   let homeWins = 0;
@@ -82,20 +109,24 @@ function localFallback(body: RequestBody) {
   let anyPenalty = 0;
   const scoreCounts = new Map<string, number>();
 
-  const homeCornerMean = Math.max((home.cornersFor + away.cornersAgainst) / 2, 1);
-  const awayCornerMean = Math.max((away.cornersFor + home.cornersAgainst) / 2, 1);
-  const redRate = 0.16;
-  const penaltyRate = 0.23;
+  const homeCornerMean = Math.max(
+    (inputs.home.cornersFor + inputs.away.cornersAgainst) / 2,
+    1,
+  );
+  const awayCornerMean = Math.max(
+    (inputs.away.cornersFor + inputs.home.cornersAgainst) / 2,
+    1,
+  );
 
-  for (let i = 0; i < simulations; i += 1) {
-    const hg = poisson(homeLambda, rng);
-    const ag = poisson(awayLambda, rng);
+  for (let i = 0; i < inputs.simulations; i += 1) {
+    const hg = poisson(inputs.homeLambda, rng);
+    const ag = poisson(inputs.awayLambda, rng);
     const hc = poisson(homeCornerMean, rng);
     const ac = poisson(awayCornerMean, rng);
-    const hy = poisson(home.yellows, rng);
-    const ay = poisson(away.yellows, rng);
-    const red = poisson(redRate, rng);
-    const penalty = poisson(penaltyRate, rng);
+    const hy = poisson(inputs.home.yellows, rng);
+    const ay = poisson(inputs.away.yellows, rng);
+    const red = poisson(0.16, rng);
+    const penalty = poisson(0.23, rng);
 
     if (hg > ag) homeWins += 1;
     else if (hg === ag) draws += 1;
@@ -125,35 +156,66 @@ function localFallback(body: RequestBody) {
   const topScorelines = [...scoreCounts.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6)
-    .map(([score, count]) => ({ score, probability: count / simulations }));
-
-  const confidence = body.scenario === "without-star" ? 81 : 84;
+    .map(([score, count]) => ({
+      score,
+      probability: count / inputs.simulations,
+    }));
 
   return {
     source: "viralio-fallback",
+    simulations: inputs.simulations,
+    seed,
+    homeTeam: body.homeTeam,
+    awayTeam: body.awayTeam,
+    homeWin: homeWins / inputs.simulations,
+    draw: draws / inputs.simulations,
+    awayWin: awayWins / inputs.simulations,
+    expectedHomeGoals: totalHomeGoals / inputs.simulations,
+    expectedAwayGoals: totalAwayGoals / inputs.simulations,
+    over25: over25 / inputs.simulations,
+    bothTeamsToScore: btts / inputs.simulations,
+    meanTotalCorners: totalCorners / inputs.simulations,
+    cornersOver85: cornersOver85 / inputs.simulations,
+    cornersOver105: cornersOver105 / inputs.simulations,
+    meanTotalYellows: totalYellows / inputs.simulations,
+    cardsOver35: cardsOver35 / inputs.simulations,
+    cardsOver55: cardsOver55 / inputs.simulations,
+    redCardProbability: anyRed / inputs.simulations,
+    penaltyProbability: anyPenalty / inputs.simulations,
+    topScorelines,
+    confidence: body.scenario === "without-star" ? 81 : 84,
+  };
+}
+
+function normalizeBackend(
+  data: Record<string, unknown>,
+  body: RequestBody,
+  simulations: number,
+  seed: number,
+) {
+  return {
+    source: "football-simulator",
     simulations,
     seed,
     homeTeam: body.homeTeam,
     awayTeam: body.awayTeam,
-    homeWin: homeWins / simulations,
-    draw: draws / simulations,
-    awayWin: awayWins / simulations,
-    expectedHomeGoals: totalHomeGoals / simulations,
-    expectedAwayGoals: totalAwayGoals / simulations,
-    over25: over25 / simulations,
-    bothTeamsToScore: btts / simulations,
-    meanTotalCorners: totalCorners / simulations,
-    cornersOver85: cornersOver85 / simulations,
-    cornersOver105: cornersOver105 / simulations,
-    meanTotalYellows: totalYellows / simulations,
-    cardsOver35: cardsOver35 / simulations,
-    cardsOver55: cardsOver55 / simulations,
-    redCardProbability: anyRed / simulations,
-    penaltyProbability: anyPenalty / simulations,
-    topScorelines,
-    confidence,
-    note:
-      "Fallback Monte Carlo local. Se reemplaza automáticamente por football-simulator cuando se configure FOOTBALL_SIMULATOR_API_URL.",
+    homeWin: Number(data.home_win ?? 0),
+    draw: Number(data.draw ?? 0),
+    awayWin: Number(data.away_win ?? 0),
+    expectedHomeGoals: Number(data.expected_home_goals ?? 0),
+    expectedAwayGoals: Number(data.expected_away_goals ?? 0),
+    over25: Number(data.over_2_5 ?? 0),
+    bothTeamsToScore: Number(data.both_teams_to_score ?? 0),
+    meanTotalCorners: Number(data.mean_total_corners ?? 0),
+    cornersOver85: Number(data.probability_corners_over_8_5 ?? 0),
+    cornersOver105: Number(data.probability_corners_over_10_5 ?? 0),
+    meanTotalYellows: Number(data.mean_total_yellows ?? 0),
+    cardsOver35: Number(data.probability_cards_over_3_5 ?? 0),
+    cardsOver55: Number(data.probability_cards_over_5_5 ?? 0),
+    redCardProbability: Number(data.probability_red_card ?? 0),
+    penaltyProbability: Number(data.probability_penalty_awarded ?? 0),
+    topScorelines: [],
+    confidence: body.scenario === "without-star" ? 82 : 86,
   };
 }
 
@@ -165,6 +227,7 @@ export async function POST(request: Request) {
   }
 
   const backend = process.env.FOOTBALL_SIMULATOR_API_URL?.replace(/\/$/, "");
+  const inputs = modelInputs(body);
 
   if (backend) {
     try {
@@ -174,26 +237,28 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           home_team: body.homeTeam,
           away_team: body.awayTeam,
-          home_lambda: 1.4,
-          away_lambda: 1.0,
-          home_corners_for: 5.5,
-          home_corners_against: 4.8,
-          away_corners_for: 4.8,
-          away_corners_against: 5.1,
-          home_yellows: 2.4,
-          away_yellows: 2.5,
-          simulations: Math.min(body.simulations ?? 30000, 100000),
-          seed: body.seed ?? 42,
+          home_lambda: inputs.homeLambda,
+          away_lambda: inputs.awayLambda,
+          home_corners_for: inputs.home.cornersFor,
+          home_corners_against: inputs.home.cornersAgainst,
+          away_corners_for: inputs.away.cornersFor,
+          away_corners_against: inputs.away.cornersAgainst,
+          home_yellows: inputs.home.yellows,
+          away_yellows: inputs.away.yellows,
+          simulations: inputs.simulations,
+          seed: inputs.seed,
         }),
         cache: "no-store",
       });
 
       if (response.ok) {
-        const data = await response.json();
-        return NextResponse.json({ source: "football-simulator", ...data });
+        const data = (await response.json()) as Record<string, unknown>;
+        return NextResponse.json(
+          normalizeBackend(data, body, inputs.simulations, inputs.seed),
+        );
       }
     } catch {
-      // Safe fallback below.
+      // Fall through to the local, deterministic Monte Carlo engine.
     }
   }
 
