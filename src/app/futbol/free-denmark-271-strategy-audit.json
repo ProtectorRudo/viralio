@@ -1,0 +1,19 @@
+{
+  "by_confidence": [],
+  "by_edge": [],
+  "by_market": [],
+  "generated_at": "2026-09-28T17:58:19.134833+00:00",
+  "sample_rules": {
+    "min_clv_sample": 20,
+    "min_roi_sample": 20,
+    "roi_affects_ranking": false
+  },
+  "schema_version": "football-strategy-audit-v1",
+  "summary": {
+    "aligned_positive": 0,
+    "collecting": 0,
+    "deteriorating": 0,
+    "mixed": 0,
+    "segments_total": 0
+  }
+}
