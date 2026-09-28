@@ -16,6 +16,10 @@ type Props = {
   homeProbability: number;
   drawProbability: number;
   awayProbability: number;
+  over25Probability: number;
+  bttsProbability: number;
+  cornersOver85Probability: number;
+  cardsOver35Probability: number;
 };
 
 type Outcome = {
@@ -30,6 +34,10 @@ export default function BetValuePanel({
   homeProbability,
   drawProbability,
   awayProbability,
+  over25Probability,
+  bttsProbability,
+  cornersOver85Probability,
+  cardsOver35Probability,
 }: Props) {
   const [odds, setOdds] = useState({
     home: "",
@@ -45,6 +53,13 @@ export default function BetValuePanel({
     ],
     [homeLabel, awayLabel, homeProbability, drawProbability, awayProbability],
   );
+
+  const quickMarkets = [
+    { label: "+2.5 goles", probability: over25Probability },
+    { label: "Ambos marcan", probability: bttsProbability },
+    { label: "+8.5 corners", probability: cornersOver85Probability },
+    { label: "+3.5 tarjetas", probability: cardsOver35Probability },
+  ];
 
   return (
     <section className={styles.valuePanel}>
@@ -123,6 +138,18 @@ export default function BetValuePanel({
             </article>
           );
         })}
+      </div>
+
+      <div className={styles.quickValueMarkets}>
+        {quickMarkets.map((market) => (
+          <div key={market.label}>
+            <span>{market.label}</span>
+            <strong>{(market.probability * 100).toFixed(1)}%</strong>
+            <small>
+              cuota mín {minimumValueOdds(market.probability).toFixed(2)}
+            </small>
+          </div>
+        ))}
       </div>
 
       <div className={styles.valueLegend}>
