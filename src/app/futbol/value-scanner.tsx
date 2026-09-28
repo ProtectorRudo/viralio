@@ -146,6 +146,14 @@ export default function ValueScanner() {
     [fixtures],
   );
 
+  const quotedRows = rows.filter((row) => row?.quote);
+  const valueRows = quotedRows.filter(
+    (row) => row && row.quote && row.quote.value >= row.minimum,
+  );
+  const strongRows = quotedRows.filter(
+    (row) => row && row.edge != null && row.edge >= 0.10,
+  );
+
   return (
     <section className={styles.scannerPanel}>
       <div className={styles.panelHeader}>
@@ -166,6 +174,21 @@ export default function ValueScanner() {
             minute: "2-digit",
           })}
         </span>
+      </div>
+
+      <div className={styles.scannerSummary}>
+        <div>
+          <span>Con cuota real</span>
+          <strong>{quotedRows.length}</strong>
+        </div>
+        <div>
+          <span>Con valor</span>
+          <strong>{valueRows.length}</strong>
+        </div>
+        <div>
+          <span>Valor fuerte</span>
+          <strong>{strongRows.length}</strong>
+        </div>
       </div>
 
       <div className={styles.scannerRows}>
