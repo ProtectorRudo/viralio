@@ -342,6 +342,10 @@ export default function FootballLab() {
           homeProbability={data.homeWin}
           drawProbability={data.draw}
           awayProbability={data.awayWin}
+          over25Probability={data.over25}
+          bttsProbability={data.bothTeamsToScore}
+          cornersOver85Probability={data.cornersOver85}
+          cardsOver35Probability={data.cardsOver35}
         />
       ) : null}
 
