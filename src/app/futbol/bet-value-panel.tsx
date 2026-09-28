@@ -28,6 +28,8 @@ type Outcome = {
   probability: number;
 };
 
+type DoubleChanceKey = "homeDraw" | "drawAway" | "homeAway";
+
 export default function BetValuePanel({
   homeLabel,
   awayLabel,
@@ -44,6 +46,11 @@ export default function BetValuePanel({
     draw: "",
     away: "",
   });
+  const [doubleChanceOdds, setDoubleChanceOdds] = useState<Record<DoubleChanceKey, string>>({
+    homeDraw: "",
+    drawAway: "",
+    homeAway: "",
+  });
 
   const outcomes = useMemo<Outcome[]>(
     () => [
@@ -53,6 +60,27 @@ export default function BetValuePanel({
     ],
     [homeLabel, awayLabel, homeProbability, drawProbability, awayProbability],
   );
+
+  const doubleChance = [
+    {
+      key: "homeDraw" as const,
+      label: "1X",
+      detail: `${homeLabel} o empate`,
+      probability: homeProbability + drawProbability,
+    },
+    {
+      key: "drawAway" as const,
+      label: "X2",
+      detail: `Empate o ${awayLabel}`,
+      probability: drawProbability + awayProbability,
+    },
+    {
+      key: "homeAway" as const,
+      label: "12",
+      detail: "Sin empate",
+      probability: homeProbability + awayProbability,
+    },
+  ];
 
   const quickMarkets = [
     { label: "+2.5 goles", probability: over25Probability },
@@ -121,6 +149,83 @@ export default function BetValuePanel({
                     setOdds((current) => ({
                       ...current,
                       [outcome.key]: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              {expectedEdge !== null ? (
+                <div className={styles.edgeLine}>
+                  Edge estimado{" "}
+                  <b>
+                    {expectedEdge >= 0 ? "+" : ""}
+                    {(expectedEdge * 100).toFixed(1)}%
+                  </b>
+                </div>
+              ) : null}
+            </article>
+          );
+        })}
+      </div>
+
+      <div className={styles.doubleChanceHeader}>
+        <div>
+          <span className={styles.eyebrow}>DOBLE OPORTUNIDAD</span>
+          <h4>1X · X2 · 12</h4>
+        </div>
+        <span>mismo umbral: +5% edge</span>
+      </div>
+
+      <div className={styles.doubleChanceGrid}>
+        {doubleChance.map((market) => {
+          const fair = fairOdds(market.probability);
+          const minimum = minimumValueOdds(market.probability);
+          const bookmaker = parseDecimalOdds(doubleChanceOdds[market.key]);
+          const status = classifyValue(bookmaker, fair, minimum);
+          const expectedEdge =
+            bookmaker === null
+              ? null
+              : expectedValueEdge(market.probability, bookmaker);
+
+          return (
+            <article
+              className={`${styles.doubleChanceCard} ${styles[`valueCard_${status.tone}`]}`}
+              key={market.key}
+            >
+              <div className={styles.valueCardTop}>
+                <div>
+                  <span>{market.detail}</span>
+                  <strong>{market.label}</strong>
+                </div>
+                <span className={styles.valueBadge}>{status.label}</span>
+              </div>
+
+              <div className={styles.doubleChanceProbability}>
+                <span>Probabilidad</span>
+                <strong>{(market.probability * 100).toFixed(1)}%</strong>
+              </div>
+
+              <div className={styles.oddsNumbers}>
+                <div>
+                  <span>Cuota justa</span>
+                  <strong>{fair.toFixed(2)}</strong>
+                </div>
+                <div className={styles.minimumOdds}>
+                  <span>Cuota mínima</span>
+                  <strong>{minimum.toFixed(2)}</strong>
+                </div>
+              </div>
+
+              <label className={styles.bookmakerInput}>
+                <span>Cuota de la casa</span>
+                <input
+                  inputMode="decimal"
+                  placeholder={minimum.toFixed(2)}
+                  value={doubleChanceOdds[market.key]}
+                  onChange={(event) =>
+                    setDoubleChanceOdds((current) => ({
+                      ...current,
+                      [market.key]: event.target.value,
                     }))
                   }
                 />
