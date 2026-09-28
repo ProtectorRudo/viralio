@@ -86,9 +86,39 @@ export default function FootballLab() {
   }
 
   useEffect(() => {
-    void simulate();
-    // Re-run automatically whenever the selected football world changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let cancelled = false;
+
+    fetch("/api/futbol/simulate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        homeTeam,
+        awayTeam,
+        scenario,
+        simulations: 30000,
+        seed: 42,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("No se pudo ejecutar la simulación");
+        }
+        return response.json() as Promise<SimulationResult>;
+      })
+      .then((data) => {
+        if (!cancelled) {
+          setResult(data);
+        }
+      })
+      .catch((cause: unknown) => {
+        if (!cancelled) {
+          setError(cause instanceof Error ? cause.message : "Error inesperado");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [homeTeam, awayTeam, scenario]);
 
   function swapTeams() {
