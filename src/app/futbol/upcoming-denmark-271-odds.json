@@ -1,0 +1,381 @@
+{
+  "generated_at": "2026-09-28T15:47:37.166736+00:00",
+  "league_id": 271,
+  "fixtures": {
+    "19713905": {
+      "home_team": "Nordsjælland",
+      "away_team": "Odense BK",
+      "kickoff_at": "2026-10-09T17:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.52,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "X": {
+          "value": 4.71,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "2": {
+          "value": 5.75,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.14,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X2": {
+          "value": 2.62,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "12": {
+          "value": 1.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      }
+    },
+    "19713907": {
+      "home_team": "Silkeborg IF",
+      "away_team": "Horsens",
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.23,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null
+        },
+        "X": {
+          "value": 3.69,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "2": {
+          "value": 3.16,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X2": {
+          "value": 1.66,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "12": {
+          "value": 1.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      }
+    },
+    "19713915": {
+      "home_team": "Randers FC",
+      "away_team": "Viborg FF",
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 3.35,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null
+        },
+        "X": {
+          "value": 3.63,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "2": {
+          "value": 2.11,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.72,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X2": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      }
+    },
+    "19713911": {
+      "home_team": "Brøndby IF",
+      "away_team": "Lyngby Boldklub",
+      "kickoff_at": "2026-10-11T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.74,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "X": {
+          "value": 4.18,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "2": {
+          "value": 4.2,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.22,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X2": {
+          "value": 2.05,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "12": {
+          "value": 1.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      }
+    },
+    "19713912": {
+      "home_team": "FC Midtjylland",
+      "away_team": "FC København",
+      "kickoff_at": "2026-10-11T16:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.56,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "X": {
+          "value": 3.72,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null
+        },
+        "2": {
+          "value": 2.7,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X2": {
+          "value": 1.53,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      }
+    },
+    "19713909": {
+      "home_team": "AGF",
+      "away_team": "Sønderjyske Fodbold",
+      "kickoff_at": "2026-10-12T17:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.6,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X": {
+          "value": 4.15,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null
+        },
+        "2": {
+          "value": 4.9,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.18,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "X2": {
+          "value": 2.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        },
+        "12": {
+          "value": 1.22,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null
+        }
+      }
+    },
+    "19713894": {
+      "home_team": "Horsens",
+      "away_team": "Randers FC",
+      "kickoff_at": "2026-10-16T17:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    },
+    "19713898": {
+      "home_team": "Lyngby Boldklub",
+      "away_team": "Nordsjælland",
+      "kickoff_at": "2026-10-18T12:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    },
+    "19713901": {
+      "home_team": "Sønderjyske Fodbold",
+      "away_team": "Silkeborg IF",
+      "kickoff_at": "2026-10-18T12:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    },
+    "19713903": {
+      "home_team": "Odense BK",
+      "away_team": "Brøndby IF",
+      "kickoff_at": "2026-10-18T14:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    },
+    "19713899": {
+      "home_team": "FC København",
+      "away_team": "AGF",
+      "kickoff_at": "2026-10-18T16:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    },
+    "19713896": {
+      "home_team": "Viborg FF",
+      "away_team": "FC Midtjylland",
+      "kickoff_at": "2026-10-19T17:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    },
+    "19713889": {
+      "home_team": "Randers FC",
+      "away_team": "Brøndby IF",
+      "kickoff_at": "2026-10-23T17:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      }
+    }
+  }
+}
