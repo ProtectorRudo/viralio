@@ -520,9 +520,11 @@ export default function ValueScanner({ onSelect }: Props) {
 
               <span
                 className={
-                  edge !== null && edge >= 0.10
-                    ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
-                    : styles.scannerBadge
+                  reviewReason
+                    ? `${styles.scannerBadge} ${styles.scannerBadgeReview}`
+                    : edge !== null && edge >= 0.10
+                      ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
+                      : styles.scannerBadge
                 }
               >
                 {row.quote
