@@ -193,6 +193,20 @@ function normalizeBackend(
   simulations: number,
   seed: number,
 ) {
+  const rawScorelines = Array.isArray(data.top_scorelines)
+    ? data.top_scorelines
+    : [];
+
+  const topScorelines = rawScorelines
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const record = item as Record<string, unknown>;
+      const score = typeof record.score === "string" ? record.score : "";
+      const probability = Number(record.probability ?? 0);
+      return score ? { score, probability } : null;
+    })
+    .filter((item): item is { score: string; probability: number } => item !== null);
+
   return {
     source: "football-simulator",
     simulations,
@@ -214,7 +228,7 @@ function normalizeBackend(
     cardsOver55: Number(data.probability_cards_over_5_5 ?? 0),
     redCardProbability: Number(data.probability_red_card ?? 0),
     penaltyProbability: Number(data.probability_penalty_awarded ?? 0),
-    topScorelines: [],
+    topScorelines,
     confidence: body.scenario === "without-star" ? 82 : 86,
   };
 }
