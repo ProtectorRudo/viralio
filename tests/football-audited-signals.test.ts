@@ -4,9 +4,12 @@ import signals from "../src/app/futbol/upcoming-denmark-271-signals.json";
 
 describe("audited football value signals contract", () => {
   it("has the expected schema and freshness metadata", () => {
-    expect(signals.schema_version).toBe("football-value-signals-v1");
+    expect(signals.schema_version).toBe("football-value-signals-v2");
     expect(typeof signals.generated_at).toBe("string");
     expect(typeof signals.odds_generated_at).toBe("string");
+    expect(signals.clv_learning?.enabled).toBe(true);
+    expect(signals.clv_learning?.min_segment_sample).toBe(5);
+    expect(signals.clv_learning?.max_adjustment).toBe(0.05);
     expect(typeof signals.profile_cutoff_at).toBe("string");
   });
 
