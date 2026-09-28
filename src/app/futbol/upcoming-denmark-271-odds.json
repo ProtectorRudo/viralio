@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T16:21:43.881821+00:00",
+  "generated_at": "2026-09-28T16:35:36.088011+00:00",
   "league_id": 271,
   "fixtures": {
     "19713905": {
@@ -95,6 +95,15 @@
           "delta": 0.0,
           "movement": "flat"
         },
+        "under_2_5": {
+          "value": 2.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.7,
+          "best_vs_median": 0.0
+        },
         "btts_yes": {
           "value": 1.53,
           "bookmaker_id": 2,
@@ -118,6 +127,30 @@
           "previous_value": 2.37,
           "delta": 0.0,
           "movement": "flat"
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.62817828297936,
+            "X": 0.20729883338318875,
+            "2": 0.1645228836374514
+          },
+          "overround": 0.07198973865640523
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.6521739130434782,
+            "under": 0.3478260869565217
+          },
+          "overround": 0.06481481481481488
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.6076923076923076,
+            "no": 0.39230769230769225
+          },
+          "overround": 0.07553569951187233
         }
       }
     },
@@ -214,6 +247,15 @@
           "delta": 0.0,
           "movement": "flat"
         },
+        "under_2_5": {
+          "value": 2.07,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 2.05,
+          "best_vs_median": 0.009756097560975618
+        },
         "btts_yes": {
           "value": 1.61,
           "bookmaker_id": 2,
@@ -237,6 +279,30 @@
           "previous_value": 2.2,
           "delta": 0.0,
           "movement": "flat"
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.4340869841395875,
+            "X": 0.26289775095777834,
+            "2": 0.30301526490263414
+          },
+          "overround": 0.07148174459016254
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5437665782493368,
+            "under": 0.4562334217506631
+          },
+          "overround": 0.06920022688598992
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5774278215223098,
+            "no": 0.4225721784776903
+          },
+          "overround": 0.07566346696781467
         }
       }
     },
@@ -333,6 +399,15 @@
           "delta": 0.0,
           "movement": "flat"
         },
+        "under_2_5": {
+          "value": 2.17,
+          "bookmaker_id": 64,
+          "bookmaker": "MelBet",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 2.16,
+          "best_vs_median": 0.004629629629629539
+        },
         "btts_yes": {
           "value": 1.57,
           "bookmaker_id": 2,
@@ -356,6 +431,30 @@
           "previous_value": 2.25,
           "delta": 0.0,
           "movement": "flat"
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.2868887313961729,
+            "X": 0.26406803685329555,
+            "2": 0.44904323175053157
+          },
+          "overround": 0.07582467183916464
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5669291338582677,
+            "under": 0.43307086614173224
+          },
+          "overround": 0.06902356902356899
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5890052356020942,
+            "no": 0.4109947643979057
+          },
+          "overround": 0.08138711960368017
         }
       }
     },
@@ -452,6 +551,15 @@
           "delta": 0.0,
           "movement": "flat"
         },
+        "under_2_5": {
+          "value": 2.31,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 2.31,
+          "best_vs_median": 0.0
+        },
         "btts_yes": {
           "value": 1.57,
           "bookmaker_id": 2,
@@ -475,6 +583,30 @@
           "previous_value": 2.25,
           "delta": 0.0,
           "movement": "flat"
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.5405582707383475,
+            "X": 0.23311575425591236,
+            "2": 0.22632597500574014
+          },
+          "overround": 0.072428591529478
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5953608247422681,
+            "under": 0.404639175257732
+          },
+          "overround": 0.06984310805966842
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5890052356020942,
+            "no": 0.4109947643979057
+          },
+          "overround": 0.08138711960368017
         }
       }
     },
@@ -571,6 +703,15 @@
           "delta": 0.0,
           "movement": "flat"
         },
+        "under_2_5": {
+          "value": 2.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 2.25,
+          "best_vs_median": 0.022222222222222143
+        },
         "btts_yes": {
           "value": 1.5,
           "bookmaker_id": 2,
@@ -594,6 +735,30 @@
           "previous_value": 2.5,
           "delta": 0.0,
           "movement": "flat"
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.3745819397993311,
+            "X": 0.25752508361204013,
+            "2": 0.36789297658862874
+          },
+          "overround": 0.07864357864357863
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5844155844155844,
+            "under": 0.41558441558441556
+          },
+          "overround": 0.06944444444444442
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.625,
+            "no": 0.375
+          },
+          "overround": 0.06666666666666665
         }
       }
     },
@@ -690,6 +855,15 @@
           "delta": 0.0,
           "movement": "flat"
         },
+        "under_2_5": {
+          "value": 2.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.5,
+          "best_vs_median": 0.0
+        },
         "btts_yes": {
           "value": 1.53,
           "bookmaker_id": 2,
@@ -714,6 +888,30 @@
           "delta": 0.0,
           "movement": "flat"
         }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.5807265034575184,
+            "X": 0.22730276638398578,
+            "2": 0.19197073015849575
+          },
+          "overround": 0.07961190666540041
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.625,
+            "under": 0.375
+          },
+          "overround": 0.06666666666666665
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.6076923076923076,
+            "no": 0.39230769230769225
+          },
+          "overround": 0.07553569951187233
+        }
       }
     },
     "19713894": {
@@ -732,8 +930,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     },
     "19713898": {
@@ -752,8 +956,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     },
     "19713901": {
@@ -772,8 +982,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     },
     "19713903": {
@@ -792,8 +1008,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     },
     "19713899": {
@@ -812,8 +1034,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     },
     "19713896": {
@@ -832,8 +1060,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     },
     "19713889": {
@@ -852,8 +1086,14 @@
       },
       "secondary": {
         "over_2_5": null,
+        "under_2_5": null,
         "btts_yes": null,
         "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
       }
     }
   }
