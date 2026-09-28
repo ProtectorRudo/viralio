@@ -14,13 +14,8 @@ import scotlandCalibrationData from "./free-scotland-501-calibration.json";
 import stabilityData from "./free-denmark-271-stability.json";
 import scotlandStabilityData from "./free-scotland-501-stability.json";
 import {
-  classifyValue,
-  expectedValueEdge,
-  impliedProbability,
-  isHighProbabilityDivergence,
   isOddsSnapshotStale,
   oddsSnapshotAgeMinutes,
-  parseDecimalOdds,
 } from "./bet-value";
 import styles from "./football.module.css";
 
@@ -376,7 +371,6 @@ export default function ValueScanner({ onSelect }: Props) {
   const stability = (
     league === "scotland" ? scotlandStabilityData : stabilityData
   ) as StabilitySnapshot;
-  const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
   >("all");
@@ -412,10 +406,6 @@ export default function ValueScanner({ onSelect }: Props) {
             (a.selected_signal?.expected_value_edge ?? -Infinity),
         ),
     [snapshot.fixtures],
-  );
-
-  const quotedRows = rows.filter(
-    (row) => row.selected_signal?.bookmaker_odds != null,
   );
 
   const reviewRows = rows.filter(
@@ -544,15 +534,14 @@ export default function ValueScanner({ onSelect }: Props) {
       {staleFeed ? (
         <div className={styles.staleOddsNotice}>
           El feed de cuotas superó {MAX_ODDS_AGE_MINUTES} minutos. Las señales
-          automáticas quedan suspendidas hasta el próximo refresco. Podés ingresar
-          una cuota manual para evaluarla puntualmente.
+          automáticas quedan suspendidas hasta el próximo refresco.
         </div>
       ) : null}
 
       <div className={styles.scannerSummary}>
         <div>
-          <span>Con cuota real</span>
-          <strong>{quotedRows.length}</strong>
+          <span>Partidos analizados</span>
+          <strong>{rows.length}</strong>
         </div>
         <div>
           <span>Con valor vigente</span>
@@ -872,62 +861,28 @@ export default function ValueScanner({ onSelect }: Props) {
                   </div>
 
                   {history ? (
-                    <div className={styles.clvStrip}>
-                      <div>
-                        <span>Detectada</span>
-                        <strong>{(history.detected_odds ?? history.first_odds).toFixed(2)}</strong>
-                      </div>
-                      <span className={styles.clvArrow}>→</span>
-                      <div>
-                        <span>{history.clv_status === "final" ? "Cierre" : "Ahora"}</span>
-                        <strong>
-                          {(history.clv_status === "final"
-                            ? history.closing_odds
-                            : history.provisional_closing_odds ?? history.last_odds
-                          )?.toFixed(2) ?? "—"}
-                        </strong>
-                      </div>
-                      <span
-                        className={`${styles.clvBadge} ${styles[`clvBadge_${clvTone(
-                          history.clv_status === "final"
-                            ? history.clv
-                            : history.provisional_clv,
-                        )}`]}`}
-                      >
-                        CLV {formatClv(
+                    <div className={styles.clvOnlyLine}>
+                      <span>Seguimiento CLV</span>
+                      <strong className={styles[`clvText_${clvTone(
+                        history.clv_status === "final"
+                          ? history.clv
+                          : history.provisional_clv,
+                      )}`]}>
+                        {formatClv(
                           history.clv_status === "final"
                             ? history.clv
                             : history.provisional_clv,
                         )}
-                      </span>
+                      </strong>
                     </div>
                   ) : null}
 
-                  <div className={styles.topValueNumbers}>
-                    <div>
-                      <span>Casa</span>
-                      <strong>{signal.bookmaker ?? "—"}</strong>
-                      <small className={styles.oddsMovement}>
-                        {signal.bookmaker_count} casas
-                        {signal.median_odds != null
-                          ? ` · mediana ${signal.median_odds.toFixed(2)}`
-                          : ""}
-                      </small>
-                    </div>
-                    <div>
-                      <span>Cuota</span>
-                      <strong>{signal.bookmaker_odds.toFixed(2)}</strong>
-                    </div>
-                    <div>
-                      <span>Mínima</span>
-                      <strong>{signal.minimum_odds.toFixed(2)}</strong>
-                    </div>
-                    <div>
-                      <span>Edge</span>
-                      <strong className={styles.topValueEdge}>
-                        +{(signal.expected_value_edge * 100).toFixed(1)}%
-                      </strong>
-                    </div>
+                  <div className={styles.valueThresholdHero}>
+                    <span>HAY VALOR DESDE</span>
+                    <strong>{signal.minimum_odds.toFixed(2)}</strong>
+                    <small>
+                      Buscá una cuota igual o superior a {signal.minimum_odds.toFixed(2)}
+                    </small>
                   </div>
 
                   {onSelect ? (
@@ -959,64 +914,21 @@ export default function ValueScanner({ onSelect }: Props) {
           const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
           const trend = historyTrend(history);
 
-          const override = bookmakerOdds[row.fixture_id];
-          const hasManualOverride = override !== undefined;
-          const displayedOdds =
-            override ?? signal.bookmaker_odds.toFixed(2);
-          const bookmaker = parseDecimalOdds(displayedOdds);
-          const manualEdge =
-            bookmaker == null
-              ? null
-              : expectedValueEdge(signal.model_probability, bookmaker);
-          const manualMarketProbability =
-            bookmaker == null ? null : impliedProbability(bookmaker);
-          const manualDivergence =
-            manualMarketProbability == null
-              ? false
-              : isHighProbabilityDivergence(
-                  signal.model_probability,
-                  manualMarketProbability,
-                  signal.confidence * 100,
-                );
-
-          const automaticStale = staleFeed && !hasManualOverride;
-          const effectiveReviewReason = hasManualOverride
-            ? manualDivergence
-              ? "model_divergence"
-              : null
-            : signal.review_reason;
-
-          const status = classifyValue(
-            bookmaker,
-            signal.fair_odds,
-            signal.minimum_odds,
-          );
-
-          const effectiveEdge =
-            hasManualOverride ? manualEdge : signal.expected_value_edge;
-
+          const automaticStale = staleFeed;
+          const effectiveReviewReason = signal.review_reason;
           const displayTone =
-            automaticStale || effectiveReviewReason ? "warning" : status.tone;
-
+            automaticStale || effectiveReviewReason
+              ? "warning"
+              : signal.qualifies
+                ? "positive"
+                : "negative";
           const displayLabel = automaticStale
-            ? "CUOTA VIEJA"
+            ? "DATOS VIEJOS"
             : effectiveReviewReason
               ? reviewLabel(effectiveReviewReason)
-              : effectiveEdge != null &&
-                  effectiveEdge >= 0.10 &&
-                  bookmaker != null &&
-                  bookmaker >= signal.minimum_odds
-                ? "VALOR FUERTE"
-                : status.label;
-
-          const marketProbability = hasManualOverride
-            ? manualMarketProbability
-            : signal.market_probability;
-
-          const probabilityGap =
-            marketProbability == null
-              ? null
-              : signal.model_probability - marketProbability;
+              : signal.qualifies
+                ? "UMBRAL CALCULADO"
+                : "A REVISAR";
 
           return (
             <article
@@ -1059,74 +971,33 @@ export default function ValueScanner({ onSelect }: Props) {
                 <strong>{(signal.model_probability * 100).toFixed(1)}%</strong>
               </div>
 
-              <div className={styles.scannerMetric}>
-                <span>Justa</span>
-                <strong>{signal.fair_odds.toFixed(2)}</strong>
+              <div className={styles.scannerValueThreshold}>
+                <span>Hay valor desde</span>
+                <strong>{signal.minimum_odds.toFixed(2)}</strong>
               </div>
-
-              <div className={styles.scannerMetric}>
-                <span>Mínima</span>
-                <strong className={styles.scannerMinimum}>
-                  {signal.minimum_odds.toFixed(2)}
-                </strong>
-              </div>
-
-              <label className={styles.scannerInput}>
-                <span>{hasManualOverride ? "Manual" : signal.bookmaker ?? "Casa"}</span>
-                <input
-                  inputMode="decimal"
-                  placeholder={signal.minimum_odds.toFixed(2)}
-                  value={displayedOdds}
-                  onChange={(event) =>
-                    setBookmakerOdds((current) => ({
-                      ...current,
-                      [row.fixture_id]: event.target.value,
-                    }))
-                  }
-                />
-              </label>
 
               <div className={styles.scannerClv}>
                 <span>CLV</span>
                 {history ? (
-                  <>
-                    <strong className={styles[`clvText_${clvTone(
+                  <strong className={styles[`clvText_${clvTone(
+                    history.clv_status === "final"
+                      ? history.clv
+                      : history.provisional_clv,
+                  )}`]}>
+                    {formatClv(
                       history.clv_status === "final"
                         ? history.clv
                         : history.provisional_clv,
-                    )}`]}>
-                      {formatClv(
-                        history.clv_status === "final"
-                          ? history.clv
-                          : history.provisional_clv,
-                      )}
-                    </strong>
-                    <small>
-                      {(history.detected_odds ?? history.first_odds).toFixed(2)}
-                      {" → "}
-                      {(history.clv_status === "final"
-                        ? history.closing_odds
-                        : history.provisional_closing_odds ?? history.last_odds
-                      )?.toFixed(2) ?? "—"}
-                    </small>
-                  </>
+                    )}
+                  </strong>
                 ) : (
                   <strong>—</strong>
                 )}
               </div>
 
-              <div className={styles.scannerMarketGap}>
-                <span>Modelo vs mercado</span>
-                <strong>
-                  {marketProbability == null || probabilityGap == null
-                    ? "—"
-                    : `${(signal.model_probability * 100).toFixed(1)}% vs ${(marketProbability * 100).toFixed(1)}% · ${probabilityGap >= 0 ? "+" : ""}${(probabilityGap * 100).toFixed(1)} pp`}
-                </strong>
-              </div>
-
               <span
                 className={
-                  displayLabel === "VALOR FUERTE"
+                  signal.qualifies && !automaticStale && !effectiveReviewReason
                     ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
                     : automaticStale || effectiveReviewReason
                       ? `${styles.scannerBadge} ${styles.scannerBadgeReview}`
@@ -1134,12 +1005,6 @@ export default function ValueScanner({ onSelect }: Props) {
                 }
               >
                 {displayLabel}
-                {effectiveEdge != null ? (
-                  <small>
-                    {effectiveEdge >= 0 ? "+" : ""}
-                    {(effectiveEdge * 100).toFixed(1)}%
-                  </small>
-                ) : null}
               </span>
             </article>
           );
