@@ -3,6 +3,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import auditedSignals from "./upcoming-denmark-271-signals.json";
 import signalHistory from "./free-denmark-271-signal-history.json";
+import performanceData from "./free-denmark-271-performance.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -107,6 +108,27 @@ type HistorySnapshot = {
   clv_definition?: string;
   max_verified_closing_age_minutes?: number;
   entries: Record<string, HistoryEntry>;
+};
+
+type PerformanceSummary = {
+  bets: number;
+  wins: number;
+  losses: number;
+  hit_rate: number | null;
+  staked_units: number;
+  profit_units: number;
+  roi: number | null;
+  yield: number | null;
+  max_drawdown_units: number;
+  average_clv: number | null;
+};
+
+type PerformanceSnapshot = {
+  schema_version: string;
+  generated_at: string;
+  staking: string;
+  summary: PerformanceSummary;
+  observed_summary: PerformanceSummary;
 };
 
 type Props = {
@@ -225,6 +247,7 @@ export default function ValueScanner({ onSelect }: Props) {
   const snapshot = auditedSignals as AuditedSnapshot;
   const historySnapshot = signalHistory as HistorySnapshot;
   const clvSummary = historicalClvSummary(historySnapshot);
+  const performance = performanceData as PerformanceSnapshot;
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -385,6 +408,51 @@ export default function ValueScanner({ onSelect }: Props) {
         <div>
           <span>A revisar</span>
           <strong>{reviewRows.length}</strong>
+        </div>
+      </div>
+
+      <div className={styles.performanceScoreboard}>
+        <div className={styles.clvScoreboardHeader}>
+          <div>
+            <span className={styles.eyebrow}>RESULTADO REAL</span>
+            <h4>Performance de apuestas</h4>
+          </div>
+          <span className={styles.clvTrackingPill}>
+            {performance.summary.bets > 0 ? "MUESTRA LIQUIDADA" : "SIN APUESTAS LIQUIDADAS"}
+          </span>
+        </div>
+
+        <div className={styles.performanceGrid}>
+          <div>
+            <span>Apuestas</span>
+            <strong>{performance.summary.bets}</strong>
+            <small>solo señales que calificaban al detectarse</small>
+          </div>
+          <div>
+            <span>ROI / Yield</span>
+            <strong className={styles[`performanceText_${clvTone(performance.summary.roi)}`]}>
+              {performance.summary.roi == null ? "—" : formatClv(performance.summary.roi)}
+            </strong>
+            <small>{performance.summary.profit_units >= 0 ? "+" : ""}{performance.summary.profit_units.toFixed(2)} u</small>
+          </div>
+          <div>
+            <span>Acierto</span>
+            <strong>
+              {performance.summary.hit_rate == null
+                ? "—"
+                : `${(performance.summary.hit_rate * 100).toFixed(0)}%`}
+            </strong>
+            <small>
+              {performance.summary.bets > 0
+                ? `${performance.summary.wins} ganadas · ${performance.summary.losses} perdidas`
+                : "se habilita con el primer resultado final"}
+            </small>
+          </div>
+          <div>
+            <span>Drawdown máx.</span>
+            <strong>{performance.summary.max_drawdown_units.toFixed(2)} u</strong>
+            <small>con stake plano de 1 unidad</small>
+          </div>
         </div>
       </div>
 
