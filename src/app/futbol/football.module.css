@@ -2174,3 +2174,57 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.advancedMetrics {
+  margin-top: 18px;
+  border: 1px solid #1f352c;
+  border-radius: 14px;
+  background: #08130f;
+  overflow: hidden;
+}
+
+.advancedMetrics > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.advancedMetrics > summary::-webkit-details-marker {
+  display: none;
+}
+
+.advancedMetrics > summary span {
+  color: #dfece6;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.advancedMetrics > summary small {
+  color: #728a7f;
+  font-size: 9px;
+}
+
+.advancedMetrics[open] > summary {
+  border-bottom: 1px solid #1f352c;
+}
+
+.advancedMetricsBody {
+  padding: 0 14px 14px;
+}
+
+.advancedMetricsBody > div {
+  margin-top: 14px;
+}
+
+@media (max-width: 560px) {
+  .advancedMetrics > summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
