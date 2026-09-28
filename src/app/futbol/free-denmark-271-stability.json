@@ -1,0 +1,101 @@
+{
+  "generated_at": "2026-09-28T18:26:45.491616+00:00",
+  "ranking_impact": false,
+  "sample_rules": {
+    "min_snapshots": 5
+  },
+  "schema_version": "football-stability-v1",
+  "signals": [
+    {
+      "away_team": "FC København",
+      "detected_qualifies": true,
+      "edge_volatility": 0.0,
+      "fixture_id": 19713912,
+      "history_key": "19713912:2",
+      "home_team": "FC Midtjylland",
+      "market": "2",
+      "mean_edge": 0.19642400000000015,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 5,
+      "status": "stable"
+    },
+    {
+      "away_team": "Odense BK",
+      "detected_qualifies": true,
+      "edge_volatility": 0.0,
+      "fixture_id": 19713905,
+      "history_key": "19713905:X",
+      "home_team": "Nordsjælland",
+      "market": "X",
+      "mean_edge": 0.15093559999999995,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 5,
+      "status": "stable"
+    },
+    {
+      "away_team": "Viborg FF",
+      "detected_qualifies": true,
+      "edge_volatility": 0.0,
+      "fixture_id": 19713915,
+      "history_key": "19713915:O2.5",
+      "home_team": "Randers FC",
+      "market": "O2.5",
+      "mean_edge": 0.13651720000000012,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 5,
+      "status": "stable"
+    },
+    {
+      "away_team": "Horsens",
+      "detected_qualifies": true,
+      "edge_volatility": 0.0,
+      "fixture_id": 19713907,
+      "history_key": "19713907:2",
+      "home_team": "Silkeborg IF",
+      "market": "2",
+      "mean_edge": 0.12470720000000002,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 5,
+      "status": "stable"
+    },
+    {
+      "away_team": "Lyngby Boldklub",
+      "detected_qualifies": false,
+      "edge_volatility": 0.0,
+      "fixture_id": 19713911,
+      "history_key": "19713911:O2.5",
+      "home_team": "Brøndby IF",
+      "market": "O2.5",
+      "mean_edge": 0.000288000000000066,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 5,
+      "status": "stable"
+    },
+    {
+      "away_team": "Sønderjyske Fodbold",
+      "detected_qualifies": false,
+      "edge_volatility": 0.0,
+      "fixture_id": 19713909,
+      "history_key": "19713909:X",
+      "home_team": "AGF",
+      "market": "X",
+      "mean_edge": -0.07994499999999993,
+      "odds_drift": 0.0,
+      "positive_edge_share": 0.0,
+      "snapshots": 5,
+      "status": "fragile"
+    }
+  ],
+  "summary": {
+    "collecting": 0,
+    "fragile": 1,
+    "stable": 5,
+    "tracked": 6,
+    "volatile": 0
+  }
+}
