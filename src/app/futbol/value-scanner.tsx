@@ -218,8 +218,18 @@ export default function ValueScanner() {
                 />
               </label>
 
-              <span className={styles.scannerBadge}>
-                {row.quote ? status.label : "SIN CUOTA"}
+              <span
+                className={
+                  edge !== null && edge >= 0.10
+                    ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
+                    : styles.scannerBadge
+                }
+              >
+                {row.quote
+                  ? edge !== null && edge >= 0.10
+                    ? "VALOR FUERTE"
+                    : status.label
+                  : "SIN CUOTA"}
                 {edge !== null ? (
                   <small>
                     {edge >= 0 ? "+" : ""}
