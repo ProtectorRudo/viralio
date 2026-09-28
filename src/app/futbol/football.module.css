@@ -140,6 +140,12 @@
   font: inherit;
 }
 
+.fixtureCardActive {
+  border-color: #54e0a4;
+  box-shadow: inset 0 0 0 1px rgba(84, 224, 164, 0.22);
+  background: #0d2a20;
+}
+
 .fixtureCard span {
   display: block;
   margin-bottom: 8px;
