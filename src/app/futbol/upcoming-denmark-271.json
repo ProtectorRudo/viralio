@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-09-28T15:21:50.947789+00:00",
+  "league_id": 271,
+  "fixtures": [
+    {
+      "fixture_id": 19713905,
+      "kickoff_at": "2026-10-09T17:00:00+00:00",
+      "home_team": "Nordsjælland",
+      "away_team": "Odense BK"
+    },
+    {
+      "fixture_id": 19713907,
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "home_team": "Silkeborg IF",
+      "away_team": "Horsens"
+    },
+    {
+      "fixture_id": 19713915,
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "home_team": "Randers FC",
+      "away_team": "Viborg FF"
+    },
+    {
+      "fixture_id": 19713911,
+      "kickoff_at": "2026-10-11T14:00:00+00:00",
+      "home_team": "Brøndby IF",
+      "away_team": "Lyngby Boldklub"
+    },
+    {
+      "fixture_id": 19713912,
+      "kickoff_at": "2026-10-11T16:00:00+00:00",
+      "home_team": "FC Midtjylland",
+      "away_team": "FC København"
+    },
+    {
+      "fixture_id": 19713909,
+      "kickoff_at": "2026-10-12T17:00:00+00:00",
+      "home_team": "AGF",
+      "away_team": "Sønderjyske Fodbold"
+    },
+    {
+      "fixture_id": 19713894,
+      "kickoff_at": "2026-10-16T17:00:00+00:00",
+      "home_team": "Horsens",
+      "away_team": "Randers FC"
+    },
+    {
+      "fixture_id": 19713898,
+      "kickoff_at": "2026-10-18T12:00:00+00:00",
+      "home_team": "Lyngby Boldklub",
+      "away_team": "Nordsjælland"
+    },
+    {
+      "fixture_id": 19713901,
+      "kickoff_at": "2026-10-18T12:00:00+00:00",
+      "home_team": "Sønderjyske Fodbold",
+      "away_team": "Silkeborg IF"
+    },
+    {
+      "fixture_id": 19713903,
+      "kickoff_at": "2026-10-18T14:00:00+00:00",
+      "home_team": "Odense BK",
+      "away_team": "Brøndby IF"
+    },
+    {
+      "fixture_id": 19713899,
+      "kickoff_at": "2026-10-18T16:00:00+00:00",
+      "home_team": "FC København",
+      "away_team": "AGF"
+    },
+    {
+      "fixture_id": 19713896,
+      "kickoff_at": "2026-10-19T17:00:00+00:00",
+      "home_team": "Viborg FF",
+      "away_team": "FC Midtjylland"
+    },
+    {
+      "fixture_id": 19713889,
+      "kickoff_at": "2026-10-23T17:00:00+00:00",
+      "home_team": "Randers FC",
+      "away_team": "Brøndby IF"
+    }
+  ]
+}
