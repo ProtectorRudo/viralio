@@ -488,9 +488,9 @@
       "total_snapshots": 5
     }
   },
-  "generated_at": "2026-09-28T17:24:00.726519+00:00",
+  "generated_at": "2026-09-28T17:41:31.817614+00:00",
   "max_verified_closing_age_minutes": 120,
   "schema_version": "football-signal-history-v2",
   "source_odds_generated_at": "2026-09-28T17:15:03.079297+00:00",
-  "source_signals_generated_at": "2026-09-28T17:15:41.034811+00:00"
+  "source_signals_generated_at": "2026-09-28T17:41:28.127796+00:00"
 }
