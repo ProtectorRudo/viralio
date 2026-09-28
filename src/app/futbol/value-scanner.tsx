@@ -308,23 +308,6 @@ function historicalClvSummary(history: HistorySnapshot) {
   };
 }
 
-function stabilitySignal(
-  snapshot: StabilitySnapshot,
-  fixtureId: number,
-  market: string,
-) {
-  return snapshot.signals.find(
-    (signal) => signal.fixture_id === fixtureId && signal.market === market,
-  ) ?? null;
-}
-
-function stabilityLabel(status: StabilitySignal["status"]) {
-  if (status === "stable") return "ESTABLE";
-  if (status === "volatile") return "VOLÁTIL";
-  if (status === "fragile") return "FRÁGIL";
-  return "RECOLECTANDO";
-}
-
 function historyTrend(entry: HistoryEntry | null) {
   if (!entry || entry.snapshots < 2 || entry.points.length < 2) {
     return {
