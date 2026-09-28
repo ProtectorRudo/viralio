@@ -1679,3 +1679,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.auditScoreboard {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #5a4b2a;
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(82, 63, 24, 0.16), rgba(21, 17, 8, 0.95));
+}
+
+.auditGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.auditGrid > div {
+  padding: 11px;
+  border: 1px solid #4a3c20;
+  border-radius: 12px;
+  background: #171206;
+}
+
+.auditGrid span,
+.auditGrid small {
+  display: block;
+  color: #9e916d;
+  font-size: 9px;
+}
+
+.auditGrid strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 22px;
+}
+
+.auditGrid small {
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+@media (max-width: 850px) {
+  .auditGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .auditGrid {
+    grid-template-columns: 1fr;
+  }
+}
