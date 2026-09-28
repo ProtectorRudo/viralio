@@ -323,8 +323,14 @@ export default function FootballLab() {
             </div>
           </div>
           <div className={styles.metricPair}>
-            <div><span>xG {home.short}</span><strong>{data ? data.expectedHomeGoals.toFixed(2) : "—"}</strong></div>
-            <div><span>xG {away.short}</span><strong>{data ? data.expectedAwayGoals.toFixed(2) : "—"}</strong></div>
+            <div>
+              <span>{data?.advancedXgAvailable ? "xG" : "λ goles"} {home.short}</span>
+              <strong>{data ? data.expectedHomeGoals.toFixed(2) : "—"}</strong>
+            </div>
+            <div>
+              <span>{data?.advancedXgAvailable ? "xG" : "λ goles"} {away.short}</span>
+              <strong>{data ? data.expectedAwayGoals.toFixed(2) : "—"}</strong>
+            </div>
           </div>
           <div className={styles.miniStats}>
             <div><span>+2.5 goles</span><strong>{data ? pct(data.over25) : "—"}</strong></div>
@@ -389,7 +395,10 @@ export default function FootballLab() {
         <div className={styles.impactBox}>
           <div><span>P({home.short})</span><strong>{data ? pct(data.homeWin) : "—"}</strong></div>
           <div className={styles.arrow}>→</div>
-          <div><span>xG {home.short}</span><strong>{data ? data.expectedHomeGoals.toFixed(2) : "—"}</strong></div>
+          <div>
+            <span>{data?.advancedXgAvailable ? "xG" : "λ goles"} {home.short}</span>
+            <strong>{data ? data.expectedHomeGoals.toFixed(2) : "—"}</strong>
+          </div>
         </div>
       </section>
 
