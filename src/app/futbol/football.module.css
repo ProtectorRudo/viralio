@@ -129,6 +129,32 @@
   font-size: 11px;
 }
 
+.scannerSummary {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.scannerSummary > div {
+  padding: 10px 12px;
+  border: 1px solid #1b3d30;
+  border-radius: 12px;
+  background: #091812;
+}
+
+.scannerSummary span {
+  display: block;
+  color: #718a7f;
+  font-size: 9px;
+}
+
+.scannerSummary strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 21px;
+}
+
 .scannerRows {
   margin-top: 14px;
   display: grid;
@@ -1069,6 +1095,10 @@
     text-align: center;
   }
 
+  .scannerSummary {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .scannerRow {
     grid-template-columns: 1fr 60px 70px 70px;
   }
@@ -1115,6 +1145,10 @@
   .timelineRow {
     grid-template-columns: 52px 30px 48px 1fr;
     font-size: 13px;
+  }
+
+  .scannerSummary {
+    grid-template-columns: 1fr;
   }
 
   .scannerRow {
