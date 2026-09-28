@@ -26,6 +26,24 @@ describe("football betting value math", () => {
     expect(classifyValue(null, 2.0, 2.1).tone).toBe("neutral");
   });
 
+  it("computes double-chance probabilities and minimum odds consistently", () => {
+    const home = 0.42;
+    const draw = 0.28;
+    const away = 0.30;
+
+    const oneX = home + draw;
+    const xTwo = draw + away;
+    const oneTwo = home + away;
+
+    expect(oneX).toBeCloseTo(0.70, 8);
+    expect(xTwo).toBeCloseTo(0.58, 8);
+    expect(oneTwo).toBeCloseTo(1 - draw, 8);
+
+    expect(minimumValueOdds(oneX)).toBeCloseTo(1.5, 8);
+    expect(minimumValueOdds(xTwo)).toBeCloseTo(1.8103448276, 8);
+    expect(minimumValueOdds(oneTwo)).toBeCloseTo(1.4583333333, 8);
+  });
+
   it("accepts decimal odds with comma or dot", () => {
     expect(parseDecimalOdds("2,15")).toBe(2.15);
     expect(parseDecimalOdds("2.15")).toBe(2.15);
