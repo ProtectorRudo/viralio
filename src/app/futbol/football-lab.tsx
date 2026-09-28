@@ -136,6 +136,12 @@ export default function FootballLab() {
     setAwayTeam(homeTeam);
   }
 
+  function loadRealDataDemo() {
+    setHomeTeam("FC København");
+    setAwayTeam("FC Midtjylland");
+    setScenario("base");
+  }
+
   const data = result;
   const leadingHome = data ? data.homeWin >= data.awayWin && data.homeWin >= data.draw : true;
   const leadingAway = data ? data.awayWin > data.homeWin && data.awayWin >= data.draw : false;
@@ -157,6 +163,13 @@ export default function FootballLab() {
           Un laboratorio probabilístico que combina fuerza de equipo, goles, corners,
           tarjetas y escenarios de alineación. La capa de datos reales seguirá ampliándose.
         </p>
+        <button
+          type="button"
+          className={styles.realDataButton}
+          onClick={loadRealDataDemo}
+        >
+          Probar modelo con datos reales
+        </button>
       </section>
 
       <section className={styles.selectorCard}>
