@@ -1,0 +1,22 @@
+{
+  "by_confidence": [],
+  "by_edge": [],
+  "by_market": [],
+  "competition_key": "free-scotland-501",
+  "definition": "entry_odds / closing_odds - 1",
+  "generated_at": "2026-09-28T19:07:31.904847+00:00",
+  "league_id": 501,
+  "league_name": "Scottish Premiership",
+  "schema_version": "football-clv-report-v2",
+  "source_history_generated_at": "2026-09-28T19:07:05.965396+00:00",
+  "source_history_schema": "football-signal-history-v2",
+  "summary": {
+    "average_clv": null,
+    "hit_rate": null,
+    "tracked_signals": 18,
+    "tracking": 18,
+    "unverified_closes": 0,
+    "verified_closes": 0,
+    "wins_vs_close": 0
+  }
+}
