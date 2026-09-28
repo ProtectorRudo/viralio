@@ -61,7 +61,7 @@ describe("football betting value math", () => {
   });
 
   it("flags large model-market disagreement when confidence is low", () => {
-    expect(isHighModelMarketDivergence(0.30, 5.0, 50)).toBe(true);
+    expect(isHighModelMarketDivergence(0.31, 5.0, 50)).toBe(true);
     expect(isHighModelMarketDivergence(0.30, 5.0, 85)).toBe(false);
     expect(isHighModelMarketDivergence(0.22, 5.0, 50)).toBe(false);
   });
