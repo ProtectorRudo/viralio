@@ -1,8 +1,14 @@
 {
-  "schema_version": "football-value-signals-v1",
-  "generated_at": "2026-09-28T16:44:26.452318+00:00",
-  "odds_generated_at": "2026-09-28T16:42:39.719359+00:00",
+  "schema_version": "football-value-signals-v2",
+  "generated_at": "2026-09-28T17:41:28.127796+00:00",
+  "odds_generated_at": "2026-09-28T17:15:03.079297+00:00",
   "profile_cutoff_at": "2026-09-28T23:59:59.999999+00:00",
+  "clv_learning": {
+    "enabled": true,
+    "min_segment_sample": 5,
+    "max_adjustment": 0.05,
+    "report_generated_at": "2026-09-28T17:40:38.775609+00:00"
+  },
   "fixtures": [
     {
       "fixture_id": 19713912,
@@ -24,7 +30,18 @@
         "probability_gap": 0.07667548984373224,
         "confidence": 0.5084375,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.19642400000000015,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.32414,
@@ -54,7 +71,18 @@
         "probability_gap": 0.03706116661681125,
         "confidence": 0.50640625,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.15093559999999995,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.476,
@@ -84,7 +112,18 @@
         "probability_gap": 0.057530866141732306,
         "confidence": 0.51046875,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.13651720000000012,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.32542,
@@ -114,7 +153,18 @@
         "probability_gap": 0.052904735097365874,
         "confidence": 0.49677083333333333,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.12470720000000002,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.41558,
@@ -144,7 +194,18 @@
         "probability_gap": 0.02981917525773181,
         "confidence": 0.5008333333333334,
         "review_reason": null,
-        "qualifies": false
+        "qualifies": false,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.000288000000000066,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.41058,
@@ -174,7 +235,18 @@
         "probability_gap": -0.005602766383985769,
         "confidence": 0.5125,
         "review_reason": null,
-        "qualifies": false
+        "qualifies": false,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": -0.07994499999999993,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.4602,
@@ -206,7 +278,18 @@
         "probability_gap": 0.07667548984373224,
         "confidence": 0.5084375,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.19642400000000015,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.32414,
@@ -236,7 +319,18 @@
         "probability_gap": 0.03706116661681125,
         "confidence": 0.50640625,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.15093559999999995,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.476,
@@ -266,7 +360,18 @@
         "probability_gap": 0.057530866141732306,
         "confidence": 0.51046875,
         "review_reason": null,
-        "qualifies": true
+        "qualifies": true,
+        "clv_learning": {
+          "adjustment": 0.0,
+          "ranking_score": 0.13651720000000012,
+          "evidence_samples": 0,
+          "active_segments": 0,
+          "market_sample": 0,
+          "confidence_sample": 0,
+          "edge_sample": 0,
+          "min_segment_sample": 5,
+          "max_adjustment": 0.05
+        }
       },
       "model": {
         "home_win": 0.32542,
@@ -296,7 +401,18 @@
       "probability_gap": 0.1151171163625486,
       "confidence": 0.50640625,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.6079300000000001,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -316,7 +432,18 @@
       "probability_gap": 0.12612926984150424,
       "confidence": 0.5125,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.5586900000000001,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713911,
@@ -336,7 +463,18 @@
       "probability_gap": 0.12625402499425986,
       "confidence": 0.5008333333333334,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.48083600000000004,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713905,
@@ -356,7 +494,18 @@
       "probability_gap": 0.14232061068702295,
       "confidence": 0.50640625,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.3728800000000001,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713907,
@@ -376,7 +525,18 @@
       "probability_gap": 0.13261342175066315,
       "confidence": 0.49677083333333333,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.29864959999999985,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -396,7 +556,18 @@
       "probability_gap": 0.10501739130434784,
       "confidence": 0.5125,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.2415400000000001,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713911,
@@ -416,7 +587,18 @@
       "probability_gap": 0.10161512195121952,
       "confidence": 0.5008333333333334,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.2083109999999999,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713907,
@@ -436,7 +618,18 @@
       "probability_gap": 0.0981521784776902,
       "confidence": 0.49677083333333333,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.08768379999999998,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -456,7 +649,18 @@
       "probability_gap": 0.07556769230769234,
       "confidence": 0.5125,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.04538780000000009,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -476,7 +680,18 @@
       "probability_gap": 0.06688000000000005,
       "confidence": 0.5125,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.037819999999999965,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713912,
@@ -496,7 +711,18 @@
       "probability_gap": 0.02226522875816994,
       "confidence": 0.5084375,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.034065800000000035,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713907,
@@ -516,7 +742,18 @@
       "probability_gap": 0.002269230769230912,
       "confidence": 0.49677083333333333,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": 0.00295000000000023,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713911,
@@ -536,7 +773,18 @@
       "probability_gap": 0.04533476439790585,
       "confidence": 0.5008333333333334,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.004086199999999929,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713915,
@@ -556,7 +804,18 @@
       "probability_gap": 0.04375476439790582,
       "confidence": 0.51046875,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.006566799999999984,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713912,
@@ -576,7 +835,18 @@
       "probability_gap": -0.013989999999999947,
       "confidence": 0.5084375,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.0179071999999999,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713915,
@@ -596,7 +866,18 @@
       "probability_gap": -0.020029999999999992,
       "confidence": 0.51046875,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.02563839999999995,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713915,
@@ -616,7 +897,18 @@
       "probability_gap": -0.0171953488372093,
       "confidence": 0.51046875,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.029575999999999936,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713907,
@@ -636,7 +928,18 @@
       "probability_gap": -0.01798963855421687,
       "confidence": 0.49677083333333333,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.029862799999999967,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713912,
@@ -656,7 +959,18 @@
       "probability_gap": 0.021619999999999973,
       "confidence": 0.5084375,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.03007000000000004,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713911,
@@ -676,7 +990,18 @@
       "probability_gap": -0.036839999999999984,
       "confidence": 0.5008333333333334,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.046049999999999924,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -696,7 +1021,18 @@
       "probability_gap": -0.041372131147541014,
       "confidence": 0.5125,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.05047400000000002,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713915,
@@ -716,7 +1052,18 @@
       "probability_gap": -0.06071411764705881,
       "confidence": 0.51046875,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.08257119999999996,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713905,
@@ -736,7 +1083,18 @@
       "probability_gap": -0.008092307692307621,
       "confidence": 0.50640625,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.08261199999999991,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713905,
@@ -756,7 +1114,18 @@
       "probability_gap": -0.07769333333333339,
       "confidence": 0.50640625,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.09323200000000009,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713907,
@@ -776,7 +1145,18 @@
       "probability_gap": -0.09121411764705878,
       "confidence": 0.49677083333333333,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.12405119999999992,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713905,
@@ -796,7 +1176,18 @@
       "probability_gap": -0.06525391304347816,
       "confidence": 0.50640625,
       "review_reason": "thin_market",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.15483520000000006,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713912,
@@ -816,7 +1207,18 @@
       "probability_gap": -0.10978666666666659,
       "confidence": 0.5084375,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.16467999999999994,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713905,
@@ -836,7 +1238,18 @@
       "probability_gap": -0.1568329824561404,
       "confidence": 0.50640625,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.1787896000000001,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -856,7 +1269,18 @@
       "probability_gap": -0.1655576271186442,
       "confidence": 0.5125,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.19535800000000014,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713911,
@@ -876,7 +1300,18 @@
       "probability_gap": -0.172252131147541,
       "confidence": 0.5008333333333334,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.2101476,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713909,
@@ -896,7 +1331,18 @@
       "probability_gap": -0.12052650345751842,
       "confidence": 0.5125,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.2636799999999999,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713905,
@@ -916,7 +1362,18 @@
       "probability_gap": -0.15217828297935998,
       "confidence": 0.50640625,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.27648000000000006,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     },
     {
       "fixture_id": 19713911,
@@ -936,7 +1393,18 @@
       "probability_gap": -0.1299782707383475,
       "confidence": 0.5008333333333334,
       "review_reason": "model_divergence",
-      "qualifies": false
+      "qualifies": false,
+      "clv_learning": {
+        "adjustment": 0.0,
+        "ranking_score": -0.28559080000000003,
+        "evidence_samples": 0,
+        "active_segments": 0,
+        "market_sample": 0,
+        "confidence_sample": 0,
+        "edge_sample": 0,
+        "min_segment_sample": 5,
+        "max_adjustment": 0.05
+      }
     }
   ]
 }
