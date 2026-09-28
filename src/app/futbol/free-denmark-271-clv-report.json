@@ -1,0 +1,19 @@
+{
+  "by_confidence": [],
+  "by_edge": [],
+  "by_market": [],
+  "definition": "entry_odds / closing_odds - 1",
+  "generated_at": "2026-09-28T17:33:57.767880+00:00",
+  "schema_version": "football-clv-report-v1",
+  "source_history_generated_at": "2026-09-28T17:24:00.726519+00:00",
+  "source_history_schema": "football-signal-history-v2",
+  "summary": {
+    "average_clv": null,
+    "hit_rate": null,
+    "tracked_signals": 6,
+    "tracking": 6,
+    "unverified_closes": 0,
+    "verified_closes": 0,
+    "wins_vs_close": 0
+  }
+}
