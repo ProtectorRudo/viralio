@@ -486,6 +486,59 @@
   color: #eef8f3;
 }
 
+.doubleChanceHeader {
+  margin-top: 18px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #1a382d;
+}
+
+.doubleChanceHeader h4 {
+  margin: 4px 0 0;
+  font-size: 20px;
+}
+
+.doubleChanceHeader > span {
+  color: #708a7e;
+  font-size: 10px;
+}
+
+.doubleChanceGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.doubleChanceCard {
+  padding: 14px;
+  border: 1px solid #1c3c30;
+  border-radius: 15px;
+  background: #0b1c16;
+}
+
+.doubleChanceProbability {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 11px;
+  background: #081611;
+}
+
+.doubleChanceProbability span {
+  display: block;
+  color: #718a7f;
+  font-size: 10px;
+}
+
+.doubleChanceProbability strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 22px;
+}
+
 .quickValueMarkets {
   margin-top: 14px;
   display: grid;
@@ -574,6 +627,35 @@
 .fixturePrediction b {
   display: inline;
   color: #54e0a4;
+}
+
+.fixtureDoubleChance {
+  margin-top: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.fixtureDoubleChance span {
+  margin: 0;
+  padding: 6px 5px;
+  border: 1px solid #1b3b30;
+  border-radius: 9px;
+  background: rgba(84, 224, 164, 0.05);
+  color: #dff8ed;
+  text-align: center;
+  font-size: 10px;
+}
+
+.fixtureDoubleChance b {
+  color: #8ff0c3;
+}
+
+.fixtureDoubleChance small {
+  display: block;
+  margin-top: 2px;
+  color: #718a7f;
+  font-size: 9px;
 }
 
 .fixturePrediction small {
@@ -858,7 +940,8 @@
   .marketGrid,
   .fixtureGrid,
   .valueGrid,
-  .quickValueMarkets {
+  .quickValueMarkets,
+  .doubleChanceGrid {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -890,7 +973,8 @@
   .metricPair,
   .fixtureGrid,
   .valueGrid,
-  .quickValueMarkets {
+  .quickValueMarkets,
+  .doubleChanceGrid {
     grid-template-columns: 1fr;
   }
 
