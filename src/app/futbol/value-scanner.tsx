@@ -10,6 +10,8 @@ import {
   expectedValueEdge,
   fairOdds,
   impliedProbability,
+  isHighModelMarketDivergence,
+  isThinBookmakerMarket,
   minimumValueOdds,
   parseDecimalOdds,
   probabilityEdge,
@@ -36,6 +38,9 @@ type OddsQuote = {
   previous_value?: number;
   delta?: number;
   movement?: "up" | "down" | "flat";
+  bookmaker_count?: number;
+  median_value?: number;
+  best_vs_median?: number;
 };
 
 type Props = {
@@ -97,7 +102,9 @@ function quoteFor(
 export default function ValueScanner({ onSelect }: Props) {
   const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
-  const [filter, setFilter] = useState<"all" | "value" | "strong">("all");
+  const [filter, setFilter] = useState<
+    "all" | "value" | "strong" | "review"
+  >("all");
 
   const rows = useMemo(
     () =>
@@ -130,13 +137,32 @@ export default function ValueScanner({ onSelect }: Props) {
           const edge = quote
             ? expectedValueEdge(market.probability, quote.value)
             : null;
-          return { market, quote, edge };
+          const highDivergence = quote
+            ? isHighModelMarketDivergence(
+                market.probability,
+                quote.value,
+                prediction.confidence,
+              )
+            : false;
+          const thinMarket = quote
+            ? isThinBookmakerMarket(quote.bookmaker_count)
+            : false;
+          const reviewReason = highDivergence
+            ? "model"
+            : thinMarket
+              ? "market"
+              : null;
+          return { market, quote, edge, reviewReason };
         });
 
         const withQuotes = candidates.filter((candidate) => candidate.quote);
+        const actionable = withQuotes.filter(
+          (candidate) => !candidate.reviewReason,
+        );
+        const selectedPool = actionable.length > 0 ? actionable : withQuotes;
         const selected =
-          withQuotes.length > 0
-            ? withQuotes.sort(
+          selectedPool.length > 0
+            ? selectedPool.sort(
                 (a, b) => (b.edge ?? -Infinity) - (a.edge ?? -Infinity),
               )[0]
             : candidates.sort(
@@ -151,6 +177,8 @@ export default function ValueScanner({ onSelect }: Props) {
           fair: fairOdds(selected.market.probability),
           minimum: minimumValueOdds(selected.market.probability, edgeBuffer),
           edgeBuffer,
+          confidence: prediction.confidence,
+          reviewReason: selected.reviewReason ?? null,
         };
       })
         .filter(Boolean)
@@ -167,11 +195,24 @@ export default function ValueScanner({ onSelect }: Props) {
   const oddsFresh = oddsAgeHours <= 2;
 
   const quotedRows = rows.filter((row) => row?.quote);
+  const reviewRows = quotedRows.filter(
+    (row) => row && row.reviewReason,
+  );
   const valueRows = quotedRows.filter(
-    (row) => row && row.quote && row.quote.value >= row.minimum,
+    (row) =>
+      row &&
+      row.quote &&
+      !row.reviewReason &&
+      row.quote.value >= row.minimum,
   );
   const strongRows = quotedRows.filter(
-    (row) => row && row.edge != null && row.edge >= 0.10,
+    (row) =>
+      row &&
+      !row.reviewReason &&
+      row.edge != null &&
+      row.edge >= 0.10 &&
+      row.quote &&
+      row.quote.value >= row.minimum,
   );
   const topOpportunities = valueRows.slice(0, 3);
   const visibleRows =
@@ -179,7 +220,9 @@ export default function ValueScanner({ onSelect }: Props) {
       ? strongRows
       : filter === "value"
         ? valueRows
-        : rows;
+        : filter === "review"
+          ? reviewRows
+          : rows;
 
   return (
     <section className={styles.scannerPanel}>
@@ -239,6 +282,13 @@ export default function ValueScanner({ onSelect }: Props) {
         >
           Valor fuerte
         </button>
+        <button
+          type="button"
+          className={filter === "review" ? styles.scannerFilterActive : ""}
+          onClick={() => setFilter("review")}
+        >
+          A revisar
+        </button>
       </div>
 
       <div className={styles.scannerSummary}>
@@ -253,6 +303,10 @@ export default function ValueScanner({ onSelect }: Props) {
         <div>
           <span>Valor fuerte</span>
           <strong>{strongRows.length}</strong>
+        </div>
+        <div>
+          <span>A revisar</span>
+          <strong>{reviewRows.length}</strong>
         </div>
       </div>
 
@@ -293,6 +347,12 @@ export default function ValueScanner({ onSelect }: Props) {
                     <div>
                       <span>Casa</span>
                       <strong>{row.quote.bookmaker ?? "—"}</strong>
+                      <small className={styles.oddsMovement}>
+                        {row.quote.bookmaker_count ?? 1} casas
+                        {row.quote.median_value != null
+                          ? ` · mediana ${row.quote.median_value.toFixed(2)}`
+                          : ""}
+                      </small>
                     </div>
                     <div>
                       <span>Cuota</span>
@@ -365,10 +425,27 @@ export default function ValueScanner({ onSelect }: Props) {
             bookmaker === null
               ? null
               : probabilityEdge(row.market.probability, bookmaker);
+          const highDivergence =
+            bookmaker === null
+              ? false
+              : isHighModelMarketDivergence(
+                  row.market.probability,
+                  bookmaker,
+                  row.confidence,
+                );
+          const thinMarket = isThinBookmakerMarket(
+            row.quote?.bookmaker_count,
+          );
+          const reviewReason = highDivergence
+            ? "model"
+            : thinMarket
+              ? "market"
+              : null;
+          const displayTone = reviewReason ? "warning" : status.tone;
 
           return (
             <article
-              className={`${styles.scannerRow} ${styles[`scannerRow_${status.tone}`]}`}
+              className={`${styles.scannerRow} ${styles[`scannerRow_${displayTone}`]}`}
               key={row.fixture.fixture_id}
             >
               <div className={styles.scannerFixture}>
@@ -449,9 +526,13 @@ export default function ValueScanner({ onSelect }: Props) {
                 }
               >
                 {row.quote
-                  ? edge !== null && edge >= 0.10
-                    ? "VALOR FUERTE"
-                    : status.label
+                  ? reviewReason === "model"
+                    ? "REVISAR MODELO"
+                    : reviewReason === "market"
+                      ? "MERCADO FINO"
+                      : edge !== null && edge >= 0.10
+                        ? "VALOR FUERTE"
+                        : status.label
                   : "SIN CUOTA"}
                 {edge !== null ? (
                   <small>
