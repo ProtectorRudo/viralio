@@ -12,9 +12,15 @@ type UpcomingFixture = {
 
 type Props = {
   onSelect: (homeTeam: string, awayTeam: string) => void;
+  activeHome: string;
+  activeAway: string;
 };
 
-export default function UpcomingFixtures({ onSelect }: Props) {
+export default function UpcomingFixtures({
+  onSelect,
+  activeHome,
+  activeAway,
+}: Props) {
   const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
 
   return (
@@ -36,7 +42,11 @@ export default function UpcomingFixtures({ onSelect }: Props) {
         {fixtures.slice(0, 8).map((fixture) => (
           <button
             type="button"
-            className={styles.fixtureCard}
+            className={
+              fixture.home_team === activeHome && fixture.away_team === activeAway
+                ? `${styles.fixtureCard} ${styles.fixtureCardActive}`
+                : styles.fixtureCard
+            }
             key={fixture.fixture_id}
             onClick={() => onSelect(fixture.home_team, fixture.away_team)}
           >
