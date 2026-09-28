@@ -4,6 +4,7 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import auditedSignals from "./upcoming-denmark-271-signals.json";
 import signalHistory from "./free-denmark-271-signal-history.json";
 import performanceData from "./free-denmark-271-performance.json";
+import strategyAuditData from "./free-denmark-271-strategy-audit.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -131,6 +132,23 @@ type PerformanceSnapshot = {
   observed_summary: PerformanceSummary;
 };
 
+type StrategyAuditSnapshot = {
+  schema_version: string;
+  generated_at: string;
+  sample_rules: {
+    min_clv_sample: number;
+    min_roi_sample: number;
+    roi_affects_ranking: boolean;
+  };
+  summary: {
+    segments_total: number;
+    collecting: number;
+    aligned_positive: number;
+    mixed: number;
+    deteriorating: number;
+  };
+};
+
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
@@ -248,6 +266,7 @@ export default function ValueScanner({ onSelect }: Props) {
   const historySnapshot = signalHistory as HistorySnapshot;
   const clvSummary = historicalClvSummary(historySnapshot);
   const performance = performanceData as PerformanceSnapshot;
+  const strategyAudit = strategyAuditData as StrategyAuditSnapshot;
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -452,6 +471,43 @@ export default function ValueScanner({ onSelect }: Props) {
             <span>Drawdown máx.</span>
             <strong>{performance.summary.max_drawdown_units.toFixed(2)} u</strong>
             <small>con stake plano de 1 unidad</small>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.auditScoreboard}>
+        <div className={styles.clvScoreboardHeader}>
+          <div>
+            <span className={styles.eyebrow}>AUDITORÍA DEL MODELO</span>
+            <h4>CLV + ROI + riesgo</h4>
+          </div>
+          <span className={styles.clvTrackingPill}>
+            {strategyAudit.summary.segments_total > 0
+              ? "SEGMENTOS EN EVALUACIÓN"
+              : "RECOLECTANDO EVIDENCIA"}
+          </span>
+        </div>
+
+        <div className={styles.auditGrid}>
+          <div>
+            <span>Alineados</span>
+            <strong>{strategyAudit.summary.aligned_positive}</strong>
+            <small>CLV y ROI positivos con muestra madura</small>
+          </div>
+          <div>
+            <span>Mixtos</span>
+            <strong>{strategyAudit.summary.mixed}</strong>
+            <small>CLV y ROI todavía no cuentan la misma historia</small>
+          </div>
+          <div>
+            <span>Deterioro</span>
+            <strong>{strategyAudit.summary.deteriorating}</strong>
+            <small>CLV y ROI negativos con muestra madura</small>
+          </div>
+          <div>
+            <span>Regla de madurez</span>
+            <strong>{strategyAudit.sample_rules.min_clv_sample}/{strategyAudit.sample_rules.min_roi_sample}</strong>
+            <small>cierres CLV / apuestas liquidadas · ROI aún no mueve ranking</small>
           </div>
         </div>
       </div>
