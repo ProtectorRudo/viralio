@@ -157,7 +157,7 @@
 .scannerSummary {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -410,6 +410,11 @@
 
 .scannerBadgeStrong small {
   color: #173d2d;
+}
+
+.scannerBadgeReview {
+  background: rgba(212, 155, 77, 0.16);
+  color: #f0c98d;
 }
 
 .scannerBadge small {
