@@ -59,16 +59,23 @@ type SimulatedEvent = {
   awayScore: number;
 };
 
-function generateEventWorld(
-  *,
-  homeLambda: number,
-  awayLambda: number,
-  homeCornerMean: number,
-  awayCornerMean: number,
-  homeYellows: number,
-  awayYellows: number,
-  seed: number,
-): SimulatedEvent[] {
+function generateEventWorld({
+  homeLambda,
+  awayLambda,
+  homeCornerMean,
+  awayCornerMean,
+  homeYellows,
+  awayYellows,
+  seed,
+}: {
+  homeLambda: number;
+  awayLambda: number;
+  homeCornerMean: number;
+  awayCornerMean: number;
+  homeYellows: number;
+  awayYellows: number;
+  seed: number;
+}): SimulatedEvent[] {
   const rng = mulberry32(seed);
   const raw: Array<Omit<SimulatedEvent, "homeScore" | "awayScore">> = [];
 
