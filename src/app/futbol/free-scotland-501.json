@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-09-28T18:39:17.897715+00:00",
+  "competition_key": "free-scotland-501",
+  "league_id": 501,
+  "league_name": "Scottish Premiership",
+  "fixtures": [
+    {
+      "fixture_id": 19722776,
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "home_team": "Rangers",
+      "away_team": "Kilmarnock"
+    },
+    {
+      "fixture_id": 19722778,
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "home_team": "Hearts",
+      "away_team": "St. Mirren"
+    },
+    {
+      "fixture_id": 19722779,
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "home_team": "Falkirk",
+      "away_team": "Dundee"
+    },
+    {
+      "fixture_id": 19722780,
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "home_team": "Dundee United",
+      "away_team": "Hibernian"
+    },
+    {
+      "fixture_id": 19722777,
+      "kickoff_at": "2026-10-11T11:00:00+00:00",
+      "home_team": "Motherwell",
+      "away_team": "Celtic"
+    },
+    {
+      "fixture_id": 19722781,
+      "kickoff_at": "2026-10-11T13:00:00+00:00",
+      "home_team": "Aberdeen",
+      "away_team": "St. Johnstone"
+    },
+    {
+      "fixture_id": 19722770,
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "home_team": "St. Johnstone",
+      "away_team": "Dundee United"
+    },
+    {
+      "fixture_id": 19722771,
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "home_team": "Kilmarnock",
+      "away_team": "Motherwell"
+    },
+    {
+      "fixture_id": 19722772,
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "home_team": "Hibernian",
+      "away_team": "Falkirk"
+    },
+    {
+      "fixture_id": 19722775,
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "home_team": "Aberdeen",
+      "away_team": "St. Mirren"
+    },
+    {
+      "fixture_id": 19722773,
+      "kickoff_at": "2026-10-17T19:00:00+00:00",
+      "home_team": "Dundee",
+      "away_team": "Rangers"
+    },
+    {
+      "fixture_id": 19722774,
+      "kickoff_at": "2026-10-18T14:00:00+00:00",
+      "home_team": "Celtic",
+      "away_team": "Hearts"
+    }
+  ]
+}
