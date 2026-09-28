@@ -277,6 +277,20 @@
   color: #8ff0c3;
 }
 
+.topValueAction {
+  width: 100%;
+  margin-top: 11px;
+  border: 1px solid #3b8e68;
+  border-radius: 11px;
+  padding: 9px 10px;
+  background: rgba(84, 224, 164, 0.1);
+  color: #b8f5d8;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .noValueNotice {
   margin-top: 16px;
   padding: 14px;
