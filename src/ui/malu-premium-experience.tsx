@@ -102,6 +102,11 @@ function MaluScratchCard({
       gradient.addColorStop(.32, "#f06a12");
       gradient.addColorStop(.68, "#2a160c");
       gradient.addColorStop(1, "#080808");
+    } else if (merchant.slug === "centro-estetica-lindy") {
+      gradient.addColorStop(0, "#fff9fa");
+      gradient.addColorStop(.34, "#e8cbd2");
+      gradient.addColorStop(.68, "#b76e79");
+      gradient.addColorStop(1, "#6b4650");
     } else {
       gradient.addColorStop(0, "#d8b58f");
       gradient.addColorStop(.48, "#b98966");
@@ -372,7 +377,13 @@ export function MaluPremiumExperience({
       <section className="malu-shell">
         <header className="malu-header">
           {merchant.slug !== "carnes-roma" && (
-            <div className="malu-brand-mark"><MerchantBrandVisual merchant={merchant} size={38} /></div>
+            <div className="malu-brand-mark">
+              <MerchantBrandVisual
+                merchant={merchant}
+                mode={merchant.slug === "centro-estetica-lindy" ? "mark" : "symbol"}
+                size={38}
+              />
+            </div>
           )}
           <div className="malu-brand-copy">
             <strong>{merchant.theme.displayName}</strong>
@@ -384,6 +395,8 @@ export function MaluPremiumExperience({
           <div className="malu-stage malu-loading">
             {merchant.slug === "carnes-roma" ? (
               <div className="malu-loading-mark malu-loading-wordmark" aria-hidden="true">ROMA</div>
+            ) : merchant.slug === "centro-estetica-lindy" ? (
+              <div className="malu-loading-mark malu-loading-monogram" aria-hidden="true">L</div>
             ) : (
               <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
             )}
@@ -403,7 +416,13 @@ export function MaluPremiumExperience({
               <div className="malu-gift-seal">HECHO<br />PARA VOS</div>
               <div className="malu-hero-overlay">
                 {merchant.slug !== "carnes-roma" && (
-                  <div className="malu-hero-logo"><MerchantBrandVisual merchant={merchant} size={46} /></div>
+                  <div className="malu-hero-logo">
+                    <MerchantBrandVisual
+                      merchant={merchant}
+                      mode={merchant.slug === "centro-estetica-lindy" ? "mark" : "symbol"}
+                      size={46}
+                    />
+                  </div>
                 )}
                 <h2>Gracias por elegir {merchant.theme.shortName}.</h2>
                 <p>Tu regalo tarda menos de un minuto.</p>
