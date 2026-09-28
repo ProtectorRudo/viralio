@@ -317,31 +317,6 @@ function historicalClvSummary(history: HistorySnapshot) {
   };
 }
 
-function historyTrend(entry: HistoryEntry | null) {
-  if (!entry || entry.snapshots < 2 || entry.points.length < 2) {
-    return {
-      label: "NUEVA",
-      tone: "new" as const,
-      edgeDelta: null,
-      oddsDelta: null,
-    };
-  }
-
-  const previous = entry.points[entry.points.length - 2];
-  const current = entry.points[entry.points.length - 1];
-  const edgeDelta =
-    current.expected_value_edge - previous.expected_value_edge;
-  const oddsDelta = current.bookmaker_odds - previous.bookmaker_odds;
-
-  if (edgeDelta >= 0.01) {
-    return { label: "↑ MEJORA", tone: "up" as const, edgeDelta, oddsDelta };
-  }
-  if (edgeDelta <= -0.01) {
-    return { label: "↓ EMPEORA", tone: "down" as const, edgeDelta, oddsDelta };
-  }
-  return { label: "= ESTABLE", tone: "flat" as const, edgeDelta, oddsDelta };
-}
-
 export default function ValueScanner({ onSelect }: Props) {
   const [league, setLeague] = useState<"denmark" | "scotland">("denmark");
   const snapshot = (
@@ -649,7 +624,6 @@ export default function ValueScanner({ onSelect }: Props) {
               const signal = row.selected_signal;
               if (!signal) return null;
               const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
-              const trend = historyTrend(history);
               return (
                 <article className={styles.topValueCard} key={row.fixture_id}>
                   <span className={styles.topValueRank}>#{index + 1}</span>
