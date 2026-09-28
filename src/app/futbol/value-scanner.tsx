@@ -637,6 +637,190 @@ export default function ValueScanner({ onSelect }: Props) {
         </div>
       </div>
 
+      {topOpportunities.length > 0 ? (
+        <div className={styles.topValueBlock}>
+          <div className={styles.topValueHeader}>
+            <span className={styles.eyebrow}>TOP OPORTUNIDADES AUDITADAS</span>
+            <strong>Ordenadas por calidad de señal</strong>
+          </div>
+
+          <div className={styles.topValueGrid}>
+            {topOpportunities.map((row, index) => {
+              const signal = row.selected_signal;
+              if (!signal) return null;
+              const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
+              const trend = historyTrend(history);
+              return (
+                <article className={styles.topValueCard} key={row.fixture_id}>
+                  <span className={styles.topValueRank}>#{index + 1}</span>
+
+                  <div className={styles.topValueFixture}>
+                    <span>
+                      {new Date(row.kickoff_at).toLocaleString("es-AR", {
+                        timeZone: "America/Argentina/Buenos_Aires",
+                        day: "2-digit",
+                        month: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <strong>
+                      {row.home_team} vs {row.away_team}
+                    </strong>
+                  </div>
+
+                  <div className={styles.topValueMarket}>
+                    <span>APUESTA</span>
+                    <strong>{marketLabel(signal.market)}</strong>
+                    <small>
+                      Probabilidad estimada {(signal.model_probability * 100).toFixed(1)}%
+                    </small>
+                  </div>
+
+                  {history ? (
+                    <div className={styles.clvOnlyLine}>
+                      <span>Seguimiento CLV</span>
+                      <strong className={styles[`clvText_${clvTone(
+                        history.clv_status === "final"
+                          ? history.clv
+                          : history.provisional_clv,
+                      )}`]}>
+                        {formatClv(
+                          history.clv_status === "final"
+                            ? history.clv
+                            : history.provisional_clv,
+                        )}
+                      </strong>
+                    </div>
+                  ) : null}
+
+                  <div className={styles.valueThresholdHero}>
+                    <span>HAY VALOR DESDE</span>
+                    <strong>{signal.minimum_odds.toFixed(2)}</strong>
+                    <small>
+                      Buscá una cuota igual o superior a {signal.minimum_odds.toFixed(2)}
+                    </small>
+                  </div>
+
+                  {onSelect ? (
+                    <button
+                      type="button"
+                      className={styles.topValueAction}
+                      onClick={() => onSelect(row.home_team, row.away_team)}
+                    >
+                      Ver análisis
+                    </button>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.noValueNotice}>
+          {staleFeed
+            ? "Esperando refresco de cuotas para habilitar oportunidades automáticas."
+            : "No hay mercados que superen el umbral de valor auditado."}
+        </div>
+      )}
+
+      <div className={styles.scannerRows}>
+        {visibleRows.map((row) => {
+          const signal = row.selected_signal;
+          if (!signal) return null;
+          const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
+
+          const automaticStale = staleFeed;
+          const effectiveReviewReason = signal.review_reason;
+          const displayTone =
+            automaticStale || effectiveReviewReason
+              ? "warning"
+              : signal.qualifies
+                ? "positive"
+                : "negative";
+          const displayLabel = automaticStale
+            ? "DATOS VIEJOS"
+            : effectiveReviewReason
+              ? reviewLabel(effectiveReviewReason)
+              : signal.qualifies
+                ? "UMBRAL CALCULADO"
+                : "A REVISAR";
+
+          return (
+            <article
+              className={`${styles.scannerRow} ${styles[`scannerRow_${displayTone}`]}`}
+              key={row.fixture_id}
+            >
+              <div className={styles.scannerFixture}>
+                <span>
+                  {new Date(row.kickoff_at).toLocaleString("es-AR", {
+                    timeZone: "America/Argentina/Buenos_Aires",
+                    day: "2-digit",
+                    month: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                <strong>
+                  {row.home_team} vs {row.away_team}
+                </strong>
+              </div>
+
+              <div className={styles.scannerMarket}>
+                <span>APUESTA</span>
+                <strong>{marketLabel(signal.market)}</strong>
+              </div>
+
+              <div className={styles.scannerMetric}>
+                <span>Prob.</span>
+                <strong>{(signal.model_probability * 100).toFixed(1)}%</strong>
+              </div>
+
+              <div className={styles.scannerValueThreshold}>
+                <span>Hay valor desde</span>
+                <strong>{signal.minimum_odds.toFixed(2)}</strong>
+              </div>
+
+              <div className={styles.scannerClv}>
+                <span>CLV</span>
+                {history ? (
+                  <strong className={styles[`clvText_${clvTone(
+                    history.clv_status === "final"
+                      ? history.clv
+                      : history.provisional_clv,
+                  )}`]}>
+                    {formatClv(
+                      history.clv_status === "final"
+                        ? history.clv
+                        : history.provisional_clv,
+                    )}
+                  </strong>
+                ) : (
+                  <strong>—</strong>
+                )}
+              </div>
+
+              <span
+                className={
+                  signal.qualifies && !automaticStale && !effectiveReviewReason
+                    ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
+                    : automaticStale || effectiveReviewReason
+                      ? `${styles.scannerBadge} ${styles.scannerBadgeReview}`
+                      : styles.scannerBadge
+                }
+              >
+                {displayLabel}
+              </span>
+            </article>
+          );
+        })}
+      </div>
+      <details className={styles.advancedMetrics}>
+        <summary>
+          <span>Ver métricas del modelo</span>
+          <small>ROI, CLV, calibración y auditoría</small>
+        </summary>
+        <div className={styles.advancedMetricsBody}>
       <div className={styles.performanceScoreboard}>
         <div className={styles.clvScoreboardHeader}>
           <div>
@@ -878,195 +1062,10 @@ export default function ValueScanner({ onSelect }: Props) {
         </div>
       </div>
 
-      {topOpportunities.length > 0 ? (
-        <div className={styles.topValueBlock}>
-          <div className={styles.topValueHeader}>
-            <span className={styles.eyebrow}>TOP OPORTUNIDADES AUDITADAS</span>
-            <strong>Ordenadas por edge estimado</strong>
-          </div>
 
-          <div className={styles.topValueGrid}>
-            {topOpportunities.map((row, index) => {
-              const signal = row.selected_signal;
-              if (!signal) return null;
-              const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
-              const trend = historyTrend(history);
-              return (
-                <article className={styles.topValueCard} key={row.fixture_id}>
-                  <span className={styles.topValueRank}>#{index + 1}</span>
-
-                  <div className={styles.topValueFixture}>
-                    <span>
-                      {new Date(row.kickoff_at).toLocaleString("es-AR", {
-                        timeZone: "America/Argentina/Buenos_Aires",
-                        day: "2-digit",
-                        month: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                    <strong>
-                      {row.home_team} vs {row.away_team}
-                    </strong>
-                  </div>
-
-                  <div className={styles.topValueMarket}>
-                    <span>APUESTA</span>
-                    <strong>{marketLabel(signal.market)}</strong>
-                    <small>
-                      Probabilidad estimada {(signal.model_probability * 100).toFixed(1)}%
-                    </small>
-                  </div>
-
-                  {history ? (
-                    <div className={styles.clvOnlyLine}>
-                      <span>Seguimiento CLV</span>
-                      <strong className={styles[`clvText_${clvTone(
-                        history.clv_status === "final"
-                          ? history.clv
-                          : history.provisional_clv,
-                      )}`]}>
-                        {formatClv(
-                          history.clv_status === "final"
-                            ? history.clv
-                            : history.provisional_clv,
-                        )}
-                      </strong>
-                    </div>
-                  ) : null}
-
-                  <div className={styles.valueThresholdHero}>
-                    <span>HAY VALOR DESDE</span>
-                    <strong>{signal.minimum_odds.toFixed(2)}</strong>
-                    <small>
-                      Buscá una cuota igual o superior a {signal.minimum_odds.toFixed(2)}
-                    </small>
-                  </div>
-
-                  {onSelect ? (
-                    <button
-                      type="button"
-                      className={styles.topValueAction}
-                      onClick={() => onSelect(row.home_team, row.away_team)}
-                    >
-                      Ver análisis
-                    </button>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
         </div>
-      ) : (
-        <div className={styles.noValueNotice}>
-          {staleFeed
-            ? "Esperando refresco de cuotas para habilitar oportunidades automáticas."
-            : "No hay mercados que superen el umbral de valor auditado."}
-        </div>
-      )}
+      </details>
 
-      <div className={styles.scannerRows}>
-        {visibleRows.map((row) => {
-          const signal = row.selected_signal;
-          if (!signal) return null;
-          const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
-
-          const automaticStale = staleFeed;
-          const effectiveReviewReason = signal.review_reason;
-          const displayTone =
-            automaticStale || effectiveReviewReason
-              ? "warning"
-              : signal.qualifies
-                ? "positive"
-                : "negative";
-          const displayLabel = automaticStale
-            ? "DATOS VIEJOS"
-            : effectiveReviewReason
-              ? reviewLabel(effectiveReviewReason)
-              : signal.qualifies
-                ? "UMBRAL CALCULADO"
-                : "A REVISAR";
-
-          return (
-            <article
-              className={`${styles.scannerRow} ${styles[`scannerRow_${displayTone}`]}`}
-              key={row.fixture_id}
-            >
-              <div className={styles.scannerFixture}>
-                <span>
-                  {new Date(row.kickoff_at).toLocaleString("es-AR", {
-                    timeZone: "America/Argentina/Buenos_Aires",
-                    day: "2-digit",
-                    month: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                <strong>
-                  {row.home_team} vs {row.away_team}
-                </strong>
-              </div>
-
-              <div className={styles.scannerMarket}>
-                <span>Mercado</span>
-                <strong>{marketLabel(signal.market)}</strong>
-                <small className={styles[`signalTrend_${trend.tone}`]}>
-                  {trend.label}
-                  {trend.edgeDelta != null
-                    ? ` · ${trend.edgeDelta >= 0 ? "+" : ""}${(trend.edgeDelta * 100).toFixed(1)} pp edge`
-                    : ""}
-                </small>
-                <small className={styles.clvLearningMini}>
-                  {signal.clv_learning?.active_segments
-                    ? `rank ${(signal.clv_learning.ranking_score * 100).toFixed(1)}% · CLV ${formatClv(signal.clv_learning.adjustment)}`
-                    : "CLV learn: espera"}
-                </small>
-              </div>
-
-              <div className={styles.scannerMetric}>
-                <span>Prob.</span>
-                <strong>{(signal.model_probability * 100).toFixed(1)}%</strong>
-              </div>
-
-              <div className={styles.scannerValueThreshold}>
-                <span>Hay valor desde</span>
-                <strong>{signal.minimum_odds.toFixed(2)}</strong>
-              </div>
-
-              <div className={styles.scannerClv}>
-                <span>CLV</span>
-                {history ? (
-                  <strong className={styles[`clvText_${clvTone(
-                    history.clv_status === "final"
-                      ? history.clv
-                      : history.provisional_clv,
-                  )}`]}>
-                    {formatClv(
-                      history.clv_status === "final"
-                        ? history.clv
-                        : history.provisional_clv,
-                    )}
-                  </strong>
-                ) : (
-                  <strong>—</strong>
-                )}
-              </div>
-
-              <span
-                className={
-                  signal.qualifies && !automaticStale && !effectiveReviewReason
-                    ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
-                    : automaticStale || effectiveReviewReason
-                      ? `${styles.scannerBadge} ${styles.scannerBadgeReview}`
-                      : styles.scannerBadge
-                }
-              >
-                {displayLabel}
-              </span>
-            </article>
-          );
-        })}
-      </div>
     </section>
   );
 }
