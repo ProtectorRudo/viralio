@@ -18,6 +18,7 @@ type RequestBody = {
   awayTeam: string;
   simulations: number;
   seed: number;
+  scenario?: "base" | "without-star";
 };
 
 function hashSeed(input: string, seed: number) {
@@ -150,10 +151,17 @@ export function simulateLearned(body: RequestBody) {
   const away = teams[body.awayTeam];
   if (!home || !away) return null;
 
-  const inputs = learnedInputs(home, away);
+  const baseInputs = learnedInputs(home, away);
+  const inputs = {
+    ...baseInputs,
+    homeLambda:
+      body.scenario === "without-star"
+        ? Math.max(baseInputs.homeLambda * 0.88, 0.15)
+        : baseInputs.homeLambda,
+  };
   const simulations = Math.min(Math.max(body.simulations, 5000), 100000);
   const seed = hashSeed(
-    `${body.homeTeam}|${body.awayTeam}|learned-v1`,
+    `${body.homeTeam}|${body.awayTeam}|${body.scenario ?? "base"}|learned-v1`,
     body.seed,
   );
   const rng = mulberry32(seed);
@@ -184,7 +192,10 @@ export function simulateLearned(body: RequestBody) {
     awayCornerMean,
     homeYellows: home.yellows,
     awayYellows: away.yellows,
-    seed: hashSeed(`${body.homeTeam}|${body.awayTeam}|event-world`, body.seed),
+    seed: hashSeed(
+      `${body.homeTeam}|${body.awayTeam}|${body.scenario ?? "base"}|event-world`,
+      body.seed,
+    ),
   });
 
   for (let i = 0; i < simulations; i += 1) {
