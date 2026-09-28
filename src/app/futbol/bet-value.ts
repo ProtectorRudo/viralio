@@ -53,3 +53,15 @@ export function confidenceAdjustedEdgeBuffer(
 
   return VALUE_EDGE_BUFFER + (1 - confidence) * 0.05;
 }
+
+
+export function impliedProbability(decimalOdds: number) {
+  return decimalOdds > 1 ? 1 / decimalOdds : 0;
+}
+
+export function probabilityEdge(
+  modelProbability: number,
+  decimalOdds: number,
+) {
+  return modelProbability - impliedProbability(decimalOdds);
+}
