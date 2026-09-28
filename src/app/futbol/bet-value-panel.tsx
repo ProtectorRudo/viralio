@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   classifyValue,
   expectedValueEdge,
@@ -59,16 +59,8 @@ export default function BetValuePanel({
   cornersOver85Probability,
   cardsOver35Probability,
 }: Props) {
-  const [odds, setOdds] = useState({
-    home: "",
-    draw: "",
-    away: "",
-  });
-  const [doubleChanceOdds, setDoubleChanceOdds] = useState<Record<DoubleChanceKey, string>>({
-    homeDraw: "",
-    drawAway: "",
-    homeAway: "",
-  });
+  const [oddsOverrides, setOddsOverrides] = useState<Record<string, string>>({});
+  const [doubleChanceOverrides, setDoubleChanceOverrides] = useState<Record<string, string>>({});
 
   const selectedFixtureOdds = useMemo(() => {
     const fixture = upcomingFixtures.fixtures.find(
@@ -82,21 +74,19 @@ export default function BetValuePanel({
     return oddsMap[String(fixture.fixture_id)] ?? null;
   }, [homeTeamName, awayTeamName]);
 
-  useEffect(() => {
-    setOdds({
-      home: selectedFixtureOdds?.["1X2"]?.["1"]?.value.toFixed(2) ?? "",
-      draw: selectedFixtureOdds?.["1X2"]?.["X"]?.value.toFixed(2) ?? "",
-      away: selectedFixtureOdds?.["1X2"]?.["2"]?.value.toFixed(2) ?? "",
-    });
-    setDoubleChanceOdds({
-      homeDraw:
-        selectedFixtureOdds?.double_chance?.["1X"]?.value.toFixed(2) ?? "",
-      drawAway:
-        selectedFixtureOdds?.double_chance?.["X2"]?.value.toFixed(2) ?? "",
-      homeAway:
-        selectedFixtureOdds?.double_chance?.["12"]?.value.toFixed(2) ?? "",
-    });
-  }, [selectedFixtureOdds]);
+  const fixtureKey = `${homeTeamName}::${awayTeamName}`;
+
+  const defaultOneXTwo = {
+    home: selectedFixtureOdds?.["1X2"]?.["1"]?.value.toFixed(2) ?? "",
+    draw: selectedFixtureOdds?.["1X2"]?.["X"]?.value.toFixed(2) ?? "",
+    away: selectedFixtureOdds?.["1X2"]?.["2"]?.value.toFixed(2) ?? "",
+  };
+
+  const defaultDoubleChance: Record<DoubleChanceKey, string> = {
+    homeDraw: selectedFixtureOdds?.double_chance?.["1X"]?.value.toFixed(2) ?? "",
+    drawAway: selectedFixtureOdds?.double_chance?.["X2"]?.value.toFixed(2) ?? "",
+    homeAway: selectedFixtureOdds?.double_chance?.["12"]?.value.toFixed(2) ?? "",
+  };
 
   const outcomes = useMemo<Outcome[]>(
     () => [
@@ -155,7 +145,10 @@ export default function BetValuePanel({
         {outcomes.map((outcome) => {
           const fair = fairOdds(outcome.probability);
           const minimum = minimumValueOdds(outcome.probability);
-          const bookmaker = parseDecimalOdds(odds[outcome.key]);
+          const overrideKey = `${fixtureKey}:1X2:${outcome.key}`;
+          const displayedOdds =
+            oddsOverrides[overrideKey] ?? defaultOneXTwo[outcome.key];
+          const bookmaker = parseDecimalOdds(displayedOdds);
           const status = classifyValue(bookmaker, fair, minimum);
           const expectedEdge =
             bookmaker === null
@@ -197,11 +190,11 @@ export default function BetValuePanel({
                 <input
                   inputMode="decimal"
                   placeholder={minimum.toFixed(2)}
-                  value={odds[outcome.key]}
+                  value={displayedOdds}
                   onChange={(event) =>
-                    setOdds((current) => ({
+                    setOddsOverrides((current) => ({
                       ...current,
-                      [outcome.key]: event.target.value,
+                      [overrideKey]: event.target.value,
                     }))
                   }
                 />
@@ -233,7 +226,10 @@ export default function BetValuePanel({
         {doubleChance.map((market) => {
           const fair = fairOdds(market.probability);
           const minimum = minimumValueOdds(market.probability);
-          const bookmaker = parseDecimalOdds(doubleChanceOdds[market.key]);
+          const overrideKey = `${fixtureKey}:dc:${market.key}`;
+          const displayedOdds =
+            doubleChanceOverrides[overrideKey] ?? defaultDoubleChance[market.key];
+          const bookmaker = parseDecimalOdds(displayedOdds);
           const status = classifyValue(bookmaker, fair, minimum);
           const expectedEdge =
             bookmaker === null
@@ -280,11 +276,11 @@ export default function BetValuePanel({
                 <input
                   inputMode="decimal"
                   placeholder={minimum.toFixed(2)}
-                  value={doubleChanceOdds[market.key]}
+                  value={displayedOdds}
                   onChange={(event) =>
-                    setDoubleChanceOdds((current) => ({
+                    setDoubleChanceOverrides((current) => ({
                       ...current,
-                      [market.key]: event.target.value,
+                      [overrideKey]: event.target.value,
                     }))
                   }
                 />
