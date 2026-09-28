@@ -412,7 +412,7 @@ export function MaluPremiumExperience({
         {state === "LANDING" && (
           <div className="malu-stage malu-home" data-testid="gift-landing-stage">
             <div className="malu-home-copy">
-              <p className="malu-eyebrow">Un detalle para vos</p>
+              <p className="malu-eyebrow">{merchant.slug === "los-chiquis" ? "Peluquería canina" : "Un detalle para vos"}</p>
               <h1>Tenemos un regalo para vos.</h1>
             </div>
             <div className="malu-hero">
