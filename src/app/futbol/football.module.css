@@ -1369,3 +1369,27 @@
     justify-self: stretch;
   }
 }
+
+
+.oddsFeedFresh {
+  border: 1px solid rgba(84, 224, 164, 0.35);
+  background: rgba(84, 224, 164, 0.08);
+  color: #8ff0c3;
+}
+
+.oddsFeedStale {
+  border: 1px solid rgba(230, 177, 86, 0.42);
+  background: rgba(230, 177, 86, 0.10);
+  color: #f0c577;
+}
+
+.staleOddsNotice {
+  margin-top: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(230, 177, 86, 0.35);
+  border-radius: 12px;
+  background: rgba(230, 177, 86, 0.08);
+  color: #c9aa72;
+  font-size: 11px;
+  line-height: 1.45;
+}
