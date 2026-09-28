@@ -31,6 +31,17 @@ type AuditedSignal = {
   confidence: number;
   review_reason: string | null;
   qualifies: boolean;
+  clv_learning?: {
+    adjustment: number;
+    ranking_score: number;
+    evidence_samples: number;
+    active_segments: number;
+    market_sample: number;
+    confidence_sample: number;
+    edge_sample: number;
+    min_segment_sample: number;
+    max_adjustment: number;
+  };
 };
 
 type AuditedFixture = {
@@ -470,6 +481,11 @@ export default function ValueScanner({ onSelect }: Props) {
                       mercado {(signal.market_probability * 100).toFixed(1)}% ·
                       confianza {(signal.confidence * 100).toFixed(0)}%
                     </small>
+                    <small className={styles.clvLearningLine}>
+                      {signal.clv_learning?.active_segments
+                        ? `Aprendizaje CLV activo · ${signal.clv_learning.evidence_samples} evidencias · ajuste ${formatClv(signal.clv_learning.adjustment)}`
+                        : "Aprendizaje CLV en espera · se activa con 5+ cierres por segmento"}
+                    </small>
                   </div>
 
                   {history ? (
@@ -647,6 +663,11 @@ export default function ValueScanner({ onSelect }: Props) {
                   {trend.edgeDelta != null
                     ? ` · ${trend.edgeDelta >= 0 ? "+" : ""}${(trend.edgeDelta * 100).toFixed(1)} pp edge`
                     : ""}
+                </small>
+                <small className={styles.clvLearningMini}>
+                  {signal.clv_learning?.active_segments
+                    ? `rank ${(signal.clv_learning.ranking_score * 100).toFixed(1)}% · CLV ${formatClv(signal.clv_learning.adjustment)}`
+                    : "CLV learn: espera"}
                 </small>
               </div>
 
