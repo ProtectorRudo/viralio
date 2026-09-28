@@ -229,7 +229,27 @@ function normalizeBackend(
     redCardProbability: Number(data.probability_red_card ?? 0),
     penaltyProbability: Number(data.probability_penalty_awarded ?? 0),
     topScorelines,
-    confidence: body.scenario === "without-star" ? 82 : 86,
+    confidence: Number.isFinite(Number(data.data_confidence))
+      ? Math.round(Number(data.data_confidence) * 100)
+      : body.scenario === "without-star"
+        ? 82
+        : 86,
+    modelKey: typeof data.model_key === "string" ? data.model_key : null,
+    modelVersion: typeof data.model_version === "string" ? data.model_version : null,
+    competitionKey:
+      typeof data.competition_key === "string" ? data.competition_key : null,
+    advancedXgAvailable:
+      typeof data.advanced_xg_available === "boolean"
+        ? data.advanced_xg_available
+        : null,
+    validationAlignedPredictions: Number.isFinite(
+      Number(data.validation_aligned_predictions),
+    )
+      ? Number(data.validation_aligned_predictions)
+      : null,
+    validationBrierDelta: Number.isFinite(Number(data.validation_brier_delta))
+      ? Number(data.validation_brier_delta)
+      : null,
   };
 }
 
@@ -244,6 +264,31 @@ export async function POST(request: Request) {
   const inputs = modelInputs(body);
 
   if (backend) {
+    if (body.scenario !== "without-star") {
+      try {
+        const learnedResponse = await fetch(`${backend}/api/v1/predict`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            home_team: body.homeTeam,
+            away_team: body.awayTeam,
+            simulations: inputs.simulations,
+            seed: inputs.seed,
+          }),
+          cache: "no-store",
+        });
+
+        if (learnedResponse.ok) {
+          const learnedData = (await learnedResponse.json()) as Record<string, unknown>;
+          return NextResponse.json(
+            normalizeBackend(learnedData, body, inputs.simulations, inputs.seed),
+          );
+        }
+      } catch {
+        // Try the lower-level backend simulation before using the local fallback.
+      }
+    }
+
     try {
       const response = await fetch(`${backend}/api/v1/simulate/full`, {
         method: "POST",
