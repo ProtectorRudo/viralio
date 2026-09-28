@@ -129,6 +129,31 @@
   font-size: 11px;
 }
 
+.scannerFilters {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.scannerFilters button {
+  border: 1px solid #29483c;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #091812;
+  color: #7f998e;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.scannerFilters .scannerFilterActive {
+  border-color: #54e0a4;
+  background: rgba(84, 224, 164, 0.12);
+  color: #b7f5d7;
+}
+
 .scannerSummary {
   margin-top: 14px;
   display: grid;
