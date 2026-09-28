@@ -31,6 +31,12 @@ type SimulationResult = {
   penaltyProbability: number;
   topScorelines: Array<{ score: string; probability: number }>;
   confidence: number;
+  modelKey?: string | null;
+  modelVersion?: string | null;
+  competitionKey?: string | null;
+  advancedXgAvailable?: boolean | null;
+  validationAlignedPredictions?: number | null;
+  validationBrierDelta?: number | null;
   note?: string;
 };
 
@@ -360,7 +366,7 @@ export default function FootballLab() {
 
       <footer className={styles.footer}>
         Motor activo: {data?.source === "football-simulator" ? "football-simulator" : "Monte Carlo integrado en Viralio"}.
-        Los parámetros de fuerza todavía se calibrarán con el feed histórico productivo.
+        {data?.modelVersion ? ` Modelo ${data.modelVersion} · ${data.competitionKey ?? "competencia sin etiqueta"} · validado en ${data.validationAlignedPredictions ?? "—"} partidos alineados.` : " Los parámetros de fuerza todavía se calibrarán con el feed histórico productivo."}
       </footer>
     </main>
   );
