@@ -315,7 +315,7 @@ export const merchants: Merchant[] = [
       stylePreset: "luxury",
       fontPreset: "editorial",
       tone: "Bienestar y belleza",
-      logoDataUrl: "/brands/centro-estetica-lindy.png",
+      logoDataUrl: "/brands/centro-estetica-lindy-v2.png",
       heroEyebrow: "Un mimo para vos",
       heroTitle: "Tenemos un regalo para vos.",
       heroCopy: "Centro Estética Lindy preparó un beneficio especial para tu próxima visita. Descubrilo en menos de un minuto.",
