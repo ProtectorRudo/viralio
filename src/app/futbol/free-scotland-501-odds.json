@@ -1,0 +1,1508 @@
+{
+  "generated_at": "2026-09-28T18:40:05.793370+00:00",
+  "competition_key": "free-scotland-501",
+  "league_id": 501,
+  "league_name": "Scottish Premiership",
+  "fixtures": {
+    "19722776": {
+      "home_team": "Rangers",
+      "away_team": "Kilmarnock",
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.14,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.12,
+          "best_vs_median": 0.01785714285714257
+        },
+        "X": {
+          "value": 8.6,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 8.2,
+          "best_vs_median": 0.04878048780487809
+        },
+        "2": {
+          "value": 15.25,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 15.0,
+          "best_vs_median": 0.016666666666666607
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.02,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.02,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 5.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 5.5,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.08,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.08,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.3,
+          "best_vs_median": 0.0
+        },
+        "under_2_5": {
+          "value": 3.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.5,
+          "best_vs_median": 0.0
+        },
+        "btts_yes": {
+          "value": 1.9,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.9,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 1.9,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.9,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.8255920098802555,
+            "X": 0.11276378671535199,
+            "2": 0.06164420340439242
+          },
+          "overround": 0.08147502903600468
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.7291666666666667,
+            "under": 0.27083333333333337
+          },
+          "overround": 0.05494505494505475
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5,
+            "no": 0.5
+          },
+          "overround": 0.05263157894736836
+        }
+      }
+    },
+    "19722778": {
+      "home_team": "Hearts",
+      "away_team": "St. Mirren",
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.46,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.4449999999999998,
+          "best_vs_median": 0.010380622837370401
+        },
+        "X": {
+          "value": 4.76,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 4.65,
+          "best_vs_median": 0.023655913978494425
+        },
+        "2": {
+          "value": 6.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 6.06,
+          "best_vs_median": 0.0726072607260726
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.11,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.11,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 2.75,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.75,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.18,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.18,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0
+        },
+        "under_2_5": {
+          "value": 2.62,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.62,
+          "best_vs_median": 0.0
+        },
+        "btts_yes": {
+          "value": 1.66,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.66,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.1,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.6454938099803116,
+            "X": 0.2005889366497957,
+            "2": 0.15391725336989276
+          },
+          "overround": 0.07211178758237469
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.6359223300970874,
+            "under": 0.3640776699029127
+          },
+          "overround": 0.04834605597964359
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5585106382978724,
+            "no": 0.4414893617021276
+          },
+          "overround": 0.07860011474469308
+        }
+      }
+    },
+    "19722779": {
+      "home_team": "Falkirk",
+      "away_team": "Dundee",
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.025,
+          "best_vs_median": 0.0370370370370372
+        },
+        "X": {
+          "value": 3.57,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 3.48,
+          "best_vs_median": 0.025862068965517127
+        },
+        "2": {
+          "value": 3.6,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 3.48,
+          "best_vs_median": 0.034482758620689724
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.36,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.7,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.97,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 1.72,
+          "best_vs_median": 0.14534883720930236
+        },
+        "under_2_5": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 2.04,
+          "best_vs_median": 0.02941176470588247
+        },
+        "btts_yes": {
+          "value": 1.61,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.61,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.2,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.4621513944223108,
+            "X": 0.2689243027888446,
+            "2": 0.2689243027888446
+          },
+          "overround": 0.06853980417198802
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5425531914893618,
+            "under": 0.4574468085106383
+          },
+          "overround": 0.07159142726858181
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5774278215223098,
+            "no": 0.4225721784776903
+          },
+          "overround": 0.07566346696781467
+        }
+      }
+    },
+    "19722780": {
+      "home_team": "Dundee United",
+      "away_team": "Hibernian",
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.72,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.66,
+          "best_vs_median": 0.022556390977443552
+        },
+        "X": {
+          "value": 3.64,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 3.54,
+          "best_vs_median": 0.02824858757062154
+        },
+        "2": {
+          "value": 2.46,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.4,
+          "best_vs_median": 0.025000000000000133
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.53,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.53,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.61,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 1.56,
+          "best_vs_median": 0.03205128205128216
+        },
+        "under_2_5": {
+          "value": 2.33,
+          "bookmaker_id": 64,
+          "bookmaker": "MelBet",
+          "updated_at": null,
+          "bookmaker_count": 3,
+          "median_value": 2.33,
+          "best_vs_median": 0.0
+        },
+        "btts_yes": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.5,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.34968143428656095,
+            "X": 0.262754976045834,
+            "2": 0.38756358966760507
+          },
+          "overround": 0.07509239199694151
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5989717223650385,
+            "under": 0.40102827763496146
+          },
+          "overround": 0.07021019038186416
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.625,
+            "no": 0.375
+          },
+          "overround": 0.06666666666666665
+        }
+      }
+    },
+    "19722777": {
+      "home_team": "Motherwell",
+      "away_team": "Celtic",
+      "kickoff_at": "2026-10-11T11:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 5.0,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 4.68,
+          "best_vs_median": 0.06837606837606836
+        },
+        "X": {
+          "value": 4.61,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 4.4,
+          "best_vs_median": 0.04772727272727262
+        },
+        "2": {
+          "value": 1.62,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.58,
+          "best_vs_median": 0.025316455696202445
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 2.37,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.37,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.16,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.16,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.22,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.22,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.44,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.44,
+          "best_vs_median": 0.0
+        },
+        "under_2_5": {
+          "value": 2.75,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.75,
+          "best_vs_median": 0.0
+        },
+        "btts_yes": {
+          "value": 1.53,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.53,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.37,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.37,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.1989787740709363,
+            "X": 0.21164105969363223,
+            "2": 0.5893801662354314
+          },
+          "overround": 0.07385933335300421
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.6563245823389022,
+            "under": 0.3436754176610979
+          },
+          "overround": 0.058080808080807955
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.6076923076923076,
+            "no": 0.39230769230769225
+          },
+          "overround": 0.07553569951187233
+        }
+      }
+    },
+    "19722781": {
+      "home_team": "Aberdeen",
+      "away_team": "St. Johnstone",
+      "kickoff_at": "2026-10-11T13:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.17,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.16,
+          "best_vs_median": 0.004629629629629539
+        },
+        "X": {
+          "value": 3.41,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 3.28,
+          "best_vs_median": 0.03963414634146356
+        },
+        "2": {
+          "value": 3.36,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 3.285,
+          "best_vs_median": 0.022831050228310446
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.36,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.66,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.66,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.3,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.97,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 5,
+          "median_value": 1.93,
+          "best_vs_median": 0.020725388601036343
+        },
+        "under_2_5": {
+          "value": 1.9,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 5,
+          "median_value": 1.86,
+          "best_vs_median": 0.021505376344086002
+        },
+        "btts_yes": {
+          "value": 1.75,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.75,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.0,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.0,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.43176572417772646,
+            "X": 0.284333525678015,
+            "2": 0.28390075014425853
+          },
+          "overround": 0.07225501478759067
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.4907651715039578,
+            "under": 0.5092348284960422
+          },
+          "overround": 0.055769123628057304
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5333333333333333,
+            "no": 0.4666666666666667
+          },
+          "overround": 0.0714285714285714
+        }
+      }
+    },
+    "19722770": {
+      "home_team": "St. Johnstone",
+      "away_team": "Dundee United",
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.25,
+          "best_vs_median": 0.0
+        },
+        "X": {
+          "value": 3.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.5,
+          "best_vs_median": 0.0
+        },
+        "2": {
+          "value": 2.87,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.87,
+          "best_vs_median": 0.0
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.4,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.4,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.61,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.61,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.97,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.845,
+          "best_vs_median": 0.0677506775067751
+        },
+        "under_2_5": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.985,
+          "best_vs_median": 0.057934508816120944
+        },
+        "btts_yes": {
+          "value": 1.61,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.61,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.2,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.4120603015075377,
+            "X": 0.26489590811198854,
+            "2": 0.3230437903804738
+          },
+          "overround": 0.07859078590785895
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5182767624020888,
+            "under": 0.4817232375979112
+          },
+          "overround": 0.04578375758568676
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5774278215223098,
+            "no": 0.4225721784776903
+          },
+          "overround": 0.07566346696781467
+        }
+      }
+    },
+    "19722771": {
+      "home_team": "Kilmarnock",
+      "away_team": "Motherwell",
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 3.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.1,
+          "best_vs_median": 0.0
+        },
+        "X": {
+          "value": 3.6,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.6,
+          "best_vs_median": 0.0
+        },
+        "2": {
+          "value": 2.15,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.15,
+          "best_vs_median": 0.0
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.66,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.66,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.36,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.92,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.8199999999999998,
+          "best_vs_median": 0.05494505494505497
+        },
+        "under_2_5": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.01,
+          "best_vs_median": 0.044776119402985204
+        },
+        "btts_yes": {
+          "value": 1.61,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.61,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.2,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.30275767651085467,
+            "X": 0.26070799921768045,
+            "2": 0.4365343242714649
+          },
+          "overround": 0.06547470200883554
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5248041775456919,
+            "under": 0.4751958224543081
+          },
+          "overround": 0.04696298726149495
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5774278215223098,
+            "no": 0.4225721784776903
+          },
+          "overround": 0.07566346696781467
+        }
+      }
+    },
+    "19722772": {
+      "home_team": "Hibernian",
+      "away_team": "Falkirk",
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.7,
+          "best_vs_median": 0.0
+        },
+        "X": {
+          "value": 3.8,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.8,
+          "best_vs_median": 0.0
+        },
+        "2": {
+          "value": 4.33,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 4.33,
+          "best_vs_median": 0.0
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.2,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.1,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.25,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.95,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.835,
+          "best_vs_median": 0.06267029972752036
+        },
+        "under_2_5": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.0,
+          "best_vs_median": 0.050000000000000044
+        },
+        "btts_yes": {
+          "value": 1.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.7,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.05,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.05,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.5434847233691165,
+            "X": 0.2431379025598679,
+            "2": 0.2133773740710157
+          },
+          "overround": 0.08234007107157915
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5215123859191656,
+            "under": 0.4784876140808344
+          },
+          "overround": 0.04495912806539515
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5466666666666666,
+            "no": 0.4533333333333333
+          },
+          "overround": 0.07604017216642767
+        }
+      }
+    },
+    "19722775": {
+      "home_team": "Aberdeen",
+      "away_team": "St. Mirren",
+      "kickoff_at": "2026-10-17T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.83,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.83,
+          "best_vs_median": 0.0
+        },
+        "X": {
+          "value": 3.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.7,
+          "best_vs_median": 0.0
+        },
+        "2": {
+          "value": 3.9,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.9,
+          "best_vs_median": 0.0
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.25,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.9,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.9,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 2.0,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.9,
+          "best_vs_median": 0.05263157894736836
+        },
+        "under_2_5": {
+          "value": 2.0,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.925,
+          "best_vs_median": 0.03896103896103886
+        },
+        "btts_yes": {
+          "value": 1.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.7,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.05,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.05,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.5092102477239042,
+            "X": 0.2518526360364175,
+            "2": 0.2389371162396782
+          },
+          "overround": 0.07312861411222071
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5032679738562091,
+            "under": 0.4967320261437908
+          },
+          "overround": 0.045796308954203724
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5466666666666666,
+            "no": 0.4533333333333333
+          },
+          "overround": 0.07604017216642767
+        }
+      }
+    },
+    "19722773": {
+      "home_team": "Dundee",
+      "away_team": "Rangers",
+      "kickoff_at": "2026-10-17T19:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 7.0,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 7.0,
+          "best_vs_median": 0.0
+        },
+        "X": {
+          "value": 4.75,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 4.75,
+          "best_vs_median": 0.0
+        },
+        "2": {
+          "value": 1.38,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.38,
+          "best_vs_median": 0.0
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 3.0,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 3.0,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 1.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.1,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.18,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.18,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.57,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.57,
+          "best_vs_median": 0.0
+        },
+        "under_2_5": {
+          "value": 2.37,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.37,
+          "best_vs_median": 0.0
+        },
+        "btts_yes": {
+          "value": 1.8,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.8,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 1.95,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.95,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.13251794197917718,
+            "X": 0.19528959870615584,
+            "2": 0.672192459314667
+          },
+          "overround": 0.07802113980603687
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.6015228426395939,
+            "under": 0.398477157360406
+          },
+          "overround": 0.0588836034292779
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5199999999999999,
+            "no": 0.48
+          },
+          "overround": 0.06837606837606858
+        }
+      }
+    },
+    "19722774": {
+      "home_team": "Celtic",
+      "away_team": "Hearts",
+      "kickoff_at": "2026-10-18T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.44,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.44,
+          "best_vs_median": 0.0
+        },
+        "X": {
+          "value": 4.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 4.5,
+          "best_vs_median": 0.0
+        },
+        "2": {
+          "value": 6.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 6.25,
+          "best_vs_median": 0.0
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.12,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.12,
+          "best_vs_median": 0.0
+        },
+        "X2": {
+          "value": 2.62,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.62,
+          "best_vs_median": 0.0
+        },
+        "12": {
+          "value": 1.18,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.18,
+          "best_vs_median": 0.0
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0
+        },
+        "under_2_5": {
+          "value": 2.62,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.62,
+          "best_vs_median": 0.0
+        },
+        "btts_yes": {
+          "value": 1.66,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.66,
+          "best_vs_median": 0.0
+        },
+        "btts_no": {
+          "value": 2.1,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.1,
+          "best_vs_median": 0.0
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.6449948400412796,
+            "X": 0.20639834881320948,
+            "2": 0.14860681114551083
+          },
+          "overround": 0.07666666666666666
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.6359223300970874,
+            "under": 0.3640776699029127
+          },
+          "overround": 0.04834605597964359
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5585106382978724,
+            "no": 0.4414893617021276
+          },
+          "overround": 0.07860011474469308
+        }
+      }
+    }
+  }
+}
