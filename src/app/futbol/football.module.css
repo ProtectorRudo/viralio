@@ -318,7 +318,7 @@
 
 .scannerRow {
   display: grid;
-  grid-template-columns: minmax(190px, 1.7fr) 64px 66px 64px 64px 82px 76px minmax(120px, 1fr) 96px;
+  grid-template-columns: minmax(210px, 1.8fr) minmax(90px, 0.8fr) 70px minmax(125px, 0.9fr) 72px 104px;
   gap: 9px;
   align-items: center;
   padding: 11px 12px;
@@ -1993,4 +1993,76 @@
 .leagueStatus strong {
   color: #d8e4ec;
   font-size: 11px;
+}
+
+
+.valueThresholdHero {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #3f8b68;
+  border-radius: 12px;
+  background: rgba(42, 124, 88, 0.14);
+  text-align: center;
+}
+
+.valueThresholdHero span {
+  display: block;
+  color: #8bb7a5;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.valueThresholdHero strong {
+  display: block;
+  margin-top: 4px;
+  color: #8ff0c3;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.valueThresholdHero small {
+  display: block;
+  margin-top: 6px;
+  color: #9db6ab;
+  font-size: 9px;
+}
+
+.clvOnlyLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.clvOnlyLine span {
+  color: #718a7f;
+  font-size: 9px;
+}
+
+.scannerValueThreshold {
+  min-width: 120px;
+  padding: 8px 10px;
+  border: 1px solid #3f8b68;
+  border-radius: 10px;
+  background: rgba(42, 124, 88, 0.14);
+  text-align: center;
+}
+
+.scannerValueThreshold span {
+  display: block;
+  color: #79a690;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.scannerValueThreshold strong {
+  display: block;
+  margin-top: 2px;
+  color: #8ff0c3;
+  font-size: 19px;
 }
