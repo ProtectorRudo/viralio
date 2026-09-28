@@ -1,0 +1,187 @@
+{
+  "entries": {
+    "19713905:X": {
+      "away_team": "Odense BK",
+      "best_odds": 4.71,
+      "bookmaker": "Pinnacle",
+      "first_edge": 0.15093559999999995,
+      "first_odds": 4.71,
+      "first_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "fixture_id": 19713905,
+      "home_team": "Nordsjælland",
+      "kickoff_at": "2026-10-09T17:00:00+00:00",
+      "last_edge": 0.15093559999999995,
+      "last_odds": 4.71,
+      "last_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "lowest_odds": 4.71,
+      "market": "X",
+      "market_probability": 0.20729883338318875,
+      "max_edge": 0.15093559999999995,
+      "model_probability": 0.24436,
+      "points": [
+        {
+          "bookmaker": "Pinnacle",
+          "bookmaker_odds": 4.71,
+          "captured_at": "2026-09-28T16:44:26.452318+00:00",
+          "expected_value_edge": 0.15093559999999995,
+          "market_probability": 0.20729883338318875,
+          "model_probability": 0.24436
+        }
+      ],
+      "snapshots": 1
+    },
+    "19713907:2": {
+      "away_team": "Horsens",
+      "best_odds": 3.16,
+      "bookmaker": "Pinnacle",
+      "first_edge": 0.12470720000000002,
+      "first_odds": 3.16,
+      "first_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "fixture_id": 19713907,
+      "home_team": "Silkeborg IF",
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "last_edge": 0.12470720000000002,
+      "last_odds": 3.16,
+      "last_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "lowest_odds": 3.16,
+      "market": "2",
+      "market_probability": 0.30301526490263414,
+      "max_edge": 0.12470720000000002,
+      "model_probability": 0.35592,
+      "points": [
+        {
+          "bookmaker": "Pinnacle",
+          "bookmaker_odds": 3.16,
+          "captured_at": "2026-09-28T16:44:26.452318+00:00",
+          "expected_value_edge": 0.12470720000000002,
+          "market_probability": 0.30301526490263414,
+          "model_probability": 0.35592
+        }
+      ],
+      "snapshots": 1
+    },
+    "19713909:X": {
+      "away_team": "Sønderjyske Fodbold",
+      "best_odds": 4.15,
+      "bookmaker": "Marathonbet",
+      "first_edge": -0.07994499999999993,
+      "first_odds": 4.15,
+      "first_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "fixture_id": 19713909,
+      "home_team": "AGF",
+      "kickoff_at": "2026-10-12T17:00:00+00:00",
+      "last_edge": -0.07994499999999993,
+      "last_odds": 4.15,
+      "last_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "lowest_odds": 4.15,
+      "market": "X",
+      "market_probability": 0.22730276638398578,
+      "max_edge": -0.07994499999999993,
+      "model_probability": 0.2217,
+      "points": [
+        {
+          "bookmaker": "Marathonbet",
+          "bookmaker_odds": 4.15,
+          "captured_at": "2026-09-28T16:44:26.452318+00:00",
+          "expected_value_edge": -0.07994499999999993,
+          "market_probability": 0.22730276638398578,
+          "model_probability": 0.2217
+        }
+      ],
+      "snapshots": 1
+    },
+    "19713911:O2.5": {
+      "away_team": "Lyngby Boldklub",
+      "best_odds": 1.6,
+      "bookmaker": "bet365",
+      "first_edge": 0.000288000000000066,
+      "first_odds": 1.6,
+      "first_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "fixture_id": 19713911,
+      "home_team": "Brøndby IF",
+      "kickoff_at": "2026-10-11T14:00:00+00:00",
+      "last_edge": 0.000288000000000066,
+      "last_odds": 1.6,
+      "last_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "lowest_odds": 1.6,
+      "market": "O2.5",
+      "market_probability": 0.5953608247422681,
+      "max_edge": 0.000288000000000066,
+      "model_probability": 0.62518,
+      "points": [
+        {
+          "bookmaker": "bet365",
+          "bookmaker_odds": 1.6,
+          "captured_at": "2026-09-28T16:44:26.452318+00:00",
+          "expected_value_edge": 0.000288000000000066,
+          "market_probability": 0.5953608247422681,
+          "model_probability": 0.62518
+        }
+      ],
+      "snapshots": 1
+    },
+    "19713912:2": {
+      "away_team": "FC København",
+      "best_odds": 2.7,
+      "bookmaker": "Marathonbet",
+      "first_edge": 0.19642400000000015,
+      "first_odds": 2.7,
+      "first_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "fixture_id": 19713912,
+      "home_team": "FC Midtjylland",
+      "kickoff_at": "2026-10-11T16:00:00+00:00",
+      "last_edge": 0.19642400000000015,
+      "last_odds": 2.7,
+      "last_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "lowest_odds": 2.7,
+      "market": "2",
+      "market_probability": 0.3664445101562678,
+      "max_edge": 0.19642400000000015,
+      "model_probability": 0.44312,
+      "points": [
+        {
+          "bookmaker": "Marathonbet",
+          "bookmaker_odds": 2.7,
+          "captured_at": "2026-09-28T16:44:26.452318+00:00",
+          "expected_value_edge": 0.19642400000000015,
+          "market_probability": 0.3664445101562678,
+          "model_probability": 0.44312
+        }
+      ],
+      "snapshots": 1
+    },
+    "19713915:O2.5": {
+      "away_team": "Viborg FF",
+      "best_odds": 1.82,
+      "bookmaker": "bet365",
+      "first_edge": 0.13651720000000012,
+      "first_odds": 1.82,
+      "first_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "fixture_id": 19713915,
+      "home_team": "Randers FC",
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "last_edge": 0.13651720000000012,
+      "last_odds": 1.82,
+      "last_seen_at": "2026-09-28T16:44:26.452318+00:00",
+      "lowest_odds": 1.82,
+      "market": "O2.5",
+      "market_probability": 0.5669291338582677,
+      "max_edge": 0.13651720000000012,
+      "model_probability": 0.62446,
+      "points": [
+        {
+          "bookmaker": "bet365",
+          "bookmaker_odds": 1.82,
+          "captured_at": "2026-09-28T16:44:26.452318+00:00",
+          "expected_value_edge": 0.13651720000000012,
+          "market_probability": 0.5669291338582677,
+          "model_probability": 0.62446
+        }
+      ],
+      "snapshots": 1
+    }
+  },
+  "generated_at": "2026-09-28T17:10:47.333074+00:00",
+  "schema_version": "football-signal-history-v1",
+  "source_signals_generated_at": "2026-09-28T16:44:26.452318+00:00"
+}
