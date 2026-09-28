@@ -312,7 +312,7 @@ export const merchants: Merchant[] = [
       category: "generic",
       businessType: "Estética",
       shareMode: "whatsapp_only",
-      stylePreset: "soft",
+      stylePreset: "luxury",
       fontPreset: "editorial",
       tone: "Bienestar y belleza",
       heroEyebrow: "Un mimo para vos",
