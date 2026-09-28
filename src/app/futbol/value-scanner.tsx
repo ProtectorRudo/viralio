@@ -108,7 +108,7 @@ export default function ValueScanner({ onSelect }: Props) {
 
   const rows = useMemo(
     () =>
-      fixtures.slice(0, 8).map((fixture) => {
+      fixtures.map((fixture) => {
         const prediction = simulateLearned({
           homeTeam: fixture.home_team,
           awayTeam: fixture.away_team,
