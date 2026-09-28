@@ -108,6 +108,110 @@
   color: #dff8ed;
 }
 
+.scannerPanel {
+  max-width: 1180px;
+  margin: 14px auto 0;
+  padding: 18px;
+  border: 1px solid #214b3b;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(15, 38, 30, 0.98), rgba(8, 22, 17, 0.98));
+}
+
+.scannerPanel h3 {
+  margin: 5px 0 0;
+  font-size: 22px;
+}
+
+.scannerIntro {
+  margin: 6px 0 0;
+  max-width: 760px;
+  color: #789086;
+  font-size: 11px;
+}
+
+.scannerRows {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.scannerRow {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.8fr) 70px 80px 72px 72px 86px 112px;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid #1a382d;
+  border-radius: 13px;
+  background: #091812;
+}
+
+.scannerRow_positive {
+  border-color: #3fc68b;
+  background: rgba(42, 124, 88, 0.16);
+}
+
+.scannerRow_warning {
+  border-color: #a98043;
+  background: rgba(151, 109, 39, 0.12);
+}
+
+.scannerRow_negative {
+  border-color: #7c403f;
+  background: rgba(119, 50, 49, 0.12);
+}
+
+.scannerFixture span,
+.scannerMarket span,
+.scannerMetric span,
+.scannerInput span {
+  display: block;
+  color: #6f887d;
+  font-size: 9px;
+}
+
+.scannerFixture strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.scannerMarket strong,
+.scannerMetric strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 15px;
+}
+
+.scannerMinimum {
+  color: #8ff0c3;
+}
+
+.scannerInput input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 3px;
+  border: 1px solid #28483b;
+  border-radius: 9px;
+  background: #07130f;
+  color: #f0faf5;
+  padding: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.scannerBadge {
+  justify-self: end;
+  padding: 7px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8f7ef;
+  font-size: 9px;
+  font-weight: 900;
+  text-align: center;
+}
+
 .upcomingPanel {
   max-width: 1180px;
   margin: 14px auto 0;
@@ -949,6 +1053,16 @@
     text-align: center;
   }
 
+  .scannerRow {
+    grid-template-columns: 1fr 60px 70px 70px;
+  }
+
+  .scannerMetric:nth-of-type(3),
+  .scannerInput,
+  .scannerBadge {
+    grid-column: auto;
+  }
+
   .impactBox {
     min-width: 0;
   }
@@ -985,5 +1099,18 @@
   .timelineRow {
     grid-template-columns: 52px 30px 48px 1fr;
     font-size: 13px;
+  }
+
+  .scannerRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scannerFixture,
+  .scannerBadge {
+    grid-column: 1 / -1;
+  }
+
+  .scannerBadge {
+    justify-self: stretch;
   }
 }
