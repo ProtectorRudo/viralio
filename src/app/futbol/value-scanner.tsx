@@ -179,8 +179,18 @@ export default function ValueScanner({ onSelect }: Props) {
           }
           suppressHydrationWarning
         >
-          {staleFeed ? "CUOTAS VIEJAS" : "CUOTAS FRESCAS"} ·{" "}
-          {Math.round(oddsAgeMinutes)} min
+          <strong>{staleFeed ? "CUOTAS VIEJAS" : "CUOTAS FRESCAS"}</strong>
+          <small>
+            capturadas{" "}
+            {new Date(snapshot.odds_generated_at).toLocaleTimeString("es-AR", {
+              timeZone: "America/Argentina/Buenos_Aires",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+            {" · "}
+            {Math.round(oddsAgeMinutes)} min
+            {" · auto cada 1h"}
+          </small>
         </span>
       </div>
 
