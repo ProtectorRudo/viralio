@@ -68,7 +68,6 @@ test("Moka direct demo starts fresh on every visit and does not keep the previou
   await expect(page.locator("main")).toHaveAttribute("data-design-version", "gift-premium-v1");
   await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
-  await expect(page.getByText("Peluquería canina", { exact: true })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 
@@ -320,6 +319,7 @@ test("Los chiquis keeps the premium Viralio structure with one surprise reward",
   expect(await root.evaluate((node) => getComputedStyle(node).getPropertyValue("--color-primary").trim())).toBe("#5E8C82");
   await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
+  await expect(page.getByText("Peluquería canina", { exact: true })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
   await expect(root.locator(".malu-brand-mark")).toContainText("LC");
