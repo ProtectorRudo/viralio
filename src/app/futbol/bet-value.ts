@@ -41,3 +41,15 @@ export function classifyValue(
   }
   return { label: "SIN VALOR", tone: "negative" as const };
 }
+
+
+export function confidenceAdjustedEdgeBuffer(
+  confidencePercent: number | null | undefined,
+) {
+  const confidence =
+    confidencePercent == null || !Number.isFinite(confidencePercent)
+      ? 0.5
+      : Math.min(Math.max(confidencePercent / 100, 0), 1);
+
+  return VALUE_EDGE_BUFFER + (1 - confidence) * 0.05;
+}
