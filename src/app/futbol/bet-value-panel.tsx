@@ -304,6 +304,38 @@ export default function BetValuePanel({
             doubleChanceOverrides[overrideKey] ?? defaultDoubleChance[market.key];
           const bookmaker = parseDecimalOdds(displayedOdds);
           const status = classifyValue(bookmaker, fair, minimum);
+          const quote =
+            market.key === "homeDraw"
+              ? selectedFixtureOdds?.double_chance?.["1X"] ?? null
+              : market.key === "drawAway"
+                ? selectedFixtureOdds?.double_chance?.["X2"] ?? null
+                : selectedFixtureOdds?.double_chance?.["12"] ?? null;
+          const hasOverride =
+            doubleChanceOverrides[overrideKey] !== undefined;
+          const highDivergence =
+            bookmaker === null
+              ? false
+              : isHighModelMarketDivergence(
+                  market.probability,
+                  bookmaker,
+                  dataConfidence,
+                );
+          const thinMarket =
+            !hasOverride && quote
+              ? isThinBookmakerMarket(quote.bookmaker_count)
+              : false;
+          const reviewReason = highDivergence
+            ? "model"
+            : thinMarket
+              ? "market"
+              : null;
+          const displayTone = reviewReason ? "warning" : status.tone;
+          const displayLabel =
+            reviewReason === "model"
+              ? "REVISAR MODELO"
+              : reviewReason === "market"
+                ? "MERCADO FINO"
+                : status.label;
           const expectedEdge =
             bookmaker === null
               ? null
