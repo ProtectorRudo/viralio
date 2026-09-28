@@ -36,6 +36,13 @@ type AuditedSignal = {
   confidence: number;
   review_reason: string | null;
   qualifies: boolean;
+  priority?: {
+    score: number;
+    capped_edge_component: number;
+    confidence_factor: number;
+    market_depth_factor: number;
+    max_edge_component: number;
+  };
   clv_learning?: {
     adjustment: number;
     ranking_score: number;
@@ -75,6 +82,7 @@ type AuditedSnapshot = {
   odds_generated_at: string;
   profile_cutoff_at: string;
   fixtures: AuditedFixture[];
+  top_opportunities?: AuditedFixture[];
 };
 
 type HistoryPoint = {
@@ -380,6 +388,53 @@ export default function ValueScanner({ onSelect }: Props) {
     nowMs,
   );
 
+  const globalTop = useMemo(() => {
+    const leagues = [
+      {
+        key: "denmark",
+        label: "Dinamarca",
+        snapshot: auditedSignals as AuditedSnapshot,
+      },
+      {
+        key: "scotland",
+        label: "Escocia",
+        snapshot: scotlandSignals as AuditedSnapshot,
+      },
+    ];
+
+    return leagues
+      .flatMap(({ key, label, snapshot: leagueSnapshot }) => {
+        const isStale = isOddsSnapshotStale(
+          leagueSnapshot.odds_generated_at,
+          MAX_ODDS_AGE_MINUTES,
+          nowMs,
+        );
+        if (isStale) return [];
+
+        return leagueSnapshot.fixtures
+          .filter((fixture) => {
+            const signal = fixture.selected_signal;
+            return Boolean(
+              signal &&
+                signal.qualifies &&
+                !signal.review_reason,
+            );
+          })
+          .map((fixture) => ({
+            league: key as "denmark" | "scotland",
+            leagueLabel: label,
+            fixture,
+            score:
+              fixture.selected_signal?.priority?.score ??
+              fixture.selected_signal?.clv_learning?.ranking_score ??
+              fixture.selected_signal?.expected_value_edge ??
+              0,
+          }));
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  }, [nowMs]);
+
   const rows = useMemo(
     () =>
       snapshot.fixtures
@@ -454,6 +509,47 @@ export default function ValueScanner({ onSelect }: Props) {
           </small>
         </span>
       </div>
+
+      {globalTop.length > 0 ? (
+        <div className={styles.globalTopBlock}>
+          <div className={styles.globalTopHeader}>
+            <div>
+              <span className={styles.eyebrow}>MEJORES DE TODAS LAS LIGAS</span>
+              <strong>Qué mirar primero</strong>
+            </div>
+            <small>ordenadas por calidad de señal</small>
+          </div>
+
+          <div className={styles.globalTopGrid}>
+            {globalTop.map(({ league: itemLeague, leagueLabel, fixture }, index) => {
+              const signal = fixture.selected_signal;
+              if (!signal) return null;
+              return (
+                <button
+                  key={`${itemLeague}-${fixture.fixture_id}`}
+                  type="button"
+                  className={styles.globalTopCard}
+                  onClick={() => setLeague(itemLeague)}
+                >
+                  <span className={styles.globalTopRank}>#{index + 1}</span>
+                  <small>{leagueLabel}</small>
+                  <strong>
+                    {fixture.home_team} vs {fixture.away_team}
+                  </strong>
+                  <div>
+                    <span>APUESTA</span>
+                    <b>{marketLabel(signal.market)}</b>
+                  </div>
+                  <div className={styles.globalTopThreshold}>
+                    <span>HAY VALOR DESDE</span>
+                    <b>{signal.minimum_odds.toFixed(2)}</b>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.leagueTabs}>
         <button
