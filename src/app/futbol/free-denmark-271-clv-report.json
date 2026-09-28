@@ -3,9 +3,9 @@
   "by_edge": [],
   "by_market": [],
   "definition": "entry_odds / closing_odds - 1",
-  "generated_at": "2026-09-28T17:33:57.767880+00:00",
-  "schema_version": "football-clv-report-v1",
-  "source_history_generated_at": "2026-09-28T17:24:00.726519+00:00",
+  "generated_at": "2026-09-28T17:41:43.089891+00:00",
+  "schema_version": "football-clv-report-v2",
+  "source_history_generated_at": "2026-09-28T17:41:31.817614+00:00",
   "source_history_schema": "football-signal-history-v2",
   "summary": {
     "average_clv": null,
