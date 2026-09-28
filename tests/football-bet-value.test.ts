@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   classifyValue,
+  confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
   fairOdds,
   minimumValueOdds,
@@ -42,6 +43,12 @@ describe("football betting value math", () => {
     expect(minimumValueOdds(oneX)).toBeCloseTo(1.5, 8);
     expect(minimumValueOdds(xTwo)).toBeCloseTo(1.8103448276, 8);
     expect(minimumValueOdds(oneTwo)).toBeCloseTo(1.4583333333, 8);
+  });
+
+  it("raises the minimum edge when model confidence is lower", () => {
+    expect(confidenceAdjustedEdgeBuffer(100)).toBeCloseTo(0.05, 8);
+    expect(confidenceAdjustedEdgeBuffer(50)).toBeCloseTo(0.075, 8);
+    expect(confidenceAdjustedEdgeBuffer(0)).toBeCloseTo(0.10, 8);
   });
 
   it("accepts decimal odds with comma or dot", () => {
