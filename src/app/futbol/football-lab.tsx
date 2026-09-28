@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./football.module.css";
 import UpcomingFixtures from "./upcoming-fixtures";
+import BetValuePanel from "./bet-value-panel";
 
 type TeamPreset = {
   name: string;
@@ -333,6 +334,16 @@ export default function FootballLab() {
         <article><span>Visitante</span><strong>{data ? pct(data.awayWin) : "—"}</strong></article>
         <article><span>Confianza</span><strong>{data ? `${data.confidence}/100` : "—"}</strong></article>
       </section>
+
+      {data ? (
+        <BetValuePanel
+          homeLabel={home.short}
+          awayLabel={away.short}
+          homeProbability={data.homeWin}
+          drawProbability={data.draw}
+          awayProbability={data.awayWin}
+        />
+      ) : null}
 
       <section className={styles.gridTwo}>
         <article className={styles.panel}>
