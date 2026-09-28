@@ -20,10 +20,10 @@ describe("football betting value math", () => {
   });
 
   it("classifies bookmaker odds visually", () => {
-    expect(classifyValue(2.2, 2.1).tone).toBe("positive");
-    expect(classifyValue(2.1, 2.1).tone).toBe("warning");
-    expect(classifyValue(1.95, 2.1).tone).toBe("negative");
-    expect(classifyValue(null, 2.1).tone).toBe("neutral");
+    expect(classifyValue(2.1, 2.0, 2.1).tone).toBe("positive");
+    expect(classifyValue(2.05, 2.0, 2.1).tone).toBe("warning");
+    expect(classifyValue(1.95, 2.0, 2.1).tone).toBe("negative");
+    expect(classifyValue(null, 2.0, 2.1).tone).toBe("neutral");
   });
 
   it("accepts decimal odds with comma or dot", () => {
