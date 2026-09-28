@@ -155,6 +155,106 @@
   font-size: 21px;
 }
 
+.topValueBlock {
+  margin-top: 16px;
+}
+
+.topValueHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topValueHeader strong {
+  color: #a8c5b8;
+  font-size: 11px;
+}
+
+.topValueGrid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.topValueCard {
+  position: relative;
+  padding: 15px;
+  border: 1px solid #3f8b68;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(37, 105, 75, 0.2), rgba(8, 24, 18, 0.98));
+}
+
+.topValueRank {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #8ff0c3;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.topValueFixture span,
+.topValueMarket span,
+.topValueNumbers span {
+  display: block;
+  color: #718a7f;
+  font-size: 9px;
+}
+
+.topValueFixture strong {
+  display: block;
+  max-width: 85%;
+  margin-top: 3px;
+  font-size: 13px;
+}
+
+.topValueMarket {
+  margin-top: 12px;
+}
+
+.topValueMarket strong {
+  display: block;
+  margin-top: 2px;
+  color: #8ff0c3;
+  font-size: 22px;
+}
+
+.topValueNumbers {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+
+.topValueNumbers > div {
+  padding: 8px;
+  border-radius: 10px;
+  background: #081711;
+}
+
+.topValueNumbers strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.topValueEdge {
+  color: #8ff0c3;
+}
+
+.noValueNotice {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #31483f;
+  border-radius: 13px;
+  background: #0a1712;
+  color: #8da399;
+  font-size: 12px;
+  text-align: center;
+}
+
 .scannerRows {
   margin-top: 14px;
   display: grid;
@@ -1097,6 +1197,10 @@
 
   .scannerSummary {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .topValueGrid {
+    grid-template-columns: 1fr;
   }
 
   .scannerRow {
