@@ -2066,3 +2066,111 @@
   color: #8ff0c3;
   font-size: 19px;
 }
+
+
+.globalTopBlock {
+  margin: 14px 0 16px;
+  padding: 14px;
+  border: 1px solid #315f4c;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(29, 77, 57, 0.18), rgba(7, 18, 14, 0.98));
+}
+
+.globalTopHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.globalTopHeader strong,
+.globalTopHeader small {
+  display: block;
+}
+
+.globalTopHeader strong {
+  margin-top: 3px;
+  font-size: 18px;
+}
+
+.globalTopHeader small {
+  color: #7f9a8e;
+  font-size: 9px;
+}
+
+.globalTopGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.globalTopCard {
+  position: relative;
+  border: 1px solid #2f6f54;
+  border-radius: 13px;
+  background: #091812;
+  color: inherit;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.globalTopCard > small {
+  display: block;
+  color: #74a18d;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.globalTopCard > strong {
+  display: block;
+  margin-top: 4px;
+  padding-right: 24px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.globalTopCard > div {
+  margin-top: 10px;
+}
+
+.globalTopCard div span {
+  display: block;
+  color: #718a7f;
+  font-size: 8px;
+}
+
+.globalTopCard div b {
+  display: block;
+  margin-top: 2px;
+  font-size: 15px;
+}
+
+.globalTopThreshold {
+  padding: 8px 9px;
+  border-radius: 9px;
+  background: rgba(42, 124, 88, 0.16);
+}
+
+.globalTopThreshold b {
+  color: #8ff0c3;
+  font-size: 22px !important;
+}
+
+.globalTopRank {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  color: #8ff0c3;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+@media (max-width: 850px) {
+  .globalTopGrid {
+    grid-template-columns: 1fr;
+  }
+}
