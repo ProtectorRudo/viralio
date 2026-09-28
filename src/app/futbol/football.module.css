@@ -1,0 +1,514 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(50, 217, 147, 0.08), transparent 34%),
+    radial-gradient(circle at 85% 15%, rgba(65, 105, 225, 0.08), transparent 32%),
+    #07110e;
+  color: #eef8f3;
+  padding: 48px 24px 72px;
+}
+
+.hero,
+.selectorCard,
+.scoreHero,
+.probabilityGrid,
+.gridTwo,
+.marketGrid,
+.scenarioPanel,
+.timelinePanel,
+.footer {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.kicker,
+.eyebrow {
+  color: #54e0a4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.hero h1 {
+  margin: 12px auto 14px;
+  max-width: 900px;
+  font-size: clamp(38px, 6vw, 72px);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.hero p {
+  margin: 0 auto;
+  max-width: 760px;
+  color: #9fb4aa;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.selectorCard {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  gap: 14px;
+  align-items: end;
+  padding: 18px;
+  border: 1px solid #18352b;
+  border-radius: 20px;
+  background: rgba(10, 24, 20, 0.92);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
+
+.selectorColumn {
+  display: grid;
+  gap: 8px;
+}
+
+.selectorColumn label {
+  color: #7f998e;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.selectorColumn select {
+  width: 100%;
+  border: 1px solid #244438;
+  border-radius: 12px;
+  background: #0b1b16;
+  color: #effaf5;
+  padding: 14px 14px;
+  font: inherit;
+}
+
+.swapButton,
+.simulateButton,
+.scenarioButtons button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.swapButton {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #122a21;
+  color: #8dd8b7;
+  font-size: 20px;
+}
+
+.simulateButton {
+  min-height: 48px;
+  border-radius: 12px;
+  padding: 0 20px;
+  background: linear-gradient(135deg, #55e0a5, #37b985);
+  color: #04110c;
+  font-weight: 900;
+}
+
+.scoreHero {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 20px;
+  align-items: center;
+  min-height: 330px;
+  padding: 32px;
+  border: 1px solid #18352b;
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(13, 31, 25, 0.98), rgba(7, 17, 14, 0.98));
+}
+
+.teamBlock {
+  text-align: center;
+}
+
+.badge {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 14px;
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 1000;
+  border: 3px solid rgba(255, 255, 255, 0.14);
+}
+
+.teamBlock h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.teamBlock span {
+  display: block;
+  margin-top: 6px;
+  color: #758d82;
+  font-size: 13px;
+}
+
+.mainProbability {
+  text-align: center;
+}
+
+.mainLabel {
+  color: #789186;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.mainProbability strong {
+  display: block;
+  font-size: clamp(64px, 9vw, 110px);
+  line-height: .9;
+  letter-spacing: -0.06em;
+  color: #54e0a4;
+  margin: 14px 0 8px;
+}
+
+.mainOutcome {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.worlds {
+  display: inline-flex;
+  margin-top: 18px;
+  padding: 7px 11px;
+  border: 1px solid #224437;
+  border-radius: 999px;
+  color: #8ca79b;
+  font-size: 12px;
+}
+
+.probabilityGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.probabilityGrid article {
+  padding: 18px;
+  background: #0b1b16;
+  border: 1px solid #17352a;
+  border-radius: 16px;
+}
+
+.probabilityGrid span,
+.metricPair span,
+.miniStats span {
+  color: #789086;
+  font-size: 12px;
+}
+
+.probabilityGrid strong,
+.metricPair strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 27px;
+}
+
+.gridTwo {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1.3fr .7fr;
+  gap: 14px;
+}
+
+.panel,
+.scenarioPanel,
+.timelinePanel {
+  border: 1px solid #17352a;
+  background: #0a1914;
+  border-radius: 20px;
+  padding: 22px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panel h3,
+.scenarioPanel h3,
+.timelinePanel h3 {
+  margin: 5px 0 0;
+  font-size: 22px;
+}
+
+.scoreList {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.scoreRow {
+  display: grid;
+  grid-template-columns: 46px 1fr 54px;
+  gap: 12px;
+  align-items: center;
+}
+
+.barTrack {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #13251f;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #54e0a4, #3bb885);
+}
+
+.metricPair {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metricPair > div,
+.miniStats > div {
+  padding: 18px;
+  border: 1px solid #17362b;
+  background: #0c211a;
+  border-radius: 14px;
+}
+
+.miniStats {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.miniStats div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.marketGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.marketCard {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #17352a;
+  border-radius: 18px;
+  background: #0a1914;
+}
+
+.marketIcon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #10291f;
+  color: #54e0a4;
+}
+
+.marketCard small {
+  display: block;
+  color: #769086;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.marketCard strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 30px;
+}
+
+.marketCard span {
+  color: #779187;
+  font-size: 12px;
+}
+
+.marketCard ul {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px solid #17352a;
+  display: grid;
+  gap: 7px;
+}
+
+.marketCard li {
+  display: flex;
+  justify-content: space-between;
+  color: #8fa79c;
+}
+
+.marketCard b {
+  color: #effaf5;
+}
+
+.scenarioPanel {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.scenarioPanel p {
+  color: #82998f;
+  margin-bottom: 0;
+}
+
+.scenarioButtons {
+  display: grid;
+  gap: 8px;
+}
+
+.scenarioButtons button {
+  background: #11261f;
+  color: #94aa9f;
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+
+.scenarioButtons .activeScenario {
+  background: #54e0a4;
+  color: #07110e;
+  font-weight: 800;
+}
+
+.impactBox {
+  min-width: 260px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: #07130f;
+  border: 1px solid #1d3d31;
+}
+
+.impactBox span {
+  display: block;
+  color: #6f897e;
+  font-size: 11px;
+}
+
+.impactBox strong {
+  font-size: 24px;
+}
+
+.arrow {
+  color: #54e0a4;
+}
+
+.timelinePanel {
+  margin-top: 14px;
+}
+
+.seed {
+  font-size: 12px;
+  color: #748e83;
+  border: 1px solid #1b3b2f;
+  padding: 7px 10px;
+  border-radius: 999px;
+}
+
+.timeline {
+  margin-top: 20px;
+  display: grid;
+}
+
+.timelineRow {
+  display: grid;
+  grid-template-columns: 66px 34px 54px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid #142e24;
+}
+
+.minute {
+  color: #54e0a4;
+  font-weight: 900;
+}
+
+.eventIcon {
+  font-size: 17px;
+}
+
+.timelineRow span:last-child {
+  color: #92a99e;
+}
+
+.footer {
+  margin-top: 20px;
+  text-align: center;
+  color: #5f786d;
+  font-size: 12px;
+}
+
+@media (max-width: 850px) {
+  .selectorCard,
+  .scoreHero,
+  .gridTwo,
+  .scenarioPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .swapButton {
+    justify-self: center;
+  }
+
+  .probabilityGrid,
+  .marketGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scoreHero {
+    text-align: center;
+  }
+
+  .impactBox {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 28px 14px 50px;
+  }
+
+  .probabilityGrid,
+  .marketGrid,
+  .metricPair {
+    grid-template-columns: 1fr;
+  }
+
+  .scoreHero {
+    padding: 22px 16px;
+  }
+
+  .timelineRow {
+    grid-template-columns: 52px 30px 48px 1fr;
+    font-size: 13px;
+  }
+}
