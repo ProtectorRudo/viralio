@@ -84,20 +84,43 @@ export default function UpcomingFixtures({
             <strong>{fixture.away_team}</strong>
 
             {prediction ? (
-              <div className={styles.fixturePrediction}>
-                <span>
-                  <b>1</b> {(prediction.homeWin * 100).toFixed(0)}%
-                  <small>mín {minimumValueOdds(prediction.homeWin).toFixed(2)}</small>
-                </span>
-                <span>
-                  <b>X</b> {(prediction.draw * 100).toFixed(0)}%
-                  <small>mín {minimumValueOdds(prediction.draw).toFixed(2)}</small>
-                </span>
-                <span>
-                  <b>2</b> {(prediction.awayWin * 100).toFixed(0)}%
-                  <small>mín {minimumValueOdds(prediction.awayWin).toFixed(2)}</small>
-                </span>
-              </div>
+              <>
+                <div className={styles.fixturePrediction}>
+                  <span>
+                    <b>1</b> {(prediction.homeWin * 100).toFixed(0)}%
+                    <small>mín {minimumValueOdds(prediction.homeWin).toFixed(2)}</small>
+                  </span>
+                  <span>
+                    <b>X</b> {(prediction.draw * 100).toFixed(0)}%
+                    <small>mín {minimumValueOdds(prediction.draw).toFixed(2)}</small>
+                  </span>
+                  <span>
+                    <b>2</b> {(prediction.awayWin * 100).toFixed(0)}%
+                    <small>mín {minimumValueOdds(prediction.awayWin).toFixed(2)}</small>
+                  </span>
+                </div>
+
+                <div className={styles.fixtureDoubleChance}>
+                  <span>
+                    <b>1X</b>
+                    <small>
+                      mín {minimumValueOdds(prediction.homeWin + prediction.draw).toFixed(2)}
+                    </small>
+                  </span>
+                  <span>
+                    <b>X2</b>
+                    <small>
+                      mín {minimumValueOdds(prediction.draw + prediction.awayWin).toFixed(2)}
+                    </small>
+                  </span>
+                  <span>
+                    <b>12</b>
+                    <small>
+                      mín {minimumValueOdds(prediction.homeWin + prediction.awayWin).toFixed(2)}
+                    </small>
+                  </span>
+                </div>
+              </>
             ) : null}
           </button>
         ))}
