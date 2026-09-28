@@ -190,10 +190,6 @@ export default function ValueScanner({ onSelect }: Props) {
     [fixtures],
   );
 
-  const oddsAgeHours =
-    (Date.now() - new Date(upcomingOdds.generated_at).getTime()) / 3_600_000;
-  const oddsFresh = oddsAgeHours <= 2;
-
   const quotedRows = rows.filter((row) => row?.quote);
   const reviewRows = quotedRows.filter(
     (row) => row && row.reviewReason,
@@ -235,14 +231,8 @@ export default function ValueScanner({ onSelect }: Props) {
             y ordena por mayor edge estimado. Podés editar la cuota para comparar otra casa.
           </p>
         </div>
-        <span
-          className={
-            oddsFresh
-              ? styles.valueRule
-              : `${styles.valueRule} ${styles.valueRuleStale}`
-          }
-        >
-          {oddsFresh ? "CUOTAS FRESCAS" : "CUOTAS DESACTUALIZADAS"} ·{" "}
+        <span className={styles.valueRule}>
+          FEED CAPTURADO ·{" "}
           {new Date(upcomingOdds.generated_at).toLocaleString("es-AR", {
             timeZone: "America/Argentina/Buenos_Aires",
             day: "2-digit",
@@ -252,13 +242,6 @@ export default function ValueScanner({ onSelect }: Props) {
           })}
         </span>
       </div>
-
-      {!oddsFresh ? (
-        <div className={styles.staleOddsNotice}>
-          Las cuotas tienen más de 2 horas. El edge se muestra como referencia,
-          pero no debe interpretarse como una oportunidad vigente hasta refrescar el feed.
-        </div>
-      ) : null}
 
       <div className={styles.scannerFilters}>
         <button
