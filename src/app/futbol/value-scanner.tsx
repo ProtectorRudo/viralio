@@ -6,6 +6,7 @@ import signalHistory from "./free-denmark-271-signal-history.json";
 import performanceData from "./free-denmark-271-performance.json";
 import strategyAuditData from "./free-denmark-271-strategy-audit.json";
 import calibrationData from "./free-denmark-271-calibration.json";
+import stabilityData from "./free-denmark-271-stability.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -181,6 +182,36 @@ type CalibrationSnapshot = {
   buckets: CalibrationBucket[];
 };
 
+type StabilitySignal = {
+  history_key: string;
+  fixture_id: number;
+  home_team: string;
+  away_team: string;
+  market: string;
+  detected_qualifies: boolean | null;
+  snapshots: number;
+  positive_edge_share: number | null;
+  mean_edge: number | null;
+  edge_volatility: number | null;
+  odds_drift: number | null;
+  status: "stable" | "volatile" | "fragile" | "collecting";
+};
+
+type StabilitySnapshot = {
+  schema_version: string;
+  generated_at: string;
+  ranking_impact: boolean;
+  sample_rules: { min_snapshots: number };
+  summary: {
+    tracked: number;
+    stable: number;
+    volatile: number;
+    fragile: number;
+    collecting: number;
+  };
+  signals: StabilitySignal[];
+};
+
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
@@ -268,6 +299,20 @@ function historicalClvSummary(history: HistorySnapshot) {
   };
 }
 
+function stabilitySignal(fixtureId: number, market: string) {
+  const snapshot = stabilityData as StabilitySnapshot;
+  return snapshot.signals.find(
+    (signal) => signal.fixture_id === fixtureId && signal.market === market,
+  ) ?? null;
+}
+
+function stabilityLabel(status: StabilitySignal["status"]) {
+  if (status === "stable") return "ESTABLE";
+  if (status === "volatile") return "VOLÁTIL";
+  if (status === "fragile") return "FRÁGIL";
+  return "RECOLECTANDO";
+}
+
 function historyTrend(entry: HistoryEntry | null) {
   if (!entry || entry.snapshots < 2 || entry.points.length < 2) {
     return {
@@ -300,6 +345,7 @@ export default function ValueScanner({ onSelect }: Props) {
   const performance = performanceData as PerformanceSnapshot;
   const strategyAudit = strategyAuditData as StrategyAuditSnapshot;
   const calibration = calibrationData as CalibrationSnapshot;
+  const stability = stabilityData as StabilitySnapshot;
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -620,6 +666,41 @@ export default function ValueScanner({ onSelect }: Props) {
         ) : null}
       </div>
 
+      <div className={styles.stabilityScoreboard}>
+        <div className={styles.clvScoreboardHeader}>
+          <div>
+            <span className={styles.eyebrow}>ESTABILIDAD TEMPORAL</span>
+            <h4>¿La señal persiste o fue un salto puntual?</h4>
+          </div>
+          <span className={styles.clvTrackingPill}>
+            {stability.summary.collecting > 0 ? "MUESTRA EN CURSO" : "MUESTRA TEMPORAL LISTA"}
+          </span>
+        </div>
+
+        <div className={styles.stabilityGrid}>
+          <div>
+            <span>Estables</span>
+            <strong>{stability.summary.stable}</strong>
+            <small>edge persistente y baja volatilidad</small>
+          </div>
+          <div>
+            <span>Volátiles</span>
+            <strong>{stability.summary.volatile}</strong>
+            <small>la ventaja cambia demasiado entre capturas</small>
+          </div>
+          <div>
+            <span>Frágiles</span>
+            <strong>{stability.summary.fragile}</strong>
+            <small>edge positivo en menos de la mitad de capturas</small>
+          </div>
+          <div>
+            <span>Regla</span>
+            <strong>{stability.sample_rules.min_snapshots} snapshots</strong>
+            <small>diagnóstico solamente · no modifica ranking</small>
+          </div>
+        </div>
+      </div>
+
       <div className={styles.clvScoreboard}>
         <div className={styles.clvScoreboardHeader}>
           <div>
@@ -682,6 +763,7 @@ export default function ValueScanner({ onSelect }: Props) {
               if (!signal) return null;
               const history = historyEntry(row.fixture_id, signal.market);
               const trend = historyTrend(history);
+              const temporal = stabilitySignal(row.fixture_id, signal.market);
 
               return (
                 <article className={styles.topValueCard} key={row.fixture_id}>
@@ -708,11 +790,21 @@ export default function ValueScanner({ onSelect }: Props) {
                     <em className={styles[`signalTrend_${trend.tone}`]}>
                       {trend.label}
                     </em>
+                    {temporal ? (
+                      <em className={styles[`stabilityTag_${temporal.status}`]}>
+                        {stabilityLabel(temporal.status)}
+                      </em>
+                    ) : null}
                     <small>
                       Modelo {(signal.model_probability * 100).toFixed(1)}% ·
                       mercado {(signal.market_probability * 100).toFixed(1)}% ·
                       confianza {(signal.confidence * 100).toFixed(0)}%
                     </small>
+                    {temporal ? (
+                      <small className={styles.stabilityLine}>
+                        Edge positivo en {(temporal.positive_edge_share ?? 0) * 100}% de {temporal.snapshots} capturas · volatilidad {((temporal.edge_volatility ?? 0) * 100).toFixed(1)} pp
+                      </small>
+                    ) : null}
                     <small className={styles.clvLearningLine}>
                       {signal.clv_learning?.active_segments
                         ? `Aprendizaje CLV activo · ${signal.clv_learning.evidence_samples} evidencias · ajuste ${formatClv(signal.clv_learning.adjustment)}`
