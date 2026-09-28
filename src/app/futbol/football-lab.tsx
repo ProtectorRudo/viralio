@@ -84,6 +84,7 @@ export default function FootballLab() {
   const [awayTeam, setAwayTeam] = useState(TEAMS[1].name);
   const [scenario, setScenario] = useState<"base" | "without-star">("base");
   const [result, setResult] = useState<SimulationResult | null>(null);
+  const [baseResult, setBaseResult] = useState<SimulationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -112,6 +113,9 @@ export default function FootballLab() {
 
       const data = (await response.json()) as SimulationResult;
       setResult(data);
+      if (scenario === "base") {
+        setBaseResult(data);
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Error inesperado");
     } finally {
@@ -142,6 +146,9 @@ export default function FootballLab() {
       .then((data) => {
         if (!cancelled) {
           setResult(data);
+          if (scenario === "base") {
+            setBaseResult(data);
+          }
         }
       })
       .catch((cause: unknown) => {
@@ -416,11 +423,24 @@ export default function FootballLab() {
         </div>
 
         <div className={styles.impactBox}>
-          <div><span>P({home.short})</span><strong>{data ? pct(data.homeWin) : "—"}</strong></div>
+          <div>
+            <span>P({home.short})</span>
+            <strong>{data ? pct(data.homeWin) : "—"}</strong>
+            {scenario === "without-star" && baseResult && data ? (
+              <em>
+                {((data.homeWin - baseResult.homeWin) * 100).toFixed(1)} pp
+              </em>
+            ) : null}
+          </div>
           <div className={styles.arrow}>→</div>
           <div>
             <span>{data?.advancedXgAvailable ? "xG" : "λ goles"} {home.short}</span>
             <strong>{data ? data.expectedHomeGoals.toFixed(2) : "—"}</strong>
+            {scenario === "without-star" && baseResult && data ? (
+              <em>
+                {(data.expectedHomeGoals - baseResult.expectedHomeGoals).toFixed(2)} λ
+              </em>
+            ) : null}
           </div>
         </div>
       </section>
