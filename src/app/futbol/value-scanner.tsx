@@ -970,7 +970,6 @@ export default function ValueScanner({ onSelect }: Props) {
           const signal = row.selected_signal;
           if (!signal) return null;
           const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
-          const trend = historyTrend(history);
 
           const automaticStale = staleFeed;
           const effectiveReviewReason = signal.review_reason;
