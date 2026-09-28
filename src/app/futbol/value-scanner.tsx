@@ -363,7 +363,7 @@ export default function ValueScanner({ onSelect }: Props) {
     nowMs,
   );
 
-  const globalTop = useMemo(() => {
+  const globalTop = (() => {
     const leagues = [
       {
         key: "denmark",
@@ -408,7 +408,7 @@ export default function ValueScanner({ onSelect }: Props) {
       })
       .sort((a, b) => b.score - a.score)
       .slice(0, 3);
-  }, [nowMs]);
+  })();
 
   const rows = useMemo(
     () =>
