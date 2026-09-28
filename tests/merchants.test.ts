@@ -59,6 +59,7 @@ describe("merchant theming", () => {
     expect(losChiquis?.whatsappNumber).toBe("5491131568065");
     expect(losChiquis?.rewardValidityDays).toBe(30);
     expect(losChiquis?.theme.businessType).toBe("Peluquería Canina");
+    expect(losChiquis?.theme.heroEyebrow).toBe("Peluquería canina");
     expect(losChiquis?.prizes).toEqual([
       { id: "discount_10", name: "10% de descuento en tu próxima sesión", probability: 100 },
     ]);
