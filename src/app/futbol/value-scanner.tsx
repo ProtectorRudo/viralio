@@ -5,6 +5,7 @@ import auditedSignals from "./upcoming-denmark-271-signals.json";
 import signalHistory from "./free-denmark-271-signal-history.json";
 import performanceData from "./free-denmark-271-performance.json";
 import strategyAuditData from "./free-denmark-271-strategy-audit.json";
+import calibrationData from "./free-denmark-271-calibration.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -149,6 +150,37 @@ type StrategyAuditSnapshot = {
   };
 };
 
+type CalibrationBucket = {
+  label: string;
+  sample_size: number;
+  mean_predicted_probability: number | null;
+  observed_hit_rate: number | null;
+  calibration_gap: number | null;
+  brier_score: number | null;
+  mature: boolean;
+};
+
+type CalibrationSnapshot = {
+  schema_version: string;
+  generated_at: string;
+  scope: string;
+  ranking_impact: boolean;
+  sample_rules: {
+    min_overall_sample: number;
+    min_bucket_sample: number;
+  };
+  summary: {
+    sample_size: number;
+    mean_predicted_probability: number | null;
+    observed_hit_rate: number | null;
+    calibration_gap: number | null;
+    brier_score: number | null;
+    ece: number | null;
+    status: "collecting" | "well_calibrated" | "watch" | "miscalibrated";
+  };
+  buckets: CalibrationBucket[];
+};
+
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
@@ -267,6 +299,7 @@ export default function ValueScanner({ onSelect }: Props) {
   const clvSummary = historicalClvSummary(historySnapshot);
   const performance = performanceData as PerformanceSnapshot;
   const strategyAudit = strategyAuditData as StrategyAuditSnapshot;
+  const calibration = calibrationData as CalibrationSnapshot;
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -510,6 +543,81 @@ export default function ValueScanner({ onSelect }: Props) {
             <small>cierres CLV / apuestas liquidadas · ROI aún no mueve ranking</small>
           </div>
         </div>
+      </div>
+
+      <div className={styles.calibrationScoreboard}>
+        <div className={styles.clvScoreboardHeader}>
+          <div>
+            <span className={styles.eyebrow}>CALIBRACIÓN</span>
+            <h4>¿El 60% se comporta como 60%?</h4>
+          </div>
+          <span className={styles.clvTrackingPill}>
+            {calibration.summary.status === "collecting"
+              ? "RECOLECTANDO MUESTRA"
+              : calibration.summary.status === "well_calibrated"
+                ? "BIEN CALIBRADO"
+                : calibration.summary.status === "watch"
+                  ? "A VIGILAR"
+                  : "DESAJUSTE"}
+          </span>
+        </div>
+
+        <div className={styles.calibrationGrid}>
+          <div>
+            <span>Muestra</span>
+            <strong>{calibration.summary.sample_size}</strong>
+            <small>señales seleccionadas con resultado final</small>
+          </div>
+          <div>
+            <span>Brier Score</span>
+            <strong>
+              {calibration.summary.brier_score == null
+                ? "—"
+                : calibration.summary.brier_score.toFixed(3)}
+            </strong>
+            <small>más bajo es mejor</small>
+          </div>
+          <div>
+            <span>ECE</span>
+            <strong>
+              {calibration.summary.ece == null
+                ? "—"
+                : `${(calibration.summary.ece * 100).toFixed(1)}%`}
+            </strong>
+            <small>error medio de calibración por bandas</small>
+          </div>
+          <div>
+            <span>Previsto vs real</span>
+            <strong>
+              {calibration.summary.mean_predicted_probability == null
+                ? "—"
+                : `${(calibration.summary.mean_predicted_probability * 100).toFixed(0)}% → ${((calibration.summary.observed_hit_rate ?? 0) * 100).toFixed(0)}%`}
+            </strong>
+            <small>
+              madura con {calibration.sample_rules.min_overall_sample}+ resultados · no mueve ranking
+            </small>
+          </div>
+        </div>
+
+        {calibration.buckets.length > 0 ? (
+          <div className={styles.calibrationBands}>
+            {calibration.buckets.map((bucket) => (
+              <div key={bucket.label}>
+                <span>{bucket.label}</span>
+                <strong>
+                  {bucket.mean_predicted_probability == null
+                    ? "—"
+                    : `${(bucket.mean_predicted_probability * 100).toFixed(0)}%`}
+                  {" → "}
+                  {bucket.observed_hit_rate == null
+                    ? "—"
+                    : `${(bucket.observed_hit_rate * 100).toFixed(0)}%`}
+                </strong>
+                <small>{bucket.sample_size} casos{bucket.mature ? " · madura" : ""}</small>
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div className={styles.clvScoreboard}>
