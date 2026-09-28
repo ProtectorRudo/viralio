@@ -40,6 +40,16 @@ describe("promoted football model", () => {
     });
     expect(repeated?.events).toEqual(result?.events);
 
+    const withoutStar = simulateLearned({
+      homeTeam: "FC København",
+      awayTeam: "FC Midtjylland",
+      simulations: 5000,
+      seed: 42,
+      scenario: "without-star",
+    });
+    expect(withoutStar?.expectedHomeGoals).toBeLessThan(result?.expectedHomeGoals ?? 0);
+    expect(withoutStar?.homeWin).toBeLessThan(result?.homeWin ?? 0);
+
     let previousHome = 0;
     let previousAway = 0;
     for (const event of result?.events ?? []) {
