@@ -68,6 +68,7 @@ test("Moka direct demo starts fresh on every visit and does not keep the previou
   await expect(page.locator("main")).toHaveAttribute("data-design-version", "gift-premium-v1");
   await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
+  await expect(page.getByText("Peluquería canina", { exact: true })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 
