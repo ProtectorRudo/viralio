@@ -2,12 +2,17 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import auditedSignals from "./upcoming-denmark-271-signals.json";
-import scotlandFixtures from "./free-scotland-501.json";
+import scotlandSignals from "./free-scotland-501-signals.json";
 import signalHistory from "./free-denmark-271-signal-history.json";
+import scotlandSignalHistory from "./free-scotland-501-signal-history.json";
 import performanceData from "./free-denmark-271-performance.json";
+import scotlandPerformanceData from "./free-scotland-501-performance.json";
 import strategyAuditData from "./free-denmark-271-strategy-audit.json";
+import scotlandStrategyAuditData from "./free-scotland-501-strategy-audit.json";
 import calibrationData from "./free-denmark-271-calibration.json";
+import scotlandCalibrationData from "./free-scotland-501-calibration.json";
 import stabilityData from "./free-denmark-271-stability.json";
+import scotlandStabilityData from "./free-scotland-501-stability.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -55,6 +60,10 @@ type AuditedFixture = {
   away_team: string;
   kickoff_at: string;
   data_confidence: number;
+  model_type?: string;
+  model_cutoff_at?: string;
+  model_age_days?: number;
+  model_stale?: boolean;
   selected_signal: AuditedSignal | null;
   model: {
     home_win: number;
@@ -213,18 +222,6 @@ type StabilitySnapshot = {
   signals: StabilitySignal[];
 };
 
-type ScotlandFixtureSnapshot = {
-  generated_at: string;
-  league_id: number;
-  league_name: string;
-  fixtures: Array<{
-    fixture_id: number;
-    kickoff_at: string;
-    home_team: string;
-    away_team: string;
-  }>;
-};
-
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
@@ -257,8 +254,11 @@ function reviewLabel(reason: string | null) {
   return "A REVISAR";
 }
 
-function historyEntry(fixtureId: number, market: string) {
-  const history = signalHistory as HistorySnapshot;
+function historyEntry(
+  history: HistorySnapshot,
+  fixtureId: number,
+  market: string,
+) {
   return history.entries[`${fixtureId}:${market}`] ?? null;
 }
 
@@ -313,8 +313,11 @@ function historicalClvSummary(history: HistorySnapshot) {
   };
 }
 
-function stabilitySignal(fixtureId: number, market: string) {
-  const snapshot = stabilityData as StabilitySnapshot;
+function stabilitySignal(
+  snapshot: StabilitySnapshot,
+  fixtureId: number,
+  market: string,
+) {
   return snapshot.signals.find(
     (signal) => signal.fixture_id === fixtureId && signal.market === market,
   ) ?? null;
@@ -353,15 +356,26 @@ function historyTrend(entry: HistoryEntry | null) {
 }
 
 export default function ValueScanner({ onSelect }: Props) {
-  const snapshot = auditedSignals as AuditedSnapshot;
-  const historySnapshot = signalHistory as HistorySnapshot;
-  const clvSummary = historicalClvSummary(historySnapshot);
-  const performance = performanceData as PerformanceSnapshot;
-  const strategyAudit = strategyAuditData as StrategyAuditSnapshot;
-  const calibration = calibrationData as CalibrationSnapshot;
-  const stability = stabilityData as StabilitySnapshot;
-  const scotland = scotlandFixtures as ScotlandFixtureSnapshot;
   const [league, setLeague] = useState<"denmark" | "scotland">("denmark");
+  const snapshot = (
+    league === "scotland" ? scotlandSignals : auditedSignals
+  ) as AuditedSnapshot;
+  const historySnapshot = (
+    league === "scotland" ? scotlandSignalHistory : signalHistory
+  ) as HistorySnapshot;
+  const clvSummary = historicalClvSummary(historySnapshot);
+  const performance = (
+    league === "scotland" ? scotlandPerformanceData : performanceData
+  ) as PerformanceSnapshot;
+  const strategyAudit = (
+    league === "scotland" ? scotlandStrategyAuditData : strategyAuditData
+  ) as StrategyAuditSnapshot;
+  const calibration = (
+    league === "scotland" ? scotlandCalibrationData : calibrationData
+  ) as CalibrationSnapshot;
+  const stability = (
+    league === "scotland" ? scotlandStabilityData : stabilityData
+  ) as StabilitySnapshot;
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -473,46 +487,29 @@ export default function ValueScanner({ onSelect }: Props) {
           className={league === "denmark" ? styles.scannerFilterActive : ""}
           onClick={() => setLeague("denmark")}
         >
-          Dinamarca · activa
+          Dinamarca
         </button>
         <button
           type="button"
           className={league === "scotland" ? styles.scannerFilterActive : ""}
           onClick={() => setLeague("scotland")}
         >
-          Escocia · {scotland.fixtures.length} partidos
+          Escocia · {snapshot.fixtures.length} señales
         </button>
       </div>
 
-      {league === "scotland" ? (
-        <div className={styles.scotlandPreview}>
-          <div>
-            <span className={styles.eyebrow}>SCOTTISH PREMIERSHIP · RECOMENDACIONES SUSPENDIDAS</span>
-            <h4>Escocia ya tiene fixtures y cuotas reales</h4>
-            <p>
-              {scotland.fixtures.length} partidos cargados. El baseline Dixon-Coles fue
-              validado, pero su corte histórico todavía está demasiado lejos de los partidos
-              actuales. Las oportunidades quedan visibles sólo para auditoría hasta refrescar
-              el modelo.
-            </p>
-          </div>
-          <div className={styles.scotlandFixtureList}>
-            {scotland.fixtures.slice(0, 6).map((fixture) => (
-              <button
-                key={fixture.fixture_id}
-                type="button"
-                onClick={() => onSelect?.(fixture.home_team, fixture.away_team)}
-              >
-                <strong>{fixture.home_team}</strong>
-                <span>vs {fixture.away_team}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <div className={styles.leagueStatus}>
+        <span>
+          {league === "scotland" ? "Scottish Premiership" : "Danish Superliga"}
+        </span>
+        <strong>
+          {league === "scotland" ? "Dixon-Coles validado" : "Team Profile promovido"}
+        </strong>
+        <small>
+          corte del modelo {new Date(snapshot.profile_cutoff_at).toLocaleDateString("es-AR")}
+        </small>
+      </div>
 
-      {league === "denmark" ? (
-      <>
       <div className={styles.scannerFilters}>
         <button
           type="button"
@@ -823,9 +820,9 @@ export default function ValueScanner({ onSelect }: Props) {
             {topOpportunities.map((row, index) => {
               const signal = row.selected_signal;
               if (!signal) return null;
-              const history = historyEntry(row.fixture_id, signal.market);
+              const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
               const trend = historyTrend(history);
-              const temporal = stabilitySignal(row.fixture_id, signal.market);
+              const temporal = stabilitySignal(stability, row.fixture_id, signal.market);
 
               return (
                 <article className={styles.topValueCard} key={row.fixture_id}>
@@ -959,7 +956,7 @@ export default function ValueScanner({ onSelect }: Props) {
         {visibleRows.map((row) => {
           const signal = row.selected_signal;
           if (!signal) return null;
-          const history = historyEntry(row.fixture_id, signal.market);
+          const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
           const trend = historyTrend(history);
 
           const override = bookmakerOdds[row.fixture_id];
@@ -1148,8 +1145,6 @@ export default function ValueScanner({ onSelect }: Props) {
           );
         })}
       </div>
-      </>
-      ) : null}
     </section>
   );
 }
