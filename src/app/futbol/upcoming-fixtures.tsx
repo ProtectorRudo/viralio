@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { simulateLearned } from "../api/futbol/learned-model";
+import { minimumValueOdds } from "./bet-value";
 import upcomingDenmark from "./upcoming-denmark-271.json";
 import styles from "./football.module.css";
 
@@ -38,9 +39,6 @@ export default function UpcomingFixtures({
       }),
     [fixtures],
   );
-
-  const minimumOdds = (probability: number) =>
-    probability > 0 ? (1.05 / probability).toFixed(2) : "—";
 
   return (
     <section className={styles.upcomingPanel}>
@@ -86,15 +84,15 @@ export default function UpcomingFixtures({
               <div className={styles.fixturePrediction}>
                 <span>
                   <b>1</b> {(prediction.homeWin * 100).toFixed(0)}%
-                  <small>mín {minimumOdds(prediction.homeWin)}</small>
+                  <small>mín {minimumValueOdds(prediction.homeWin).toFixed(2)}</small>
                 </span>
                 <span>
                   <b>X</b> {(prediction.draw * 100).toFixed(0)}%
-                  <small>mín {minimumOdds(prediction.draw)}</small>
+                  <small>mín {minimumValueOdds(prediction.draw).toFixed(2)}</small>
                 </span>
                 <span>
                   <b>2</b> {(prediction.awayWin * 100).toFixed(0)}%
-                  <small>mín {minimumOdds(prediction.awayWin)}</small>
+                  <small>mín {minimumValueOdds(prediction.awayWin).toFixed(2)}</small>
                 </span>
               </div>
             ) : null}
