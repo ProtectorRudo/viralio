@@ -416,8 +416,18 @@ export default function ValueScanner({ onSelect }: Props) {
         .filter((fixture) => fixture.selected_signal)
         .sort(
           (a, b) =>
-            (b.selected_signal?.expected_value_edge ?? -Infinity) -
-            (a.selected_signal?.expected_value_edge ?? -Infinity),
+            (
+              b.selected_signal?.priority?.score ??
+              b.selected_signal?.clv_learning?.ranking_score ??
+              b.selected_signal?.expected_value_edge ??
+              -Infinity
+            ) -
+            (
+              a.selected_signal?.priority?.score ??
+              a.selected_signal?.clv_learning?.ranking_score ??
+              a.selected_signal?.expected_value_edge ??
+              -Infinity
+            ),
         ),
     [snapshot.fixtures],
   );
