@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./football.module.css";
+import UpcomingFixtures from "./upcoming-fixtures";
 
 type TeamPreset = {
   name: string;
@@ -173,6 +174,12 @@ export default function FootballLab() {
     setScenario("base");
   }
 
+  function loadUpcomingFixture(home: string, away: string) {
+    setHomeTeam(home);
+    setAwayTeam(away);
+    setScenario("base");
+  }
+
   const data = result;
   const leadingHome = data ? data.homeWin >= data.awayWin && data.homeWin >= data.draw : true;
   const leadingAway = data ? data.awayWin > data.homeWin && data.awayWin >= data.draw : false;
@@ -202,6 +209,8 @@ export default function FootballLab() {
           Probar modelo con datos reales
         </button>
       </section>
+
+      <UpcomingFixtures onSelect={loadUpcomingFixture} />
 
       <section className={styles.selectorCard}>
         <div className={styles.selectorColumn}>
