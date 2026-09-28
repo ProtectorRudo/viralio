@@ -1732,3 +1732,70 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.calibrationScoreboard {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #4b3f70;
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(65, 48, 105, 0.18), rgba(15, 11, 24, 0.96));
+}
+
+.calibrationGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calibrationGrid > div,
+.calibrationBands > div {
+  padding: 11px;
+  border: 1px solid #3a3154;
+  border-radius: 12px;
+  background: #100c18;
+}
+
+.calibrationGrid span,
+.calibrationGrid small,
+.calibrationBands span,
+.calibrationBands small {
+  display: block;
+  color: #8f83ac;
+  font-size: 9px;
+}
+
+.calibrationGrid strong,
+.calibrationBands strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 20px;
+}
+
+.calibrationGrid small,
+.calibrationBands small {
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.calibrationBands {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 850px) {
+  .calibrationGrid,
+  .calibrationBands {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .calibrationGrid,
+  .calibrationBands {
+    grid-template-columns: 1fr;
+  }
+}
