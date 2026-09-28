@@ -7,6 +7,8 @@ import {
   expectedValueEdge,
   fairOdds,
   impliedProbability,
+  isHighModelMarketDivergence,
+  isThinBookmakerMarket,
   minimumValueOdds,
   parseDecimalOdds,
   probabilityEdge,
@@ -43,6 +45,12 @@ type OddsQuote = {
   bookmaker_id: number | null;
   bookmaker: string | null;
   updated_at: string | null;
+  bookmaker_count?: number;
+  median_value?: number;
+  best_vs_median?: number;
+  previous_value?: number;
+  delta?: number;
+  movement?: "up" | "down" | "flat";
 };
 
 type FixtureOdds = {
@@ -171,6 +179,37 @@ export default function BetValuePanel({
             oddsOverrides[overrideKey] ?? defaultOneXTwo[outcome.key];
           const bookmaker = parseDecimalOdds(displayedOdds);
           const status = classifyValue(bookmaker, fair, minimum);
+          const quote =
+            outcome.key === "home"
+              ? selectedFixtureOdds?.["1X2"]?.["1"] ?? null
+              : outcome.key === "draw"
+                ? selectedFixtureOdds?.["1X2"]?.["X"] ?? null
+                : selectedFixtureOdds?.["1X2"]?.["2"] ?? null;
+          const hasOverride = oddsOverrides[overrideKey] !== undefined;
+          const highDivergence =
+            bookmaker === null
+              ? false
+              : isHighModelMarketDivergence(
+                  outcome.probability,
+                  bookmaker,
+                  dataConfidence,
+                );
+          const thinMarket =
+            !hasOverride && quote
+              ? isThinBookmakerMarket(quote.bookmaker_count)
+              : false;
+          const reviewReason = highDivergence
+            ? "model"
+            : thinMarket
+              ? "market"
+              : null;
+          const displayTone = reviewReason ? "warning" : status.tone;
+          const displayLabel =
+            reviewReason === "model"
+              ? "REVISAR MODELO"
+              : reviewReason === "market"
+                ? "MERCADO FINO"
+                : status.label;
           const expectedEdge =
             bookmaker === null
               ? null
@@ -184,7 +223,7 @@ export default function BetValuePanel({
 
           return (
             <article
-              className={`${styles.valueCard} ${styles[`valueCard_${status.tone}`]}`}
+              className={`${styles.valueCard} ${styles[`valueCard_${displayTone}`]}`}
               key={outcome.key}
             >
               <div className={styles.valueCardTop}>
@@ -192,7 +231,7 @@ export default function BetValuePanel({
                   <span>{outcome.label}</span>
                   <strong>{(outcome.probability * 100).toFixed(1)}%</strong>
                 </div>
-                <span className={styles.valueBadge}>{status.label}</span>
+                <span className={styles.valueBadge}>{displayLabel}</span>
               </div>
 
               <div className={styles.oddsNumbers}>
@@ -208,11 +247,10 @@ export default function BetValuePanel({
 
               <label className={styles.bookmakerInput}>
                 <span>
-                  {outcome.key === "home"
-                    ? selectedFixtureOdds?.["1X2"]?.["1"]?.bookmaker ?? "Cuota de la casa"
-                    : outcome.key === "draw"
-                      ? selectedFixtureOdds?.["1X2"]?.["X"]?.bookmaker ?? "Cuota de la casa"
-                      : selectedFixtureOdds?.["1X2"]?.["2"]?.bookmaker ?? "Cuota de la casa"}
+                  {quote?.bookmaker ?? "Cuota de la casa"}
+                  {quote?.bookmaker_count
+                    ? ` · ${quote.bookmaker_count} casas`
+                    : ""}
                 </span>
                 <input
                   inputMode="decimal"
@@ -279,7 +317,7 @@ export default function BetValuePanel({
 
           return (
             <article
-              className={`${styles.doubleChanceCard} ${styles[`valueCard_${status.tone}`]}`}
+              className={`${styles.doubleChanceCard} ${styles[`valueCard_${displayTone}`]}`}
               key={market.key}
             >
               <div className={styles.valueCardTop}>
@@ -287,7 +325,7 @@ export default function BetValuePanel({
                   <span>{market.detail}</span>
                   <strong>{market.label}</strong>
                 </div>
-                <span className={styles.valueBadge}>{status.label}</span>
+                <span className={styles.valueBadge}>{displayLabel}</span>
               </div>
 
               <div className={styles.doubleChanceProbability}>
@@ -308,11 +346,10 @@ export default function BetValuePanel({
 
               <label className={styles.bookmakerInput}>
                 <span>
-                  {market.key === "homeDraw"
-                    ? selectedFixtureOdds?.double_chance?.["1X"]?.bookmaker ?? "Cuota de la casa"
-                    : market.key === "drawAway"
-                      ? selectedFixtureOdds?.double_chance?.["X2"]?.bookmaker ?? "Cuota de la casa"
-                      : selectedFixtureOdds?.double_chance?.["12"]?.bookmaker ?? "Cuota de la casa"}
+                  {quote?.bookmaker ?? "Cuota de la casa"}
+                  {quote?.bookmaker_count
+                    ? ` · ${quote.bookmaker_count} casas`
+                    : ""}
                 </span>
                 <input
                   inputMode="decimal"
