@@ -10,6 +10,8 @@ import {
   isHighProbabilityDivergence,
   isThinBookmakerMarket,
   minimumValueOdds,
+  oddsSnapshotAgeMinutes,
+  isOddsSnapshotStale,
   parseDecimalOdds,
   probabilityEdge,
 } from "../src/app/futbol/bet-value";
@@ -77,6 +79,16 @@ describe("football betting value math", () => {
     expect(isThinBookmakerMarket(1)).toBe(true);
     expect(isThinBookmakerMarket(2)).toBe(false);
     expect(isThinBookmakerMarket(undefined)).toBe(true);
+  });
+
+  it("marks bookmaker snapshots stale after the configured age", () => {
+    const generatedAt = "2026-09-28T16:00:00.000Z";
+    const freshNow = Date.parse("2026-09-28T17:20:00.000Z");
+    const staleNow = Date.parse("2026-09-28T17:31:00.000Z");
+
+    expect(oddsSnapshotAgeMinutes(generatedAt, freshNow)).toBeCloseTo(80, 8);
+    expect(isOddsSnapshotStale(generatedAt, 90, freshNow)).toBe(false);
+    expect(isOddsSnapshotStale(generatedAt, 90, staleNow)).toBe(true);
   });
 
   it("accepts decimal odds with comma or dot", () => {
