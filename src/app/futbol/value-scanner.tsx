@@ -153,6 +153,7 @@ export default function ValueScanner() {
   const strongRows = quotedRows.filter(
     (row) => row && row.edge != null && row.edge >= 0.10,
   );
+  const topOpportunities = valueRows.slice(0, 3);
 
   return (
     <section className={styles.scannerPanel}>
@@ -190,6 +191,70 @@ export default function ValueScanner() {
           <strong>{strongRows.length}</strong>
         </div>
       </div>
+
+      {topOpportunities.length > 0 ? (
+        <div className={styles.topValueBlock}>
+          <div className={styles.topValueHeader}>
+            <span className={styles.eyebrow}>TOP OPORTUNIDADES REALES</span>
+            <strong>Ordenadas por edge estimado</strong>
+          </div>
+          <div className={styles.topValueGrid}>
+            {topOpportunities.map((row, index) => {
+              if (!row || !row.quote) return null;
+
+              return (
+                <article className={styles.topValueCard} key={row.fixture.fixture_id}>
+                  <span className={styles.topValueRank}>#{index + 1}</span>
+                  <div className={styles.topValueFixture}>
+                    <span>
+                      {new Date(row.fixture.kickoff_at).toLocaleString("es-AR", {
+                        timeZone: "America/Argentina/Buenos_Aires",
+                        day: "2-digit",
+                        month: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <strong>
+                      {row.fixture.home_team} vs {row.fixture.away_team}
+                    </strong>
+                  </div>
+
+                  <div className={styles.topValueMarket}>
+                    <span>Mercado</span>
+                    <strong>{row.market.label}</strong>
+                  </div>
+
+                  <div className={styles.topValueNumbers}>
+                    <div>
+                      <span>Casa</span>
+                      <strong>{row.quote.bookmaker ?? "—"}</strong>
+                    </div>
+                    <div>
+                      <span>Cuota</span>
+                      <strong>{row.quote.value.toFixed(2)}</strong>
+                    </div>
+                    <div>
+                      <span>Mínima</span>
+                      <strong>{row.minimum.toFixed(2)}</strong>
+                    </div>
+                    <div>
+                      <span>Edge</span>
+                      <strong className={styles.topValueEdge}>
+                        +{((row.edge ?? 0) * 100).toFixed(1)}%
+                      </strong>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.noValueNotice}>
+          No hay mercados que superen el umbral de valor ajustado por confianza.
+        </div>
+      )}
 
       <div className={styles.scannerRows}>
         {rows.map((row) => {
