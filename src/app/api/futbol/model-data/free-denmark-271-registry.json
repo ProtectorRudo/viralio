@@ -1,0 +1,16 @@
+{
+  "model_key": "team-profile",
+  "model_version": "team-profile-v1",
+  "competition_key": "sportmonks:271",
+  "profile_cutoff_at": "2026-09-28T23:59:59+00:00",
+  "advanced_xg_available": false,
+  "validation": {
+    "aligned_predictions": 138,
+    "challenger_brier": 0.6327191122387428,
+    "incumbent_brier": 0.6677019278244527,
+    "delta": -0.0349828155857098,
+    "bootstrap_low": -0.0686290036023634,
+    "bootstrap_high": -0.0008204685047796976,
+    "promoted": true
+  }
+}
