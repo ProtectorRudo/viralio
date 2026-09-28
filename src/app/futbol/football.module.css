@@ -64,6 +64,50 @@
   cursor: pointer;
 }
 
+.modelNotice {
+  max-width: 1180px;
+  margin: 14px auto 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid #285846;
+  border-radius: 16px;
+  background: rgba(28, 82, 61, 0.18);
+}
+
+.modelNotice strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 20px;
+}
+
+.modelNotice p {
+  margin: 5px 0 0;
+  color: #88a499;
+  font-size: 12px;
+}
+
+.modelFacts {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.modelFacts span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #0b1b16;
+  color: #759187;
+  font-size: 11px;
+}
+
+.modelFacts b {
+  color: #dff8ed;
+}
+
 .selectorCard {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto;
@@ -502,6 +546,15 @@
 
   .impactBox {
     min-width: 0;
+  }
+
+  .modelNotice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .modelFacts {
+    justify-content: flex-start;
   }
 }
 
