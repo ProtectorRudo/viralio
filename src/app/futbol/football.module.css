@@ -212,6 +212,13 @@
   text-align: center;
 }
 
+.scannerBadge small {
+  display: block;
+  margin-top: 2px;
+  color: #9db6ab;
+  font-size: 8px;
+}
+
 .upcomingPanel {
   max-width: 1180px;
   margin: 14px auto 0;
