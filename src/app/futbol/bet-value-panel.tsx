@@ -44,6 +44,11 @@ type OddsQuote = {
 type FixtureOdds = {
   "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
   double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
+  secondary: {
+    over_2_5: OddsQuote | null;
+    btts_yes: OddsQuote | null;
+    btts_no: OddsQuote | null;
+  };
 };
 
 export default function BetValuePanel({
@@ -119,10 +124,18 @@ export default function BetValuePanel({
   ];
 
   const quickMarkets = [
-    { label: "+2.5 goles", probability: over25Probability },
-    { label: "Ambos marcan", probability: bttsProbability },
-    { label: "+8.5 corners", probability: cornersOver85Probability },
-    { label: "+3.5 tarjetas", probability: cardsOver35Probability },
+    {
+      label: "+2.5 goles",
+      probability: over25Probability,
+      quote: selectedFixtureOdds?.secondary?.over_2_5 ?? null,
+    },
+    {
+      label: "Ambos marcan",
+      probability: bttsProbability,
+      quote: selectedFixtureOdds?.secondary?.btts_yes ?? null,
+    },
+    { label: "+8.5 corners", probability: cornersOver85Probability, quote: null },
+    { label: "+3.5 tarjetas", probability: cardsOver35Probability, quote: null },
   ];
 
   return (
@@ -301,15 +314,35 @@ export default function BetValuePanel({
       </div>
 
       <div className={styles.quickValueMarkets}>
-        {quickMarkets.map((market) => (
-          <div key={market.label}>
-            <span>{market.label}</span>
-            <strong>{(market.probability * 100).toFixed(1)}%</strong>
-            <small>
-              cuota mín {minimumValueOdds(market.probability).toFixed(2)}
-            </small>
-          </div>
-        ))}
+        {quickMarkets.map((market) => {
+          const fair = fairOdds(market.probability);
+          const minimum = minimumValueOdds(market.probability);
+          const actual = market.quote?.value ?? null;
+          const status = classifyValue(actual, fair, minimum);
+          const edge =
+            actual === null
+              ? null
+              : expectedValueEdge(market.probability, actual);
+
+          return (
+            <div
+              className={styles[`valueCard_${status.tone}`]}
+              key={market.label}
+            >
+              <span>{market.label}</span>
+              <strong>{(market.probability * 100).toFixed(1)}%</strong>
+              <small>mín {minimum.toFixed(2)}</small>
+              {actual !== null ? (
+                <small>
+                  {market.quote?.bookmaker ?? "Casa"} {actual.toFixed(2)}
+                  {edge !== null ? ` · ${edge >= 0 ? "+" : ""}${(edge * 100).toFixed(1)}%` : ""}
+                </small>
+              ) : (
+                <small>sin cuota real</small>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className={styles.valueLegend}>
