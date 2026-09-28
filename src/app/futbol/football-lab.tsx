@@ -212,7 +212,7 @@ export default function FootballLab() {
         </button>
       </section>
 
-      <ValueScanner />
+      <ValueScanner onSelect={loadUpcomingFixture} />
 
       <UpcomingFixtures
         onSelect={loadUpcomingFixture}
