@@ -9,8 +9,10 @@ import {
   confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
   fairOdds,
+  impliedProbability,
   minimumValueOdds,
   parseDecimalOdds,
+  probabilityEdge,
 } from "./bet-value";
 import styles from "./football.module.css";
 
@@ -333,6 +335,12 @@ export default function ValueScanner() {
             bookmaker === null
               ? null
               : expectedValueEdge(row.market.probability, bookmaker);
+          const marketProbability =
+            bookmaker === null ? null : impliedProbability(bookmaker);
+          const probabilityGap =
+            bookmaker === null
+              ? null
+              : probabilityEdge(row.market.probability, bookmaker);
 
           return (
             <article
@@ -399,6 +407,15 @@ export default function ValueScanner() {
                   }
                 />
               </label>
+
+              <div className={styles.scannerMarketGap}>
+                <span>Modelo vs mercado</span>
+                <strong>
+                  {marketProbability === null || probabilityGap === null
+                    ? "—"
+                    : `${(row.market.probability * 100).toFixed(1)}% vs ${(marketProbability * 100).toFixed(1)}% · ${probabilityGap >= 0 ? "+" : ""}${(probabilityGap * 100).toFixed(1)} pp`}
+                </strong>
+              </div>
 
               <span
                 className={
