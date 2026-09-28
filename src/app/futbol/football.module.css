@@ -318,8 +318,8 @@
 
 .scannerRow {
   display: grid;
-  grid-template-columns: minmax(220px, 1.8fr) 70px 80px 72px 72px 86px 112px;
-  gap: 10px;
+  grid-template-columns: minmax(190px, 1.7fr) 64px 66px 64px 64px 82px 76px minmax(120px, 1fr) 96px;
+  gap: 9px;
   align-items: center;
   padding: 11px 12px;
   border: 1px solid #1a382d;
