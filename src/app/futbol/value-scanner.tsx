@@ -31,6 +31,9 @@ type OddsQuote = {
   bookmaker_id: number | null;
   bookmaker: string | null;
   updated_at: string | null;
+  previous_value?: number;
+  delta?: number;
+  movement?: "up" | "down" | "flat";
 };
 
 type FixtureOdds = {
@@ -233,6 +236,18 @@ export default function ValueScanner() {
                     <div>
                       <span>Cuota</span>
                       <strong>{row.quote.value.toFixed(2)}</strong>
+                      {row.quote.movement ? (
+                        <small className={styles.oddsMovement}>
+                          {row.quote.movement === "up"
+                            ? "↑ subió"
+                            : row.quote.movement === "down"
+                              ? "↓ bajó"
+                              : "= estable"}
+                          {row.quote.previous_value != null
+                            ? ` · ant ${row.quote.previous_value.toFixed(2)}`
+                            : ""}
+                        </small>
+                      ) : null}
                     </div>
                     <div>
                       <span>Mínima</span>
@@ -313,7 +328,16 @@ export default function ValueScanner() {
               </div>
 
               <label className={styles.scannerInput}>
-                <span>{row.quote?.bookmaker ?? "Casa"}</span>
+                <span>
+                  {row.quote?.bookmaker ?? "Casa"}
+                  {row.quote?.movement
+                    ? row.quote.movement === "up"
+                      ? " · ↑"
+                      : row.quote.movement === "down"
+                        ? " · ↓"
+                        : " · ="
+                    : ""}
+                </span>
                 <input
                   inputMode="decimal"
                   placeholder={row.minimum.toFixed(2)}
