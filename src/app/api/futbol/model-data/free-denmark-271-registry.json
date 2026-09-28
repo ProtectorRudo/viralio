@@ -1,16 +1,19 @@
 {
+  "advanced_xg_available": false,
+  "competition_key": "sportmonks:271",
+  "generated_at": "2026-09-28T14:49:30.561930+00:00",
   "model_key": "team-profile",
   "model_version": "team-profile-v1",
-  "competition_key": "sportmonks:271",
-  "profile_cutoff_at": "2026-09-28T23:59:59+00:00",
-  "advanced_xg_available": false,
+  "profile_cutoff_at": "2026-09-28T23:59:59.999999+00:00",
+  "snapshot_path": "data/profiles/free-denmark-271.json",
+  "snapshot_schema": "team-profile-snapshot-v1",
   "validation": {
     "aligned_predictions": 138,
+    "bootstrap_high": -0.0008204685047796862,
+    "bootstrap_low": -0.06862900360236333,
     "challenger_brier": 0.6327191122387428,
+    "delta": -0.034982815585709794,
     "incumbent_brier": 0.6677019278244527,
-    "delta": -0.0349828155857098,
-    "bootstrap_low": -0.0686290036023634,
-    "bootstrap_high": -0.0008204685047796976,
     "promoted": true
   }
 }
