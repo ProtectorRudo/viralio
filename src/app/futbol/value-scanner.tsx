@@ -21,7 +21,7 @@ type UpcomingFixture = {
 };
 
 type MarketCandidate = {
-  label: "1" | "X" | "2" | "1X" | "X2" | "12";
+  label: "1" | "X" | "2" | "1X" | "X2" | "12" | "O2.5" | "BTTS";
   probability: number;
 };
 
@@ -35,12 +35,19 @@ type OddsQuote = {
 type FixtureOdds = {
   "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
   double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
+  secondary: {
+    over_2_5: OddsQuote | null;
+    btts_yes: OddsQuote | null;
+    btts_no: OddsQuote | null;
+  };
 };
 
 function marketCandidates(
   home: number,
   draw: number,
   away: number,
+  over25: number,
+  btts: number,
 ): MarketCandidate[] {
   return [
     { label: "1", probability: home },
@@ -49,6 +56,8 @@ function marketCandidates(
     { label: "1X", probability: home + draw },
     { label: "X2", probability: draw + away },
     { label: "12", probability: home + away },
+    { label: "O2.5", probability: over25 },
+    { label: "BTTS", probability: btts },
   ];
 }
 
@@ -60,7 +69,13 @@ function quoteFor(
   if (label === "1" || label === "X" || label === "2") {
     return fixtureOdds["1X2"][label];
   }
-  return fixtureOdds.double_chance[label];
+  if (label === "1X" || label === "X2" || label === "12") {
+    return fixtureOdds.double_chance[label];
+  }
+  if (label === "O2.5") {
+    return fixtureOdds.secondary?.over_2_5 ?? null;
+  }
+  return fixtureOdds.secondary?.btts_yes ?? null;
 }
 
 export default function ValueScanner() {
@@ -89,6 +104,8 @@ export default function ValueScanner() {
           prediction.homeWin,
           prediction.draw,
           prediction.awayWin,
+          prediction.over25,
+          prediction.bothTeamsToScore,
         ).map((market) => {
           const quote = quoteFor(fixtureOdds, market.label);
           const edge = quote
@@ -132,8 +149,8 @@ export default function ValueScanner() {
           <span className={styles.eyebrow}>ESCÁNER DE CUOTAS</span>
           <h3>¿Dónde mirar primero?</h3>
           <p className={styles.scannerIntro}>
-            Revisa 1, X, 2, 1X, X2 y 12 con cuotas reales y ordena por mayor edge
-            estimado. Podés editar la cuota si querés comparar otra casa.
+            Revisa 1, X, 2, 1X, X2, 12, +2.5 goles y ambos marcan con cuotas reales,
+            y ordena por mayor edge estimado. Podés editar la cuota para comparar otra casa.
           </p>
         </div>
         <span className={styles.valueRule}>
