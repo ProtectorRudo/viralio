@@ -253,6 +253,7 @@ function marketLabel(label: MarketLabel) {
 function reviewLabel(reason: string | null) {
   if (reason === "model_divergence") return "REVISAR MODELO";
   if (reason === "thin_market") return "MERCADO FINO";
+  if (reason === "stale_model") return "MODELO DESACTUALIZADO";
   return "A REVISAR";
 }
 
@@ -486,12 +487,13 @@ export default function ValueScanner({ onSelect }: Props) {
       {league === "scotland" ? (
         <div className={styles.scotlandPreview}>
           <div>
-            <span className={styles.eyebrow}>SCOTTISH PREMIERSHIP · MODELO EN VALIDACIÓN</span>
+            <span className={styles.eyebrow}>SCOTTISH PREMIERSHIP · RECOMENDACIONES SUSPENDIDAS</span>
             <h4>Escocia ya tiene fixtures y cuotas reales</h4>
             <p>
-              {scotland.fixtures.length} partidos cargados. El backtest eligió Dixon-Coles
-              sobre el modelo de perfiles; las señales se habilitan automáticamente cuando
-              termine de persistirse el baseline validado.
+              {scotland.fixtures.length} partidos cargados. El baseline Dixon-Coles fue
+              validado, pero su corte histórico todavía está demasiado lejos de los partidos
+              actuales. Las oportunidades quedan visibles sólo para auditoría hasta refrescar
+              el modelo.
             </p>
           </div>
           <div className={styles.scotlandFixtureList}>
