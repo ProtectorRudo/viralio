@@ -210,7 +210,11 @@ export default function FootballLab() {
         </button>
       </section>
 
-      <UpcomingFixtures onSelect={loadUpcomingFixture} />
+      <UpcomingFixtures
+        onSelect={loadUpcomingFixture}
+        activeHome={homeTeam}
+        activeAway={awayTeam}
+      />
 
       <section className={styles.selectorCard}>
         <div className={styles.selectorColumn}>
