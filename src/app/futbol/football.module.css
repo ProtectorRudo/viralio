@@ -685,6 +685,18 @@
   font-weight: 800;
 }
 
+.valueRule > strong,
+.valueRule > small {
+  display: block;
+}
+
+.valueRule > small {
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: 600;
+  opacity: 0.78;
+}
+
 .valueRuleStale {
   background: rgba(160, 92, 38, 0.16);
   color: #e7b36f;
