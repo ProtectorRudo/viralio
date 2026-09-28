@@ -453,6 +453,61 @@
       "snapshots": 1,
       "total_snapshots": 1
     },
+    "19722776:1": {
+      "away_team": "Kilmarnock",
+      "beat_closing_line": null,
+      "best_odds": 1.14,
+      "bookmaker": "Pinnacle",
+      "closing_bookmaker": null,
+      "closing_captured_at": null,
+      "closing_odds": null,
+      "closing_sample_minutes_before_kickoff": 16999.903443833333,
+      "clv": null,
+      "clv_status": "tracking",
+      "detected_at": "2026-09-28T18:40:05.793370+00:00",
+      "detected_bookmaker": "Pinnacle",
+      "detected_confidence": 1.0,
+      "detected_edge": -0.16073202226116823,
+      "detected_model_probability": 0.7361999804726596,
+      "detected_odds": 1.14,
+      "detected_qualifies": false,
+      "detected_review_reason": null,
+      "first_edge": -0.16073202226116823,
+      "first_odds": 1.14,
+      "first_seen_at": "2026-09-28T18:40:05.793370+00:00",
+      "fixture_id": 19722776,
+      "home_team": "Rangers",
+      "implied_probability_shift": null,
+      "kickoff_at": "2026-10-10T14:00:00+00:00",
+      "last_edge": -0.16073202226116823,
+      "last_odds": 1.14,
+      "last_seen_at": "2026-09-28T18:40:05.793370+00:00",
+      "lowest_odds": 1.14,
+      "market": "1",
+      "market_probability": 0.8255920098802555,
+      "max_edge": -0.16073202226116823,
+      "model_probability": 0.7361999804726596,
+      "points": [
+        {
+          "bookmaker": "Pinnacle",
+          "bookmaker_odds": 1.14,
+          "captured_at": "2026-09-28T18:40:05.793370+00:00",
+          "confidence": 1.0,
+          "expected_value_edge": -0.16073202226116823,
+          "market_probability": 0.8255920098802555,
+          "model_probability": 0.7361999804726596,
+          "qualifies": false,
+          "review_reason": null
+        }
+      ],
+      "provisional_closing_bookmaker": "Pinnacle",
+      "provisional_closing_captured_at": "2026-09-28T18:40:05.793370+00:00",
+      "provisional_closing_odds": 1.14,
+      "provisional_clv": 0.0,
+      "provisional_implied_probability_shift": 0.0,
+      "snapshots": 1,
+      "total_snapshots": 1
+    },
     "19722776:2": {
       "away_team": "Kilmarnock",
       "beat_closing_line": null,
@@ -1016,9 +1071,9 @@
       "total_snapshots": 1
     }
   },
-  "generated_at": "2026-09-28T19:07:05.965396+00:00",
+  "generated_at": "2026-09-28T19:20:10.830393+00:00",
   "max_verified_closing_age_minutes": 120,
   "schema_version": "football-signal-history-v2",
   "source_odds_generated_at": "2026-09-28T18:40:05.793370+00:00",
-  "source_signals_generated_at": "2026-09-28T19:06:39.057932+00:00"
+  "source_signals_generated_at": "2026-09-28T19:19:48.082528+00:00"
 }
