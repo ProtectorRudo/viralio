@@ -415,7 +415,7 @@ export const merchants: Merchant[] = [
       tone: "Cuidado y mimo para tu mascota",
       heroEyebrow: "Peluquería canina",
       heroTitle: "Tenemos un regalo para vos.",
-      heroCopy: "En Los chiquis, peluquería canina, preparamos un beneficio especial para la próxima sesión de tu mascota. Descubrilo en menos de un minuto.",
+      heroCopy: "Los chiquis es una peluquería canina y preparamos un beneficio especial para la próxima sesión de tu mascota. Descubrilo en menos de un minuto.",
       mysteryLabel: "Regalo Los chiquis",
       shareTitle: "Antes de descubrir el tuyo, regalale uno a alguien.",
       shareCopy: "Compartilo por WhatsApp. La otra persona también recibe su propio regalo y el tuyo sigue siendo solo tuyo.",
