@@ -1970,3 +1970,27 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.leagueStatus {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 12px;
+  padding: 8px 10px;
+  border: 1px solid #243c50;
+  border-radius: 10px;
+  background: #081219;
+}
+
+.leagueStatus span,
+.leagueStatus small {
+  color: #7890a2;
+  font-size: 9px;
+}
+
+.leagueStatus strong {
+  color: #d8e4ec;
+  font-size: 11px;
+}
