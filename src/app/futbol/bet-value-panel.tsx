@@ -1,6 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import {
+  classifyValue,
+  expectedValueEdge,
+  fairOdds,
+  minimumValueOdds,
+  parseDecimalOdds,
+} from "./bet-value";
 import styles from "./football.module.css";
 
 type Props = {
@@ -16,37 +23,6 @@ type Outcome = {
   label: string;
   probability: number;
 };
-
-const EDGE_BUFFER = 0.05;
-
-function fairOdds(probability: number) {
-  return probability > 0 ? 1 / probability : 0;
-}
-
-function minimumValueOdds(probability: number) {
-  return fairOdds(probability) * (1 + EDGE_BUFFER);
-}
-
-function parseOdds(value: string) {
-  const normalized = value.replace(",", ".").trim();
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) && parsed > 1 ? parsed : null;
-}
-
-function statusFor(bookmakerOdds: number | null, minimumOdds: number) {
-  if (bookmakerOdds === null) {
-    return { label: "INGRESÁ CUOTA", tone: "neutral" as const };
-  }
-
-  const ratio = bookmakerOdds / minimumOdds;
-  if (ratio >= 1.02) {
-    return { label: "HAY VALOR", tone: "positive" as const };
-  }
-  if (ratio >= 0.98) {
-    return { label: "CUOTA JUSTA", tone: "warning" as const };
-  }
-  return { label: "SIN VALOR", tone: "negative" as const };
-}
 
 export default function BetValuePanel({
   homeLabel,
@@ -89,12 +65,12 @@ export default function BetValuePanel({
         {outcomes.map((outcome) => {
           const fair = fairOdds(outcome.probability);
           const minimum = minimumValueOdds(outcome.probability);
-          const bookmaker = parseOdds(odds[outcome.key]);
-          const status = statusFor(bookmaker, minimum);
+          const bookmaker = parseDecimalOdds(odds[outcome.key]);
+          const status = classifyValue(bookmaker, minimum);
           const expectedEdge =
             bookmaker === null
               ? null
-              : outcome.probability * bookmaker - 1;
+              : expectedValueEdge(outcome.probability, bookmaker);
 
           return (
             <article
