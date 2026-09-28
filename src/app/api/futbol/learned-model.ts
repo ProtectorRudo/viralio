@@ -50,6 +50,62 @@ function poisson(lambda: number, rng: () => number) {
   return k - 1;
 }
 
+type SimulatedEvent = {
+  minute: number;
+  eventType: "goal" | "corner" | "yellow" | "red";
+  side: "home" | "away";
+  homeScore: number;
+  awayScore: number;
+};
+
+function generateEventWorld(
+  *,
+  homeLambda: number,
+  awayLambda: number,
+  homeCornerMean: number,
+  awayCornerMean: number,
+  homeYellows: number,
+  awayYellows: number,
+  seed: number,
+): SimulatedEvent[] {
+  const rng = mulberry32(seed);
+  const raw: Array<Omit<SimulatedEvent, "homeScore" | "awayScore">> = [];
+
+  const addEvents = (
+    count: number,
+    eventType: SimulatedEvent["eventType"],
+    side: SimulatedEvent["side"],
+  ) => {
+    for (let i = 0; i < count; i += 1) {
+      const minute = Math.min(95, Math.max(1, 1 + Math.floor(rng() * 95)));
+      raw.push({ minute, eventType, side });
+    }
+  };
+
+  addEvents(poisson(homeLambda, rng), "goal", "home");
+  addEvents(poisson(awayLambda, rng), "goal", "away");
+  addEvents(poisson(homeCornerMean, rng), "corner", "home");
+  addEvents(poisson(awayCornerMean, rng), "corner", "away");
+  addEvents(poisson(homeYellows, rng), "yellow", "home");
+  addEvents(poisson(awayYellows, rng), "yellow", "away");
+
+  if (poisson(0.16, rng) > 0) {
+    addEvents(1, "red", rng() >= 0.5 ? "home" : "away");
+  }
+
+  raw.sort((a, b) => a.minute - b.minute);
+
+  let homeScore = 0;
+  let awayScore = 0;
+  return raw.map((event) => {
+    if (event.eventType === "goal") {
+      if (event.side === "home") homeScore += 1;
+      else awayScore += 1;
+    }
+    return { ...event, homeScore, awayScore };
+  });
+}
+
 function learnedInputs(home: TeamProfile, away: TeamProfile) {
   const goalsWeight = 0.45;
   const xgWeight = 0.55;
@@ -121,6 +177,15 @@ export function simulateLearned(body: RequestBody) {
 
   const homeCornerMean = Math.max((home.corners_for + away.corners_against) / 2, 1);
   const awayCornerMean = Math.max((away.corners_for + home.corners_against) / 2, 1);
+  const eventWorld = generateEventWorld({
+    homeLambda: inputs.homeLambda,
+    awayLambda: inputs.awayLambda,
+    homeCornerMean,
+    awayCornerMean,
+    homeYellows: home.yellows,
+    awayYellows: away.yellows,
+    seed: hashSeed(`${body.homeTeam}|${body.awayTeam}|event-world`, body.seed),
+  });
 
   for (let i = 0; i < simulations; i += 1) {
     const hg = poisson(inputs.homeLambda, rng);
@@ -193,5 +258,6 @@ export function simulateLearned(body: RequestBody) {
     validationBrierDelta: registry.validation.delta,
     modelGeneratedAt: registry.generated_at,
     profileCutoffAt: registry.profile_cutoff_at,
+    events: eventWorld,
   };
 }
