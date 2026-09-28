@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { simulateLearned } from "../api/futbol/learned-model";
 import upcomingDenmark from "./upcoming-denmark-271.json";
 import styles from "./football.module.css";
 
@@ -22,6 +24,23 @@ export default function UpcomingFixtures({
   activeAway,
 }: Props) {
   const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
+  const cards = useMemo(
+    () =>
+      fixtures.slice(0, 8).map((fixture) => {
+        const prediction = simulateLearned({
+          homeTeam: fixture.home_team,
+          awayTeam: fixture.away_team,
+          simulations: 5000,
+          seed: fixture.fixture_id,
+          scenario: "base",
+        });
+        return { fixture, prediction };
+      }),
+    [fixtures],
+  );
+
+  const minimumOdds = (probability: number) =>
+    probability > 0 ? (1.05 / probability).toFixed(2) : "—";
 
   return (
     <section className={styles.upcomingPanel}>
@@ -39,7 +58,7 @@ export default function UpcomingFixtures({
       </div>
 
       <div className={styles.fixtureGrid}>
-        {fixtures.slice(0, 8).map((fixture) => (
+        {cards.map(({ fixture, prediction }) => (
           <button
             type="button"
             className={
@@ -62,6 +81,23 @@ export default function UpcomingFixtures({
             <strong>{fixture.home_team}</strong>
             <em>vs</em>
             <strong>{fixture.away_team}</strong>
+
+            {prediction ? (
+              <div className={styles.fixturePrediction}>
+                <span>
+                  <b>1</b> {(prediction.homeWin * 100).toFixed(0)}%
+                  <small>mín {minimumOdds(prediction.homeWin)}</small>
+                </span>
+                <span>
+                  <b>X</b> {(prediction.draw * 100).toFixed(0)}%
+                  <small>mín {minimumOdds(prediction.draw)}</small>
+                </span>
+                <span>
+                  <b>2</b> {(prediction.awayWin * 100).toFixed(0)}%
+                  <small>mín {minimumOdds(prediction.awayWin)}</small>
+                </span>
+              </div>
+            ) : null}
           </button>
         ))}
       </div>
