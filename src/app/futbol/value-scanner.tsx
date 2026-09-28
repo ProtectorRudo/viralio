@@ -444,8 +444,8 @@ export default function ValueScanner({ onSelect }: Props) {
           <span className={styles.eyebrow}>ESCÁNER AUDITADO DE CUOTAS</span>
           <h3>¿Dónde mirar primero?</h3>
           <p className={styles.scannerIntro}>
-            Señales calculadas por el backend con modelo, consenso sin vig,
-            profundidad de mercado y umbral ajustado por confianza.
+            Elegí el mercado y compará la cuota que encontrás con el umbral mínimo.
+            Si es igual o superior, hay valor según el modelo.
           </p>
         </div>
         <span
@@ -544,11 +544,11 @@ export default function ValueScanner({ onSelect }: Props) {
           <strong>{rows.length}</strong>
         </div>
         <div>
-          <span>Con valor vigente</span>
+          <span>Oportunidades</span>
           <strong>{valueRows.length}</strong>
         </div>
         <div>
-          <span>Valor fuerte</span>
+          <span>Oportunidades fuertes</span>
           <strong>{strongRows.length}</strong>
         </div>
         <div>
@@ -811,8 +811,6 @@ export default function ValueScanner({ onSelect }: Props) {
               if (!signal) return null;
               const history = historyEntry(historySnapshot, row.fixture_id, signal.market);
               const trend = historyTrend(history);
-              const temporal = stabilitySignal(stability, row.fixture_id, signal.market);
-
               return (
                 <article className={styles.topValueCard} key={row.fixture_id}>
                   <span className={styles.topValueRank}>#{index + 1}</span>
@@ -833,30 +831,10 @@ export default function ValueScanner({ onSelect }: Props) {
                   </div>
 
                   <div className={styles.topValueMarket}>
-                    <span>Mercado</span>
+                    <span>APUESTA</span>
                     <strong>{marketLabel(signal.market)}</strong>
-                    <em className={styles[`signalTrend_${trend.tone}`]}>
-                      {trend.label}
-                    </em>
-                    {temporal ? (
-                      <em className={styles[`stabilityTag_${temporal.status}`]}>
-                        {stabilityLabel(temporal.status)}
-                      </em>
-                    ) : null}
                     <small>
-                      Modelo {(signal.model_probability * 100).toFixed(1)}% ·
-                      mercado {(signal.market_probability * 100).toFixed(1)}% ·
-                      confianza {(signal.confidence * 100).toFixed(0)}%
-                    </small>
-                    {temporal ? (
-                      <small className={styles.stabilityLine}>
-                        Edge positivo en {(temporal.positive_edge_share ?? 0) * 100}% de {temporal.snapshots} capturas · volatilidad {((temporal.edge_volatility ?? 0) * 100).toFixed(1)} pp
-                      </small>
-                    ) : null}
-                    <small className={styles.clvLearningLine}>
-                      {signal.clv_learning?.active_segments
-                        ? `Aprendizaje CLV activo · ${signal.clv_learning.evidence_samples} evidencias · ajuste ${formatClv(signal.clv_learning.adjustment)}`
-                        : "Aprendizaje CLV en espera · se activa con 5+ cierres por segmento"}
+                      Probabilidad estimada {(signal.model_probability * 100).toFixed(1)}%
                     </small>
                   </div>
 
