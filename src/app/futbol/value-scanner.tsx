@@ -341,6 +341,11 @@ export default function ValueScanner({ onSelect }: Props) {
                   <div className={styles.topValueMarket}>
                     <span>Mercado</span>
                     <strong>{marketLabel(row.market.label)}</strong>
+                    <small>
+                      Modelo {(row.market.probability * 100).toFixed(1)}% · mercado{" "}
+                      {(impliedProbability(row.quote.value) * 100).toFixed(1)}% ·
+                      confianza {row.confidence}%
+                    </small>
                   </div>
 
                   <div className={styles.topValueNumbers}>
