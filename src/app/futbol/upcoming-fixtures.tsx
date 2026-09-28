@@ -46,6 +46,9 @@ export default function UpcomingFixtures({
         <div>
           <span className={styles.eyebrow}>PRÓXIMOS PARTIDOS · DATOS REALES</span>
           <h3>Elegí un fixture real</h3>
+          <p className={styles.fixtureHint}>
+            Probabilidad del modelo · mín = cuota mínima con 5% de edge.
+          </p>
         </div>
         <span className={styles.seed}>
           actualizado{" "}
