@@ -6,8 +6,10 @@ import {
   confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
   fairOdds,
+  impliedProbability,
   minimumValueOdds,
   parseDecimalOdds,
+  probabilityEdge,
 } from "./bet-value";
 import upcomingFixtures from "./upcoming-denmark-271.json";
 import upcomingOdds from "./upcoming-denmark-271-odds.json";
@@ -173,6 +175,12 @@ export default function BetValuePanel({
             bookmaker === null
               ? null
               : expectedValueEdge(outcome.probability, bookmaker);
+          const marketProbability =
+            bookmaker === null ? null : impliedProbability(bookmaker);
+          const probabilityGap =
+            bookmaker === null
+              ? null
+              : probabilityEdge(outcome.probability, bookmaker);
 
           return (
             <article
@@ -226,6 +234,14 @@ export default function BetValuePanel({
                     {expectedEdge >= 0 ? "+" : ""}
                     {(expectedEdge * 100).toFixed(1)}%
                   </b>
+                  {marketProbability !== null && probabilityGap !== null ? (
+                    <small>
+                      Modelo {(outcome.probability * 100).toFixed(1)}% · mercado{" "}
+                      {(marketProbability * 100).toFixed(1)}% ·{" "}
+                      {probabilityGap >= 0 ? "+" : ""}
+                      {(probabilityGap * 100).toFixed(1)} pp
+                    </small>
+                  ) : null}
                 </div>
               ) : null}
             </article>
@@ -254,6 +270,12 @@ export default function BetValuePanel({
             bookmaker === null
               ? null
               : expectedValueEdge(market.probability, bookmaker);
+          const marketProbability =
+            bookmaker === null ? null : impliedProbability(bookmaker);
+          const probabilityGap =
+            bookmaker === null
+              ? null
+              : probabilityEdge(market.probability, bookmaker);
 
           return (
             <article
@@ -312,6 +334,14 @@ export default function BetValuePanel({
                     {expectedEdge >= 0 ? "+" : ""}
                     {(expectedEdge * 100).toFixed(1)}%
                   </b>
+                  {marketProbability !== null && probabilityGap !== null ? (
+                    <small>
+                      Modelo {(market.probability * 100).toFixed(1)}% · mercado{" "}
+                      {(marketProbability * 100).toFixed(1)}% ·{" "}
+                      {probabilityGap >= 0 ? "+" : ""}
+                      {(probabilityGap * 100).toFixed(1)} pp
+                    </small>
+                  ) : null}
                 </div>
               ) : null}
             </article>
