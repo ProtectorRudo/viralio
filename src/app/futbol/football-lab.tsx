@@ -351,6 +351,7 @@ export default function FootballLab() {
           bttsProbability={data.bothTeamsToScore}
           cornersOver85Probability={data.cornersOver85}
           cardsOver35Probability={data.cardsOver35}
+          dataConfidence={data.confidence}
         />
       ) : null}
 
