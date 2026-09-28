@@ -1433,3 +1433,167 @@
 .signalTrend_flat {
   color: #d2b06f;
 }
+
+
+.clvScoreboard {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #275743;
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(21, 63, 47, 0.2), rgba(7, 20, 15, 0.96));
+}
+
+.clvScoreboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.clvScoreboardHeader h4 {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+
+.clvTrackingPill {
+  padding: 7px 9px;
+  border: 1px solid #315f4c;
+  border-radius: 999px;
+  color: #9dd7bd;
+  background: #0a1d16;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.clvScoreGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.clvScoreGrid > div {
+  padding: 11px;
+  border: 1px solid #1c4132;
+  border-radius: 12px;
+  background: #081711;
+}
+
+.clvScoreGrid span,
+.clvScoreGrid small,
+.clvStrip span,
+.scannerClv span,
+.scannerClv small {
+  display: block;
+  color: #718a7f;
+  font-size: 9px;
+}
+
+.clvScoreGrid strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 22px;
+}
+
+.clvScoreGrid small {
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.clvStrip {
+  margin-top: 10px;
+  padding: 9px 10px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #244c3b;
+  border-radius: 11px;
+  background: #07150f;
+}
+
+.clvStrip strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.clvArrow {
+  color: #54e0a4 !important;
+  font-size: 13px !important;
+  font-weight: 900;
+}
+
+.clvBadge {
+  padding: 6px 7px;
+  border-radius: 999px;
+  font-size: 9px !important;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.clvBadge_positive {
+  background: rgba(84, 224, 164, 0.14);
+  color: #8ff0c3 !important;
+}
+
+.clvBadge_negative {
+  background: rgba(195, 90, 87, 0.14);
+  color: #e69a97 !important;
+}
+
+.clvBadge_flat,
+.clvBadge_pending {
+  background: rgba(255, 255, 255, 0.06);
+  color: #a9bdb4 !important;
+}
+
+.scannerClv strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.scannerClv small {
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.clvText_positive {
+  color: #8ff0c3 !important;
+}
+
+.clvText_negative {
+  color: #e69a97 !important;
+}
+
+.clvText_flat,
+.clvText_pending {
+  color: #d2e1da !important;
+}
+
+@media (max-width: 850px) {
+  .clvScoreGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clvStrip {
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .clvBadge {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 560px) {
+  .clvScoreboardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .clvScoreGrid {
+    grid-template-columns: 1fr;
+  }
+}

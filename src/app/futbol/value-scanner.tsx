@@ -70,15 +70,31 @@ type HistoryEntry = {
   fixture_id: number;
   market: string;
   snapshots: number;
+  total_snapshots?: number;
   first_odds: number;
   last_odds: number;
   first_edge: number;
   last_edge: number;
   max_edge: number;
+  detected_at?: string;
+  detected_odds?: number;
+  detected_edge?: number;
+  detected_bookmaker?: string | null;
+  provisional_closing_odds?: number | null;
+  provisional_clv?: number | null;
+  closing_odds?: number | null;
+  clv?: number | null;
+  clv_status?: "tracking" | "final" | "unverified_close";
+  beat_closing_line?: boolean | null;
+  closing_sample_minutes_before_kickoff?: number | null;
   points: HistoryPoint[];
 };
 
 type HistorySnapshot = {
+  schema_version?: string;
+  generated_at?: string;
+  clv_definition?: string;
+  max_verified_closing_age_minutes?: number;
   entries: Record<string, HistoryEntry>;
 };
 
@@ -118,6 +134,57 @@ function historyEntry(fixtureId: number, market: string) {
   return history.entries[`${fixtureId}:${market}`] ?? null;
 }
 
+function formatClv(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
+}
+
+function clvTone(value: number | null | undefined) {
+  if (value == null) return "pending" as const;
+  if (value > 0.002) return "positive" as const;
+  if (value < -0.002) return "negative" as const;
+  return "flat" as const;
+}
+
+function historicalClvSummary(history: HistorySnapshot) {
+  const entries = Object.values(history.entries);
+  const finals = entries.filter(
+    (entry) => entry.clv_status === "final" && entry.clv != null,
+  );
+  const verifiedWins = finals.filter((entry) => entry.beat_closing_line === true);
+  const avgClv =
+    finals.length > 0
+      ? finals.reduce((sum, entry) => sum + (entry.clv ?? 0), 0) / finals.length
+      : null;
+
+  const byMarket = new Map<string, { count: number; sum: number; wins: number }>();
+  for (const entry of finals) {
+    const current = byMarket.get(entry.market) ?? { count: 0, sum: 0, wins: 0 };
+    current.count += 1;
+    current.sum += entry.clv ?? 0;
+    current.wins += entry.beat_closing_line ? 1 : 0;
+    byMarket.set(entry.market, current);
+  }
+
+  const bestMarket = [...byMarket.entries()]
+    .map(([market, stats]) => ({
+      market,
+      count: stats.count,
+      avgClv: stats.sum / stats.count,
+      hitRate: stats.wins / stats.count,
+    }))
+    .sort((a, b) => b.avgClv - a.avgClv)[0] ?? null;
+
+  return {
+    tracked: entries.length,
+    finals: finals.length,
+    wins: verifiedWins.length,
+    hitRate: finals.length > 0 ? verifiedWins.length / finals.length : null,
+    avgClv,
+    bestMarket,
+  };
+}
+
 function historyTrend(entry: HistoryEntry | null) {
   if (!entry || entry.snapshots < 2 || entry.points.length < 2) {
     return {
@@ -145,6 +212,8 @@ function historyTrend(entry: HistoryEntry | null) {
 
 export default function ValueScanner({ onSelect }: Props) {
   const snapshot = auditedSignals as AuditedSnapshot;
+  const historySnapshot = signalHistory as HistorySnapshot;
+  const clvSummary = historicalClvSummary(historySnapshot);
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -308,6 +377,55 @@ export default function ValueScanner({ onSelect }: Props) {
         </div>
       </div>
 
+      <div className={styles.clvScoreboard}>
+        <div className={styles.clvScoreboardHeader}>
+          <div>
+            <span className={styles.eyebrow}>PRUEBA CONTRA EL MERCADO</span>
+            <h4>Closing Line Value</h4>
+          </div>
+          <span className={styles.clvTrackingPill}>
+            {clvSummary.finals > 0 ? "MUESTRA VERIFICADA" : "CONSTRUYENDO MUESTRA"}
+          </span>
+        </div>
+
+        <div className={styles.clvScoreGrid}>
+          <div>
+            <span>Señales siguiendo cierre</span>
+            <strong>{clvSummary.tracked}</strong>
+            <small>mercados con precio de entrada guardado</small>
+          </div>
+          <div>
+            <span>Cierres verificados</span>
+            <strong>{clvSummary.finals}</strong>
+            <small>muestra tomada ≤ 120 min antes del inicio</small>
+          </div>
+          <div>
+            <span>Batimos al cierre</span>
+            <strong>
+              {clvSummary.hitRate == null
+                ? "—"
+                : `${(clvSummary.hitRate * 100).toFixed(0)}%`}
+            </strong>
+            <small>
+              {clvSummary.finals > 0
+                ? `${clvSummary.wins} de ${clvSummary.finals}`
+                : "todavía no hay partidos cerrados"}
+            </small>
+          </div>
+          <div>
+            <span>CLV promedio</span>
+            <strong className={styles[`clvText_${clvTone(clvSummary.avgClv)}`]}>
+              {formatClv(clvSummary.avgClv)}
+            </strong>
+            <small>
+              {clvSummary.bestMarket
+                ? `mejor mercado: ${marketLabel(clvSummary.bestMarket.market as MarketLabel)} · ${formatClv(clvSummary.bestMarket.avgClv)}`
+                : "se habilita con el primer cierre verificado"}
+            </small>
+          </div>
+        </div>
+      </div>
+
       {topOpportunities.length > 0 ? (
         <div className={styles.topValueBlock}>
           <div className={styles.topValueHeader}>
@@ -353,6 +471,38 @@ export default function ValueScanner({ onSelect }: Props) {
                       confianza {(signal.confidence * 100).toFixed(0)}%
                     </small>
                   </div>
+
+                  {history ? (
+                    <div className={styles.clvStrip}>
+                      <div>
+                        <span>Detectada</span>
+                        <strong>{(history.detected_odds ?? history.first_odds).toFixed(2)}</strong>
+                      </div>
+                      <span className={styles.clvArrow}>→</span>
+                      <div>
+                        <span>{history.clv_status === "final" ? "Cierre" : "Ahora"}</span>
+                        <strong>
+                          {(history.clv_status === "final"
+                            ? history.closing_odds
+                            : history.provisional_closing_odds ?? history.last_odds
+                          )?.toFixed(2) ?? "—"}
+                        </strong>
+                      </div>
+                      <span
+                        className={`${styles.clvBadge} ${styles[`clvBadge_${clvTone(
+                          history.clv_status === "final"
+                            ? history.clv
+                            : history.provisional_clv,
+                        )}`]}`}
+                      >
+                        CLV {formatClv(
+                          history.clv_status === "final"
+                            ? history.clv
+                            : history.provisional_clv,
+                        )}
+                      </span>
+                    </div>
+                  ) : null}
 
                   <div className={styles.topValueNumbers}>
                     <div>
@@ -531,6 +681,35 @@ export default function ValueScanner({ onSelect }: Props) {
                   }
                 />
               </label>
+
+              <div className={styles.scannerClv}>
+                <span>CLV</span>
+                {history ? (
+                  <>
+                    <strong className={styles[`clvText_${clvTone(
+                      history.clv_status === "final"
+                        ? history.clv
+                        : history.provisional_clv,
+                    )}`]}>
+                      {formatClv(
+                        history.clv_status === "final"
+                          ? history.clv
+                          : history.provisional_clv,
+                      )}
+                    </strong>
+                    <small>
+                      {(history.detected_odds ?? history.first_odds).toFixed(2)}
+                      {" → "}
+                      {(history.clv_status === "final"
+                        ? history.closing_odds
+                        : history.provisional_closing_odds ?? history.last_odds
+                      )?.toFixed(2) ?? "—"}
+                    </small>
+                  </>
+                ) : (
+                  <strong>—</strong>
+                )}
+              </div>
 
               <div className={styles.scannerMarketGap}>
                 <span>Modelo vs mercado</span>
