@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import auditedSignals from "./upcoming-denmark-271-signals.json";
+import signalHistory from "./free-denmark-271-signal-history.json";
 import {
   classifyValue,
   expectedValueEdge,
@@ -56,6 +57,31 @@ type AuditedSnapshot = {
   fixtures: AuditedFixture[];
 };
 
+type HistoryPoint = {
+  captured_at: string;
+  bookmaker_odds: number;
+  expected_value_edge: number;
+  market_probability: number;
+  model_probability: number;
+  bookmaker: string | null;
+};
+
+type HistoryEntry = {
+  fixture_id: number;
+  market: string;
+  snapshots: number;
+  first_odds: number;
+  last_odds: number;
+  first_edge: number;
+  last_edge: number;
+  max_edge: number;
+  points: HistoryPoint[];
+};
+
+type HistorySnapshot = {
+  entries: Record<string, HistoryEntry>;
+};
+
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
@@ -85,6 +111,36 @@ function reviewLabel(reason: string | null) {
   if (reason === "model_divergence") return "REVISAR MODELO";
   if (reason === "thin_market") return "MERCADO FINO";
   return "A REVISAR";
+}
+
+function historyEntry(fixtureId: number, market: string) {
+  const history = signalHistory as HistorySnapshot;
+  return history.entries[`${fixtureId}:${market}`] ?? null;
+}
+
+function historyTrend(entry: HistoryEntry | null) {
+  if (!entry || entry.snapshots < 2 || entry.points.length < 2) {
+    return {
+      label: "NUEVA",
+      tone: "new" as const,
+      edgeDelta: null,
+      oddsDelta: null,
+    };
+  }
+
+  const previous = entry.points[entry.points.length - 2];
+  const current = entry.points[entry.points.length - 1];
+  const edgeDelta =
+    current.expected_value_edge - previous.expected_value_edge;
+  const oddsDelta = current.bookmaker_odds - previous.bookmaker_odds;
+
+  if (edgeDelta >= 0.01) {
+    return { label: "↑ MEJORA", tone: "up" as const, edgeDelta, oddsDelta };
+  }
+  if (edgeDelta <= -0.01) {
+    return { label: "↓ EMPEORA", tone: "down" as const, edgeDelta, oddsDelta };
+  }
+  return { label: "= ESTABLE", tone: "flat" as const, edgeDelta, oddsDelta };
 }
 
 export default function ValueScanner({ onSelect }: Props) {
@@ -263,6 +319,8 @@ export default function ValueScanner({ onSelect }: Props) {
             {topOpportunities.map((row, index) => {
               const signal = row.selected_signal;
               if (!signal) return null;
+              const history = historyEntry(row.fixture_id, signal.market);
+              const trend = historyTrend(history);
 
               return (
                 <article className={styles.topValueCard} key={row.fixture_id}>
@@ -286,6 +344,9 @@ export default function ValueScanner({ onSelect }: Props) {
                   <div className={styles.topValueMarket}>
                     <span>Mercado</span>
                     <strong>{marketLabel(signal.market)}</strong>
+                    <em className={styles[`signalTrend_${trend.tone}`]}>
+                      {trend.label}
+                    </em>
                     <small>
                       Modelo {(signal.model_probability * 100).toFixed(1)}% ·
                       mercado {(signal.market_probability * 100).toFixed(1)}% ·
@@ -346,6 +407,8 @@ export default function ValueScanner({ onSelect }: Props) {
         {visibleRows.map((row) => {
           const signal = row.selected_signal;
           if (!signal) return null;
+          const history = historyEntry(row.fixture_id, signal.market);
+          const trend = historyTrend(history);
 
           const override = bookmakerOdds[row.fixture_id];
           const hasManualOverride = override !== undefined;
@@ -429,6 +492,12 @@ export default function ValueScanner({ onSelect }: Props) {
               <div className={styles.scannerMarket}>
                 <span>Mercado</span>
                 <strong>{marketLabel(signal.market)}</strong>
+                <small className={styles[`signalTrend_${trend.tone}`]}>
+                  {trend.label}
+                  {trend.edgeDelta != null
+                    ? ` · ${trend.edgeDelta >= 0 ? "+" : ""}${(trend.edgeDelta * 100).toFixed(1)} pp edge`
+                    : ""}
+                </small>
               </div>
 
               <div className={styles.scannerMetric}>
