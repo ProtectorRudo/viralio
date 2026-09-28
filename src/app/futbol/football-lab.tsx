@@ -37,6 +37,8 @@ type SimulationResult = {
   advancedXgAvailable?: boolean | null;
   validationAlignedPredictions?: number | null;
   validationBrierDelta?: number | null;
+  modelGeneratedAt?: string | null;
+  profileCutoffAt?: string | null;
   note?: string;
 };
 
@@ -49,6 +51,16 @@ const TEAMS: TeamPreset[] = [
   { name: "FC Midtjylland", short: "FCM", primary: "#111111", secondary: "#d71920" },
   { name: "Brøndby IF", short: "BIF", primary: "#f2dc24", secondary: "#1d3d86" },
   { name: "AGF", short: "AGF", primary: "#ffffff", secondary: "#111111" },
+  { name: "Fredericia", short: "FRE", primary: "#d71920", secondary: "#ffffff" },
+  { name: "Horsens", short: "HOR", primary: "#f2d21a", secondary: "#111111" },
+  { name: "Lyngby Boldklub", short: "LYN", primary: "#244c9b", secondary: "#ffffff" },
+  { name: "Nordsjælland", short: "FCN", primary: "#d71920", secondary: "#f2d21a" },
+  { name: "Odense BK", short: "OB", primary: "#174a8b", secondary: "#ffffff" },
+  { name: "Randers FC", short: "RFC", primary: "#6db7e8", secondary: "#ffffff" },
+  { name: "Silkeborg IF", short: "SIF", primary: "#d71920", secondary: "#ffffff" },
+  { name: "Sønderjyske Fodbold", short: "SE", primary: "#5ca4dc", secondary: "#ffffff" },
+  { name: "Vejle Boldklub", short: "VB", primary: "#d71920", secondary: "#ffffff" },
+  { name: "Viborg FF", short: "VFF", primary: "#2b8a3e", secondary: "#ffffff" },
 ];
 
 function pct(value: number) {
@@ -210,6 +222,27 @@ export default function FootballLab() {
       </section>
 
       {error ? <section className={styles.footer}>{error}</section> : null}
+
+      {data?.modelVersion ? (
+        <section className={styles.modelNotice}>
+          <div>
+            <span className={styles.eyebrow}>DATOS REALES · MODELO PROMOVIDO</span>
+            <strong>{data.modelVersion}</strong>
+            <p>
+              Sportmonks {data.competitionKey ?? "competencia"} · actualizado {data.modelGeneratedAt
+                ? new Date(data.modelGeneratedAt).toLocaleString("es-AR", {
+                    timeZone: "America/Argentina/Buenos_Aires",
+                  })
+                : "—"}
+            </p>
+          </div>
+          <div className={styles.modelFacts}>
+            <span>Validación <b>{data.validationAlignedPredictions ?? "—"} partidos</b></span>
+            <span>xG avanzado <b>{data.advancedXgAvailable ? "sí" : "no · plan gratuito"}</b></span>
+            <span>Δ Brier <b>{data.validationBrierDelta?.toFixed(4) ?? "—"}</b></span>
+          </div>
+        </section>
+      ) : null}
 
       <section className={styles.scoreHero}>
         <div className={styles.teamBlock}>
