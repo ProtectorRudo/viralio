@@ -1613,3 +1613,69 @@
   font-size: 8px;
   line-height: 1.25;
 }
+
+
+.performanceScoreboard {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #34516b;
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(25, 49, 72, 0.22), rgba(7, 18, 25, 0.96));
+}
+
+.performanceGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.performanceGrid > div {
+  padding: 11px;
+  border: 1px solid #243c50;
+  border-radius: 12px;
+  background: #081219;
+}
+
+.performanceGrid span,
+.performanceGrid small {
+  display: block;
+  color: #7890a2;
+  font-size: 9px;
+}
+
+.performanceGrid strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 22px;
+}
+
+.performanceGrid small {
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.performanceText_positive {
+  color: #8ff0c3 !important;
+}
+
+.performanceText_negative {
+  color: #e69a97 !important;
+}
+
+.performanceText_flat,
+.performanceText_pending {
+  color: #d8e4ec !important;
+}
+
+@media (max-width: 850px) {
+  .performanceGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .performanceGrid {
+    grid-template-columns: 1fr;
+  }
+}
