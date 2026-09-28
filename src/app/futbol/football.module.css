@@ -122,6 +122,12 @@
   font-size: 22px;
 }
 
+.fixtureHint {
+  margin: 6px 0 0;
+  color: #6f887d;
+  font-size: 11px;
+}
+
 .fixtureGrid {
   margin-top: 16px;
   display: grid;
