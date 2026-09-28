@@ -342,6 +342,8 @@ export default function FootballLab() {
         <BetValuePanel
           homeLabel={home.short}
           awayLabel={away.short}
+          homeTeamName={home.name}
+          awayTeamName={away.name}
           homeProbability={data.homeWin}
           drawProbability={data.draw}
           awayProbability={data.awayWin}
