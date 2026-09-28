@@ -240,6 +240,14 @@
   font-size: 13px;
 }
 
+.oddsMovement {
+  display: block;
+  margin-top: 3px;
+  color: #7f9a8e;
+  font-size: 8px;
+  font-weight: 700;
+}
+
 .topValueEdge {
   color: #8ff0c3;
 }
