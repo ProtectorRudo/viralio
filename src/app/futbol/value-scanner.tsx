@@ -38,6 +38,10 @@ type OddsQuote = {
   movement?: "up" | "down" | "flat";
 };
 
+type Props = {
+  onSelect?: (homeTeam: string, awayTeam: string) => void;
+};
+
 type FixtureOdds = {
   "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
   double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
@@ -67,6 +71,12 @@ function marketCandidates(
   ];
 }
 
+function marketLabel(label: MarketCandidate["label"]) {
+  if (label === "O2.5") return "+2.5 goles";
+  if (label === "BTTS") return "Ambos marcan";
+  return label;
+}
+
 function quoteFor(
   fixtureOdds: FixtureOdds | undefined,
   label: MarketCandidate["label"],
@@ -84,7 +94,7 @@ function quoteFor(
   return fixtureOdds.secondary?.btts_yes ?? null;
 }
 
-export default function ValueScanner() {
+export default function ValueScanner({ onSelect }: Props) {
   const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<"all" | "value" | "strong">("all");
@@ -276,7 +286,7 @@ export default function ValueScanner() {
 
                   <div className={styles.topValueMarket}>
                     <span>Mercado</span>
-                    <strong>{row.market.label}</strong>
+                    <strong>{marketLabel(row.market.label)}</strong>
                   </div>
 
                   <div className={styles.topValueNumbers}>
@@ -311,6 +321,20 @@ export default function ValueScanner() {
                       </strong>
                     </div>
                   </div>
+                  {onSelect ? (
+                    <button
+                      type="button"
+                      className={styles.topValueAction}
+                      onClick={() =>
+                        onSelect(
+                          row.fixture.home_team,
+                          row.fixture.away_team,
+                        )
+                      }
+                    >
+                      Ver análisis
+                    </button>
+                  ) : null}
                 </article>
               );
             })}
@@ -364,7 +388,7 @@ export default function ValueScanner() {
 
               <div className={styles.scannerMarket}>
                 <span>Mercado</span>
-                <strong>{row.market.label}</strong>
+                <strong>{marketLabel(row.market.label)}</strong>
               </div>
 
               <div className={styles.scannerMetric}>
