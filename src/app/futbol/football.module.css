@@ -212,6 +212,15 @@
   text-align: center;
 }
 
+.scannerBadgeStrong {
+  background: #54e0a4;
+  color: #05130d;
+}
+
+.scannerBadgeStrong small {
+  color: #173d2d;
+}
+
 .scannerBadge small {
   display: block;
   margin-top: 2px;
