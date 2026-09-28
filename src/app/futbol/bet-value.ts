@@ -65,3 +65,25 @@ export function probabilityEdge(
 ) {
   return modelProbability - impliedProbability(decimalOdds);
 }
+
+
+export function isHighModelMarketDivergence(
+  modelProbability: number,
+  decimalOdds: number,
+  confidencePercent: number,
+  probabilityGapThreshold = 0.10,
+  confidenceThreshold = 70,
+) {
+  return (
+    confidencePercent < confidenceThreshold &&
+    Math.abs(probabilityEdge(modelProbability, decimalOdds)) >
+      probabilityGapThreshold
+  );
+}
+
+export function isThinBookmakerMarket(
+  bookmakerCount: number | null | undefined,
+  minimumBookmakers = 2,
+) {
+  return (bookmakerCount ?? 0) < minimumBookmakers;
+}
