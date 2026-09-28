@@ -1405,3 +1405,31 @@
   font-size: 11px;
   line-height: 1.45;
 }
+
+
+.signalTrend_new,
+.signalTrend_up,
+.signalTrend_down,
+.signalTrend_flat {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.signalTrend_new {
+  color: #8fa9a0;
+}
+
+.signalTrend_up {
+  color: #67e0a7;
+}
+
+.signalTrend_down {
+  color: #e28b80;
+}
+
+.signalTrend_flat {
+  color: #d2b06f;
+}
