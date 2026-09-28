@@ -191,5 +191,7 @@ export function simulateLearned(body: RequestBody) {
     advancedXgAvailable: registry.advanced_xg_available,
     validationAlignedPredictions: registry.validation.aligned_predictions,
     validationBrierDelta: registry.validation.delta,
+    modelGeneratedAt: registry.generated_at,
+    profileCutoffAt: registry.profile_cutoff_at,
   };
 }
