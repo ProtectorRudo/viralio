@@ -49,11 +49,14 @@ type SimulationResult = {
   note?: string;
 };
 
-const TEAMS: TeamPreset[] = [
+const ARGENTINA_DEMO_TEAMS: TeamPreset[] = [
   { name: "Boca Juniors", short: "BOC", primary: "#0b2a66", secondary: "#f4cf2f" },
   { name: "Estudiantes", short: "EST", primary: "#d51f2b", secondary: "#ffffff" },
   { name: "River Plate", short: "RIV", primary: "#ffffff", secondary: "#d71920" },
   { name: "Racing Club", short: "RAC", primary: "#78c7f2", secondary: "#ffffff" },
+];
+
+const DENMARK_REAL_TEAMS: TeamPreset[] = [
   { name: "FC København", short: "FCK", primary: "#ffffff", secondary: "#1f3f91" },
   { name: "FC Midtjylland", short: "FCM", primary: "#111111", secondary: "#d71920" },
   { name: "Brøndby IF", short: "BIF", primary: "#f2dc24", secondary: "#1d3d86" },
@@ -69,6 +72,8 @@ const TEAMS: TeamPreset[] = [
   { name: "Vejle Boldklub", short: "VB", primary: "#d71920", secondary: "#ffffff" },
   { name: "Viborg FF", short: "VFF", primary: "#2b8a3e", secondary: "#ffffff" },
 ];
+
+const TEAMS = [...ARGENTINA_DEMO_TEAMS, ...DENMARK_REAL_TEAMS];
 
 function pct(value: number) {
   return `${(value * 100).toFixed(1)}%`;
@@ -195,11 +200,20 @@ export default function FootballLab() {
         <div className={styles.selectorColumn}>
           <label>Local</label>
           <select value={homeTeam} onChange={(event) => setHomeTeam(event.target.value)}>
-            {TEAMS.map((team) => (
-              <option key={team.name} value={team.name} disabled={team.name === awayTeam}>
-                {team.name}
-              </option>
-            ))}
+            <optgroup label="Argentina · demo">
+              {ARGENTINA_DEMO_TEAMS.map((team) => (
+                <option key={team.name} value={team.name} disabled={team.name === awayTeam}>
+                  {team.name}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Dinamarca · datos reales">
+              {DENMARK_REAL_TEAMS.map((team) => (
+                <option key={team.name} value={team.name} disabled={team.name === awayTeam}>
+                  {team.name}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 
@@ -215,11 +229,20 @@ export default function FootballLab() {
         <div className={styles.selectorColumn}>
           <label>Visitante</label>
           <select value={awayTeam} onChange={(event) => setAwayTeam(event.target.value)}>
-            {TEAMS.map((team) => (
-              <option key={team.name} value={team.name} disabled={team.name === homeTeam}>
-                {team.name}
-              </option>
-            ))}
+            <optgroup label="Argentina · demo">
+              {ARGENTINA_DEMO_TEAMS.map((team) => (
+                <option key={team.name} value={team.name} disabled={team.name === homeTeam}>
+                  {team.name}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Dinamarca · datos reales">
+              {DENMARK_REAL_TEAMS.map((team) => (
+                <option key={team.name} value={team.name} disabled={team.name === homeTeam}>
+                  {team.name}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 
