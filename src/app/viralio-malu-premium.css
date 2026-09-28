@@ -1434,3 +1434,218 @@
 .malu-experience[data-merchant="despensa-elvira"] .malu-footer strong{
   color:#aa6443;
 }
+
+
+/* LOS CHIQUIS · PREMIUM CANINE GROOMING EXPERIENCE */
+.malu-experience[data-merchant="los-chiquis"]{
+  color:#29433f;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(229,154,114,.12),transparent 24rem),
+    radial-gradient(circle at 7% 88%,rgba(94,140,130,.14),transparent 28rem),
+    linear-gradient(180deg,#f7f5ef 0%,#edf2ee 100%);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-shell{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,255,255,.78),transparent 20rem),
+    linear-gradient(180deg,rgba(255,253,248,.98),rgba(245,247,243,.98));
+  border:1px solid rgba(94,140,130,.13);
+  box-shadow:0 26px 80px rgba(47,70,64,.08);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-header{
+  border-bottom:1px solid rgba(94,140,130,.12);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-brand-mark{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.94),rgba(255,255,255,.45) 36%,transparent 37%),
+    linear-gradient(145deg,#83aaa1,#5e8c82);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:0 10px 24px rgba(47,70,64,.13);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-brand-mark > span{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-brand-copy strong{
+  color:#31544e;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-brand-copy small{
+  color:#7a8783;
+  letter-spacing:.13em;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-stage h1,
+.malu-experience[data-merchant="los-chiquis"] .malu-stage h2{
+  color:#29433f;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-eyebrow{
+  color:#c67f5b;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-lead{
+  color:#70817c;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero{
+  background:
+    radial-gradient(circle at 76% 18%,rgba(255,255,255,.82),transparent 14rem),
+    linear-gradient(180deg,#e6eee9 0%,#d6e4dd 100%);
+  border-top:1px solid rgba(94,140,130,.10);
+  border-bottom:1px solid rgba(94,140,130,.12);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-photo,
+.malu-experience[data-merchant="los-chiquis"] .malu-share-photo{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(255,255,255,.94),transparent 10rem),
+    linear-gradient(145deg,#eef4f0 0%,#d7e6df 52%,#bed4cb 100%);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-photo::before,
+.malu-experience[data-merchant="los-chiquis"] .malu-share-photo::before{
+  content:"LC";
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  border-radius:50%;
+  color:#fff;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:800;
+  letter-spacing:.04em;
+  background:
+    radial-gradient(circle at 34% 28%,rgba(255,255,255,.40),transparent 26%),
+    linear-gradient(145deg,#83aaa1,#5e8c82);
+  border:1px solid rgba(255,255,255,.82);
+  outline:1px solid rgba(94,140,130,.18);
+  outline-offset:10px;
+  box-shadow:0 22px 54px rgba(47,70,64,.16);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-photo::after,
+.malu-experience[data-merchant="los-chiquis"] .malu-share-photo::after{
+  content:"PELUQUERÍA CANINA";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  color:#31544e;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:700;
+  letter-spacing:.19em;
+  text-indent:.19em;
+  white-space:nowrap;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-photo::before{
+  width:186px;
+  font-size:54px;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-photo::after{
+  top:24%;
+  font-size:9px;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-share-photo::before{
+  width:124px;
+  font-size:34px;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-share-photo::after{
+  top:24%;
+  font-size:7px;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-gift-seal{
+  background:#fff8f3;
+  color:#c67f5b;
+  border:1px solid rgba(229,154,114,.22);
+  box-shadow:0 12px 30px rgba(47,70,64,.08);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-logo{
+  background:#fffaf6;
+  border:1px solid rgba(94,140,130,.18);
+  color:#5e8c82;
+  box-shadow:0 10px 24px rgba(47,70,64,.08);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-hero-logo > span{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-button-primary{
+  background:linear-gradient(135deg,#648f86,#4d766d);
+  color:#fff;
+  box-shadow:0 14px 34px rgba(94,140,130,.18);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-button-primary:hover{
+  background:linear-gradient(135deg,#587f77,#42675f);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-share-card{
+  background:#fffdf9;
+  border-color:rgba(94,140,130,.13);
+  box-shadow:0 22px 58px rgba(47,70,64,.08);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-prosocial-note{
+  background:#fff8f3;
+  border-color:rgba(229,154,114,.14);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-scratch-card{
+  border-color:rgba(94,140,130,.18);
+  background:linear-gradient(145deg,#fffdf9,#eef4ef);
+  box-shadow:0 26px 68px rgba(47,70,64,.10);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-scratch-under{
+  color:#29433f;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(255,255,255,.90),transparent 12rem),
+    linear-gradient(145deg,#fffaf6,#eaf2ed);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-scratch-under strong{
+  color:#c67f5b;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-heart{
+  background:#fff8f3;
+  color:#e59a72;
+  border-color:rgba(229,154,114,.18);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-coupon{
+  color:#29433f;
+  background:
+    radial-gradient(circle at 84% 16%,rgba(229,154,114,.15),transparent 12rem),
+    linear-gradient(145deg,#fffdf9,#f1f5f2);
+  border:1px solid rgba(94,140,130,.18);
+  box-shadow:0 26px 66px rgba(47,70,64,.10);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-coupon strong{
+  color:#c67f5b;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-loading-mark{
+  width:126px;
+  height:126px;
+  border-color:rgba(94,140,130,.24);
+  outline:1px solid rgba(255,255,255,.86);
+  outline-offset:8px;
+  background:
+    radial-gradient(circle at 32% 26%,rgba(255,255,255,.70),transparent 28%),
+    linear-gradient(145deg,#83aaa1,#5e8c82);
+  color:#fff;
+  box-shadow:0 18px 42px rgba(47,70,64,.14);
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-loading-monogram{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-footer{
+  color:#86918d;
+}
+.malu-experience[data-merchant="los-chiquis"] .malu-footer strong{
+  color:#c67f5b;
+}
