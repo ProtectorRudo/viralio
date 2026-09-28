@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import {
   classifyValue,
+  confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
   fairOdds,
   minimumValueOdds,
@@ -24,6 +25,7 @@ type Props = {
   bttsProbability: number;
   cornersOver85Probability: number;
   cardsOver35Probability: number;
+  dataConfidence: number;
 };
 
 type Outcome = {
@@ -63,6 +65,7 @@ export default function BetValuePanel({
   bttsProbability,
   cornersOver85Probability,
   cardsOver35Probability,
+  dataConfidence,
 }: Props) {
   const [oddsOverrides, setOddsOverrides] = useState<Record<string, string>>({});
   const [doubleChanceOverrides, setDoubleChanceOverrides] = useState<Record<string, string>>({});
@@ -80,6 +83,7 @@ export default function BetValuePanel({
   }, [homeTeamName, awayTeamName]);
 
   const fixtureKey = `${homeTeamName}::${awayTeamName}`;
+  const edgeBuffer = confidenceAdjustedEdgeBuffer(dataConfidence);
 
   const defaultOneXTwo = {
     home: selectedFixtureOdds?.["1X2"]?.["1"]?.value.toFixed(2) ?? "",
@@ -145,7 +149,9 @@ export default function BetValuePanel({
           <span className={styles.eyebrow}>VALOR DE APUESTA · 1X2</span>
           <h3>¿Desde qué cuota empieza a haber valor?</h3>
         </div>
-        <span className={styles.valueRule}>+5% edge mínimo</span>
+        <span className={styles.valueRule}>
+          +{(edgeBuffer * 100).toFixed(1)}% mínimo · confianza {dataConfidence}%
+        </span>
       </div>
 
       <p className={styles.valueIntro}>
@@ -157,7 +163,7 @@ export default function BetValuePanel({
       <div className={styles.valueGrid}>
         {outcomes.map((outcome) => {
           const fair = fairOdds(outcome.probability);
-          const minimum = minimumValueOdds(outcome.probability);
+          const minimum = minimumValueOdds(outcome.probability, edgeBuffer);
           const overrideKey = `${fixtureKey}:1X2:${outcome.key}`;
           const displayedOdds =
             oddsOverrides[overrideKey] ?? defaultOneXTwo[outcome.key];
@@ -232,13 +238,13 @@ export default function BetValuePanel({
           <span className={styles.eyebrow}>DOBLE OPORTUNIDAD</span>
           <h4>1X · X2 · 12</h4>
         </div>
-        <span>mismo umbral: +5% edge</span>
+        <span>mismo umbral: +{(edgeBuffer * 100).toFixed(1)}%</span>
       </div>
 
       <div className={styles.doubleChanceGrid}>
         {doubleChance.map((market) => {
           const fair = fairOdds(market.probability);
-          const minimum = minimumValueOdds(market.probability);
+          const minimum = minimumValueOdds(market.probability, edgeBuffer);
           const overrideKey = `${fixtureKey}:dc:${market.key}`;
           const displayedOdds =
             doubleChanceOverrides[overrideKey] ?? defaultDoubleChance[market.key];
@@ -316,7 +322,7 @@ export default function BetValuePanel({
       <div className={styles.quickValueMarkets}>
         {quickMarkets.map((market) => {
           const fair = fairOdds(market.probability);
-          const minimum = minimumValueOdds(market.probability);
+          const minimum = minimumValueOdds(market.probability, edgeBuffer);
           const actual = market.quote?.value ?? null;
           const status = classifyValue(actual, fair, minimum);
           const edge =
