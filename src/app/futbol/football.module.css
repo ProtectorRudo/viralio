@@ -473,6 +473,15 @@
   font-size: 24px;
 }
 
+.impactBox em {
+  display: block;
+  margin-top: 4px;
+  color: #f0b96c;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
 .arrow {
   color: #54e0a4;
 }
