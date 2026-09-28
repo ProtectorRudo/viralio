@@ -1,4 +1,4 @@
-import { simulateLearned } from "./learned-model";
+import { simulateLearned } from "../learned-model";
 import { NextResponse } from "next/server";
 
 type RequestBody = {
