@@ -380,7 +380,7 @@ export function MaluPremiumExperience({
             <div className="malu-brand-mark">
               <MerchantBrandVisual
                 merchant={merchant}
-                mode={merchant.slug === "centro-estetica-lindy" ? "mark" : "symbol"}
+                mode={(merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira") ? "mark" : "symbol"}
                 size={38}
               />
             </div>
@@ -397,6 +397,8 @@ export function MaluPremiumExperience({
               <div className="malu-loading-mark malu-loading-wordmark" aria-hidden="true">ROMA</div>
             ) : merchant.slug === "centro-estetica-lindy" ? (
               <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={88} /></div>
+            ) : merchant.slug === "despensa-elvira" ? (
+              <div className="malu-loading-mark malu-loading-monogram" aria-hidden="true">E</div>
             ) : (
               <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
             )}
@@ -419,7 +421,7 @@ export function MaluPremiumExperience({
                   <div className="malu-hero-logo">
                     <MerchantBrandVisual
                       merchant={merchant}
-                      mode={merchant.slug === "centro-estetica-lindy" ? "mark" : "symbol"}
+                      mode={(merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira") ? "mark" : "symbol"}
                       size={46}
                     />
                   </div>

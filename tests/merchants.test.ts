@@ -13,7 +13,8 @@ describe("merchant theming", () => {
     const saimond = getMerchantBySlug("saimond");
     const carnesRoma = getMerchantBySlug("carnes-roma");
     const lindy = getMerchantBySlug("centro-estetica-lindy");
-    expect(merchants).toHaveLength(7);
+    const elvira = getMerchantBySlug("despensa-elvira");
+    expect(merchants).toHaveLength(8);
     expect(moka?.theme.category).toBe("coffee");
     expect(atlas?.theme.category).toBe("barber");
     expect(leo?.theme.category).toBe("generic");
@@ -46,6 +47,13 @@ describe("merchant theming", () => {
       { id: "discount_15", name: "15% de descuento en la próxima sesión", probability: 50 },
       { id: "feet_massage_2x1", name: "2 x 1 en masajes de pies", probability: 50 },
     ]);
+    expect(elvira?.name).toBe("Despensa Elvira");
+    expect(elvira?.whatsappNumber).toBe("5491138199795");
+    expect(elvira?.rewardValidityDays).toBe(30);
+    expect(elvira?.theme.businessType).toBe("Almacén / Despensa");
+    expect(elvira?.prizes).toEqual([
+      { id: "discount_10", name: "10% de descuento en la próxima compra", probability: 100 },
+    ]);
     expect(volga?.prizes.map(({ id, probability }) => ({ id, probability }))).toEqual([
       { id: "nuts_20", probability: 34 },
       { id: "deli_10", probability: 33 },
@@ -69,6 +77,7 @@ describe("merchant theming", () => {
     expect(getMerchantById("merchant_saimond")).toBe(saimond);
     expect(getMerchantById("merchant_carnes_roma")).toBe(carnesRoma);
     expect(getMerchantById("merchant_centro_estetica_lindy")).toBe(lindy);
+    expect(getMerchantById("merchant_despensa_elvira")).toBe(elvira);
   });
 
   it("exposes only validated color tokens as CSS variables", () => {
