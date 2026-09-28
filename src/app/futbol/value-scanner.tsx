@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import auditedSignals from "./upcoming-denmark-271-signals.json";
+import scotlandFixtures from "./free-scotland-501.json";
 import signalHistory from "./free-denmark-271-signal-history.json";
 import performanceData from "./free-denmark-271-performance.json";
 import strategyAuditData from "./free-denmark-271-strategy-audit.json";
@@ -212,6 +213,18 @@ type StabilitySnapshot = {
   signals: StabilitySignal[];
 };
 
+type ScotlandFixtureSnapshot = {
+  generated_at: string;
+  league_id: number;
+  league_name: string;
+  fixtures: Array<{
+    fixture_id: number;
+    kickoff_at: string;
+    home_team: string;
+    away_team: string;
+  }>;
+};
+
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
@@ -346,6 +359,8 @@ export default function ValueScanner({ onSelect }: Props) {
   const strategyAudit = strategyAuditData as StrategyAuditSnapshot;
   const calibration = calibrationData as CalibrationSnapshot;
   const stability = stabilityData as StabilitySnapshot;
+  const scotland = scotlandFixtures as ScotlandFixtureSnapshot;
+  const [league, setLeague] = useState<"denmark" | "scotland">("denmark");
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
@@ -451,6 +466,51 @@ export default function ValueScanner({ onSelect }: Props) {
         </span>
       </div>
 
+      <div className={styles.leagueTabs}>
+        <button
+          type="button"
+          className={league === "denmark" ? styles.scannerFilterActive : ""}
+          onClick={() => setLeague("denmark")}
+        >
+          Dinamarca · activa
+        </button>
+        <button
+          type="button"
+          className={league === "scotland" ? styles.scannerFilterActive : ""}
+          onClick={() => setLeague("scotland")}
+        >
+          Escocia · {scotland.fixtures.length} partidos
+        </button>
+      </div>
+
+      {league === "scotland" ? (
+        <div className={styles.scotlandPreview}>
+          <div>
+            <span className={styles.eyebrow}>SCOTTISH PREMIERSHIP · MODELO EN VALIDACIÓN</span>
+            <h4>Escocia ya tiene fixtures y cuotas reales</h4>
+            <p>
+              {scotland.fixtures.length} partidos cargados. El backtest eligió Dixon-Coles
+              sobre el modelo de perfiles; las señales se habilitan automáticamente cuando
+              termine de persistirse el baseline validado.
+            </p>
+          </div>
+          <div className={styles.scotlandFixtureList}>
+            {scotland.fixtures.slice(0, 6).map((fixture) => (
+              <button
+                key={fixture.fixture_id}
+                type="button"
+                onClick={() => onSelect?.(fixture.home_team, fixture.away_team)}
+              >
+                <strong>{fixture.home_team}</strong>
+                <span>vs {fixture.away_team}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {league === "denmark" ? (
+      <>
       <div className={styles.scannerFilters}>
         <button
           type="button"
@@ -1086,6 +1146,8 @@ export default function ValueScanner({ onSelect }: Props) {
           );
         })}
       </div>
+      </>
+      ) : null}
     </section>
   );
 }
