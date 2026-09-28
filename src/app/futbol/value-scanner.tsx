@@ -10,11 +10,10 @@ import {
   expectedValueEdge,
   fairOdds,
   impliedProbability,
-  isHighModelMarketDivergence,
+  isHighProbabilityDivergence,
   isThinBookmakerMarket,
   minimumValueOdds,
   parseDecimalOdds,
-  probabilityEdge,
 } from "./bet-value";
 import styles from "./football.module.css";
 
@@ -47,13 +46,24 @@ type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
 
+type NoVigConsensus = {
+  probabilities: Record<string, number>;
+  overround: number;
+};
+
 type FixtureOdds = {
   "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
   double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
   secondary: {
     over_2_5: OddsQuote | null;
+    under_2_5?: OddsQuote | null;
     btts_yes: OddsQuote | null;
     btts_no: OddsQuote | null;
+  };
+  market_consensus?: {
+    "1X2_no_vig"?: NoVigConsensus | null;
+    goals_2_5_no_vig?: NoVigConsensus | null;
+    btts_no_vig?: NoVigConsensus | null;
   };
 };
 
@@ -80,6 +90,32 @@ function marketLabel(label: MarketCandidate["label"]) {
   if (label === "O2.5") return "+2.5 goles";
   if (label === "BTTS") return "Ambos marcan";
   return label;
+}
+
+function consensusProbability(
+  fixtureOdds: FixtureOdds | undefined,
+  label: MarketCandidate["label"],
+) {
+  if (!fixtureOdds) return null;
+  if (label === "1" || label === "X" || label === "2") {
+    return (
+      fixtureOdds.market_consensus?.["1X2_no_vig"]?.probabilities[label] ??
+      null
+    );
+  }
+  if (label === "O2.5") {
+    return (
+      fixtureOdds.market_consensus?.goals_2_5_no_vig?.probabilities.over ??
+      null
+    );
+  }
+  if (label === "BTTS") {
+    return (
+      fixtureOdds.market_consensus?.btts_no_vig?.probabilities.yes ??
+      null
+    );
+  }
+  return null;
 }
 
 function quoteFor(
@@ -137,13 +173,17 @@ export default function ValueScanner({ onSelect }: Props) {
           const edge = quote
             ? expectedValueEdge(market.probability, quote.value)
             : null;
-          const highDivergence = quote
-            ? isHighModelMarketDivergence(
-                market.probability,
-                quote.value,
-                prediction.confidence,
-              )
-            : false;
+          const marketProbability =
+            consensusProbability(fixtureOdds, market.label) ??
+            (quote ? impliedProbability(quote.value) : null);
+          const highDivergence =
+            marketProbability == null
+              ? false
+              : isHighProbabilityDivergence(
+                  market.probability,
+                  marketProbability,
+                  prediction.confidence,
+                );
           const thinMarket = quote
             ? isThinBookmakerMarket(quote.bookmaker_count)
             : false;
@@ -152,7 +192,13 @@ export default function ValueScanner({ onSelect }: Props) {
             : thinMarket
               ? "market"
               : null;
-          return { market, quote, edge, reviewReason };
+          return {
+            market,
+            quote,
+            edge,
+            reviewReason,
+            marketProbability,
+          };
         });
 
         const withQuotes = candidates.filter((candidate) => candidate.quote);
@@ -179,6 +225,7 @@ export default function ValueScanner({ onSelect }: Props) {
           edgeBuffer,
           confidence: prediction.confidence,
           reviewReason: selected.reviewReason ?? null,
+          marketProbability: selected.marketProbability ?? null,
         };
       })
         .filter(Boolean)
@@ -326,8 +373,10 @@ export default function ValueScanner({ onSelect }: Props) {
                     <strong>{marketLabel(row.market.label)}</strong>
                     <small>
                       Modelo {(row.market.probability * 100).toFixed(1)}% · mercado{" "}
-                      {(impliedProbability(row.quote.value) * 100).toFixed(1)}% ·
-                      confianza {row.confidence}%
+                      {(
+                        (row.marketProbability ??
+                          impliedProbability(row.quote.value)) * 100
+                      ).toFixed(1)}% · confianza {row.confidence}%
                     </small>
                   </div>
 
@@ -407,18 +456,24 @@ export default function ValueScanner({ onSelect }: Props) {
             bookmaker === null
               ? null
               : expectedValueEdge(row.market.probability, bookmaker);
+          const hasManualOverride =
+            bookmakerOdds[row.fixture.fixture_id] !== undefined;
           const marketProbability =
-            bookmaker === null ? null : impliedProbability(bookmaker);
-          const probabilityGap =
             bookmaker === null
               ? null
-              : probabilityEdge(row.market.probability, bookmaker);
+              : hasManualOverride
+                ? impliedProbability(bookmaker)
+                : row.marketProbability ?? impliedProbability(bookmaker);
+          const probabilityGap =
+            marketProbability === null
+              ? null
+              : row.market.probability - marketProbability;
           const highDivergence =
-            bookmaker === null
+            marketProbability === null
               ? false
-              : isHighModelMarketDivergence(
+              : isHighProbabilityDivergence(
                   row.market.probability,
-                  bookmaker,
+                  marketProbability,
                   row.confidence,
                 );
           const thinMarket = isThinBookmakerMarket(
