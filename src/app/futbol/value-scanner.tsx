@@ -1,263 +1,156 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { simulateLearned } from "../api/futbol/learned-model";
-import upcomingDenmark from "./upcoming-denmark-271.json";
-import upcomingOdds from "./upcoming-denmark-271-odds.json";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import auditedSignals from "./upcoming-denmark-271-signals.json";
 import {
   classifyValue,
-  confidenceAdjustedEdgeBuffer,
   expectedValueEdge,
-  fairOdds,
   impliedProbability,
   isHighProbabilityDivergence,
-  isThinBookmakerMarket,
-  minimumValueOdds,
+  isOddsSnapshotStale,
+  oddsSnapshotAgeMinutes,
   parseDecimalOdds,
 } from "./bet-value";
 import styles from "./football.module.css";
 
-type UpcomingFixture = {
+type MarketLabel = "1" | "X" | "2" | "1X" | "X2" | "12" | "O2.5" | "BTTS";
+
+type AuditedSignal = {
+  market: MarketLabel;
+  model_probability: number;
+  market_probability: number;
+  fair_odds: number;
+  minimum_odds: number;
+  bookmaker_odds: number;
+  bookmaker: string | null;
+  bookmaker_count: number;
+  median_odds: number | null;
+  expected_value_edge: number;
+  probability_gap: number;
+  confidence: number;
+  review_reason: string | null;
+  qualifies: boolean;
+};
+
+type AuditedFixture = {
   fixture_id: number;
-  kickoff_at: string;
   home_team: string;
   away_team: string;
+  kickoff_at: string;
+  data_confidence: number;
+  selected_signal: AuditedSignal | null;
+  model: {
+    home_win: number;
+    draw: number;
+    away_win: number;
+    over_2_5: number;
+    both_teams_to_score: number;
+  };
 };
 
-type MarketCandidate = {
-  label: "1" | "X" | "2" | "1X" | "X2" | "12" | "O2.5" | "BTTS";
-  probability: number;
-};
-
-type OddsQuote = {
-  value: number;
-  bookmaker_id: number | null;
-  bookmaker: string | null;
-  updated_at: string | null;
-  previous_value?: number;
-  delta?: number;
-  movement?: "up" | "down" | "flat";
-  bookmaker_count?: number;
-  median_value?: number;
-  best_vs_median?: number;
+type AuditedSnapshot = {
+  schema_version: string;
+  generated_at: string;
+  odds_generated_at: string;
+  profile_cutoff_at: string;
+  fixtures: AuditedFixture[];
 };
 
 type Props = {
   onSelect?: (homeTeam: string, awayTeam: string) => void;
 };
 
-type NoVigConsensus = {
-  probabilities: Record<string, number>;
-  overround: number;
-};
+const MAX_ODDS_AGE_MINUTES = 90;
 
-type FixtureOdds = {
-  "1X2": Record<"1" | "X" | "2", OddsQuote | null>;
-  double_chance: Record<"1X" | "X2" | "12", OddsQuote | null>;
-  secondary: {
-    over_2_5: OddsQuote | null;
-    under_2_5?: OddsQuote | null;
-    btts_yes: OddsQuote | null;
-    btts_no: OddsQuote | null;
-  };
-  market_consensus?: {
-    "1X2_no_vig"?: NoVigConsensus | null;
-    goals_2_5_no_vig?: NoVigConsensus | null;
-    btts_no_vig?: NoVigConsensus | null;
-  };
-};
-
-function marketCandidates(
-  home: number,
-  draw: number,
-  away: number,
-  over25: number,
-  btts: number,
-): MarketCandidate[] {
-  return [
-    { label: "1", probability: home },
-    { label: "X", probability: draw },
-    { label: "2", probability: away },
-    { label: "1X", probability: home + draw },
-    { label: "X2", probability: draw + away },
-    { label: "12", probability: home + away },
-    { label: "O2.5", probability: over25 },
-    { label: "BTTS", probability: btts },
-  ];
+function subscribeClock(callback: () => void) {
+  const id = window.setInterval(callback, 60_000);
+  return () => window.clearInterval(id);
 }
 
-function marketLabel(label: MarketCandidate["label"]) {
+function getClockSnapshot() {
+  return Math.floor(Date.now() / 60_000);
+}
+
+function getServerClockSnapshot() {
+  return 0;
+}
+
+function marketLabel(label: MarketLabel) {
   if (label === "O2.5") return "+2.5 goles";
   if (label === "BTTS") return "Ambos marcan";
   return label;
 }
 
-function consensusProbability(
-  fixtureOdds: FixtureOdds | undefined,
-  label: MarketCandidate["label"],
-) {
-  if (!fixtureOdds) return null;
-  if (label === "1" || label === "X" || label === "2") {
-    return (
-      fixtureOdds.market_consensus?.["1X2_no_vig"]?.probabilities[label] ??
-      null
-    );
-  }
-  if (label === "O2.5") {
-    return (
-      fixtureOdds.market_consensus?.goals_2_5_no_vig?.probabilities.over ??
-      null
-    );
-  }
-  if (label === "BTTS") {
-    return (
-      fixtureOdds.market_consensus?.btts_no_vig?.probabilities.yes ??
-      null
-    );
-  }
-  return null;
-}
-
-function quoteFor(
-  fixtureOdds: FixtureOdds | undefined,
-  label: MarketCandidate["label"],
-) {
-  if (!fixtureOdds) return null;
-  if (label === "1" || label === "X" || label === "2") {
-    return fixtureOdds["1X2"][label];
-  }
-  if (label === "1X" || label === "X2" || label === "12") {
-    return fixtureOdds.double_chance[label];
-  }
-  if (label === "O2.5") {
-    return fixtureOdds.secondary?.over_2_5 ?? null;
-  }
-  return fixtureOdds.secondary?.btts_yes ?? null;
+function reviewLabel(reason: string | null) {
+  if (reason === "model_divergence") return "REVISAR MODELO";
+  if (reason === "thin_market") return "MERCADO FINO";
+  return "A REVISAR";
 }
 
 export default function ValueScanner({ onSelect }: Props) {
-  const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
+  const snapshot = auditedSignals as AuditedSnapshot;
   const [bookmakerOdds, setBookmakerOdds] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
   >("all");
 
+  const minuteTick = useSyncExternalStore(
+    subscribeClock,
+    getClockSnapshot,
+    getServerClockSnapshot,
+  );
+
+  const nowMs =
+    minuteTick === 0
+      ? Date.parse(snapshot.odds_generated_at)
+      : minuteTick * 60_000;
+
+  const oddsAgeMinutes = oddsSnapshotAgeMinutes(
+    snapshot.odds_generated_at,
+    nowMs,
+  );
+  const staleFeed = isOddsSnapshotStale(
+    snapshot.odds_generated_at,
+    MAX_ODDS_AGE_MINUTES,
+    nowMs,
+  );
+
   const rows = useMemo(
     () =>
-      fixtures.map((fixture) => {
-        const prediction = simulateLearned({
-          homeTeam: fixture.home_team,
-          awayTeam: fixture.away_team,
-          simulations: 5000,
-          seed: fixture.fixture_id,
-          scenario: "base",
-        });
-
-        if (!prediction) {
-          return null;
-        }
-
-        const oddsMap = upcomingOdds.fixtures as Record<string, FixtureOdds>;
-        const fixtureOdds = oddsMap[String(fixture.fixture_id)];
-
-        const edgeBuffer = confidenceAdjustedEdgeBuffer(prediction.confidence);
-
-        const candidates = marketCandidates(
-          prediction.homeWin,
-          prediction.draw,
-          prediction.awayWin,
-          prediction.over25,
-          prediction.bothTeamsToScore,
-        ).map((market) => {
-          const quote = quoteFor(fixtureOdds, market.label);
-          const edge = quote
-            ? expectedValueEdge(market.probability, quote.value)
-            : null;
-          const marketProbability =
-            consensusProbability(fixtureOdds, market.label) ??
-            (quote ? impliedProbability(quote.value) : null);
-          const highDivergence =
-            marketProbability == null
-              ? false
-              : isHighProbabilityDivergence(
-                  market.probability,
-                  marketProbability,
-                  prediction.confidence,
-                );
-          const thinMarket = quote
-            ? isThinBookmakerMarket(quote.bookmaker_count)
-            : false;
-          const reviewReason = highDivergence
-            ? "model"
-            : thinMarket
-              ? "market"
-              : null;
-          return {
-            market,
-            quote,
-            edge,
-            reviewReason,
-            marketProbability,
-          };
-        });
-
-        const withQuotes = candidates.filter((candidate) => candidate.quote);
-        const actionable = withQuotes.filter(
-          (candidate) => !candidate.reviewReason,
-        );
-        const selectedPool = actionable.length > 0 ? actionable : withQuotes;
-        const selected =
-          selectedPool.length > 0
-            ? selectedPool.sort(
-                (a, b) => (b.edge ?? -Infinity) - (a.edge ?? -Infinity),
-              )[0]
-            : candidates.sort(
-                (a, b) => b.market.probability - a.market.probability,
-              )[0];
-
-        return {
-          fixture,
-          market: selected.market,
-          quote: selected.quote,
-          edge: selected.edge,
-          fair: fairOdds(selected.market.probability),
-          minimum: minimumValueOdds(selected.market.probability, edgeBuffer),
-          edgeBuffer,
-          confidence: prediction.confidence,
-          reviewReason: selected.reviewReason ?? null,
-          marketProbability: selected.marketProbability ?? null,
-        };
-      })
-        .filter(Boolean)
+      snapshot.fixtures
+        .filter((fixture) => fixture.selected_signal)
         .sort(
           (a, b) =>
-            ((b?.edge ?? -Infinity) as number) -
-            ((a?.edge ?? -Infinity) as number),
+            (b.selected_signal?.expected_value_edge ?? -Infinity) -
+            (a.selected_signal?.expected_value_edge ?? -Infinity),
         ),
-    [fixtures],
+    [snapshot.fixtures],
   );
 
-  const quotedRows = rows.filter((row) => row?.quote);
-  const reviewRows = quotedRows.filter(
-    (row) => row && row.reviewReason,
+  const quotedRows = rows.filter(
+    (row) => row.selected_signal?.bookmaker_odds != null,
   );
-  const valueRows = quotedRows.filter(
-    (row) =>
-      row &&
-      row.quote &&
-      !row.reviewReason &&
-      row.quote.value >= row.minimum,
+
+  const reviewRows = rows.filter(
+    (row) => row.selected_signal?.review_reason,
   );
-  const strongRows = quotedRows.filter(
-    (row) =>
-      row &&
-      !row.reviewReason &&
-      row.edge != null &&
-      row.edge >= 0.10 &&
-      row.quote &&
-      row.quote.value >= row.minimum,
+
+  const valueRows = staleFeed
+    ? []
+    : rows.filter(
+        (row) =>
+          row.selected_signal?.qualifies &&
+          !row.selected_signal.review_reason &&
+          row.selected_signal.bookmaker_odds >=
+            row.selected_signal.minimum_odds,
+      );
+
+  const strongRows = valueRows.filter(
+    (row) => (row.selected_signal?.expected_value_edge ?? 0) >= 0.10,
   );
+
   const topOpportunities = valueRows.slice(0, 3);
+
   const visibleRows =
     filter === "strong"
       ? strongRows
@@ -271,22 +164,23 @@ export default function ValueScanner({ onSelect }: Props) {
     <section className={styles.scannerPanel}>
       <div className={styles.panelHeader}>
         <div>
-          <span className={styles.eyebrow}>ESCÁNER DE CUOTAS</span>
+          <span className={styles.eyebrow}>ESCÁNER AUDITADO DE CUOTAS</span>
           <h3>¿Dónde mirar primero?</h3>
           <p className={styles.scannerIntro}>
-            Revisa 1, X, 2, 1X, X2, 12, +2.5 goles y ambos marcan con cuotas reales,
-            y ordena por mayor edge estimado. Podés editar la cuota para comparar otra casa.
+            Señales calculadas por el backend con modelo, consenso sin vig,
+            profundidad de mercado y umbral ajustado por confianza.
           </p>
         </div>
-        <span className={styles.valueRule}>
-          FEED CAPTURADO ·{" "}
-          {new Date(upcomingOdds.generated_at).toLocaleString("es-AR", {
-            timeZone: "America/Argentina/Buenos_Aires",
-            day: "2-digit",
-            month: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+        <span
+          className={
+            staleFeed
+              ? `${styles.valueRule} ${styles.oddsFeedStale}`
+              : `${styles.valueRule} ${styles.oddsFeedFresh}`
+          }
+          suppressHydrationWarning
+        >
+          {staleFeed ? "CUOTAS VIEJAS" : "CUOTAS FRESCAS"} ·{" "}
+          {Math.round(oddsAgeMinutes)} min
         </span>
       </div>
 
@@ -321,13 +215,21 @@ export default function ValueScanner({ onSelect }: Props) {
         </button>
       </div>
 
+      {staleFeed ? (
+        <div className={styles.staleOddsNotice}>
+          El feed de cuotas superó {MAX_ODDS_AGE_MINUTES} minutos. Las señales
+          automáticas quedan suspendidas hasta el próximo refresco. Podés ingresar
+          una cuota manual para evaluarla puntualmente.
+        </div>
+      ) : null}
+
       <div className={styles.scannerSummary}>
         <div>
           <span>Con cuota real</span>
           <strong>{quotedRows.length}</strong>
         </div>
         <div>
-          <span>Con valor</span>
+          <span>Con valor vigente</span>
           <strong>{valueRows.length}</strong>
         </div>
         <div>
@@ -343,19 +245,22 @@ export default function ValueScanner({ onSelect }: Props) {
       {topOpportunities.length > 0 ? (
         <div className={styles.topValueBlock}>
           <div className={styles.topValueHeader}>
-            <span className={styles.eyebrow}>TOP OPORTUNIDADES REALES</span>
+            <span className={styles.eyebrow}>TOP OPORTUNIDADES AUDITADAS</span>
             <strong>Ordenadas por edge estimado</strong>
           </div>
+
           <div className={styles.topValueGrid}>
             {topOpportunities.map((row, index) => {
-              if (!row || !row.quote) return null;
+              const signal = row.selected_signal;
+              if (!signal) return null;
 
               return (
-                <article className={styles.topValueCard} key={row.fixture.fixture_id}>
+                <article className={styles.topValueCard} key={row.fixture_id}>
                   <span className={styles.topValueRank}>#{index + 1}</span>
+
                   <div className={styles.topValueFixture}>
                     <span>
-                      {new Date(row.fixture.kickoff_at).toLocaleString("es-AR", {
+                      {new Date(row.kickoff_at).toLocaleString("es-AR", {
                         timeZone: "America/Argentina/Buenos_Aires",
                         day: "2-digit",
                         month: "2-digit",
@@ -364,70 +269,52 @@ export default function ValueScanner({ onSelect }: Props) {
                       })}
                     </span>
                     <strong>
-                      {row.fixture.home_team} vs {row.fixture.away_team}
+                      {row.home_team} vs {row.away_team}
                     </strong>
                   </div>
 
                   <div className={styles.topValueMarket}>
                     <span>Mercado</span>
-                    <strong>{marketLabel(row.market.label)}</strong>
+                    <strong>{marketLabel(signal.market)}</strong>
                     <small>
-                      Modelo {(row.market.probability * 100).toFixed(1)}% · mercado{" "}
-                      {(
-                        (row.marketProbability ??
-                          impliedProbability(row.quote.value)) * 100
-                      ).toFixed(1)}% · confianza {row.confidence}%
+                      Modelo {(signal.model_probability * 100).toFixed(1)}% ·
+                      mercado {(signal.market_probability * 100).toFixed(1)}% ·
+                      confianza {(signal.confidence * 100).toFixed(0)}%
                     </small>
                   </div>
 
                   <div className={styles.topValueNumbers}>
                     <div>
                       <span>Casa</span>
-                      <strong>{row.quote.bookmaker ?? "—"}</strong>
+                      <strong>{signal.bookmaker ?? "—"}</strong>
                       <small className={styles.oddsMovement}>
-                        {row.quote.bookmaker_count ?? 1} casas
-                        {row.quote.median_value != null
-                          ? ` · mediana ${row.quote.median_value.toFixed(2)}`
+                        {signal.bookmaker_count} casas
+                        {signal.median_odds != null
+                          ? ` · mediana ${signal.median_odds.toFixed(2)}`
                           : ""}
                       </small>
                     </div>
                     <div>
                       <span>Cuota</span>
-                      <strong>{row.quote.value.toFixed(2)}</strong>
-                      {row.quote.movement ? (
-                        <small className={styles.oddsMovement}>
-                          {row.quote.movement === "up"
-                            ? "↑ subió"
-                            : row.quote.movement === "down"
-                              ? "↓ bajó"
-                              : "= estable"}
-                          {row.quote.previous_value != null
-                            ? ` · ant ${row.quote.previous_value.toFixed(2)}`
-                            : ""}
-                        </small>
-                      ) : null}
+                      <strong>{signal.bookmaker_odds.toFixed(2)}</strong>
                     </div>
                     <div>
                       <span>Mínima</span>
-                      <strong>{row.minimum.toFixed(2)}</strong>
+                      <strong>{signal.minimum_odds.toFixed(2)}</strong>
                     </div>
                     <div>
                       <span>Edge</span>
                       <strong className={styles.topValueEdge}>
-                        +{((row.edge ?? 0) * 100).toFixed(1)}%
+                        +{(signal.expected_value_edge * 100).toFixed(1)}%
                       </strong>
                     </div>
                   </div>
+
                   {onSelect ? (
                     <button
                       type="button"
                       className={styles.topValueAction}
-                      onClick={() =>
-                        onSelect(
-                          row.fixture.home_team,
-                          row.fixture.away_team,
-                        )
-                      }
+                      onClick={() => onSelect(row.home_team, row.away_team)}
                     >
                       Ver análisis
                     </button>
@@ -439,61 +326,84 @@ export default function ValueScanner({ onSelect }: Props) {
         </div>
       ) : (
         <div className={styles.noValueNotice}>
-          No hay mercados que superen el umbral de valor ajustado por confianza.
+          {staleFeed
+            ? "Esperando refresco de cuotas para habilitar oportunidades automáticas."
+            : "No hay mercados que superen el umbral de valor auditado."}
         </div>
       )}
 
       <div className={styles.scannerRows}>
         {visibleRows.map((row) => {
-          if (!row) return null;
+          const signal = row.selected_signal;
+          if (!signal) return null;
 
-          const raw =
-            bookmakerOdds[row.fixture.fixture_id] ??
-            (row.quote ? row.quote.value.toFixed(2) : "");
-          const bookmaker = parseDecimalOdds(raw);
-          const status = classifyValue(bookmaker, row.fair, row.minimum);
-          const edge =
-            bookmaker === null
+          const override = bookmakerOdds[row.fixture_id];
+          const hasManualOverride = override !== undefined;
+          const displayedOdds =
+            override ?? signal.bookmaker_odds.toFixed(2);
+          const bookmaker = parseDecimalOdds(displayedOdds);
+          const manualEdge =
+            bookmaker == null
               ? null
-              : expectedValueEdge(row.market.probability, bookmaker);
-          const hasManualOverride =
-            bookmakerOdds[row.fixture.fixture_id] !== undefined;
-          const marketProbability =
-            bookmaker === null
-              ? null
-              : hasManualOverride
-                ? impliedProbability(bookmaker)
-                : row.marketProbability ?? impliedProbability(bookmaker);
-          const probabilityGap =
-            marketProbability === null
-              ? null
-              : row.market.probability - marketProbability;
-          const highDivergence =
-            marketProbability === null
+              : expectedValueEdge(signal.model_probability, bookmaker);
+          const manualMarketProbability =
+            bookmaker == null ? null : impliedProbability(bookmaker);
+          const manualDivergence =
+            manualMarketProbability == null
               ? false
               : isHighProbabilityDivergence(
-                  row.market.probability,
-                  marketProbability,
-                  row.confidence,
+                  signal.model_probability,
+                  manualMarketProbability,
+                  signal.confidence * 100,
                 );
-          const thinMarket = isThinBookmakerMarket(
-            row.quote?.bookmaker_count,
+
+          const automaticStale = staleFeed && !hasManualOverride;
+          const effectiveReviewReason = hasManualOverride
+            ? manualDivergence
+              ? "model_divergence"
+              : null
+            : signal.review_reason;
+
+          const status = classifyValue(
+            bookmaker,
+            signal.fair_odds,
+            signal.minimum_odds,
           );
-          const reviewReason = highDivergence
-            ? "model"
-            : thinMarket
-              ? "market"
-              : null;
-          const displayTone = reviewReason ? "warning" : status.tone;
+
+          const effectiveEdge =
+            hasManualOverride ? manualEdge : signal.expected_value_edge;
+
+          const displayTone =
+            automaticStale || effectiveReviewReason ? "warning" : status.tone;
+
+          const displayLabel = automaticStale
+            ? "CUOTA VIEJA"
+            : effectiveReviewReason
+              ? reviewLabel(effectiveReviewReason)
+              : effectiveEdge != null &&
+                  effectiveEdge >= 0.10 &&
+                  bookmaker != null &&
+                  bookmaker >= signal.minimum_odds
+                ? "VALOR FUERTE"
+                : status.label;
+
+          const marketProbability = hasManualOverride
+            ? manualMarketProbability
+            : signal.market_probability;
+
+          const probabilityGap =
+            marketProbability == null
+              ? null
+              : signal.model_probability - marketProbability;
 
           return (
             <article
               className={`${styles.scannerRow} ${styles[`scannerRow_${displayTone}`]}`}
-              key={row.fixture.fixture_id}
+              key={row.fixture_id}
             >
               <div className={styles.scannerFixture}>
                 <span>
-                  {new Date(row.fixture.kickoff_at).toLocaleString("es-AR", {
+                  {new Date(row.kickoff_at).toLocaleString("es-AR", {
                     timeZone: "America/Argentina/Buenos_Aires",
                     day: "2-digit",
                     month: "2-digit",
@@ -502,51 +412,42 @@ export default function ValueScanner({ onSelect }: Props) {
                   })}
                 </span>
                 <strong>
-                  {row.fixture.home_team} vs {row.fixture.away_team}
+                  {row.home_team} vs {row.away_team}
                 </strong>
               </div>
 
               <div className={styles.scannerMarket}>
                 <span>Mercado</span>
-                <strong>{marketLabel(row.market.label)}</strong>
+                <strong>{marketLabel(signal.market)}</strong>
               </div>
 
               <div className={styles.scannerMetric}>
                 <span>Prob.</span>
-                <strong>{(row.market.probability * 100).toFixed(1)}%</strong>
+                <strong>{(signal.model_probability * 100).toFixed(1)}%</strong>
               </div>
 
               <div className={styles.scannerMetric}>
                 <span>Justa</span>
-                <strong>{row.fair.toFixed(2)}</strong>
+                <strong>{signal.fair_odds.toFixed(2)}</strong>
               </div>
 
               <div className={styles.scannerMetric}>
                 <span>Mínima</span>
                 <strong className={styles.scannerMinimum}>
-                  {row.minimum.toFixed(2)}
+                  {signal.minimum_odds.toFixed(2)}
                 </strong>
               </div>
 
               <label className={styles.scannerInput}>
-                <span>
-                  {row.quote?.bookmaker ?? "Casa"}
-                  {row.quote?.movement
-                    ? row.quote.movement === "up"
-                      ? " · ↑"
-                      : row.quote.movement === "down"
-                        ? " · ↓"
-                        : " · ="
-                    : ""}
-                </span>
+                <span>{hasManualOverride ? "Manual" : signal.bookmaker ?? "Casa"}</span>
                 <input
                   inputMode="decimal"
-                  placeholder={row.minimum.toFixed(2)}
-                  value={raw}
+                  placeholder={signal.minimum_odds.toFixed(2)}
+                  value={displayedOdds}
                   onChange={(event) =>
                     setBookmakerOdds((current) => ({
                       ...current,
-                      [row.fixture.fixture_id]: event.target.value,
+                      [row.fixture_id]: event.target.value,
                     }))
                   }
                 />
@@ -555,34 +456,26 @@ export default function ValueScanner({ onSelect }: Props) {
               <div className={styles.scannerMarketGap}>
                 <span>Modelo vs mercado</span>
                 <strong>
-                  {marketProbability === null || probabilityGap === null
+                  {marketProbability == null || probabilityGap == null
                     ? "—"
-                    : `${(row.market.probability * 100).toFixed(1)}% vs ${(marketProbability * 100).toFixed(1)}% · ${probabilityGap >= 0 ? "+" : ""}${(probabilityGap * 100).toFixed(1)} pp`}
+                    : `${(signal.model_probability * 100).toFixed(1)}% vs ${(marketProbability * 100).toFixed(1)}% · ${probabilityGap >= 0 ? "+" : ""}${(probabilityGap * 100).toFixed(1)} pp`}
                 </strong>
               </div>
 
               <span
                 className={
-                  reviewReason
-                    ? `${styles.scannerBadge} ${styles.scannerBadgeReview}`
-                    : edge !== null && edge >= 0.10
-                      ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
+                  displayLabel === "VALOR FUERTE"
+                    ? `${styles.scannerBadge} ${styles.scannerBadgeStrong}`
+                    : automaticStale || effectiveReviewReason
+                      ? `${styles.scannerBadge} ${styles.scannerBadgeReview}`
                       : styles.scannerBadge
                 }
               >
-                {row.quote
-                  ? reviewReason === "model"
-                    ? "REVISAR MODELO"
-                    : reviewReason === "market"
-                      ? "MERCADO FINO"
-                      : edge !== null && edge >= 0.10
-                        ? "VALOR FUERTE"
-                        : status.label
-                  : "SIN CUOTA"}
-                {edge !== null ? (
+                {displayLabel}
+                {effectiveEdge != null ? (
                   <small>
-                    {edge >= 0 ? "+" : ""}
-                    {(edge * 100).toFixed(1)}%
+                    {effectiveEdge >= 0 ? "+" : ""}
+                    {(effectiveEdge * 100).toFixed(1)}%
                   </small>
                 ) : null}
               </span>
