@@ -1597,3 +1597,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.clvLearningLine {
+  margin-top: 6px !important;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(143, 240, 195, 0.18);
+  color: #8fb6a5 !important;
+}
+
+.clvLearningMini {
+  display: block;
+  margin-top: 3px;
+  color: #6f9f89;
+  font-size: 8px;
+  line-height: 1.25;
+}
