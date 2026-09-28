@@ -26,18 +26,18 @@ export function parseDecimalOdds(value: string) {
 
 export function classifyValue(
   bookmakerOdds: number | null,
+  fair: number,
   minimumOdds: number,
 ) {
   if (bookmakerOdds === null) {
     return { label: "INGRESÁ CUOTA", tone: "neutral" as const };
   }
 
-  const ratio = bookmakerOdds / minimumOdds;
-  if (ratio >= 1.02) {
+  if (bookmakerOdds >= minimumOdds) {
     return { label: "HAY VALOR", tone: "positive" as const };
   }
-  if (ratio >= 0.98) {
-    return { label: "CUOTA JUSTA", tone: "warning" as const };
+  if (bookmakerOdds >= fair) {
+    return { label: "JUSTA · SIN MARGEN", tone: "warning" as const };
   }
   return { label: "SIN VALOR", tone: "negative" as const };
 }
