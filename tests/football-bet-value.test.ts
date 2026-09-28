@@ -6,6 +6,8 @@ import {
   expectedValueEdge,
   fairOdds,
   impliedProbability,
+  isHighModelMarketDivergence,
+  isThinBookmakerMarket,
   minimumValueOdds,
   parseDecimalOdds,
   probabilityEdge,
@@ -56,6 +58,18 @@ describe("football betting value math", () => {
   it("compares model probability against bookmaker implied probability", () => {
     expect(impliedProbability(2)).toBeCloseTo(0.5, 8);
     expect(probabilityEdge(0.58, 2)).toBeCloseTo(0.08, 8);
+  });
+
+  it("flags large model-market disagreement when confidence is low", () => {
+    expect(isHighModelMarketDivergence(0.30, 5.0, 50)).toBe(true);
+    expect(isHighModelMarketDivergence(0.30, 5.0, 85)).toBe(false);
+    expect(isHighModelMarketDivergence(0.22, 5.0, 50)).toBe(false);
+  });
+
+  it("flags thin bookmaker coverage", () => {
+    expect(isThinBookmakerMarket(1)).toBe(true);
+    expect(isThinBookmakerMarket(2)).toBe(false);
+    expect(isThinBookmakerMarket(undefined)).toBe(true);
   });
 
   it("accepts decimal odds with comma or dot", () => {
