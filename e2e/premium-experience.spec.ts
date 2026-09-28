@@ -246,6 +246,12 @@ test("Centro Estética Lindy keeps the premium Viralio structure with two surpri
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
   await expect(root.locator(".malu-brand-mark")).toBeVisible();
+  const logo = root.locator('img[src="/brands/centro-estetica-lindy.png"]').first();
+  await expect(logo).toBeVisible();
+  expect(await logo.evaluate((node) => {
+    const image = node as HTMLImageElement;
+    return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+  })).toBe(true);
   await expectNoHorizontalOverflow(page);
 
   const reward = await completeGiftFlow(page, "/experiencia/centro-estetica-lindy?reset=1");
