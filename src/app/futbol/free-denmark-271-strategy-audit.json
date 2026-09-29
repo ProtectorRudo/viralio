@@ -2,7 +2,10 @@
   "by_confidence": [],
   "by_edge": [],
   "by_market": [],
-  "generated_at": "2026-09-28T17:58:19.134833+00:00",
+  "competition_key": "free-denmark-271",
+  "generated_at": "2026-09-29T11:32:17.981197+00:00",
+  "league_id": 271,
+  "league_name": "Danish Superliga",
   "sample_rules": {
     "min_clv_sample": 20,
     "min_roi_sample": 20,
