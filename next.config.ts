@@ -11,7 +11,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  `connect-src 'self'${development ? " ws: wss:" : ""}`,
+  `connect-src 'self' https://raw.githubusercontent.com${development ? " ws: wss:" : ""}`,
   "manifest-src 'self'",
   "media-src 'self' blob:",
   "worker-src 'self' blob:",
