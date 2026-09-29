@@ -2,7 +2,7 @@
   "buckets": [],
   "by_market": [],
   "competition_key": "free-scotland-501",
-  "generated_at": "2026-09-28T19:05:26.253243+00:00",
+  "generated_at": "2026-09-29T11:32:20.325582+00:00",
   "league_id": 501,
   "league_name": "Scottish Premiership",
   "ranking_impact": false,
@@ -10,8 +10,9 @@
     "min_bucket_sample": 10,
     "min_overall_sample": 30
   },
-  "schema_version": "football-calibration-v1",
+  "schema_version": "football-calibration-v2",
   "scope": "selected signals with final results",
+  "source": "selected_signal_fallback",
   "summary": {
     "brier_score": null,
     "calibration_gap": null,
