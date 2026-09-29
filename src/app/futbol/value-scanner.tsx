@@ -1,18 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import auditedSignals from "./upcoming-denmark-271-signals.json";
-import scotlandSignals from "./free-scotland-501-signals.json";
-import signalHistory from "./free-denmark-271-signal-history.json";
-import scotlandSignalHistory from "./free-scotland-501-signal-history.json";
-import performanceData from "./free-denmark-271-performance.json";
-import scotlandPerformanceData from "./free-scotland-501-performance.json";
-import strategyAuditData from "./free-denmark-271-strategy-audit.json";
-import scotlandStrategyAuditData from "./free-scotland-501-strategy-audit.json";
-import calibrationData from "./free-denmark-271-calibration.json";
-import scotlandCalibrationData from "./free-scotland-501-calibration.json";
-import stabilityData from "./free-denmark-271-stability.json";
-import scotlandStabilityData from "./free-scotland-501-stability.json";
+import { useLiveFootballData } from "./live-football-data";
 import {
   isOddsSnapshotStale,
   oddsSnapshotAgeMinutes,
@@ -319,25 +308,38 @@ function historicalClvSummary(history: HistorySnapshot) {
 
 export default function ValueScanner({ onSelect }: Props) {
   const [league, setLeague] = useState<"denmark" | "scotland">("denmark");
-  const snapshot = (
-    league === "scotland" ? scotlandSignals : auditedSignals
-  ) as AuditedSnapshot;
-  const historySnapshot = (
-    league === "scotland" ? scotlandSignalHistory : signalHistory
-  ) as HistorySnapshot;
+  const liveData = useLiveFootballData();
+
+  const denmarkSignals = liveData.denmark.signals as AuditedSnapshot;
+  const scotlandSignals = liveData.scotland.signals as AuditedSnapshot;
+  const denmarkHistory = liveData.denmark.history as HistorySnapshot;
+  const scotlandHistory = liveData.scotland.history as HistorySnapshot;
+  const denmarkPerformance = liveData.denmark.performance as PerformanceSnapshot;
+  const scotlandPerformance = liveData.scotland.performance as PerformanceSnapshot;
+  const denmarkStrategyAudit =
+    liveData.denmark.strategyAudit as StrategyAuditSnapshot;
+  const scotlandStrategyAudit =
+    liveData.scotland.strategyAudit as StrategyAuditSnapshot;
+  const denmarkCalibration =
+    liveData.denmark.calibration as CalibrationSnapshot;
+  const scotlandCalibration =
+    liveData.scotland.calibration as CalibrationSnapshot;
+  const denmarkStability = liveData.denmark.stability as StabilitySnapshot;
+  const scotlandStability = liveData.scotland.stability as StabilitySnapshot;
+
+  const snapshot =
+    league === "scotland" ? scotlandSignals : denmarkSignals;
+  const historySnapshot =
+    league === "scotland" ? scotlandHistory : denmarkHistory;
   const clvSummary = historicalClvSummary(historySnapshot);
-  const performance = (
-    league === "scotland" ? scotlandPerformanceData : performanceData
-  ) as PerformanceSnapshot;
-  const strategyAudit = (
-    league === "scotland" ? scotlandStrategyAuditData : strategyAuditData
-  ) as StrategyAuditSnapshot;
-  const calibration = (
-    league === "scotland" ? scotlandCalibrationData : calibrationData
-  ) as CalibrationSnapshot;
-  const stability = (
-    league === "scotland" ? scotlandStabilityData : stabilityData
-  ) as StabilitySnapshot;
+  const performance =
+    league === "scotland" ? scotlandPerformance : denmarkPerformance;
+  const strategyAudit =
+    league === "scotland" ? scotlandStrategyAudit : denmarkStrategyAudit;
+  const calibration =
+    league === "scotland" ? scotlandCalibration : denmarkCalibration;
+  const stability =
+    league === "scotland" ? scotlandStability : denmarkStability;
   const [filter, setFilter] = useState<
     "all" | "value" | "strong" | "review"
   >("all");
@@ -368,12 +370,12 @@ export default function ValueScanner({ onSelect }: Props) {
       {
         key: "denmark",
         label: "Dinamarca",
-        snapshot: auditedSignals as AuditedSnapshot,
+        snapshot: denmarkSignals,
       },
       {
         key: "scotland",
         label: "Escocia",
-        snapshot: scotlandSignals as AuditedSnapshot,
+        snapshot: scotlandSignals,
       },
     ];
 
@@ -562,6 +564,8 @@ export default function ValueScanner({ onSelect }: Props) {
         </strong>
         <small>
           corte del modelo {new Date(snapshot.profile_cutoff_at).toLocaleDateString("es-AR")}
+          {" · "}
+          datos {liveData.source === "github" ? "en vivo" : "locales"}
         </small>
       </div>
 
