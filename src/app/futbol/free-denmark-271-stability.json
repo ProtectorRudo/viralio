@@ -1,5 +1,8 @@
 {
-  "generated_at": "2026-09-28T18:26:45.491616+00:00",
+  "competition_key": "free-denmark-271",
+  "generated_at": "2026-09-29T11:31:51.963580+00:00",
+  "league_id": 271,
+  "league_name": "Danish Superliga",
   "ranking_impact": false,
   "sample_rules": {
     "min_snapshots": 5
@@ -17,7 +20,7 @@
       "mean_edge": 0.19642400000000015,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 5,
+      "snapshots": 12,
       "status": "stable"
     },
     {
@@ -31,7 +34,7 @@
       "mean_edge": 0.15093559999999995,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 5,
+      "snapshots": 12,
       "status": "stable"
     },
     {
@@ -45,7 +48,7 @@
       "mean_edge": 0.13651720000000012,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 5,
+      "snapshots": 12,
       "status": "stable"
     },
     {
@@ -59,7 +62,7 @@
       "mean_edge": 0.12470720000000002,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 5,
+      "snapshots": 12,
       "status": "stable"
     },
     {
@@ -73,7 +76,7 @@
       "mean_edge": 0.000288000000000066,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 5,
+      "snapshots": 12,
       "status": "stable"
     },
     {
@@ -87,7 +90,7 @@
       "mean_edge": -0.07994499999999993,
       "odds_drift": 0.0,
       "positive_edge_share": 0.0,
-      "snapshots": 5,
+      "snapshots": 12,
       "status": "fragile"
     }
   ],
