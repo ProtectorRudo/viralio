@@ -1,14 +1,18 @@
 {
   "buckets": [],
   "by_market": [],
-  "generated_at": "2026-09-28T18:03:14.547526+00:00",
+  "competition_key": "free-denmark-271",
+  "generated_at": "2026-09-29T11:32:20.264740+00:00",
+  "league_id": 271,
+  "league_name": "Danish Superliga",
   "ranking_impact": false,
   "sample_rules": {
     "min_bucket_sample": 10,
     "min_overall_sample": 30
   },
-  "schema_version": "football-calibration-v1",
+  "schema_version": "football-calibration-v2",
   "scope": "selected signals with final results",
+  "source": "selected_signal_fallback",
   "summary": {
     "brier_score": null,
     "calibration_gap": null,
