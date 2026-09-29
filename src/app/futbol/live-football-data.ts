@@ -16,7 +16,7 @@ import denmarkStability from "./free-denmark-271-stability.json";
 import scotlandStability from "./free-scotland-501-stability.json";
 
 const RAW_BASE =
-  "https://raw.githubusercontent.com/ProtectorRudo/viralio/main/src/app/futbol";
+  "https://raw.githubusercontent.com/ProtectorRudo/viralio/football-data/src/app/futbol";
 
 const REFRESH_MS = 5 * 60 * 1000;
 
