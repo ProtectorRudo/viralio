@@ -1,0 +1,4540 @@
+{
+  "generated_at": "2026-09-29T08:45:32.983182+00:00",
+  "competition_key": "free-denmark-271",
+  "league_id": 271,
+  "league_name": "Danish Superliga",
+  "fixtures": {
+    "19713905": {
+      "home_team": "Nordsjælland",
+      "away_team": "Odense BK",
+      "kickoff_at": "2026-10-09T17:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.52,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 1.48,
+          "best_vs_median": 0.027027027027026973,
+          "previous_value": 1.52,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.52,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "X": {
+          "value": 4.71,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 4.5,
+          "best_vs_median": 0.046666666666666634,
+          "previous_value": 4.71,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 4.71,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "2": {
+          "value": 5.75,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 5.31,
+          "best_vs_median": 0.08286252354048962,
+          "previous_value": 5.75,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 5.75,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.14,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.14,
+          "best_vs_median": 0.0,
+          "previous_value": 1.14,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.14,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X2": {
+          "value": 2.62,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.62,
+          "best_vs_median": 0.0,
+          "previous_value": 2.62,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.62,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "12": {
+          "value": 1.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.2,
+          "best_vs_median": 0.0,
+          "previous_value": 1.2,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.2,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.44,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.44,
+          "best_vs_median": 0.0,
+          "previous_value": 1.44,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.44,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "under_2_5": {
+          "value": 2.7,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.7,
+          "best_vs_median": 0.0,
+          "previous_value": 2.7,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.7,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_yes": {
+          "value": 1.53,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.53,
+          "best_vs_median": 0.0,
+          "previous_value": 1.53,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_no": {
+          "value": 2.37,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.37,
+          "best_vs_median": 0.0,
+          "previous_value": 2.37,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.622042078627993,
+            "X": 0.2045827280820955,
+            "2": 0.17337519328991144
+          },
+          "overround": 0.0862218150353744
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.6521739130434782,
+            "under": 0.3478260869565217
+          },
+          "overround": 0.06481481481481488
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.6076923076923076,
+            "no": 0.39230769230769225
+          },
+          "overround": 0.07553569951187233
+        }
+      }
+    },
+    "19713907": {
+      "home_team": "Silkeborg IF",
+      "away_team": "Horsens",
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.23,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 2.15,
+          "best_vs_median": 0.037209302325581506,
+          "previous_value": 2.23,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.23,
+              "bookmaker": "Marathonbet"
+            }
+          ]
+        },
+        "X": {
+          "value": 3.69,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 3.5,
+          "best_vs_median": 0.05428571428571427,
+          "previous_value": 3.69,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 3.69,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "2": {
+          "value": 3.16,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 3.0,
+          "best_vs_median": 0.053333333333333455,
+          "previous_value": 3.16,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 3.16,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.36,
+          "best_vs_median": 0.0,
+          "previous_value": 1.36,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X2": {
+          "value": 1.66,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.66,
+          "best_vs_median": 0.0,
+          "previous_value": 1.66,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.66,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "12": {
+          "value": 1.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.3,
+          "best_vs_median": 0.0,
+          "previous_value": 1.3,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.3,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.92,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.72,
+          "best_vs_median": 0.11627906976744184,
+          "previous_value": 1.92,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.92,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "under_2_5": {
+          "value": 2.07,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.05,
+          "best_vs_median": 0.009756097560975618,
+          "previous_value": 2.07,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.07,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_yes": {
+          "value": 1.61,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.61,
+          "best_vs_median": 0.0,
+          "previous_value": 1.61,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.61,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_no": {
+          "value": 2.2,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.2,
+          "best_vs_median": 0.0,
+          "previous_value": 2.2,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.2,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.4290091930541369,
+            "X": 0.2635342185903984,
+            "2": 0.30745658835546474
+          },
+          "overround": 0.08416389811738645
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5437665782493368,
+            "under": 0.4562334217506631
+          },
+          "overround": 0.06920022688598992
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5774278215223098,
+            "no": 0.4225721784776903
+          },
+          "overround": 0.07566346696781467
+        }
+      }
+    },
+    "19713915": {
+      "home_team": "Randers FC",
+      "away_team": "Viborg FF",
+      "kickoff_at": "2026-10-11T12:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 3.35,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 3.2,
+          "best_vs_median": 0.046875,
+          "previous_value": 3.35,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 3.35,
+              "bookmaker": "Marathonbet"
+            }
+          ]
+        },
+        "X": {
+          "value": 3.63,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 3.52,
+          "best_vs_median": 0.03125,
+          "previous_value": 3.63,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 3.63,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "2": {
+          "value": 2.11,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 2.05,
+          "best_vs_median": 0.029268292682926855,
+          "previous_value": 2.11,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.11,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.72,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.72,
+          "best_vs_median": 0.0,
+          "previous_value": 1.72,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.72,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X2": {
+          "value": 1.36,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.36,
+          "best_vs_median": 0.0,
+          "previous_value": 1.36,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.36,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0,
+          "previous_value": 1.28,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.82,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.64,
+          "best_vs_median": 0.10975609756097571,
+          "previous_value": 1.82,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.82,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "under_2_5": {
+          "value": 2.2,
+          "bookmaker_id": 32,
+          "bookmaker": "Ladbrokes",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.15,
+          "best_vs_median": 0.023255813953488413,
+          "previous_value": 2.17,
+          "delta": 0.03000000000000025,
+          "movement": "up",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.17,
+              "bookmaker": "MelBet"
+            }
+          ]
+        },
+        "btts_yes": {
+          "value": 1.57,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.57,
+          "best_vs_median": 0.0,
+          "previous_value": 1.57,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_no": {
+          "value": 2.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.25,
+          "best_vs_median": 0.0,
+          "previous_value": 2.25,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.2881789137380191,
+            "X": 0.26198083067092653,
+            "2": 0.44984025559105434
+          },
+          "overround": 0.08439578713968965
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5672823218997362,
+            "under": 0.43271767810026385
+          },
+          "overround": 0.07487237663074309
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5890052356020942,
+            "no": 0.4109947643979057
+          },
+          "overround": 0.08138711960368017
+        }
+      }
+    },
+    "19713911": {
+      "home_team": "Brøndby IF",
+      "away_team": "Lyngby Boldklub",
+      "kickoff_at": "2026-10-11T14:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.77,
+          "bookmaker_id": 28,
+          "bookmaker": "bwin",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 1.73,
+          "best_vs_median": 0.023121387283236983,
+          "previous_value": 1.74,
+          "delta": 0.030000000000000027,
+          "movement": "up",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.74,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "X": {
+          "value": 4.18,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 3.9,
+          "best_vs_median": 0.07179487179487176,
+          "previous_value": 4.18,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 4.18,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "2": {
+          "value": 4.2,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 4.12,
+          "best_vs_median": 0.01941747572815533,
+          "previous_value": 4.2,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 4.2,
+              "bookmaker": "Marathonbet"
+            }
+          ]
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.22,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.22,
+          "best_vs_median": 0.0,
+          "previous_value": 1.22,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X2": {
+          "value": 2.05,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.05,
+          "best_vs_median": 0.0,
+          "previous_value": 2.05,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.05,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "12": {
+          "value": 1.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.25,
+          "best_vs_median": 0.0,
+          "previous_value": 1.25,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.25,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.6,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.57,
+          "best_vs_median": 0.019108280254777066,
+          "previous_value": 1.6,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "under_2_5": {
+          "value": 2.31,
+          "bookmaker_id": 64,
+          "bookmaker": "MelBet",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.275,
+          "best_vs_median": 0.015384615384615552,
+          "previous_value": 2.31,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.31,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.31,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.31,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.31,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.31,
+              "bookmaker": "MelBet"
+            }
+          ]
+        },
+        "btts_yes": {
+          "value": 1.57,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.57,
+          "best_vs_median": 0.0,
+          "previous_value": 1.57,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.57,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_no": {
+          "value": 2.25,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.25,
+          "best_vs_median": 0.0,
+          "previous_value": 2.25,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.25,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.5366267458403746,
+            "X": 0.2380421205907303,
+            "2": 0.22533113356889514
+          },
+          "overround": 0.07716338509312304
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5916775032509752,
+            "under": 0.40832249674902465
+          },
+          "overround": 0.0765031147196753
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.5890052356020942,
+            "no": 0.4109947643979057
+          },
+          "overround": 0.08138711960368017
+        }
+      }
+    },
+    "19713912": {
+      "home_team": "FC Midtjylland",
+      "away_team": "FC København",
+      "kickoff_at": "2026-10-11T16:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 2.53,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 2.45,
+          "best_vs_median": 0.03265306122448974,
+          "previous_value": 2.56,
+          "delta": -0.03000000000000025,
+          "movement": "down",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.56,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "X": {
+          "value": 3.72,
+          "bookmaker_id": 20,
+          "bookmaker": "Pinnacle",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 3.6,
+          "best_vs_median": 0.03333333333333344,
+          "previous_value": 3.72,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 3.72,
+              "bookmaker": "Pinnacle"
+            }
+          ]
+        },
+        "2": {
+          "value": 2.7,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 9,
+          "median_value": 2.55,
+          "best_vs_median": 0.05882352941176494,
+          "previous_value": 2.7,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.7,
+              "bookmaker": "Marathonbet"
+            }
+          ]
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0,
+          "previous_value": 1.5,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X2": {
+          "value": 1.53,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.53,
+          "best_vs_median": 0.0,
+          "previous_value": 1.53,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "12": {
+          "value": 1.28,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.28,
+          "best_vs_median": 0.0,
+          "previous_value": 1.28,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.28,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.6,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 1.585,
+          "best_vs_median": 0.009463722397476504,
+          "previous_value": 1.6,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.6,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.6,
+              "bookmaker": "MelBet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "under_2_5": {
+          "value": 2.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 6,
+          "median_value": 2.25,
+          "best_vs_median": 0.022222222222222143,
+          "previous_value": 2.3,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_yes": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0,
+          "previous_value": 1.5,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_no": {
+          "value": 2.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.5,
+          "best_vs_median": 0.0,
+          "previous_value": 2.5,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.3785957315187132,
+            "X": 0.25765542839467986,
+            "2": 0.3637488400866069
+          },
+          "overround": 0.07809790582899834
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.5867014341590613,
+            "under": 0.41329856584093877
+          },
+          "overround": 0.07535927094286698
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.625,
+            "no": 0.375
+          },
+          "overround": 0.06666666666666665
+        }
+      }
+    },
+    "19713909": {
+      "home_team": "AGF",
+      "away_team": "Sønderjyske Fodbold",
+      "kickoff_at": "2026-10-12T17:00:00+00:00",
+      "1X2": {
+        "1": {
+          "value": 1.6,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 2,
+          "median_value": 1.5950000000000002,
+          "best_vs_median": 0.0031347962382444194,
+          "previous_value": 1.6,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.6,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X": {
+          "value": 4.15,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 2,
+          "median_value": 4.075,
+          "best_vs_median": 0.01840490797546024,
+          "previous_value": 4.15,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 4.15,
+              "bookmaker": "Marathonbet"
+            }
+          ]
+        },
+        "2": {
+          "value": 4.9,
+          "bookmaker_id": 16,
+          "bookmaker": "Marathonbet",
+          "updated_at": null,
+          "bookmaker_count": 2,
+          "median_value": 4.825,
+          "best_vs_median": 0.015544041450777257,
+          "previous_value": 4.9,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 4.9,
+              "bookmaker": "Marathonbet"
+            }
+          ]
+        }
+      },
+      "double_chance": {
+        "1X": {
+          "value": 1.18,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.18,
+          "best_vs_median": 0.0,
+          "previous_value": 1.18,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.18,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "X2": {
+          "value": 2.3,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.3,
+          "best_vs_median": 0.0,
+          "previous_value": 2.3,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.3,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "12": {
+          "value": 1.22,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.22,
+          "best_vs_median": 0.0,
+          "previous_value": 1.22,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.22,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "secondary": {
+        "over_2_5": {
+          "value": 1.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.5,
+          "best_vs_median": 0.0,
+          "previous_value": 1.5,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.5,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "under_2_5": {
+          "value": 2.5,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.5,
+          "best_vs_median": 0.0,
+          "previous_value": 2.5,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.5,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_yes": {
+          "value": 1.53,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 1.53,
+          "best_vs_median": 0.0,
+          "previous_value": 1.53,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 1.53,
+              "bookmaker": "bet365"
+            }
+          ]
+        },
+        "btts_no": {
+          "value": 2.37,
+          "bookmaker_id": 2,
+          "bookmaker": "bet365",
+          "updated_at": null,
+          "bookmaker_count": 1,
+          "median_value": 2.37,
+          "best_vs_median": 0.0,
+          "previous_value": 2.37,
+          "delta": 0.0,
+          "movement": "flat",
+          "history": [
+            {
+              "captured_at": "2026-09-28T16:35:36.088011+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T16:42:39.719359+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:10:54.969752+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:12:38.831211+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T17:15:03.079297+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:36:21.999002+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T18:40:00.028706+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T22:10:33.212791+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-28T23:13:07.756832+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T02:06:15.096531+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            },
+            {
+              "captured_at": "2026-09-29T05:37:52.319617+00:00",
+              "value": 2.37,
+              "bookmaker": "bet365"
+            }
+          ]
+        }
+      },
+      "market_consensus": {
+        "1X2_no_vig": {
+          "probabilities": {
+            "1": 0.5807265034575184,
+            "X": 0.22730276638398578,
+            "2": 0.19197073015849575
+          },
+          "overround": 0.07961190666540041
+        },
+        "goals_2_5_no_vig": {
+          "probabilities": {
+            "over": 0.625,
+            "under": 0.375
+          },
+          "overround": 0.06666666666666665
+        },
+        "btts_no_vig": {
+          "probabilities": {
+            "yes": 0.6076923076923076,
+            "no": 0.39230769230769225
+          },
+          "overround": 0.07553569951187233
+        }
+      }
+    },
+    "19713894": {
+      "home_team": "Horsens",
+      "away_team": "Randers FC",
+      "kickoff_at": "2026-10-16T17:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    },
+    "19713898": {
+      "home_team": "Lyngby Boldklub",
+      "away_team": "Nordsjælland",
+      "kickoff_at": "2026-10-18T12:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    },
+    "19713901": {
+      "home_team": "Sønderjyske Fodbold",
+      "away_team": "Silkeborg IF",
+      "kickoff_at": "2026-10-18T12:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    },
+    "19713903": {
+      "home_team": "Odense BK",
+      "away_team": "Brøndby IF",
+      "kickoff_at": "2026-10-18T14:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    },
+    "19713899": {
+      "home_team": "FC København",
+      "away_team": "AGF",
+      "kickoff_at": "2026-10-18T16:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    },
+    "19713896": {
+      "home_team": "Viborg FF",
+      "away_team": "FC Midtjylland",
+      "kickoff_at": "2026-10-19T17:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    },
+    "19713889": {
+      "home_team": "Randers FC",
+      "away_team": "Brøndby IF",
+      "kickoff_at": "2026-10-23T17:00:00+00:00",
+      "1X2": {
+        "1": null,
+        "X": null,
+        "2": null
+      },
+      "double_chance": {
+        "1X": null,
+        "X2": null,
+        "12": null
+      },
+      "secondary": {
+        "over_2_5": null,
+        "under_2_5": null,
+        "btts_yes": null,
+        "btts_no": null
+      },
+      "market_consensus": {
+        "1X2_no_vig": null,
+        "goals_2_5_no_vig": null,
+        "btts_no_vig": null
+      }
+    }
+  }
+}
