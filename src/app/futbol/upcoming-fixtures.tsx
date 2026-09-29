@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { simulateLearned } from "../api/futbol/learned-model";
 import { confidenceAdjustedEdgeBuffer, minimumValueOdds } from "./bet-value";
-import upcomingDenmark from "./upcoming-denmark-271.json";
+import { useLiveUpcomingDenmark } from "./live-upcoming-denmark";
 import styles from "./football.module.css";
 
 type UpcomingFixture = {
@@ -24,6 +24,7 @@ export default function UpcomingFixtures({
   activeHome,
   activeAway,
 }: Props) {
+  const upcomingDenmark = useLiveUpcomingDenmark();
   const fixtures = upcomingDenmark.fixtures as UpcomingFixture[];
   const cards = useMemo(
     () =>
