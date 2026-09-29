@@ -1,6 +1,6 @@
 {
   "competition_key": "free-scotland-501",
-  "generated_at": "2026-09-28T19:07:36.387976+00:00",
+  "generated_at": "2026-09-29T11:31:52.022078+00:00",
   "league_id": 501,
   "league_name": "Scottish Premiership",
   "ranking_impact": false,
@@ -20,36 +20,22 @@
       "mean_edge": 0.49800188998441275,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "Kilmarnock",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
+      "edge_volatility": 0.009067341265070859,
       "fixture_id": 19722776,
       "history_key": "19722776:2",
       "home_team": "Rangers",
       "market": "2",
-      "mean_edge": 0.48414401369255966,
+      "mean_edge": 0.4881990519813371,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
-    },
-    {
-      "away_team": "Rangers",
-      "detected_qualifies": false,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722773,
-      "history_key": "19722773:1",
-      "home_team": "Dundee",
-      "market": "1",
-      "mean_edge": 0.36312063896557767,
-      "odds_drift": 0.0,
-      "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "Dundee",
@@ -62,22 +48,22 @@
       "mean_edge": 0.32216708305919806,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
-      "away_team": "St. Mirren",
+      "away_team": "Rangers",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722775,
-      "history_key": "19722775:2",
-      "home_team": "Aberdeen",
-      "market": "2",
-      "mean_edge": 0.2826403784886653,
+      "edge_volatility": 0.022272623182136624,
+      "fixture_id": 19722773,
+      "history_key": "19722773:1",
+      "home_team": "Dundee",
+      "market": "1",
+      "mean_edge": 0.3133175394930825,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "Falkirk",
@@ -90,36 +76,36 @@
       "mean_edge": 0.27404431538924,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
-      "away_team": "Motherwell",
+      "away_team": "St. Mirren",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722771,
-      "history_key": "19722771:1",
-      "home_team": "Kilmarnock",
-      "market": "1",
-      "mean_edge": 0.26824356017860973,
-      "odds_drift": 0.0,
-      "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
-    },
-    {
-      "away_team": "Dundee United",
-      "detected_qualifies": false,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722770,
-      "history_key": "19722770:2",
-      "home_team": "St. Johnstone",
+      "edge_volatility": 0.012028327359662652,
+      "fixture_id": 19722775,
+      "history_key": "19722775:2",
+      "home_team": "Aberdeen",
       "market": "2",
-      "mean_edge": 0.20535900856997746,
+      "mean_edge": 0.25574422085683907,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
+    },
+    {
+      "away_team": "Celtic",
+      "detected_qualifies": false,
+      "edge_volatility": 0.02950667983172026,
+      "fixture_id": 19722777,
+      "history_key": "19722777:2",
+      "home_team": "Motherwell",
+      "market": "2",
+      "mean_edge": 0.19645812252534114,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "St. Johnstone",
@@ -132,36 +118,22 @@
       "mean_edge": 0.14879175646671672,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
-      "away_team": "Dundee",
-      "detected_qualifies": true,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722779,
-      "history_key": "19722779:1",
-      "home_team": "Falkirk",
-      "market": "1",
-      "mean_edge": 0.14477532696766438,
-      "odds_drift": 0.0,
-      "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
-    },
-    {
-      "away_team": "Celtic",
+      "away_team": "Dundee United",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722777,
-      "history_key": "19722777:2",
-      "home_team": "Motherwell",
+      "edge_volatility": 0.028958350375169688,
+      "fixture_id": 19722770,
+      "history_key": "19722770:2",
+      "home_team": "St. Johnstone",
       "market": "2",
-      "mean_edge": 0.1304791806312926,
+      "mean_edge": 0.14060616861484151,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "Falkirk",
@@ -174,22 +146,22 @@
       "mean_edge": 0.11885512838549417,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "St. Mirren",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
+      "edge_volatility": 0.0032532861059362396,
       "fixture_id": 19722778,
       "history_key": "19722778:X",
       "home_team": "Hearts",
       "market": "X",
-      "mean_edge": 0.038808436510835875,
-      "odds_drift": 0.0,
+      "mean_edge": 0.040263350287461676,
+      "odds_drift": 0.008403361344537785,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "St. Johnstone",
@@ -202,22 +174,22 @@
       "mean_edge": 0.026480773520465073,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "Hibernian",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
+      "edge_volatility": 0.004567161085274781,
       "fixture_id": 19722780,
       "history_key": "19722780:2",
       "home_team": "Dundee United",
       "market": "2",
-      "mean_edge": 0.013316619049565048,
-      "odds_drift": 0.0,
+      "mean_edge": 0.02352910170043117,
+      "odds_drift": 0.004065040650406582,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
       "away_team": "St. Mirren",
@@ -230,22 +202,36 @@
       "mean_edge": 0.00928335260149038,
       "odds_drift": 0.0,
       "positive_edge_share": 1.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "stable"
     },
     {
-      "away_team": "Hearts",
+      "away_team": "Motherwell",
       "detected_qualifies": false,
-      "edge_volatility": 0.0,
-      "fixture_id": 19722774,
-      "history_key": "19722774:1",
-      "home_team": "Celtic",
+      "edge_volatility": 0.06722008686156362,
+      "fixture_id": 19722771,
+      "history_key": "19722771:1",
+      "home_team": "Kilmarnock",
       "market": "1",
-      "mean_edge": -0.017213723448348484,
+      "mean_edge": 0.11793487650271299,
       "odds_drift": 0.0,
-      "positive_edge_share": 0.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "positive_edge_share": 1.0,
+      "snapshots": 6,
+      "status": "volatile"
+    },
+    {
+      "away_team": "Dundee",
+      "detected_qualifies": true,
+      "edge_volatility": 0.030454012865373453,
+      "fixture_id": 19722779,
+      "history_key": "19722779:1",
+      "home_team": "Falkirk",
+      "market": "1",
+      "mean_edge": 0.07667808401303618,
+      "odds_drift": 0.0,
+      "positive_edge_share": 1.0,
+      "snapshots": 6,
+      "status": "volatile"
     },
     {
       "away_team": "Hearts",
@@ -258,15 +244,43 @@
       "mean_edge": -0.024138273971744173,
       "odds_drift": 0.0,
       "positive_edge_share": 0.0,
-      "snapshots": 1,
-      "status": "collecting"
+      "snapshots": 6,
+      "status": "fragile"
+    },
+    {
+      "away_team": "Hearts",
+      "detected_qualifies": false,
+      "edge_volatility": 0.02003393982716862,
+      "fixture_id": 19722774,
+      "history_key": "19722774:1",
+      "home_team": "Celtic",
+      "market": "1",
+      "mean_edge": -0.062010974759037905,
+      "odds_drift": 0.0,
+      "positive_edge_share": 0.0,
+      "snapshots": 6,
+      "status": "fragile"
+    },
+    {
+      "away_team": "Kilmarnock",
+      "detected_qualifies": false,
+      "edge_volatility": 0.01097462134247261,
+      "fixture_id": 19722776,
+      "history_key": "19722776:1",
+      "home_team": "Rangers",
+      "market": "1",
+      "mean_edge": -0.1558240223913505,
+      "odds_drift": 0.03508771929824572,
+      "positive_edge_share": 0.0,
+      "snapshots": 6,
+      "status": "fragile"
     }
   ],
   "summary": {
-    "collecting": 18,
-    "fragile": 0,
-    "stable": 0,
-    "tracked": 18,
-    "volatile": 0
+    "collecting": 0,
+    "fragile": 3,
+    "stable": 14,
+    "tracked": 19,
+    "volatile": 2
   }
 }
