@@ -340,6 +340,40 @@ test("Los chiquis keeps the premium Viralio structure with one surprise reward",
   expect(decoded).toContain(reward.shortCode);
 });
 
+test("Fusión de sabores keeps the premium Viralio structure with one surprise reward", async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await context.route("https://wa.me/**", (route) =>
+    route.fulfill({ status: 200, contentType: "text/html", body: "WhatsApp" }),
+  );
+
+  await page.goto("/experiencia/fusion-de-sabores?reset=1");
+  const root = page.locator("main");
+  await expect(root).toHaveAttribute("data-merchant", "fusion-de-sabores");
+  await expect(root).toHaveAttribute("data-design-version", "gift-premium-v1");
+  expect(await root.evaluate((node) => getComputedStyle(node).getPropertyValue("--color-primary").trim())).toBe("#8DAA79");
+  await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
+  await expect(page.getByText("Heladería & panadería", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
+  await expect(page.getByTestId("native-share")).toHaveCount(0);
+  await expect(root.locator(".malu-brand-mark")).toContainText("FS");
+  await expectNoHorizontalOverflow(page);
+
+  const reward = await completeGiftFlow(page, "/experiencia/fusion-de-sabores?reset=1");
+  expect(reward.prizeName).toBe("10% de descuento en tu próxima compra");
+  await expect(page.getByTestId("gift-reward-voucher")).toContainText(reward.prizeName);
+  await expect(page.getByTestId("gift-reward-voucher")).toContainText(reward.shortCode);
+
+  const popupPromise = page.waitForEvent("popup");
+  await page.getByRole("button", { name: "Guardar cupón en WhatsApp" }).click();
+  const popup = await popupPromise;
+  await expect.poll(() => popup.url()).toContain("wa.me/5493437520637");
+  const decoded = decodeURIComponent(popup.url());
+  expect(decoded).toContain("Fusión de sabores");
+  expect(decoded).toContain(reward.prizeName);
+  expect(decoded).toContain(reward.shortCode);
+});
+
 test("premium gift landings stay contained at required mobile and desktop widths", async ({ page }) => {
   const viewports = [
     { width: 360, height: 800 },
@@ -348,7 +382,7 @@ test("premium gift landings stay contained at required mobile and desktop widths
     { width: 430, height: 932 },
     { width: 1280, height: 800 },
   ];
-  for (const path of ["/moka?reset=1", "/atlas-barber?reset=1", "/experiencia/volga?reset=1", "/experiencia/saimond?reset=1", "/experiencia/carnes-roma?reset=1", "/experiencia/centro-estetica-lindy?reset=1", "/experiencia/despensa-elvira?reset=1", "/experiencia/los-chiquis?reset=1"]) {
+  for (const path of ["/moka?reset=1", "/atlas-barber?reset=1", "/experiencia/volga?reset=1", "/experiencia/saimond?reset=1", "/experiencia/carnes-roma?reset=1", "/experiencia/centro-estetica-lindy?reset=1", "/experiencia/despensa-elvira?reset=1", "/experiencia/los-chiquis?reset=1", "/experiencia/fusion-de-sabores?reset=1"]) {
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       await page.goto(path);
