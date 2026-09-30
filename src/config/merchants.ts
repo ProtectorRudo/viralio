@@ -450,7 +450,7 @@ export const merchants: Merchant[] = [
     slug: "fusion-de-sabores",
     name: "Fusión de sabores",
     whatsappNumber: "5493437520637",
-    rewardValidityDays: 14,
+    rewardValidityDays: 7,
     theme: {
       displayName: "Fusión de sabores",
       shortName: "Fusión",
