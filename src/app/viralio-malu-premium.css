@@ -1649,3 +1649,218 @@
 .malu-experience[data-merchant="los-chiquis"] .malu-footer strong{
   color:#c67f5b;
 }
+
+
+/* FUSIÓN DE SABORES · HELADERÍA & PANADERÍA */
+.malu-experience[data-merchant="fusion-de-sabores"]{
+  color:#4b3a30;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(233,137,114,.13),transparent 24rem),
+    radial-gradient(circle at 7% 88%,rgba(141,170,121,.14),transparent 28rem),
+    linear-gradient(180deg,#fbf5ea 0%,#f1eadf 100%);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-shell{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,255,255,.80),transparent 20rem),
+    linear-gradient(180deg,rgba(255,253,248,.98),rgba(249,245,238,.98));
+  border:1px solid rgba(140,103,84,.11);
+  box-shadow:0 26px 80px rgba(78,58,47,.08);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-header{
+  border-bottom:1px solid rgba(140,103,84,.11);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-brand-mark{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 27%,rgba(255,255,255,.92),rgba(255,255,255,.35) 35%,transparent 36%),
+    linear-gradient(145deg,#a8bf96,#8daa79);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.84);
+  box-shadow:0 10px 24px rgba(78,58,47,.12);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-brand-mark > span{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.03em;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-brand-copy strong{
+  color:#5a4033;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-brand-copy small{
+  color:#857970;
+  letter-spacing:.12em;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-stage h1,
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-stage h2{
+  color:#4b3a30;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-eyebrow{
+  color:#c96f5f;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-lead{
+  color:#7b7169;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero{
+  background:
+    radial-gradient(circle at 76% 18%,rgba(255,255,255,.84),transparent 14rem),
+    linear-gradient(180deg,#f6e6cb 0%,#ead9bc 100%);
+  border-top:1px solid rgba(140,103,84,.10);
+  border-bottom:1px solid rgba(140,103,84,.12);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-photo,
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-share-photo{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 37%,rgba(255,255,255,.96),transparent 10rem),
+    linear-gradient(145deg,#fbf2e4 0%,#eeddbf 52%,#dcc79f 100%);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-photo::before,
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-share-photo::before{
+  content:"FS";
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  border-radius:50%;
+  color:#fff;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+  letter-spacing:.02em;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.42),transparent 26%),
+    linear-gradient(145deg,#a8bf96 0%,#8daa79 52%,#789666 100%);
+  border:1px solid rgba(255,255,255,.82);
+  outline:1px solid rgba(140,103,84,.16);
+  outline-offset:10px;
+  box-shadow:0 22px 54px rgba(78,58,47,.15);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-photo::after,
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-share-photo::after{
+  content:"HELADERÍA · PANADERÍA";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  color:#735342;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-indent:.18em;
+  white-space:nowrap;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-photo::before{
+  width:186px;
+  font-size:52px;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-photo::after{
+  top:24%;
+  font-size:9px;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-share-photo::before{
+  width:124px;
+  font-size:34px;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-share-photo::after{
+  top:24%;
+  font-size:7px;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-gift-seal{
+  background:#fff8f0;
+  color:#c96f5f;
+  border:1px solid rgba(233,137,114,.22);
+  box-shadow:0 12px 30px rgba(78,58,47,.08);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-logo{
+  background:#fffaf4;
+  border:1px solid rgba(141,170,121,.20);
+  color:#7c986c;
+  box-shadow:0 10px 24px rgba(78,58,47,.08);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-hero-logo > span{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-button-primary{
+  background:linear-gradient(135deg,#93ae80,#769263);
+  color:#fff;
+  box-shadow:0 14px 34px rgba(118,146,99,.18);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-button-primary:hover{
+  background:linear-gradient(135deg,#819e6f,#6b855b);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-share-card{
+  background:#fffdf9;
+  border-color:rgba(140,103,84,.12);
+  box-shadow:0 22px 58px rgba(78,58,47,.08);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-prosocial-note{
+  background:#fff8f1;
+  border-color:rgba(233,137,114,.14);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-scratch-card{
+  border-color:rgba(141,170,121,.20);
+  background:linear-gradient(145deg,#fffdf9,#f4ebdc);
+  box-shadow:0 26px 68px rgba(78,58,47,.10);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-scratch-under{
+  color:#4b3a30;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(255,255,255,.92),transparent 12rem),
+    linear-gradient(145deg,#fffaf4,#f0e5d2);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-scratch-under strong{
+  color:#c96f5f;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-heart{
+  background:#fff8f1;
+  color:#e98972;
+  border-color:rgba(233,137,114,.18);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-coupon{
+  color:#4b3a30;
+  background:
+    radial-gradient(circle at 84% 16%,rgba(233,137,114,.14),transparent 12rem),
+    linear-gradient(145deg,#fffdf9,#f5eee2);
+  border:1px solid rgba(141,170,121,.19);
+  box-shadow:0 26px 66px rgba(78,58,47,.10);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-coupon strong{
+  color:#c96f5f;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-loading-mark{
+  width:126px;
+  height:126px;
+  border-color:rgba(141,170,121,.24);
+  outline:1px solid rgba(255,255,255,.86);
+  outline-offset:8px;
+  background:
+    radial-gradient(circle at 32% 26%,rgba(255,255,255,.70),transparent 28%),
+    linear-gradient(145deg,#a8bf96,#8daa79);
+  color:#fff;
+  box-shadow:0 18px 42px rgba(78,58,47,.13);
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-loading-monogram{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:34px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-footer{
+  color:#91847a;
+}
+.malu-experience[data-merchant="fusion-de-sabores"] .malu-footer strong{
+  color:#c96f5f;
+}
