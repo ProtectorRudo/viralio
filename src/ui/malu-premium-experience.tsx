@@ -380,7 +380,7 @@ export function MaluPremiumExperience({
             <div className="malu-brand-mark">
               <MerchantBrandVisual
                 merchant={merchant}
-                mode={(merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira" || merchant.slug === "los-chiquis" || merchant.slug === "fusion-de-sabores") ? "mark" : "symbol"}
+                mode={(merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira" || merchant.slug === "los-chiquis" || merchant.slug === "fusion-de-sabores" || merchant.slug === "roxy-comidas") ? "mark" : "symbol"}
                 size={38}
               />
             </div>
@@ -403,6 +403,8 @@ export function MaluPremiumExperience({
               <div className="malu-loading-mark malu-loading-monogram" aria-hidden="true">LC</div>
             ) : merchant.slug === "fusion-de-sabores" ? (
               <div className="malu-loading-mark malu-loading-monogram" aria-hidden="true">FS</div>
+            ) : merchant.slug === "roxy-comidas" ? (
+              <div className="malu-loading-mark malu-loading-monogram" aria-hidden="true">RC</div>
             ) : (
               <div className="malu-loading-mark"><MerchantBrandVisual merchant={merchant} size={merchant.slug === "saimond" ? 88 : 50} /></div>
             )}
@@ -414,7 +416,7 @@ export function MaluPremiumExperience({
         {state === "LANDING" && (
           <div className="malu-stage malu-home" data-testid="gift-landing-stage">
             <div className="malu-home-copy">
-              <p className="malu-eyebrow">{merchant.slug === "los-chiquis" ? "Peluquería canina" : merchant.slug === "fusion-de-sabores" ? "Heladería & panadería" : "Un detalle para vos"}</p>
+              <p className="malu-eyebrow">{merchant.slug === "los-chiquis" ? "Peluquería canina" : merchant.slug === "fusion-de-sabores" ? "Heladería & panadería" : merchant.slug === "roxy-comidas" ? "Rotisería" : "Un detalle para vos"}</p>
               <h1>Tenemos un regalo para vos.</h1>
             </div>
             <div className="malu-hero">
@@ -425,7 +427,7 @@ export function MaluPremiumExperience({
                   <div className="malu-hero-logo">
                     <MerchantBrandVisual
                       merchant={merchant}
-                      mode={(merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira" || merchant.slug === "los-chiquis" || merchant.slug === "fusion-de-sabores") ? "mark" : "symbol"}
+                      mode={(merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira" || merchant.slug === "los-chiquis" || merchant.slug === "fusion-de-sabores" || merchant.slug === "roxy-comidas") ? "mark" : "symbol"}
                       size={46}
                     />
                   </div>
