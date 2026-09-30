@@ -66,7 +66,7 @@ describe("merchant theming", () => {
     ]);
     expect(fusion?.name).toBe("Fusión de sabores");
     expect(fusion?.whatsappNumber).toBe("5493437520637");
-    expect(fusion?.rewardValidityDays).toBe(14);
+    expect(fusion?.rewardValidityDays).toBe(7);
     expect(fusion?.theme.businessType).toBe("Heladería y panadería");
     expect(fusion?.theme.heroEyebrow).toBe("Heladería & panadería");
     expect(fusion?.prizes).toEqual([
