@@ -1864,3 +1864,218 @@
 .malu-experience[data-merchant="fusion-de-sabores"] .malu-footer strong{
   color:#c96f5f;
 }
+
+
+/* ROXY COMIDAS · ROTISERÍA PREMIUM EXPERIENCE */
+.malu-experience[data-merchant="roxy-comidas"]{
+  color:#46362f;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(217,139,76,.13),transparent 24rem),
+    radial-gradient(circle at 7% 88%,rgba(169,79,61,.12),transparent 28rem),
+    linear-gradient(180deg,#fbf4ec 0%,#f1e6da 100%);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-shell{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,255,255,.80),transparent 20rem),
+    linear-gradient(180deg,rgba(255,253,249,.98),rgba(249,243,236,.98));
+  border:1px solid rgba(169,79,61,.11);
+  box-shadow:0 26px 80px rgba(72,52,43,.08);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-header{
+  border-bottom:1px solid rgba(169,79,61,.11);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-brand-mark{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 27%,rgba(255,255,255,.92),rgba(255,255,255,.34) 35%,transparent 36%),
+    linear-gradient(145deg,#c8735d,#a94f3d);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.84);
+  box-shadow:0 10px 24px rgba(72,52,43,.12);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-brand-mark > span{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-brand-copy strong{
+  color:#5b3d32;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-brand-copy small{
+  color:#85756b;
+  letter-spacing:.12em;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-stage h1,
+.malu-experience[data-merchant="roxy-comidas"] .malu-stage h2{
+  color:#46362f;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-eyebrow{
+  color:#b65a44;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-lead{
+  color:#7e7169;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero{
+  background:
+    radial-gradient(circle at 76% 18%,rgba(255,255,255,.82),transparent 14rem),
+    linear-gradient(180deg,#f4dfca 0%,#e8cbb2 100%);
+  border-top:1px solid rgba(169,79,61,.10);
+  border-bottom:1px solid rgba(169,79,61,.12);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-photo,
+.malu-experience[data-merchant="roxy-comidas"] .malu-share-photo{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 37%,rgba(255,255,255,.95),transparent 10rem),
+    linear-gradient(145deg,#fbefe4 0%,#efd7c2 52%,#dfbea3 100%);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-photo::before,
+.malu-experience[data-merchant="roxy-comidas"] .malu-share-photo::before{
+  content:"RC";
+  position:absolute;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  border-radius:50%;
+  color:#fff;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:800;
+  letter-spacing:.04em;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.40),transparent 26%),
+    linear-gradient(145deg,#c8735d 0%,#a94f3d 54%,#8f4133 100%);
+  border:1px solid rgba(255,255,255,.82);
+  outline:1px solid rgba(169,79,61,.16);
+  outline-offset:10px;
+  box-shadow:0 22px 54px rgba(72,52,43,.15);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-photo::after,
+.malu-experience[data-merchant="roxy-comidas"] .malu-share-photo::after{
+  content:"ROTISERÍA";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  color:#6f4a3b;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:700;
+  letter-spacing:.22em;
+  text-indent:.22em;
+  white-space:nowrap;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-photo::before{
+  width:186px;
+  font-size:52px;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-photo::after{
+  top:24%;
+  font-size:9px;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-share-photo::before{
+  width:124px;
+  font-size:34px;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-share-photo::after{
+  top:24%;
+  font-size:7px;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-gift-seal{
+  background:#fff8f1;
+  color:#b65a44;
+  border:1px solid rgba(217,139,76,.22);
+  box-shadow:0 12px 30px rgba(72,52,43,.08);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-logo{
+  background:#fffaf5;
+  border:1px solid rgba(169,79,61,.18);
+  color:#a94f3d;
+  box-shadow:0 10px 24px rgba(72,52,43,.08);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-hero-logo > span{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-button-primary{
+  background:linear-gradient(135deg,#b85b45,#8f4133);
+  color:#fff;
+  box-shadow:0 14px 34px rgba(169,79,61,.18);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-button-primary:hover{
+  background:linear-gradient(135deg,#a54d3a,#7f392d);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-share-card{
+  background:#fffdf9;
+  border-color:rgba(169,79,61,.12);
+  box-shadow:0 22px 58px rgba(72,52,43,.08);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-prosocial-note{
+  background:#fff8f1;
+  border-color:rgba(217,139,76,.14);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-scratch-card{
+  border-color:rgba(169,79,61,.18);
+  background:linear-gradient(145deg,#fffdf9,#f3e5d7);
+  box-shadow:0 26px 68px rgba(72,52,43,.10);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-scratch-under{
+  color:#46362f;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(255,255,255,.91),transparent 12rem),
+    linear-gradient(145deg,#fffaf5,#efe0d1);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-scratch-under strong{
+  color:#b65a44;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-heart{
+  background:#fff8f1;
+  color:#d98b4c;
+  border-color:rgba(217,139,76,.18);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-coupon{
+  color:#46362f;
+  background:
+    radial-gradient(circle at 84% 16%,rgba(217,139,76,.14),transparent 12rem),
+    linear-gradient(145deg,#fffdf9,#f5ece3);
+  border:1px solid rgba(169,79,61,.18);
+  box-shadow:0 26px 66px rgba(72,52,43,.10);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-coupon strong{
+  color:#b65a44;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-loading-mark{
+  width:126px;
+  height:126px;
+  border-color:rgba(169,79,61,.24);
+  outline:1px solid rgba(255,255,255,.86);
+  outline-offset:8px;
+  background:
+    radial-gradient(circle at 32% 26%,rgba(255,255,255,.70),transparent 28%),
+    linear-gradient(145deg,#c8735d,#a94f3d);
+  color:#fff;
+  box-shadow:0 18px 42px rgba(72,52,43,.13);
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-loading-monogram{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:.04em;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-footer{
+  color:#918078;
+}
+.malu-experience[data-merchant="roxy-comidas"] .malu-footer strong{
+  color:#b65a44;
+}

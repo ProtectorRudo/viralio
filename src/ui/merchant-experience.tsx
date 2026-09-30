@@ -343,7 +343,7 @@ function DefaultMerchantExperience({ merchant: initialMerchant, referralToken }:
 }
 
 export function MerchantExperience({ merchant, referralToken }: { merchant: Merchant; referralToken?: string }) {
-  if (merchant.slug === "malu-cafe-jardin" || merchant.slug === "moka" || merchant.slug === "atlas-barber" || merchant.slug === "volga" || merchant.slug === "saimond" || merchant.slug === "carnes-roma" || merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira" || merchant.slug === "los-chiquis" || merchant.slug === "fusion-de-sabores") {
+  if (merchant.slug === "malu-cafe-jardin" || merchant.slug === "moka" || merchant.slug === "atlas-barber" || merchant.slug === "volga" || merchant.slug === "saimond" || merchant.slug === "carnes-roma" || merchant.slug === "centro-estetica-lindy" || merchant.slug === "despensa-elvira" || merchant.slug === "los-chiquis" || merchant.slug === "fusion-de-sabores" || merchant.slug === "roxy-comidas") {
     return <MaluPremiumExperience merchant={merchant} referralToken={referralToken} />;
   }
   return <DefaultMerchantExperience merchant={merchant} referralToken={referralToken} />;
