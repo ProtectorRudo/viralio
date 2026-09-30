@@ -387,7 +387,7 @@ test("Roxy Comidas keeps the premium Viralio structure with one surprise reward"
   expect(await root.evaluate((node) => getComputedStyle(node).getPropertyValue("--color-primary").trim())).toBe("#A94F3D");
   await expect(page.getByTestId("gift-landing-stage")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tenemos un regalo para vos." })).toBeVisible();
-  await expect(page.getByText("Rotisería", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("gift-landing-stage").getByText("Rotisería", { exact: true })).toBeVisible();
   await expect(page.getByTestId("premium-wheel")).toHaveCount(0);
   await expect(page.getByTestId("native-share")).toHaveCount(0);
   await expect(root.locator(".malu-brand-mark")).toContainText("RC");
