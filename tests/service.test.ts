@@ -158,4 +158,19 @@ describe("ViralioService", () => {
     expect(merchant.prizes.some((prize) => prize.id === reward.prizeId)).toBe(true);
     expect(repository.database.events.map((event) => event.name)).toContain("reward_issued");
   });
+
+  it("deactivates a merchant page without deleting its historical data", async () => {
+    const { repository, service } = setup();
+    const { session } = await service.startSession("moka");
+    await service.unlock(session.id);
+
+    await service.deactivateMerchant("moka");
+
+    await expect(service.getMerchantForExperience("moka")).rejects.toThrow(/not found/i);
+    await expect(service.startSession("moka")).rejects.toThrow(/not found/i);
+    expect(repository.database.sessions).toHaveLength(1);
+    expect(repository.database.events.some((event) => event.name === "unlock_viewed")).toBe(true);
+    expect(repository.database.merchantDeletions).toHaveLength(1);
+  });
+
 });
