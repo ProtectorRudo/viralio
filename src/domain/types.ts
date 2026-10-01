@@ -203,10 +203,17 @@ export interface MerchantMetrics {
   shareChannels: Record<ShareChannel, number>;
 }
 
+export interface MerchantDeletionRecord {
+  merchantId: string;
+  slug: string;
+  deletedAt: string;
+}
+
 export interface Database {
   sessions: Session[];
   rewards: Reward[];
   events: AnalyticsEvent[];
   merchantSettings: MerchantSettingsRecord[];
   merchantAccounts: MerchantAccount[];
+  merchantDeletions: MerchantDeletionRecord[];
 }
