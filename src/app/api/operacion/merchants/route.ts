@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { listMerchantOperations, type OperationsPeriod } from "@/operations/merchant-operations";
-import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
+import { isSameOrigin } from "@/security/merchant-auth";
 
 const PERIODS: OperationsPeriod[] = ["today", "7d", "30d", "all"];
 
@@ -15,10 +15,6 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json() as Record<string, unknown>;
-    if (typeof body.onboardingKey !== "string" || !verifyOnboardingKey(body.onboardingKey)) {
-      return NextResponse.json({ error: "Clave inválida" }, { status: 401 });
-    }
-
     const period = body.period ?? "all";
     if (!isOperationsPeriod(period)) {
       return NextResponse.json({ error: "Período inválido" }, { status: 400 });
