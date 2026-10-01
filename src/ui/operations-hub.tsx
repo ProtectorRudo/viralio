@@ -125,7 +125,7 @@ export function OperationsHub() {
             <div className={styles.periodBar}>
               <div>
                 <strong>Período</strong>
-                <span>El embudo sigue a quienes empezaron en ese lapso.</span>
+                <span>El embudo sigue a quienes entraron en ese lapso.</span>
               </div>
               <div className={styles.periodOptions} role="group" aria-label="Período de métricas">
                 {PERIOD_OPTIONS.map((option) => (
@@ -144,6 +144,7 @@ export function OperationsHub() {
               </div>
             </div>
             {error && <p className={styles.error} role="alert">{error}</p>}
+            <p className={styles.meta}>QR trazable = entrada registrada mediante /q. Los QR antiguos que apuntaban directo a la experiencia no permiten reconstruir ese escaneo histórico; por eso el embudo usa visitas reales.</p>
 
             <div className={styles.toolbar}>
               <div className={styles.summary}>
@@ -197,7 +198,8 @@ export function OperationsHub() {
                           <span><strong>{percent(merchant.starts, merchant.visits)}</strong> empieza después de entrar</span>
                           <span><strong>{percent(merchant.shares, merchant.starts)}</strong> comparte después de empezar</span>
                           <span><strong>{percent(merchant.rewardsRedeemed, merchant.rewardsIssued)}</strong> de los premios termina en canje</span>
-                          <span><strong>{merchant.qrScans}</strong> entradas por QR trazable</span>
+                          <span><strong>{Math.max(0, merchant.visits - merchant.referredSessions)}</strong> entradas iniciales · <strong>{merchant.referredSessions}</strong> por recomendación</span>
+                          <span><strong>{merchant.qrScans}</strong> QR trazables</span>
                         </div>
                       </section>
 
