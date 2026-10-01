@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import { getMerchantBySlug } from "@/config/merchants";
+import { merchants as configuredMerchants } from "@/config/merchants";
 
 export type OperationsPeriod = "today" | "7d" | "30d" | "all";
 
@@ -8,7 +8,7 @@ export interface MerchantOperationsRow {
   slug: string;
   name: string;
   businessType: string;
-  createdAt: string;
+  createdAt: string | null;
   qrScans: number;
   starts: number;
   shares: number;
@@ -149,75 +149,74 @@ export async function listMerchantOperations(
       createdAt: iso(row.createdAt),
     }));
 
-    const legacyPilot = getMerchantBySlug("el-gordo-leo");
-    if (!legacyPilot || dynamicRows.some((merchant) => merchant.slug === legacyPilot.slug)) {
-      return dynamicRows;
-    }
+    const configuredRows: MerchantOperationsRow[] = [];
 
-    const [metrics] = await sql<MerchantMetricsDbRow[]>`
-      SELECT
-        (
-          SELECT count(*)
-          FROM analytics_events
-          WHERE merchant_id = ${legacyPilot.id}
-            AND name = 'qr_opened'
-            AND (${periodStart}::timestamptz IS NULL OR timestamp >= ${periodStart})
-        )::int AS qr_scans,
-        (
-          SELECT count(DISTINCT ae.session_id)
-          FROM analytics_events ae
-          JOIN sessions s ON s.id = ae.session_id
-          WHERE ae.merchant_id = ${legacyPilot.id}
-            AND ae.name = 'unlock_viewed'
-            AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
-        )::int AS starts,
-        (
-          SELECT count(DISTINCT ae.session_id)
-          FROM analytics_events ae
-          JOIN sessions s ON s.id = ae.session_id
-          WHERE ae.merchant_id = ${legacyPilot.id}
-            AND ae.name = 'share_initiated'
-            AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
-        )::int AS shares,
-        (
-          SELECT count(DISTINCT ae.session_id)
-          FROM analytics_events ae
-          JOIN sessions s ON s.id = ae.session_id
-          WHERE ae.merchant_id = ${legacyPilot.id}
-            AND ae.name = 'whatsapp_save_clicked'
-            AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
-        )::int AS whatsapp_saves,
-        (
-          SELECT count(DISTINCT r.session_id)
-          FROM rewards r
-          JOIN sessions s ON s.id = r.session_id
-          WHERE r.merchant_id = ${legacyPilot.id}
-            AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
-        )::int AS rewards_issued,
-        (
-          SELECT count(DISTINCT r.session_id)
-          FROM rewards r
-          JOIN sessions s ON s.id = r.session_id
-          WHERE r.merchant_id = ${legacyPilot.id}
-            AND r.redeemed_at IS NOT NULL
-            AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
-        )::int AS rewards_redeemed,
-        (
-          SELECT count(DISTINCT id)
-          FROM sessions
-          WHERE merchant_id = ${legacyPilot.id}
-            AND referred_by IS NOT NULL
-            AND (${periodStart}::timestamptz IS NULL OR created_at >= ${periodStart})
-        )::int AS referred_sessions
-    `;
+    for (const merchant of configuredMerchants) {
+      if (dynamicRows.some((row) => row.id === merchant.id || row.slug === merchant.slug)) continue;
 
-    return [
-      {
-        id: legacyPilot.id,
-        slug: legacyPilot.slug,
-        name: legacyPilot.name,
-        businessType: legacyPilot.theme.businessType ?? "Mini mercado",
-        createdAt: "2026-09-14T00:00:00.000Z",
+      const [metrics] = await sql<MerchantMetricsDbRow[]>`
+        SELECT
+          (
+            SELECT count(*)
+            FROM analytics_events
+            WHERE merchant_id = ${merchant.id}
+              AND name = 'qr_opened'
+              AND (${periodStart}::timestamptz IS NULL OR timestamp >= ${periodStart})
+          )::int AS qr_scans,
+          (
+            SELECT count(DISTINCT ae.session_id)
+            FROM analytics_events ae
+            JOIN sessions s ON s.id = ae.session_id
+            WHERE ae.merchant_id = ${merchant.id}
+              AND ae.name = 'unlock_viewed'
+              AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
+          )::int AS starts,
+          (
+            SELECT count(DISTINCT ae.session_id)
+            FROM analytics_events ae
+            JOIN sessions s ON s.id = ae.session_id
+            WHERE ae.merchant_id = ${merchant.id}
+              AND ae.name = 'share_initiated'
+              AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
+          )::int AS shares,
+          (
+            SELECT count(DISTINCT ae.session_id)
+            FROM analytics_events ae
+            JOIN sessions s ON s.id = ae.session_id
+            WHERE ae.merchant_id = ${merchant.id}
+              AND ae.name = 'whatsapp_save_clicked'
+              AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
+          )::int AS whatsapp_saves,
+          (
+            SELECT count(DISTINCT r.session_id)
+            FROM rewards r
+            JOIN sessions s ON s.id = r.session_id
+            WHERE r.merchant_id = ${merchant.id}
+              AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
+          )::int AS rewards_issued,
+          (
+            SELECT count(DISTINCT r.session_id)
+            FROM rewards r
+            JOIN sessions s ON s.id = r.session_id
+            WHERE r.merchant_id = ${merchant.id}
+              AND r.redeemed_at IS NOT NULL
+              AND (${periodStart}::timestamptz IS NULL OR s.created_at >= ${periodStart})
+          )::int AS rewards_redeemed,
+          (
+            SELECT count(DISTINCT id)
+            FROM sessions
+            WHERE merchant_id = ${merchant.id}
+              AND referred_by IS NOT NULL
+              AND (${periodStart}::timestamptz IS NULL OR created_at >= ${periodStart})
+          )::int AS referred_sessions
+      `;
+
+      configuredRows.push({
+        id: merchant.id,
+        slug: merchant.slug,
+        name: merchant.name,
+        businessType: merchant.theme.businessType ?? "Comercio",
+        createdAt: null,
         qrScans: metrics?.qrScans ?? 0,
         starts: metrics?.starts ?? 0,
         shares: metrics?.shares ?? 0,
@@ -225,9 +224,15 @@ export async function listMerchantOperations(
         rewardsRedeemed: metrics?.rewardsRedeemed ?? 0,
         whatsappSaves: metrics?.whatsappSaves ?? 0,
         referredSessions: metrics?.referredSessions ?? 0,
-      },
-      ...dynamicRows,
-    ];
+      });
+    }
+
+    return [...dynamicRows, ...configuredRows].sort((a, b) => {
+      if (a.createdAt && b.createdAt) return b.createdAt.localeCompare(a.createdAt);
+      if (a.createdAt) return -1;
+      if (b.createdAt) return 1;
+      return a.name.localeCompare(b.name, "es");
+    });
   } finally {
     await sql.end({ timeout: 5 });
   }
