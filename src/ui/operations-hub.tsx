@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./operations-hub.module.css";
 
 type OperationsPeriod = "today" | "7d" | "30d" | "all";
@@ -56,7 +56,6 @@ function funnelStages(merchant: MerchantOperationsRow): FunnelStage[] {
 }
 
 export function OperationsHub() {
-  const [key, setKey] = useState("");
   const [period, setPeriod] = useState<OperationsPeriod>("7d");
   const [merchants, setMerchants] = useState<MerchantOperationsRow[] | null>(null);
   const [busy, setBusy] = useState(false);
@@ -72,14 +71,14 @@ export function OperationsHub() {
     }), { qrScans: 0, shares: 0, rewardsRedeemed: 0, referredSessions: 0 });
   }, [merchants]);
 
-  async function fetchMerchants(nextPeriod: OperationsPeriod) {
+  const fetchMerchants = useCallback(async (nextPeriod: OperationsPeriod) => {
     setBusy(true);
     setError("");
     try {
       const response = await fetch("/api/operacion/merchants", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ onboardingKey: key, period: nextPeriod }),
+        body: JSON.stringify({ period: nextPeriod }),
       });
       const payload = await response.json() as { merchants?: MerchantOperationsRow[]; error?: string };
       if (!response.ok || !payload.merchants) throw new Error(payload.error ?? "No pudimos cargar los comercios");
@@ -90,12 +89,11 @@ export function OperationsHub() {
     } finally {
       setBusy(false);
     }
-  }
+  }, []);
 
-  async function load(event: FormEvent) {
-    event.preventDefault();
-    await fetchMerchants(period);
-  }
+  useEffect(() => {
+    void fetchMerchants("7d");
+  }, [fetchMerchants]);
 
   return (
     <main className={styles.shell} data-testid="operations-hub">
@@ -110,17 +108,16 @@ export function OperationsHub() {
         </header>
 
         {merchants === null ? (
-          <form className={styles.login} onSubmit={load}>
+          <div className={styles.login}>
             <div>
-              <strong>Ingresá con la clave de alta</strong>
-              <p className={styles.meta}>No se muestran datos de comercios hasta validar la clave privada.</p>
+              <strong>{busy ? "Cargando estadísticas…" : "No pudimos cargar las estadísticas"}</strong>
+              <p className={styles.meta}>{busy ? "Estamos reuniendo los datos de tus comercios." : "Podés volver a intentar ahora."}</p>
             </div>
-            <div className={styles.loginRow}>
-              <input className={styles.input} data-testid="operations-key" type="password" value={key} onChange={(event) => setKey(event.target.value)} placeholder="Clave privada" autoComplete="off" required />
-              <button className={styles.button} data-testid="operations-submit" disabled={busy} type="submit">{busy ? "Cargando…" : "Entrar"}</button>
-            </div>
+            {!busy && (
+              <button className={styles.button} type="button" onClick={() => void fetchMerchants(period)}>Reintentar</button>
+            )}
             {error && <p className={styles.error} role="alert">{error}</p>}
-          </form>
+          </div>
         ) : (
           <>
             <div className={styles.periodBar}>
