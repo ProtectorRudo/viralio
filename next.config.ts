@@ -46,8 +46,36 @@ const sensitiveSources = [
   "/api/share-card/:path*",
 ];
 
+function maurilioOrigin() {
+  const raw = process.env.MAURILIO_ORIGIN?.replace(/\/$/, "");
+  if (!raw) return null;
+
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:" || url.origin !== raw) return null;
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async rewrites() {
+    const origin = maurilioOrigin();
+    if (!origin) return [];
+
+    return [
+      {
+        source: "/maurilio",
+        destination: `${origin}/maurilio`,
+      },
+      {
+        source: "/maurilio/:path*",
+        destination: `${origin}/maurilio/:path*`,
+      },
+    ];
+  },
   async headers() {
     return [
       {
