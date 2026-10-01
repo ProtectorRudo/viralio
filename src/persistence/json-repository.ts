@@ -43,6 +43,7 @@ export class JsonRepository implements Repository {
         events: parsed.events ?? [],
         merchantSettings: parsed.merchantSettings ?? [],
         merchantAccounts: parsed.merchantAccounts ?? [],
+        merchantDeletions: parsed.merchantDeletions ?? [],
       };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return emptyDatabase();
