@@ -6,6 +6,7 @@ import type {
   MerchantCustomization,
   MerchantMetrics,
   MerchantSettingsRecord,
+  MerchantDeletionRecord,
   Reward,
   Session,
 } from "@/domain/types";
@@ -15,6 +16,7 @@ export class ArrayTransaction implements TransactionRepository {
   constructor(private readonly database: Database) {
     this.database.merchantSettings ??= [];
     this.database.merchantAccounts ??= [];
+    this.database.merchantDeletions ??= [];
   }
 
   async getSessionById(sessionId: string, merchantId?: string): Promise<Session | undefined> {
@@ -130,6 +132,22 @@ export class ArrayTransaction implements TransactionRepository {
       throw new Error("Merchant already exists");
     }
     this.database.merchantAccounts.push(account);
+  }
+
+  async getMerchantDeletionBySlug(slug: string): Promise<MerchantDeletionRecord | undefined> {
+    return this.database.merchantDeletions.find((record) => record.slug === slug);
+  }
+
+  async getMerchantDeletionById(merchantId: string): Promise<MerchantDeletionRecord | undefined> {
+    return this.database.merchantDeletions.find((record) => record.merchantId === merchantId);
+  }
+
+  async upsertMerchantDeletion(record: MerchantDeletionRecord): Promise<void> {
+    const index = this.database.merchantDeletions.findIndex(
+      (candidate) => candidate.merchantId === record.merchantId || candidate.slug === record.slug,
+    );
+    if (index < 0) this.database.merchantDeletions.push(record);
+    else this.database.merchantDeletions[index] = record;
   }
 
   async getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined> {
