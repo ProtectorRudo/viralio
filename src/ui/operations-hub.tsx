@@ -137,7 +137,7 @@ export function OperationsHub() {
         body: JSON.stringify({ onboardingKey: deleteKey }),
       });
       const payload = await response.json() as { merchant?: { slug: string }; error?: string };
-      if (!response.ok || !payload.merchant) throw new Error(payload.error ?? "No pudimos eliminar el comercio");
+      if (!response.ok || !payload.merchant) throw new Error(payload.error ?? "No pudimos borrar el comercio");
 
       setMerchants((current) => current?.filter((merchant) => merchant.slug !== deleteTarget.slug) ?? current);
       closeDelete();
@@ -259,7 +259,7 @@ export function OperationsHub() {
                         <Link className={styles.action} href={`/comercio/${merchant.slug}/activacion`}>Kit</Link>
                         <Link className={styles.action} href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
                         <Link className={styles.action} href={experiencePath(merchant.slug)} target="_blank" rel="noreferrer">Experiencia</Link>
-                        <button className={`${styles.action} ${styles.actionDanger}`} type="button" onClick={() => openDelete(merchant)}>Eliminar comercio</button>
+                        <button className={`${styles.action} ${styles.actionDanger}`} type="button" onClick={() => openDelete(merchant)}>Borrar comercio</button>
                       </div>
                     </article>
                   );
@@ -275,7 +275,7 @@ export function OperationsHub() {
           }}>
             <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="delete-merchant-title">
               <p className={styles.eyebrow}>Acción protegida</p>
-              <h2 id="delete-merchant-title" className={styles.modalTitle}>Eliminar {deleteTarget.name}</h2>
+              <h2 id="delete-merchant-title" className={styles.modalTitle}>Borrar {deleteTarget.name}</h2>
               <p className={styles.modalCopy}>
                 La página pública dejará de estar disponible y el comercio desaparecerá de Operación. Las métricas históricas se conservan para no perder información.
               </p>
@@ -311,7 +311,7 @@ export function OperationsHub() {
                   disabled={deleteBusy || deleteConfirmation.trim() !== deleteTarget.name || !deleteKey.trim()}
                   onClick={() => void deleteMerchant()}
                 >
-                  {deleteBusy ? "Eliminando…" : "Eliminar comercio"}
+                  {deleteBusy ? "Borrando…" : "Borrar comercio"}
                 </button>
               </div>
             </section>
