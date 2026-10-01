@@ -61,6 +61,11 @@ export function OperationsHub() {
   const [merchants, setMerchants] = useState<MerchantOperationsRow[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<MerchantOperationsRow | null>(null);
+  const [deleteKey, setDeleteKey] = useState("");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const totals = useMemo(() => {
     const rows = merchants ?? [];
@@ -96,6 +101,52 @@ export function OperationsHub() {
   useEffect(() => {
     void fetchMerchants("7d");
   }, [fetchMerchants]);
+
+  function openDelete(merchant: MerchantOperationsRow) {
+    setDeleteTarget(merchant);
+    setDeleteKey("");
+    setDeleteConfirmation("");
+    setDeleteError("");
+  }
+
+  function closeDelete() {
+    if (deleteBusy) return;
+    setDeleteTarget(null);
+    setDeleteKey("");
+    setDeleteConfirmation("");
+    setDeleteError("");
+  }
+
+  async function deleteMerchant() {
+    if (!deleteTarget) return;
+    if (deleteConfirmation.trim() !== deleteTarget.name) {
+      setDeleteError("Escribí el nombre exacto del comercio para confirmar.");
+      return;
+    }
+    if (!deleteKey.trim()) {
+      setDeleteError("Ingresá la clave de administración.");
+      return;
+    }
+
+    setDeleteBusy(true);
+    setDeleteError("");
+    try {
+      const response = await fetch(`/api/operacion/merchants/${encodeURIComponent(deleteTarget.slug)}`, {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ onboardingKey: deleteKey }),
+      });
+      const payload = await response.json() as { merchant?: { slug: string }; error?: string };
+      if (!response.ok || !payload.merchant) throw new Error(payload.error ?? "No pudimos eliminar el comercio");
+
+      setMerchants((current) => current?.filter((merchant) => merchant.slug !== deleteTarget.slug) ?? current);
+      closeDelete();
+    } catch (reason) {
+      setDeleteError((reason as Error).message);
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
 
   return (
     <main className={styles.shell} data-testid="operations-hub">
@@ -208,6 +259,7 @@ export function OperationsHub() {
                         <Link className={styles.action} href={`/comercio/${merchant.slug}/activacion`}>Kit</Link>
                         <Link className={styles.action} href={`/comercio/${merchant.slug}/configuracion`}>Configuración</Link>
                         <Link className={styles.action} href={experiencePath(merchant.slug)} target="_blank" rel="noreferrer">Experiencia</Link>
+                        <button className={`${styles.action} ${styles.actionDanger}`} type="button" onClick={() => openDelete(merchant)}>Eliminar comercio</button>
                       </div>
                     </article>
                   );
@@ -215,6 +267,55 @@ export function OperationsHub() {
               </section>
             )}
           </>
+        )}
+
+        {deleteTarget && (
+          <div className={styles.modalBackdrop} role="presentation" onMouseDown={(event) => {
+            if (event.currentTarget === event.target) closeDelete();
+          }}>
+            <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="delete-merchant-title">
+              <p className={styles.eyebrow}>Acción protegida</p>
+              <h2 id="delete-merchant-title" className={styles.modalTitle}>Eliminar {deleteTarget.name}</h2>
+              <p className={styles.modalCopy}>
+                La página pública dejará de estar disponible y el comercio desaparecerá de Operación. Las métricas históricas se conservan para no perder información.
+              </p>
+
+              <label className={styles.modalLabel}>
+                Escribí <strong>{deleteTarget.name}</strong> para confirmar
+                <input
+                  className={styles.input}
+                  value={deleteConfirmation}
+                  onChange={(event) => setDeleteConfirmation(event.target.value)}
+                  autoComplete="off"
+                />
+              </label>
+
+              <label className={styles.modalLabel}>
+                Clave de administración
+                <input
+                  className={styles.input}
+                  type="password"
+                  value={deleteKey}
+                  onChange={(event) => setDeleteKey(event.target.value)}
+                  autoComplete="off"
+                />
+              </label>
+
+              {deleteError && <p className={styles.error} role="alert">{deleteError}</p>}
+
+              <div className={styles.modalActions}>
+                <button className={styles.action} type="button" disabled={deleteBusy} onClick={closeDelete}>Cancelar</button>
+                <button
+                  className={styles.deleteConfirm}
+                  type="button"
+                  disabled={deleteBusy || deleteConfirmation.trim() !== deleteTarget.name || !deleteKey.trim()}
+                  onClick={() => void deleteMerchant()}
+                >
+                  {deleteBusy ? "Eliminando…" : "Eliminar comercio"}
+                </button>
+              </div>
+            </section>
+          </div>
         )}
       </div>
     </main>
