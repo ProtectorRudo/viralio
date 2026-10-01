@@ -133,6 +133,23 @@ export class ViralioService {
     });
   }
 
+  async deactivateMerchant(merchantSlug: string): Promise<{ id: string; slug: string; name: string }> {
+    return this.repository.transaction(async (transaction) => {
+      const configured = getMerchantBySlug(merchantSlug);
+      const account = configured ? undefined : await transaction.getMerchantAccountBySlug(merchantSlug);
+      const merchant = configured ?? (account ? merchantFromAccount(account) : undefined);
+      if (!merchant) throw new Error("Merchant not found");
+
+      await transaction.upsertMerchantDeletion({
+        merchantId: merchant.id,
+        slug: merchant.slug,
+        deletedAt: this.now().toISOString(),
+      });
+
+      return { id: merchant.id, slug: merchant.slug, name: merchant.name };
+    });
+  }
+
   async getMerchantCustomization(merchantId: string): Promise<MerchantCustomization> {
     return this.repository.transaction(async (transaction) => {
       const base = await this.resolveMerchantBaseById(transaction, merchantId);
@@ -359,6 +376,7 @@ export class ViralioService {
     transaction: TransactionRepository,
     slug: string,
   ): Promise<Merchant | undefined> {
+    if (await transaction.getMerchantDeletionBySlug(slug)) return undefined;
     const configured = getMerchantBySlug(slug);
     if (configured) return configured;
     const account = await transaction.getMerchantAccountBySlug(slug);
@@ -369,6 +387,7 @@ export class ViralioService {
     transaction: TransactionRepository,
     merchantId: string,
   ): Promise<Merchant | undefined> {
+    if (await transaction.getMerchantDeletionById(merchantId)) return undefined;
     const configured = getMerchantById(merchantId);
     if (configured) return configured;
     const account = await transaction.getMerchantAccountById(merchantId);
