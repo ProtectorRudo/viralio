@@ -10,6 +10,7 @@ export interface MerchantOperationsRow {
   businessType: string;
   createdAt: string | null;
   qrScans: number;
+  visits: number;
   starts: number;
   shares: number;
   rewardsIssued: number;
@@ -25,6 +26,7 @@ interface MerchantOperationsDbRow {
   businessType: string;
   createdAt: Date | string;
   qrScans: number;
+  visits: number;
   starts: number;
   shares: number;
   rewardsIssued: number;
@@ -35,6 +37,7 @@ interface MerchantOperationsDbRow {
 
 interface MerchantMetricsDbRow {
   qrScans: number;
+  visits: number;
   starts: number;
   shares: number;
   rewardsIssued: number;
@@ -88,6 +91,7 @@ export async function listMerchantOperations(
         ma.business_type,
         ma.created_at,
         COALESCE(events.qr_scans, 0)::int AS qr_scans,
+        COALESCE(sessions.visits, 0)::int AS visits,
         COALESCE(events.starts, 0)::int AS starts,
         COALESCE(events.shares, 0)::int AS shares,
         COALESCE(events.whatsapp_saves, 0)::int AS whatsapp_saves,
@@ -134,10 +138,14 @@ export async function listMerchantOperations(
         WHERE r.merchant_id = ma.merchant_id
       ) rewards ON true
       LEFT JOIN LATERAL (
-        SELECT count(DISTINCT id) FILTER (
-          WHERE referred_by IS NOT NULL
-            AND (${periodStart}::timestamptz IS NULL OR created_at >= ${periodStart})
-        ) AS referred_sessions
+        SELECT
+          count(DISTINCT id) FILTER (
+            WHERE ${periodStart}::timestamptz IS NULL OR created_at >= ${periodStart}
+          ) AS visits,
+          count(DISTINCT id) FILTER (
+            WHERE referred_by IS NOT NULL
+              AND (${periodStart}::timestamptz IS NULL OR created_at >= ${periodStart})
+          ) AS referred_sessions
         FROM sessions
         WHERE merchant_id = ma.merchant_id
       ) sessions ON true
@@ -156,6 +164,12 @@ export async function listMerchantOperations(
 
       const [metrics] = await sql<MerchantMetricsDbRow[]>`
         SELECT
+          (
+            SELECT count(DISTINCT id)
+            FROM sessions
+            WHERE merchant_id = ${merchant.id}
+              AND (${periodStart}::timestamptz IS NULL OR created_at >= ${periodStart})
+          )::int AS visits,
           (
             SELECT count(*)
             FROM analytics_events
@@ -218,6 +232,7 @@ export async function listMerchantOperations(
         businessType: merchant.theme.businessType ?? "Comercio",
         createdAt: null,
         qrScans: metrics?.qrScans ?? 0,
+        visits: metrics?.visits ?? 0,
         starts: metrics?.starts ?? 0,
         shares: metrics?.shares ?? 0,
         rewardsIssued: metrics?.rewardsIssued ?? 0,
