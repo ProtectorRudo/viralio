@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { viralio } from "@/application";
 import { MerchantExperience } from "@/ui/merchant-experience";
 
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
 
 export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams;
-  const merchant = await viralio.getMerchantForExperience("atlas-barber");
-  return <MerchantExperience merchant={merchant} referralToken={ref} />;
+  try {
+    const merchant = await viralio.getMerchantForExperience("atlas-barber");
+    return <MerchantExperience merchant={merchant} referralToken={ref} />;
+  } catch {
+    notFound();
+  }
 }
