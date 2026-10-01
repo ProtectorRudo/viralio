@@ -13,6 +13,7 @@ interface MerchantOperationsRow {
   businessType: string;
   createdAt: string | null;
   qrScans: number;
+  visits: number;
   starts: number;
   shares: number;
   rewardsIssued: number;
@@ -46,8 +47,8 @@ function percent(value: number, base: number): string {
 
 function funnelStages(merchant: MerchantOperationsRow): FunnelStage[] {
   return [
-    { key: "scan", label: "Escaneó", value: merchant.qrScans },
-    { key: "start", label: "Empezó", value: merchant.starts, previous: merchant.qrScans },
+    { key: "visit", label: "Entró", value: merchant.visits },
+    { key: "start", label: "Empezó", value: merchant.starts, previous: merchant.visits },
     { key: "share", label: "Compartió", value: merchant.shares, previous: merchant.starts },
     { key: "reward", label: "Premio", value: merchant.rewardsIssued, previous: merchant.shares },
     { key: "save", label: "Guardó", value: merchant.whatsappSaves, previous: merchant.rewardsIssued },
@@ -64,11 +65,12 @@ export function OperationsHub() {
   const totals = useMemo(() => {
     const rows = merchants ?? [];
     return rows.reduce((acc, merchant) => ({
+      visits: acc.visits + merchant.visits,
       qrScans: acc.qrScans + merchant.qrScans,
       shares: acc.shares + merchant.shares,
       rewardsRedeemed: acc.rewardsRedeemed + merchant.rewardsRedeemed,
       referredSessions: acc.referredSessions + merchant.referredSessions,
-    }), { qrScans: 0, shares: 0, rewardsRedeemed: 0, referredSessions: 0 });
+    }), { visits: 0, qrScans: 0, shares: 0, rewardsRedeemed: 0, referredSessions: 0 });
   }, [merchants]);
 
   const fetchMerchants = useCallback(async (nextPeriod: OperationsPeriod) => {
@@ -146,7 +148,7 @@ export function OperationsHub() {
             <div className={styles.toolbar}>
               <div className={styles.summary}>
                 <span className={styles.summaryItem}><strong>{merchants.length}</strong> comercios</span>
-                <span className={styles.summaryItem}><strong>{totals.qrScans}</strong> escaneos</span>
+                <span className={styles.summaryItem}><strong>{totals.visits}</strong> visitas</span>
                 <span className={styles.summaryItem}><strong>{totals.shares}</strong> compartidos</span>
                 <span className={styles.summaryItem}><strong>{totals.referredSessions}</strong> nuevos receptores</span>
                 <span className={styles.summaryItem}><strong>{totals.rewardsRedeemed}</strong> canjes</span>
@@ -166,7 +168,7 @@ export function OperationsHub() {
                       </div>
 
                       <div className={styles.metrics}>
-                        <div className={styles.metric}><strong>{merchant.qrScans}</strong><span>Escaneos</span></div>
+                        <div className={styles.metric}><strong>{merchant.visits}</strong><span>Visitas</span></div>
                         <div className={styles.metric}><strong>{merchant.shares}</strong><span>Compartidos</span></div>
                         <div className={styles.metric}><strong>{merchant.referredSessions}</strong><span>Receptores</span></div>
                         <div className={styles.metric}><strong>{merchant.rewardsRedeemed}</strong><span>Canjes</span></div>
@@ -192,9 +194,10 @@ export function OperationsHub() {
                           ))}
                         </div>
                         <div className={styles.funnelNotes}>
-                          <span><strong>{percent(merchant.starts, merchant.qrScans)}</strong> inicia después de escanear</span>
+                          <span><strong>{percent(merchant.starts, merchant.visits)}</strong> empieza después de entrar</span>
                           <span><strong>{percent(merchant.shares, merchant.starts)}</strong> comparte después de empezar</span>
                           <span><strong>{percent(merchant.rewardsRedeemed, merchant.rewardsIssued)}</strong> de los premios termina en canje</span>
+                          <span><strong>{merchant.qrScans}</strong> entradas por QR trazable</span>
                         </div>
                       </section>
 
