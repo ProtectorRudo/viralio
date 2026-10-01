@@ -3,18 +3,18 @@ import { expect, test } from "@playwright/test";
 const onboardingKey = process.env.VIRALIO_ONBOARDING_KEY;
 const slug = "operacion-ci";
 
-test("operations hub stays private, filters periods and lists real plus onboarded merchants", async ({ page, request }) => {
-  test.skip(!onboardingKey, "VIRALIO_ONBOARDING_KEY is required for operations E2E");
+test("operations hub loads without password, filters periods and lists real plus onboarded merchants", async ({ page, request }) => {
+  test.skip(!onboardingKey, "VIRALIO_ONBOARDING_KEY is required to create the E2E merchant");
 
-  const unauthorized = await request.post("/api/operacion/merchants", {
+  const publicStats = await request.post("/api/operacion/merchants", {
     headers: { origin: "http://127.0.0.1:3000" },
-    data: { onboardingKey: "wrong-key" },
+    data: { period: "7d" },
   });
-  expect(unauthorized.status()).toBe(401);
+  expect(publicStats.status()).toBe(200);
 
   const invalidPeriod = await request.post("/api/operacion/merchants", {
     headers: { origin: "http://127.0.0.1:3000" },
-    data: { onboardingKey, period: "year" },
+    data: { period: "year" },
   });
   expect(invalidPeriod.status()).toBe(400);
 
@@ -33,12 +33,8 @@ test("operations hub stays private, filters periods and lists real plus onboarde
 
   await page.goto("/operacion");
   await expect(page.getByTestId("operations-hub")).toBeVisible();
-  await expect(page.getByTestId(`operations-merchant-${slug}`)).toHaveCount(0);
-  await expect(page.getByTestId("operations-merchant-el-gordo-leo")).toHaveCount(0);
-
-  await page.getByTestId("operations-key").fill(onboardingKey!);
-  await page.getByTestId("operations-submit").click();
-
+  await expect(page.getByTestId("operations-key")).toHaveCount(0);
+  await expect(page.getByTestId("operations-submit")).toHaveCount(0);
   await expect(page.getByTestId("operations-period-7d")).toHaveAttribute("aria-pressed", "true");
 
   const pilotCard = page.getByTestId("operations-merchant-el-gordo-leo");
