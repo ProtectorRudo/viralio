@@ -83,6 +83,12 @@ export async function listMerchantOperations(
   });
 
   try {
+    const deletedRows = await sql<Array<{ merchantId: string; slug: string }>>`
+      SELECT merchant_id, slug FROM merchant_deletions
+    `;
+    const deletedIds = new Set(deletedRows.map((row) => row.merchantId));
+    const deletedSlugs = new Set(deletedRows.map((row) => row.slug));
+
     const rows = await sql<MerchantOperationsDbRow[]>`
       SELECT
         ma.merchant_id AS id,
@@ -149,6 +155,11 @@ export async function listMerchantOperations(
         FROM sessions
         WHERE merchant_id = ma.merchant_id
       ) sessions ON true
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM merchant_deletions md
+        WHERE md.merchant_id = ma.merchant_id OR md.slug = ma.slug
+      )
       ORDER BY ma.created_at DESC, ma.name ASC
     `;
 
@@ -160,6 +171,7 @@ export async function listMerchantOperations(
     const configuredRows: MerchantOperationsRow[] = [];
 
     for (const merchant of configuredMerchants) {
+      if (deletedIds.has(merchant.id) || deletedSlugs.has(merchant.slug)) continue;
       if (dynamicRows.some((row) => row.id === merchant.id || row.slug === merchant.slug)) continue;
 
       const [metrics] = await sql<MerchantMetricsDbRow[]>`
