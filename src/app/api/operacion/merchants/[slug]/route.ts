@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { viralio } from "@/application";
-import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
+import { isSameOrigin } from "@/security/merchant-auth";
 
 export async function DELETE(
   request: Request,
@@ -17,19 +17,20 @@ export async function DELETE(
     return NextResponse.json({ error: "Solicitud inválida" }, { status: 400 });
   }
 
-  if (typeof body.onboardingKey !== "string" || !verifyOnboardingKey(body.onboardingKey)) {
-    return NextResponse.json({ error: "Clave de administración inválida" }, { status: 401 });
-  }
-
   const { slug } = await params;
 
   try {
-    const merchant = await viralio.deactivateMerchant(slug);
-    return NextResponse.json({ merchant });
+    const merchant = await viralio.getMerchantForExperience(slug);
+    if (typeof body.confirmationName !== "string" || body.confirmationName.trim() !== merchant.name) {
+      return NextResponse.json({ error: "Confirmación inválida" }, { status: 400 });
+    }
+
+    const deleted = await viralio.deactivateMerchant(slug);
+    return NextResponse.json({ merchant: deleted });
   } catch (error) {
     const message = (error as Error).message;
     return NextResponse.json(
-      { error: message === "Merchant not found" ? "Comercio no encontrado" : "No pudimos eliminar el comercio" },
+      { error: message === "Merchant not found" ? "Comercio no encontrado" : "No pudimos borrar el comercio" },
       { status: message === "Merchant not found" ? 404 : 500 },
     );
   }
