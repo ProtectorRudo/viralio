@@ -62,7 +62,6 @@ export function OperationsHub() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<MerchantOperationsRow | null>(null);
-  const [deleteKey, setDeleteKey] = useState("");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -104,7 +103,6 @@ export function OperationsHub() {
 
   function openDelete(merchant: MerchantOperationsRow) {
     setDeleteTarget(merchant);
-    setDeleteKey("");
     setDeleteConfirmation("");
     setDeleteError("");
   }
@@ -112,7 +110,6 @@ export function OperationsHub() {
   function closeDelete() {
     if (deleteBusy) return;
     setDeleteTarget(null);
-    setDeleteKey("");
     setDeleteConfirmation("");
     setDeleteError("");
   }
@@ -123,18 +120,13 @@ export function OperationsHub() {
       setDeleteError("Escribí el nombre exacto del comercio para confirmar.");
       return;
     }
-    if (!deleteKey.trim()) {
-      setDeleteError("Ingresá la clave de administración.");
-      return;
-    }
-
     setDeleteBusy(true);
     setDeleteError("");
     try {
       const response = await fetch(`/api/operacion/merchants/${encodeURIComponent(deleteTarget.slug)}`, {
         method: "DELETE",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ onboardingKey: deleteKey }),
+        body: JSON.stringify({ confirmationName: deleteConfirmation.trim() }),
       });
       const payload = await response.json() as { merchant?: { slug: string }; error?: string };
       if (!response.ok || !payload.merchant) throw new Error(payload.error ?? "No pudimos borrar el comercio");
@@ -274,7 +266,7 @@ export function OperationsHub() {
             if (event.currentTarget === event.target) closeDelete();
           }}>
             <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="delete-merchant-title">
-              <p className={styles.eyebrow}>Acción protegida</p>
+              <p className={styles.eyebrow}>Confirmar borrado</p>
               <h2 id="delete-merchant-title" className={styles.modalTitle}>Borrar {deleteTarget.name}</h2>
               <p className={styles.modalCopy}>
                 La página pública dejará de estar disponible y el comercio desaparecerá de Operación. Las métricas históricas se conservan para no perder información.
@@ -290,17 +282,6 @@ export function OperationsHub() {
                 />
               </label>
 
-              <label className={styles.modalLabel}>
-                Clave de administración
-                <input
-                  className={styles.input}
-                  type="password"
-                  value={deleteKey}
-                  onChange={(event) => setDeleteKey(event.target.value)}
-                  autoComplete="off"
-                />
-              </label>
-
               {deleteError && <p className={styles.error} role="alert">{deleteError}</p>}
 
               <div className={styles.modalActions}>
@@ -308,7 +289,7 @@ export function OperationsHub() {
                 <button
                   className={styles.deleteConfirm}
                   type="button"
-                  disabled={deleteBusy || deleteConfirmation.trim() !== deleteTarget.name || !deleteKey.trim()}
+                  disabled={deleteBusy || deleteConfirmation.trim() !== deleteTarget.name}
                   onClick={() => void deleteMerchant()}
                 >
                   {deleteBusy ? "Borrando…" : "Borrar comercio"}
