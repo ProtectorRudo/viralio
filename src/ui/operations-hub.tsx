@@ -11,7 +11,7 @@ interface MerchantOperationsRow {
   slug: string;
   name: string;
   businessType: string;
-  createdAt: string;
+  createdAt: string | null;
   qrScans: number;
   starts: number;
   shares: number;
@@ -162,7 +162,7 @@ export function OperationsHub() {
                     <article className={styles.card} key={merchant.id} data-testid={`operations-merchant-${merchant.slug}`}>
                       <div className={styles.cardTop}>
                         <div><h2 className={styles.name}>{merchant.name}</h2><p className={styles.meta}>{merchant.businessType} · /{merchant.slug}</p></div>
-                        <span className={styles.date}>Alta {new Date(merchant.createdAt).toLocaleDateString("es-AR")}</span>
+                        <span className={styles.date}>{merchant.createdAt ? `Alta ${new Date(merchant.createdAt).toLocaleDateString("es-AR")}` : "Comercio configurado"}</span>
                       </div>
 
                       <div className={styles.metrics}>
