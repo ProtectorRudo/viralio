@@ -6,6 +6,7 @@ import type {
   MerchantCustomization,
   MerchantMetrics,
   MerchantSettingsRecord,
+  MerchantDeletionRecord,
   Reward,
   Session,
 } from "@/domain/types";
@@ -32,6 +33,10 @@ export interface TransactionRepository {
   getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined>;
   insertMerchantAccount(account: MerchantAccount): Promise<void>;
 
+  getMerchantDeletionBySlug(slug: string): Promise<MerchantDeletionRecord | undefined>;
+  getMerchantDeletionById(merchantId: string): Promise<MerchantDeletionRecord | undefined>;
+  upsertMerchantDeletion(record: MerchantDeletionRecord): Promise<void>;
+
   getMerchantSettings(merchantId: string): Promise<MerchantSettingsRecord | undefined>;
   upsertMerchantSettings(merchantId: string, customization: MerchantCustomization, updatedAt: string): Promise<void>;
   uniqueValueExists(kind: UniqueValueKind, value: string): Promise<boolean>;
@@ -44,5 +49,5 @@ export interface Repository {
 }
 
 export function emptyDatabase(): Database {
-  return { sessions: [], rewards: [], events: [], merchantSettings: [], merchantAccounts: [] };
+  return { sessions: [], rewards: [], events: [], merchantSettings: [], merchantAccounts: [], merchantDeletions: [] };
 }
