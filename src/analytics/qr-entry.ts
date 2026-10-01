@@ -5,6 +5,7 @@ import { repository } from "@/persistence";
 
 export async function recordQrOpen(merchantSlug: string): Promise<void> {
   await repository.transaction(async (transaction) => {
+    if (await transaction.getMerchantDeletionBySlug(merchantSlug)) throw new Error("Merchant deleted");
     const configured = getMerchantBySlug(merchantSlug);
     const account = configured ? undefined : await transaction.getMerchantAccountBySlug(merchantSlug);
     const merchantId = configured?.id ?? account?.id;
