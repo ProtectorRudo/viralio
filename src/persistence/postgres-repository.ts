@@ -7,6 +7,7 @@ import type {
   MerchantCustomization,
   MerchantMetrics,
   MerchantSettingsRecord,
+  MerchantDeletionRecord,
   MerchantTemplate,
   Reward,
   Session,
@@ -79,6 +80,12 @@ interface MerchantAccountRow {
   pinSalt: string;
   pinHash: string;
   createdAt: Timestamp;
+}
+
+interface MerchantDeletionRow {
+  merchantId: string;
+  slug: string;
+  deletedAt: Timestamp;
 }
 
 function iso(value: Timestamp): string {
@@ -346,6 +353,38 @@ class PostgresTransaction implements TransactionRepository {
         ${account.id}, ${account.slug}, ${account.name}, ${account.template}, ${account.businessType ?? "Comercio"},
         ${account.pinSalt}, ${account.pinHash}, ${account.createdAt}
       )
+    `;
+  }
+
+  async getMerchantDeletionBySlug(slug: string): Promise<MerchantDeletionRecord | undefined> {
+    const rows = await this.sql<MerchantDeletionRow[]>`
+      SELECT merchant_id, slug, deleted_at
+      FROM merchant_deletions
+      WHERE slug = ${slug}
+      LIMIT 1
+    `;
+    const row = rows[0];
+    return row ? { merchantId: row.merchantId, slug: row.slug, deletedAt: iso(row.deletedAt) } : undefined;
+  }
+
+  async getMerchantDeletionById(merchantId: string): Promise<MerchantDeletionRecord | undefined> {
+    const rows = await this.sql<MerchantDeletionRow[]>`
+      SELECT merchant_id, slug, deleted_at
+      FROM merchant_deletions
+      WHERE merchant_id = ${merchantId}
+      LIMIT 1
+    `;
+    const row = rows[0];
+    return row ? { merchantId: row.merchantId, slug: row.slug, deletedAt: iso(row.deletedAt) } : undefined;
+  }
+
+  async upsertMerchantDeletion(record: MerchantDeletionRecord): Promise<void> {
+    await this.sql`
+      INSERT INTO merchant_deletions (merchant_id, slug, deleted_at)
+      VALUES (${record.merchantId}, ${record.slug}, ${record.deletedAt})
+      ON CONFLICT (merchant_id) DO UPDATE SET
+        slug = EXCLUDED.slug,
+        deleted_at = EXCLUDED.deleted_at
     `;
   }
 
