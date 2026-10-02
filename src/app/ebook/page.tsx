@@ -333,7 +333,7 @@ export default function Home() {
             <div className="aqv-page-sheet aqv-page-two">
               <div className="aqv-sheet-head"><span>RETENCIÓN</span><b>07</b></div>
               <h4>Hook → Tensión<br/>→ Revelación</h4>
-              <div className="aqv-flow-row"><span>P</span><i>→</i><span>C</span><i>→</i><span>S</span></div>
+              <div className="aqv-flow-row"><span>H</span><i>→</i><span>T</span><i>→</i><span>R</span></div>
               <small>PARA SOSTENER LA ATENCIÓN</small>
             </div>
             <div className="aqv-page-sheet aqv-page-three">
