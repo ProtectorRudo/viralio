@@ -98,7 +98,11 @@ export function OperationsHub() {
   }, []);
 
   useEffect(() => {
-    void fetchMerchants("7d");
+    const timer = window.setTimeout(() => {
+      void fetchMerchants("7d");
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [fetchMerchants]);
 
   function openDelete(merchant: MerchantOperationsRow) {
