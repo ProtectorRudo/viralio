@@ -182,3 +182,31 @@ test("Maurilio failed payment return never reveals premium content", async ({ pa
 
   await expectNoHorizontalOverflow(page);
 });
+
+
+test("Maurilio tipster marketplace is simple, real and mobile-safe", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/tipsters");
+
+  await expect(
+    page.getByRole("heading", { name: "Encontrá a quién seguir." }),
+  ).toBeVisible();
+  await expect(page.getByPlaceholder("Nombre, deporte o especialidad")).toBeVisible();
+
+  const card = page.getByRole("article").filter({ hasText: "Maurilio" }).first();
+  await expect(card).toBeVisible();
+  await expect(card.getByText("ROI 90D")).toBeVisible();
+  await expect(card.getByText("PICKS 90D")).toBeVisible();
+  await expect(card.getByText("0", { exact: true })).toBeVisible();
+
+  const body = await page.locator("body").innerText();
+  expect(body).not.toContain("+12.4%");
+  expect(body).not.toContain("184 apuestas");
+
+  await card.getByRole("link", { name: "Ver perfil" }).click();
+  await expect(page.getByRole("heading", { name: "Maurilio" })).toBeVisible();
+  await expect(page.getByText("Todavía no hay picks liquidados.")).toBeVisible();
+  await expect(page.getByText("No aceptamos historial cargado a mano.")).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
