@@ -67,7 +67,10 @@ export default function PremiumCheckoutButton({
         return (await response.json()) as CheckoutStatus;
       })
       .then((data) => {
-        if (!cancelled) setStatus(data);
+        if (!cancelled) {
+          setExpired(false);
+          setStatus(data);
+        }
       })
       .catch(() => {
         if (!cancelled) setStatus(null);
@@ -87,30 +90,18 @@ export default function PremiumCheckoutButton({
   const saleEndsAtMs = saleEndsAt ? new Date(saleEndsAt).getTime() : null;
 
   useEffect(() => {
-    if (!saleEndsAtMs || !Number.isFinite(saleEndsAtMs)) {
-      setExpired(false);
-      return;
-    }
+    if (!saleEndsAtMs || !Number.isFinite(saleEndsAtMs)) return;
 
     const remaining = saleEndsAtMs - Date.now();
-    if (remaining <= 0) {
-      setExpired(true);
-      return;
-    }
-
-    setExpired(false);
     const timer = window.setTimeout(
       () => setExpired(true),
-      Math.min(remaining + 50, 2_147_483_647),
+      Math.max(0, Math.min(remaining + 50, 2_147_483_647)),
     );
 
     return () => window.clearTimeout(timer);
   }, [saleEndsAtMs]);
 
-  const available =
-    (status?.availability[tier] ?? false) &&
-    !expired &&
-    (!saleEndsAtMs || saleEndsAtMs > Date.now());
+  const available = (status?.availability[tier] ?? false) && !expired;
 
   async function checkout() {
     if (!status?.enabled || !available || busy) return;
