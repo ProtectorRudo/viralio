@@ -10,12 +10,18 @@ import PremiumCheckoutButton from "./PremiumCheckoutButton";
 import PremiumReportView from "./PremiumReportView";
 import PaymentReturnView from "./PaymentReturnView";
 import PublicLedger from "./PublicLedger";
+import TipsterMarketplace from "./TipsterMarketplace";
+import TipsterProfile from "./TipsterProfile";
 import {
   ars,
   fetchMaurilioGateway,
   pct,
   type PublicState,
 } from "./maurilio-data";
+import {
+  fetchTipsterProfile,
+  fetchTipsters,
+} from "./tipsters-data";
 import {
   invokeMaurilioAccess,
   type AccessStatus,
@@ -55,10 +61,9 @@ function HeaderNav() {
       </Link>
 
       <nav className={styles.maurilioNav} aria-label="Maurilio">
+        <Link href="/maurilio/tipsters">Tipsters</Link>
         <Link href="/maurilio">Matchday</Link>
-        <Link href="/maurilio/demo">Demo</Link>
         <Link href="/maurilio/mis-informes">Mis informes</Link>
-        <Link href="/maurilio/integridad">Integridad</Link>
         <Link href="/maurilio/registro">Registro</Link>
       </nav>
     </header>
@@ -96,6 +101,50 @@ export default async function MaurilioPage({
   const reportView = view === "informe" || view === "report";
   const demoView = view === "demo" || view === "experiencia";
   const paymentView = view === "pago" || view === "payment";
+  const tipstersView = view === "tipsters" || view === "explorar";
+
+  if (tipstersView) {
+    const slug = resolved.path?.[1]?.toLowerCase();
+
+    if (slug) {
+      const profile = await fetchTipsterProfile(slug);
+
+      return (
+        <SubviewShell>
+          {profile ? (
+            <TipsterProfile data={profile} />
+          ) : (
+            <section className={styles.subview}>
+              <div className={styles.tipsterEmpty}>
+                <b>Tipster no encontrado.</b>
+                <p>Puede haber cambiado de nombre o no estar publicado.</p>
+                <Link className={styles.inlineAction} href="/maurilio/tipsters">
+                  Volver a buscar →
+                </Link>
+              </div>
+            </section>
+          )}
+        </SubviewShell>
+      );
+    }
+
+    const marketplace = await fetchTipsters();
+
+    return (
+      <SubviewShell>
+        {marketplace ? (
+          <TipsterMarketplace data={marketplace} />
+        ) : (
+          <section className={styles.subview}>
+            <div className={styles.tipsterEmpty}>
+              <b>No pudimos cargar los tipsters.</b>
+              <p>Probá nuevamente en unos segundos.</p>
+            </div>
+          </section>
+        )}
+      </SubviewShell>
+    );
+  }
 
   if (ledgerView) {
     return (
