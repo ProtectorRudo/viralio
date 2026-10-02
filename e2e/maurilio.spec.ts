@@ -12,201 +12,140 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(hasOverflow).toBe(false);
 }
 
-test("Maurilio Matchday is mobile-safe and never fabricates a pick", async ({ page }) => {
+test("Maurilio opens as a simple tipster marketplace on mobile", async ({ page }) => {
   await mobile(page);
   await page.goto("/maurilio");
 
   await expect(page.getByText("MAURILIO", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Matchday", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Integridad" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Registro" })).toBeVisible();
-
-  await expect(page.getByText("FREE", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("PRO", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("ELITE", { exact: true }).first()).toBeVisible();
-
-  const body = await page.locator("body").innerText();
-  expect(body).not.toContain("CUOTA BET365 NO VERIFICADA");
-  expect(body).not.toContain("1.53");
-  expect(body).not.toContain("1.57");
-
-  await expectNoHorizontalOverflow(page);
-});
-
-test("Maurilio integrity view exposes process rules without buyer data", async ({ page }) => {
-  await mobile(page);
-  await page.goto("/maurilio/integridad");
-
-  await expect(page.getByText("INTEGRITY / PROOF OF PROCESS")).toBeVisible();
-  await expect(page.getByText("BET365 ONLY", { exact: true })).toBeVisible();
-  await expect(page.getByText("IMMUTABLE PICK", { exact: true })).toBeVisible();
-  await expect(page.getByText("APPEND-ONLY AUDIT", { exact: true })).toBeVisible();
-
-  const body = await page.locator("body").innerText();
-  expect(body).not.toContain("subject_id");
-  expect(body).not.toContain("source_order_id");
-  expect(body).not.toContain("ENTITLEMENT");
-
-  await expectNoHorizontalOverflow(page);
-});
-
-test("Maurilio public ledger renders safely with or without settled history", async ({ page }) => {
-  await mobile(page);
-  await page.goto("/maurilio/registro");
-
-  await expect(page.getByText("PUBLIC LEDGER / IMMUTABLE HISTORY")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Registro real." })).toBeVisible();
-
-  const body = await page.locator("body").innerText();
-  expect(body).not.toContain("principal_risk");
-  expect(body).not.toContain("thesis");
-  expect(body).not.toContain("subject_id");
-
-  await expectNoHorizontalOverflow(page);
-});
-
-
-test("Maurilio access API returns no entitlement when no access cookie exists", async ({ request }) => {
-  const response = await request.get("http://127.0.0.1:3000/maurilio/api/access");
-  expect(response.status()).toBe(200);
-
-  const body = (await response.json()) as {
-    matchday: string | null;
-    pro: boolean;
-    elite: boolean;
-    activeEntitlements: number;
-  };
-
-  expect(body.pro).toBe(false);
-  expect(body.elite).toBe(false);
-  expect(body.activeEntitlements).toBe(0);
-});
-
-test("Maurilio premium API fails closed for a valid session id without entitlement", async ({ page }) => {
-  await page.context().addCookies([
-    {
-      name: "maurilio_sid",
-      value: "11111111-1111-4111-8111-111111111111",
-      url: "http://127.0.0.1:3000/maurilio",
-      httpOnly: true,
-      sameSite: "Lax",
-    },
-  ]);
-
-  const access = await page.request.get("/maurilio/api/access");
-  expect(access.status()).toBe(200);
-  const status = (await access.json()) as {
-    pro: boolean;
-    elite: boolean;
-    activeEntitlements: number;
-  };
-  expect(status.pro).toBe(false);
-  expect(status.elite).toBe(false);
-  expect(status.activeEntitlements).toBe(0);
-
-  const premium = await page.request.get("/maurilio/api/premium/pro");
-  expect([403, 404]).toContain(premium.status());
-  const body = (await premium.json()) as {
-    error?: string;
-    event?: unknown;
-    market?: unknown;
-    selection?: unknown;
-  };
-  expect(["access_required", "report_not_found"]).toContain(body.error);
-  expect(body.event).toBeUndefined();
-  expect(body.market).toBeUndefined();
-  expect(body.selection).toBeUndefined();
-});
-
-
-test("Maurilio demo is a single penalty kick that reveals the analysis on mobile", async ({ page }) => {
-  await mobile(page);
-  await page.goto("/maurilio/demo");
-
-  await expect(page.getByText("EXPERIENCIA DEMO")).toBeVisible();
-  await expect(page.getByText("Sin dinero · sin apuesta real")).toBeVisible();
-
-  const kick = page.getByRole("button", { name: /PATEAR PENAL/ });
-  await expect(kick).toBeVisible();
-  await kick.click();
-
-  await expect(page.getByText("Atlético Norte vs Unión Central")).toBeVisible({
-    timeout: 2500,
-  });
-  await expect(page.getByText("Más de 4.5 tarjetas")).toBeVisible();
-  await expect(page.getByText("CUOTA BET365 NO VERIFICADA")).toBeVisible();
-  await expect(page.getByText("NUESTRO MODELO")).toBeVisible();
-  await expect(page.getByText("MEJOR RAZÓN PARA NO ENTRAR")).toBeVisible();
-
-  await expectNoHorizontalOverflow(page);
-});
-
-
-test("Maurilio checkout stays fail-closed until Mercado Pago is configured", async ({ request }) => {
-  const status = await request.get("http://127.0.0.1:3000/maurilio/api/checkout");
-  expect(status.status()).toBe(200);
-
-  const body = (await status.json()) as {
-    enabled: boolean;
-    provider: string;
-    prices: { pro: number | null; elite: number | null };
-  };
-
-  expect(body.enabled).toBe(false);
-  expect(body.provider).toBe("mercado_pago");
-  expect(body.prices.pro).toBeNull();
-  expect(body.prices.elite).toBeNull();
-
-  const post = await request.post("http://127.0.0.1:3000/maurilio/api/checkout", {
-    data: { tier: "pro" },
-  });
-  expect(post.status()).toBe(403);
-
-  const denied = (await post.json()) as { error?: string };
-  expect(denied.error).toBe("invalid_origin");
-});
-
-test("Maurilio failed payment return never reveals premium content", async ({ page }) => {
-  await mobile(page);
-  await page.goto("/maurilio/pago/failure?tier=pro");
-
-  await expect(page.getByText("PAYMENT NOT COMPLETED")).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "No se desbloqueó ningún informe." }),
-  ).toBeVisible();
-
-  const body = await page.locator("body").innerText();
-  expect(body).not.toContain("ANÁLISIS REVELADO");
-  expect(body).not.toContain("PATEAR PENAL");
-  expect(body).not.toContain("selection");
-
-  await expectNoHorizontalOverflow(page);
-});
-
-
-test("Maurilio tipster marketplace is simple, real and mobile-safe", async ({ page }) => {
-  await mobile(page);
-  await page.goto("/maurilio/tipsters");
+  await expect(page.getByRole("link", { name: "Explorar" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Mis suscripciones" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Soy tipster" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ingresar" })).toBeVisible();
 
   await expect(
     page.getByRole("heading", { name: "Encontrá a quién seguir." }),
   ).toBeVisible();
-  await expect(page.getByPlaceholder("Nombre, deporte o especialidad")).toBeVisible();
+  await expect(
+    page.getByPlaceholder("Nombre, deporte o especialidad"),
+  ).toBeVisible();
+
+  const body = await page.locator("body").innerText();
+  expect(body).not.toContain("MATCHDAY / LIVE MODEL");
+  expect(body).not.toContain("PATEAR PENAL");
+  expect(body).not.toContain("THE LOCKER");
+  expect(body).not.toContain("ELITE");
+
+  await expectNoHorizontalOverflow(page);
+});
+
+test("public tipster performance starts from real platform history only", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio");
 
   const card = page.getByRole("article").filter({ hasText: "Maurilio" }).first();
   await expect(card).toBeVisible();
   await expect(card.getByText("ROI 90D")).toBeVisible();
   await expect(card.getByText("PICKS 90D")).toBeVisible();
-  await expect(card.getByText("0", { exact: true })).toBeVisible();
 
-  const body = await page.locator("body").innerText();
-  expect(body).not.toContain("+12.4%");
-  expect(body).not.toContain("184 apuestas");
+  const pageText = await page.locator("body").innerText();
+  expect(pageText).not.toContain("+12.4%");
+  expect(pageText).not.toContain("184 apuestas");
 
   await card.getByRole("link", { name: "Ver perfil" }).click();
   await expect(page.getByRole("heading", { name: "Maurilio" })).toBeVisible();
   await expect(page.getByText("Todavía no hay picks liquidados.")).toBeVisible();
   await expect(page.getByText("No aceptamos historial cargado a mano.")).toBeVisible();
+  await expect(page.getByText(/tips activos/)).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
+
+test("registration clearly separates subscriber and tipster roles", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/ingresar");
+
+  await expect(page.getByRole("heading", { name: "Creá tu cuenta." })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Quiero seguir tipsters/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Soy tipster/ })).toBeVisible();
+
+  await page.getByRole("button", { name: /Soy tipster/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Creá tu perfil de tipster." }),
+  ).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
+
+test("private subscriber feed requires an account", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/suscripciones");
+
+  await expect(
+    page.getByRole("heading", { name: "Ingresá para ver tus tipsters." }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ingresar →" })).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
+
+test("tipster studio requires a tipster account", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/para-tipsters");
+
+  await expect(
+    page.getByRole("heading", { name: "Ingresá para publicar." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Ingresar o crear cuenta →" }),
+  ).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
+
+test("Bet365 feed endpoint is explicit and fail-closed", async ({ request }) => {
+  const response = await request.get(
+    "http://127.0.0.1:3000/maurilio/api/bet365?view=status",
+  );
+
+  expect(response.status()).toBe(200);
+  const body = (await response.json()) as {
+    configured?: boolean;
+    bookmaker?: string;
+    bookmakerKey?: string;
+  };
+
+  expect(body.bookmaker).toBe("Bet365");
+  expect(typeof body.configured).toBe("boolean");
+  expect(typeof body.bookmakerKey).toBe("string");
+});
+
+test("subscription and promotion mutations require same-origin requests", async ({ request }) => {
+  const subscription = await request.post(
+    "http://127.0.0.1:3000/maurilio/api/subscriptions",
+    { data: { tipsterSlug: "maurilio" } },
+  );
+  expect(subscription.status()).toBe(403);
+
+  const promotion = await request.post(
+    "http://127.0.0.1:3000/maurilio/api/promotions",
+    { data: { days: 7 } },
+  );
+  expect(promotion.status()).toBe(403);
+});
+
+test("legacy Maurilio paths no longer expose the old product", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/demo");
+
+  await expect(
+    page.getByRole("heading", { name: "Encontrá a quién seguir." }),
+  ).toBeVisible();
+
+  const body = await page.locator("body").innerText();
+  expect(body).not.toContain("EXPERIENCIA DEMO");
+  expect(body).not.toContain("PATEAR PENAL");
+  expect(body).not.toContain("PRO");
+  expect(body).not.toContain("ELITE");
 
   await expectNoHorizontalOverflow(page);
 });
