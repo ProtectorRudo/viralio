@@ -4418,3 +4418,215 @@
     grid-column: 1 / -1;
   }
 }
+
+
+/* --- Subscriptions + private feed --- */
+.subscribeNote {
+  display: block;
+  margin-top: 6px;
+  color: #67746c;
+  font-size: 7px;
+  text-align: center;
+}
+
+.subscribeMessage {
+  margin: 7px 0 0;
+  color: #b5c0b9;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.subscriptionsView {
+  margin-top: 52px;
+}
+
+.subscriptionsHero > span {
+  color: #68756d;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.subscriptionsHero h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(44px,7vw,72px);
+  line-height: .94;
+  letter-spacing: -.06em;
+}
+
+.subscriptionsHero p {
+  margin: 0;
+  color: #78857d;
+  font-size: 11px;
+}
+
+.subscriptionSection {
+  margin-top: 30px;
+}
+
+.subscriptionList,
+.privateTipList {
+  display: grid;
+  gap: 9px;
+}
+
+.subscriptionCard,
+.privateTipCard {
+  border: 1px solid rgba(255,255,255,.065);
+  border-radius: 14px;
+  padding: 15px;
+  background: rgba(255,255,255,.01);
+}
+
+.subscriptionCard {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.subscriptionCard > div:first-child > span,
+.privateTipTop span,
+.privateTipSelection span,
+.privateTipMeta span {
+  color: #637168;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.subscriptionCard h3,
+.privateTipTop h3 {
+  margin: 5px 0 3px;
+  color: #e0e8e3;
+  font-size: 17px;
+}
+
+.subscriptionCard p {
+  margin: 0;
+  color: #6e7b73;
+  font-size: 8px;
+}
+
+.subscriptionMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px,auto));
+  gap: 7px;
+}
+
+.subscriptionMeta > div {
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 9px;
+  padding: 9px;
+}
+
+.subscriptionMeta span {
+  display: block;
+  color: #5e6b63;
+  font: 6px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.subscriptionMeta b {
+  display: block;
+  margin-top: 5px;
+  color: #cfd9d2;
+  font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.subscriptionCard > a {
+  color: #94efb1;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.privateTipTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.privateTipTop > b {
+  flex: 0 0 auto;
+  color: #87938b;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.privateTipSelection {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-top: 12px;
+  border: 1px solid rgba(119,242,164,.09);
+  border-radius: 10px;
+  padding: 11px;
+  background: rgba(119,242,164,.018);
+}
+
+.privateTipSelection > div {
+  display: grid;
+  gap: 4px;
+}
+
+.privateTipSelection b {
+  color: #dce5df;
+  font-size: 12px;
+}
+
+.privateTipSelection strong {
+  color: #94efb1;
+  font: 15px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.privateTipMeta {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.privateTipMeta > div {
+  border: 1px solid rgba(255,255,255,.045);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.privateTipMeta b {
+  display: block;
+  margin-top: 5px;
+  color: #cbd5ce;
+  font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.privateTipCard > small {
+  display: block;
+  margin-top: 8px;
+  color: #4f5b54;
+  font: 6px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .06em;
+}
+
+@media (max-width: 760px) {
+  .subscriptionsView {
+    margin-top: 40px;
+  }
+
+  .subscriptionCard {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .subscriptionMeta {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .privateTipTop,
+  .privateTipSelection {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .privateTipMeta {
+    grid-template-columns: 1fr;
+  }
+}
