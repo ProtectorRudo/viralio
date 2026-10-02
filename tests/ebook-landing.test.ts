@@ -15,8 +15,8 @@ describe("ebook sales landing", () => {
     expect(source).toContain("Método A.R.D.A.");
   });
 
-  it("routes checkout through the verified purchase flow and avoids guaranteed-viral claims", () => {
-    expect(source).toContain("/api/ebook/checkout");
+  it("uses the direct Mercado Pago checkout and avoids guaranteed-viral claims", () => {
+    expect(source).toContain("https://mpago.la/2yjdJB9");
     expect(source).toContain("Nadie puede garantizar viralidad");
     expect(source).toContain("potencial viral");
   });

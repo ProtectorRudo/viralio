@@ -103,7 +103,7 @@ const faqs = [
 ];
 
 export default function Home() {
-  const checkoutUrl = "/api/ebook/checkout";
+  const checkoutUrl = "https://mpago.la/2yjdJB9";
 
   return (
     <main className="aqv-ebook-page">
