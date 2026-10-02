@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Anuncios que Venden | Playbook + Kit de Anuncios",
-  description: "Hooks, guiones, estructuras, prompts de IA y checklists para crear anuncios sin empezar desde cero.",
+  description: "Un sistema práctico para crear anuncios con potencial viral: captar atención, retener, generar deseo y convertir mejor.",
   alternates: { canonical: "/ebook" },
   openGraph: {
     title: "Anuncios que Venden",
-    description: "El playbook práctico para pasar de una pantalla en blanco a anuncios estructurados y listos para producir.",
+    description: "Aprendé a crear anuncios con potencial viral, pensados para captar atención, retener y vender mejor.",
     type: "website",
   },
 };
@@ -14,51 +14,51 @@ export const metadata: Metadata = {
 const included = [
   {
     icon: "⚡",
-    title: "100 Hooks",
-    text: "Ideas listas para adaptar y captar atención desde los primeros segundos.",
-    tag: "ATENCIÓN",
+    title: "100 Hooks que frenan el scroll",
+    text: "Ideas listas para adaptar y conseguir que más personas se detengan en los primeros segundos.",
+    tag: "HOOKS",
   },
   {
     icon: "🎬",
-    title: "20 Guiones",
-    text: "Estructuras para videos cortos de 10, 15, 20 y 30 segundos.",
-    tag: "VIDEO",
+    title: "20 Guiones de alta retención",
+    text: "Estructuras para videos de 10, 15, 20 y 30 segundos diseñadas para sostener la atención.",
+    tag: "RETENCIÓN",
   },
   {
     icon: "🧠",
-    title: "30 Estructuras",
-    text: "Fórmulas publicitarias para dejar de empezar cada anuncio desde cero.",
-    tag: "COPY",
+    title: "30 Estructuras de anuncio",
+    text: "Fórmulas para convertir una idea en una pieza que capte atención, genere deseo y lleve a una acción.",
+    tag: "CONVERSIÓN",
   },
   {
     icon: "🤖",
-    title: "Prompts para IA",
-    text: "Prompts preparados para generar ángulos, hooks y variantes en minutos.",
-    tag: "IA",
+    title: "Prompts para encontrar ideas fuertes",
+    text: "Prompts para generar ángulos, hooks, conceptos y variantes sin caer siempre en el mismo anuncio.",
+    tag: "IDEACIÓN",
   },
   {
     icon: "🎯",
-    title: "Método A.V.C.",
-    text: "Atención → Valor → Conversión. Un marco simple para ordenar cada pieza.",
+    title: "Método A.R.D.A.",
+    text: "Atención → Retención → Deseo → Acción. El marco para pensar anuncios con potencial de viralizarse y vender.",
     tag: "MÉTODO",
   },
   {
     icon: "🔍",
-    title: "Investigación",
-    text: "Cómo detectar ideas y patrones de competidores sin copiar anuncios.",
-    tag: "RESEARCH",
+    title: "Patrones de anuncios que explotan",
+    text: "Cómo detectar qué tienen en común las piezas que consiguen vistas, retención y compartidos sin copiarlas.",
+    tag: "PATRONES",
   },
   {
     icon: "📊",
-    title: "Diagnóstico",
-    text: "Qué revisar cuando hay vistas, clics o interés, pero no llegan las ventas.",
-    tag: "OPTIMIZACIÓN",
+    title: "Diagnóstico de viralidad y venta",
+    text: "Qué revisar si no miran, abandonan rápido, no comparten, no hacen clic o no compran.",
+    tag: "DIAGNÓSTICO",
   },
   {
     icon: "✅",
-    title: "Checklist",
-    text: "Una revisión final para publicar con criterio y evitar errores básicos.",
-    tag: "LANZAMIENTO",
+    title: "Checklist antes de publicar",
+    text: "Una revisión rápida de hook, retención, deseo, CTA y claridad antes de invertir en pauta.",
+    tag: "PUBLICAR",
   },
 ];
 
@@ -92,8 +92,12 @@ const faqs = [
     "No. El precio de lanzamiento es un pago único de $14.900.",
   ],
   [
+    "¿Esto garantiza que un anuncio se haga viral?",
+    "No. Nadie puede garantizar viralidad. El sistema te enseña a aumentar las probabilidades de captar atención, retener, generar interés y crear piezas más compartibles.",
+  ],
+  [
     "¿El material garantiza ventas?",
-    "No existe una plantilla que pueda garantizar resultados. El objetivo del sistema es darte un proceso mucho más claro para crear, evaluar y mejorar anuncios.",
+    "No. Las ventas también dependen de tu producto, oferta, precio, mercado y ejecución. El objetivo es darte mejores herramientas para crear anuncios y detectar qué mejorar.",
   ],
 ];
 
@@ -227,9 +231,9 @@ export default function Home() {
 
       <section className="aqv-section aqv-section-shell aqv-problem-section">
         <div className="aqv-section-heading aqv-centered">
-          <span className="aqv-section-kicker">NO ES MÁS TEORÍA</span>
-          <h2>No necesitás otro PDF que te explique qué es el marketing.</h2>
-          <p>Necesitás abrirlo, elegir qué vendés y saber qué hacer después.</p>
+          <span className="aqv-section-kicker">EL PROBLEMA NO ES “HACER PUBLICIDAD”</span>
+          <h2>El problema es que nadie se detiene a mirar tu anuncio.</h2>
+          <p>Antes de vender, primero tenés que ganar atención. Después retenerla, generar deseo y recién ahí pedir una acción.</p>
         </div>
 
         <div className="aqv-before-after">
@@ -239,19 +243,19 @@ export default function Home() {
               <div className="aqv-window-dots"><i/><i/><i/></div>
               <p>|</p>
             </div>
-            <h3>“¿Qué pongo en el anuncio?”</h3>
-            <p>Ideas sueltas, horas mirando la pantalla y cambios sin un criterio claro.</p>
+            <h3>“Publico… y nadie reacciona.”</h3>
+            <p>Hooks débiles, videos que pierden atención rápido y mensajes que se sienten como publicidad.</p>
           </div>
 
           <div className="aqv-transform-arrow">→</div>
 
           <div className="aqv-state-card aqv-state-after">
-            <span className="aqv-state-label">CON EL PLAYBOOK</span>
+            <span className="aqv-state-label">CON EL SISTEMA</span>
             <div className="aqv-formula">
-              <span>HOOK</span><b>+</b><span>VALOR</span><b>+</b><span>CTA</span>
+              <span>HOOK</span><b>+</b><span>RETENCIÓN</span><b>+</b><span>ACCIÓN</span>
             </div>
-            <h3>Una estructura para empezar.</h3>
-            <p>Elegís un ángulo, adaptás una fórmula y construís una pieza con intención.</p>
+            <h3>Anuncios hechos para conseguir atención.</h3>
+            <p>Elegís un ángulo, sostenés el interés y construís una pieza que dé ganas de seguir mirando, compartir o comprar.</p>
           </div>
         </div>
       </section>
@@ -259,10 +263,10 @@ export default function Home() {
       <section className="aqv-section aqv-section-shell aqv-audience-section">
         <div className="aqv-section-heading aqv-split-heading">
           <div>
-            <span className="aqv-section-kicker">ELEGÍ TU CAMINO</span>
-            <h2>¿Qué vendés?</h2>
+            <span className="aqv-section-kicker">NO IMPORTA QUÉ VENDAS</span>
+            <h2>Tu anuncio compite por atención.</h2>
           </div>
-          <p>El sistema está pensado para que no tengas que traducir teoría genérica a tu realidad.</p>
+          <p>Producto, servicio o negocio local: el principio es el mismo. Si nadie se detiene, no hay clic, consulta ni venta.</p>
         </div>
 
         <div className="aqv-audience-grid">
@@ -270,7 +274,7 @@ export default function Home() {
             <div className="aqv-audience-card" key={label}>
               <span>{icon}</span>
               <strong>{label}</strong>
-              <small>→ estructuras aplicables</small>
+              <small>→ ideas y formatos aplicables</small>
             </div>
           ))}
         </div>
@@ -278,9 +282,9 @@ export default function Home() {
 
       <section className="aqv-section aqv-section-shell aqv-stack-section">
         <div className="aqv-section-heading aqv-centered aqv-narrow">
-          <span className="aqv-section-kicker">TODO EN UN SOLO SISTEMA</span>
-          <h2>Esto es lo que te llevás por <em>$14.900</em></h2>
-          <p>No son “capítulos”. Son recursos para usar mientras pensás, escribís y producís anuncios.</p>
+          <span className="aqv-section-kicker">TU CAJA DE HERRAMIENTAS CREATIVA</span>
+          <h2>Todo para crear anuncios que tengan más chances de <em>destacar.</em></h2>
+          <p>No son capítulos para estudiar y olvidar. Son recursos para abrir mientras creás: hooks, retención, guiones, patrones, IA y diagnóstico.</p>
         </div>
 
         <div className="aqv-stack-grid">
@@ -298,7 +302,7 @@ export default function Home() {
         </div>
 
         <div className="aqv-stack-cta">
-          <span>Valor percibido: mucho más que un “ebook”</span>
+          <span>Un sistema para pensar mejores anuncios cada vez que tengas que publicar.</span>
           <a className="aqv-text-link" href={checkoutUrl}>Obtener el kit →</a>
         </div>
       </section>
@@ -306,37 +310,37 @@ export default function Home() {
       <section className="aqv-section aqv-preview-section">
         <div className="aqv-section-shell aqv-preview-layout">
           <div className="aqv-preview-copy">
-            <span className="aqv-section-kicker">MIRÁ ANTES DE COMPRAR</span>
-            <h2>No te pedimos que imagines el contenido.</h2>
+            <span className="aqv-section-kicker">DE “UNA IDEA MÁS” A UNA PIEZA QUE DESTACA</span>
+            <h2>Vas a saber qué hace que un anuncio dé ganas de seguir mirando.</h2>
             <p>
-              El playbook está construido para ser visual, escaneable y accionable. Abrís una sección y encontrás una decisión concreta para tomar.
+              El playbook convierte la viralidad en decisiones concretas: qué mostrar primero, cómo sostener la curiosidad, cómo generar deseo y cuándo pedir la acción.
             </p>
             <ul>
-              <li><span>01</span> Elegí un hook.</li>
-              <li><span>02</span> Completá una estructura.</li>
-              <li><span>03</span> Generá variantes con IA.</li>
-              <li><span>04</span> Revisá antes de publicar.</li>
+              <li><span>01</span> Frená el scroll con un hook fuerte.</li>
+              <li><span>02</span> Mantené la atención con tensión y curiosidad.</li>
+              <li><span>03</span> Convertí interés en deseo por tu oferta.</li>
+              <li><span>04</span> Cerrá con un CTA claro y testeá variantes.</li>
             </ul>
           </div>
 
           <div className="aqv-pages-fan">
             <div className="aqv-page-sheet aqv-page-one">
-              <div className="aqv-sheet-head"><span>100 HOOKS</span><b>01</b></div>
-              <h4>“Si vendés ___,<br/>probá esto.”</h4>
+              <div className="aqv-sheet-head"><span>HOOK VIRAL</span><b>01</b></div>
+              <h4>“Nadie te cuenta<br/>esto sobre ___.”</h4>
               <div className="aqv-sheet-lines"><i/><i/><i/><i/></div>
-              <small>HOOK DE CURIOSIDAD</small>
+              <small>CURIOSIDAD · INTERRUPCIÓN · ATENCIÓN</small>
             </div>
             <div className="aqv-page-sheet aqv-page-two">
-              <div className="aqv-sheet-head"><span>ESTRUCTURA</span><b>07</b></div>
-              <h4>Problema → Cambio<br/>→ Solución</h4>
+              <div className="aqv-sheet-head"><span>RETENCIÓN</span><b>07</b></div>
+              <h4>Hook → Tensión<br/>→ Revelación</h4>
               <div className="aqv-flow-row"><span>P</span><i>→</i><span>C</span><i>→</i><span>S</span></div>
-              <small>PLANTILLA EDITABLE</small>
+              <small>PARA SOSTENER LA ATENCIÓN</small>
             </div>
             <div className="aqv-page-sheet aqv-page-three">
               <div className="aqv-sheet-head"><span>PROMPT IA</span><b>12</b></div>
-              <h4>Generá 5 ángulos<br/>para tu oferta.</h4>
-              <div className="aqv-prompt-box">Mi producto es ___ y ayuda a ___...</div>
-              <small>COPIÁ · PEGÁ · ADAPTÁ</small>
+              <h4>Generá 10 ideas<br/>con potencial viral.</h4>
+              <div className="aqv-prompt-box">Mi producto es ___ y mi cliente desea ___...</div>
+              <small>ÁNGULOS · HOOKS · VARIANTES</small>
             </div>
           </div>
         </div>
@@ -345,9 +349,9 @@ export default function Home() {
       <section className="aqv-section aqv-section-shell aqv-method-section">
         <div className="aqv-method-card">
           <div className="aqv-method-intro">
-            <span className="aqv-section-kicker aqv-light">EL MÉTODO A.V.C.</span>
-            <h2>Tres preguntas antes de tocar “publicar”.</h2>
-            <p>Una forma simple de darle orden al anuncio antes de gastar un peso en pauta.</p>
+            <span className="aqv-section-kicker aqv-light">EL MÉTODO A.R.D.A.</span>
+            <h2>La secuencia detrás de un anuncio que puede despegar.</h2>
+            <p>No alcanza con un hook. La pieza tiene que ganar atención, sostenerla, generar deseo y llevar a una acción.</p>
           </div>
           <div className="aqv-method-steps">
             <div>
@@ -356,14 +360,19 @@ export default function Home() {
               <p>¿Qué hace que alguien deje de deslizar?</p>
             </div>
             <div>
-              <span>V</span>
-              <strong>VALOR</strong>
-              <p>¿Por qué debería importarle lo que ofrecés?</p>
+              <span>R</span>
+              <strong>RETENCIÓN</strong>
+              <p>¿Qué hace que quiera seguir mirando después del hook?</p>
             </div>
             <div>
-              <span>C</span>
-              <strong>CONVERSIÓN</strong>
-              <p>¿Qué querés que haga después?</p>
+              <span>D</span>
+              <strong>DESEO</strong>
+              <p>¿Qué hace que quiera eso que estás mostrando?</p>
+            </div>
+            <div>
+              <span>A</span>
+              <strong>ACCIÓN</strong>
+              <p>¿Qué querés que haga después: comentar, compartir, consultar o comprar?</p>
             </div>
           </div>
         </div>
@@ -371,28 +380,28 @@ export default function Home() {
 
       <section className="aqv-section aqv-section-shell aqv-steps-section">
         <div className="aqv-section-heading aqv-centered">
-          <span className="aqv-section-kicker">SIN COMPLICARLO</span>
-          <h2>De la idea al anuncio en 3 pasos.</h2>
+          <span className="aqv-section-kicker">DE LA IDEA A LA PRUEBA REAL</span>
+          <h2>Creá, lanzá y encontrá qué versión tiene más potencial.</h2>
         </div>
 
         <div className="aqv-steps-grid">
           <article>
             <span className="aqv-step-number">01</span>
             <div className="aqv-step-icon">◉</div>
-            <h3>Elegí qué vendés</h3>
-            <p>Ubicá tu tipo de negocio, producto o servicio y elegí el enfoque.</p>
+            <h3>Encontrá el ángulo</h3>
+            <p>Elegí el deseo, problema o curiosidad que puede hacer que la persona se detenga.</p>
           </article>
           <article>
             <span className="aqv-step-number">02</span>
             <div className="aqv-step-icon">✦</div>
-            <h3>Armá la pieza</h3>
-            <p>Hook + estructura + demostración + CTA. Sin improvisar todo desde cero.</p>
+            <h3>Construí para retener</h3>
+            <p>Hook + tensión + demostración + deseo + CTA. Cada segundo tiene una función.</p>
           </article>
           <article>
             <span className="aqv-step-number">03</span>
             <div className="aqv-step-icon">↗</div>
-            <h3>Adaptá y publicá</h3>
-            <p>Creá variantes, pasá el checklist y prepará el anuncio para testear.</p>
+            <h3>Probá variantes</h3>
+            <p>Cambiá hook, ángulo o apertura para descubrir qué versión consigue más atención y respuesta.</p>
           </article>
         </div>
       </section>
@@ -400,14 +409,15 @@ export default function Home() {
       <section className="aqv-section aqv-section-shell aqv-clarity-section">
         <div className="aqv-clarity-grid">
           <div className="aqv-clarity-copy">
-            <span className="aqv-section-kicker">CUANDO ALGO NO FUNCIONA</span>
-            <h2>Dejá de cambiar todo al mismo tiempo.</h2>
-            <p>Una parte del kit te ayuda a pensar dónde puede estar el cuello de botella.</p>
+            <span className="aqv-section-kicker">VIRALIDAD NO ES MAGIA: SE DIAGNOSTICA</span>
+            <h2>Descubrí en qué segundo se rompe tu anuncio.</h2>
+            <p>El sistema te ayuda a separar un problema de atención, retención, deseo o conversión para no cambiar todo a ciegas.</p>
           </div>
           <div className="aqv-diagnostic">
-            <div><span>👀</span><p><strong>No miran</strong><small>Revisá hook y creativo</small></p></div>
-            <div><span>🖱️</span><p><strong>Miran, no hacen clic</strong><small>Revisá propuesta y CTA</small></p></div>
-            <div><span>🛒</span><p><strong>Hacen clic, no compran</strong><small>Revisá oferta y landing</small></p></div>
+            <div><span>👀</span><p><strong>No se detienen</strong><small>Revisá el primer segundo y el hook</small></p></div>
+            <div><span>⏱️</span><p><strong>Abandonan rápido</strong><small>Revisá tensión, ritmo y promesa</small></p></div>
+            <div><span>🔁</span><p><strong>Miran pero no reaccionan</strong><small>Revisá deseo, novedad y motivo para compartir</small></p></div>
+            <div><span>🛒</span><p><strong>Interesa pero no vende</strong><small>Revisá oferta, CTA y landing</small></p></div>
           </div>
         </div>
       </section>
@@ -416,8 +426,8 @@ export default function Home() {
         <div className="aqv-offer-card">
           <div className="aqv-offer-left">
             <span className="aqv-section-kicker aqv-light">PRECIO DE LANZAMIENTO</span>
-            <h2>Tu próxima idea no tiene que empezar en blanco.</h2>
-            <p>Accedé al Playbook + Kit completo y usalo como sistema de consulta cada vez que tengas que crear un anuncio.</p>
+            <h2>Tu próximo anuncio puede tener una idea mucho más fuerte.</h2>
+            <p>Accedé al Playbook + Kit completo y usalo cada vez que quieras crear una pieza con más potencial de captar atención, retener y vender.</p>
 
             <div className="aqv-offer-list">
               <span>✓ Playbook completo</span>
@@ -426,7 +436,7 @@ export default function Home() {
               <span>✓ 20 Guiones</span>
               <span>✓ Prompts IA</span>
               <span>✓ Checklists</span>
-              <span>✓ Diagnóstico</span>
+              <span>✓ Diagnóstico de viralidad</span>
               <span>✓ Swipe File</span>
             </div>
           </div>
@@ -436,7 +446,7 @@ export default function Home() {
             <div className="aqv-checkout-price">$14.900</div>
             <div className="aqv-checkout-currency">ARS · PAGO ÚNICO</div>
             <a className="aqv-button aqv-button-dark" href={checkoutUrl} data-cta="offer">
-              OBTENER ACCESO AHORA
+              QUIERO CREAR MEJORES ANUNCIOS
               <span>→</span>
             </a>
             <div className="aqv-checkout-notes">
@@ -470,10 +480,10 @@ export default function Home() {
         <div className="aqv-final-glow" />
         <div className="aqv-section-shell aqv-final-inner">
           <span className="aqv-section-kicker aqv-light">ANUNCIOS QUE VENDEN</span>
-          <h2>Menos “¿qué publico?”<br/><em>Más claridad para crear.</em></h2>
-          <p>Playbook + kit completo · $14.900 ARS · pago único.</p>
+          <h2>Dejá de crear anuncios que pasan de largo.<br/><em>Creá piezas que den ganas de mirar.</em></h2>
+          <p>Más atención. Más retención. Más oportunidades de vender. · $14.900 ARS · pago único.</p>
           <a className="aqv-button aqv-button-primary aqv-final-button" href={checkoutUrl} data-cta="final">
-            QUIERO EL KIT COMPLETO
+            QUIERO ANUNCIOS CON MÁS IMPACTO
             <span>→</span>
           </a>
           <small>Producto educativo digital. Los resultados dependen de la oferta, mercado, ejecución y otros factores.</small>
@@ -493,7 +503,7 @@ export default function Home() {
           <span>PRECIO LANZAMIENTO</span>
           <strong>$14.900</strong>
         </div>
-        <a href={checkoutUrl} data-cta="sticky">OBTENER →</a>
+        <a href={checkoutUrl} data-cta="sticky">QUIERO →</a>
       </div>
     </main>
   );
