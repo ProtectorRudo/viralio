@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import styles from "./maurilio-fallback.module.css";
+import PromotionPanel from "./PromotionPanel";
 
 type TipsterProfile = {
   id: string;
@@ -510,6 +511,10 @@ export default function TipsterStudio() {
             {eventsLoading ? "Cargando…" : "Ver partidos Bet365"}
           </button>
         </div>
+      </div>
+
+      <div className={styles.studioSingleCard}>
+        <PromotionPanel hasProfile={Boolean(account.tipster)} />
       </div>
 
       {events.length > 0 ? (
