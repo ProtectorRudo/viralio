@@ -1,8 +1,17 @@
 create schema if not exists private;
 
 revoke all on schema private from public;
-revoke all on schema private from anon;
-revoke all on schema private from authenticated;
+
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    execute 'revoke all on schema private from anon';
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    execute 'revoke all on schema private from authenticated';
+  end if;
+end
+$$;
 
 create table if not exists private.ebook_assets (
   asset_key text primary key,
@@ -48,5 +57,18 @@ create table if not exists private.ebook_webhook_events (
 create index if not exists ebook_purchases_email_idx
   on private.ebook_purchases (lower(payer_email));
 
-revoke all on all tables in schema private from public, anon, authenticated;
-revoke all on all sequences in schema private from public, anon, authenticated;
+revoke all on all tables in schema private from public;
+revoke all on all sequences in schema private from public;
+
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    execute 'revoke all on all tables in schema private from anon';
+    execute 'revoke all on all sequences in schema private from anon';
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    execute 'revoke all on all tables in schema private from authenticated';
+    execute 'revoke all on all sequences in schema private from authenticated';
+  end if;
+end
+$$;
