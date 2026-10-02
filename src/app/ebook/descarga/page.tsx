@@ -100,21 +100,25 @@ export default function EbookDownloadPage() {
             );
           }
 
-          return (
-            <div className="reader-table-wrap" key={key}>
-              <table>
-                <tbody>
-                  {block.rows.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell, cellIndex) => (
-                        <td key={cellIndex}>{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
+          if (block.type === "table") {
+            return (
+              <div className="reader-table-wrap" key={key}>
+                <table>
+                  <tbody>
+                    {block.rows.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                          <td key={cellIndex}>{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          }
+
+          return null;
         })}
 
         <section className="reader-finish">
