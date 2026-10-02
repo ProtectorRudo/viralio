@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./maurilio-fallback.module.css";
 
 export default function SubscribeButton({
@@ -14,6 +15,7 @@ export default function SubscribeButton({
   const [loadingStatus, setLoadingStatus] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     let cancelled = false;
@@ -56,7 +58,7 @@ export default function SubscribeButton({
       };
 
       if (response.status === 401) {
-        window.location.assign("/maurilio/ingresar");
+        router.push("/maurilio/ingresar");
         return;
       }
 
