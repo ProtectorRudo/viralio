@@ -4346,3 +4346,75 @@
     gap: 8px;
   }
 }
+
+
+.publishBar {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 95px auto;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 9px;
+  border: 1px solid rgba(119,242,164,.12);
+  border-radius: 11px;
+  padding: 11px;
+  background: rgba(119,242,164,.018);
+}
+
+.publishBar > div,
+.publishBar label {
+  display: grid;
+  gap: 5px;
+}
+
+.publishBar span {
+  color: #637067;
+  font: 6px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.publishBar b {
+  color: #dce5df;
+  font-size: 10px;
+}
+
+.publishBar input {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 8px;
+  padding: 9px;
+  color: #e1e9e4;
+  background: #080c09;
+  outline: none;
+}
+
+.publishBar button {
+  min-height: 38px;
+  border: 1px solid rgba(119,242,164,.22);
+  border-radius: 999px;
+  padding: 0 13px;
+  color: #071009;
+  background: #77f2a4;
+  cursor: pointer;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 900;
+}
+
+.publishBar button:disabled {
+  cursor: not-allowed;
+  opacity: .4;
+}
+
+.oddsList .oddsLineSelected {
+  border-color: rgba(119,242,164,.32);
+  background: rgba(119,242,164,.04);
+}
+
+@media (max-width: 680px) {
+  .publishBar {
+    grid-template-columns: 1fr 90px;
+  }
+
+  .publishBar > button {
+    grid-column: 1 / -1;
+  }
+}
