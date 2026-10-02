@@ -23,7 +23,7 @@ function price(value: number | null) {
       style: "currency",
       currency: "ARS",
       maximumFractionDigits: 0,
-    }).format(value) + "/mes"
+    }).format(value) + " · 30 días"
   );
 }
 
