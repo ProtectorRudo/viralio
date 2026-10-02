@@ -170,44 +170,55 @@ export default async function MaurilioPage({
           </article>
         </div>
 
-        {state?.mode === "matchday" && state.free ? (
-          <FreeReveal pick={state.free} />
-        ) : (
-          <section className={styles.emptyLocker}>
+        <section className={styles.lockerSection}>
+          <div className={styles.lockerSectionHead}>
             <div>
               <span>EL VESTUARIO</span>
-              <h2>Hoy no hay nada que revelar.</h2>
-              <p>
-                El reveal sólo aparece cuando una señal real supera precio mínimo,
-                EV robusto y auditoría adversarial.
-              </p>
+              <h2>
+                {state?.mode === "matchday"
+                  ? "Accesos del Matchday."
+                  : "Hoy no hay nada que revelar."}
+              </h2>
             </div>
-            <div className={styles.emptyLockerDoors} aria-hidden="true">
-              <i>FREE</i><i>PRO</i><i>ELITE</i>
-            </div>
-          </section>
-        )}
+            <p>
+              {state?.mode === "matchday"
+                ? "Cada locker cambia de estado únicamente cuando existe una señal real publicada."
+                : "Los lockers permanecen cerrados hasta que una señal supere precio mínimo, EV robusto y auditoría adversarial."}
+            </p>
+          </div>
 
-        <section className={styles.lockerGrid}>
-          <article className={styles.lockerFree}>
-            <div className={styles.jersey}><small>M</small><b>FREE</b></div>
-            <span>01 / OPEN ANALYSIS</span>
-            <strong>{state?.mode === "matchday" && state.free ? "PUBLICADO" : "SIN SEÑAL"}</strong>
-            <p>Lectura abierta. El proceso se muestra antes de revelar la selección.</p>
-          </article>
-          <article>
-            <div className={styles.jersey}><small>M</small><b>PRO</b></div>
-            <span>02 / VAR AUDIT</span>
-            <strong>{state?.mode === "matchday" && state.premium.pro ? "DISPONIBLE" : "SELLADO"}</strong>
-            <p>Convicción media, precio mínimo y auditoría ampliada.</p>
-          </article>
-          <article className={styles.lockerElite}>
-            <div className={styles.jersey}><small>M</small><b>ELITE</b></div>
-            <span>03 / THE LOCKER</span>
-            <strong>{state?.mode === "matchday" && state.premium.elite ? "HIGH CONVICTION" : "SELLADO"}</strong>
-            <p>Reservado para discrepancias excepcionales. Nunca se fuerza.</p>
-          </article>
+          <div className={styles.lockerGrid}>
+            <article className={styles.lockerFree}>
+              <div className={styles.jersey}><small>M</small><b>FREE</b></div>
+              <span>01 / OPEN ANALYSIS</span>
+              <strong>{state?.mode === "matchday" && state.free ? "REVELAR" : "SIN SEÑAL"}</strong>
+              <p>Lectura abierta. El proceso se muestra antes de revelar la selección.</p>
+              {state?.mode === "matchday" && state.free ? (
+                <a className={styles.lockerAction} href="#free-reveal">
+                  Abrir auditoría →
+                </a>
+              ) : null}
+            </article>
+
+            <article>
+              <div className={styles.jersey}><small>M</small><b>PRO</b></div>
+              <span>02 / VAR AUDIT</span>
+              <strong>{state?.mode === "matchday" && state.premium.pro ? "DISPONIBLE" : "SELLADO"}</strong>
+              <p>Convicción media, precio mínimo y auditoría ampliada.</p>
+            </article>
+
+            <article className={styles.lockerElite}>
+              <div className={styles.jersey}><small>M</small><b>ELITE</b></div>
+              <span>03 / THE LOCKER</span>
+              <strong>{state?.mode === "matchday" && state.premium.elite ? "HIGH CONVICTION" : "SELLADO"}</strong>
+              <p>Reservado para discrepancias excepcionales. Nunca se fuerza.</p>
+            </article>
+          </div>
         </section>
+
+        {state?.mode === "matchday" && state.free ? (
+          <FreeReveal pick={state.free} />
+        ) : null}
 
         <div className={styles.rules}>
           <article>
