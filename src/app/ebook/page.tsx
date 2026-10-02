@@ -98,7 +98,7 @@ const faqs = [
 ];
 
 export default function Home() {
-  const checkoutUrl = process.env.NEXT_PUBLIC_CHECKOUT_URL || "#oferta";
+  const checkoutUrl = process.env.NEXT_PUBLIC_CHECKOUT_URL || "https://mpago.la/2yjdJB9";
 
   return (
     <main className="aqv-ebook-page">
