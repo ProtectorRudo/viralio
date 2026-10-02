@@ -1,0 +1,26 @@
+import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
+
+const root = process.cwd();
+const source = fs.readFileSync(path.join(root, "src/app/ebook/page.tsx"), "utf8");
+
+describe("ebook sales landing", () => {
+  it("publishes the launch price and core value stack", () => {
+    expect(source).toContain("$14.900");
+    expect(source).toContain("100 Hooks");
+    expect(source).toContain("20 Guiones");
+    expect(source).toContain("30 Estructuras");
+    expect(source).toContain("Prompts para IA");
+  });
+
+  it("keeps checkout configurable and avoids fake guarantees", () => {
+    expect(source).toContain("NEXT_PUBLIC_CHECKOUT_URL");
+    expect(source).toContain("No existe una plantilla que pueda garantizar resultados");
+  });
+
+  it("loads an isolated stylesheet for /ebook", () => {
+    expect(source).toContain('href="/ebook/ebook.css"');
+    expect(fs.existsSync(path.join(root, "public/ebook/ebook.css"))).toBe(true);
+  });
+});
