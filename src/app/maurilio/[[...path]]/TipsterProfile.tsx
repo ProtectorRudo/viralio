@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./maurilio-fallback.module.css";
+import SubscribeButton from "./SubscribeButton";
 import type { TipsterProfileResponse } from "./tipsters-data";
 
 function number(value: number | string | null | undefined) {
@@ -96,11 +97,14 @@ export default function TipsterProfile({
                   maximumFractionDigits: 0,
                 }).format(tipster.monthly_price_ars) + "/mes"}
           </strong>
-          <button type="button" disabled>
-            {tipster.accepting_subscribers
-              ? "Suscripción en preparación"
-              : "Suscripción no disponible"}
-          </button>
+          <SubscribeButton
+            slug={tipster.slug}
+            enabled={
+              tipster.accepting_subscribers &&
+              tipster.monthly_price_ars !== null &&
+              tipster.monthly_price_ars > 0
+            }
+          />
         </div>
       </div>
 
@@ -147,8 +151,9 @@ export default function TipsterProfile({
             {data.future.count === 1 ? "tip activo" : "tips activos"}
           </h2>
           <p>
-            La selección no es pública. Cuando las suscripciones estén activas,
-            sólo los suscriptores de este tipster podrán verla antes del evento.
+            La selección no es pública. Sólo los suscriptores activos pueden
+            verla antes del evento; después queda incorporada al historial
+            verificable del tipster.
           </p>
         </div>
         <b>CONTENIDO BLOQUEADO</b>
