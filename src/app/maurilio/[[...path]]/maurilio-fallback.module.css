@@ -4724,3 +4724,39 @@
     flex-direction: column;
   }
 }
+
+
+/* --- Simple tipster revenue summary --- */
+.studioRevenue {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 7px;
+  margin-top: 22px;
+}
+
+.studioRevenue > div {
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  padding: 11px;
+  background: rgba(255,255,255,.01);
+}
+
+.studioRevenue span {
+  display: block;
+  color: #606d65;
+  font: 6px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.studioRevenue b {
+  display: block;
+  margin-top: 7px;
+  color: #dce5df;
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (max-width: 680px) {
+  .studioRevenue {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
