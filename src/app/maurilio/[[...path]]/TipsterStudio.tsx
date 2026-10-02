@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import styles from "./maurilio-fallback.module.css";
 import PromotionPanel from "./PromotionPanel";
+import PaymentAccountCard from "./PaymentAccountCard";
 
 type TipsterProfile = {
   id: string;
@@ -35,14 +36,12 @@ type FeedStatus = {
 
 type TipsterFinance = {
   activeSubscribers: number;
-  pendingSubscribers: number;
   approvedCharges: number;
   grossArs: number;
   platformFeeArs: number;
-  tipsterNetArs: number;
-  paidOutArs: number;
-  pendingPayoutArs: number;
-  balanceArs: number;
+  paymentConnected?: boolean;
+  acceptingSubscribers?: boolean;
+  monthlyPriceArs?: number | null;
   activePromotionEndsAt: string | null;
 };
 
@@ -210,6 +209,8 @@ export default function TipsterStudio() {
   const [selectedLine, setSelectedLine] = useState<OddsLine | null>(null);
   const [stakeUnits, setStakeUnits] = useState("1");
   const [publishing, setPublishing] = useState(false);
+  const [salesBusy, setSalesBusy] = useState(false);
+  const [paymentConnected, setPaymentConnected] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const [slug, setSlug] = useState("");
@@ -255,7 +256,9 @@ export default function TipsterStudio() {
         }
 
         if (financeResponse.ok) {
-          setFinance((await financeResponse.json()) as TipsterFinance);
+          const dashboard = (await financeResponse.json()) as TipsterFinance;
+          setFinance(dashboard);
+          setPaymentConnected(Boolean(dashboard.paymentConnected));
         }
 
         setAccountLoading(false);
@@ -321,6 +324,48 @@ export default function TipsterStudio() {
 
     setMessage("Perfil guardado.");
     window.setTimeout(() => window.location.reload(), 450);
+  }
+
+  async function toggleSales() {
+    if (!account?.tipster || salesBusy) return;
+
+    setSalesBusy(true);
+    setMessage(null);
+    const accepting = !Boolean(finance?.acceptingSubscribers);
+
+    try {
+      const response = await fetch("/maurilio/api/tipster/sales", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accepting }),
+      });
+      const body = (await response.json().catch(() => ({}))) as {
+        error?: string;
+      };
+
+      if (!response.ok) {
+        setMessage(
+          body.error === "payment_account_required"
+            ? "Conectá Mercado Pago antes de habilitar ventas."
+            : body.error === "valid_subscription_price_required"
+              ? "Definí un precio mayor a cero antes de habilitar ventas."
+              : "No pudimos actualizar las ventas.",
+        );
+        return;
+      }
+
+      const dashboardResponse = await fetch("/maurilio/api/tipster/dashboard", {
+        cache: "no-store",
+      });
+      if (dashboardResponse.ok) {
+        setFinance((await dashboardResponse.json()) as TipsterFinance);
+      }
+      setMessage(accepting ? "Ventas habilitadas." : "Ventas pausadas.");
+    } catch {
+      setMessage("No pudimos actualizar las ventas.");
+    } finally {
+      setSalesBusy(false);
+    }
   }
 
   async function loadEvents() {
@@ -500,12 +545,8 @@ export default function TipsterStudio() {
             }).format(finance.platformFeeArs)}</b>
           </div>
           <div>
-            <span>SALDO NETO</span>
-            <b>{new Intl.NumberFormat("es-AR", {
-              style: "currency",
-              currency: "ARS",
-              maximumFractionDigits: 0,
-            }).format(finance.balanceArs)}</b>
+            <span>COBRO</span>
+            <b>{paymentConnected ? "DIRECTO MP" : "PENDIENTE"}</b>
           </div>
         </div>
       ) : null}
@@ -565,7 +606,7 @@ export default function TipsterStudio() {
             />
           </label>
           <label>
-            <span>Precio mensual ARS</span>
+            <span>Precio por 30 días ARS</span>
             <input
               value={monthlyPrice}
               onChange={(event) => setMonthlyPrice(event.target.value)}
@@ -579,9 +620,11 @@ export default function TipsterStudio() {
           <button type="submit">Guardar perfil</button>
         </form>
 
+        <PaymentAccountCard onChange={setPaymentConnected} />
+
         <div className={styles.studioCard}>
           <div className={styles.studioCardTitle}>
-            <span>02</span>
+            <span>03</span>
             <div>
               <b>Fuente de cuotas</b>
               <p>Obligatoria para publicar tips verificables.</p>
@@ -618,6 +661,44 @@ export default function TipsterStudio() {
           </button>
         </div>
       </div>
+
+      {account.tipster ? (
+        <div className={styles.studioSingleCard}>
+          <div className={styles.studioCard}>
+            <div className={styles.studioCardTitle}>
+              <span>04</span>
+              <div>
+                <b>Ventas</b>
+                <p>Habilitá o pausá nuevas compras de 30 días.</p>
+              </div>
+            </div>
+            <p className={styles.studioHelp}>
+              {finance?.acceptingSubscribers
+                ? "Tu perfil está disponible para nuevas compras."
+                : paymentConnected
+                  ? "Mercado Pago está conectado. Habilitá ventas cuando quieras."
+                  : "Primero conectá Mercado Pago."}
+            </p>
+            <button
+              type="button"
+              className={styles.studioSecondary}
+              disabled={
+                salesBusy ||
+                !paymentConnected ||
+                !Number(monthlyPrice) ||
+                Number(monthlyPrice) <= 0
+              }
+              onClick={() => void toggleSales()}
+            >
+              {salesBusy
+                ? "Guardando…"
+                : finance?.acceptingSubscribers
+                  ? "Pausar ventas"
+                  : "Habilitar ventas"}
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.studioSingleCard}>
         <PromotionPanel hasProfile={Boolean(account.tipster)} />
