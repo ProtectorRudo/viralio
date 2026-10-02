@@ -12,10 +12,12 @@ export const metadata: Metadata = {
 
 export default async function AtlasPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams;
+  let merchant;
   try {
-    const merchant = await viralio.getMerchantForExperience("atlas-barber");
-    return <MerchantExperience merchant={merchant} referralToken={ref} />;
+    merchant = await viralio.getMerchantForExperience("atlas-barber");
   } catch {
     notFound();
   }
+
+  return <MerchantExperience merchant={merchant} referralToken={ref} />;
 }
