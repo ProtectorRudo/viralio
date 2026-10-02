@@ -121,11 +121,11 @@ export default function Home() {
 
           <h1>
             Pasá de “no sé qué anunciar”
-            <span> a tener una estructura clara.</span>
+            <span> a crear anuncios que la gente quiera mirar.</span>
           </h1>
 
           <p className="aqv-hero-subtitle">
-            <strong>ANUNCIOS QUE VENDEN</strong> es un sistema práctico para transformar cualquier producto o servicio en un anuncio con <strong>hook, argumento y CTA</strong> —y saber qué revisar cuando algo no funciona.
+            <strong>ANUNCIOS QUE VENDEN</strong> te enseña a crear anuncios con <strong>potencial viral</strong>, pensados para captar atención, generar interés y llevar a más personas hacia tu producto o servicio.
           </p>
 
           <div className="aqv-hero-transform" aria-label="Transformación antes y después">
@@ -137,20 +137,20 @@ export default function Home() {
             <div className="aqv-transform-mini-arrow">→</div>
             <div className="aqv-transform-side aqv-transform-after">
               <small>DESPUÉS</small>
-              <strong>Hook + mensaje + CTA</strong>
-              <span>Una estructura para crear, probar y mejorar</span>
+              <strong>Atención + deseo + acción</strong>
+              <span>Anuncios pensados para destacar, compartirse y vender</span>
             </div>
           </div>
 
           <div className="aqv-hero-points">
-            <span>✓ Sabés por dónde empezar</span>
-            <span>✓ Creás variantes sin arrancar de cero</span>
-            <span>✓ Entendés qué corregir si falla</span>
+            <span>✓ Captá atención desde el primer segundo</span>
+            <span>✓ Creá anuncios con potencial de viralizarse</span>
+            <span>✓ Convertí más miradas en oportunidades de venta</span>
           </div>
 
           <div className="aqv-hero-value-line">
             <strong>No comprás teoría.</strong>
-            <span>Comprás claridad + estructura + criterio para crear anuncios.</span>
+            <span>Comprás un sistema para crear anuncios que destaquen y vendan.</span>
           </div>
 
           <div className="aqv-hero-buy">
@@ -163,7 +163,7 @@ export default function Home() {
             </div>
 
             <a className="aqv-button aqv-button-primary" href={checkoutUrl} data-cta="hero">
-              QUIERO DEJAR DE IMPROVISAR
+              QUIERO CREAR ANUNCIOS QUE VENDAN
               <span>→</span>
             </a>
           </div>
@@ -180,7 +180,7 @@ export default function Home() {
           <div className="aqv-orbit aqv-orbit-two" />
           <div className="aqv-value-badge">
             <span>OBJETIVO</span>
-            <strong>claridad</strong>
+            <strong>más impacto</strong>
           </div>
 
           <div className="aqv-product-scene">
@@ -190,7 +190,7 @@ export default function Home() {
                 <span className="aqv-book-mini">PLAYBOOK 2026</span>
                 <div className="aqv-book-mark">AV</div>
                 <h2>ANUNCIOS<br />QUE <em>VENDEN</em></h2>
-                <p>De una pantalla en blanco a una estructura clara.</p>
+                <p>De una pantalla en blanco a anuncios que captan atención.</p>
                 <div className="aqv-book-line" />
                 <small>HOOKS · GUIONES · IA · CHECKLISTS</small>
               </div>
@@ -217,11 +217,11 @@ export default function Home() {
 
       <section className="aqv-proof-strip">
         <div className="aqv-proof-marquee">
-          <span>SABÉ QUÉ DECIR</span><i>◆</i>
-          <span>ELEGÍ UN ÁNGULO</span><i>◆</i>
-          <span>ARMÁ EL GUION</span><i>◆</i>
-          <span>GENERÁ VARIANTES</span><i>◆</i>
-          <span>DETECTÁ QUÉ CORREGIR</span>
+          <span>CAPTÁ ATENCIÓN</span><i>◆</i>
+          <span>GENERÁ DESEO</span><i>◆</i>
+          <span>CREÁ ANUNCIOS COMPARTIBLES</span><i>◆</i>
+          <span>PROBÁ VARIANTES</span><i>◆</i>
+          <span>CONVERTÍ MÁS</span>
         </div>
       </section>
 
