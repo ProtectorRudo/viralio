@@ -5,6 +5,7 @@ import AuthView from "./AuthView";
 import TipsterMarketplace from "./TipsterMarketplace";
 import TipsterStudio from "./TipsterStudio";
 import TipsterProfile from "./TipsterProfile";
+import SubscriptionsView from "./SubscriptionsView";
 import {
   fetchTipsterProfile,
   fetchTipsters,
@@ -169,16 +170,7 @@ export default async function MaurilioPage({
   if (view === "suscripciones") {
     return (
       <Shell>
-        <ComingSoon
-          eyebrow="MI CUENTA"
-          title="Tus tipsters, en un solo lugar."
-          copy="Acá van a aparecer las suscripciones activas, próximas renovaciones y los tips futuros que tengas desbloqueados."
-          action={
-            <Link className={styles.productPrimaryLink} href="/maurilio/ingresar">
-              Ingresar →
-            </Link>
-          }
-        />
+        <SubscriptionsView />
       </Shell>
     );
   }
