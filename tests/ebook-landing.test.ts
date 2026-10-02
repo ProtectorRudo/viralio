@@ -15,9 +15,8 @@ describe("ebook sales landing", () => {
     expect(source).toContain("Método A.R.D.A.");
   });
 
-  it("keeps checkout configurable and avoids guaranteed-viral claims", () => {
-    expect(source).toContain("NEXT_PUBLIC_CHECKOUT_URL");
-    expect(source).toContain("https://mpago.la/2yjdJB9");
+  it("routes checkout through the verified purchase flow and avoids guaranteed-viral claims", () => {
+    expect(source).toContain("/api/ebook/checkout");
     expect(source).toContain("Nadie puede garantizar viralidad");
     expect(source).toContain("potencial viral");
   });
