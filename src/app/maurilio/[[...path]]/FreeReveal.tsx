@@ -1,18 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import styles from "./maurilio-fallback.module.css";
 
 type FreePick = Record<string, unknown>;
-
-const auditSteps = [
-  "Contexto competitivo",
-  "Disponibilidad & alineaciones",
-  "Métricas del mercado",
-  "Precio Bet365",
-  "Modelo probabilístico",
-  "Auditoría adversarial",
-];
+type Phase = "ready" | "kicking" | "revealed";
 
 function num(value: unknown) {
   const n = Number(value);
@@ -45,8 +37,8 @@ function artTime(value: unknown) {
 }
 
 export default function FreeReveal({ pick }: { pick: FreePick }) {
-  const [phase, setPhase] = useState<"idle" | "checking" | "revealed">("idle");
-  const [step, setStep] = useState(0);
+  const [phase, setPhase] = useState<Phase>("ready");
+  const timerRef = useRef<number | null>(null);
 
   const metrics = useMemo(() => {
     const entry = num(pick.entry_odds);
@@ -62,82 +54,59 @@ export default function FreeReveal({ pick }: { pick: FreePick }) {
     return { entry, minimum, own, low, high, stake, implied, edge, ev, floorEv };
   }, [pick]);
 
-  useEffect(() => {
-    if (phase !== "checking") return;
+  function kick() {
+    if (phase !== "ready") return;
+    setPhase("kicking");
 
-    const interval = window.setInterval(() => {
-      setStep((current) => Math.min(current + 1, auditSteps.length - 1));
-    }, 260);
-
-    const timeout = window.setTimeout(() => {
-      window.clearInterval(interval);
+    timerRef.current = window.setTimeout(() => {
       setPhase("revealed");
-    }, 1900);
+    }, 900);
+  }
 
-    return () => {
-      window.clearInterval(interval);
-      window.clearTimeout(timeout);
-    };
-  }, [phase]);
+  function reset() {
+    if (timerRef.current) window.clearTimeout(timerRef.current);
+    setPhase("ready");
+  }
 
   return (
     <section className={styles.revealShell} id="free-reveal">
-      <div className={styles.revealTop}>
-        <div>
-          <span>FREE / OPEN ANALYSIS</span>
-          <h2>Auditá antes de ver la selección.</h2>
-        </div>
-        <b>{String(pick.public_id ?? "FREE")}</b>
-      </div>
-
-      {phase === "idle" && (
-        <div className={styles.penaltyStage}>
-          <div className={styles.goalFrame} aria-hidden="true">
-            <div className={styles.goalNet} />
-            <span className={styles.goalMark}>M</span>
-            <span className={styles.ball}>⚽</span>
+      {phase !== "revealed" ? (
+        <div className={styles.simplePenalty}>
+          <div className={styles.simpleGoal} aria-hidden="true">
+            <div className={styles.simpleNet} />
+            <span className={styles.simpleKeeper}>M</span>
+            <span
+              className={
+                phase === "kicking"
+                  ? `${styles.simpleBall} ${styles.simpleBallKicking}`
+                  : styles.simpleBall
+              }
+            >
+              ⚽
+            </span>
+            <span
+              className={
+                phase === "kicking"
+                  ? `${styles.simpleGoalFlash} ${styles.simpleGoalFlashActive}`
+                  : styles.simpleGoalFlash
+              }
+            />
           </div>
+
           <button
-            className={styles.kickButton}
             type="button"
-            onClick={() => {
-              setStep(0);
-              setPhase("checking");
-            }}
+            className={styles.simpleKickButton}
+            onClick={kick}
+            disabled={phase === "kicking"}
           >
-            <span>INICIAR AUDITORÍA</span>
-            <b>Ejecutar reveal →</b>
-            <small>La selección aparece sólo después del control de proceso.</small>
+            <b>{phase === "kicking" ? "PATEANDO…" : "PATEAR PENAL"}</b>
+            <span>Revelar análisis FREE</span>
           </button>
         </div>
-      )}
-
-      {phase === "checking" && (
-        <div className={styles.checkingPanel}>
-          <span className={styles.reviewLabel}>QUANT REVIEW</span>
-          <h3>Intentando demostrar que la entrada está mal…</h3>
-          <div className={styles.auditRows}>
-            {auditSteps.map((label, index) => (
-              <div
-                className={index <= step ? styles.auditActive : styles.auditRow}
-                key={label}
-              >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <b>{label}</b>
-                <em>
-                  {index < step ? "CHECK" : index === step ? "READING" : "WAIT"}
-                </em>
-              </div>
-            ))}
-          </div>
-          <div className={styles.scanBar} />
-        </div>
-      )}
-
-      {phase === "revealed" && (
+      ) : (
         <div className={styles.revealedPanel}>
           <div className={styles.decision}>
-            <span>QUANT DECISION</span>
+            <span>ANÁLISIS REVELADO</span>
             <b>VALUE DETECTED</b>
           </div>
 
@@ -198,7 +167,7 @@ export default function FreeReveal({ pick }: { pick: FreePick }) {
           <button
             className={styles.repeatButton}
             type="button"
-            onClick={() => setPhase("idle")}
+            onClick={reset}
           >
             Repetir experiencia
           </button>
