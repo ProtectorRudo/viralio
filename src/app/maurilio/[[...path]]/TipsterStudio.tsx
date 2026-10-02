@@ -33,6 +33,19 @@ type FeedStatus = {
   bookmakerAvailable?: boolean;
 };
 
+type TipsterFinance = {
+  activeSubscribers: number;
+  pendingSubscribers: number;
+  approvedCharges: number;
+  grossArs: number;
+  platformFeeArs: number;
+  tipsterNetArs: number;
+  paidOutArs: number;
+  pendingPayoutArs: number;
+  balanceArs: number;
+  activePromotionEndsAt: string | null;
+};
+
 type FeedEvent = {
   event_id?: string;
   sport?: string;
@@ -188,6 +201,7 @@ export default function TipsterStudio() {
   const [account, setAccount] = useState<Account | null>(null);
   const [accountLoading, setAccountLoading] = useState(true);
   const [feed, setFeed] = useState<FeedStatus | null>(null);
+  const [finance, setFinance] = useState<TipsterFinance | null>(null);
   const [events, setEvents] = useState<FeedEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null);
@@ -211,7 +225,8 @@ export default function TipsterStudio() {
     void Promise.all([
       fetch("/maurilio/api/account", { cache: "no-store" }),
       fetch("/maurilio/api/bet365?view=status", { cache: "no-store" }),
-    ]).then(async ([accountResponse, feedResponse]) => {
+      fetch("/maurilio/api/tipster/dashboard", { cache: "no-store" }),
+    ]).then(async ([accountResponse, feedResponse, financeResponse]) => {
       if (!cancelled) {
         if (accountResponse.ok) {
           const data = (await accountResponse.json()) as Account;
@@ -237,6 +252,10 @@ export default function TipsterStudio() {
           setFeed((await feedResponse.json()) as FeedStatus);
         } else {
           setFeed({ configured: false });
+        }
+
+        if (financeResponse.ok) {
+          setFinance((await financeResponse.json()) as TipsterFinance);
         }
 
         setAccountLoading(false);
@@ -457,6 +476,39 @@ export default function TipsterStudio() {
           publicado, el núcleo del tip no se puede editar ni borrar.
         </p>
       </div>
+
+      {finance ? (
+        <div className={styles.studioRevenue}>
+          <div>
+            <span>SUSCRIPTORES</span>
+            <b>{finance.activeSubscribers}</b>
+          </div>
+          <div>
+            <span>FACTURACIÓN</span>
+            <b>{new Intl.NumberFormat("es-AR", {
+              style: "currency",
+              currency: "ARS",
+              maximumFractionDigits: 0,
+            }).format(finance.grossArs)}</b>
+          </div>
+          <div>
+            <span>COMISIÓN MAURILIO</span>
+            <b>{new Intl.NumberFormat("es-AR", {
+              style: "currency",
+              currency: "ARS",
+              maximumFractionDigits: 0,
+            }).format(finance.platformFeeArs)}</b>
+          </div>
+          <div>
+            <span>SALDO NETO</span>
+            <b>{new Intl.NumberFormat("es-AR", {
+              style: "currency",
+              currency: "ARS",
+              maximumFractionDigits: 0,
+            }).format(finance.balanceArs)}</b>
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.studioGrid}>
         <form className={styles.studioCard} onSubmit={saveProfile}>
