@@ -17,6 +17,10 @@ export type CheckoutStatus = {
     pro: boolean;
     elite: boolean;
   };
+  saleEndsAt: {
+    pro: string | null;
+    elite: string | null;
+  };
 };
 
 export async function invokeMaurilioCheckout<T>(
