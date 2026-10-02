@@ -82,6 +82,7 @@ export default function SubscriptionsView() {
   const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
   const [tips, setTips] = useState<TipRow[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -130,6 +131,52 @@ export default function SubscriptionsView() {
     () => subscriptions.filter((item) => item.status === "active").length,
     [subscriptions],
   );
+
+  async function cancelRenewal(subscriptionId: string) {
+    if (cancellingId) return;
+
+    setCancellingId(subscriptionId);
+    setMessage(null);
+
+    try {
+      const response = await fetch("/maurilio/api/subscriptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "cancel",
+          subscriptionId,
+        }),
+      });
+
+      const body = (await response.json().catch(() => ({}))) as {
+        accessUntil?: string | null;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        setMessage("No pudimos cancelar la renovación.");
+        return;
+      }
+
+      setMessage(
+        body.accessUntil
+          ? `Renovación cancelada. Conservás acceso hasta ${dateTime(body.accessUntil)}.`
+          : "Renovación cancelada.",
+      );
+
+      setSubscriptions((current) =>
+        current.map((item) =>
+          item.id === subscriptionId
+            ? { ...item, status: "cancelled" }
+            : item,
+        ),
+      );
+    } catch {
+      setMessage("No pudimos conectar con Mercado Pago.");
+    } finally {
+      setCancellingId(null);
+    }
+  }
 
   if (loading) {
     return (
@@ -206,11 +253,28 @@ export default function SubscriptionsView() {
                     </div>
                   </div>
 
-                  {slug ? (
-                    <Link href={`/maurilio/tipsters/${slug}`}>
-                      Ver perfil →
-                    </Link>
-                  ) : null}
+                  <div className={styles.subscriptionActions}>
+                    {slug ? (
+                      <Link href={`/maurilio/tipsters/${slug}`}>
+                        Ver perfil →
+                      </Link>
+                    ) : null}
+
+                    {subscription.id &&
+                    ["active", "pending", "past_due", "paused"].includes(
+                      String(subscription.status ?? ""),
+                    ) ? (
+                      <button
+                        type="button"
+                        onClick={() => cancelRenewal(subscription.id!)}
+                        disabled={cancellingId === subscription.id}
+                      >
+                        {cancellingId === subscription.id
+                          ? "Cancelando…"
+                          : "Cancelar renovación"}
+                      </button>
+                    ) : null}
+                  </div>
                 </article>
               );
             })}
