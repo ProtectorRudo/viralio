@@ -3,6 +3,7 @@ import Link from "next/link";
 import styles from "./maurilio-fallback.module.css";
 import AuthView from "./AuthView";
 import TipsterMarketplace from "./TipsterMarketplace";
+import TipsterStudio from "./TipsterStudio";
 import TipsterProfile from "./TipsterProfile";
 import {
   fetchTipsterProfile,
@@ -185,16 +186,7 @@ export default async function MaurilioPage({
   if (view === "para-tipsters") {
     return (
       <Shell>
-        <ComingSoon
-          eyebrow="PARA TIPSTERS"
-          title="Publicá. Construí historial. Cobrá suscripciones."
-          copy="Maurilio registra cada tip antes del evento, toma la cuota desde Bet365 y construye tu historial sin permitir borrar perdedoras ni reescribir el pasado."
-          action={
-            <Link className={styles.productPrimaryLink} href="/maurilio/ingresar?tipo=tipster">
-              Crear perfil de tipster →
-            </Link>
-          }
-        />
+        <TipsterStudio />
       </Shell>
     );
   }
