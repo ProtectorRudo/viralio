@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import styles from "./maurilio-fallback.module.css";
+import FreeReveal from "./FreeReveal";
 
 export const dynamic = "force-dynamic";
 
@@ -133,6 +134,9 @@ export default async function MaurilioPage({
   return (
     <main className={styles.shell}>
       <div className={styles.pitch} aria-hidden="true" />
+      <div className={styles.stadiumLights} aria-hidden="true">
+        <i /><i /><i /><i /><i /><i />
+      </div>
       <section className={styles.panel}>
         <header className={styles.header}>
           <div className={styles.mark}>M</div>
@@ -176,67 +180,43 @@ export default async function MaurilioPage({
         </div>
 
         {state?.mode === "matchday" && state.free ? (
-          <section className={styles.freeCard}>
-            <div className={styles.freeTop}>
-              <div>
-                <span>FREE / ACCESO LIBRE</span>
-                <h2>{String(freeMetric(state.free, "event") ?? "Evento")}</h2>
-              </div>
-              <b>{String(freeMetric(state.free, "public_id") ?? "FREE")}</b>
+          <FreeReveal pick={state.free} />
+        ) : (
+          <section className={styles.emptyLocker}>
+            <div>
+              <span>EL VESTUARIO</span>
+              <h2>Hoy no hay nada que revelar.</h2>
+              <p>
+                El reveal sólo aparece cuando una señal real supera precio mínimo,
+                EV robusto y auditoría adversarial.
+              </p>
             </div>
-
-            <div className={styles.marketBlock}>
-              <small>MERCADO</small>
-              <strong>{String(freeMetric(state.free, "market") ?? "—")}</strong>
-              {freeMetric(state.free, "selection") ? (
-                <b>{String(freeMetric(state.free, "selection"))}</b>
-              ) : null}
-            </div>
-
-            <div className={styles.pickMetrics}>
-              <div>
-                <span>BET365</span>
-                <b>{odds(freeMetric(state.free, "entry_odds"))}</b>
-              </div>
-              <div>
-                <span>CUOTA MÍNIMA</span>
-                <b>{odds(freeMetric(state.free, "minimum_odds"))}</b>
-              </div>
-              <div>
-                <span>PROB. PROPIA</span>
-                <b>{pct(freeMetric(state.free, "probability_own"))}</b>
-              </div>
-              <div>
-                <span>STAKE</span>
-                <b>{pct(freeMetric(state.free, "stake_pct"))}</b>
-              </div>
-            </div>
-
-            <div className={styles.thesis}>
-              <span>TESIS</span>
-              <p>{String(freeMetric(state.free, "thesis") ?? "—")}</p>
-            </div>
-            <div className={styles.risk}>
-              <span>MEJOR RAZÓN PARA NO ENTRAR</span>
-              <p>{String(freeMetric(state.free, "principal_risk") ?? "—")}</p>
+            <div className={styles.emptyLockerDoors} aria-hidden="true">
+              <i>FREE</i><i>PRO</i><i>ELITE</i>
             </div>
           </section>
-        ) : null}
+        )}
 
-        {state?.mode === "matchday" ? (
-          <section className={styles.lockedGrid}>
-            <article>
-              <span>PRO</span>
-              <b>{state.premium.pro ? "INFORME DISPONIBLE" : "SIN INFORME"}</b>
-              <small>Stake medio · entitlement requerido</small>
-            </article>
-            <article>
-              <span>ELITE</span>
-              <b>{state.premium.elite ? "HIGH CONVICTION" : "SIN INFORME"}</b>
-              <small>Stake fuerte · entitlement requerido</small>
-            </article>
-          </section>
-        ) : null}
+        <section className={styles.lockerGrid}>
+          <article className={styles.lockerFree}>
+            <div className={styles.jersey}><small>M</small><b>FREE</b></div>
+            <span>01 / OPEN ANALYSIS</span>
+            <strong>{state?.mode === "matchday" && state.free ? "PUBLICADO" : "SIN SEÑAL"}</strong>
+            <p>Lectura abierta. El proceso se muestra antes de revelar la selección.</p>
+          </article>
+          <article>
+            <div className={styles.jersey}><small>M</small><b>PRO</b></div>
+            <span>02 / VAR AUDIT</span>
+            <strong>{state?.mode === "matchday" && state.premium.pro ? "DISPONIBLE" : "SELLADO"}</strong>
+            <p>Convicción media, precio mínimo y auditoría ampliada.</p>
+          </article>
+          <article className={styles.lockerElite}>
+            <div className={styles.jersey}><small>M</small><b>ELITE</b></div>
+            <span>03 / THE LOCKER</span>
+            <strong>{state?.mode === "matchday" && state.premium.elite ? "HIGH CONVICTION" : "SELLADO"}</strong>
+            <p>Reservado para discrepancias excepcionales. Nunca se fuerza.</p>
+          </article>
+        </section>
 
         <div className={styles.rules}>
           <article>
