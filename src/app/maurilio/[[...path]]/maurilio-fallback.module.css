@@ -3040,3 +3040,189 @@
     animation: none;
   }
 }
+
+
+/* --- Checkout + payment return + paid penalty reveal --- */
+.checkoutAction {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.checkoutAction button {
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid rgba(119,242,164,.22);
+  border-radius: 999px;
+  padding: 10px 14px;
+  color: #071009;
+  background: #77f2a4;
+  cursor: pointer;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.checkoutAction button:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.checkoutAction small {
+  color: #69766e;
+  font-size: 7px;
+}
+
+.checkoutAction p {
+  margin: 0;
+  max-width: 300px;
+  color: #c58d78;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.paymentReturn {
+  margin-top: 70px;
+  max-width: 760px;
+}
+
+.paymentReturn > span {
+  color: #66736b;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .11em;
+}
+
+.paymentReturn h1 {
+  margin: 10px 0 14px;
+  font-size: clamp(46px,7vw,78px);
+  line-height: .92;
+  letter-spacing: -.06em;
+}
+
+.paymentReturn p {
+  max-width: 650px;
+  margin: 0;
+  color: #7a8780;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.paymentReturn a {
+  display: inline-flex;
+  width: max-content;
+  margin-top: 20px;
+  color: #95efb1;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(149,239,177,.3);
+  padding-bottom: 3px;
+}
+
+.paymentReturn .paymentPrimary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  border: 1px solid rgba(119,242,164,.22);
+  border-radius: 999px;
+  padding: 0 16px;
+  color: #071009;
+  background: #77f2a4;
+  border-bottom-color: rgba(119,242,164,.22);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.paymentPulse {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.paymentPulse i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #77f2a4;
+  box-shadow: 0 0 0 0 rgba(119,242,164,.25);
+  animation: paymentPulse 1.4s ease-out infinite;
+}
+
+.paymentPulse b {
+  color: #8c9890;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .05em;
+}
+
+@keyframes paymentPulse {
+  0% { box-shadow: 0 0 0 0 rgba(119,242,164,.28); }
+  70% { box-shadow: 0 0 0 12px rgba(119,242,164,0); }
+  100% { box-shadow: 0 0 0 0 rgba(119,242,164,0); }
+}
+
+.paidReveal {
+  overflow: hidden;
+  border: 1px solid rgba(119,242,164,.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(119,242,164,.05), transparent 30%),
+    #050806;
+}
+
+.paidRevealHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 16px 18px;
+}
+
+.paidRevealHead > div {
+  display: grid;
+  gap: 5px;
+}
+
+.paidRevealHead span {
+  color: #647168;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.paidRevealHead b {
+  color: #92efb0;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+}
+
+.paidRevealHead small {
+  max-width: 300px;
+  color: #66736b;
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.paidReveal .simplePenalty {
+  border-radius: 0 0 16px 16px;
+}
+
+@media (max-width: 680px) {
+  .paidRevealHead {
+    flex-direction: column;
+  }
+
+  .paidRevealHead small {
+    text-align: left;
+  }
+
+  .paymentReturn {
+    margin-top: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paymentPulse i {
+    animation: none;
+  }
+}
