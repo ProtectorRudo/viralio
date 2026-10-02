@@ -75,6 +75,55 @@ function eventTime(value: number | undefined) {
   }).format(new Date(value * 1000));
 }
 
+function autoSettleableLine(row: Record<string, unknown>) {
+  const betType = String(row.bet_type ?? "").trim().toLowerCase();
+  const marketKey = String(row.market_key ?? "").trim().toLowerCase();
+  const periodRaw = row.period_str ?? row.period;
+  const period =
+    periodRaw === null || periodRaw === undefined
+      ? ""
+      : String(periodRaw).trim().toLowerCase();
+
+  if (
+    period &&
+    !period.includes("full") &&
+    !period.includes("match") &&
+    !period.includes("game")
+  ) {
+    return false;
+  }
+
+  const family =
+    betType === "moneyline" ||
+    marketKey === "moneyline" ||
+    marketKey === "moneyline 3w"
+      ? "moneyline"
+      : betType === "handicap" ||
+          marketKey === "handicap" ||
+          marketKey === "spread"
+        ? "handicap"
+        : betType === "total" ||
+            marketKey === "total" ||
+            marketKey === "over_under"
+          ? "total"
+          : null;
+
+  if (!family) return false;
+
+  const side = String(row.side ?? "").trim().toLowerCase();
+
+  if (family === "moneyline") {
+    return ["home", "away", "draw"].includes(side);
+  }
+
+  const threshold = Number(row.line);
+  if (!Number.isFinite(threshold)) return false;
+
+  return family === "handicap"
+    ? ["home", "away"].includes(side)
+    : ["over", "under"].includes(side);
+}
+
 function collectOdds(node: unknown, lines: OddsLine[], depth = 0) {
   if (depth > 8 || node === null || node === undefined) return;
 
@@ -89,7 +138,11 @@ function collectOdds(node: unknown, lines: OddsLine[], depth = 0) {
   const rawOdds = row.odds ?? row.price;
   const parsedOdds = Number(rawOdds);
 
-  if (Number.isFinite(parsedOdds) && parsedOdds > 1) {
+  if (
+    Number.isFinite(parsedOdds) &&
+    parsedOdds > 1 &&
+    autoSettleableLine(row)
+  ) {
     const selectionKey =
       typeof row.selection_key === "string" ? row.selection_key : null;
     const selection =
@@ -498,8 +551,9 @@ export default function TipsterStudio() {
           </div>
 
           <p className={styles.studioHelp}>
-            No se aceptan cuotas cargadas manualmente. El precio de entrada debe
-            venir del feed Bet365 y queda guardado con timestamp.
+            No se aceptan cuotas cargadas manualmente. Por ahora habilitamos
+            ganador, hándicap y total de partido completo: son los mercados que
+            podemos liquidar automáticamente con resultado verificado.
           </p>
 
           <button
