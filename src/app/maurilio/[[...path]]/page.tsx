@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./maurilio-fallback.module.css";
+import AuthView from "./AuthView";
 import TipsterMarketplace from "./TipsterMarketplace";
 import TipsterProfile from "./TipsterProfile";
 import {
@@ -201,11 +202,7 @@ export default async function MaurilioPage({
   if (view === "ingresar" || view === "registro") {
     return (
       <Shell>
-        <ComingSoon
-          eyebrow="CUENTA MAURILIO"
-          title="Entrá como usuario o tipster."
-          copy="El sistema de cuentas está siendo conectado sobre Supabase Auth. La elección de rol queda asociada a la cuenta y no afecta el resto de Viralio."
-        />
+        <AuthView />
       </Shell>
     );
   }
