@@ -16,6 +16,10 @@ type CheckoutStatus = {
     pro: boolean;
     elite: boolean;
   };
+  saleEndsAt: {
+    pro: string | null;
+    elite: string | null;
+  };
 };
 
 function ars(value: number | null) {
@@ -27,6 +31,21 @@ function ars(value: number | null) {
   }).format(value);
 }
 
+function artTime(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return (
+    new Intl.DateTimeFormat("es-AR", {
+      timeZone: "America/Argentina/Buenos_Aires",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date) + " ART"
+  );
+}
+
 export default function PremiumCheckoutButton({
   tier,
 }: {
@@ -35,6 +54,7 @@ export default function PremiumCheckoutButton({
   const [status, setStatus] = useState<CheckoutStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [expired, setExpired] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,10 +83,44 @@ export default function PremiumCheckoutButton({
     [status, tier],
   );
 
-  const available = status?.availability[tier] ?? false;
+  const saleEndsAt = status?.saleEndsAt[tier] ?? null;
+  const saleEndsAtMs = saleEndsAt ? new Date(saleEndsAt).getTime() : null;
+
+  useEffect(() => {
+    if (!saleEndsAtMs || !Number.isFinite(saleEndsAtMs)) {
+      setExpired(false);
+      return;
+    }
+
+    const remaining = saleEndsAtMs - Date.now();
+    if (remaining <= 0) {
+      setExpired(true);
+      return;
+    }
+
+    setExpired(false);
+    const timer = window.setTimeout(
+      () => setExpired(true),
+      Math.min(remaining + 50, 2_147_483_647),
+    );
+
+    return () => window.clearTimeout(timer);
+  }, [saleEndsAtMs]);
+
+  const available =
+    (status?.availability[tier] ?? false) &&
+    !expired &&
+    (!saleEndsAtMs || saleEndsAtMs > Date.now());
 
   async function checkout() {
     if (!status?.enabled || !available || busy) return;
+
+    if (saleEndsAtMs && saleEndsAtMs <= Date.now()) {
+      setExpired(true);
+      setMessage("La venta cerró al comenzar el partido.");
+      return;
+    }
+
     setBusy(true);
     setMessage(null);
 
@@ -89,9 +143,12 @@ export default function PremiumCheckoutButton({
         }
 
         if (body.error === "sale_closed" || body.error === "event_started") {
-          setMessage("La entrada ya no está disponible.");
+          setExpired(true);
+          setMessage("La venta cerró al comenzar el partido.");
         } else if (body.error === "checkout_initializing") {
-          setMessage("El checkout ya se está iniciando. Reintentá en unos segundos.");
+          setMessage(
+            "El checkout ya se está iniciando. Reintentá en unos segundos.",
+          );
         } else {
           setMessage("El pago todavía no está disponible.");
         }
@@ -117,7 +174,7 @@ export default function PremiumCheckoutButton({
   if (!available) {
     return (
       <span className={styles.premiumPending}>
-        Venta cerrada
+        {expired ? "Venta cerrada · partido iniciado" : "Venta cerrada"}
       </span>
     );
   }
@@ -129,7 +186,11 @@ export default function PremiumCheckoutButton({
           ? "Abriendo Mercado Pago…"
           : `Desbloquear ${tier.toUpperCase()}${price ? ` · ${ars(price)}` : ""}`}
       </button>
-      <small>Mercado Pago · acceso después de acreditación</small>
+      <small>
+        {saleEndsAt
+          ? `Disponible hasta ${artTime(saleEndsAt)} · Mercado Pago`
+          : "Mercado Pago · acceso después de acreditación"}
+      </small>
       {message ? <p>{message}</p> : null}
     </div>
   );
