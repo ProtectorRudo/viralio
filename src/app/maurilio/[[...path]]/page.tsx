@@ -219,7 +219,7 @@ export default async function MaurilioPage({
           <p>{description}</p>
           <div className={styles.heroDemoCta}>
             <Link href="/maurilio/demo">Vivir la experiencia demo →</Link>
-            <span>FREE · VAR PRO · THE LOCKER</span>
+            <span>PENAL → ANÁLISIS</span>
           </div>
         </div>
 
