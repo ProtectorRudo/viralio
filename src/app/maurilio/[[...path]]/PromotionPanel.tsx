@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./maurilio-fallback.module.css";
 
 type PromotionStatus = {
@@ -29,6 +30,7 @@ export default function PromotionPanel({
   const [days, setDays] = useState(7);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     let cancelled = false;
@@ -85,7 +87,7 @@ export default function PromotionPanel({
       };
 
       if (response.status === 401) {
-        window.location.assign("/maurilio/ingresar?tipo=tipster");
+        router.push("/maurilio/ingresar?tipo=tipster");
         return;
       }
 
