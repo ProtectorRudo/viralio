@@ -6,7 +6,9 @@ import AccessLibrary from "./AccessLibrary";
 import DemoExperience from "./DemoExperience";
 import FreeReveal from "./FreeReveal";
 import IntegrityView from "./IntegrityView";
+import PremiumCheckoutButton from "./PremiumCheckoutButton";
 import PremiumReportView from "./PremiumReportView";
+import PaymentReturnView from "./PaymentReturnView";
 import PublicLedger from "./PublicLedger";
 import {
   ars,
@@ -93,6 +95,7 @@ export default async function MaurilioPage({
   const accessView = view === "mis-informes" || view === "access";
   const reportView = view === "informe" || view === "report";
   const demoView = view === "demo" || view === "experiencia";
+  const paymentView = view === "pago" || view === "payment";
 
   if (ledgerView) {
     return (
@@ -122,6 +125,25 @@ export default async function MaurilioPage({
     return (
       <SubviewShell>
         <DemoExperience />
+      </SubviewShell>
+    );
+  }
+
+  if (paymentView) {
+    const paymentState = resolved.path?.[1]?.toLowerCase();
+    const validState =
+      paymentState === "success" ||
+      paymentState === "pending" ||
+      paymentState === "failure"
+        ? paymentState
+        : "failure";
+
+    return (
+      <SubviewShell>
+        <PaymentReturnView
+          state={validState}
+          tier={first(query.tier)}
+        />
       </SubviewShell>
     );
   }
@@ -298,9 +320,7 @@ export default async function MaurilioPage({
                   Abrir informe verificado →
                 </Link>
               ) : proAvailable ? (
-                <span className={styles.premiumPending}>
-                  Checkout aún no habilitado
-                </span>
+                <PremiumCheckoutButton tier="pro" />
               ) : null}
             </article>
 
@@ -331,9 +351,7 @@ export default async function MaurilioPage({
                   Abrir informe verificado →
                 </Link>
               ) : eliteAvailable ? (
-                <span className={styles.premiumPending}>
-                  Checkout aún no habilitado
-                </span>
+                <PremiumCheckoutButton tier="elite" />
               ) : null}
             </article>
           </div>
