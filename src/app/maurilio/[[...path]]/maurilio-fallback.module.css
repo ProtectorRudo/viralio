@@ -3865,3 +3865,197 @@
     grid-template-columns: repeat(2,1fr);
   }
 }
+
+
+/* --- Simplified Maurilio product + auth --- */
+.simpleProductPage {
+  margin-top: 72px;
+  max-width: 760px;
+}
+
+.simpleProductPage > span,
+.authIntro > span {
+  color: #68756d;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.simpleProductPage h1,
+.authIntro h1 {
+  margin: 10px 0 14px;
+  font-size: clamp(44px, 7vw, 76px);
+  line-height: .92;
+  letter-spacing: -.06em;
+}
+
+.simpleProductPage p,
+.authIntro p {
+  max-width: 650px;
+  margin: 0;
+  color: #7a8780;
+  font-size: 11px;
+  line-height: 1.68;
+}
+
+.productPrimaryLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  margin-top: 22px;
+  border-radius: 999px;
+  padding: 0 15px;
+  color: #08100a;
+  background: #77f2a4;
+  text-decoration: none;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 900;
+}
+
+.authView {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(340px, .7fr);
+  gap: 42px;
+  align-items: start;
+  margin-top: 58px;
+}
+
+.authCard {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,.012);
+}
+
+.authMode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.authMode button,
+.authRoles button {
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  color: #7b877f;
+  background: rgba(255,255,255,.01);
+  cursor: pointer;
+}
+
+.authMode button {
+  padding: 9px 10px;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.authMode .authModeActive {
+  border-color: rgba(119,242,164,.22);
+  color: #071009;
+  background: #77f2a4;
+  font-weight: 900;
+}
+
+.authRoles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.authRoles button {
+  display: grid;
+  gap: 5px;
+  min-height: 92px;
+  padding: 12px;
+  text-align: left;
+}
+
+.authRoles button b {
+  color: #dbe4de;
+  font-size: 10px;
+}
+
+.authRoles button span {
+  color: #6f7c73;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.authRoles .authRoleActive {
+  border-color: rgba(119,242,164,.2);
+  background: rgba(119,242,164,.03);
+}
+
+.authRoles .authRoleActive b {
+  color: #94efb1;
+}
+
+.authForm {
+  display: grid;
+  gap: 10px;
+  margin-top: 13px;
+}
+
+.authForm label {
+  display: grid;
+  gap: 6px;
+}
+
+.authForm label span {
+  color: #68756d;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.authForm input {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 10px;
+  padding: 12px;
+  color: #e3ebe6;
+  background: #090d0a;
+  outline: none;
+  font-size: 11px;
+}
+
+.authForm input:focus {
+  border-color: rgba(119,242,164,.3);
+}
+
+.authForm > button {
+  min-height: 42px;
+  margin-top: 2px;
+  border: 1px solid rgba(119,242,164,.22);
+  border-radius: 999px;
+  color: #071009;
+  background: #77f2a4;
+  cursor: pointer;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 900;
+}
+
+.authForm > button:disabled {
+  cursor: wait;
+  opacity: .62;
+}
+
+.authMessage {
+  margin: 10px 0 0;
+  color: #b7c3bb;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .simpleProductPage {
+    margin-top: 46px;
+  }
+
+  .authView {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    margin-top: 42px;
+  }
+
+  .authRoles {
+    grid-template-columns: 1fr;
+  }
+}
