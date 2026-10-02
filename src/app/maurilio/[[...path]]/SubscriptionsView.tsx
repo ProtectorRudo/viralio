@@ -21,7 +21,6 @@ type SubscriptionRow = {
 
 type TipRow = {
   public_id?: string;
-  tipster_id?: string;
   sport?: string;
   competition?: string;
   event?: string;
@@ -31,14 +30,11 @@ type TipRow = {
   entry_odds?: number | string;
   stake_units?: number | string;
   event_start_at?: string;
-  published_at?: string;
   content_hash?: string;
   odds_captured_at?: string | null;
   tipster?: {
-    id?: string;
     slug?: string;
     display_name?: string;
-    avatar_url?: string | null;
   } | null;
 };
 
@@ -66,6 +62,12 @@ function dateTime(value: string | null | undefined) {
   }).format(date);
 }
 
+function activeAccess(item: SubscriptionRow) {
+  if (item.status !== "active" || !item.current_period_end) return false;
+  const end = new Date(item.current_period_end).getTime();
+  return Number.isFinite(end) && end > Date.now();
+}
+
 function odds(value: unknown) {
   const n = Number(value);
   return Number.isFinite(n) ? `@${n.toFixed(2)}` : "—";
@@ -82,7 +84,6 @@ export default function SubscriptionsView() {
   const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
   const [tips, setTips] = useState<TipRow[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -128,61 +129,15 @@ export default function SubscriptionsView() {
   }, []);
 
   const activeCount = useMemo(
-    () => subscriptions.filter((item) => item.status === "active").length,
+    () => subscriptions.filter(activeAccess).length,
     [subscriptions],
   );
-
-  async function cancelRenewal(subscriptionId: string) {
-    if (cancellingId) return;
-
-    setCancellingId(subscriptionId);
-    setMessage(null);
-
-    try {
-      const response = await fetch("/maurilio/api/subscriptions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "cancel",
-          subscriptionId,
-        }),
-      });
-
-      const body = (await response.json().catch(() => ({}))) as {
-        accessUntil?: string | null;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        setMessage("No pudimos cancelar la renovación.");
-        return;
-      }
-
-      setMessage(
-        body.accessUntil
-          ? `Renovación cancelada. Conservás acceso hasta ${dateTime(body.accessUntil)}.`
-          : "Renovación cancelada.",
-      );
-
-      setSubscriptions((current) =>
-        current.map((item) =>
-          item.id === subscriptionId
-            ? { ...item, status: "cancelled" }
-            : item,
-        ),
-      );
-    } catch {
-      setMessage("No pudimos conectar con Mercado Pago.");
-    } finally {
-      setCancellingId(null);
-    }
-  }
 
   if (loading) {
     return (
       <section className={styles.simpleProductPage}>
         <span>MI CUENTA</span>
-        <h1>Cargando tus suscripciones…</h1>
+        <h1>Cargando tus accesos…</h1>
       </section>
     );
   }
@@ -192,10 +147,7 @@ export default function SubscriptionsView() {
       <section className={styles.simpleProductPage}>
         <span>MI CUENTA</span>
         <h1>Ingresá para ver tus tipsters.</h1>
-        <p>
-          Tus suscripciones y tips privados sólo se muestran dentro de tu
-          cuenta.
-        </p>
+        <p>Tus accesos y tips privados sólo se muestran dentro de tu cuenta.</p>
         <Link className={styles.productPrimaryLink} href="/maurilio/ingresar">
           Ingresar →
         </Link>
@@ -207,27 +159,26 @@ export default function SubscriptionsView() {
     <section className={styles.subscriptionsView}>
       <div className={styles.subscriptionsHero}>
         <span>MI CUENTA</span>
-        <h1>Mis suscripciones.</h1>
-        <p>
-          {activeCount} activas · {tips.length} tips futuros desbloqueados.
-        </p>
+        <h1>Mis accesos.</h1>
+        <p>{activeCount} activos · {tips.length} tips futuros desbloqueados.</p>
       </div>
 
       <div className={styles.subscriptionSection}>
         <div className={styles.tipsterSectionTitle}>
           <div>
-            <span>SUSCRIPCIONES</span>
+            <span>ACCESOS</span>
             <h2>Tipsters que seguís</h2>
           </div>
-          <p>Renovación mensual gestionada por Mercado Pago.</p>
+          <p>Cada compra habilita 30 días. No hay débito automático.</p>
         </div>
 
         {subscriptions.length > 0 ? (
           <div className={styles.subscriptionList}>
             {subscriptions.map((subscription, index) => {
               const tipster = subscription.tipster;
-              const slug =
-                typeof tipster?.slug === "string" ? tipster.slug : null;
+              const slug = typeof tipster?.slug === "string" ? tipster.slug : null;
+              const active = activeAccess(subscription);
+              const pending = subscription.status === "pending";
 
               return (
                 <article
@@ -235,9 +186,7 @@ export default function SubscriptionsView() {
                   key={subscription.id ?? String(index)}
                 >
                   <div>
-                    <span>
-                      {String(subscription.status ?? "unknown").toUpperCase()}
-                    </span>
+                    <span>{active ? "ACTIVO" : pending ? "PAGO PENDIENTE" : "VENCIDO"}</span>
                     <h3>{tipster?.display_name ?? "Tipster"}</h3>
                     <p>{tipster?.headline ?? "Perfil de Maurilio"}</p>
                   </div>
@@ -245,10 +194,10 @@ export default function SubscriptionsView() {
                   <div className={styles.subscriptionMeta}>
                     <div>
                       <span>PRECIO</span>
-                      <b>{ars(subscription.monthly_price_ars)}/mes</b>
+                      <b>{ars(subscription.monthly_price_ars)} · 30 días</b>
                     </div>
                     <div>
-                      <span>PRÓXIMA RENOVACIÓN</span>
+                      <span>{active ? "ACCESO HASTA" : "ÚLTIMO PERÍODO"}</span>
                       <b>{dateTime(subscription.current_period_end)}</b>
                     </div>
                   </div>
@@ -256,24 +205,10 @@ export default function SubscriptionsView() {
                   <div className={styles.subscriptionActions}>
                     {slug ? (
                       <Link href={`/maurilio/tipsters/${slug}`}>
-                        Ver perfil →
+                        {active || pending ? "Ver perfil →" : "Renovar →"}
                       </Link>
                     ) : null}
-
-                    {subscription.id &&
-                    ["active", "pending", "past_due", "paused"].includes(
-                      String(subscription.status ?? ""),
-                    ) ? (
-                      <button
-                        type="button"
-                        onClick={() => cancelRenewal(subscription.id!)}
-                        disabled={cancellingId === subscription.id}
-                      >
-                        {cancellingId === subscription.id
-                          ? "Cancelando…"
-                          : "Cancelar renovación"}
-                      </button>
-                    ) : null}
+                    {active ? <span>Sin débito automático</span> : null}
                   </div>
                 </article>
               );
@@ -296,10 +231,7 @@ export default function SubscriptionsView() {
             <span>FEED PRIVADO</span>
             <h2>Tips futuros</h2>
           </div>
-          <p>
-            Sólo aparecen picks de suscripciones activas y antes del inicio del
-            evento.
-          </p>
+          <p>Sólo aparecen picks con acceso vigente y antes del inicio del evento.</p>
         </div>
 
         {tips.length > 0 ? (
@@ -329,24 +261,13 @@ export default function SubscriptionsView() {
                 </div>
 
                 <div className={styles.privateTipMeta}>
-                  <div>
-                    <span>STAKE</span>
-                    <b>{stake(tip.stake_units)}</b>
-                  </div>
-                  <div>
-                    <span>BOOKMAKER</span>
-                    <b>{tip.bookmaker ?? "Bet365"}</b>
-                  </div>
-                  <div>
-                    <span>CAPTURA</span>
-                    <b>{dateTime(tip.odds_captured_at)}</b>
-                  </div>
+                  <div><span>STAKE</span><b>{stake(tip.stake_units)}</b></div>
+                  <div><span>BOOKMAKER</span><b>{tip.bookmaker ?? "Bet365"}</b></div>
+                  <div><span>CAPTURA</span><b>{dateTime(tip.odds_captured_at)}</b></div>
                 </div>
 
                 {tip.content_hash ? (
-                  <small>
-                    HASH {tip.content_hash.slice(0, 12).toUpperCase()}…
-                  </small>
+                  <small>HASH {tip.content_hash.slice(0, 12).toUpperCase()}…</small>
                 ) : null}
               </article>
             ))}
@@ -354,9 +275,7 @@ export default function SubscriptionsView() {
         ) : (
           <div className={styles.tipsterEmpty}>
             <b>No hay tips futuros desbloqueados.</b>
-            <p>
-              Puede que tus tipsters no tengan picks abiertos en este momento.
-            </p>
+            <p>Puede que tus tipsters no tengan picks abiertos en este momento.</p>
           </div>
         )}
       </div>
