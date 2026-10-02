@@ -139,6 +139,9 @@ export default function TipsterStudio() {
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null);
   const [odds, setOdds] = useState<OddsLine[]>([]);
   const [oddsLoading, setOddsLoading] = useState(false);
+  const [selectedLine, setSelectedLine] = useState<OddsLine | null>(null);
+  const [stakeUnits, setStakeUnits] = useState("1");
+  const [publishing, setPublishing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const [slug, setSlug] = useState("");
@@ -271,6 +274,7 @@ export default function TipsterStudio() {
     if (!event.event_id) return;
     setSelectedEvent(event);
     setOdds([]);
+    setSelectedLine(null);
     setOddsLoading(true);
     setMessage(null);
 
@@ -288,6 +292,68 @@ export default function TipsterStudio() {
       setMessage("No pudimos cargar las cuotas Bet365 de ese partido.");
     } finally {
       setOddsLoading(false);
+    }
+  }
+
+  async function publishSelectedTip() {
+    if (
+      !selectedEvent?.event_id ||
+      !selectedLine?.selectionKey ||
+      !canPublish ||
+      publishing
+    ) {
+      return;
+    }
+
+    const stake = Number(stakeUnits);
+    if (!Number.isFinite(stake) || stake <= 0 || stake > 5) {
+      setMessage("El stake debe estar entre 0 y 5 unidades.");
+      return;
+    }
+
+    setPublishing(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch("/maurilio/api/tips/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: selectedEvent.event_id,
+          selectionKey: selectedLine.selectionKey,
+          stakeUnits: stake,
+        }),
+      });
+
+      const body = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        tip?: {
+          publicId?: string;
+          entryOdds?: number | string;
+        };
+      };
+
+      if (!response.ok) {
+        if (body.error === "event_started") {
+          setMessage("El partido ya comenzó. Ese tip no se puede publicar.");
+        } else if (body.error === "bet365_selection_unavailable") {
+          setMessage("La línea ya no está disponible en Bet365.");
+        } else if (body.error === "bet365_feed_not_configured") {
+          setMessage("El feed Bet365 todavía no está configurado.");
+        } else {
+          setMessage("No pudimos publicar el tip.");
+        }
+        return;
+      }
+
+      setMessage(
+        `Tip publicado y sellado · ${body.tip?.publicId ?? "OK"} · cuota Bet365 @${Number(body.tip?.entryOdds ?? selectedLine.odds).toFixed(2)}`,
+      );
+      setSelectedLine(null);
+    } catch {
+      setMessage("No pudimos publicar el tip.");
+    } finally {
+      setPublishing(false);
     }
   }
 
@@ -494,17 +560,70 @@ export default function TipsterStudio() {
           </div>
 
           {uniqueOdds.length > 0 ? (
-            <div className={styles.oddsList}>
-              {uniqueOdds.slice(0, 120).map((line, index) => (
-                <button type="button" key={`${line.selectionKey ?? "line"}-${index}`} disabled={!canPublish}>
-                  <div>
-                    <span>{line.market}{line.period ? ` · ${line.period}` : ""}</span>
-                    <b>{line.selection}</b>
-                  </div>
-                  <strong>@{line.odds.toFixed(2)}</strong>
+            <>
+              <div className={styles.publishBar}>
+                <div>
+                  <span>SELECCIÓN</span>
+                  <b>
+                    {selectedLine
+                      ? `${selectedLine.selection} @${selectedLine.odds.toFixed(2)}`
+                      : "Elegí una cuota Bet365"}
+                  </b>
+                </div>
+                <label>
+                  <span>STAKE</span>
+                  <input
+                    value={stakeUnits}
+                    onChange={(event) => setStakeUnits(event.target.value)}
+                    type="number"
+                    min="0.1"
+                    max="5"
+                    step="0.1"
+                  />
+                </label>
+                <button
+                  type="button"
+                  disabled={
+                    !canPublish ||
+                    !selectedLine?.selectionKey ||
+                    publishing
+                  }
+                  onClick={publishSelectedTip}
+                >
+                  {publishing ? "Validando Bet365…" : "Publicar tip"}
                 </button>
-              ))}
-            </div>
+              </div>
+
+              <div className={styles.oddsList}>
+                {uniqueOdds.slice(0, 120).map((line, index) => {
+                  const selected =
+                    Boolean(selectedLine) &&
+                    selectedLine?.selectionKey === line.selectionKey &&
+                    selectedLine?.market === line.market &&
+                    selectedLine?.selection === line.selection &&
+                    selectedLine?.odds === line.odds;
+
+                  return (
+                    <button
+                      type="button"
+                      key={`${line.selectionKey ?? "line"}-${index}`}
+                      disabled={!canPublish || !line.selectionKey}
+                      className={selected ? styles.oddsLineSelected : undefined}
+                      onClick={() => setSelectedLine(line)}
+                    >
+                      <div>
+                        <span>
+                          {line.market}
+                          {line.period ? ` · ${line.period}` : ""}
+                        </span>
+                        <b>{line.selection}</b>
+                      </div>
+                      <strong>@{line.odds.toFixed(2)}</strong>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           ) : !oddsLoading ? (
             <div className={styles.tipsterEmpty}>
               <b>No encontramos líneas utilizables.</b>
