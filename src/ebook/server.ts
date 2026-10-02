@@ -79,9 +79,9 @@ export async function createMercadoPagoCheckout(): Promise<string> {
         product: EBOOK_PRODUCT_REFERENCE,
       },
       back_urls: {
-        success: base + "/ebook/acceso",
-        pending: base + "/ebook/acceso?state=pending",
-        failure: base + "/ebook?payment=failed",
+        success: base + "/api/ebook/return?state=success",
+        pending: base + "/api/ebook/return?state=pending",
+        failure: base + "/api/ebook/return?state=failure",
       },
       auto_return: "approved",
       notification_url: base + "/api/ebook/mercadopago/webhook",
