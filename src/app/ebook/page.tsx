@@ -108,12 +108,12 @@ export default function Home() {
         PRECIO DE LANZAMIENTO · ACCESO DIGITAL
       </div>
 
-      <aqv-section className="aqv-hero aqv-aqv-section-shell">
-        <div className="aqv-aqv-hero-glow aqv-aqv-aqv-hero-glow-one" />
-        <div className="aqv-aqv-hero-glow aqv-aqv-aqv-hero-glow-two" />
-        <div className="aqv-aqv-hero-grid" />
+      <section className="aqv-hero aqv-section-shell">
+        <div className="aqv-hero-glow aqv-hero-glow-one" />
+        <div className="aqv-hero-glow aqv-hero-glow-two" />
+        <div className="aqv-hero-grid" />
 
-        <div className="aqv-aqv-hero-copy">
+        <div className="aqv-hero-copy">
           <div className="aqv-eyebrow">
             <span>PLAYBOOK + KIT DE ANUNCIOS</span>
             <strong>Edición 2026</strong>
@@ -124,27 +124,26 @@ export default function Home() {
             <span> qué poner en tus anuncios.</span>
           </h1>
 
-          <p className="aqv-aqv-hero-subtitle">
+          <p className="aqv-hero-subtitle">
             Un sistema práctico con <strong>hooks, guiones, estructuras, prompts de IA y checklists</strong> para pasar de una pantalla en blanco a anuncios listos para producir.
           </p>
 
-          <div className="aqv-aqv-hero-points">
+          <div className="aqv-hero-points">
             <span>✓ Aplicable a productos y servicios</span>
             <span>✓ Sin empezar desde cero</span>
             <span>✓ Acceso inmediato</span>
           </div>
 
-          <div className="aqv-aqv-hero-buy">
+          <div className="aqv-hero-buy">
             <div className="aqv-price-block">
               <span className="aqv-price-kicker">Precio de lanzamiento</span>
               <div className="aqv-price-row">
-                <span className="aqv-old-price">$29.900</span>
                 <strong>$14.900</strong>
               </div>
               <small>ARS · pago único</small>
             </div>
 
-            <a className="aqv-button aqv-aqv-button-primary" href={checkoutUrl} data-cta="aqv-hero">
+            <a className="aqv-button aqv-button-primary" href={checkoutUrl} data-cta="hero">
               QUIERO EL KIT COMPLETO
               <span>→</span>
             </a>
@@ -157,9 +156,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="aqv-aqv-hero-visual" aria-label="Vista previa del producto">
-          <div className="aqv-orbit aqv-aqv-orbit-one" />
-          <div className="aqv-orbit aqv-aqv-orbit-two" />
+        <div className="aqv-hero-visual" aria-label="Vista previa del producto">
+          <div className="aqv-orbit aqv-orbit-one" />
+          <div className="aqv-orbit aqv-orbit-two" />
           <div className="aqv-value-badge">
             <span>INCLUYE</span>
             <strong>8 recursos</strong>
@@ -167,13 +166,13 @@ export default function Home() {
 
           <div className="aqv-product-scene">
             <div className="aqv-book">
-              <div className="aqv-aqv-book-spine" />
-              <div className="aqv-aqv-book-cover">
-                <span className="aqv-aqv-book-mini">PLAYBOOK 2026</span>
-                <div className="aqv-aqv-book-mark">AV</div>
+              <div className="aqv-book-spine" />
+              <div className="aqv-book-cover">
+                <span className="aqv-book-mini">PLAYBOOK 2026</span>
+                <div className="aqv-book-mark">AV</div>
                 <h2>ANUNCIOS<br />QUE <em>VENDEN</em></h2>
                 <p>El sistema práctico para crear anuncios con intención.</p>
-                <div className="aqv-aqv-book-line" />
+                <div className="aqv-book-line" />
                 <small>HOOKS · GUIONES · IA · CHECKLISTS</small>
               </div>
             </div>
@@ -195,9 +194,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-proof-strip">
+      <section className="aqv-proof-strip">
         <div className="aqv-proof-marquee">
           <span>100 HOOKS</span><i>◆</i>
           <span>30 ESTRUCTURAS</span><i>◆</i>
@@ -206,11 +205,11 @@ export default function Home() {
           <span>CHECKLISTS</span><i>◆</i>
           <span>SWIPE FILE</span>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell problem-aqv-section">
-        <div className="aqv-aqv-section-heading aqv-centered">
-          <span className="aqv-aqv-section-kicker">NO ES MÁS TEORÍA</span>
+      <section className="aqv-section aqv-section-shell aqv-problem-section">
+        <div className="aqv-section-heading aqv-centered">
+          <span className="aqv-section-kicker">NO ES MÁS TEORÍA</span>
           <h2>No necesitás otro PDF que te explique qué es el marketing.</h2>
           <p>Necesitás abrirlo, elegir qué vendés y saber qué hacer después.</p>
         </div>
@@ -237,12 +236,12 @@ export default function Home() {
             <p>Elegís un ángulo, adaptás una fórmula y construís una pieza con intención.</p>
           </div>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell aqv-audience-aqv-section">
-        <div className="aqv-aqv-section-heading aqv-split-heading">
+      <section className="aqv-section aqv-section-shell aqv-audience-section">
+        <div className="aqv-section-heading aqv-split-heading">
           <div>
-            <span className="aqv-aqv-section-kicker">ELEGÍ TU CAMINO</span>
+            <span className="aqv-section-kicker">ELEGÍ TU CAMINO</span>
             <h2>¿Qué vendés?</h2>
           </div>
           <p>El sistema está pensado para que no tengas que traducir teoría genérica a tu realidad.</p>
@@ -257,11 +256,11 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell aqv-stack-aqv-section">
-        <div className="aqv-aqv-section-heading aqv-centered aqv-narrow">
-          <span className="aqv-aqv-section-kicker">TODO EN UN SOLO SISTEMA</span>
+      <section className="aqv-section aqv-section-shell aqv-stack-section">
+        <div className="aqv-section-heading aqv-centered aqv-narrow">
+          <span className="aqv-section-kicker">TODO EN UN SOLO SISTEMA</span>
           <h2>Esto es lo que te llevás por <em>$14.900</em></h2>
           <p>No son “capítulos”. Son recursos para usar mientras pensás, escribís y producís anuncios.</p>
         </div>
@@ -284,12 +283,12 @@ export default function Home() {
           <span>Valor percibido: mucho más que un “ebook”</span>
           <a className="aqv-text-link" href={checkoutUrl}>Obtener el kit →</a>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-preview-aqv-section">
-        <div className="aqv-aqv-section-shell aqv-preview-layout">
+      <section className="aqv-section aqv-preview-section">
+        <div className="aqv-section-shell aqv-preview-layout">
           <div className="aqv-preview-copy">
-            <span className="aqv-aqv-section-kicker">MIRÁ ANTES DE COMPRAR</span>
+            <span className="aqv-section-kicker">MIRÁ ANTES DE COMPRAR</span>
             <h2>No te pedimos que imagines el contenido.</h2>
             <p>
               El playbook está construido para ser visual, escaneable y accionable. Abrís una sección y encontrás una decisión concreta para tomar.
@@ -323,12 +322,12 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell aqv-method-aqv-section">
+      <section className="aqv-section aqv-section-shell aqv-method-section">
         <div className="aqv-method-card">
           <div className="aqv-method-intro">
-            <span className="aqv-aqv-section-kicker aqv-light">EL MÉTODO A.V.C.</span>
+            <span className="aqv-section-kicker aqv-light">EL MÉTODO A.V.C.</span>
             <h2>Tres preguntas antes de tocar “publicar”.</h2>
             <p>Una forma simple de darle orden al anuncio antes de gastar un peso en pauta.</p>
           </div>
@@ -350,11 +349,11 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell steps-aqv-section">
-        <div className="aqv-aqv-section-heading aqv-centered">
-          <span className="aqv-aqv-section-kicker">SIN COMPLICARLO</span>
+      <section className="aqv-section aqv-section-shell aqv-steps-section">
+        <div className="aqv-section-heading aqv-centered">
+          <span className="aqv-section-kicker">SIN COMPLICARLO</span>
           <h2>De la idea al anuncio en 3 pasos.</h2>
         </div>
 
@@ -378,12 +377,12 @@ export default function Home() {
             <p>Creá variantes, pasá el checklist y prepará el anuncio para testear.</p>
           </article>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell aqv-clarity-aqv-section">
+      <section className="aqv-section aqv-section-shell aqv-clarity-section">
         <div className="aqv-clarity-grid">
           <div className="aqv-clarity-copy">
-            <span className="aqv-aqv-section-kicker">CUANDO ALGO NO FUNCIONA</span>
+            <span className="aqv-section-kicker">CUANDO ALGO NO FUNCIONA</span>
             <h2>Dejá de cambiar todo al mismo tiempo.</h2>
             <p>Una parte del kit te ayuda a pensar dónde puede estar el cuello de botella.</p>
           </div>
@@ -393,12 +392,12 @@ export default function Home() {
             <div><span>🛒</span><p><strong>Hacen clic, no compran</strong><small>Revisá oferta y landing</small></p></div>
           </div>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell aqv-offer-aqv-section" id="oferta">
+      <section className="aqv-section aqv-section-shell aqv-offer-section" id="oferta">
         <div className="aqv-offer-card">
           <div className="aqv-offer-left">
-            <span className="aqv-aqv-section-kicker aqv-light">PRECIO DE LANZAMIENTO</span>
+            <span className="aqv-section-kicker aqv-light">PRECIO DE LANZAMIENTO</span>
             <h2>Tu próxima idea no tiene que empezar en blanco.</h2>
             <p>Accedé al Playbook + Kit completo y usalo como sistema de consulta cada vez que tengas que crear un anuncio.</p>
 
@@ -416,10 +415,9 @@ export default function Home() {
 
           <div className="aqv-checkout-card">
             <span className="aqv-checkout-label">HOY</span>
-            <div className="aqv-checkout-old">$29.900</div>
             <div className="aqv-checkout-price">$14.900</div>
             <div className="aqv-checkout-currency">ARS · PAGO ÚNICO</div>
-            <a className="aqv-button aqv-aqv-button-dark" href={checkoutUrl} data-cta="offer">
+            <a className="aqv-button aqv-button-dark" href={checkoutUrl} data-cta="offer">
               OBTENER ACCESO AHORA
               <span>→</span>
             </a>
@@ -430,11 +428,11 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-section aqv-aqv-section-shell aqv-faq-aqv-section">
-        <div className="aqv-aqv-section-heading aqv-centered aqv-narrow">
-          <span className="aqv-aqv-section-kicker">PREGUNTAS FRECUENTES</span>
+      <section className="aqv-section aqv-section-shell aqv-faq-section">
+        <div className="aqv-section-heading aqv-centered aqv-narrow">
+          <span className="aqv-section-kicker">PREGUNTAS FRECUENTES</span>
           <h2>Antes de comprar.</h2>
         </div>
         <div className="aqv-faq-list">
@@ -448,24 +446,24 @@ export default function Home() {
             </details>
           ))}
         </div>
-      </aqv-section>
+      </section>
 
-      <aqv-section className="aqv-final-cta">
+      <section className="aqv-final-cta">
         <div className="aqv-final-glow" />
-        <div className="aqv-aqv-section-shell aqv-final-inner">
-          <span className="aqv-aqv-section-kicker aqv-light">ANUNCIOS QUE VENDEN</span>
+        <div className="aqv-section-shell aqv-final-inner">
+          <span className="aqv-section-kicker aqv-light">ANUNCIOS QUE VENDEN</span>
           <h2>Menos “¿qué publico?”<br/><em>Más claridad para crear.</em></h2>
           <p>Playbook + kit completo · $14.900 ARS · pago único.</p>
-          <a className="aqv-button aqv-aqv-button-primary aqv-final-aqv-button" href={checkoutUrl} data-cta="final">
+          <a className="aqv-button aqv-button-primary aqv-final-button" href={checkoutUrl} data-cta="final">
             QUIERO EL KIT COMPLETO
             <span>→</span>
           </a>
           <small>Producto educativo digital. Los resultados dependen de la oferta, mercado, ejecución y otros factores.</small>
         </div>
-      </aqv-section>
+      </section>
 
       <footer>
-        <div className="aqv-aqv-section-shell aqv-footer-inner">
+        <div className="aqv-section-shell aqv-footer-inner">
           <strong>ANUNCIOS QUE VENDEN™</strong>
           <p>Un producto digital de Viralio.</p>
           <span>© 2026 · Todos los derechos reservados.</span>
