@@ -18,7 +18,7 @@ test("Maurilio opens as a simple tipster marketplace on mobile", async ({ page }
 
   await expect(page.getByText("MAURILIO", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explorar" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Mis suscripciones" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Mis accesos" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Soy tipster" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Ingresar" })).toBeVisible();
 
@@ -38,24 +38,19 @@ test("Maurilio opens as a simple tipster marketplace on mobile", async ({ page }
   await expectNoHorizontalOverflow(page);
 });
 
-test("public tipster performance starts from real platform history only", async ({ page }) => {
+test("public marketplace never fabricates tipster history", async ({ page }) => {
   await mobile(page);
   await page.goto("/maurilio");
-
-  const card = page.getByRole("article").filter({ hasText: "Maurilio" }).first();
-  await expect(card).toBeVisible();
-  await expect(card.getByText("ROI 90D")).toBeVisible();
-  await expect(card.getByText("PICKS 90D")).toBeVisible();
 
   const pageText = await page.locator("body").innerText();
   expect(pageText).not.toContain("+12.4%");
   expect(pageText).not.toContain("184 apuestas");
+  expect(pageText).not.toContain("EXPERIENCIA DEMO");
 
-  await card.getByRole("link", { name: "Ver perfil" }).click();
-  await expect(page.getByRole("heading", { name: "Maurilio" })).toBeVisible();
-  await expect(page.getByText("Todavía no hay picks liquidados.")).toBeVisible();
-  await expect(page.getByText("No aceptamos historial cargado a mano.")).toBeVisible();
-  await expect(page.getByText(/tips activos/)).toBeVisible();
+  await expect(page.getByText("No encontramos tipsters con esos filtros.")).toBeVisible();
+  await expect(
+    page.getByText("Sólo cuentan picks registrados y liquidados dentro de Maurilio."),
+  ).toBeVisible();
 
   await expectNoHorizontalOverflow(page);
 });
