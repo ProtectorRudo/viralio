@@ -6,17 +6,20 @@ const root = process.cwd();
 const source = fs.readFileSync(path.join(root, "src/app/ebook/page.tsx"), "utf8");
 
 describe("ebook sales landing", () => {
-  it("publishes the launch price and core value stack", () => {
+  it("publishes the launch price and viral creative toolkit", () => {
     expect(source).toContain("$14.900");
     expect(source).toContain("100 Hooks");
     expect(source).toContain("20 Guiones");
     expect(source).toContain("30 Estructuras");
-    expect(source).toContain("Prompts para IA");
+    expect(source).toContain("Prompts para encontrar ideas fuertes");
+    expect(source).toContain("Método A.R.D.A.");
   });
 
-  it("keeps checkout configurable and avoids fake guarantees", () => {
+  it("keeps checkout configurable and avoids guaranteed-viral claims", () => {
     expect(source).toContain("NEXT_PUBLIC_CHECKOUT_URL");
-    expect(source).toContain("No existe una plantilla que pueda garantizar resultados");
+    expect(source).toContain("https://mpago.la/2yjdJB9");
+    expect(source).toContain("Nadie puede garantizar viralidad");
+    expect(source).toContain("potencial viral");
   });
 
   it("loads an isolated stylesheet for /ebook", () => {
