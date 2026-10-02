@@ -17,7 +17,7 @@ test("Maurilio Matchday is mobile-safe and never fabricates a pick", async ({ pa
   await page.goto("/maurilio");
 
   await expect(page.getByText("MAURILIO", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Matchday" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Matchday", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Integridad" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Registro" })).toBeVisible();
 
