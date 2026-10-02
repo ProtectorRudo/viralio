@@ -140,3 +140,45 @@ test("Maurilio demo is a single penalty kick that reveals the analysis on mobile
 
   await expectNoHorizontalOverflow(page);
 });
+
+
+test("Maurilio checkout stays fail-closed until Mercado Pago is configured", async ({ request }) => {
+  const status = await request.get("http://127.0.0.1:3000/maurilio/api/checkout");
+  expect(status.status()).toBe(200);
+
+  const body = (await status.json()) as {
+    enabled: boolean;
+    provider: string;
+    prices: { pro: number | null; elite: number | null };
+  };
+
+  expect(body.enabled).toBe(false);
+  expect(body.provider).toBe("mercado_pago");
+  expect(body.prices.pro).toBeNull();
+  expect(body.prices.elite).toBeNull();
+
+  const post = await request.post("http://127.0.0.1:3000/maurilio/api/checkout", {
+    data: { tier: "pro" },
+  });
+  expect(post.status()).toBe(403);
+
+  const denied = (await post.json()) as { error?: string };
+  expect(denied.error).toBe("invalid_origin");
+});
+
+test("Maurilio failed payment return never reveals premium content", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/pago/failure?tier=pro");
+
+  await expect(page.getByText("PAYMENT NOT COMPLETED")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "No se desbloqueó ningún informe." }),
+  ).toBeVisible();
+
+  const body = await page.locator("body").innerText();
+  expect(body).not.toContain("ANÁLISIS REVELADO");
+  expect(body).not.toContain("PATEAR PENAL");
+  expect(body).not.toContain("selection");
+
+  await expectNoHorizontalOverflow(page);
+});
