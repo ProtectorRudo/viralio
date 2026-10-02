@@ -62,10 +62,10 @@ function dateTime(value: string | null | undefined) {
   }).format(date);
 }
 
-function activeAccess(item: SubscriptionRow) {
+function activeAccess(item: SubscriptionRow, now: number) {
   if (item.status !== "active" || !item.current_period_end) return false;
   const end = new Date(item.current_period_end).getTime();
-  return Number.isFinite(end) && end > Date.now();
+  return Number.isFinite(end) && end > now;
 }
 
 function odds(value: unknown) {
@@ -84,6 +84,7 @@ export default function SubscriptionsView() {
   const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
   const [tips, setTips] = useState<TipRow[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [renderNow] = useState(() => Date.now());
 
   useEffect(() => {
     let cancelled = false;
@@ -129,8 +130,8 @@ export default function SubscriptionsView() {
   }, []);
 
   const activeCount = useMemo(
-    () => subscriptions.filter(activeAccess).length,
-    [subscriptions],
+    () => subscriptions.filter((item) => activeAccess(item, renderNow)).length,
+    [renderNow, subscriptions],
   );
 
   if (loading) {
@@ -177,7 +178,7 @@ export default function SubscriptionsView() {
             {subscriptions.map((subscription, index) => {
               const tipster = subscription.tipster;
               const slug = typeof tipster?.slug === "string" ? tipster.slug : null;
-              const active = activeAccess(subscription);
+              const active = activeAccess(subscription, renderNow);
               const pending = subscription.status === "pending";
 
               return (
