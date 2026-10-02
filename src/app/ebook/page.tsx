@@ -121,7 +121,7 @@ export default function Home() {
 
           <h1>
             Pasá de “no sé qué anunciar”
-            <span> a crear anuncios que la gente quiera mirar.</span>
+            <span> a crear anuncios con potencial de hacerse virales.</span>
           </h1>
 
           <p className="aqv-hero-subtitle">
