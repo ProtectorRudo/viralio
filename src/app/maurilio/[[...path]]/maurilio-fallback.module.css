@@ -4630,3 +4630,97 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* --- Internal sponsored placement purchase --- */
+.studioSingleCard {
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,.012);
+}
+
+.promotionPanel {
+  display: grid;
+  gap: 12px;
+}
+
+.promotionExplain {
+  border: 1px solid rgba(235,191,105,.1);
+  border-radius: 11px;
+  padding: 12px;
+  background: rgba(235,191,105,.018);
+}
+
+.promotionExplain b {
+  color: #ddc17e;
+  font-size: 11px;
+}
+
+.promotionExplain p {
+  margin: 5px 0 0;
+  max-width: 700px;
+  color: #777f79;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.promotionDurations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.promotionDurations button {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #7c8880;
+  background: transparent;
+  cursor: pointer;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.promotionDurations .promotionDurationActive {
+  border-color: rgba(235,191,105,.22);
+  color: #161207;
+  background: #dfc27c;
+  font-weight: 900;
+}
+
+.promotionPrice {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: end;
+  border-top: 1px solid rgba(255,255,255,.055);
+  padding-top: 11px;
+}
+
+.promotionPrice > div {
+  display: grid;
+  gap: 4px;
+}
+
+.promotionPrice span {
+  color: #626f67;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.promotionPrice b {
+  color: #e0e7e2;
+  font-size: 20px;
+}
+
+.promotionPrice small {
+  color: #6a766e;
+  font-size: 8px;
+}
+
+@media (max-width: 600px) {
+  .promotionPrice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
