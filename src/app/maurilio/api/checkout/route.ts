@@ -31,6 +31,7 @@ export async function GET() {
         provider: "mercado_pago",
         prices: { pro: null, elite: null },
         availability: { pro: false, elite: false },
+        saleEndsAt: { pro: null, elite: null },
       },
       {
         status: 200,
