@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Maurilio · Tipsters verificados",
   description:
-    "Encontrá tipsters, revisá su historial registrado y suscribite para acceder a sus próximos tips.",
+    "Encontrá tipsters, revisá su historial registrado y comprá acceso de 30 días a sus próximos tips.",
   robots: {
     index: false,
     follow: false,
@@ -42,7 +42,7 @@ function HeaderNav() {
 
       <nav className={styles.maurilioNav} aria-label="Maurilio">
         <Link href="/maurilio">Explorar</Link>
-        <Link href="/maurilio/suscripciones">Mis suscripciones</Link>
+        <Link href="/maurilio/suscripciones">Mis accesos</Link>
         <Link href="/maurilio/para-tipsters">Soy tipster</Link>
         <Link href="/maurilio/ingresar">Ingresar</Link>
       </nav>
