@@ -63,18 +63,27 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   async rewrites() {
     const origin = maurilioOrigin();
-    if (!origin) return [];
+    const maurilio = origin
+      ? [
+          {
+            source: "/maurilio",
+            destination: `${origin}/maurilio`,
+          },
+          {
+            source: "/maurilio/:path*",
+            destination: `${origin}/maurilio/:path*`,
+          },
+        ]
+      : [];
 
-    return [
-      {
-        source: "/maurilio",
-        destination: `${origin}/maurilio`,
-      },
-      {
-        source: "/maurilio/:path*",
-        destination: `${origin}/maurilio/:path*`,
-      },
-    ];
+    return {
+      // When a Maurilio origin exists it must override the local fallback
+      // route. If the origin is absent, the filesystem fallback remains live
+      // instead of exposing Next.js' generic 404.
+      beforeFiles: maurilio,
+      afterFiles: [],
+      fallback: [],
+    };
   },
   async headers() {
     return [
