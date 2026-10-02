@@ -2663,3 +2663,380 @@
     transition: none;
   }
 }
+
+
+/* --- Simple penalty reveal --- */
+.simpleDemo {
+  margin-top: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(119,242,164,.055), transparent 32%),
+    #050806;
+}
+
+.simpleDemoHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 13px 16px;
+}
+
+.simpleDemoHead > div {
+  display: grid;
+  gap: 4px;
+}
+
+.simpleDemoHead span,
+.simpleDecision span,
+.simpleSelection span,
+.simpleMetric span,
+.simpleMetricAccent span,
+.simpleReasonGrid span {
+  color: #647168;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .09em;
+}
+
+.simpleDemoHead b {
+  color: #91efb0;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.simpleDemoHead button {
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #8b968f;
+  background: transparent;
+  cursor: pointer;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.simplePenalty {
+  min-height: 540px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 108px;
+  padding: 42px 18px 30px;
+  background:
+    linear-gradient(90deg, transparent 49.8%, rgba(119,242,164,.055) 50%, transparent 50.2%),
+    radial-gradient(circle at 50% 100%, rgba(119,242,164,.08), transparent 35%);
+}
+
+.simpleGoal {
+  --kick-y: -228px;
+  position: relative;
+  width: min(540px, 86vw);
+  height: clamp(190px, 26vw, 245px);
+  overflow: visible;
+  border: 4px solid rgba(226,236,230,.84);
+  border-bottom-width: 5px;
+  box-shadow: 0 0 26px rgba(255,255,255,.035);
+}
+
+.simpleNet {
+  position: absolute;
+  inset: 0;
+  opacity: .18;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(255,255,255,.22) 18px 19px),
+    repeating-linear-gradient(90deg, transparent 0 24px, rgba(255,255,255,.22) 24px 25px);
+}
+
+.simpleKeeper {
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  z-index: 3;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 58px;
+  border: 1px solid rgba(119,242,164,.26);
+  border-radius: 12px 12px 7px 7px;
+  color: #8ff0ae;
+  background: rgba(5,10,7,.88);
+  font: 15px ui-monospace, SFMono-Regular, Menlo, monospace;
+  box-shadow: 0 0 22px rgba(119,242,164,.05);
+}
+
+.simpleBall {
+  position: absolute;
+  left: 50%;
+  bottom: -88px;
+  z-index: 6;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  filter: saturate(.72) contrast(1.08);
+  font-size: 36px;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.simpleBallKicking {
+  animation: simplePenaltyKick .9s cubic-bezier(.18,.72,.24,1) forwards;
+}
+
+@keyframes simplePenaltyKick {
+  0% {
+    transform: translate3d(0,0,0) scale(1) rotate(0deg);
+  }
+  42% {
+    transform: translate3d(-7px,calc(var(--kick-y) * .52),0) scale(.78) rotate(320deg);
+  }
+  82% {
+    transform: translate3d(18px,var(--kick-y),0) scale(.56) rotate(680deg);
+  }
+  100% {
+    transform: translate3d(18px,var(--kick-y),0) scale(.5) rotate(760deg);
+    opacity: .9;
+  }
+}
+
+.simpleGoalFlash {
+  position: absolute;
+  left: 56%;
+  top: 25%;
+  z-index: 2;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(119,242,164,.42), transparent 68%);
+  transform: translate(-50%,-50%) scale(.4);
+}
+
+.simpleGoalFlashActive {
+  animation: simpleGoalImpact .5s .62s ease-out forwards;
+}
+
+@keyframes simpleGoalImpact {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.35); }
+  35% { opacity: .9; transform: translate(-50%,-50%) scale(1.4); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(2.1); }
+}
+
+.simpleKickButton {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: min(320px, 88vw);
+  border: 1px solid rgba(119,242,164,.2);
+  border-radius: 999px;
+  padding: 13px 22px;
+  color: #071009;
+  background: #77f2a4;
+  cursor: pointer;
+  box-shadow: 0 16px 34px rgba(0,0,0,.22);
+}
+
+.simpleKickButton b {
+  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.simpleKickButton span {
+  font-size: 8px;
+  opacity: .72;
+}
+
+.simpleKickButton:disabled {
+  cursor: wait;
+  opacity: .8;
+}
+
+.simpleReveal {
+  padding: clamp(20px,4vw,34px);
+  animation: simpleRevealIn .42s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes simpleRevealIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.simpleDecision {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding-bottom: 12px;
+}
+
+.simpleDecision b {
+  color: #93f0b1;
+  font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+}
+
+.simpleReveal > small {
+  display: block;
+  margin-top: 18px;
+  color: #69766e;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.simpleReveal > h1 {
+  margin: 7px 0 18px;
+  max-width: 760px;
+  font-size: clamp(34px,6vw,62px);
+  line-height: .94;
+  letter-spacing: -.055em;
+}
+
+.simpleSelection {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.simpleSelection > div {
+  display: grid;
+  gap: 5px;
+  align-content: center;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  padding: 12px;
+  background: rgba(255,255,255,.012);
+}
+
+.simpleSelection b {
+  color: #dce5df;
+  font-size: 16px;
+}
+
+.simpleSelection strong {
+  color: #8ff0ae;
+  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.simpleMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.simpleMetric,
+.simpleMetricAccent {
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 9px;
+  padding: 11px;
+  background: rgba(255,255,255,.01);
+}
+
+.simpleMetricAccent {
+  border-color: rgba(119,242,164,.16);
+  background: rgba(119,242,164,.022);
+}
+
+.simpleMetric b,
+.simpleMetricAccent b {
+  display: block;
+  margin-top: 7px;
+  color: #dfe7e2;
+  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.simpleMetricAccent b {
+  color: #98f1b4;
+}
+
+.simpleReasonGrid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.simpleReasonGrid article {
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 10px;
+  padding: 13px;
+}
+
+.simpleReasonGrid p {
+  margin: 7px 0 0;
+  color: #838f87;
+  font-size: 9px;
+  line-height: 1.58;
+}
+
+.simpleDisclaimer {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding-top: 12px;
+}
+
+.simpleDisclaimer b {
+  color: #e9bd6e;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .09em;
+}
+
+.simpleDisclaimer span {
+  color: #68746d;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .simplePenalty {
+    min-height: 470px;
+    gap: 94px;
+    padding: 34px 14px 26px;
+  }
+
+  .simpleGoal {
+    --kick-y: -178px;
+    height: 176px;
+  }
+
+  .simpleBall {
+    bottom: -76px;
+    width: 46px;
+    height: 46px;
+    font-size: 32px;
+  }
+
+  .simpleSelection,
+  .simpleReasonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .simpleMetricGrid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .simpleDecision {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simpleBallKicking {
+    animation-duration: .01ms;
+  }
+
+  .simpleGoalFlashActive {
+    animation: none;
+  }
+
+  .simpleReveal {
+    animation: none;
+  }
+}
