@@ -66,11 +66,50 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "authentication_required" }, { status: 401 });
   }
 
-  let body: { tipsterSlug?: unknown };
+  let body: {
+    action?: unknown;
+    tipsterSlug?: unknown;
+    subscriptionId?: unknown;
+  };
   try {
     body = (await request.json()) as typeof body;
   } catch {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
+
+  const action = body.action === "cancel" ? "cancel" : "create";
+
+  if (action === "cancel") {
+    const subscriptionId =
+      typeof body.subscriptionId === "string"
+        ? body.subscriptionId.trim()
+        : "";
+
+    const result = await invokeMaurilioSubscriptions<{
+      ok: boolean;
+      status: string;
+      accessUntil: string | null;
+    }>(
+      {
+        action: "cancel",
+        subscriptionId,
+      },
+      token,
+    );
+
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: result.status },
+      );
+    }
+
+    return NextResponse.json(result.data, {
+      headers: {
+        "Cache-Control": "private, no-store, max-age=0",
+        "X-Robots-Tag": "noindex, nofollow, noarchive",
+      },
+    });
   }
 
   const tipsterSlug =
