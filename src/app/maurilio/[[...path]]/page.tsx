@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import styles from "./maurilio-fallback.module.css";
 import AccessLibrary from "./AccessLibrary";
+import DemoExperience from "./DemoExperience";
 import FreeReveal from "./FreeReveal";
 import IntegrityView from "./IntegrityView";
 import PremiumReportView from "./PremiumReportView";
@@ -53,6 +54,7 @@ function HeaderNav() {
 
       <nav className={styles.maurilioNav} aria-label="Maurilio">
         <Link href="/maurilio">Matchday</Link>
+        <Link href="/maurilio/demo">Demo</Link>
         <Link href="/maurilio/mis-informes">Mis informes</Link>
         <Link href="/maurilio/integridad">Integridad</Link>
         <Link href="/maurilio/registro">Registro</Link>
@@ -90,6 +92,7 @@ export default async function MaurilioPage({
   const integrityView = view === "integridad" || view === "integrity";
   const accessView = view === "mis-informes" || view === "access";
   const reportView = view === "informe" || view === "report";
+  const demoView = view === "demo" || view === "experiencia";
 
   if (ledgerView) {
     return (
@@ -111,6 +114,14 @@ export default async function MaurilioPage({
     return (
       <SubviewShell>
         <AccessLibrary />
+      </SubviewShell>
+    );
+  }
+
+  if (demoView) {
+    return (
+      <SubviewShell>
+        <DemoExperience />
       </SubviewShell>
     );
   }
@@ -206,6 +217,10 @@ export default async function MaurilioPage({
           </span>
           <h1 className={styles.liveHeadline}>{headline}</h1>
           <p>{description}</p>
+          <div className={styles.heroDemoCta}>
+            <Link href="/maurilio/demo">Vivir la experiencia demo →</Link>
+            <span>FREE · VAR PRO · THE LOCKER</span>
+          </div>
         </div>
 
         <div className={styles.metrics}>
