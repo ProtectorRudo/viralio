@@ -981,3 +981,365 @@
     max-width: 290px;
   }
 }
+
+
+/* --- Maurilio navigation + public proof views --- */
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.header {
+  color: inherit;
+  text-decoration: none;
+}
+
+.maurilioNav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.maurilioNav a {
+  color: #6f7d74;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+  text-decoration: none;
+  transition: color .18s ease;
+}
+
+.maurilioNav a:hover {
+  color: #a6f6bf;
+}
+
+.subview {
+  margin-top: 68px;
+}
+
+.subviewHero {
+  max-width: 760px;
+}
+
+.subviewHero > span {
+  color: #647168;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+}
+
+.subviewHero h1 {
+  margin: 10px 0 16px;
+  font-size: clamp(46px, 7vw, 78px);
+  line-height: .94;
+  letter-spacing: -.06em;
+}
+
+.subviewHero p {
+  max-width: 650px;
+  margin: 0;
+  color: #7b8880;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.ledgerSummary,
+.integrityStatus {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.ledgerSummary article,
+.integrityStatus article {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: rgba(255,255,255,.012);
+  padding: 13px;
+}
+
+.ledgerSummary span,
+.integrityStatus span,
+.ledgerMetrics span,
+.ledgerMarket span,
+.subviewNote span,
+.auditStrip > span {
+  color: #5f6c64;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .09em;
+}
+
+.ledgerSummary b,
+.integrityStatus b {
+  display: block;
+  margin-top: 8px;
+  color: #dce4df;
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.integrityStatus small {
+  display: block;
+  margin-top: 5px;
+  color: #68756d;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.emptyLedger {
+  margin-top: 24px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 22px;
+  background: rgba(255,255,255,.012);
+}
+
+.emptyLedger > span {
+  color: #66736b;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.emptyLedger h2 {
+  margin: 8px 0;
+  font-size: 30px;
+  letter-spacing: -.04em;
+}
+
+.emptyLedger p {
+  max-width: 620px;
+  margin: 0;
+  color: #748078;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.ledgerList {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.ledgerRow {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 13px;
+  padding: 17px;
+  background:
+    linear-gradient(120deg, rgba(119,242,164,.018), transparent 46%),
+    rgba(255,255,255,.01);
+}
+
+.ledgerRowHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.ledgerRowHead > div {
+  display: grid;
+  gap: 5px;
+}
+
+.ledgerRowHead span {
+  color: #66736b;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.ledgerRowHead b,
+.ledgerRowHead strong {
+  font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ledgerRowHead strong {
+  color: #89efab;
+}
+
+.ledgerRow h3 {
+  margin: 16px 0 4px;
+  font-size: 24px;
+  letter-spacing: -.035em;
+}
+
+.ledgerRow > p {
+  margin: 0;
+  color: #6f7b73;
+  font-size: 9px;
+}
+
+.ledgerMarket {
+  display: grid;
+  gap: 5px;
+  margin-top: 13px;
+  padding: 11px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.ledgerMarket b {
+  font-size: 13px;
+}
+
+.ledgerMarket small {
+  color: #8aeaaa;
+  font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ledgerMetrics {
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.ledgerMetrics > div {
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 8px;
+  padding: 9px;
+}
+
+.ledgerMetrics b {
+  display: block;
+  margin-top: 6px;
+  color: #d9e2dc;
+  font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.subviewNote {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+
+.subviewNote p {
+  max-width: 670px;
+  margin: 7px 0 0;
+  color: #647169;
+  font-size: 9px;
+  line-height: 1.65;
+}
+
+.integrityRules {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.integrityRules article {
+  min-height: 158px;
+  border: 1px solid rgba(255,255,255,.065);
+  border-radius: 10px;
+  background: rgba(255,255,255,.01);
+  padding: 13px;
+}
+
+.integrityRules span {
+  color: #435047;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.integrityRules b {
+  display: block;
+  margin-top: 24px;
+  color: #dce5df;
+  font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .07em;
+}
+
+.integrityRules p {
+  margin: 8px 0 0;
+  color: #69766e;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.auditStrip {
+  margin-top: 26px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 16px;
+}
+
+.auditStrip > div {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.auditStrip i {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-style: normal;
+}
+
+.auditStrip i b {
+  color: #cfd9d2;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.auditStrip i small {
+  color: #657169;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.auditStrip > p {
+  color: #68756d;
+  font-size: 9px;
+}
+
+@media (max-width: 860px) {
+  .ledgerMetrics {
+    grid-template-columns: repeat(3,1fr);
+  }
+
+  .integrityRules {
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .headerRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .maurilioNav {
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding-top: 12px;
+  }
+
+  .subview {
+    margin-top: 46px;
+  }
+
+  .subviewHero h1 {
+    font-size: 48px;
+  }
+
+  .ledgerSummary,
+  .integrityStatus {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .ledgerMetrics {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .integrityRules {
+    grid-template-columns: 1fr;
+  }
+
+  .auditStrip i {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
