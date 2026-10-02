@@ -95,7 +95,7 @@ export default function TipsterProfile({
                   style: "currency",
                   currency: "ARS",
                   maximumFractionDigits: 0,
-                }).format(tipster.monthly_price_ars) + "/mes"}
+                }).format(tipster.monthly_price_ars) + " · 30 días"}
           </strong>
           <SubscribeButton
             slug={tipster.slug}
