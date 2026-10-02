@@ -117,3 +117,40 @@ test("Maurilio premium API fails closed for a valid session id without entitleme
   expect(body.market).toBeUndefined();
   expect(body.selection).toBeUndefined();
 });
+
+
+test("Maurilio demo completes the full FREE, PRO and ELITE experience on mobile", async ({ page }) => {
+  await mobile(page);
+  await page.goto("/maurilio/demo");
+
+  await expect(page.getByRole("heading", { name: "Esta vez vas a vivirlo vos." })).toBeVisible();
+  await expect(page.getByText("DEMO · SIN DINERO · SIN APUESTA REAL")).toBeVisible();
+
+  await page.getByRole("button", { name: "Entrar al vestuario →" }).click();
+  await expect(page.getByRole("heading", { name: "Pateá para revelar." })).toBeVisible();
+
+  await page.getByRole("button", { name: /PATEAR/ }).click();
+  await expect(page.getByText("Atlético Norte vs Unión Central")).toBeVisible();
+  await expect(page.getByText("CUOTA BET365 NO VERIFICADA")).toBeVisible();
+
+  await page.getByRole("button", { name: "Continuar al VAR PRO →" }).click();
+  await expect(page.getByRole("heading", { name: "El precio entra a revisión." })).toBeVisible();
+
+  await page.getByRole("button", { name: "Iniciar VAR Review" }).click();
+  await expect(page.getByText("VALUE CONFIRMED · DEMO")).toBeVisible({ timeout: 6000 });
+  await expect(page.getByText("Puerto Azul vs Deportivo Oeste")).toBeVisible();
+
+  await page.getByRole("button", { name: "Entrar a The Locker →" }).click();
+  await expect(page.getByRole("heading", { name: "La puerta que no siempre se abre." })).toBeVisible();
+
+  await page.getByRole("button", { name: "Abrir The Locker →" }).click();
+  await expect(page.getByText("Racing del Sur vs Capital FC")).toBeVisible();
+  await expect(page.getByText("+20.2% EV").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Cerrar experiencia →" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Así se sentiría un Matchday con los tres niveles." }),
+  ).toBeVisible();
+
+  await expectNoHorizontalOverflow(page);
+});
