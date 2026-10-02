@@ -5,4 +5,15 @@ create table if not exists private.ebook_asset_chunks (
   primary key (asset_key, chunk_index)
 );
 
-revoke all on private.ebook_asset_chunks from public, anon, authenticated;
+revoke all on private.ebook_asset_chunks from public;
+
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    execute 'revoke all on private.ebook_asset_chunks from anon';
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    execute 'revoke all on private.ebook_asset_chunks from authenticated';
+  end if;
+end
+$$;
