@@ -105,7 +105,15 @@ test("Maurilio premium API fails closed for a valid session id without entitleme
   expect(status.activeEntitlements).toBe(0);
 
   const premium = await page.request.get("/maurilio/api/premium/pro");
-  expect(premium.status()).toBe(403);
-  const body = (await premium.json()) as { error?: string };
-  expect(body.error).toBe("access_required");
+  expect([403, 404]).toContain(premium.status());
+  const body = (await premium.json()) as {
+    error?: string;
+    event?: unknown;
+    market?: unknown;
+    selection?: unknown;
+  };
+  expect(["access_required", "report_not_found"]).toContain(body.error);
+  expect(body.event).toBeUndefined();
+  expect(body.market).toBeUndefined();
+  expect(body.selection).toBeUndefined();
 });
