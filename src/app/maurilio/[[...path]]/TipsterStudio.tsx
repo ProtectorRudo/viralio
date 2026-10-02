@@ -620,7 +620,22 @@ export default function TipsterStudio() {
           <button type="submit">Guardar perfil</button>
         </form>
 
-        <PaymentAccountCard onChange={setPaymentConnected} />
+        {account.tipster ? (
+          <PaymentAccountCard onChange={setPaymentConnected} />
+        ) : (
+          <div className={styles.studioCard}>
+            <div className={styles.studioCardTitle}>
+              <span>02</span>
+              <div>
+                <b>Mercado Pago</b>
+                <p>Primero guardá tu perfil.</p>
+              </div>
+            </div>
+            <p className={styles.studioHelp}>
+              Después vas a poder conectar tu propia cuenta y recibir los cobros directamente.
+            </p>
+          </div>
+        )}
 
         <div className={styles.studioCard}>
           <div className={styles.studioCardTitle}>
