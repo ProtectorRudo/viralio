@@ -203,8 +203,8 @@ export default function TipsterMarketplace({
         <h1>Encontrá a quién seguir.</h1>
         <p>
           Mirá resultados reales, compará rendimiento y elegí por historial.
-          Los tips futuros permanecen bloqueados hasta que exista una
-          suscripción.
+          Los tips futuros permanecen bloqueados hasta que exista un
+          acceso vigente.
         </p>
       </div>
 
