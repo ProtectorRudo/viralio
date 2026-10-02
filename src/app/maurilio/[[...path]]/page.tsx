@@ -6,6 +6,7 @@ import TipsterMarketplace from "./TipsterMarketplace";
 import TipsterStudio from "./TipsterStudio";
 import TipsterProfile from "./TipsterProfile";
 import SubscriptionsView from "./SubscriptionsView";
+import MercadoPagoCallback from "./MercadoPagoCallback";
 import {
   fetchTipsterProfile,
   fetchTipsters,
@@ -84,12 +85,27 @@ function ComingSoon({
 
 export default async function MaurilioPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ path?: string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const resolved = await params;
+  const query = await searchParams;
   const path = resolved.path ?? [];
   const view = path[0]?.toLowerCase() ?? "explorar";
+
+  if (view === "conectar-mercadopago") {
+    return (
+      <Shell>
+        <MercadoPagoCallback
+          code={typeof query.code === "string" ? query.code : ""}
+          state={typeof query.state === "string" ? query.state : ""}
+          error={typeof query.error === "string" ? query.error : ""}
+        />
+      </Shell>
+    );
+  }
 
   const legacyViews = new Set([
     "demo",
