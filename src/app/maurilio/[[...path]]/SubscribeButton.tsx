@@ -63,10 +63,14 @@ export default function SubscribeButton({
       }
 
       if (!response.ok || !body.checkoutUrl) {
-        if (body.error === "subscription_already_exists") {
-          setMessage("Ya tenés una suscripción a este tipster.");
+        if (body.error === "subscription_already_active") {
+          setMessage("Ya tenés acceso vigente a este tipster.");
+        } else if (body.error === "tipster_payment_account_required") {
+          setMessage("Este tipster todavía no habilitó sus cobros.");
+        } else if (body.error === "seller_payment_account_reconnect_required") {
+          setMessage("El tipster necesita reconectar Mercado Pago.");
         } else {
-          setMessage("No pudimos iniciar la suscripción.");
+          setMessage("No pudimos abrir el pago.");
         }
         return;
       }
@@ -80,7 +84,7 @@ export default function SubscribeButton({
   }
 
   if (!enabled) {
-    return <button type="button" disabled>Suscripción no disponible</button>;
+    return <button type="button" disabled>Acceso no disponible</button>;
   }
 
   if (loadingStatus) {
@@ -88,16 +92,16 @@ export default function SubscribeButton({
   }
 
   if (!configured) {
-    return <button type="button" disabled>Suscripciones próximamente</button>;
+    return <button type="button" disabled>Pagos próximamente</button>;
   }
 
   return (
     <>
       <button type="button" onClick={subscribe} disabled={busy}>
-        {busy ? "Abriendo Mercado Pago…" : "Suscribirme"}
+        {busy ? "Abriendo Mercado Pago…" : "Comprar 30 días"}
       </button>
       <small className={styles.subscribeNote}>
-        Renovación mensual · cancelable
+        Pago único · sin débito automático
       </small>
       {message ? <p className={styles.subscribeMessage}>{message}</p> : null}
     </>
