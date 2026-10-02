@@ -105,7 +105,7 @@ export default function PaymentAccountCard({
         return;
       }
 
-      setStatus((current) => ({ ...current, connected: false }));
+      setStatus((current) => ({ ...(current ?? {}), connected: false }));
       onChange?.(false);
     } finally {
       setBusy(false);
