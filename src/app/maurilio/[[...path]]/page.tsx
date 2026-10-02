@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import styles from "./maurilio-fallback.module.css";
 import FreeReveal from "./FreeReveal";
 import IntegrityView from "./IntegrityView";
@@ -26,18 +27,18 @@ export const metadata: Metadata = {
 function HeaderNav() {
   return (
     <header className={styles.headerRow}>
-      <a className={styles.header} href="/maurilio" aria-label="Maurilio Matchday">
+      <Link className={styles.header} href="/maurilio" aria-label="Maurilio Matchday">
         <div className={styles.mark}>M</div>
         <div>
           <b>MAURILIO</b>
           <span>QUANT FOOTBALL</span>
         </div>
-      </a>
+      </Link>
 
       <nav className={styles.maurilioNav} aria-label="Maurilio">
-        <a href="/maurilio">Matchday</a>
-        <a href="/maurilio/integridad">Integridad</a>
-        <a href="/maurilio/registro">Registro</a>
+        <Link href="/maurilio">Matchday</Link>
+        <Link href="/maurilio/integridad">Integridad</Link>
+        <Link href="/maurilio/registro">Registro</Link>
       </nav>
     </header>
   );
