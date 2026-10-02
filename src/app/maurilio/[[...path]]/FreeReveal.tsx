@@ -65,7 +65,6 @@ export default function FreeReveal({ pick }: { pick: FreePick }) {
   useEffect(() => {
     if (phase !== "checking") return;
 
-    setStep(0);
     const interval = window.setInterval(() => {
       setStep((current) => Math.min(current + 1, auditSteps.length - 1));
     }, 260);
@@ -101,7 +100,10 @@ export default function FreeReveal({ pick }: { pick: FreePick }) {
           <button
             className={styles.kickButton}
             type="button"
-            onClick={() => setPhase("checking")}
+            onClick={() => {
+              setStep(0);
+              setPhase("checking");
+            }}
           >
             <span>INICIAR AUDITORÍA</span>
             <b>Ejecutar reveal →</b>
