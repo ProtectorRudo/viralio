@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import styles from "./maurilio-fallback.module.css";
 import FreeReveal from "./FreeReveal";
+import IntegrityView from "./IntegrityView";
+import PublicLedger from "./PublicLedger";
+import {
+  ars,
+  fetchMaurilioGateway,
+  pct,
+  type PublicState,
+} from "./maurilio-data";
 
 export const dynamic = "force-dynamic";
 
@@ -15,79 +23,24 @@ export const metadata: Metadata = {
   },
 };
 
-const STATE_URL =
-  "https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/maurilio-public-state";
+function HeaderNav() {
+  return (
+    <header className={styles.headerRow}>
+      <a className={styles.header} href="/maurilio" aria-label="Maurilio Matchday">
+        <div className={styles.mark}>M</div>
+        <div>
+          <b>MAURILIO</b>
+          <span>QUANT FOOTBALL</span>
+        </div>
+      </a>
 
-// Legacy anon JWT: intentionally public, equivalent to a publishable browser key.
-// Edge Function verification rejects requests without a valid project JWT.
-const PUBLIC_SUPABASE_JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3c2d4cHR0bnJjdGtscmNqbWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNzUwMTIsImV4cCI6MjEwMzk1MTAxMn0.XNmGhD52sJlNSkPip41moM8Z6YesrYmx7AGrBK0KZII";
-
-type PublicState = {
-  mode: "off_market" | "no_value" | "matchday";
-  status: string;
-  label: string;
-  matchday: {
-    slug: string;
-    matchDate: string;
-    publishedAt: string | null;
-  } | null;
-  free: Record<string, unknown> | null;
-  premium: {
-    pro: boolean;
-    elite: boolean;
-  };
-  risk: Record<string, unknown> | null;
-  updatedAt: string;
-};
-
-async function getPublicState(): Promise<PublicState | null> {
-  try {
-    const response = await fetch(STATE_URL, {
-      headers: {
-        Authorization: `Bearer ${PUBLIC_SUPABASE_JWT}`,
-        apikey: PUBLIC_SUPABASE_JWT,
-      },
-      cache: "no-store",
-      signal: AbortSignal.timeout(4500),
-    });
-
-    if (!response.ok) return null;
-
-    const body = (await response.json()) as PublicState;
-    if (
-      body.mode !== "off_market" &&
-      body.mode !== "no_value" &&
-      body.mode !== "matchday"
-    ) {
-      return null;
-    }
-
-    return body;
-  } catch {
-    return null;
-  }
-}
-
-function numeric(value: unknown) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function pct(value: unknown, digits = 1) {
-  const number = numeric(value);
-  return number === null ? "—" : `${(number * 100).toFixed(digits)}%`;
-}
-
-function ars(value: unknown) {
-  const number = numeric(value);
-  return number === null
-    ? "—"
-    : new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        maximumFractionDigits: 0,
-      }).format(number);
+      <nav className={styles.maurilioNav} aria-label="Maurilio">
+        <a href="/maurilio">Matchday</a>
+        <a href="/maurilio/integridad">Integridad</a>
+        <a href="/maurilio/registro">Registro</a>
+      </nav>
+    </header>
+  );
 }
 
 export default async function MaurilioPage({
@@ -95,9 +48,28 @@ export default async function MaurilioPage({
 }: {
   params: Promise<{ path?: string[] }>;
 }) {
-  await params;
-  const state = await getPublicState();
+  const resolved = await params;
+  const view = resolved.path?.[0]?.toLowerCase() ?? "matchday";
 
+  const ledgerView = view === "registro" || view === "archive";
+  const integrityView = view === "integridad" || view === "integrity";
+
+  if (ledgerView || integrityView) {
+    return (
+      <main className={styles.shell}>
+        <div className={styles.pitch} aria-hidden="true" />
+        <div className={styles.stadiumLights} aria-hidden="true">
+          <i /><i /><i /><i /><i /><i />
+        </div>
+        <section className={styles.panel}>
+          <HeaderNav />
+          {ledgerView ? <PublicLedger /> : <IntegrityView />}
+        </section>
+      </main>
+    );
+  }
+
+  const state = await fetchMaurilioGateway<PublicState>("state");
   const mode = state?.mode ?? "off_market";
   const risk = state?.risk ?? null;
   const bank = risk ? risk.bank_ars : null;
@@ -119,7 +91,7 @@ export default async function MaurilioPage({
       : mode === "no_value"
         ? "La jornada fue auditada y ninguna entrada superó el umbral de valor exigido por el modelo."
         : mode === "matchday"
-          ? "Matchday publicado. La selección FREE se expone abajo; PRO y ELITE permanecen protegidos por entitlement."
+          ? "Matchday publicado. La selección FREE se expone abajo; PRO y ELITE permanecen protegidos."
           : "No hay un Matchday publicado en este momento. Maurilio no fuerza una apuesta cuando no existe una discrepancia de precio suficiente.";
 
   return (
@@ -128,14 +100,9 @@ export default async function MaurilioPage({
       <div className={styles.stadiumLights} aria-hidden="true">
         <i /><i /><i /><i /><i /><i />
       </div>
+
       <section className={styles.panel}>
-        <header className={styles.header}>
-          <div className={styles.mark}>M</div>
-          <div>
-            <b>MAURILIO</b>
-            <span>QUANT FOOTBALL</span>
-          </div>
-        </header>
+        <HeaderNav />
 
         <div className={styles.status}>
           <span className={styles.dot} />
@@ -145,7 +112,9 @@ export default async function MaurilioPage({
 
         <div className={styles.hero}>
           <span>
-            {mode === "matchday" ? "MATCHDAY / LIVE MODEL" : "SYSTEM STATUS / MARKET"}
+            {mode === "matchday"
+              ? "MATCHDAY / LIVE MODEL"
+              : "SYSTEM STATUS / MARKET"}
           </span>
           <h1 className={styles.liveHeadline}>{headline}</h1>
           <p>{description}</p>
@@ -157,7 +126,7 @@ export default async function MaurilioPage({
             <strong>{ars(bank)}</strong>
           </article>
           <article>
-            <span>P&L</span>
+            <span>P&amp;L</span>
             <strong>{ars(pnl)}</strong>
           </article>
           <article>
@@ -191,8 +160,15 @@ export default async function MaurilioPage({
             <article className={styles.lockerFree}>
               <div className={styles.jersey}><small>M</small><b>FREE</b></div>
               <span>01 / OPEN ANALYSIS</span>
-              <strong>{state?.mode === "matchday" && state.free ? "REVELAR" : "SIN SEÑAL"}</strong>
-              <p>Lectura abierta. El proceso se muestra antes de revelar la selección.</p>
+              <strong>
+                {state?.mode === "matchday" && state.free
+                  ? "REVELAR"
+                  : "SIN SEÑAL"}
+              </strong>
+              <p>
+                Lectura abierta. El proceso se muestra antes de revelar la
+                selección.
+              </p>
               {state?.mode === "matchday" && state.free ? (
                 <a className={styles.lockerAction} href="#free-reveal">
                   Abrir auditoría →
@@ -203,15 +179,25 @@ export default async function MaurilioPage({
             <article>
               <div className={styles.jersey}><small>M</small><b>PRO</b></div>
               <span>02 / VAR AUDIT</span>
-              <strong>{state?.mode === "matchday" && state.premium.pro ? "DISPONIBLE" : "SELLADO"}</strong>
+              <strong>
+                {state?.mode === "matchday" && state.premium.pro
+                  ? "DISPONIBLE"
+                  : "SELLADO"}
+              </strong>
               <p>Convicción media, precio mínimo y auditoría ampliada.</p>
             </article>
 
             <article className={styles.lockerElite}>
               <div className={styles.jersey}><small>M</small><b>ELITE</b></div>
               <span>03 / THE LOCKER</span>
-              <strong>{state?.mode === "matchday" && state.premium.elite ? "HIGH CONVICTION" : "SELLADO"}</strong>
-              <p>Reservado para discrepancias excepcionales. Nunca se fuerza.</p>
+              <strong>
+                {state?.mode === "matchday" && state.premium.elite
+                  ? "HIGH CONVICTION"
+                  : "SELLADO"}
+              </strong>
+              <p>
+                Reservado para discrepancias excepcionales. Nunca se fuerza.
+              </p>
             </article>
           </div>
         </section>
