@@ -64,3 +64,48 @@ test("Maurilio public ledger renders safely with or without settled history", as
 
   await expectNoHorizontalOverflow(page);
 });
+
+
+test("Maurilio access API returns no entitlement when no access cookie exists", async ({ request }) => {
+  const response = await request.get("http://127.0.0.1:3000/maurilio/api/access");
+  expect(response.status()).toBe(200);
+
+  const body = (await response.json()) as {
+    matchday: string | null;
+    pro: boolean;
+    elite: boolean;
+    activeEntitlements: number;
+  };
+
+  expect(body.pro).toBe(false);
+  expect(body.elite).toBe(false);
+  expect(body.activeEntitlements).toBe(0);
+});
+
+test("Maurilio premium API fails closed for a valid session id without entitlement", async ({ page }) => {
+  await page.context().addCookies([
+    {
+      name: "maurilio_sid",
+      value: "11111111-1111-4111-8111-111111111111",
+      url: "http://127.0.0.1:3000/maurilio",
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
+
+  const access = await page.request.get("/maurilio/api/access");
+  expect(access.status()).toBe(200);
+  const status = (await access.json()) as {
+    pro: boolean;
+    elite: boolean;
+    activeEntitlements: number;
+  };
+  expect(status.pro).toBe(false);
+  expect(status.elite).toBe(false);
+  expect(status.activeEntitlements).toBe(0);
+
+  const premium = await page.request.get("/maurilio/api/premium/pro");
+  expect(premium.status()).toBe(403);
+  const body = (await premium.json()) as { error?: string };
+  expect(body.error).toBe("access_required");
+});
