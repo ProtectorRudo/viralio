@@ -79,11 +79,6 @@ function pct(value: unknown, digits = 1) {
   return number === null ? "—" : `${(number * 100).toFixed(digits)}%`;
 }
 
-function odds(value: unknown) {
-  const number = numeric(value);
-  return number === null ? "—" : `@${number.toFixed(2)}`;
-}
-
 function ars(value: unknown) {
   const number = numeric(value);
   return number === null
@@ -93,10 +88,6 @@ function ars(value: unknown) {
         currency: "ARS",
         maximumFractionDigits: 0,
       }).format(number);
-}
-
-function freeMetric(free: Record<string, unknown>, key: string) {
-  return free[key];
 }
 
 export default async function MaurilioPage({
