@@ -13,15 +13,15 @@ export default function MercadoPagoCallback({
   state: string;
   error: string;
 }) {
+  const invalid = Boolean(error || !code || !state);
   const [status, setStatus] = useState<"loading" | "success" | "error">(
-    error ? "error" : "loading",
+    invalid ? "error" : "loading",
   );
 
   useEffect(() => {
-    if (error || !code || !state) {
-      setStatus("error");
-      return;
-    }
+    if (invalid) return;
+
+    let cancelled = false;
 
     void (async () => {
       try {
@@ -30,12 +30,19 @@ export default function MercadoPagoCallback({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "complete", code, state }),
         });
-        setStatus(response.ok ? "success" : "error");
+
+        if (!cancelled) {
+          setStatus(response.ok ? "success" : "error");
+        }
       } catch {
-        setStatus("error");
+        if (!cancelled) setStatus("error");
       }
     })();
-  }, [code, state, error]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [code, invalid, state]);
 
   return (
     <section className={styles.simpleProductPage}>
