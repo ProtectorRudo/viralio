@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import styles from "./maurilio-fallback.module.css";
+import AccessLibrary from "./AccessLibrary";
 import FreeReveal from "./FreeReveal";
 import IntegrityView from "./IntegrityView";
+import PremiumReportView from "./PremiumReportView";
 import PublicLedger from "./PublicLedger";
 import {
   ars,
@@ -10,6 +13,11 @@ import {
   pct,
   type PublicState,
 } from "./maurilio-data";
+import {
+  invokeMaurilioAccess,
+  type AccessStatus,
+  validSubjectId,
+} from "@/lib/maurilio-access-server";
 
 export const dynamic = "force-dynamic";
 
@@ -24,10 +32,18 @@ export const metadata: Metadata = {
   },
 };
 
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 function HeaderNav() {
   return (
     <header className={styles.headerRow}>
-      <Link className={styles.header} href="/maurilio" aria-label="Maurilio Matchday">
+      <Link
+        className={styles.header}
+        href="/maurilio"
+        aria-label="Maurilio Matchday"
+      >
         <div className={styles.mark}>M</div>
         <div>
           <b>MAURILIO</b>
@@ -37,6 +53,7 @@ function HeaderNav() {
 
       <nav className={styles.maurilioNav} aria-label="Maurilio">
         <Link href="/maurilio">Matchday</Link>
+        <Link href="/maurilio/mis-informes">Mis informes</Link>
         <Link href="/maurilio/integridad">Integridad</Link>
         <Link href="/maurilio/registro">Registro</Link>
       </nav>
@@ -44,33 +61,90 @@ function HeaderNav() {
   );
 }
 
+function SubviewShell({ children }: { children: React.ReactNode }) {
+  return (
+    <main className={styles.shell}>
+      <div className={styles.pitch} aria-hidden="true" />
+      <div className={styles.stadiumLights} aria-hidden="true">
+        <i /><i /><i /><i /><i /><i />
+      </div>
+      <section className={styles.panel}>
+        <HeaderNav />
+        {children}
+      </section>
+    </main>
+  );
+}
+
 export default async function MaurilioPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ path?: string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const resolved = await params;
+  const [resolved, query] = await Promise.all([params, searchParams]);
   const view = resolved.path?.[0]?.toLowerCase() ?? "matchday";
 
   const ledgerView = view === "registro" || view === "archive";
   const integrityView = view === "integridad" || view === "integrity";
+  const accessView = view === "mis-informes" || view === "access";
+  const reportView = view === "informe" || view === "report";
 
-  if (ledgerView || integrityView) {
+  if (ledgerView) {
     return (
-      <main className={styles.shell}>
-        <div className={styles.pitch} aria-hidden="true" />
-        <div className={styles.stadiumLights} aria-hidden="true">
-          <i /><i /><i /><i /><i /><i />
-        </div>
-        <section className={styles.panel}>
-          <HeaderNav />
-          {ledgerView ? <PublicLedger /> : <IntegrityView />}
-        </section>
-      </main>
+      <SubviewShell>
+        <PublicLedger />
+      </SubviewShell>
     );
   }
 
-  const state = await fetchMaurilioGateway<PublicState>("state");
+  if (integrityView) {
+    return (
+      <SubviewShell>
+        <IntegrityView />
+      </SubviewShell>
+    );
+  }
+
+  if (accessView) {
+    return (
+      <SubviewShell>
+        <AccessLibrary />
+      </SubviewShell>
+    );
+  }
+
+  if (reportView) {
+    return (
+      <SubviewShell>
+        <PremiumReportView
+          tier={first(query.tier)}
+          matchday={first(query.matchday)}
+        />
+      </SubviewShell>
+    );
+  }
+
+  const store = await cookies();
+  const subjectId = store.get("maurilio_sid")?.value;
+
+  const stateRequest = fetchMaurilioGateway<PublicState>("state");
+  const accessRequest = validSubjectId(subjectId)
+    ? invokeMaurilioAccess<AccessStatus>({
+        action: "status",
+        subjectId,
+      })
+    : Promise.resolve(null);
+
+  const [state, accessResult] = await Promise.all([
+    stateRequest,
+    accessRequest,
+  ]);
+
+  const access =
+    accessResult && accessResult.ok ? accessResult.data : null;
+
   const mode = state?.mode ?? "off_market";
   const risk = state?.risk ?? null;
   const bank = risk ? risk.bank_ars : null;
@@ -92,8 +166,16 @@ export default async function MaurilioPage({
       : mode === "no_value"
         ? "La jornada fue auditada y ninguna entrada superó el umbral de valor exigido por el modelo."
         : mode === "matchday"
-          ? "Matchday publicado. La selección FREE se expone abajo; PRO y ELITE permanecen protegidos."
+          ? "Matchday publicado. La selección FREE se expone abajo; PRO y ELITE permanecen protegidos por entitlement."
           : "No hay un Matchday publicado en este momento. Maurilio no fuerza una apuesta cuando no existe una discrepancia de precio suficiente.";
+
+  const activeSlug = state?.matchday?.slug ?? null;
+  const proAvailable = Boolean(state?.mode === "matchday" && state.premium.pro);
+  const eliteAvailable = Boolean(
+    state?.mode === "matchday" && state.premium.elite,
+  );
+  const proUnlocked = Boolean(proAvailable && access?.pro);
+  const eliteUnlocked = Boolean(eliteAvailable && access?.elite);
 
   return (
     <main className={styles.shell}>
@@ -108,7 +190,12 @@ export default async function MaurilioPage({
         <div className={styles.status}>
           <span className={styles.dot} />
           <b>{state ? state.status : "SAFE FALLBACK"}</b>
-          <small>viralio.net/maurilio</small>
+          <small>
+            {access?.activeEntitlements
+              ? `${access.activeEntitlements} ACCESS · `
+              : ""}
+            viralio.net/maurilio
+          </small>
         </div>
 
         <div className={styles.hero}>
@@ -152,7 +239,7 @@ export default async function MaurilioPage({
             </div>
             <p>
               {state?.mode === "matchday"
-                ? "Cada locker cambia de estado únicamente cuando existe una señal real publicada."
+                ? "Cada locker cambia de estado únicamente cuando existe una señal real publicada y el acceso premium se valida en servidor."
                 : "Los lockers permanecen cerrados hasta que una señal supere precio mínimo, EV robusto y auditoría adversarial."}
             </p>
           </div>
@@ -177,28 +264,62 @@ export default async function MaurilioPage({
               ) : null}
             </article>
 
-            <article>
+            <article className={proUnlocked ? styles.lockerUnlocked : undefined}>
               <div className={styles.jersey}><small>M</small><b>PRO</b></div>
               <span>02 / VAR AUDIT</span>
               <strong>
-                {state?.mode === "matchday" && state.premium.pro
-                  ? "DISPONIBLE"
-                  : "SELLADO"}
+                {proUnlocked
+                  ? "ABRIR INFORME"
+                  : proAvailable
+                    ? "DISPONIBLE"
+                    : "SELLADO"}
               </strong>
               <p>Convicción media, precio mínimo y auditoría ampliada.</p>
+              {proUnlocked && activeSlug ? (
+                <Link
+                  className={styles.lockerAction}
+                  href={`/maurilio/informe?tier=pro&matchday=${encodeURIComponent(activeSlug)}`}
+                >
+                  Abrir informe verificado →
+                </Link>
+              ) : proAvailable ? (
+                <span className={styles.premiumPending}>
+                  Checkout aún no habilitado
+                </span>
+              ) : null}
             </article>
 
-            <article className={styles.lockerElite}>
+            <article
+              className={
+                eliteUnlocked
+                  ? `${styles.lockerElite} ${styles.lockerUnlocked}`
+                  : styles.lockerElite
+              }
+            >
               <div className={styles.jersey}><small>M</small><b>ELITE</b></div>
               <span>03 / THE LOCKER</span>
               <strong>
-                {state?.mode === "matchday" && state.premium.elite
-                  ? "HIGH CONVICTION"
-                  : "SELLADO"}
+                {eliteUnlocked
+                  ? "ABRIR INFORME"
+                  : eliteAvailable
+                    ? "HIGH CONVICTION"
+                    : "SELLADO"}
               </strong>
               <p>
                 Reservado para discrepancias excepcionales. Nunca se fuerza.
               </p>
+              {eliteUnlocked && activeSlug ? (
+                <Link
+                  className={styles.lockerAction}
+                  href={`/maurilio/informe?tier=elite&matchday=${encodeURIComponent(activeSlug)}`}
+                >
+                  Abrir informe verificado →
+                </Link>
+              ) : eliteAvailable ? (
+                <span className={styles.premiumPending}>
+                  Checkout aún no habilitado
+                </span>
+              ) : null}
             </article>
           </div>
         </section>
