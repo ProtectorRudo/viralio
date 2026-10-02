@@ -3,7 +3,23 @@
 import { useMemo, useState } from "react";
 import type { Experience, SceneType } from "./data";
 
-export default function ExperienceEngine({ experience }: { experience: Experience }) {
+export type ThiPhoto = { url:string; caption?:string; fit?:"cover"|"contain"; position?:"center"|"top"|"bottom"|"left"|"right" };
+export type ThiAudio = { url:string; caption?:string };
+export type ThiVideo = { url:string; caption?:string };
+
+export default function ExperienceEngine({
+  experience,
+  letterText,
+  photoMedia,
+  audioMedia,
+  videoMedia,
+}: {
+  experience: Experience;
+  letterText?: string;
+  photoMedia?: ThiPhoto[];
+  audioMedia?: ThiAudio[];
+  videoMedia?: ThiVideo[];
+}) {
   const [sceneIndex,setSceneIndex]=useState(0);
   const [stars,setStars]=useState<number[]>([]);
   const [letterOpen,setLetterOpen]=useState(false);
@@ -26,6 +42,7 @@ export default function ExperienceEngine({ experience }: { experience: Experienc
     "Los mejores recuerdos casi nunca avisan que van a ser importantes.",
     "Sin darnos cuenta, empezamos a coleccionar un mundo propio."
   ],[]);
+  const displayPhotos = photoMedia && photoMedia.length ? photoMedia.slice(0,8) : [];
 
   function scene(type:SceneType){
     switch(type){
@@ -47,7 +64,10 @@ export default function ExperienceEngine({ experience }: { experience: Experienc
       case "memories": return <section className="thi-scene">
         <p className="thi-kicker">Los recuerdos</p><h2>Hay días que terminan. Y otros que se quedan.</h2>
         <div className="thi-film">
-          {memories.map((m,i)=><article className={`thi-memory m${i+1}`} key={m}><div className="thi-memory-photo"><span>{String(i+1).padStart(2,"0")}</span></div><p>{m}</p></article>)}
+          {(displayPhotos.length ? displayPhotos : memories.map((caption,i)=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url || item.caption || i}>
+            <div className="thi-memory-photo" style={item.url?{backgroundImage:`url("${item.url}")`,backgroundSize:item.fit||"cover",backgroundPosition:item.position||"center",backgroundRepeat:"no-repeat"}:undefined}><span>{String(i+1).padStart(2,"0")}</span></div>
+            <p>{item.caption || memories[i%memories.length]}</p>
+          </article>)}
         </div>
         <button className="thi-primary" onClick={next}>Seguir</button>
       </section>;
@@ -74,7 +94,7 @@ export default function ExperienceEngine({ experience }: { experience: Experienc
       case "letter": return <section className="thi-scene">
         <p className="thi-kicker">La parte que no podía entrar en una foto</p><h2>Hay palabras que merecen abrirse despacio.</h2>
         <button className={`thi-envelope ${letterOpen?"open":""}`} onClick={()=>setLetterOpen(true)}>
-          <span className="back"/><span className="paper"><small>Para {experience.demoRecipient}</small><strong>Gracias por convertir tantos días comunes en recuerdos extraordinarios.</strong><em>— {experience.demoGiver}</em></span><span className="front"/><span className="wax">♥</span>
+          <span className="back"/><span className="paper"><small>Para {experience.demoRecipient}</small><strong>{letterText || "Gracias por convertir tantos días comunes en recuerdos extraordinarios."}</strong><em>— {experience.demoGiver}</em></span><span className="front"/><span className="wax">♥</span>
         </button>
         {!letterOpen?<p className="thi-hint">Rompé el sello</p>:<button className="thi-primary" onClick={next}>Seguir</button>}
       </section>;
@@ -100,7 +120,7 @@ export default function ExperienceEngine({ experience }: { experience: Experienc
 
       case "voices": return <section className="thi-scene">
         <p className="thi-kicker">Hay gente esperando decirte algo</p><h2>Elegí una voz.</h2>
-        <div className="thi-voices">{["Mamá","Tomás","Caro","Fran"].map((n,i)=><button key={n} className={voicesPlayed.includes(i)?"played":""} onClick={()=>setVoicesPlayed(v=>v.includes(i)?v:[...v,i])}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{n}</strong><small>{voicesPlayed.includes(i)?"“Te quiero muchísimo. Gracias por estar siempre.”":"Tocar para escuchar"}</small></button>)}</div>
+        <div className="thi-voices">{audioMedia?.length ? audioMedia.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption || `Mensaje ${i+1}`}</strong><audio src={a.url} controls preload="metadata" onPlay={()=>setVoicesPlayed(v=>v.includes(i)?v:[...v,i])}/></article>) : ["Mamá","Tomás","Caro","Fran"].map((n,i)=><button key={n} className={voicesPlayed.includes(i)?"played":""} onClick={()=>setVoicesPlayed(v=>v.includes(i)?v:[...v,i])}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{n}</strong><small>{voicesPlayed.includes(i)?"“Te quiero muchísimo. Gracias por estar siempre.”":"Tocar para escuchar"}</small></button>)}</div>
         <button className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>Continuar</button>
       </section>;
 
@@ -121,6 +141,12 @@ export default function ExperienceEngine({ experience }: { experience: Experienc
         <p className="thi-kicker">Para volver algún día</p><h2>Guardamos algo para tu yo del futuro.</h2>
         <button className={`thi-capsule ${capsuleOpen?"open":""}`} onClick={()=>setCapsuleOpen(true)}><span>2036</span><strong>{capsuleOpen?"Abriste una cápsula del tiempo":"Abrir cápsula"}</strong><p>{capsuleOpen?"Ojalá sigas teniendo esa misma curiosidad por el mundo.":"Hay palabras que pueden esperar."}</p></button>
         {capsuleOpen&&<button className="thi-primary" onClick={next}>Guardar este momento</button>}
+      </section>;
+
+      case "video": return <section className="thi-scene">
+        <p className="thi-kicker">Un momento para mirar sin apuro</p><h2>Hay recuerdos que necesitan movimiento y sonido.</h2>
+        {videoMedia?.length ? <div className="thi-video-wrap"><video src={videoMedia[0].url} controls playsInline preload="metadata"/>{videoMedia[0].caption&&<p>{videoMedia[0].caption}</p>}</div> : <div className="thi-video-placeholder">▶</div>}
+        <button className="thi-primary" onClick={next}>Continuar</button>
       </section>;
 
       case "proposal": return <section className="thi-scene thi-final"><p className="thi-kicker">Y ahora sí</p><span className="thi-ring">◇</span><h2>{experience.closing}</h2><p className="thi-lead">No hace falta tocar nada más. Este momento es de ustedes.</p><div className="thi-reactions"><button>Sí ❤️</button><button>😭</button><button>✨</button></div><small>creado con ♥ en Te Hice Esto</small></section>;
