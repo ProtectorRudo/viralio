@@ -4059,3 +4059,290 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* --- Tipster Studio --- */
+.tipsterStudio {
+  margin-top: 50px;
+}
+
+.studioHero {
+  max-width: 760px;
+}
+
+.studioHero > span {
+  color: #68756d;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.studioHero h1 {
+  margin: 8px 0 12px;
+  font-size: clamp(44px, 7vw, 72px);
+  line-height: .94;
+  letter-spacing: -.06em;
+}
+
+.studioHero p {
+  max-width: 650px;
+  margin: 0;
+  color: #7a8780;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.studioGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.studioCard {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,.012);
+}
+
+.studioCardTitle {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.studioCardTitle > span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(119,242,164,.18);
+  border-radius: 50%;
+  color: #8cefab;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.studioCardTitle > div {
+  display: grid;
+  gap: 4px;
+}
+
+.studioCardTitle b {
+  color: #dce5df;
+  font-size: 13px;
+}
+
+.studioCardTitle p {
+  margin: 0;
+  color: #6f7b73;
+  font-size: 8px;
+}
+
+.studioCard label {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.studioCard label > span {
+  color: #68756d;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.studioCard input {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 10px;
+  padding: 11px 12px;
+  color: #e3ebe6;
+  background: #090d0a;
+  outline: none;
+  font-size: 10px;
+}
+
+.studioCard input:focus {
+  border-color: rgba(119,242,164,.3);
+}
+
+.slugField {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #090d0a;
+}
+
+.slugField small {
+  padding-left: 11px;
+  color: #526057;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+}
+
+.slugField input {
+  border: 0;
+  border-radius: 0;
+}
+
+.studioCard > button[type="submit"],
+.studioSecondary {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 14px;
+  border: 1px solid rgba(119,242,164,.2);
+  border-radius: 999px;
+  color: #071009;
+  background: #77f2a4;
+  cursor: pointer;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 900;
+}
+
+.studioSecondary {
+  color: #9aefb5;
+  background: transparent;
+}
+
+.studioSecondary:disabled {
+  cursor: not-allowed;
+  opacity: .38;
+}
+
+.feedStatus {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 11px;
+  padding: 12px;
+}
+
+.feedStatus i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #555f59;
+}
+
+.feedStatus .feedOnline {
+  background: #77f2a4;
+  box-shadow: 0 0 0 5px rgba(119,242,164,.06);
+}
+
+.feedStatus > div {
+  display: grid;
+  gap: 4px;
+}
+
+.feedStatus b {
+  color: #dce5df;
+  font-size: 12px;
+}
+
+.feedStatus span {
+  color: #68756d;
+  font-size: 8px;
+}
+
+.studioHelp {
+  margin: 11px 0 0;
+  color: #707d75;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.studioMessage {
+  margin: 14px 0 0;
+  color: #9aefb5;
+  font-size: 9px;
+}
+
+.eventPicker {
+  margin-top: 32px;
+}
+
+.eventList,
+.oddsList {
+  display: grid;
+  gap: 7px;
+}
+
+.eventList button,
+.oddsList button {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 11px;
+  padding: 12px 13px;
+  color: inherit;
+  background: rgba(255,255,255,.01);
+  cursor: pointer;
+  text-align: left;
+}
+
+.eventList button:hover,
+.oddsList button:hover {
+  border-color: rgba(119,242,164,.18);
+  background: rgba(119,242,164,.018);
+}
+
+.eventList button > div,
+.oddsList button > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.eventList span,
+.oddsList span {
+  color: #647168;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.eventList b,
+.oddsList b {
+  color: #dce5df;
+  font-size: 11px;
+}
+
+.eventList small {
+  flex: 0 0 auto;
+  color: #7b877f;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.oddsList {
+  grid-template-columns: repeat(2, minmax(0,1fr));
+}
+
+.oddsList button:disabled {
+  cursor: not-allowed;
+  opacity: .52;
+}
+
+.oddsList strong {
+  flex: 0 0 auto;
+  color: #8ff0ae;
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (max-width: 760px) {
+  .tipsterStudio {
+    margin-top: 40px;
+  }
+
+  .studioGrid,
+  .oddsList {
+    grid-template-columns: 1fr;
+  }
+
+  .eventList button {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
