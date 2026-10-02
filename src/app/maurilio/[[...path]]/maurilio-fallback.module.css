@@ -1343,3 +1343,408 @@
     gap: 4px;
   }
 }
+
+
+/* --- Premium entitlement access --- */
+.lockerUnlocked {
+  border-color: rgba(119,242,164,.22) !important;
+  box-shadow: inset 0 0 38px rgba(119,242,164,.035);
+}
+
+.lockerUnlocked strong {
+  color: #8cf1ae !important;
+}
+
+.premiumPending {
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 12px;
+  color: #6b776f;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .06em;
+  border-bottom: 1px dashed rgba(255,255,255,.12);
+  padding-bottom: 3px;
+}
+
+.accessSummary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.accessSummary article {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 13px;
+  background: rgba(255,255,255,.012);
+}
+
+.accessSummary span,
+.accessReportCard span,
+.recoveryIntro > span,
+.recoveryIssue span,
+.recoveryCode span,
+.premiumVerifiedHead span,
+.premiumVerifiedHead b,
+.premiumMarket span,
+.premiumMetrics span,
+.premiumProofGrid span,
+.settledProof span {
+  color: #637168;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .1em;
+}
+
+.accessSummary b {
+  display: block;
+  margin-top: 8px;
+  color: #dce5df;
+  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.inlineAction,
+.reportOpen {
+  display: inline-flex;
+  width: max-content;
+  margin-top: 14px;
+  color: #8ef1af;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(142,241,175,.32);
+  padding-bottom: 3px;
+}
+
+.accessReportList {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.accessReportCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: end;
+  border: 1px solid rgba(119,242,164,.14);
+  border-radius: 12px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 0 0, rgba(119,242,164,.035), transparent 34%),
+    rgba(255,255,255,.01);
+}
+
+.accessReportCard h2 {
+  margin: 8px 0 4px;
+  font-size: 23px;
+  letter-spacing: -.035em;
+}
+
+.accessReportCard p {
+  margin: 0;
+  color: #6d7971;
+  font-size: 9px;
+}
+
+.recoveryPanel {
+  margin-top: 26px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 24px;
+}
+
+.recoveryIntro {
+  max-width: 620px;
+}
+
+.recoveryIntro h2 {
+  margin: 8px 0 9px;
+  font-size: clamp(28px,4.5vw,42px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.recoveryIntro p {
+  margin: 0;
+  color: #738078;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.recoveryForm {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.recoveryForm label {
+  grid-column: 1 / -1;
+  color: #637168;
+  font: 7px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .09em;
+}
+
+.recoveryForm input {
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.085);
+  border-radius: 9px;
+  padding: 12px;
+  color: #e1e9e4;
+  background: rgba(255,255,255,.018);
+  outline: none;
+  font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.recoveryForm input:focus {
+  border-color: rgba(119,242,164,.34);
+}
+
+.recoveryForm button,
+.recoveryIssue button {
+  border: 1px solid rgba(119,242,164,.19);
+  border-radius: 9px;
+  padding: 11px 14px;
+  cursor: pointer;
+  color: #0a120d;
+  background: #77f2a4;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+}
+
+.recoveryForm button:disabled,
+.recoveryIssue button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.recoveryIssue {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  padding: 13px;
+}
+
+.recoveryIssue p {
+  max-width: 520px;
+  margin: 6px 0 0;
+  color: #68756d;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.recoveryCode {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+  border: 1px solid rgba(119,242,164,.18);
+  border-radius: 10px;
+  padding: 14px;
+  background: rgba(119,242,164,.025);
+}
+
+.recoveryCode b {
+  overflow-wrap: anywhere;
+  color: #a7f6c0;
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .05em;
+}
+
+.recoveryCode small,
+.recoveryMessage {
+  color: #6d7a72;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.recoveryMessage {
+  margin: 12px 0 0;
+}
+
+.premiumVerified {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(119,242,164,.17);
+  border-radius: 16px;
+  padding: clamp(20px,4vw,34px);
+  background:
+    radial-gradient(circle at 10% 0, rgba(119,242,164,.06), transparent 35%),
+    #060a07;
+}
+
+.premiumVerified::after {
+  content: "MAURILIO · VERIFIED · MAURILIO · VERIFIED";
+  position: absolute;
+  right: -72px;
+  bottom: 24px;
+  transform: rotate(-90deg);
+  color: rgba(119,242,164,.035);
+  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .14em;
+  pointer-events: none;
+}
+
+.premiumVerifiedHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  padding-bottom: 13px;
+}
+
+.premiumVerifiedHead > div {
+  display: grid;
+  gap: 5px;
+}
+
+.premiumVerifiedHead > strong {
+  color: #96f1b4;
+  font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+}
+
+.premiumVerified > small {
+  display: block;
+  margin-top: 20px;
+  color: #6c786f;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.premiumVerified > h1 {
+  margin: 7px 0 18px;
+  max-width: 760px;
+  font-size: clamp(38px,6.5vw,68px);
+  line-height: .94;
+  letter-spacing: -.055em;
+}
+
+.premiumMarket {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.premiumMarket > div,
+.premiumMetrics > div,
+.premiumProofGrid > div {
+  border: 1px solid rgba(255,255,255,.065);
+  border-radius: 9px;
+  padding: 11px;
+  background: rgba(255,255,255,.012);
+}
+
+.premiumMarket > div {
+  display: grid;
+  gap: 5px;
+  align-content: center;
+}
+
+.premiumMarket b {
+  font-size: 16px;
+}
+
+.premiumMarket strong {
+  color: #8df0ae;
+  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.premiumMetrics {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.premiumMetrics b,
+.premiumProofGrid b {
+  display: block;
+  margin-top: 6px;
+  color: #dce5df;
+  font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.premiumProofGrid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.settledProof {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  padding-top: 12px;
+}
+
+.settledProof b {
+  color: #91efb0;
+  font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.settledProof small {
+  margin-left: auto;
+  color: #69766e;
+  font-size: 8px;
+}
+
+@media (max-width: 760px) {
+  .maurilioNav {
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 18px;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .maurilioNav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .maurilioNav a {
+    white-space: nowrap;
+  }
+
+  .accessReportCard {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recoveryForm {
+    grid-template-columns: 1fr;
+  }
+
+  .recoveryForm label {
+    grid-column: auto;
+  }
+
+  .recoveryIssue {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .premiumMarket,
+  .premiumProofGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .premiumMetrics {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .settledProof {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settledProof small {
+    margin-left: 0;
+  }
+}
