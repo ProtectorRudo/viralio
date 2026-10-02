@@ -115,23 +115,42 @@ export default function Home() {
 
         <div className="aqv-hero-copy">
           <div className="aqv-eyebrow">
-            <span>PLAYBOOK + KIT DE ANUNCIOS</span>
-            <strong>Edición 2026</strong>
+            <span>PARA QUIEN VENDE ALGO</span>
+            <strong>Y NO QUIERE IMPROVISAR</strong>
           </div>
 
           <h1>
-            Dejá de adivinar
-            <span> qué poner en tus anuncios.</span>
+            Pasá de “no sé qué anunciar”
+            <span> a tener una estructura clara.</span>
           </h1>
 
           <p className="aqv-hero-subtitle">
-            Un sistema práctico con <strong>hooks, guiones, estructuras, prompts de IA y checklists</strong> para pasar de una pantalla en blanco a anuncios listos para producir.
+            <strong>ANUNCIOS QUE VENDEN</strong> es un sistema práctico para transformar cualquier producto o servicio en un anuncio con <strong>hook, argumento y CTA</strong> —y saber qué revisar cuando algo no funciona.
           </p>
 
+          <div className="aqv-hero-transform" aria-label="Transformación antes y después">
+            <div className="aqv-transform-side aqv-transform-before">
+              <small>ANTES</small>
+              <strong>“¿Qué digo?”</strong>
+              <span>Ideas sueltas · prueba y error · cero criterio claro</span>
+            </div>
+            <div className="aqv-transform-mini-arrow">→</div>
+            <div className="aqv-transform-side aqv-transform-after">
+              <small>DESPUÉS</small>
+              <strong>Hook + mensaje + CTA</strong>
+              <span>Una estructura para crear, probar y mejorar</span>
+            </div>
+          </div>
+
           <div className="aqv-hero-points">
-            <span>✓ Aplicable a productos y servicios</span>
-            <span>✓ Sin empezar desde cero</span>
-            <span>✓ Acceso inmediato</span>
+            <span>✓ Sabés por dónde empezar</span>
+            <span>✓ Creás variantes sin arrancar de cero</span>
+            <span>✓ Entendés qué corregir si falla</span>
+          </div>
+
+          <div className="aqv-hero-value-line">
+            <strong>No comprás teoría.</strong>
+            <span>Comprás claridad + estructura + criterio para crear anuncios.</span>
           </div>
 
           <div className="aqv-hero-buy">
@@ -144,14 +163,14 @@ export default function Home() {
             </div>
 
             <a className="aqv-button aqv-button-primary" href={checkoutUrl} data-cta="hero">
-              QUIERO EL KIT COMPLETO
+              QUIERO DEJAR DE IMPROVISAR
               <span>→</span>
             </a>
           </div>
 
           <div className="aqv-microtrust">
-            <span>🔒 Pago seguro</span>
-            <span>⚡ Acceso digital</span>
+            <span>⚡ Acceso digital inmediato</span>
+            <span>∞ Lo usás cada vez que creás un anuncio</span>
             <span>📱 Celular + PC</span>
           </div>
         </div>
@@ -160,8 +179,8 @@ export default function Home() {
           <div className="aqv-orbit aqv-orbit-one" />
           <div className="aqv-orbit aqv-orbit-two" />
           <div className="aqv-value-badge">
-            <span>INCLUYE</span>
-            <strong>8 recursos</strong>
+            <span>OBJETIVO</span>
+            <strong>claridad</strong>
           </div>
 
           <div className="aqv-product-scene">
@@ -171,7 +190,7 @@ export default function Home() {
                 <span className="aqv-book-mini">PLAYBOOK 2026</span>
                 <div className="aqv-book-mark">AV</div>
                 <h2>ANUNCIOS<br />QUE <em>VENDEN</em></h2>
-                <p>El sistema práctico para crear anuncios con intención.</p>
+                <p>De una pantalla en blanco a una estructura clara.</p>
                 <div className="aqv-book-line" />
                 <small>HOOKS · GUIONES · IA · CHECKLISTS</small>
               </div>
@@ -198,12 +217,11 @@ export default function Home() {
 
       <section className="aqv-proof-strip">
         <div className="aqv-proof-marquee">
-          <span>100 HOOKS</span><i>◆</i>
-          <span>30 ESTRUCTURAS</span><i>◆</i>
-          <span>20 GUIONES</span><i>◆</i>
-          <span>PROMPTS IA</span><i>◆</i>
-          <span>CHECKLISTS</span><i>◆</i>
-          <span>SWIPE FILE</span>
+          <span>SABÉ QUÉ DECIR</span><i>◆</i>
+          <span>ELEGÍ UN ÁNGULO</span><i>◆</i>
+          <span>ARMÁ EL GUION</span><i>◆</i>
+          <span>GENERÁ VARIANTES</span><i>◆</i>
+          <span>DETECTÁ QUÉ CORREGIR</span>
         </div>
       </section>
 
