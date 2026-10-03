@@ -82,6 +82,9 @@ export default function AdminPortal() {
     setGifts([]);
   }
 
+  const publishedCount = gifts.filter((gift) => gift.status === "published").length;
+  const draftCount = gifts.filter((gift) => gift.status === "draft").length;
+
   async function createGift(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -109,7 +112,10 @@ export default function AdminPortal() {
   if (!loggedIn) {
     return (
       <main className="thi-admin-shell thi-admin-login-shell">
-        <section className="thi-admin-login-card">
+        <section className="thi-admin-login-card thi-admin-login-premium">
+          <div className="thi-admin-login-orbit orbit-a" aria-hidden="true"/>
+          <div className="thi-admin-login-orbit orbit-b" aria-hidden="true"/>
+          <div className="thi-admin-lockmark" aria-hidden="true"><span>◇</span><i/></div>
           <Link href="/tehiceesto" className="thi-admin-back">← Te Hice Esto</Link>
           <p className="thi-kicker">Panel interno</p>
           <h1>Armado de regalos</h1>
@@ -140,7 +146,8 @@ export default function AdminPortal() {
 
   return (
     <main className="thi-admin-shell">
-      <header className="thi-admin-header">
+      <header className="thi-admin-header thi-admin-header-premium">
+        <div className="thi-admin-header-aura" aria-hidden="true"/>
         <div>
           <Link href="/tehiceesto" className="thi-admin-back">← Te Hice Esto</Link>
           <p className="thi-kicker">Operación</p>
@@ -155,8 +162,15 @@ export default function AdminPortal() {
         </div>
       </header>
 
+      <section className="thi-admin-stat-grid">
+        <article><span>Total</span><strong>{gifts.length}</strong><small>regalos creados</small></article>
+        <article><span>Publicados</span><strong>{publishedCount}</strong><small>links activos</small></article>
+        <article><span>Borradores</span><strong>{draftCount}</strong><small>en preparación</small></article>
+        <article className="accent"><span>Sistema</span><strong>●</strong><small>operativo y privado</small></article>
+      </section>
+
       {showNew && (
-        <section className="thi-admin-panel">
+        <section className="thi-admin-panel thi-admin-new-panel">
           <div className="thi-admin-panel-heading">
             <div>
               <p className="thi-kicker">Nuevo</p>
