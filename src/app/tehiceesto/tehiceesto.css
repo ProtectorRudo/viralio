@@ -1499,3 +1499,244 @@
   .thi-theme-pareja .thi-scratch{width:86vw}
   .thi-theme-pareja .thi-envelope .paper strong{font-size:17px!important}
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   CUMPLEAÑOS QUALITY PASS — candlelight, documentary, grown-up
+   ═══════════════════════════════════════════════════════════ */
+.thi-demo-page-cumpleanos .thi-demo-ribbon{transition:opacity .5s ease,transform .5s ease}
+.thi-demo-page-cumpleanos:has(.thi-experience[data-scene]:not([data-scene="intro"])) .thi-demo-ribbon{
+  opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-8px)
+}
+.thi-theme-cumpleanos .thi-reset-journey{opacity:.24;background:transparent;border-color:transparent;backdrop-filter:none}
+.thi-theme-cumpleanos .thi-reset-journey:hover,.thi-theme-cumpleanos .thi-reset-journey:focus-visible{opacity:1;background:rgba(13,9,5,.72);border-color:rgba(255,209,145,.12)}
+.thi-theme-cumpleanos .thi-scene-meta{opacity:.36;transition:opacity .25s}.thi-theme-cumpleanos .thi-scene-meta:hover{opacity:.9}
+.thi-theme-cumpleanos .thi-progress-premium{
+  width:min(72vw,310px);opacity:.34;background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;transition:opacity .25s
+}
+.thi-theme-cumpleanos .thi-progress-premium:hover,.thi-theme-cumpleanos .thi-progress-premium:focus-within{
+  opacity:.95;background:rgba(13,9,5,.7);border-color:rgba(255,209,145,.1)
+}
+.thi-theme-cumpleanos .thi-progress-premium>div{background:rgba(255,225,178,.09)}
+.thi-theme-cumpleanos .thi-progress-premium>small{color:#756454}
+.thi-theme-cumpleanos .thi-primary:not(:disabled){
+  background:#dfb16b!important;color:#1a1007!important;border-color:#dfb16b!important;
+  box-shadow:0 13px 40px rgba(205,139,58,.12)!important
+}
+.thi-theme-cumpleanos .thi-primary:not(:disabled):hover{background:#e9c080!important;transform:translateY(-2px)}
+.thi-theme-cumpleanos .thi-primary:disabled{
+  background:transparent!important;color:#685943!important;border-color:rgba(223,177,107,.16)!important;opacity:1!important
+}
+.thi-theme-cumpleanos .thi-ghost{border-color:rgba(223,177,107,.15);color:#a89173;background:transparent}
+.thi-theme-cumpleanos .thi-ghost:hover{border-color:rgba(223,177,107,.3);color:#ead5b9;background:rgba(223,177,107,.025)}
+
+/* intro — celebration after dark */
+.thi-theme-cumpleanos .thi-intro h1{font-style:normal;text-shadow:0 0 60px rgba(223,177,107,.1)}
+.thi-theme-cumpleanos .thi-intro-constellation i{background:#ffd899;box-shadow:0 0 16px #ffc86c}
+.thi-theme-cumpleanos .thi-intro .thi-lead{color:#b0a08d}
+
+/* candle ritual — intentionally editorial, not faux-real cake illustration */
+.thi-birthday-ritual{
+  position:relative;width:min(650px,92vw);height:330px;margin:4px 0 5px;
+  display:grid;place-items:center;isolation:isolate
+}
+.thi-birthday-candlelight{
+  position:absolute;width:360px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,184,84,.18),rgba(255,145,43,.05) 37%,transparent 70%);
+  filter:blur(15px);top:26px;left:50%;transform:translateX(-50%);transition:opacity .7s
+}
+.thi-birthday-table{
+  position:absolute;width:min(520px,78vw);height:70px;left:50%;bottom:43px;transform:translateX(-50%);
+  border-radius:50%;background:radial-gradient(ellipse,rgba(94,60,32,.42),rgba(27,17,10,.18) 55%,transparent 72%);
+  filter:blur(2px)
+}
+.thi-birthday-cake-premium{
+  position:absolute;width:235px;height:126px;left:50%;bottom:75px;transform:translateX(-50%);
+  filter:drop-shadow(0 30px 35px rgba(0,0,0,.48))
+}
+.thi-birthday-cake-edge{
+  position:absolute;left:0;right:0;bottom:0;height:82px;border-radius:50% / 24%;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),transparent 18%),
+    linear-gradient(90deg,#2b1b11,#4b2d18 47%,#28170e);
+  box-shadow:inset 0 -14px 22px rgba(0,0,0,.3),inset 0 1px rgba(255,220,178,.08)
+}
+.thi-birthday-cake-top{
+  position:absolute;left:0;right:0;top:4px;height:60px;border-radius:50%;
+  background:
+    radial-gradient(circle at 42% 42%,rgba(239,183,114,.15) 0 2px,transparent 3px),
+    radial-gradient(circle at 58% 30%,rgba(239,183,114,.1) 0 2px,transparent 3px),
+    radial-gradient(ellipse,#54331c,#2b1a10 70%);
+  box-shadow:inset 0 0 0 1px rgba(255,218,161,.08),0 3px 0 rgba(20,12,8,.7)
+}
+.thi-birthday-candles{position:absolute;inset:0;z-index:4}
+.thi-birthday-candles>span{position:absolute;width:10px;height:58px;bottom:76px;transform-origin:bottom}
+.thi-birthday-candles .c1{left:23%;transform:rotate(-4deg)}.thi-birthday-candles .c2{left:38%;transform:rotate(2deg)}
+.thi-birthday-candles .c3{left:49%;transform:translateX(-50%)}.thi-birthday-candles .c4{right:37%;transform:rotate(-2deg)}.thi-birthday-candles .c5{right:22%;transform:rotate(4deg)}
+.thi-birthday-candles b{
+  position:absolute;left:2px;bottom:0;width:6px;height:48px;border-radius:2px;
+  background:linear-gradient(90deg,#d8b66e,#f0d597 45%,#b78f4d);
+  box-shadow:inset 1px 0 rgba(255,255,255,.22)
+}
+.thi-birthday-candles i{
+  position:absolute;left:50%;top:-15px;width:13px;height:22px;transform:translateX(-50%);
+  border-radius:52% 48% 58% 42% / 68% 68% 32% 32%;
+  background:radial-gradient(circle at 50% 64%,#fff8c4 0 18%,#ffcc67 35%,#f4872b 72%);
+  box-shadow:0 0 15px rgba(255,190,78,.78),0 0 35px rgba(255,137,43,.35);
+  transform-origin:50% 100%;animation:thiBirthdayFlame 1.25s ease-in-out infinite alternate
+}
+.thi-birthday-candles em{
+  position:absolute;left:50%;top:-28px;width:34px;height:34px;transform:translateX(-50%);
+  border-radius:50%;background:#ffa83d;filter:blur(18px);opacity:.27;transition:opacity .55s
+}
+.thi-birthday-candles .c2 i{animation-delay:.2s}.thi-birthday-candles .c3 i{animation-delay:.45s}.thi-birthday-candles .c4 i{animation-delay:.08s}.thi-birthday-candles .c5 i{animation-delay:.32s}
+.thi-birthday-ritual>p{
+  position:absolute;bottom:6px;margin:0;font-family:var(--thi-serif);font-style:italic;
+  font-size:16px;color:#8d745a;letter-spacing:.01em
+}
+.thi-birthday-ritual.out .thi-birthday-candles i{opacity:0;transform:translateX(-50%) scale(.15);transition:.32s}
+.thi-birthday-ritual.out .thi-birthday-candles em{opacity:0}.thi-birthday-ritual.out .thi-birthday-candlelight{opacity:.18}
+.thi-theme-cumpleanos .thi-blow-controls{margin-top:-2px}
+.thi-theme-cumpleanos .thi-blow-mic{min-width:175px}
+.thi-theme-cumpleanos .thi-blow-fallback{color:#756553}
+.thi-theme-cumpleanos .thi-wish-made{font-family:var(--thi-serif);font-style:italic;color:#d9bd94;font-size:18px}
+@keyframes thiBirthdayFlame{from{transform:translateX(-50%) rotate(-3deg) scale(.94)}to{transform:translateX(-50%) rotate(4deg) scale(1.05)}}
+
+/* balloons — smoked glass and strings, then a toast appears */
+.thi-theme-cumpleanos .thi-balloons{
+  width:min(760px,94vw);display:grid;grid-template-columns:repeat(3,1fr);gap:20px 16px;
+  align-items:start;margin:20px 0 18px;padding-bottom:28px
+}
+.thi-theme-cumpleanos .thi-balloons button{
+  position:relative;aspect-ratio:.78;border-radius:50% 50% 46% 46% / 43% 43% 57% 57%;
+  border:1px solid rgba(237,190,122,.15);
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,240,215,.19),transparent 12%),
+    linear-gradient(145deg,rgba(223,177,107,.18),rgba(74,45,21,.28));
+  box-shadow:inset -18px -24px 34px rgba(0,0,0,.2),0 20px 55px rgba(0,0,0,.16);
+  overflow:visible;color:#f5e6d1;transform:translateY(var(--balloon-y,0)) rotate(var(--balloon-r,0deg))
+}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(1){--balloon-y:8px;--balloon-r:-2deg}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(2){--balloon-y:-5px;--balloon-r:1deg}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(3){--balloon-y:14px;--balloon-r:2deg}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(4){--balloon-y:-2px;--balloon-r:1deg}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(5){--balloon-y:12px;--balloon-r:-2deg}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(6){--balloon-y:0;--balloon-r:2deg}
+.thi-theme-cumpleanos .thi-balloons button:after{
+  content:"";position:absolute;left:50%;top:99%;width:1px;height:46px;
+  background:linear-gradient(rgba(210,172,119,.4),transparent);transform:rotate(5deg);transform-origin:top
+}
+.thi-theme-cumpleanos .thi-balloons button>i{
+  font-size:7px;letter-spacing:.17em;color:#ad8a60;text-transform:uppercase
+}
+.thi-theme-cumpleanos .thi-balloons button>span{
+  padding:0 14px;font-family:var(--thi-serif);font-style:italic;font-size:18px;line-height:1.18
+}
+.thi-theme-cumpleanos .thi-balloons button.pop{
+  aspect-ratio:auto;min-height:120px;border-radius:2px;background:#17110c;border-color:rgba(223,177,107,.13);
+  box-shadow:0 18px 46px rgba(0,0,0,.22);transform:translateY(var(--balloon-y,0)) rotate(var(--balloon-r,0deg))
+}
+.thi-theme-cumpleanos .thi-balloons button.pop:after{display:none}
+.thi-theme-cumpleanos .thi-balloons button.pop>i{font-size:12px;color:#dcb06e}
+
+/* memories — warm documentary prints, not template polaroids */
+.thi-theme-cumpleanos .thi-scene-memories{justify-content:center}
+.thi-theme-cumpleanos .thi-film{
+  width:min(980px,94vw);display:grid;grid-template-columns:1.06fr .95fr 1.04fr;gap:13px;
+  margin:24px 0 18px;align-items:center;perspective:1000px
+}
+.thi-theme-cumpleanos .thi-memory{
+  background:#0f0b08!important;color:#e7d7c2;padding:6px 6px 14px!important;
+  border:1px solid rgba(232,191,133,.11);box-shadow:0 25px 70px rgba(0,0,0,.34)!important;
+  border-radius:2px!important;overflow:hidden
+}
+.thi-theme-cumpleanos .thi-memory.m1{transform:rotate(-1.8deg) translateY(8px)}
+.thi-theme-cumpleanos .thi-memory.m2{transform:rotate(.9deg) translateY(-7px) scale(1.02)}
+.thi-theme-cumpleanos .thi-memory.m3{transform:rotate(1.6deg) translateY(11px)}
+.thi-theme-cumpleanos .thi-memory-photo{
+  aspect-ratio:4/3!important;filter:saturate(.8) contrast(1.05) sepia(.08);border-radius:0!important;background:#17100b!important
+}
+.thi-theme-cumpleanos .thi-memory-photo:after{
+  content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,183,95,.04),transparent 50%,rgba(22,10,2,.18));pointer-events:none
+}
+.thi-theme-cumpleanos .thi-memory p{
+  font-family:var(--thi-serif);font-style:italic;font-size:13px;line-height:1.38;color:#c7b49d;
+  margin:11px 7px 2px;min-height:2.8em
+}
+
+/* golden light scene */
+.thi-theme-cumpleanos .thi-light-reveal{
+  border-color:rgba(226,174,97,.09);background:radial-gradient(circle at 50% 50%,rgba(181,108,31,.07),rgba(5,4,3,.24) 55%,transparent)!important;
+  box-shadow:0 25px 90px rgba(0,0,0,.22)
+}
+.thi-theme-cumpleanos .thi-light-secret p{color:#e7cfaa}
+.thi-theme-cumpleanos .thi-light-reveal>em{color:#75614a}
+.thi-theme-cumpleanos .thi-light-ambient i{background:#ffcb75!important;opacity:.32}
+
+/* voices — birthday guestbook, not dashboard cards */
+.thi-theme-cumpleanos .thi-voices{
+  width:min(690px,92vw);grid-template-columns:1fr 1fr;gap:0 24px;margin:22px 0
+}
+.thi-theme-cumpleanos .thi-voices button{
+  border-width:0 0 1px;border-radius:0;background:transparent;padding:17px 2px;
+  grid-template-columns:38px 1fr;box-shadow:none
+}
+.thi-theme-cumpleanos .thi-voices button:hover{transform:none;border-color:rgba(225,180,111,.25)}
+.thi-theme-cumpleanos .thi-voices button>span{
+  width:34px;height:34px;background:transparent;border:1px solid rgba(225,180,111,.16);color:#d4a45f
+}
+.thi-theme-cumpleanos .thi-voices button>strong{font-family:var(--thi-serif);font-size:17px;font-weight:400}
+.thi-theme-cumpleanos .thi-voices button>small{color:#796a59;font-size:9px;line-height:1.35}
+.thi-theme-cumpleanos .thi-voices .played{background:transparent;border-color:rgba(225,180,111,.3)}
+
+/* hold — one quiet wish, with the room visually dimmed */
+.thi-theme-cumpleanos[data-scene="hold"] .thi-experience-orb{opacity:.13!important}
+.thi-theme-cumpleanos .thi-scene-hold .thi-hold-rings i{border-color:rgba(223,177,107,.11)}
+.thi-theme-cumpleanos .thi-scene-hold .thi-hold-core{background:#0e0a07;border-color:rgba(223,177,107,.18);color:#dfb16b}
+.thi-theme-cumpleanos .thi-scene-hold .thi-hold-reveal.revealed p{color:#e3c89f}
+
+/* letter — warm paper, a little imperfect */
+.thi-theme-cumpleanos .thi-envelope{filter:drop-shadow(0 30px 50px rgba(0,0,0,.36))}
+.thi-theme-cumpleanos .thi-envelope .back,.thi-theme-cumpleanos .thi-envelope .front{background:#8f6b48}
+.thi-theme-cumpleanos .thi-envelope .paper{
+  background:linear-gradient(145deg,#f0e3d2,#ddccb7);color:#33271f
+}
+.thi-theme-cumpleanos .thi-envelope .paper strong{
+  font-weight:400;font-size:clamp(17px,2.7vw,20px);line-height:1.5;color:#3b2c22
+}
+.thi-theme-cumpleanos .thi-envelope .wax{background:#9a5c34}
+.thi-theme-cumpleanos .thi-envelope .paper em{color:#826f61}
+
+/* finale — after the noise, a quiet toast */
+.thi-theme-cumpleanos .thi-final{
+  background:radial-gradient(circle at 50% 45%,rgba(218,155,73,.1),transparent 25%),#070503
+}
+.thi-theme-cumpleanos .thi-final-sparks i{background:#dfb16b;box-shadow:0 0 16px rgba(223,177,107,.6)}
+.thi-theme-cumpleanos .thi-final .thi-reactions button{
+  width:42px;height:42px;background:transparent;border-color:rgba(223,177,107,.1);box-shadow:none
+}
+.thi-theme-cumpleanos .thi-final .thi-reactions button:hover{background:rgba(223,177,107,.03);border-color:rgba(223,177,107,.22)}
+.thi-theme-cumpleanos .thi-final>small{opacity:.42}
+
+@media(max-width:650px){
+  .thi-theme-cumpleanos .thi-birthday-ritual{height:300px;width:100vw;margin-inline:-18px}
+  .thi-theme-cumpleanos .thi-birthday-cake-premium{width:205px;height:115px;bottom:70px}
+  .thi-theme-cumpleanos .thi-birthday-table{width:86vw}
+  .thi-theme-cumpleanos .thi-balloons{grid-template-columns:repeat(2,1fr);gap:14px 12px;width:92vw}
+  .thi-theme-cumpleanos .thi-balloons button{aspect-ratio:.84}
+  .thi-theme-cumpleanos .thi-balloons button.pop{min-height:105px}
+  .thi-theme-cumpleanos .thi-balloons button>span{font-size:16px}
+  .thi-theme-cumpleanos .thi-scene-memories{padding-inline:0!important}
+  .thi-theme-cumpleanos .thi-scene-memories>.thi-kicker,.thi-theme-cumpleanos .thi-scene-memories>h2,.thi-theme-cumpleanos .thi-scene-memories>.thi-primary{margin-left:18px;margin-right:18px}
+  .thi-theme-cumpleanos .thi-film{
+    width:100vw;display:grid;grid-template-columns:repeat(3,77vw);gap:10px;overflow-x:auto;padding:18px 11.5vw 28px;
+    margin:7px 0 0;scroll-snap-type:x mandatory;scrollbar-width:none
+  }
+  .thi-theme-cumpleanos .thi-film::-webkit-scrollbar{display:none}
+  .thi-theme-cumpleanos .thi-memory{scroll-snap-align:center;transform:none!important}
+  .thi-theme-cumpleanos .thi-memory-photo{aspect-ratio:4/3!important}
+  .thi-theme-cumpleanos .thi-memory p{font-size:14px;min-height:auto}
+  .thi-theme-cumpleanos .thi-voices{grid-template-columns:1fr;width:88vw}
+  .thi-theme-cumpleanos .thi-progress-premium{width:230px;bottom:10px}
+  .thi-theme-cumpleanos .thi-reset-journey{opacity:.2}
+}

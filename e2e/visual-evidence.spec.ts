@@ -181,9 +181,55 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.goto("/tehiceesto/experiencias/cumpleanos");
   await page.locator('[data-action="advance"]').click();
   await expect(page.getByRole("button", { name: /Soplar de verdad/i })).toBeVisible();
+  await page.waitForTimeout(600);
   await capture(page, testInfo, "tehiceesto-cumple-candles-390");
   await page.locator('[data-action="blow-fallback"]').click();
+  await page.waitForTimeout(500);
   await capture(page, testInfo, "tehiceesto-cumple-wish-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","balloons");
+  const birthdayBalloons=page.locator('[data-action="balloon"]');
+  await birthdayBalloons.nth(0).click();
+  await birthdayBalloons.nth(2).click();
+  await birthdayBalloons.nth(4).click();
+  await page.waitForTimeout(500);
+  await capture(page,testInfo,"tehiceesto-cumple-balloons-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","memories");
+  await waitForLoadedImages(page,".thi-theme-cumpleanos .thi-memory-photo img");
+  await page.waitForTimeout(700);
+  await capture(page,testInfo,"tehiceesto-cumple-memories-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","light");
+  await page.locator('[data-action="light-reveal"]').click();
+  await page.waitForTimeout(450);
+  await capture(page,testInfo,"tehiceesto-cumple-light-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
+  await page.locator('[data-action="demo-voice"]').first().click();
+  await page.waitForTimeout(450);
+  await capture(page,testInfo,"tehiceesto-cumple-voices-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hold");
+  await page.locator('[data-action="hold"]').press("Enter");
+  await page.waitForTimeout(450);
+  await capture(page,testInfo,"tehiceesto-cumple-hold-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
+  await page.locator('[data-action="open-letter"]').click();
+  await page.waitForTimeout(550);
+  await capture(page,testInfo,"tehiceesto-cumple-letter-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
+  await page.waitForTimeout(600);
+  await capture(page,testInfo,"tehiceesto-cumple-final-390");
 
   await page.goto("/tehiceesto/experiencias/propuesta");
   await page.locator('[data-action="advance"]').click();

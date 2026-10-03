@@ -104,6 +104,11 @@ export const experiences: Experience[] = [
         "La salida improvisada que terminó siendo el mejor plan.",
         "Una de esas fotos que explica perfectamente por qué te queremos.",
       ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1763951778440-13af353b122a?auto=format&fit=crop&fm=jpg&q=74&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1733967018420-4b8964a39fb2?auto=format&fit=crop&fm=jpg&q=74&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1681716349822-33b7af89d04e?auto=format&fit=crop&fm=jpg&q=74&w=1400",position:"center"},
+      ],
       voices:[
         {name:"Mamá",message:"Que seas muy feliz, hija. Siempre voy a estar orgullosa de vos."},
         {name:"Nati",message:"Gracias por ser esa amiga que aparece incluso antes de que la llamen."},
