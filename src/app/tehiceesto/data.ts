@@ -1,7 +1,12 @@
 export type SceneType =
   | "intro" | "door" | "memories" | "stars" | "scratch" | "letter"
   | "finale" | "candles" | "balloons" | "timeline" | "voices" | "quiz"
-  | "vault" | "capsule" | "proposal" | "video" | "light" | "hold";
+  | "vault" | "capsule" | "proposal" | "video" | "light" | "hold"
+  | "archive" | "home" | "legacy" | "rituals" | "chapters" | "future"
+  | "origin" | "reasons" | "certainty" | "threshold"
+  | "childhood" | "care" | "sacrifices" | "return"
+  | "lessons" | "presence" | "inheritance" | "lookback"
+  | "casefile" | "insidejokes" | "incidents" | "proof" | "pact";
 
 export type DemoContent = {
   memories?: string[];
@@ -174,7 +179,7 @@ export const experiences: Experience[] = [
     opening:"Hay historias que no deberían quedar guardadas en una caja de fotos.",
     closing:"Tu historia también es la nuestra. Gracias por haberla empezado.",
     tags:["Abuelos","Legado","Familia"],
-    recipe:["intro","timeline","memories","light","voices","stars","hold","letter","finale"],
+    recipe:["intro","archive","timeline","memories","home","voices","letter","legacy","finale"],
     demo:{
       timeline:[
         {title:"Antes de nosotros",body:"Una vida entera ya estaba pasando antes de que llegáramos a conocerla."},
@@ -211,10 +216,10 @@ export const experiences: Experience[] = [
     accent:"#d197ff",
     demoRecipient:"Martina",
     demoGiver:"Nico",
-    opening:"Pasó otro año. Pero algunas cosas todavía me siguen pasando como el primer día.",
-    closing:"Feliz nosotros.",
+    opening:"No quiero celebrar solamente el día en que empezamos. Quiero celebrar todo lo que fuimos construyendo después.",
+    closing:"Feliz nosotros. Por todo lo que fuimos, por todo lo que somos y por todo lo que todavía nos falta construir.",
     tags:["Aniversario","Pareja","Recuerdos"],
-    recipe:["intro","timeline","memories","light","quiz","scratch","hold","letter","finale"],
+    recipe:["intro","timeline","memories","rituals","chapters","letter","future","finale"],
     demo:{
       timeline:[
         {title:"Nos conocimos",body:"Todavía podíamos hacernos los interesantes porque no sabíamos demasiado del otro."},
@@ -242,15 +247,15 @@ export const experiences: Experience[] = [
     slug:"propuesta",
     eyebrow:"La pregunta más importante",
     title:"Antes de preguntarte algo…",
-    short:"La historia de ustedes conduce a una última puerta y una sola pregunta.",
+    short:"Un recorrido íntimo por las razones, la certeza y todo lo que lleva a una sola pregunta.",
     icon:"◇",
     accent:"#f6d58f",
     demoRecipient:"Clara",
     demoGiver:"Tomás",
-    opening:"Para llegar hasta esta pregunta primero tenemos que volver a pasar por algunas cosas.",
+    opening:"Hay algo que quiero preguntarte. Pero antes necesito que vuelvas conmigo a algunas cosas que me trajeron hasta acá.",
     closing:"¿Querés casarte conmigo?",
     tags:["Propuesta","Casamiento","Pareja"],
-    recipe:["intro","door","memories","light","stars","hold","vault","letter","proposal"],
+    recipe:["intro","origin","memories","reasons","certainty","letter","threshold","proposal"],
     demo:{
       memories:[
         "La primera vez que pensé: ojalá esto dure mucho.",
@@ -268,56 +273,72 @@ export const experiences: Experience[] = [
     },
   },
   {
-    slug:"mama-papa",
-    eyebrow:"Para quienes estuvieron primero",
-    title:"Todo lo que quizá nunca te dije",
-    short:"Un recorrido de gratitud hecho con recuerdos familiares y palabras que importan.",
-    icon:"❋",
-    accent:"#ff9a7a",
+    slug:"mama",
+    eyebrow:"Para la mujer que estuvo antes que todos",
+    title:"Todo lo que hiciste sin pedir aplausos",
+    short:"Una experiencia sobre infancia, cuidado, gestos invisibles y ese lugar al que siempre se puede volver.",
+    icon:"✿",
+    accent:"#e8a99b",
     demoRecipient:"Mamá",
     demoGiver:"Tus hijos",
-    opening:"Hay cosas que uno siente toda la vida y tarda demasiado en decir.",
-    closing:"Gracias por ser casa incluso cuando estamos lejos.",
-    tags:["Mamá","Papá","Gratitud"],
-    recipe:["intro","memories","light","voices","stars","hold","letter","scratch","finale"],
+    opening:"Hay una edad en la que uno cree que mamá simplemente puede con todo. Después crece y empieza a entender cuánto había detrás.",
+    closing:"Gracias por ser hogar mucho antes de que yo entendiera lo que significaba esa palabra.",
+    tags:["Mamá","Gratitud","Infancia"],
+    recipe:["intro","childhood","memories","care","sacrifices","voices","letter","return","finale"],
     demo:{
       memories:[
+        "La comida servida, la ropa lista y todo eso que parecía aparecer solo.",
         "Esperarnos despierta aunque dijéramos que no hacía falta.",
-        "Resolver cosas imposibles como si fueran una pavada.",
         "Esos abrazos que de chicos parecían normales y de grandes entendimos todo lo que tenían.",
       ],
       voices:[
         {name:"Tu hijo mayor",message:"Ahora que crecí entiendo muchas cosas que antes simplemente daba por hechas."},
         {name:"Tu hija",message:"Gracias por seguir siendo la primera persona a la que quiero contarle algo bueno."},
-        {name:"Los nietos",message:"Abu, tu casa siempre gana."},
         {name:"Todos",message:"No te lo decimos suficiente, pero gran parte de lo que somos empezó con vos."},
       ],
-      stars:[
-        "Tu capacidad de aparecer.",
-        "Las cosas que sacrificaste sin anunciarlas.",
-        "La manera de cuidarnos incluso cuando ya no hacía falta.",
-        "Todo lo que aprendimos mirándote.",
-        "Que todavía seguimos necesitando un poco de casa.",
+      letter:"De chico veía lo que hacías. De grande empecé a entender todo lo que había detrás. Gracias por cada cosa invisible que sostuvo nuestra vida.",
+    },
+  },
+  {
+    slug:"papa",
+    eyebrow:"Para el hombre que me enseñó más de lo que decía",
+    title:"Las cosas tuyas que quedaron en mí",
+    short:"Un recorrido por aprendizajes, presencia, códigos y todo lo que uno entiende distinto cuando crece.",
+    icon:"⌁",
+    accent:"#a9b7c9",
+    demoRecipient:"Papá",
+    demoGiver:"Tus hijos",
+    opening:"De chico pensé que simplemente sabías cómo hacer las cosas. De grande entendí que muchas veces estabas aprendiendo mientras me enseñabas.",
+    closing:"Hay cosas tuyas que ya forman parte de mí. Gracias por haberlas dejado sin siquiera proponértelo.",
+    tags:["Papá","Legado","Gratitud"],
+    recipe:["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
+    demo:{
+      memories:[
+        "La mano sosteniendo la bici hasta que dejaste de hacerlo y yo ni me di cuenta.",
+        "Esas salidas donde se hablaba poco pero quedaban un montón de cosas.",
+        "Los consejos que tardé años en entender y un día empezaron a sonar distintos.",
       ],
-      scratchEyebrow:"Vale por",
-      scratchReward:"un día entero pensado para vos",
-      scratchNote:"sin cocinar · sin organizar · sin preocuparte",
-      letter:"De chicos creemos que los padres simplemente saben hacer todo. De grandes entendemos que muchas veces estaban aprendiendo sobre la marcha y aun así lograron hacernos sentir seguros. Gracias.",
+      voices:[
+        {name:"Vale",message:"Ahora entiendo que muchas veces estabas enseñando sin decir que estabas enseñando."},
+        {name:"Lucas",message:"Hay gestos tuyos que me descubro haciendo sin haberlos aprendido a propósito."},
+        {name:"Todos",message:"Gracias por estar tantas veces de formas que recién de grandes supimos ver."},
+      ],
+      letter:"De grande dejé de verte solamente como papá y empecé a entender también al hombre que estaba haciendo lo mejor que podía. Gracias por todo lo que quedó en mí.",
     },
   },
   {
     slug:"amistad",
-    eyebrow:"Para tu persona elegida",
-    title:"El archivo secreto de nuestra amistad",
-    short:"Anécdotas, papelones, fotos y mensajes que sólo ustedes entienden.",
+    eyebrow:"Archivo confidencial · sólo para ustedes",
+    title:"Expediente: nuestra amistad",
+    short:"Pruebas, códigos secretos, malas decisiones y todo eso que convirtió una amistad en parte de la vida.",
     icon:"✹",
     accent:"#79b7ff",
     demoRecipient:"Vale",
     demoGiver:"Cami",
-    opening:"Advertencia: este archivo contiene pruebas de demasiadas malas decisiones juntas.",
-    closing:"Gracias por estar en todas. Incluso en las que era mejor no estar.",
+    opening:"Antes de que esto se ponga sentimental, considero necesario dejar constancia oficial de demasiadas cosas que hicimos.",
+    closing:"Entre todas las personas que la vida podía cruzarme, qué suerte que me tocaste vos.",
     tags:["Amistad","Humor","Recuerdos"],
-    recipe:["intro","quiz","memories","light","balloons","scratch","hold","letter","finale"],
+    recipe:["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
     demo:{
       quiz:{
         question:"¿Quién mandó el primer mensaje después de aquella pelea absurda?",
@@ -339,4 +360,7 @@ export const experiences: Experience[] = [
   },
 ];
 
-export function getExperience(slug:string){ return experiences.find(x=>x.slug===slug); }
+export function getExperience(slug:string){
+  if(slug==="mama-papa") return experiences.find(x=>x.slug==="mama");
+  return experiences.find(x=>x.slug===slug);
+}
