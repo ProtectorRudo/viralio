@@ -330,3 +330,237 @@
   from{opacity:0;transform:translateY(12px) scale(.995);filter:blur(2px)}
   to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   DEMO ART DIRECTION V2 — each experience has its own world
+   ═══════════════════════════════════════════════════════════ */
+
+/* persistent reset */
+.thi-reset-journey{
+  position:fixed;z-index:845;right:max(16px,env(safe-area-inset-right));top:max(15px,env(safe-area-inset-top));
+  display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.09);
+  background:rgba(8,7,10,.62);backdrop-filter:blur(16px);color:#837c88;border-radius:999px;
+  padding:8px 11px;cursor:pointer;transition:color .25s,border-color .25s,background .25s,transform .25s;
+}
+.thi-reset-journey span{font-size:14px;line-height:1}.thi-reset-journey small{font-size:7px;text-transform:uppercase;letter-spacing:.13em;margin:0}
+.thi-reset-journey:hover{color:#fff;border-color:rgba(255,255,255,.18);background:rgba(20,17,23,.78);transform:translateY(-1px)}
+@media(max-width:520px){.thi-reset-journey{right:10px;top:max(48px,calc(env(safe-area-inset-top) + 38px));padding:7px}.thi-reset-journey small{display:none}}
+
+/* base theatrical environment */
+.thi-experience-premium:before,.thi-experience-premium:after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;transition:opacity .6s;
+}
+.thi-experience-premium:before{opacity:.42}
+.thi-experience-premium:after{opacity:.24;mix-blend-mode:screen}
+.thi-scene-stage{z-index:5}.thi-experience-vignette{z-index:3}.thi-experience-noise{z-index:8}
+
+/* PAREJA — velvet cinema / late-night city */
+.thi-theme-pareja{background:#070508}
+.thi-theme-pareja:before{
+  background:
+    radial-gradient(circle at 18% 22%,rgba(140,30,69,.26),transparent 26%),
+    radial-gradient(circle at 82% 72%,rgba(78,42,116,.18),transparent 28%),
+    linear-gradient(145deg,#090609,#050406 70%);
+}
+.thi-theme-pareja:after{
+  background-image:
+    radial-gradient(circle at 18% 25%,rgba(255,255,255,.9) 0 1px,transparent 1.4px),
+    radial-gradient(circle at 73% 17%,rgba(255,255,255,.65) 0 1px,transparent 1.4px),
+    radial-gradient(circle at 63% 79%,rgba(255,255,255,.6) 0 1px,transparent 1.4px);
+  background-size:240px 240px,310px 310px,270px 270px;
+}
+.thi-theme-pareja .thi-memory{background:#f5eee8}.thi-theme-pareja .thi-envelope .front,.thi-theme-pareja .thi-envelope .back{background:#a98a72}.thi-theme-pareja .thi-wax{background:#761c39}
+
+/* CUMPLEAÑOS — warm stage, not generic confetti UI */
+.thi-theme-cumpleanos{background:#080605}
+.thi-theme-cumpleanos:before{
+  background:
+    radial-gradient(ellipse at 50% -5%,rgba(255,194,96,.24),transparent 36%),
+    radial-gradient(circle at 15% 72%,rgba(219,84,108,.12),transparent 24%),
+    radial-gradient(circle at 88% 60%,rgba(76,128,183,.1),transparent 22%),
+    #080605;
+}
+.thi-theme-cumpleanos:after{
+  background:
+    linear-gradient(115deg,transparent 0 48%,rgba(255,190,91,.04) 49% 51%,transparent 52%) 0 0/170px 170px,
+    radial-gradient(circle,rgba(255,255,255,.5) 0 1px,transparent 1.5px) 0 0/95px 95px;
+  animation:thiBirthdayDrift 18s linear infinite;
+}
+.thi-theme-cumpleanos .thi-cake{filter:drop-shadow(0 25px 60px rgba(255,155,75,.11))}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(1){background:linear-gradient(145deg,#ff9e80,#b94261)}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(2){background:linear-gradient(145deg,#f7c96f,#bd7e2f)}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(3){background:linear-gradient(145deg,#8fc8d8,#497a9a)}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(4){background:linear-gradient(145deg,#c99be7,#7a4d99)}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(5){background:linear-gradient(145deg,#e993b1,#984562)}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(6){background:linear-gradient(145deg,#a7d3a4,#507d55)}
+
+/* HIJOS — storybook / soft sky */
+.thi-theme-hijos{background:#07100f}
+.thi-theme-hijos:before{
+  background:
+    radial-gradient(circle at 20% 15%,rgba(143,217,203,.18),transparent 26%),
+    radial-gradient(circle at 80% 75%,rgba(129,158,223,.11),transparent 28%),
+    linear-gradient(#07100f,#060a0b);
+}
+.thi-theme-hijos:after{
+  background:
+    radial-gradient(ellipse at 20% 38%,rgba(255,255,255,.055) 0 8%,transparent 8.6%),
+    radial-gradient(ellipse at 76% 22%,rgba(255,255,255,.045) 0 7%,transparent 7.6%);
+  filter:blur(16px);animation:thiCloudDrift 22s ease-in-out infinite alternate;
+}
+.thi-theme-hijos .thi-memory{background:#eef5f1}.thi-theme-hijos .thi-memory p{color:#35423f}
+.thi-theme-hijos .thi-capsule{background:linear-gradient(145deg,#101b19,#09100f);border-color:rgba(143,217,203,.19)}
+
+/* ABUELOS — archival room / warm paper / projector */
+.thi-theme-abuelos{background:#0b0805}
+.thi-theme-abuelos:before{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(216,185,135,.16),transparent 35%),
+    linear-gradient(180deg,#0d0906,#070605 75%);
+}
+.thi-theme-abuelos:after{
+  background:
+    repeating-linear-gradient(90deg,transparent 0 89px,rgba(216,185,135,.025) 90px 91px),
+    linear-gradient(90deg,rgba(216,185,135,.02),transparent 35%,rgba(216,185,135,.02));
+  animation:thiProjectorFlicker 4.2s steps(2,end) infinite;
+}
+.thi-theme-abuelos .thi-memory{background:#e9dec9;color:#2c241c;filter:sepia(.12)}
+.thi-theme-abuelos .thi-memory:nth-child(odd){transform:rotate(-1.8deg)}.thi-theme-abuelos .thi-memory:nth-child(even){transform:rotate(1.4deg) translateY(12px)}
+.thi-theme-abuelos .thi-timeline article{background:#130e09;border-color:rgba(216,185,135,.12)}
+.thi-theme-abuelos .thi-voice-audio,.thi-theme-abuelos .thi-voices button{background:#130e09}
+.thi-theme-abuelos .thi-envelope .paper{background:#eee2cf}
+
+/* ANIVERSARIO — editorial violet / film */
+.thi-theme-aniversario{background:#08060b}
+.thi-theme-aniversario:before{
+  background:
+    linear-gradient(118deg,rgba(209,151,255,.08),transparent 26%),
+    radial-gradient(circle at 70% 32%,rgba(103,58,139,.2),transparent 29%),
+    #08060b;
+}
+.thi-theme-aniversario:after{
+  background:
+    linear-gradient(90deg,transparent 0 6%,rgba(255,255,255,.028) 6.2% 6.8%,transparent 7%) 0 0/125px 100%;
+  opacity:.16;
+}
+.thi-theme-aniversario .thi-memory{background:#f1ecf2}.thi-theme-aniversario .thi-scratch{transform:rotate(-1deg)}
+.thi-theme-aniversario .thi-quiz button{border-left:2px solid rgba(209,151,255,.25)}
+
+/* PROPUESTA — black-tie gold / spotlight */
+.thi-theme-propuesta{background:#050505}
+.thi-theme-propuesta:before{
+  background:
+    radial-gradient(ellipse at 50% -12%,rgba(246,213,143,.22),transparent 34%),
+    radial-gradient(circle at 50% 65%,rgba(246,213,143,.055),transparent 22%),
+    #050505;
+}
+.thi-theme-propuesta:after{
+  background-image:radial-gradient(circle,rgba(246,213,143,.5) 0 .7px,transparent 1px);
+  background-size:84px 84px;opacity:.15;
+}
+.thi-theme-propuesta .thi-door-frame{border-color:#3c3322;box-shadow:0 35px 110px #000,0 0 55px rgba(246,213,143,.07)}
+.thi-theme-propuesta .thi-door{background:linear-gradient(145deg,#272017,#0d0b09)}
+.thi-theme-propuesta .thi-vault{border-color:#342d20;background:radial-gradient(circle,#2d271d,#090807 68%)}
+.thi-theme-propuesta .thi-envelope .wax{background:#6f1c27}
+.thi-theme-propuesta .thi-ring{color:#f6d58f;text-shadow:0 0 30px rgba(246,213,143,.58),0 0 90px rgba(246,213,143,.2)}
+
+/* MAMÁ / PAPÁ — sunlit home / terracotta */
+.thi-theme-mama-papa{background:#0c0705}
+.thi-theme-mama-papa:before{
+  background:
+    linear-gradient(108deg,rgba(255,154,122,.14),transparent 34%),
+    radial-gradient(circle at 82% 20%,rgba(255,213,174,.11),transparent 24%),
+    #0c0705;
+}
+.thi-theme-mama-papa:after{
+  background:linear-gradient(115deg,transparent 0 45%,rgba(255,217,187,.035) 47%,transparent 50%);
+  transform:skewX(-13deg);animation:thiSunSweep 12s ease-in-out infinite alternate;
+}
+.thi-theme-mama-papa .thi-memory{background:#f0e3d9}.thi-theme-mama-papa .thi-envelope .front,.thi-theme-mama-papa .thi-envelope .back{background:#b77e5e}
+
+/* AMISTAD — analog scrapbook / messy, less polished on purpose */
+.thi-theme-amistad{background:#05090e}
+.thi-theme-amistad:before{
+  background:
+    radial-gradient(circle at 14% 24%,rgba(121,183,255,.15),transparent 24%),
+    radial-gradient(circle at 86% 76%,rgba(247,174,74,.09),transparent 23%),
+    #05090e;
+}
+.thi-theme-amistad:after{
+  background:
+    linear-gradient(17deg,transparent 0 49%,rgba(121,183,255,.035) 49.5% 50.5%,transparent 51%) 0 0/140px 140px;
+}
+.thi-theme-amistad .thi-memory:nth-child(1){transform:rotate(-4deg) translateY(10px)}
+.thi-theme-amistad .thi-memory:nth-child(2){transform:rotate(3deg) translateY(-8px)}
+.thi-theme-amistad .thi-memory:nth-child(3){transform:rotate(-2deg) translateY(14px)}
+.thi-theme-amistad .thi-memory:before{content:"";position:absolute;width:54px;height:16px;top:-8px;left:50%;transform:translateX(-50%) rotate(-2deg);background:rgba(241,219,151,.62);z-index:3}
+.thi-theme-amistad .thi-quiz button{border-radius:7px}.thi-theme-amistad .thi-scratch{border-radius:10px;transform:rotate(1deg)}
+
+/* moments with impact */
+.thi-door-wrap.opening:after{
+  content:"";position:fixed;inset:0;background:radial-gradient(circle at center,#fff 0,rgba(255,255,255,.82) 8%,color-mix(in srgb,var(--accent) 70%,transparent) 25%,transparent 54%);
+  opacity:0;pointer-events:none;z-index:30;animation:thiDoorFlash .72s ease-out both;
+}
+.thi-stars:after{
+  content:"";position:absolute;left:-20%;top:22%;width:140%;height:1px;background:linear-gradient(90deg,transparent,var(--accent),white,transparent);
+  opacity:0;transform:rotate(-13deg) translateX(-35%);filter:drop-shadow(0 0 8px var(--accent));
+}
+.thi-stars:has(.revealed:nth-of-type(3)):after{animation:thiShootingStar 1.35s ease-out .15s both}
+.thi-scratch.done:after{
+  content:"✦";position:absolute;left:50%;top:50%;font-size:26px;color:var(--accent);z-index:5;
+  animation:thiRevealBurst .7s ease-out both;text-shadow:0 0 24px var(--accent);
+}
+.thi-balloons .pop:before,.thi-balloons .pop:after{
+  content:"";position:absolute;left:50%;top:50%;width:7px;height:24px;background:currentColor;opacity:.6;pointer-events:none;
+}
+.thi-balloons .pop:before{animation:thiShardA .5s ease-out both}.thi-balloons .pop:after{animation:thiShardB .5s ease-out both}
+.thi-cake.out .thi-candles>span:after{
+  content:"";position:absolute;left:50%;top:-28px;width:6px;height:17px;border-radius:50%;
+  border-left:1px solid rgba(220,220,220,.42);filter:blur(.2px);animation:thiSmoke 1.9s ease-out both;
+}
+.thi-envelope.open .wax:before,.thi-envelope.open .wax:after{
+  content:"";position:absolute;width:18px;height:22px;background:#7d253d;clip-path:polygon(0 0,100% 18%,75% 100%,12% 74%);
+  animation:thiWaxBreak .55s ease-out both;
+}
+.thi-envelope.open .wax:before{left:-5px;transform-origin:right}.thi-envelope.open .wax:after{right:-5px;transform-origin:left;animation-name:thiWaxBreakB}
+.thi-vault.open:after{
+  content:"";position:absolute;inset:-15%;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:40px;
+  animation:thiVaultWave .9s ease-out both;pointer-events:none;
+}
+.thi-proposal .thi-ring:after{content:"✦";position:absolute;font-size:18px;color:#fff;transform:translate(12px,-19px);animation:thiRingGlint 1.7s ease-in-out infinite}
+.thi-final .thi-reactions:before{content:"";position:absolute;left:50%;top:50%;width:320px;height:320px;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 14%,transparent);transform:translate(-50%,-50%);animation:thiFinalBreath 3.8s ease-in-out infinite;pointer-events:none}.thi-final .thi-reactions{position:relative}
+
+/* stronger transitions without blur-heavy AI feel */
+.thi-scene-stage{animation:thiSceneEditorialIn .42s cubic-bezier(.18,.8,.2,1) both}
+.thi-scene-stage.leaving.forward{animation:thiSceneEditorialOut .16s ease-in both}
+.thi-scene-stage.leaving.back{animation:thiSceneEditorialBack .16s ease-in both}
+
+/* animation definitions */
+@keyframes thiBirthdayDrift{to{background-position:170px 170px,95px 95px}}
+@keyframes thiCloudDrift{from{transform:translateX(-20px)}to{transform:translateX(25px)}}
+@keyframes thiProjectorFlicker{0%,100%{opacity:.19}48%{opacity:.24}50%{opacity:.17}53%{opacity:.23}}
+@keyframes thiSunSweep{from{transform:skewX(-13deg) translateX(-12%)}to{transform:skewX(-13deg) translateX(10%)}}
+@keyframes thiDoorFlash{0%,35%{opacity:0}58%{opacity:.55}100%{opacity:0}}
+@keyframes thiShootingStar{0%{opacity:0;transform:rotate(-13deg) translateX(-40%)}12%{opacity:.8}100%{opacity:0;transform:rotate(-13deg) translateX(45%)}}
+@keyframes thiRevealBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-20deg)}45%{opacity:1;transform:translate(-50%,-50%) scale(2.5) rotate(15deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(4) rotate(40deg)}}
+@keyframes thiShardA{0%{opacity:.8;transform:translate(-50%,-50%) rotate(18deg) scale(.4)}100%{opacity:0;transform:translate(-72px,-80px) rotate(95deg) scale(.9)}}
+@keyframes thiShardB{0%{opacity:.8;transform:translate(-50%,-50%) rotate(-24deg) scale(.4)}100%{opacity:0;transform:translate(65px,-66px) rotate(-110deg) scale(.8)}}
+@keyframes thiSmoke{0%{opacity:0;transform:translateX(-50%) translateY(3px) scale(.6)}20%{opacity:.48}100%{opacity:0;transform:translateX(-35%) translateY(-38px) scale(1.5)}}
+@keyframes thiWaxBreak{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(-22px,30px) rotate(-55deg)}}
+@keyframes thiWaxBreakB{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(24px,34px) rotate(62deg)}}
+@keyframes thiVaultWave{0%{opacity:.7;transform:scale(.78)}100%{opacity:0;transform:scale(1.16)}}
+@keyframes thiRingGlint{0%,70%,100%{opacity:0;transform:translate(12px,-19px) scale(.6)}80%{opacity:1;transform:translate(12px,-19px) scale(1.5)}}
+@keyframes thiFinalBreath{0%,100%{opacity:.16;transform:translate(-50%,-50%) scale(.88)}50%{opacity:.45;transform:translate(-50%,-50%) scale(1.08)}}
+@keyframes thiSceneEditorialIn{from{opacity:0;transform:translateY(16px) scale(.994)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes thiSceneEditorialOut{to{opacity:0;transform:translateY(-9px) scale(.996)}}
+@keyframes thiSceneEditorialBack{to{opacity:0;transform:translateY(9px) scale(.996)}}
+
+/* avoid generic glass-card overload inside demos */
+.thi-experience-premium .thi-timeline article,
+.thi-experience-premium .thi-voices button,
+.thi-experience-premium .thi-voice-audio,
+.thi-experience-premium .thi-quiz button{
+  box-shadow:none;
+}
+.thi-experience-premium .thi-kicker{opacity:.88}
