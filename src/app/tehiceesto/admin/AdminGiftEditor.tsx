@@ -41,29 +41,26 @@ type Media = {
     fit?: "cover" | "contain";
     position?: "center" | "top" | "bottom" | "left" | "right";
     scene?: SceneType;
+    role?: "voice" | "soundtrack";
   } | null;
   url: string | null;
 };
 
 const scenes: { type: SceneType; label: string }[] = [
-  { type:"intro", label:"Entrada" },
-  { type:"door", label:"Puerta" },
-  { type:"memories", label:"Recuerdos" },
-  { type:"light", label:"Luz" },
-  { type:"hold", label:"Mantener" },
-  { type:"timeline", label:"Línea de tiempo" },
-  { type:"stars", label:"Estrellas" },
-  { type:"quiz", label:"Pregunta" },
-  { type:"scratch", label:"Raspadita" },
-  { type:"voices", label:"Voces" },
-  { type:"video", label:"Video" },
-  { type:"candles", label:"Velitas" },
-  { type:"balloons", label:"Globos" },
-  { type:"vault", label:"Bóveda" },
-  { type:"capsule", label:"Cápsula" },
-  { type:"letter", label:"Carta" },
-  { type:"proposal", label:"Propuesta" },
-  { type:"finale", label:"Final" },
+  {type:"intro",label:"Entrada"},{type:"door",label:"Puerta"},{type:"memories",label:"Recuerdos"},
+  {type:"light",label:"Luz"},{type:"hold",label:"Mantener"},{type:"timeline",label:"Línea de tiempo"},
+  {type:"stars",label:"Estrellas"},{type:"quiz",label:"Pregunta"},{type:"scratch",label:"Raspadita"},
+  {type:"voices",label:"Voces"},{type:"video",label:"Video"},{type:"candles",label:"Velitas"},
+  {type:"balloons",label:"Globos"},{type:"vault",label:"Bóveda"},{type:"capsule",label:"Cápsula"},
+  {type:"letter",label:"Carta"},{type:"proposal",label:"Propuesta"},{type:"finale",label:"Final"},
+  {type:"archive",label:"Archivo familiar"},{type:"home",label:"La casa"},{type:"legacy",label:"Legado"},
+  {type:"rituals",label:"Rituales"},{type:"chapters",label:"Capítulos"},{type:"future",label:"Futuro"},
+  {type:"origin",label:"Origen"},{type:"reasons",label:"Razones"},{type:"certainty",label:"Certeza"},
+  {type:"threshold",label:"Umbral"},{type:"childhood",label:"Infancia"},{type:"care",label:"Cuidados"},
+  {type:"sacrifices",label:"Sacrificios"},{type:"return",label:"Volver"},{type:"lessons",label:"Lecciones"},
+  {type:"presence",label:"Presencia"},{type:"inheritance",label:"Herencia"},{type:"lookback",label:"Mirar de nuevo"},
+  {type:"casefile",label:"Expediente"},{type:"insidejokes",label:"Códigos internos"},{type:"incidents",label:"Incidentes"},
+  {type:"proof",label:"Pruebas"},{type:"pact",label:"Pacto"},
 ];
 
 function humanSize(size?: number){
@@ -136,7 +133,9 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     position:x.metadata?.position||"center",
     scene:x.metadata?.scene,
   }));
-  const audioMedia:ThiAudio[]=media.filter(x=>x.kind==="audio"&&x.url).map(x=>({url:x.url!,caption:x.caption||undefined,scene:x.metadata?.scene}));
+  const soundtrackItem=media.find(x=>x.kind==="audio"&&x.url&&x.metadata?.role==="soundtrack");
+  const soundtrackMedia:ThiAudio|undefined=soundtrackItem?{url:soundtrackItem.url!,caption:soundtrackItem.caption||undefined}:undefined;
+  const audioMedia:ThiAudio[]=media.filter(x=>x.kind==="audio"&&x.url&&x.metadata?.role!=="soundtrack").map(x=>({url:x.url!,caption:x.caption||undefined,scene:x.metadata?.scene}));
   const videoMedia:ThiVideo[]=media.filter(x=>x.kind==="video"&&x.url).map(x=>({url:x.url!,caption:x.caption||undefined,scene:x.metadata?.scene}));
 
   function patchGift<K extends keyof Gift>(key:K,value:Gift[K]){
@@ -210,7 +209,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     await load();
   }
 
-  async function updateMedia(item:Media,patch:Partial<Media> & {fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType}){
+  async function updateMedia(item:Media,patch:Partial<Media> & {fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType;role?:"voice"|"soundtrack"}){
     if(!gift) return;
     const fallbackScene=defaultSceneForMedia(item.kind,gift.scene_recipe);
     const metadata={
@@ -218,9 +217,10 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       fit:patch.fit??item.metadata?.fit??"cover",
       position:patch.position??item.metadata?.position??"center",
       scene:patch.scene??item.metadata?.scene??fallbackScene,
+      ...(item.kind==="audio"?{role:patch.role??item.metadata?.role??"voice"}:{}),
     };
     setMedia(current=>current.map(x=>x.id===item.id?{...x,caption:patch.caption??x.caption,metadata}:x));
-    await adminCall("updateMedia",{code,mediaId:item.id,caption:patch.caption??item.caption??"",fit:metadata.fit,position:metadata.position,scene:metadata.scene});
+    await adminCall("updateMedia",{code,mediaId:item.id,caption:patch.caption??item.caption??"",fit:metadata.fit,position:metadata.position,scene:metadata.scene,role:metadata.role});
     await load();
   }
 
@@ -255,7 +255,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <button onClick={()=>setPreview(false)}>← Volver al editor</button>
         <span>PREVIEW PRIVADO · {gift.recipient_name}</span>
       </div>
-      <ExperienceEngine key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} videoMedia={videoMedia}/>
+      <ExperienceEngine key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} soundtrackMedia={soundtrackMedia} videoMedia={videoMedia} storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}}/>
     </div>;
   }
 
@@ -301,7 +301,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <label><span>Emoción</span><select value={gift.feeling||"Emoción"} onChange={e=>patchGift("feeling",e.target.value)}><option>Emoción</option><option>Amor</option><option>Sorpresa</option><option>Diversión</option><option>Nostalgia</option></select></label>
         <label className="wide"><span>Relación / contexto</span><textarea rows={3} value={gift.story_data?.relationship||""} onChange={e=>patchGift("story_data",{...(gift.story_data||{}),relationship:e.target.value})}/></label>
         <label><span>Fecha importante</span><input type="date" value={gift.story_data?.keyDate||""} onChange={e=>patchGift("story_data",{...(gift.story_data||{}),keyDate:e.target.value})}/></label>
-        <label><span>Canción / link</span><input value={gift.music_url||""} onChange={e=>patchGift("music_url",e.target.value)}/></label>
+        <label><span>Canción de referencia</span><input value={gift.music_url||""} onChange={e=>patchGift("music_url",e.target.value)}/></label>
         <label className="wide"><span>Anécdota</span><textarea rows={4} value={gift.story_data?.anecdote||""} onChange={e=>patchGift("story_data",{...(gift.story_data||{}),anecdote:e.target.value})}/></label>
       </div>
 
@@ -357,12 +357,13 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             {item.kind==="image"&&item.url&&<img src={item.url} alt={item.caption||item.metadata?.originalName||"Foto"} style={{objectFit:fit,objectPosition:position}}/>}
             {item.kind==="video"&&item.url&&<video src={item.url} controls preload="metadata"/>}
             {item.kind==="audio"&&item.url&&<div className="thi-media-audio"><span>♪</span><audio src={item.url} controls preload="metadata"/></div>}
-            <b>{String(index+1).padStart(2,"0")}</b><em>{item.kind}</em>
+            <b>{String(index+1).padStart(2,"0")}</b><em>{item.kind==="audio"&&item.metadata?.role==="soundtrack"?"música":item.kind}</em>
           </div>
           <div className="thi-media-body">
             <div className="thi-media-name"><strong>{item.metadata?.originalName||"Archivo"}</strong><small>{humanSize(item.metadata?.size)}</small></div>
-            <label className="thi-media-scene-select"><span>Aparece en</span><select value={assignedScene} onChange={e=>updateMedia(item,{scene:e.target.value as SceneType})}>{Array.from(new Set(gift.scene_recipe)).map(scene=><option key={scene} value={scene}>{scenes.find(x=>x.type===scene)?.label||scene}</option>)}</select></label>
-            <label><span>Texto / pie</span><input defaultValue={item.caption||""} onBlur={e=>updateMedia(item,{caption:e.target.value})}/></label>
+            {item.kind==="audio"&&<label className="thi-media-scene-select"><span>Uso del audio</span><select value={item.metadata?.role==="soundtrack"?"soundtrack":"voice"} onChange={e=>updateMedia(item,{role:e.target.value as "voice"|"soundtrack"})}><option value="voice">Mensaje de voz</option><option value="soundtrack">Música de fondo</option></select></label>}
+            {!(item.kind==="audio"&&item.metadata?.role==="soundtrack")&&<label className="thi-media-scene-select"><span>Aparece en</span><select value={assignedScene} onChange={e=>updateMedia(item,{scene:e.target.value as SceneType})}>{Array.from(new Set(gift.scene_recipe)).map(scene=><option key={scene} value={scene}>{scenes.find(x=>x.type===scene)?.label||scene}</option>)}</select></label>}
+            <label><span>{item.kind==="audio"&&item.metadata?.role==="soundtrack"?"Nombre de la música":"Texto / pie"}</span><input defaultValue={item.caption||""} onBlur={e=>updateMedia(item,{caption:e.target.value})}/></label>
             {item.kind==="image"&&<div className="thi-media-controls">
               <label><span>Encuadre</span><select value={fit} onChange={e=>updateMedia(item,{fit:e.target.value as "cover"|"contain"})}><option value="cover">Llenar marco</option><option value="contain">Mostrar completa</option></select></label>
               <label><span>Foco</span><select value={position} onChange={e=>updateMedia(item,{position:e.target.value as "center"|"top"|"bottom"|"left"|"right"})}><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label>
