@@ -15,6 +15,12 @@ export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
 export type ThiVideo={url:string;caption?:string;scene?:SceneType};
 
+const premiumFallbackPhotos=[
+  "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=85",
+  "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1200&q=85",
+  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=85",
+];
+
 function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos:ThiPhoto[];audios:ThiAudio[];videos:ThiVideo[]}){
   const attachedPhotos=scene==="memories"?[]:photos;
   const attachedAudios=scene==="voices"?[]:audios;
@@ -41,6 +47,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
   const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);
   const [doorOpen,setDoorOpen]=useState(false);const [lightRevealed,setLightRevealed]=useState(false);const [holdRevealed,setHoldRevealed]=useState(false);const [lastStar,setLastStar]=useState<number|null>(null);
+  const [archiveOpen,setArchiveOpen]=useState(false);const [homeOpen,setHomeOpen]=useState<number[]>([]);const [legacyOpen,setLegacyOpen]=useState(false);
+  const [ritualsOpen,setRitualsOpen]=useState<number[]>([]);const [chapterOpen,setChapterOpen]=useState<number[]>([]);const [futureOpen,setFutureOpen]=useState(false);
+  const [reasonsOpen,setReasonsOpen]=useState<number[]>([]);const [certaintyOpen,setCertaintyOpen]=useState<number[]>([]);const [thresholdHolding,setThresholdHolding]=useState(false);const [thresholdOpen,setThresholdOpen]=useState(false);
+  const [careOpen,setCareOpen]=useState<number[]>([]);const [sacrificesOpen,setSacrificesOpen]=useState<number[]>([]);const [lessonsOpen,setLessonsOpen]=useState<number[]>([]);const [presenceOpen,setPresenceOpen]=useState<number[]>([]);const [inheritanceOpen,setInheritanceOpen]=useState<number[]>([]);const [returnOpen,setReturnOpen]=useState(false);const [lookbackOpen,setLookbackOpen]=useState(false);
+  const [casefileOpen,setCasefileOpen]=useState(false);const [insideJokesOpen,setInsideJokesOpen]=useState<number[]>([]);const [incidentsOpen,setIncidentsOpen]=useState<number[]>([]);const [proofOpen,setProofOpen]=useState<number[]>([]);const [pactOpen,setPactOpen]=useState<number[]>([]);
 
   const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
   const token=(value:string)=>value.replaceAll("{giver}",experience.demoGiver).replaceAll("{recipient}",experience.demoRecipient).replaceAll("{opening}",experience.opening).replaceAll("{closing}",experience.closing);
@@ -56,10 +67,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const currentVideos=(videoMedia||[]).filter(item=>mediaBelongsToScene("video",item.scene,current));
   const demoPhotos=(experience.demo.photos||[]).map((item,index)=>({url:item.url,caption:memoryLines[index]||undefined,fit:"cover" as const,position:item.position||"center" as const}));
   const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):demoPhotos):[];
+  const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):demoPhotos;
   const hasAttachedMedia=(current!=="memories"&&currentPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
 
-  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false)};
-  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices")setVoicesPlayed([]);if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false)};
+  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([])};
+  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices")setVoicesPlayed([]);if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([])};
   const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator)navigator.vibrate(pattern)};
   const restart=()=>{resetAllInteractions();setDirection("back");setTransitioning(false);setSceneIndex(0);setRunId(v=>v+1);haptic([8,22,8])};
 
@@ -70,7 +82,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");const prev=()=>moveTo(Math.max(0,sceneIndex-1),"back");
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
 
-  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;default:return false}};
+  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=3;case"presence":return presenceOpen.length>=2;case"inheritance":return inheritanceOpen.length>=3;case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
     switch(type){
@@ -106,6 +118,554 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       case"vault":return <section className="thi-scene thi-scene-vault thi-scene-rich"><p className="thi-kicker">{token(copy.vault.kicker)}</p><h2>{titleLines(copy.vault.title)}</h2><div className="thi-vault-aura" aria-hidden="true"/><button data-action="open-vault" className={`thi-vault ${vaultOpen?"open":""}`} onClick={()=>{setVaultOpen(true);haptic([12,40,12]);playFx("unlock")}}><span><i>◇</i><b/></span><strong>{token(vaultOpen?copy.vault.openLabel:copy.vault.closedLabel)}</strong><small>{token(vaultOpen?copy.vault.openSmall:copy.vault.closedSmall)}</small></button>{vaultOpen&&<><p className="thi-lead thi-reveal-copy">{token(copy.vault.reveal)}</p><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.vault.cta)}</button></>}</section>;
       case"capsule":return <section className="thi-scene thi-scene-capsule thi-scene-rich"><p className="thi-kicker">{token(copy.capsule.kicker)}</p><h2>{titleLines(copy.capsule.title)}</h2><button data-action="open-capsule" className={`thi-capsule ${capsuleOpen?"open":""}`} onClick={()=>{setCapsuleOpen(true);haptic([8,25,8])}}><span>{token(copy.capsule.year)}<i/></span><strong>{token(capsuleOpen?copy.capsule.openLabel:copy.capsule.closedLabel)}</strong><p>{token(capsuleOpen?copy.capsule.open:copy.capsule.closed)}</p></button>{capsuleOpen&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.capsule.cta)}</button>}</section>;
       case"video":return <section className="thi-scene thi-scene-video thi-scene-rich"><p className="thi-kicker">{token(copy.video.kicker)}</p><h2>{titleLines(copy.video.title)}</h2>{currentVideos.length?<div className="thi-video-wrap"><div className="thi-video-frame"><video src={currentVideos[0].url} controls playsInline preload="metadata"/></div>{currentVideos[0].caption&&<p>{currentVideos[0].caption}</p>}</div>:<div className="thi-video-placeholder"><span>▶</span><small>{token(copy.video.placeholder)}</small></div>}<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.video.cta)}</button></section>;
+      case "archive":
+        return (
+          <section className="scene scene-archive">
+            <div className="archive-dust" aria-hidden="true" />
+            <p className="scene-kicker">Archivo familiar · reservado</p>
+            <h2>Hay una vida entera guardada acá adentro.</h2>
+            <button className={`archive-folder ${archiveOpen ? "open" : ""}`} onClick={() => setArchiveOpen(true)}>
+              <span className="archive-tab">FAMILIA · {experience.demoRecipient.toUpperCase()}</span>
+              <span className="archive-cover">
+                <small>ARCHIVO Nº 01</small>
+                <strong>Una vida<br/>que merece quedar.</strong>
+                <em>Fotografías · historias · voces · recetas</em>
+              </span>
+              <span className="archive-paper">
+                <small>PRIMERA NOTA</small>
+                <strong>Antes de seguir:</strong>
+                <p>esto no es un resumen de tu vida. Es apenas una colección de las huellas que fuiste dejando en la nuestra.</p>
+              </span>
+            </button>
+            {!archiveOpen && <p className="scene-hint">Tocá el archivo para abrirlo</p>}
+            {archiveOpen && <button className="primary-action" onClick={next}>Empezar por el principio</button>}
+          </section>
+        );
+
+      case "home":
+        return (
+          <section className="scene scene-home">
+            <p className="scene-kicker">La casa también se acuerda</p>
+            <h2>No heredamos sólo historias. Heredamos pequeñas cosas.</h2>
+            <div className="home-memory">
+              {[
+                ["La cocina", "Ese olor que alcanzaba para saber qué estabas haciendo antes de entrar."],
+                ["La mesa", "Donde siempre aparecía lugar para uno más, incluso cuando parecía imposible."],
+                ["Tus manos", "La manera de arreglar, preparar, señalar, acariciar y hacer que todo siguiera funcionando."],
+                ["Tus frases", "Las repetimos riéndonos. Y un día descubrimos que empezamos a decirlas igual que vos."],
+              ].map(([title, copy], index) => (
+                <button key={title} className={homeOpen.includes(index) ? "open" : ""} onClick={() => setHomeOpen((items) => items.includes(index) ? items : [...items, index])}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{title}</strong>
+                  <p>{homeOpen.includes(index) ? copy : "Tocá para recordar"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={homeOpen.length < 3}>
+              {homeOpen.length < 3 ? `Encontrá ${3 - homeOpen.length} recuerdos más` : "Escuchar a la familia"}
+            </button>
+          </section>
+        );
+
+      case "legacy":
+        return (
+          <section className="scene scene-legacy">
+            <div className="legacy-roots" aria-hidden="true">
+              <i /><i /><i /><i /><i />
+            </div>
+            <p className="scene-kicker">Y entonces entendimos algo</p>
+            <h2>Una familia también se parece a quien la enseñó a querer.</h2>
+            <button className={`legacy-seal ${legacyOpen ? "open" : ""}`} onClick={() => setLegacyOpen(true)}>
+              <span>⌁</span>
+              <strong>{legacyOpen ? "Mirá todo lo que empezó en vos" : "Tocá acá"}</strong>
+            </button>
+            {legacyOpen && (
+              <div className="legacy-names">
+                <span>historias</span><span>costumbres</span><span>recetas</span><span>frases</span><span>abrazos</span><span>nosotros</span>
+              </div>
+            )}
+            {legacyOpen && <p className="legacy-copy">No todo legado lleva apellido. A veces es una forma de poner la mesa, de llamar para saber si llegamos bien o de hacer sentir a alguien que siempre puede volver.</p>}
+            {legacyOpen && <button className="primary-action" onClick={next}>Una última cosa</button>}
+          </section>
+        );
+
+      case "rituals":
+        return (
+          <section className="scene scene-rituals">
+            <p className="scene-kicker">Las cosas que nadie sube a Instagram</p>
+            <h2>También somos todo esto.</h2>
+            <div className="ritual-grid">
+              {[
+                ["01", "El mensaje de siempre", "Ese “avisame cuando llegues” que parece pequeño hasta que un día entendés todo lo que contiene."],
+                ["02", "Nuestra comida", "Ese pedido, plato o improvisación que ya sabe a nosotros aunque nadie más entienda por qué."],
+                ["03", "El lado de la cama", "Pequeñas negociaciones que hace años dejaron de negociarse."],
+                ["04", "El idioma propio", "Palabras, caras y chistes que serían incomprensibles para cualquier otra persona."],
+              ].map(([number, title, copy], index) => (
+                <button key={title} className={ritualsOpen.includes(index) ? "open" : ""} onClick={() => setRitualsOpen((items) => items.includes(index) ? items : [...items, index])}>
+                  <span>{number}</span>
+                  <strong>{title}</strong>
+                  <p>{ritualsOpen.includes(index) ? copy : "Tocá para abrir"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={ritualsOpen.length < 3}>
+              {ritualsOpen.length < 3 ? `Abrí ${3 - ritualsOpen.length} más` : "Y también atravesamos cosas"}
+            </button>
+          </section>
+        );
+
+      case "chapters":
+        return (
+          <section className="scene scene-chapters">
+            <p className="scene-kicker">No todo fue una foto linda</p>
+            <h2>Hay capítulos que valen por haberlos atravesado juntos.</h2>
+            <div className="chapter-stack">
+              {[
+                ["Lo que tuvimos que aprender", "Que amar no era adivinar al otro. Era aprender a hablar, escuchar y volver a intentar."],
+                ["Lo que cambió", "Nosotros también. Y aun así encontramos maneras nuevas de reconocernos."],
+                ["Lo que sostuvimos", "Cuando era más fácil encerrarse cada uno en lo suyo, hubo veces en que elegimos acercarnos."],
+              ].map(([title, copy], index) => (
+                <button key={title} className={chapterOpen.includes(index) ? "open" : ""} onClick={() => setChapterOpen((items) => items.includes(index) ? items : [...items, index])}>
+                  <span>CAPÍTULO {String(index + 1).padStart(2, "0")}</span>
+                  <strong>{title}</strong>
+                  <p>{chapterOpen.includes(index) ? copy : "Abrir capítulo"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={chapterOpen.length < 2}>
+              {chapterOpen.length < 2 ? "Abrí al menos dos capítulos" : "Seguir"}
+            </button>
+          </section>
+        );
+
+      case "future":
+        return (
+          <section className="scene scene-future">
+            <div className="future-line" aria-hidden="true" />
+            <p className="scene-kicker">No estamos celebrando sólo lo que pasó</p>
+            <h2>También estamos celebrando que todavía hay cosas que no vivimos.</h2>
+            <button className={`future-card ${futureOpen ? "open" : ""}`} onClick={() => setFutureOpen(true)}>
+              <small>PRÓXIMO CAPÍTULO</small>
+              <strong>{futureOpen ? "Todavía no sabemos exactamente qué viene." : "Abrir lo que sigue"}</strong>
+              <p>{futureOpen ? "Pero quiero conocerlo con vos: más domingos, más lugares, más conversaciones, más versiones nuestras y algunos planes que hoy ni siquiera existen." : "Hay futuro guardado acá."}</p>
+              <span>{futureOpen ? "∞" : "→"}</span>
+            </button>
+            {futureOpen && <button className="primary-action" onClick={next}>Llegar al final</button>}
+          </section>
+        );
+
+      case "origin":
+        return (
+          <section className="scene scene-origin">
+            <p className="scene-kicker">Antes de la pregunta</p>
+            <h2>Hubo un momento en que todavía no sabía todo lo que ibas a significar.</h2>
+            <div className="origin-frame">
+              <div
+                className="origin-photo"
+                style={{
+                  backgroundImage: `url("${scenePhotos[0]?.url || premiumFallbackPhotos[0]}")`,
+                  backgroundSize: scenePhotos[0]?.fit || "cover",
+                  backgroundPosition: scenePhotos[0]?.position || "center",
+                }}
+              />
+              <div className="origin-caption">
+                <small>CAPÍTULO 01</small>
+                <strong>Acá todavía no sabía.</strong>
+                <p>Que ibas a convertirte en la persona con la que iba a querer compartir las noticias buenas, los días comunes y también los difíciles.</p>
+              </div>
+            </div>
+            <button className="primary-action" onClick={next}>Seguir recordando</button>
+          </section>
+        );
+
+      case "reasons":
+        return (
+          <section className="scene scene-reasons">
+            <p className="scene-kicker">No es una lista. Es una certeza que se fue formando.</p>
+            <h2>Hay razones que fui entendiendo de a poco.</h2>
+            <div className="reason-ledger">
+              {[
+                ["01", "Cómo se siente estar con vos", "No tengo que actuar, impresionar ni medir cada palabra. Puedo estar."],
+                ["02", "Cómo hacemos equipo", "No porque siempre pensemos igual, sino porque aprendimos a volver al mismo lado."],
+                ["03", "Cómo cambia el futuro cuando te imagino ahí", "Los planes dejan de ser ideas sueltas y empiezan a parecer una vida."],
+                ["04", "La tranquilidad de elegirte", "No es vértigo. Es esa calma rara de saber hacia dónde quiero ir."],
+              ].map(([number, title, copy], index) => (
+                <button
+                  key={title}
+                  className={reasonsOpen.includes(index) ? "open" : ""}
+                  onClick={() => setReasonsOpen((items) => items.includes(index) ? items : [...items, index])}
+                >
+                  <span>{number}</span>
+                  <div>
+                    <strong>{title}</strong>
+                    <p>{reasonsOpen.includes(index) ? copy : "Tocá para leer"}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={reasonsOpen.length < 3}>
+              {reasonsOpen.length < 3 ? `Abrí ${3 - reasonsOpen.length} más` : "Hay algo más"}
+            </button>
+          </section>
+        );
+
+      case "certainty":
+        return (
+          <section className="scene scene-certainty">
+            <p className="scene-kicker">Quiero decirlo bien</p>
+            <h2>No te estoy prometiendo una vida perfecta.</h2>
+            <div className="certainty-lines">
+              {[
+                ["No prometo", "que nada vaya a cambiar."],
+                ["No prometo", "que siempre sepamos qué hacer."],
+                ["Sí prometo", "seguir construyendo, aprendiendo y volviendo a elegirte."],
+              ].map(([lead, copy], index) => (
+                <button
+                  key={index}
+                  className={certaintyOpen.includes(index) ? "open" : ""}
+                  onClick={() => setCertaintyOpen((items) => items.includes(index) ? items : [...items, index])}
+                >
+                  <span>{certaintyOpen.includes(index) ? lead : "···"}</span>
+                  <strong>{certaintyOpen.includes(index) ? copy : "Tocá para revelar"}</strong>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={certaintyOpen.length < 3}>Seguir</button>
+          </section>
+        );
+
+      case "threshold":
+        return (
+          <section className={`scene scene-threshold ${thresholdOpen ? "open" : ""}`}>
+            <div className="threshold-aura" />
+            <p className="scene-kicker">Último paso</p>
+            <h2>{thresholdOpen ? "Ya no queda nada entre vos y la pregunta." : "Lo que sigue cambia esta historia."}</h2>
+            {!thresholdOpen ? (
+              <>
+                <button
+                  className={`threshold-hold ${thresholdHolding ? "holding" : ""}`}
+                  onPointerDown={() => setThresholdHolding(true)}
+                  onPointerUp={() => setThresholdHolding(false)}
+                  onPointerLeave={() => setThresholdHolding(false)}
+                  onPointerCancel={() => setThresholdHolding(false)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setThresholdOpen(true); }
+                  }}
+                  aria-label="Mantener presionado para continuar"
+                >
+                  <span onAnimationEnd={() => {
+                    if (thresholdHolding) {
+                      setThresholdOpen(true);
+                      setThresholdHolding(false);
+                    }
+                  }} />
+                  <strong>Mantené presionado</strong>
+                  <small>No es un botón para tocar rápido.</small>
+                </button>
+              </>
+            ) : (
+              <button className="primary-action threshold-continue" onClick={next}>Continuar</button>
+            )}
+          </section>
+        );
+
+      case "childhood":
+        return (
+          <section className="scene scene-childhood">
+            <div className="childhood-light" aria-hidden="true" />
+            <p className="scene-kicker">Volver un segundo atrás</p>
+            <h2>Hubo un tiempo en que el mundo era enorme y mamá era el lugar conocido.</h2>
+            <div className="childhood-memory">
+              <div
+                className="childhood-photo"
+                style={{
+                  backgroundImage: `url("${scenePhotos[0]?.url || premiumFallbackPhotos[0]}")`,
+                  backgroundSize: scenePhotos[0]?.fit || "cover",
+                  backgroundPosition: scenePhotos[0]?.position || "center",
+                }}
+              />
+              <div className="childhood-note">
+                <small>RECUERDO · 01</small>
+                <strong>Yo no veía todo.</strong>
+                <p>Veía la comida servida, la ropa lista, el cumpleaños, la mano que aparecía cuando tenía miedo. No veía el cansancio, las cuentas, las dudas ni todo lo que acomodabas para que yo pudiera ser chico.</p>
+              </div>
+            </div>
+            <button className="primary-action" onClick={next}>Mirar esas fotos otra vez</button>
+          </section>
+        );
+
+      case "care":
+        return (
+          <section className="scene scene-care">
+            <p className="scene-kicker">Las cosas que parecían pequeñas</p>
+            <h2>Gran parte del amor estaba escondido en tareas que nadie aplaudía.</h2>
+            <div className="care-grid">
+              {[
+                ["01", "Recordar por todos", "Turnos, horarios, gustos, lo que faltaba, lo que había que llevar y hasta cosas que yo ya había olvidado."],
+                ["02", "Hacer lugar", "En la mesa, en el día, en el presupuesto, en el cansancio. De alguna manera siempre aparecía espacio."],
+                ["03", "Estar antes de que lo pidiera", "Muchas veces entendiste qué me pasaba antes de que yo pudiera ponerle palabras."],
+                ["04", "Convertir rutina en hogar", "No eran grandes gestos. Era repetir pequeñas cosas durante años hasta volverlas parte de mí."],
+              ].map(([n,title,copy],index)=>(
+                <button key={title} className={careOpen.includes(index) ? "open" : ""} onClick={()=>setCareOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{n}</span>
+                  <strong>{title}</strong>
+                  <p>{careOpen.includes(index) ? copy : "Tocá para recordar"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={careOpen.length < 3}>
+              {careOpen.length < 3 ? `Descubrí ${3-careOpen.length} más` : "Hay algo que de chico no veía"}
+            </button>
+          </section>
+        );
+
+      case "sacrifices":
+        return (
+          <section className="scene scene-sacrifices">
+            <p className="scene-kicker">Lo invisible también cuenta</p>
+            <h2>Ahora entiendo que muchas veces vos quedabas última para que nosotros pudiéramos ir primero.</h2>
+            <div className="sacrifice-thread" aria-hidden="true" />
+            <div className="sacrifice-list">
+              {[
+                ["TIEMPO", "Horas que eran tuyas y terminaron siendo nuestras."],
+                ["ENERGÍA", "Días en los que estabas cansada y aun así había algo más que resolver."],
+                ["PREOCUPACIÓN", "Miedos que muchas veces llevaste en silencio para no pasármelos."],
+                ["VOS", "Y también quiero agradecerte por la mujer que siguió existiendo detrás de ser mamá."],
+              ].map(([title,copy],index)=>(
+                <button key={title} className={sacrificesOpen.includes(index) ? "open" : ""} onClick={()=>setSacrificesOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{title}</span>
+                  <p>{sacrificesOpen.includes(index) ? copy : "Abrir"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={sacrificesOpen.length < 3}>Escuchar a la familia</button>
+          </section>
+        );
+
+      case "return":
+        return (
+          <section className={`scene scene-return ${returnOpen ? "open" : ""}`}>
+            <div className="return-window" aria-hidden="true"><i /></div>
+            <p className="scene-kicker">Hay algo que no cambia del todo</p>
+            <h2>{returnOpen ? "No importa cuánto crezca: hay una parte de mí que siempre sabe volver a vos." : "Algunas personas se vuelven una dirección."}</h2>
+            {!returnOpen ? (
+              <button className="return-key" onClick={()=>setReturnOpen(true)}>
+                <span>⌂</span><strong>Abrir la puerta</strong>
+              </button>
+            ) : (
+              <button className="primary-action" onClick={next}>Una última cosa</button>
+            )}
+          </section>
+        );
+
+      case "lessons":
+        return (
+          <section className="scene scene-lessons">
+            <div className="lesson-line" aria-hidden="true" />
+            <p className="scene-kicker">Todo lo que me enseñaste sin dar una clase</p>
+            <h2>Muchas lecciones tuyas tardaron años en hacer sentido.</h2>
+            <div className="lesson-ledger">
+              {[
+                ["01", "Resolver", "No saber no era una excusa para quedarse quieto. Primero se mira, se prueba, se pregunta y se vuelve a intentar."],
+                ["02", "Cumplir", "Llegar, llamar, hacerse cargo, sostener la palabra incluso cuando nadie está mirando."],
+                ["03", "Cuidar", "Entendí que proteger no siempre es hablar. A veces es estar cerca, prever, acompañar y dejar que el otro intente."],
+                ["04", "Seguir", "Hay días en los que el coraje se parece menos a una hazaña y más a levantarse y hacer lo que toca."],
+              ].map(([n,title,copy],index)=>(
+                <button key={title} className={lessonsOpen.includes(index) ? "open" : ""} onClick={()=>setLessonsOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{n}</span><div><strong>{title}</strong><p>{lessonsOpen.includes(index) ? copy : "Abrir lección"}</p></div>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={lessonsOpen.length < 3}>
+              {lessonsOpen.length < 3 ? `Faltan ${3-lessonsOpen.length}` : "Seguir"}
+            </button>
+          </section>
+        );
+
+      case "presence":
+        return (
+          <section className="scene scene-presence">
+            <p className="scene-kicker">Las formas de estar</p>
+            <h2>No todos los recuerdos importantes tienen una conversación.</h2>
+            <div className="presence-track">
+              {[
+                ["LA MANO", "La que sostenía la bici, señalaba cómo hacerlo o aparecía en un hombro cuando hacía falta."],
+                ["LA ESPERA", "Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía."],
+                ["LA MIRADA", "Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."],
+              ].map(([title,copy],index)=>(
+                <button key={title} className={presenceOpen.includes(index) ? "open" : ""} onClick={()=>setPresenceOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{String(index+1).padStart(2,"0")}</span>
+                  <strong>{title}</strong>
+                  <p>{presenceOpen.includes(index) ? copy : "Tocá para recordar"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={presenceOpen.length < 2}>Ver lo que quedó</button>
+          </section>
+        );
+
+      case "inheritance":
+        return (
+          <section className="scene scene-inheritance">
+            <p className="scene-kicker">La herencia que no se firma</p>
+            <h2>Hay cosas tuyas que un día descubrí viviendo en mí.</h2>
+            <div className="inheritance-board">
+              {[
+                ["LA FORMA DE MIRAR UN PROBLEMA", "Antes de pedir ayuda, trato de entender cómo funciona."],
+                ["ALGUNAS FRASES", "Juraba que nunca las iba a decir. Ahora salen solas."],
+                ["CIERTOS GESTOS", "Maneras de ordenar, manejar, cocinar, arreglar o pensar que aparecieron sin permiso."],
+                ["UNA PARTE DE TU CARÁCTER", "No todo. Pero lo suficiente como para reconocerte en mí de vez en cuando."],
+              ].map(([title,copy],index)=>(
+                <button key={title} className={inheritanceOpen.includes(index) ? "open" : ""} onClick={()=>setInheritanceOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>0{index+1}</span><strong>{title}</strong><p>{inheritanceOpen.includes(index) ? copy : "Revelar"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={inheritanceOpen.length < 3}>Escuchar a la familia</button>
+          </section>
+        );
+
+      case "lookback":
+        return (
+          <section className={`scene scene-lookback ${lookbackOpen ? "open" : ""}`}>
+            <div className="lookback-horizon" aria-hidden="true" />
+            <p className="scene-kicker">Ahora te miro distinto</p>
+            <h2>{lookbackOpen ? "De grande dejé de verte sólo como “papá”. Empecé a ver también al hombre que estaba haciendo lo mejor que podía con lo que tenía." : "Hay una parte de crecer que también es volver a conocer a nuestros padres."}</h2>
+            {!lookbackOpen ? (
+              <button className="lookback-button" onClick={()=>setLookbackOpen(true)}><span>→</span><strong>Mirar de nuevo</strong></button>
+            ) : (
+              <button className="primary-action" onClick={next}>Una última cosa</button>
+            )}
+          </section>
+        );
+
+      case "casefile":
+        return (
+          <section className="scene scene-casefile">
+            <div className="casefile-scan" aria-hidden="true" />
+            <p className="scene-kicker">EXPEDIENTE 021 · NIVEL DE ACCESO: CUESTIONABLE</p>
+            <h2>Hay pruebas suficientes para confirmar que esto se nos fue de las manos hace años.</h2>
+            <button className={`casefile-folder ${casefileOpen ? "open" : ""}`} onClick={() => setCasefileOpen(true)}>
+              <span className="casefile-tab">{experience.demoRecipient.toUpperCase()} + {experience.demoGiver.toUpperCase()}</span>
+              <span className="casefile-cover">
+                <small>ARCHIVO CONFIDENCIAL</small>
+                <strong>AMISTAD<br/>BAJO INVESTIGACIÓN</strong>
+                <em>Incidentes · evidencia · códigos · reincidencia</em>
+                <b>CLASIFICADO</b>
+              </span>
+              <span className="casefile-sheet">
+                <small>INFORME PRELIMINAR</small>
+                <strong>Conclusión:</strong>
+                <p>Demasiadas historias compartidas como para fingir que esto sigue siendo una amistad normal.</p>
+              </span>
+            </button>
+            {!casefileOpen && <p className="scene-hint">Tocá para desclasificar</p>}
+            {casefileOpen && <button className="primary-action" onClick={next}>Ver evidencia</button>}
+          </section>
+        );
+
+      case "insidejokes":
+        return (
+          <section className="scene scene-insidejokes">
+            <p className="scene-kicker">DICCIONARIO NO AUTORIZADO</p>
+            <h2>Hay un idioma que sólo existe porque nos conocemos demasiado.</h2>
+            <div className="joke-decoder">
+              {[
+                ["“YA FUE”", "Frase históricamente pronunciada segundos antes de una decisión que no debía tomarse."],
+                ["ESA CARA", "Sistema de comunicación completo. Traducción simultánea innecesaria."],
+                ["“5 MINUTOS”", "Unidad temporal sin relación demostrable con cinco minutos reales."],
+                ["EL NOMBRE PROHIBIDO", "No hace falta escribirlo. Ya sabés perfectamente de quién estamos hablando."],
+              ].map(([code,meaning],index)=>(
+                <button key={code} className={insideJokesOpen.includes(index) ? "open" : ""} onClick={()=>setInsideJokesOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>CODE 0{index+1}</span>
+                  <strong>{code}</strong>
+                  <p>{insideJokesOpen.includes(index) ? meaning : "Tocá para decodificar"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={insideJokesOpen.length < 3}>
+              {insideJokesOpen.length < 3 ? `Decodificá ${3-insideJokesOpen.length} más` : "Pasar a antecedentes"}
+            </button>
+          </section>
+        );
+
+      case "incidents":
+        return (
+          <section className="scene scene-incidents">
+            <p className="scene-kicker">ANTECEDENTES · REINCIDENCIA CONFIRMADA</p>
+            <h2>No digo que esta dupla tome malas decisiones. Digo que hay evidencia.</h2>
+            <div className="incident-stack">
+              {[
+                ["CASO 001", "La salida que iba a ser tranqui", "Duración estimada: 2 horas. Duración real: información reservada."],
+                ["CASO 014", "El mensaje que no había que mandar", "Se discutió. Se analizó. Se mandó igual."],
+                ["CASO 028", "El plan sin plan", "Logística inexistente. Presupuesto dudoso. Resultado: inexplicablemente memorable."],
+                ["CASO 041", "La vez que dijimos “nunca más”", "El archivo registra múltiples reincidencias posteriores."],
+              ].map(([caseNo,title,copy],index)=>(
+                <button key={caseNo} className={incidentsOpen.includes(index) ? "open" : ""} onClick={()=>setIncidentsOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{caseNo}</span>
+                  <strong>{title}</strong>
+                  <p>{incidentsOpen.includes(index) ? copy : "ABRIR INFORME"}</p>
+                  {incidentsOpen.includes(index) && <em>CONFIRMADO</em>}
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={incidentsOpen.length < 3}>
+              {incidentsOpen.length < 3 ? "La investigación continúa" : "Hay otra clase de pruebas"}
+            </button>
+          </section>
+        );
+
+      case "proof":
+        return (
+          <section className="scene scene-proof">
+            <div className="proof-shift" aria-hidden="true" />
+            <p className="scene-kicker">Y después están las pruebas que sí importan</p>
+            <h2>Porque estar de verdad también fue aparecer cuando no había nada divertido para contar.</h2>
+            <div className="proof-list">
+              {[
+                ["ESTUVISTE", "Cuando no sabía bien qué decir y tampoco hacía falta que arreglaras nada."],
+                ["TE ALEGRASTE", "Por cosas buenas que me pasaban aunque no tuvieran absolutamente nada que ver con vos."],
+                ["ME DIJISTE LA VERDAD", "Incluso cuando hubiera sido mucho más cómodo darme la razón."],
+                ["TE QUEDASTE", "En versiones mías que ni yo sabía cuánto iban a durar."],
+              ].map(([title,copy],index)=>(
+                <button key={title} className={proofOpen.includes(index) ? "open" : ""} onClick={()=>setProofOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{String(index+1).padStart(2,"0")}</span>
+                  <strong>{title}</strong>
+                  <p>{proofOpen.includes(index) ? copy : "Tocá"}</p>
+                </button>
+              ))}
+            </div>
+            <button className="primary-action" onClick={next} disabled={proofOpen.length < 3}>Ahora sí</button>
+          </section>
+        );
+
+      case "pact":
+        return (
+          <section className="scene scene-pact">
+            <p className="scene-kicker">PACTO NO LEGAL · VIGENCIA INDEFINIDA</p>
+            <h2>Para que quede por escrito, por si alguna vez la vida se pone demasiado seria.</h2>
+            <div className="pact-paper">
+              <small>ACUERDO ENTRE {experience.demoRecipient.toUpperCase()} Y {experience.demoGiver.toUpperCase()}</small>
+              {[
+                ["I", "Podemos pasar semanas sin hablar y retomar como si hubieran sido veinte minutos."],
+                ["II", "Si alguien está haciendo una estupidez, la otra persona tiene obligación moral de avisar. Una vez."],
+                ["III", "Los logros de una persona se festejan sin medirlos contra la vida de la otra."],
+                ["IV", "Si todo se complica, existe siempre el derecho irrestricto a mandar “¿estás?”."],
+              ].map(([n,copy],index)=>(
+                <button key={n} className={pactOpen.includes(index) ? "signed" : ""} onClick={()=>setPactOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{n}</span>
+                  <p>{copy}</p>
+                  <strong>{pactOpen.includes(index) ? "✓ ACEPTADO" : "ACEPTAR"}</strong>
+                </button>
+              ))}
+              <div className="pact-signatures">
+                <span>{experience.demoGiver}</span><i>+</i><span>{experience.demoRecipient}</span>
+              </div>
+            </div>
+            <button className="primary-action" onClick={next} disabled={pactOpen.length < 3}>Cerrar expediente</button>
+          </section>
+        );
+
       case"proposal":return <section className="thi-scene thi-final thi-proposal thi-scene-rich"><div className="thi-proposal-rings" aria-hidden="true"><i/><i/><i/></div><p className="thi-kicker">{token(copy.proposal.kicker)}</p><span className="thi-ring">◇</span><h2>{token(copy.proposal.title)}</h2><p className="thi-lead">{token(copy.proposal.lead)}</p><div className="thi-reactions">{copy.proposal.reactions.map(x=><button key={x} onClick={()=>haptic([10,20,10])}>{token(x)}</button>)}</div><small>{token(copy.proposal.createdWith)}</small></section>;
       case"finale":default:return <section className="thi-scene thi-final thi-scene-rich"><div className="thi-final-sparks" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div><p className="thi-kicker">{token(copy.finale.kicker)}</p><h2>{token(copy.finale.title)}</h2><p className="thi-lead">{token(copy.finale.lead)}</p><div className="thi-reactions">{copy.finale.reactions.map(x=><button key={x} onClick={()=>haptic(7)}>{token(x)}</button>)}</div><button data-action="restart" className="thi-ghost" onClick={restart}>{token(copy.finale.restartLabel)}</button><small>{token(copy.finale.createdWith)}</small></section>;
     }
