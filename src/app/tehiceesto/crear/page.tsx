@@ -1,6 +1,15 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import CreatorWizard from "../CreatorWizard";
 
+export const metadata: Metadata = {
+  title: "Crear una experiencia",
+  description:
+    "Elegí para quién es, contá la historia y armá una primera versión privada de su experiencia.",
+};
+
 export default function CreatePage(){
-  return <main className="thi-create-page"><Link href="/tehiceesto" className="thi-create-back">← Te Hice Esto</Link><CreatorWizard/></main>;
+  return <main className="creator-page">
+    <div className="creator-backdrop" />
+    <CreatorWizard/>
+  </main>;
 }
