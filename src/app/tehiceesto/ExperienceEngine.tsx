@@ -28,6 +28,7 @@ export default function ExperienceEngine({
   videoMedia?: ThiVideo[];
 }) {
   const [sceneIndex,setSceneIndex]=useState(0);
+  const [runId,setRunId]=useState(0);
   const [transitioning,setTransitioning]=useState(false);
   const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);
@@ -53,6 +54,41 @@ export default function ExperienceEngine({
   ],[]);
   const displayPhotos = photoMedia && photoMedia.length ? photoMedia.slice(0,8) : [];
 
+  const resetAllInteractions=()=>{
+    setStars([]);
+    setLetterOpen(false);
+    setScratched(false);
+    setCandlesOut(false);
+    setPopped([]);
+    setQuizDone(false);
+    setVaultOpen(false);
+    setCapsuleOpen(false);
+    setVoicesPlayed([]);
+    setDoorOpen(false);
+  };
+
+  const resetSceneState=(type:SceneType)=>{
+    if(type==="stars") setStars([]);
+    if(type==="letter") setLetterOpen(false);
+    if(type==="scratch") setScratched(false);
+    if(type==="candles") setCandlesOut(false);
+    if(type==="balloons") setPopped([]);
+    if(type==="quiz") setQuizDone(false);
+    if(type==="vault") setVaultOpen(false);
+    if(type==="capsule") setCapsuleOpen(false);
+    if(type==="voices") setVoicesPlayed([]);
+    if(type==="door") setDoorOpen(false);
+  };
+
+  const restart=()=>{
+    resetAllInteractions();
+    setDirection("back");
+    setTransitioning(false);
+    setSceneIndex(0);
+    setRunId((value)=>value+1);
+    haptic([8,22,8]);
+  };
+
   const haptic=(pattern:number|number[]=10)=>{
     if(typeof navigator!=="undefined"&&"vibrate" in navigator){
       navigator.vibrate(pattern);
@@ -60,15 +96,16 @@ export default function ExperienceEngine({
   };
 
   const moveTo=(nextIndex:number,dir:"forward"|"back")=>{
-    if(transitioning||nextIndex<0||nextIndex>=total||nextIndex===sceneIndex) return;
+    if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex) return;
+    const destination=scenes[nextIndex];
+    resetSceneState(destination);
     setDirection(dir);
     setTransitioning(true);
     haptic(8);
     window.setTimeout(()=>{
       setSceneIndex(nextIndex);
-      setDoorOpen(false);
       setTransitioning(false);
-    },210);
+    },160);
   };
 
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");
@@ -237,13 +274,13 @@ export default function ExperienceEngine({
         <h2>{experience.closing}</h2>
         <p className="thi-lead">Este lugar va a seguir acá para cuando quieras volver.</p>
         <div className="thi-reactions">{["🥹","❤️","😭","✨"].map(x=><button key={x} onClick={()=>haptic(7)}>{x}</button>)}</div>
-        <button className="thi-ghost" onClick={()=>moveTo(0,"back")}>Volver al comienzo</button>
+        <button className="thi-ghost" onClick={restart}>Volver al comienzo</button>
         <small>creado con ♥ en Te Hice Esto</small>
       </section>;
     }
   }
 
-  return <main className="thi-experience thi-experience-premium" style={{"--accent":experience.accent} as CSSProperties}>
+  return <main className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current}>
     <div className="thi-experience-noise" aria-hidden="true"/>
     <div className="thi-experience-vignette" aria-hidden="true"/>
     <div className="thi-experience-orb orb-a" aria-hidden="true"/>
@@ -255,7 +292,11 @@ export default function ExperienceEngine({
       <small>{String(sceneIndex+1).padStart(2,"0")} / {String(total).padStart(2,"0")}</small>
     </div>
 
-    <div className={`thi-scene-stage ${transitioning?"leaving":""} ${direction}`} key={`${sceneIndex}-${current}`}>
+    <button className="thi-reset-journey" type="button" onClick={restart} aria-label="Reiniciar experiencia">
+      <span>↻</span><small>Reiniciar</small>
+    </button>
+
+    <div className={`thi-scene-stage ${transitioning?"leaving":""} ${direction}`} key={`${runId}-${sceneIndex}-${current}`}>
       {scene(current)}
     </div>
 
