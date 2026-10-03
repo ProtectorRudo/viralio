@@ -36,13 +36,13 @@ async function advanceOne(page: Page) {
     await stars.nth(2).click();
     await page.getByRole("button", { name: /Continuar/ }).click();
   } else if (current === "scratch") {
-    await page.locator(".thi-scratch").click();
+    await page.getByRole("button", { name: /revelar sin raspar/i }).click();
     await page.getByRole("button", { name: /Ya lo descubrí/ }).click();
   } else if (current === "letter") {
     await page.locator(".thi-envelope").click();
     await page.getByRole("button", { name: /Guardar estas palabras/ }).click();
   } else if (current === "candles") {
-    await page.getByRole("button", { name: /Soplar las velitas/ }).click();
+    await page.getByRole("button", { name: /apagarlas tocando/i }).click();
     await page.getByRole("button", { name: /Seguir/ }).click();
   } else if (current === "balloons") {
     const balloons = page.locator(".thi-balloons button");
@@ -108,7 +108,7 @@ test("scene state resets when revisiting and restart always starts clean", async
 
   await advanceOne(page); // intro -> candles
   await waitForScene(page, "candles");
-  await page.getByRole("button", { name: /Soplar las velitas/ }).click();
+  await page.getByRole("button", { name: /apagarlas tocando/i }).click();
   await page.getByRole("button", { name: /Seguir/ }).click();
   await waitForScene(page, "balloons");
 
@@ -120,7 +120,7 @@ test("scene state resets when revisiting and restart always starts clean", async
   await waitForScene(page, "candles");
 
   await expect(page.locator(".thi-cake")).not.toHaveClass(/out/);
-  await page.getByRole("button", { name: /Soplar las velitas/ }).click();
+  await page.getByRole("button", { name: /apagarlas tocando/i }).click();
   await page.getByRole("button", { name: /Seguir/ }).click();
   await waitForScene(page, "balloons");
 
