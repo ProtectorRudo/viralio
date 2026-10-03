@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { adminCall, SESSION_KEY } from "./api";
 import { experiences } from "../data";
 
@@ -106,7 +107,7 @@ export default function AdminPortal() {
     return (
       <main className="thi-admin-shell thi-admin-login-shell">
         <section className="thi-admin-login-card">
-          <a href="/tehiceesto" className="thi-admin-back">← Te Hice Esto</a>
+          <Link href="/tehiceesto" className="thi-admin-back">← Te Hice Esto</Link>
           <p className="thi-kicker">Panel interno</p>
           <h1>Armado de regalos</h1>
           <p>
@@ -241,10 +242,10 @@ export default function AdminPortal() {
                 {gifts.map((gift) => (
                   <tr key={gift.public_code}>
                     <td>
-                      <a href={`/tehiceesto/admin/${gift.public_code}`} className="thi-admin-gift-link">
+                      <Link href={`/tehiceesto/admin/${gift.public_code}`} className="thi-admin-gift-link">
                         <strong>{gift.recipient_name}</strong>
                         <span>Editar →</span>
-                      </a>
+                      </Link>
                     </td>
                     <td>{gift.giver_name}</td>
                     <td>{gift.experience_slug}</td>
