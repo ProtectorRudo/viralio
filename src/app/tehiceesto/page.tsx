@@ -1,117 +1,266 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import BrandMark from "./BrandMark";
 import { experiences } from "./data";
 
-export default function TeHiceEstoHome(){
-  return <main className="thi-site thi-premium-site">
+const occasionOrder = [
+  "pareja",
+  "cumpleanos",
+  "aniversario",
+  "amistad",
+  "mama-papa",
+  "propuesta",
+  "hijos",
+  "abuelos",
+];
+
+const occasionCopy: Record<string, {
+  category: string;
+  title: string;
+  description: string;
+  ideal: string;
+  demoLabel: string;
+  features: string[];
+}> = {
+  pareja: {
+    category: "Pareja",
+    title: "Regalo para tu pareja",
+    description: "Para sorprender porque sí, celebrar una fecha o decir de una forma distinta todo lo que esa persona significa.",
+    ideal: "Ideal para novios, convivencia y sorpresas románticas",
+    demoLabel: "Vivir demo para pareja",
+    features: ["Puerta", "Recuerdos", "Estrellas", "Raspadita", "Carta"],
+  },
+  cumpleanos: {
+    category: "Cumpleaños",
+    title: "Regalo de cumpleaños",
+    description: "Un cumpleaños convertido en recorrido: velitas, mensajes, recuerdos, voces y sorpresas que se desbloquean.",
+    ideal: "Ideal para amigos, pareja o familia",
+    demoLabel: "Vivir demo de cumpleaños",
+    features: ["Velitas", "Globos", "Fotos", "Voces", "Carta"],
+  },
+  aniversario: {
+    category: "Aniversario",
+    title: "Regalo de aniversario",
+    description: "Volver a recorrer la relación desde el comienzo y terminar con algo nuevo que todavía queda por vivir.",
+    ideal: "Ideal para aniversarios de pareja",
+    demoLabel: "Vivir demo de aniversario",
+    features: ["Historia", "Fotos", "Pregunta", "Sorpresa", "Carta"],
+  },
+  amistad: {
+    category: "Amistad",
+    title: "Regalo para una amistad",
+    description: "Fotos que nunca deberían publicarse, anécdotas, códigos internos y mensajes que sólo ustedes entienden.",
+    ideal: "Ideal para mejores amigos y grupos",
+    demoLabel: "Vivir demo de amistad",
+    features: ["Quiz", "Fotos", "Globos", "Cupón", "Carta"],
+  },
+  "mama-papa": {
+    category: "Familia",
+    title: "Regalo para mamá o papá",
+    description: "Una forma de agradecer cosas que a veces se sienten toda la vida y tardan demasiado en decirse.",
+    ideal: "Ideal para Día de la Madre, del Padre o cualquier día",
+    demoLabel: "Vivir demo para mamá o papá",
+    features: ["Recuerdos", "Voces", "Estrellas", "Carta", "Sorpresa"],
+  },
+  propuesta: {
+    category: "Propuesta",
+    title: "Propuesta de casamiento",
+    description: "La historia de ustedes conduce paso a paso hacia una última puerta y una sola pregunta.",
+    ideal: "Ideal para una propuesta íntima y distinta",
+    demoLabel: "Vivir demo de propuesta",
+    features: ["Puerta", "Fotos", "Constelación", "Bóveda", "Pregunta"],
+  },
+  hijos: {
+    category: "Hijos",
+    title: "Regalo para tus hijos",
+    description: "Una cápsula emocional para guardar etapas, palabras y recuerdos que algún día van a tener todavía más valor.",
+    ideal: "Ideal para nacimientos, cumpleaños y cápsulas de tiempo",
+    demoLabel: "Vivir demo para hijos",
+    features: ["Historia", "Fotos", "Estrellas", "Cápsula", "Carta"],
+  },
+  abuelos: {
+    category: "Legado",
+    title: "Regalo para abuelos",
+    description: "Décadas de historias familiares convertidas en un museo íntimo para volver a escuchar, mirar y recordar.",
+    ideal: "Ideal para homenajes y recuerdos familiares",
+    demoLabel: "Vivir demo para abuelos",
+    features: ["Línea de tiempo", "Fotos", "Voces", "Recuerdos", "Carta"],
+  },
+};
+
+export default async function TeHiceEstoHome(){
+  const host = (await headers()).get("host")?.split(":")[0].toLowerCase() || "";
+  const dedicated = host === "tehiceesto.com" || host === "www.tehiceesto.com";
+  const prefix = dedicated ? "" : "/tehiceesto";
+  const href = (path = "") => `${prefix}${path}` || "/";
+
+  const orderedExperiences = occasionOrder
+    .map((slug) => experiences.find((experience) => experience.slug === slug))
+    .filter((experience): experience is NonNullable<typeof experience> => Boolean(experience));
+
+  return <main className="thi-site thi-premium-site thi-home-v3">
     <div className="thi-page-noise" aria-hidden="true"/>
     <div className="thi-page-aura aura-one" aria-hidden="true"/>
     <div className="thi-page-aura aura-two" aria-hidden="true"/>
 
-    <header className="thi-nav">
-      <Link href="/tehiceesto" className="thi-brand">TE HICE ESTO<span>♥</span></Link>
+    <header className="thi-nav thi-nav-v3">
+      <BrandMark href={href()} compact />
       <nav>
-        <a href="#experiencias">Experiencias</a>
+        <a href="#ocasiones">Elegí la ocasión</a>
         <a href="#como-funciona">Cómo funciona</a>
-        <Link href="/tehiceesto/crear" className="thi-nav-cta">Crear regalo</Link>
+        <Link href={href("/crear")} className="thi-nav-cta">Crear mi regalo</Link>
       </nav>
     </header>
 
-    <section className="thi-hero thi-hero-premium">
-      <div className="thi-hero-copy">
+    <section className="thi-hero-v3">
+      <div className="thi-hero-v3-copy">
         <div className="thi-hero-badge">
           <span className="thi-live-dot"/>
-          Hecho para una sola persona
+          Regalos digitales para el alma
         </div>
-        <p className="thi-kicker">Experiencias digitales personalizadas</p>
-        <h1>Un regalo que no se abre.<em> Se vive.</em></h1>
-        <p className="thi-hero-description">Convertí fotos, cartas, audios y recuerdos en un lugar de Internet que existe solamente para esa persona. No mira una página: entra, descubre, toca y siente.</p>
+        <p className="thi-kicker">Experiencias personalizadas con tus recuerdos</p>
+        <h1>Convertimos tus recuerdos en <em>un regalo que se vive.</em></h1>
+        <p className="thi-hero-v3-description">
+          Elegís la ocasión. Nos mandás fotos, audios, videos, cartas y anécdotas.
+          Nosotros los convertimos en una experiencia privada e interactiva que esa persona descubre desde su celular.
+        </p>
+
         <div className="thi-hero-actions">
-          <Link className="thi-primary thi-primary-premium" href="/tehiceesto/crear">
-            <span>Hacerle algo</span><b>♥</b>
-          </Link>
-          <Link className="thi-text-link thi-demo-link" href="/tehiceesto/experiencias/pareja">
+          <a className="thi-primary thi-primary-premium" href="#ocasiones">
+            <span>Elegir la ocasión</span><b>↓</b>
+          </a>
+          <Link className="thi-text-link thi-demo-link" href={href("/experiencias/pareja")}>
             <span className="thi-play-dot">▶</span>
-            Vivir un demo
+            Probar una demo
           </Link>
         </div>
-        <div className="thi-hero-signature">
-          <span><b>01</b> Privado</span>
-          <span><b>02</b> Interactivo</span>
-          <span><b>03</b> Irrepetible</span>
+
+        <div className="thi-hero-proofline">
+          <span><i>✓</i> Link privado</span>
+          <span><i>✓</i> Hecho para celular</span>
+          <span><i>✓</i> Fotos, audio y video</span>
+          <span><i>✓</i> Sin instalar nada</span>
         </div>
       </div>
 
-      <div className="thi-phone-wrap thi-phone-premium" aria-hidden="true">
-        <div className="thi-phone-orbit orbit-one"/>
-        <div className="thi-phone-orbit orbit-two"/>
-        <div className="thi-phone-shadow"/>
-        <div className="thi-phone">
-          <div className="thi-island"/>
-          <div className="thi-phone-screen">
-            <div className="thi-phone-stars"><i/><i/><i/><i/><i/></div>
-            <small>Julián hizo algo para vos</small>
+      <div className="thi-hero-gift-object" aria-hidden="true">
+        <div className="thi-gift-aura"/>
+        <div className="thi-gift-card">
+          <div className="thi-gift-card-top">
+            <span>Una experiencia para</span>
             <strong>Emma</strong>
-            <p>Este lugar existe solamente para vos.</p>
-            <span className="thi-phone-enter">Entrar <i>→</i></span>
-            <em>6 min · mejor con auriculares</em>
+          </div>
+          <div className="thi-gift-scene-preview">
+            <div className="thi-gift-preview-stars"><i/><i/><i/><i/></div>
+            <small>Julián hizo algo para vos</small>
+            <p>Hay miles de lugares en Internet.<br/>Este existe solamente para vos.</p>
+            <span className="thi-gift-preview-button">Entrar <i>→</i></span>
+          </div>
+          <div className="thi-gift-card-bottom">
+            <span>7 escenas</span><i/><span>privado</span><i/><span>interactivo</span>
           </div>
         </div>
-        <div className="thi-float one"><i>✦</i><span>recuerdos<br/><small>que se descubren</small></span></div>
-        <div className="thi-float two"><i>♥</i><span>una carta<br/><small>que espera al final</small></span></div>
-        <div className="thi-float three"><i>◌</i><span>link privado<br/><small>sólo para esa persona</small></span></div>
+        <div className="thi-wax-seal-hero"><span>♥</span><i/></div>
+        <div className="thi-gift-float float-a"><span>✦</span><small>recuerdos que se descubren</small></div>
+        <div className="thi-gift-float float-b"><span>♪</span><small>audios que vuelven a sonar</small></div>
       </div>
     </section>
 
-    <section className="thi-trust thi-trust-premium">
-      <span><b>✦</b> 100% digital</span><i/>
-      <span><b>⌁</b> Link privado</span><i/>
-      <span><b>◇</b> Hecho para celular</span><i/>
-      <span><b>∞</b> Un recuerdo que queda</span>
+    <section className="thi-occasion-section" id="ocasiones">
+      <div className="thi-occasion-heading">
+        <div>
+          <p className="thi-kicker">Elegí la ocasión</p>
+          <h2>Hay una experiencia distinta para cada persona y cada momento.</h2>
+        </div>
+        <p>
+          Cada demo tiene su propia historia, estética e interacciones.
+          Entrá a la que más se parezca al regalo que querés hacer.
+        </p>
+      </div>
+
+      <div className="thi-occasion-grid">
+        {orderedExperiences.map((experience, index) => {
+          const copy = occasionCopy[experience.slug];
+          return <article
+            className={`thi-occasion-card ${index < 2 ? "featured" : ""}`}
+            key={experience.slug}
+            style={{"--occasion-accent":experience.accent} as React.CSSProperties}
+          >
+            <div className="thi-occasion-card-glow"/>
+            <div className="thi-occasion-card-head">
+              <span className="thi-occasion-icon">{experience.icon}</span>
+              <div>
+                <small>{copy.category}</small>
+                <em>Demo {String(index+1).padStart(2,"0")}</em>
+              </div>
+            </div>
+
+            <h3>{copy.title}</h3>
+            <p>{copy.description}</p>
+            <span className="thi-occasion-ideal">{copy.ideal}</span>
+
+            <div className="thi-occasion-features">
+              {copy.features.map((feature)=><span key={feature}>{feature}</span>)}
+            </div>
+
+            <div className="thi-occasion-actions">
+              <Link href={href(`/experiencias/${experience.slug}`)} className="thi-occasion-demo">
+                <span className="thi-play-dot">▶</span>{copy.demoLabel}
+              </Link>
+              <Link href={href("/crear")} className="thi-occasion-create">Crear este regalo →</Link>
+            </div>
+          </article>;
+        })}
+      </div>
     </section>
 
-    <section className="thi-emotion-section">
-      <div className="thi-emotion-copy">
-        <p className="thi-kicker">No es una página bonita</p>
-        <h2>La diferencia está en lo que la persona tiene que hacer.</h2>
-        <p>Entrar a una habitación. Abrir una puerta. Encender estrellas. Escuchar una voz. Descubrir una carta. Cada gesto convierte el recuerdo en algo que se vive.</p>
-      </div>
-      <div className="thi-emotion-visual">
-        <article className="thi-mini-scene scene-door"><span>01</span><div className="mini-door"><i/></div><strong>Abrir</strong><small>una puerta que sólo existe para vos</small></article>
-        <article className="thi-mini-scene scene-star"><span>02</span><div className="mini-star">✦</div><strong>Descubrir</strong><small>lo que alguien guardó para decirte</small></article>
-        <article className="thi-mini-scene scene-letter"><span>03</span><div className="mini-letter">♥</div><strong>Sentir</strong><small>la parte que no entraba en una foto</small></article>
-      </div>
-    </section>
-
-    <section className="thi-catalog" id="experiencias">
+    <section className="thi-what-is-section">
       <div className="thi-section-head">
-        <p className="thi-kicker">Elegí una historia</p>
-        <h2>¿Para quién querés hacer algo inolvidable?</h2>
-        <p>No elegís una plantilla. Elegís el tipo de emoción que querés crear.</p>
+        <p className="thi-kicker">¿Qué recibe la otra persona?</p>
+        <h2>No recibe una web. Recibe un recorrido hecho con su historia.</h2>
       </div>
-      <div className="thi-card-grid">
-        {experiences.map((x,i)=><Link href={`/tehiceesto/experiencias/${x.slug}`} className="thi-card thi-card-premium" key={x.slug} style={{"--card-accent":x.accent} as React.CSSProperties}>
-          <span className="thi-card-glow"/>
-          <span className="thi-card-num">{String(i+1).padStart(2,"0")}</span>
-          <span className="thi-card-icon">{x.icon}</span>
-          <small>{x.eyebrow}</small>
-          <h3>{x.title}</h3>
-          <p>{x.short}</p>
-          <div>{x.tags.map(t=><em key={t}>{t}</em>)}</div>
-          <strong>Vivir demo <i>↗</i></strong>
-        </Link>)}
+
+      <div className="thi-journey-strip">
+        <article><span>01</span><i>◇</i><strong>Abre un link privado</strong><p>Sin app, sin registro y desde su propio celular.</p></article>
+        <article><span>02</span><i>✦</i><strong>Empieza a descubrir</strong><p>Fotos, puertas, recuerdos, preguntas y pequeños secretos.</p></article>
+        <article><span>03</span><i>♥</i><strong>Interactúa con la historia</strong><p>Raspa, sopla velitas, escucha voces, abre cartas y desbloquea escenas.</p></article>
+        <article><span>04</span><i>∞</i><strong>Llega a un final único</strong><p>Una carta, una propuesta, una cápsula o aquello que quieras decir.</p></article>
       </div>
     </section>
 
-    <section className="thi-how" id="como-funciona">
+    <section className="thi-material-section">
+      <div className="thi-material-copy">
+        <p className="thi-kicker">Vos nos mandás los recuerdos</p>
+        <h2>Nosotros hacemos la magia.</h2>
+        <p>
+          No necesitás diseñar nada. Nos contás para quién es, qué querés provocar
+          y nos enviás el material. Nosotros elegimos el ritmo, las escenas y la forma de contarlo.
+        </p>
+        <Link href={href("/crear")} className="thi-primary thi-primary-premium"><span>Empezar mi regalo</span><b>→</b></Link>
+      </div>
+
+      <div className="thi-material-cloud">
+        <span className="large">Fotos <i>▧</i></span>
+        <span>Audios <i>♪</i></span>
+        <span>Videos <i>▶</i></span>
+        <span className="large">Cartas <i>♥</i></span>
+        <span>Fechas <i>◌</i></span>
+        <span>Anécdotas <i>✦</i></span>
+        <span>Frases de ustedes <i>“ ”</i></span>
+        <span>Una canción <i>♫</i></span>
+      </div>
+    </section>
+
+    <section className="thi-how thi-how-v3" id="como-funciona">
       <div className="thi-section-head">
-        <p className="thi-kicker">Muy fácil para vos. Inolvidable para quien lo recibe.</p>
-        <h2>Vos traés la historia. Nosotros construimos el lugar.</h2>
+        <p className="thi-kicker">Cómo funciona</p>
+        <h2>Fácil para vos. Personal hasta el último detalle.</h2>
       </div>
       <div className="thi-steps thi-steps-premium">
-        <article><span>01</span><i>◇</i><h3>Elegís</h3><p>La persona, la ocasión y qué querés hacerle sentir.</p></article>
-        <article><span>02</span><i>✦</i><h3>Nos contás</h3><p>Fotos, audios, recuerdos y pequeñas cosas que sólo ustedes entienden.</p></article>
-        <article><span>03</span><i>⌁</i><h3>Lo creamos</h3><p>La historia se convierte en escenas, juegos, cartas y sorpresas.</p></article>
-        <article><span>04</span><i>♥</i><h3>Lo vive</h3><p>Le mandás un link privado para descubrirlo paso a paso.</p></article>
+        <article><span>01</span><i>◇</i><h3>Elegís la ocasión</h3><p>Pareja, cumpleaños, aniversario, amistad, familia o una propuesta.</p></article>
+        <article><span>02</span><i>✦</i><h3>Nos mandás la historia</h3><p>Fotos, audios, videos, mensajes y todo lo que tenga significado.</p></article>
+        <article><span>03</span><i>⌁</i><h3>La convertimos en experiencia</h3><p>Ordenamos el relato y construimos las escenas, efectos y sorpresas.</p></article>
+        <article><span>04</span><i>♥</i><h3>Le mandás el link</h3><p>La persona entra desde su celular y descubre su regalo paso a paso.</p></article>
       </div>
     </section>
 
@@ -120,7 +269,7 @@ export default function TeHiceEstoHome(){
         <div>
           <p className="thi-kicker">Íntimo por diseño</p>
           <h2>Lo importante no tiene por qué ser público.</h2>
-          <p>El regalo vive detrás de un código privado. Las fotos, audios y videos se guardan en almacenamiento privado y se entregan mediante enlaces temporales.</p>
+          <p>Los regalos viven en enlaces privados. Las fotos, audios y videos se guardan en almacenamiento privado y no aparecen en buscadores.</p>
         </div>
         <div className="thi-private-orb">
           <span>◌</span><strong>PRIVATE</strong><small>one person only</small>
@@ -130,16 +279,15 @@ export default function TeHiceEstoHome(){
 
     <section className="thi-final-cta thi-final-cta-premium">
       <div className="thi-final-ring ring-a"/><div className="thi-final-ring ring-b"/>
-      <p className="thi-kicker">Hay alguien que se merece esto</p>
-      <h2>No le mandes otra cosa.<br/><em>Hacésela vivir.</em></h2>
-      <Link className="thi-primary thi-primary-premium" href="/tehiceesto/crear"><span>Empezar mi regalo</span><b>→</b></Link>
-      <small>Un regalo digital. Una experiencia privada. Un recuerdo que queda.</small>
+      <BrandMark href={href()} tagline />
+      <h2>Hay regalos que se guardan.<br/><em>Y otros que se recuerdan.</em></h2>
+      <Link className="thi-primary thi-primary-premium" href={href("/crear")}><span>Crear algo para alguien</span><b>→</b></Link>
     </section>
 
-    <footer className="thi-footer">
-      <span className="thi-brand">TE HICE ESTO<span>♥</span></span>
-      <p>Un lugar en Internet que existe para una sola persona.</p>
-      <Link href="/tehiceesto/crear">Crear algo →</Link>
+    <footer className="thi-footer thi-footer-v3">
+      <BrandMark href={href()} compact />
+      <p>Regalos digitales para el alma.</p>
+      <div><a href="#ocasiones">Ver ocasiones</a><Link href={href("/crear")}>Crear regalo →</Link></div>
     </footer>
   </main>;
 }

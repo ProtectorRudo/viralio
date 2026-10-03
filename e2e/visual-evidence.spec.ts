@@ -85,7 +85,11 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/tehiceesto");
-  await expect(page.getByRole("heading", { name: /Un regalo que no se abre/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Convertimos tus recuerdos/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Regalo de cumpleaños" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Regalo para tu pareja" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Regalo de aniversario" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Regalo para una amistad" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await capture(page, testInfo, "tehiceesto-home-1440");
 

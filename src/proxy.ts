@@ -99,12 +99,11 @@ export function proxy(request: NextRequest) {
     return teHiceEstoSitemap();
   }
 
-  // Until the final Te Hice Esto icon is installed, avoid leaking Viralio's favicon.
+  // Brand-specific favicon: never inherit Viralio's icon on tehiceesto.com.
   if (pathname === "/favicon.ico") {
-    return new NextResponse(null, {
-      status: 204,
-      headers: { "cache-control": "public, max-age=86400" },
-    });
+    const target = request.nextUrl.clone();
+    target.pathname = `${LEGACY_PREFIX}/brand-icon`;
+    return NextResponse.rewrite(target);
   }
 
   // Keep old prefixed links clean on the dedicated domain.
