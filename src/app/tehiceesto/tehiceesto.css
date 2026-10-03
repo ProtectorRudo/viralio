@@ -1740,3 +1740,77 @@
   .thi-theme-cumpleanos .thi-progress-premium{width:230px;bottom:10px}
   .thi-theme-cumpleanos .thi-reset-journey{opacity:.2}
 }
+
+
+/* CUMPLEAÑOS QUALITY PASS II — unify palette and remove remaining UI artifacts */
+.thi-theme-cumpleanos .thi-balloons button:nth-child(1),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(2),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(3),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(4),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(5),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(6){
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,241,216,.2),transparent 11%),
+    linear-gradient(145deg,rgba(209,158,91,.28),rgba(73,43,20,.48))!important;
+  border-color:rgba(229,184,116,.16)!important
+}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(2),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(5){
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,244,219,.18),transparent 11%),
+    linear-gradient(145deg,rgba(173,124,72,.24),rgba(54,33,20,.5))!important
+}
+.thi-theme-cumpleanos .thi-balloons button:nth-child(3),
+.thi-theme-cumpleanos .thi-balloons button:nth-child(6){
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,241,216,.16),transparent 11%),
+    linear-gradient(145deg,rgba(127,91,56,.26),rgba(43,27,17,.52))!important
+}
+.thi-theme-cumpleanos .thi-balloons button.pop,
+.thi-theme-cumpleanos .thi-balloons button:nth-child(1).pop,
+.thi-theme-cumpleanos .thi-balloons button:nth-child(2).pop,
+.thi-theme-cumpleanos .thi-balloons button:nth-child(3).pop,
+.thi-theme-cumpleanos .thi-balloons button:nth-child(4).pop,
+.thi-theme-cumpleanos .thi-balloons button:nth-child(5).pop,
+.thi-theme-cumpleanos .thi-balloons button:nth-child(6).pop{
+  background:linear-gradient(145deg,#17110c,#0f0b08)!important;
+  border-color:rgba(223,177,107,.13)!important
+}
+
+/* the light lives in the room, not inside a card */
+.thi-theme-cumpleanos .thi-light-reveal{
+  width:min(760px,96vw);height:min(405px,48vh);min-height:330px;
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important
+}
+.thi-theme-cumpleanos .thi-light-reveal:before{
+  background:radial-gradient(135px circle at var(--light-x) var(--light-y),transparent 0 42%,rgba(6,4,2,.1) 56%,rgba(6,4,2,.94) 100%)
+}
+.thi-theme-cumpleanos .thi-light-reveal:after{
+  background:radial-gradient(circle,rgba(255,226,173,.22),rgba(219,153,73,.075) 36%,transparent 70%);
+  filter:blur(9px)
+}
+.thi-theme-cumpleanos .thi-light-secret strong{font-weight:400}
+.thi-theme-cumpleanos .thi-light-secret p{
+  font-family:var(--thi-serif);font-style:italic;font-size:clamp(22px,3.2vw,31px);
+  line-height:1.35;color:#ead4b3;max-width:610px
+}
+.thi-theme-cumpleanos .thi-light-reveal>em{bottom:8px;color:#76614a}
+.thi-theme-cumpleanos .thi-light-reveal.revealed>em{color:#ad8655}
+
+/* when the letter opens, everything else gets out of the way */
+.thi-theme-cumpleanos .thi-scene-letter>h2{
+  transition:opacity .45s ease,transform .45s ease,filter .45s ease
+}
+.thi-theme-cumpleanos .thi-scene-letter:has(.thi-envelope.open)>h2{
+  opacity:.12;transform:translateY(-14px);filter:blur(1.5px)
+}
+.thi-theme-cumpleanos .thi-scene-letter:has(.thi-envelope.open)>.thi-kicker{opacity:.38;transition:opacity .4s}
+.thi-theme-cumpleanos .thi-envelope.open{margin-top:24px}
+.thi-theme-cumpleanos .thi-envelope.open .paper{box-shadow:0 24px 70px rgba(0,0,0,.22)}
+
+@media(max-width:650px){
+  .thi-theme-cumpleanos .thi-light-reveal{width:100vw;height:360px;min-height:340px;margin-inline:-18px}
+  .thi-theme-cumpleanos .thi-light-secret{padding-inline:34px}
+  .thi-theme-cumpleanos .thi-scene-letter:has(.thi-envelope.open)>h2{opacity:.08;transform:translateY(-18px) scale(.97)}
+}
