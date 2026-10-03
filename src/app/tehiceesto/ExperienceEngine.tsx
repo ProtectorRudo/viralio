@@ -2,6 +2,8 @@
 
 import { useState, type CSSProperties } from "react";
 import type { Experience, SceneType } from "./data";
+import ScratchReveal from "./ScratchReveal";
+import CandleBlow from "./CandleBlow";
 
 export type ThiPhoto = { url:string; caption?:string; fit?:"cover"|"contain"; position?:"center"|"top"|"bottom"|"left"|"right" };
 export type ThiAudio = { url:string; caption?:string };
@@ -124,6 +126,35 @@ export default function ExperienceEngine({
     }
   };
 
+  const playFx=(kind:"chime"|"pop"|"door"|"seal"|"unlock")=>{
+    try{
+      const context=new AudioContext();
+      const oscillator=context.createOscillator();
+      const gain=context.createGain();
+      const now=context.currentTime;
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+
+      const presets={
+        chime:{type:"sine" as OscillatorType,start:760,end:1180,duration:.34,volume:.035},
+        pop:{type:"triangle" as OscillatorType,start:240,end:72,duration:.12,volume:.05},
+        door:{type:"sine" as OscillatorType,start:95,end:48,duration:.42,volume:.035},
+        seal:{type:"triangle" as OscillatorType,start:330,end:180,duration:.18,volume:.035},
+        unlock:{type:"sine" as OscillatorType,start:420,end:820,duration:.42,volume:.035},
+      };
+      const preset=presets[kind];
+      oscillator.type=preset.type;
+      oscillator.frequency.setValueAtTime(preset.start,now);
+      oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,preset.end),now+preset.duration);
+      gain.gain.setValueAtTime(.0001,now);
+      gain.gain.exponentialRampToValueAtTime(preset.volume,now+.02);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+preset.duration);
+      oscillator.start(now);
+      oscillator.stop(now+preset.duration+.02);
+      window.setTimeout(()=>void context.close(),Math.ceil((preset.duration+.1)*1000));
+    }catch{}
+  };
+
   const moveTo=(nextIndex:number,dir:"forward"|"back")=>{
     if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex) return;
     const destination=scenes[nextIndex];
@@ -144,6 +175,7 @@ export default function ExperienceEngine({
     if(doorOpen) return;
     setDoorOpen(true);
     haptic([12,35,9]);
+    playFx("door");
     window.setTimeout(next,680);
   };
 
@@ -194,7 +226,7 @@ export default function ExperienceEngine({
         <h2>Tocá las estrellas.</h2>
         <div className="thi-stars">
           {starLines.map((t,i)=>
-            <button key={t} className={stars.includes(i)?"revealed":""} onClick={()=>{setStars(v=>v.includes(i)?v:[...v,i]);haptic(9);}}>
+            <button key={t} className={stars.includes(i)?"revealed":""} onClick={()=>{setStars(v=>v.includes(i)?v:[...v,i]);haptic(9);playFx("chime");}}>
               <span>✦</span><em>{stars.includes(i)?t:"Tocame"}</em><i/>
             </button>
           )}
@@ -205,10 +237,14 @@ export default function ExperienceEngine({
       case "scratch": return <section className="thi-scene thi-scene-scratch thi-scene-rich">
         <p className="thi-kicker">Hay algo escondido</p>
         <h2>Esto sí tenés que descubrirlo.</h2>
-        <button className={`thi-scratch ${scratched?"done":""}`} onClick={()=>{setScratched(true);haptic([8,20,8]);}}>
-          <div><span>{demo.scratchEyebrow || "Vale por"}</span><strong>{demo.scratchReward || "un recuerdo nuevo juntos"}</strong><small>{demo.scratchNote || "sin vencimiento"}</small></div>
-          <i><b>DESCUBRÍ ACÁ</b><small>tocá para revelar</small><span className="thi-scratch-shine"/></i>
-        </button>
+        <ScratchReveal
+          accent={experience.accent}
+          eyebrow={demo.scratchEyebrow || "Vale por"}
+          reward={demo.scratchReward || "un recuerdo nuevo juntos"}
+          note={demo.scratchNote || "sin vencimiento"}
+          revealed={scratched}
+          onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime");}}
+        />
         <button className="thi-primary" disabled={!scratched} onClick={next}>Ya lo descubrí →</button>
       </section>;
 
@@ -216,7 +252,7 @@ export default function ExperienceEngine({
         <p className="thi-kicker">La parte que no podía entrar en una foto</p>
         <h2>Hay palabras que merecen abrirse despacio.</h2>
         <div className="thi-letter-aura" aria-hidden="true"/>
-        <button className={`thi-envelope ${letterOpen?"open":""}`} onClick={()=>{setLetterOpen(true);haptic([10,30,8]);}}>
+        <button className={`thi-envelope ${letterOpen?"open":""}`} onClick={()=>{setLetterOpen(true);haptic([10,30,8]);playFx("seal");}}>
           <span className="back"/><span className="paper"><small>Para {experience.demoRecipient}</small><strong>{letterText || demo.letter || "Gracias por convertir tantos días comunes en recuerdos extraordinarios."}</strong><em>— {experience.demoGiver}</em></span><span className="front"/><span className="wax">♥</span>
         </button>
         {!letterOpen?<p className="thi-hint">Rompé el sello</p>:<button className="thi-primary" onClick={next}>Guardar estas palabras →</button>}
@@ -226,14 +262,14 @@ export default function ExperienceEngine({
         <p className="thi-kicker">Pedí un deseo</p>
         <h2>Antes de seguir,<br/>faltan las velitas.</h2>
         <div className={`thi-cake ${candlesOut?"out":""}`}><div className="thi-cake-shadow"/><div className="thi-cake-body"/><div className="thi-candles">{[0,1,2,3,4].map(i=><span key={i}><i/><b/></span>)}</div></div>
-        <button className="thi-primary" onClick={()=>{setCandlesOut(true);haptic([10,20,10]);}}>{candlesOut?"Deseo pedido ✦":"Soplar las velitas"}</button>
-        {candlesOut&&<button className="thi-ghost" onClick={next}>Seguir →</button>}
+        <CandleBlow blown={candlesOut} onBlow={()=>{setCandlesOut(true);haptic([10,20,10]);playFx("chime");}}/>
+        {candlesOut&&<><p className="thi-wish-made">✦ deseo guardado</p><button className="thi-ghost" onClick={next}>Seguir →</button></>}
       </section>;
 
       case "balloons": return <section className="thi-scene thi-scene-balloons thi-scene-rich">
         <p className="thi-kicker">No todos los globos están vacíos</p>
         <h2>Reventá tres.</h2>
-        <div className="thi-balloons">{balloonLines.map((t,i)=><button key={t} className={popped.includes(i)?"pop":""} onClick={()=>{setPopped(v=>v.includes(i)?v:[...v,i]);haptic(10);}}><span>{popped.includes(i)?t:""}</span><i>{popped.includes(i)?"✦":"POP"}</i></button>)}</div>
+        <div className="thi-balloons">{balloonLines.map((t,i)=><button key={t} className={popped.includes(i)?"pop":""} onClick={()=>{setPopped(v=>v.includes(i)?v:[...v,i]);haptic(10);playFx("pop");}}><span>{popped.includes(i)?t:""}</span><i>{popped.includes(i)?"✦":"POP"}</i></button>)}</div>
         <button className="thi-primary" disabled={popped.length<3} onClick={next}>{popped.length<3?`Faltan ${3-popped.length}`:"Continuar →"}</button>
       </section>;
 
@@ -266,7 +302,7 @@ export default function ExperienceEngine({
         <p className="thi-kicker">Última cerradura</p>
         <h2>Hay algo guardado para vos.</h2>
         <div className="thi-vault-aura" aria-hidden="true"/>
-        <button className={`thi-vault ${vaultOpen?"open":""}`} onClick={()=>{setVaultOpen(true);haptic([12,40,12]);}}><span><i>◇</i><b/></span><strong>{vaultOpen?"ABIERTO":"TOCÁ PARA ABRIR"}</strong><small>{vaultOpen?"acceso concedido":"último secreto"}</small></button>
+        <button className={`thi-vault ${vaultOpen?"open":""}`} onClick={()=>{setVaultOpen(true);haptic([12,40,12]);playFx("unlock");}}><span><i>◇</i><b/></span><strong>{vaultOpen?"ABIERTO":"TOCÁ PARA ABRIR"}</strong><small>{vaultOpen?"acceso concedido":"último secreto"}</small></button>
         {vaultOpen&&<><p className="thi-lead thi-reveal-copy">No era un objeto. Era una pregunta.</p><button className="thi-primary" onClick={next}>Abrir la última carta →</button></>}
       </section>;
 
