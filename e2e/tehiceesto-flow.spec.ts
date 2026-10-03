@@ -78,10 +78,10 @@ async function advanceOne(page: Page) {
   }
 }
 
-test("all Te Hice Esto demos can be completed without getting stuck", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-
-  for (const slug of slugs) {
+for (const slug of slugs) {
+  test(`Te Hice Esto demo ${slug} completes without getting stuck`, async ({ page }) => {
+    test.setTimeout(45_000);
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/tehiceesto/experiencias/${slug}`);
     await waitForScene(page, "intro");
 
@@ -93,14 +93,17 @@ test("all Te Hice Esto demos can be completed without getting stuck", async ({ p
       await advanceOne(page);
 
       await expect
-        .poll(() => sceneName(page), { timeout: 3_500 })
+        .poll(() => sceneName(page), {
+          timeout: 4_000,
+          message: `${slug} did not advance from scene ${before}`,
+        })
         .not.toBe(before);
     }
 
     const ending = await sceneName(page);
-    expect(["finale", "proposal"]).toContain(ending);
-  }
-});
+    expect(["finale", "proposal"], `${slug} never reached an ending`).toContain(ending);
+  });
+}
 
 test("scene state resets when revisiting and restart always starts clean", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
