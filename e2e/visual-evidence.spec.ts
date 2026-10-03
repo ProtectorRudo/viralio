@@ -118,7 +118,7 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await expect(page.locator(".thi-door-wrap")).toBeVisible();
   await capture(page, testInfo, "tehiceesto-pareja-door-390");
   await page.locator(".thi-door-wrap").click();
-  await page.waitForTimeout(950);
+  await page.getByRole("button", { name: "Entrar →" }).click();
   await expect(page.getByText(/Hay días que terminan/i)).toBeVisible();
   await capture(page, testInfo, "tehiceesto-pareja-memories-390");
 
@@ -132,7 +132,7 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.goto("/tehiceesto/experiencias/propuesta");
   await page.getByRole("button", { name: "Entrar" }).click();
   await page.locator(".thi-door-wrap").click();
-  await page.waitForTimeout(950);
+  await page.getByRole("button", { name: "Entrar →" }).click();
   await page.getByRole("button", { name: /Seguir/ }).click();
   await expect(page.getByText(/Tocá las estrellas/i)).toBeVisible();
   const stars = page.locator(".thi-stars button");
