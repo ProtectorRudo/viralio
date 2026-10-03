@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import type { Experience, SceneType } from "./data";
 
 export type ThiPhoto = { url:string; caption?:string; fit?:"cover"|"contain"; position?:"center"|"top"|"bottom"|"left"|"right" };
@@ -36,7 +36,7 @@ export default function ExperienceEngine({
   const [scratched,setScratched]=useState(false);
   const [candlesOut,setCandlesOut]=useState(false);
   const [popped,setPopped]=useState<number[]>([]);
-  const [quizDone,setQuizDone]=useState(false);
+  const [quizChoice,setQuizChoice]=useState<number|null>(null);
   const [vaultOpen,setVaultOpen]=useState(false);
   const [capsuleOpen,setCapsuleOpen]=useState(false);
   const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);
@@ -47,11 +47,40 @@ export default function ExperienceEngine({
   const total=scenes.length;
   const progress=((sceneIndex+1)/total)*100;
 
-  const memories=useMemo(()=>[
+  const defaultMemories=[
     "Ese día todavía no sabíamos todo lo que iba a venir.",
     "Los mejores recuerdos casi nunca avisan que van a ser importantes.",
-    "Sin darnos cuenta, empezamos a coleccionar un mundo propio."
-  ],[]);
+    "Sin darnos cuenta, empezamos a coleccionar un mundo propio.",
+  ];
+  const demo=experience.demo;
+  const memoryLines=demo.memories?.length ? demo.memories : defaultMemories;
+  const starLines=demo.stars?.length ? demo.stars : [
+    "Tu forma de hacer hogar.",
+    "Cómo te reís cuando te olvidás de cuidarte.",
+    "La calma que traés sin darte cuenta.",
+    "Todo lo que todavía soñamos.",
+    "Que te volvería a elegir.",
+  ];
+  const balloonLines=demo.balloons?.length ? demo.balloons : [
+    "Te queremos","Tu risa","Hoy mandás vos","Una salida","Un abrazo","Nunca cambies",
+  ];
+  const timelineEntries=demo.timeline?.length ? demo.timeline : [
+    {title:"El comienzo",body:"Cuando todavía no sabíamos en qué se iba a convertir todo esto."},
+    {title:"Ese día",body:"Uno de esos momentos que después entendemos que fueron gigantes."},
+    {title:"Hoy",body:"La historia sigue. Y eso es lo mejor."},
+  ];
+  const voiceEntries=demo.voices?.length ? demo.voices : [
+    {name:"Mamá",message:"Te quiero muchísimo. Gracias por estar siempre."},
+    {name:"Tomás",message:"Hay personas que hacen más lindos los días sin darse cuenta."},
+    {name:"Caro",message:"Gracias por todas las veces que estuviste."},
+    {name:"Fran",message:"Esto es sólo una pequeña forma de decirte cuánto importás."},
+  ];
+  const quizData=demo.quiz || {
+    question:"¿Dónde empezó esta historia?",
+    answers:["En un mensaje","En una salida que casi se cancela","En un lugar que ya no existe"],
+    correctIndex:1,
+    after:"La respuesta importa menos que todo lo que vino después.",
+  };
   const displayPhotos = photoMedia && photoMedia.length ? photoMedia.slice(0,8) : [];
 
   const resetAllInteractions=()=>{
@@ -60,7 +89,7 @@ export default function ExperienceEngine({
     setScratched(false);
     setCandlesOut(false);
     setPopped([]);
-    setQuizDone(false);
+    setQuizChoice(null);
     setVaultOpen(false);
     setCapsuleOpen(false);
     setVoicesPlayed([]);
@@ -73,7 +102,7 @@ export default function ExperienceEngine({
     if(type==="scratch") setScratched(false);
     if(type==="candles") setCandlesOut(false);
     if(type==="balloons") setPopped([]);
-    if(type==="quiz") setQuizDone(false);
+    if(type==="quiz") setQuizChoice(null);
     if(type==="vault") setVaultOpen(false);
     if(type==="capsule") setCapsuleOpen(false);
     if(type==="voices") setVoicesPlayed([]);
@@ -148,12 +177,12 @@ export default function ExperienceEngine({
         <p className="thi-kicker">Los recuerdos</p>
         <h2>Hay días que terminan.<br/>Y otros que se quedan.</h2>
         <div className="thi-film">
-          {(displayPhotos.length ? displayPhotos : memories.map((caption)=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url || item.caption || i}>
+          {(displayPhotos.length ? displayPhotos : memoryLines.map((caption)=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url || item.caption || i}>
             <div className="thi-memory-photo" style={item.url?{backgroundImage:`url("${item.url}")`,backgroundSize:item.fit||"cover",backgroundPosition:item.position||"center",backgroundRepeat:"no-repeat"}:undefined}>
               <span>{String(i+1).padStart(2,"0")}</span>
               <i className="thi-photo-sheen"/>
             </div>
-            <p>{item.caption || memories[i%memories.length]}</p>
+            <p>{item.caption || memoryLines[i%memoryLines.length]}</p>
           </article>)}
         </div>
         <button className="thi-primary" onClick={next}>Seguir <span>→</span></button>
@@ -164,7 +193,7 @@ export default function ExperienceEngine({
         <p className="thi-kicker">Cosas que no quiero que olvides</p>
         <h2>Tocá las estrellas.</h2>
         <div className="thi-stars">
-          {["Tu forma de hacer hogar.","Cómo te reís cuando te olvidás de cuidarte.","La calma que traés sin darte cuenta.","Todo lo que todavía soñamos.","Que te volvería a elegir."].map((t,i)=>
+          {starLines.map((t,i)=>
             <button key={t} className={stars.includes(i)?"revealed":""} onClick={()=>{setStars(v=>v.includes(i)?v:[...v,i]);haptic(9);}}>
               <span>✦</span><em>{stars.includes(i)?t:"Tocame"}</em><i/>
             </button>
@@ -177,7 +206,7 @@ export default function ExperienceEngine({
         <p className="thi-kicker">Hay algo escondido</p>
         <h2>Esto sí tenés que descubrirlo.</h2>
         <button className={`thi-scratch ${scratched?"done":""}`} onClick={()=>{setScratched(true);haptic([8,20,8]);}}>
-          <div><span>Vale por</span><strong>un recuerdo nuevo juntos</strong><small>sin vencimiento</small></div>
+          <div><span>{demo.scratchEyebrow || "Vale por"}</span><strong>{demo.scratchReward || "un recuerdo nuevo juntos"}</strong><small>{demo.scratchNote || "sin vencimiento"}</small></div>
           <i><b>DESCUBRÍ ACÁ</b><small>tocá para revelar</small><span className="thi-scratch-shine"/></i>
         </button>
         <button className="thi-primary" disabled={!scratched} onClick={next}>Ya lo descubrí →</button>
@@ -188,7 +217,7 @@ export default function ExperienceEngine({
         <h2>Hay palabras que merecen abrirse despacio.</h2>
         <div className="thi-letter-aura" aria-hidden="true"/>
         <button className={`thi-envelope ${letterOpen?"open":""}`} onClick={()=>{setLetterOpen(true);haptic([10,30,8]);}}>
-          <span className="back"/><span className="paper"><small>Para {experience.demoRecipient}</small><strong>{letterText || "Gracias por convertir tantos días comunes en recuerdos extraordinarios."}</strong><em>— {experience.demoGiver}</em></span><span className="front"/><span className="wax">♥</span>
+          <span className="back"/><span className="paper"><small>Para {experience.demoRecipient}</small><strong>{letterText || demo.letter || "Gracias por convertir tantos días comunes en recuerdos extraordinarios."}</strong><em>— {experience.demoGiver}</em></span><span className="front"/><span className="wax">♥</span>
         </button>
         {!letterOpen?<p className="thi-hint">Rompé el sello</p>:<button className="thi-primary" onClick={next}>Guardar estas palabras →</button>}
       </section>;
@@ -204,7 +233,7 @@ export default function ExperienceEngine({
       case "balloons": return <section className="thi-scene thi-scene-balloons thi-scene-rich">
         <p className="thi-kicker">No todos los globos están vacíos</p>
         <h2>Reventá tres.</h2>
-        <div className="thi-balloons">{["Te queremos","Tu risa","Hoy mandás vos","Una salida","Un abrazo","Nunca cambies"].map((t,i)=><button key={t} className={popped.includes(i)?"pop":""} onClick={()=>{setPopped(v=>v.includes(i)?v:[...v,i]);haptic(10);}}><span>{popped.includes(i)?t:""}</span><i>{popped.includes(i)?"✦":"POP"}</i></button>)}</div>
+        <div className="thi-balloons">{balloonLines.map((t,i)=><button key={t} className={popped.includes(i)?"pop":""} onClick={()=>{setPopped(v=>v.includes(i)?v:[...v,i]);haptic(10);}}><span>{popped.includes(i)?t:""}</span><i>{popped.includes(i)?"✦":"POP"}</i></button>)}</div>
         <button className="thi-primary" disabled={popped.length<3} onClick={next}>{popped.length<3?`Faltan ${3-popped.length}`:"Continuar →"}</button>
       </section>;
 
@@ -213,9 +242,7 @@ export default function ExperienceEngine({
         <h2>Tres momentos.<br/>Una misma historia.</h2>
         <div className="thi-timeline">
           <div className="thi-timeline-line" aria-hidden="true"/>
-          <article><span>01</span><i/><strong>El comienzo</strong><p>Cuando todavía no sabíamos en qué se iba a convertir todo esto.</p></article>
-          <article><span>02</span><i/><strong>Ese día</strong><p>Uno de esos momentos que después entendemos que fueron gigantes.</p></article>
-          <article><span>03</span><i/><strong>Hoy</strong><p>La historia sigue. Y eso es lo mejor.</p></article>
+          {timelineEntries.map((entry,index)=><article key={entry.title}><span>{String(index+1).padStart(2,"0")}</span><i/><strong>{entry.title}</strong><p>{entry.body}</p></article>)}
         </div>
         <button className="thi-primary" onClick={next}>Seguir la historia →</button>
       </section>;
@@ -223,16 +250,16 @@ export default function ExperienceEngine({
       case "voices": return <section className="thi-scene thi-scene-voices thi-scene-rich">
         <p className="thi-kicker">Hay gente esperando decirte algo</p>
         <h2>Elegí una voz.</h2>
-        <div className="thi-voices">{audioMedia?.length ? audioMedia.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption || `Mensaje ${i+1}`}</strong><audio src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}/></article>) : ["Mamá","Tomás","Caro","Fran"].map((n,i)=><button key={n} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{n}</strong><small>{voicesPlayed.includes(i)?"“Te quiero muchísimo. Gracias por estar siempre.”":"Tocar para escuchar"}</small></button>)}</div>
+        <div className="thi-voices">{audioMedia?.length ? audioMedia.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption || `Mensaje ${i+1}`}</strong><audio src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}/></article>) : voiceEntries.map((voice,i)=><button key={voice.name} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{voice.name}</strong><small>{voicesPlayed.includes(i)?`“${voice.message}”`:"Tocar para escuchar"}</small></button>)}</div>
         <button className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>Continuar →</button>
       </section>;
 
       case "quiz": return <section className="thi-scene thi-scene-quiz thi-scene-rich">
         <p className="thi-kicker">A ver cuánto te acordás</p>
-        <h2>¿Dónde empezó esta historia?</h2>
-        <div className="thi-quiz">{["En un mensaje","En una salida que casi se cancela","En un lugar que ya no existe"].map((a,i)=><button key={a} className={quizDone&&i===1?"ok":""} onClick={()=>{setQuizDone(true);haptic(8);}}><span>{String.fromCharCode(65+i)}</span>{a}<i>{quizDone&&i===1?"✓":""}</i></button>)}</div>
-        {quizDone&&<p className="thi-lead thi-reveal-copy">La respuesta importa menos que todo lo que vino después.</p>}
-        <button className="thi-primary" disabled={!quizDone} onClick={next}>Seguir →</button>
+        <h2>{quizData.question}</h2>
+        <div className="thi-quiz">{quizData.answers.map((answer,i)=><button key={answer} className={quizChoice!==null&&i===quizData.correctIndex?"ok":quizChoice===i?"wrong":""} onClick={()=>{setQuizChoice(i);haptic(8);}}><span>{String.fromCharCode(65+i)}</span>{answer}<i>{quizChoice!==null&&i===quizData.correctIndex?"✓":quizChoice===i?"·":""}</i></button>)}</div>
+        {quizChoice!==null&&<p className="thi-lead thi-reveal-copy">{quizData.after}</p>}
+        <button className="thi-primary" disabled={quizChoice===null} onClick={next}>Seguir →</button>
       </section>;
 
       case "vault": return <section className="thi-scene thi-scene-vault thi-scene-rich">
@@ -246,7 +273,7 @@ export default function ExperienceEngine({
       case "capsule": return <section className="thi-scene thi-scene-capsule thi-scene-rich">
         <p className="thi-kicker">Para volver algún día</p>
         <h2>Guardamos algo para<br/>tu yo del futuro.</h2>
-        <button className={`thi-capsule ${capsuleOpen?"open":""}`} onClick={()=>{setCapsuleOpen(true);haptic([8,25,8]);}}><span>2036<i/></span><strong>{capsuleOpen?"Abriste una cápsula del tiempo":"Abrir cápsula"}</strong><p>{capsuleOpen?"Ojalá sigas teniendo esa misma curiosidad por el mundo.":"Hay palabras que pueden esperar."}</p></button>
+        <button className={`thi-capsule ${capsuleOpen?"open":""}`} onClick={()=>{setCapsuleOpen(true);haptic([8,25,8]);}}><span>{demo.capsule?.year || "2036"}<i/></span><strong>{capsuleOpen?"Abriste una cápsula del tiempo":"Abrir cápsula"}</strong><p>{capsuleOpen?(demo.capsule?.open || "Ojalá sigas teniendo esa misma curiosidad por el mundo."):(demo.capsule?.closed || "Hay palabras que pueden esperar.")}</p></button>
         {capsuleOpen&&<button className="thi-primary" onClick={next}>Guardar este momento →</button>}
       </section>;
 
