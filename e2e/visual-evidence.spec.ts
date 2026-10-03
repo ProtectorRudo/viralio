@@ -234,7 +234,7 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.goto("/tehiceesto/experiencias/hijos");
   await page.locator('[data-action="advance"]').click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","timeline");
-  await page.waitForTimeout(550);
+  await page.waitForTimeout(950);
   await capture(page,testInfo,"tehiceesto-hijos-timeline-390");
   await page.locator('[data-action="advance"]').click();
 

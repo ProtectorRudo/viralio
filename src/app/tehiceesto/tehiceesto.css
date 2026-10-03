@@ -2033,3 +2033,16 @@
   .thi-theme-hijos .thi-capsule>strong{font-size:20px}.thi-theme-hijos .thi-capsule>p{font-size:13px}
   .thi-theme-hijos .thi-progress-premium{width:230px;bottom:10px}.thi-theme-hijos .thi-reset-journey{opacity:.18}
 }
+
+
+/* HIJOS QUALITY PASS II — readable orbit labels and calmer revealed state */
+.thi-theme-hijos .thi-stars button>em{
+  max-width:138px;font-size:12px;line-height:1.42;text-wrap:balance;
+  text-shadow:0 2px 14px rgba(0,0,0,.32)
+}
+.thi-theme-hijos .thi-stars button:not(.revealed)>em{font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-family:inherit;font-style:normal}
+.thi-theme-hijos .thi-stars button.revealed>span{transform:scale(1.08)!important}
+@media(max-width:650px){
+  .thi-theme-hijos .thi-stars button>em{font-size:11.5px;max-width:118px}
+  .thi-theme-hijos .thi-stars button:not(.revealed)>em{font-size:8px}
+}
