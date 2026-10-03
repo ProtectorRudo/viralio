@@ -10,6 +10,7 @@ import LightReveal from "./LightReveal";
 import HoldReveal from "./HoldReveal";
 import { getExperienceCopy,type DeepPartial,type ExperienceCopy } from "./experienceCopy";
 import { mediaBelongsToScene } from "./mediaRouting";
+import type { SceneTextOverrides } from "./sceneText";
 
 export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType};
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
@@ -41,7 +42,7 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
   </aside>;
 }
 
-export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string}}){
+export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext,sceneTextOverrides}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides}){
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
@@ -54,8 +55,36 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const [casefileOpen,setCasefileOpen]=useState(false);const [insideJokesOpen,setInsideJokesOpen]=useState<number[]>([]);const [incidentsOpen,setIncidentsOpen]=useState<number[]>([]);const [proofOpen,setProofOpen]=useState<number[]>([]);const [pactOpen,setPactOpen]=useState<number[]>([]);
   const [soundtrackStarted,setSoundtrackStarted]=useState(false);const [soundtrackPaused,setSoundtrackPaused]=useState(false);
   const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);
+  const shellRef=useRef<HTMLElement|null>(null);
 
   const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
+  useEffect(()=>{
+    const root=shellRef.current;if(!root||!sceneTextOverrides)return;
+    let applying=false;
+    const apply=()=>{
+      if(applying)return;applying=true;
+      try{
+        const scene=root.dataset.scene||"";const overrides=sceneTextOverrides[scene];if(!overrides)return;
+        const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node=walker.nextNode();
+        while(node){
+          const textNode=node as Text;const parent=textNode.parentElement;const raw=textNode.textContent||"";const source=raw.trim();
+          if(source&&parent&&!parent.closest(".thi-progress,.thi-scene-meta,.thi-reset-journey,.soundtrack-control")){
+            const replacement=overrides[source];
+            if(typeof replacement==="string"){
+              const leading=raw.match(/^\s*/)?.[0]||"";const trailing=raw.match(/\s*$/)?.[0]||"";
+              const nextValue=leading+replacement+trailing;if(raw!==nextValue)textNode.textContent=nextValue;
+            }
+          }
+          node=walker.nextNode();
+        }
+      }finally{applying=false}
+    };
+    apply();
+    const observer=new MutationObserver(()=>queueMicrotask(apply));
+    observer.observe(root,{childList:true,characterData:true,subtree:true});
+    return()=>observer.disconnect();
+  },[sceneTextOverrides,sceneIndex,runId]);
+
   const token=(value:string)=>value.replaceAll("{giver}",experience.demoGiver).replaceAll("{recipient}",experience.demoRecipient).replaceAll("{opening}",experience.opening).replaceAll("{closing}",experience.closing);
   const countText=(one:string,many:string,count:number)=>token((count===1?one:many).replace("{count}",String(count)));
   const titleLines=(parts:string[])=>parts.map((line,index)=><span key={`${line}-${index}`}>{token(line)}{index<parts.length-1&&<br/>}</span>);
@@ -693,7 +722,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
   const moveAtmosphere=(event:ReactPointerEvent<HTMLElement>)=>{const node=event.currentTarget;const width=Math.max(window.innerWidth,1);const height=Math.max(window.innerHeight,1);node.style.setProperty("--pointer-left",`${event.clientX}px`);node.style.setProperty("--pointer-top",`${event.clientY}px`);node.style.setProperty("--parallax-x",`${((event.clientX/width)-.5)*18}px`);node.style.setProperty("--parallax-y",`${((event.clientY/height)-.5)*14}px`)};
 
-  return <main className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onPointerMove={moveAtmosphere} onPointerDownCapture={()=>{if(soundtrackMedia&&!soundtrackStarted)void startSoundtrack()}} onPlayCapture={handleMediaPlay} onPauseCapture={handleMediaRest} onEndedCapture={handleMediaRest}>
+  return <main ref={shellRef} className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onPointerMove={moveAtmosphere} onPointerDownCapture={()=>{if(soundtrackMedia&&!soundtrackStarted)void startSoundtrack()}} onPlayCapture={handleMediaPlay} onPauseCapture={handleMediaRest} onEndedCapture={handleMediaRest}>
     {soundtrackMedia&&<audio ref={soundtrackRef} src={soundtrackMedia.url} preload="auto" loop playsInline/>}
     {soundtrackMedia&&(soundtrackStarted||sceneIndex>0)&&<button type="button" className={`soundtrack-control ${soundtrackPaused?"paused":""} ${!soundtrackStarted?"not-started":""}`} onClick={(event)=>{event.stopPropagation();if(!soundtrackStarted)void startSoundtrack();else if(soundtrackPaused)void resumeSoundtrack();else pauseSoundtrack()}} aria-label={!soundtrackStarted?"Activar música":soundtrackPaused?"Reanudar música":"Pausar música"} aria-pressed={soundtrackStarted&&!soundtrackPaused}>
       <span>{!soundtrackStarted||soundtrackPaused?"♪":"♫"}</span><div><small>{!soundtrackStarted?"Tocar para activar":soundtrackPaused?"Música pausada":"Sonando suave"}</small><strong>{soundtrackMedia.caption||"Música de fondo"}</strong></div><i aria-hidden="true"><b/><b/><b/><b/></i>
