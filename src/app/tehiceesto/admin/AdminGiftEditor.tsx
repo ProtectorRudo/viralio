@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from "../ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
+import { getExperienceCopy, type DeepPartial, type ExperienceCopy } from "../experienceCopy";
+import ScriptEditor from "./ScriptEditor";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
 
 type Gift = {
@@ -21,7 +23,7 @@ type Gift = {
   closing_text: string | null;
   music_url: string | null;
   scene_recipe: SceneType[];
-  story_data: { relationship?: string; keyDate?: string; anecdote?: string } | null;
+  story_data: { relationship?: string; keyDate?: string; anecdote?: string; script?: DeepPartial<ExperienceCopy> } | null;
   theme_data: { accent?: string } | null;
 };
 
@@ -45,6 +47,8 @@ const scenes: { type: SceneType; label: string }[] = [
   { type:"intro", label:"Entrada" },
   { type:"door", label:"Puerta" },
   { type:"memories", label:"Recuerdos" },
+  { type:"light", label:"Luz" },
+  { type:"hold", label:"Mantener" },
   { type:"timeline", label:"Línea de tiempo" },
   { type:"stars", label:"Estrellas" },
   { type:"quiz", label:"Pregunta" },
@@ -65,6 +69,15 @@ function humanSize(size?: number){
   return size < 1024*1024 ? `${Math.round(size/1024)} KB` : `${(size/(1024*1024)).toFixed(1)} MB`;
 }
 
+function seedLegacyScript(gift:Gift):Gift{
+  const script:DeepPartial<ExperienceCopy>=JSON.parse(JSON.stringify(gift.story_data?.script||{}));
+  if(gift.opening_text&&!script.intro?.lead) script.intro={...(script.intro||{}),lead:gift.opening_text};
+  if(gift.letter_text&&!script.letter?.body) script.letter={...(script.letter||{}),body:gift.letter_text};
+  if(gift.closing_text&&!script.finale?.title) script.finale={...(script.finale||{}),title:gift.closing_text};
+  if(gift.closing_text&&!script.proposal?.title) script.proposal={...(script.proposal||{}),title:gift.closing_text};
+  return {...gift,story_data:{...(gift.story_data||{}),script}};
+}
+
 export default function AdminGiftEditor({ code }: { code: string }) {
   const router = useRouter();
   const [gift,setGift]=useState<Gift|null>(null);
@@ -73,6 +86,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const [saving,setSaving]=useState(false);
   const [message,setMessage]=useState("");
   const [preview,setPreview]=useState(false);
+  const [previewScene,setPreviewScene]=useState<SceneType|null>(null);
   const [selectedScene,setSelectedScene]=useState<SceneType>("memories");
   const [uploading,setUploading]=useState<string[]>([]);
   const inputRef=useRef<HTMLInputElement>(null);
@@ -85,7 +99,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         return;
       }
       const data=await adminCall<{gift:Gift;media:Media[]}>("getGift",{code});
-      setGift(data.gift);
+      setGift(seedLegacyScript(data.gift));
       setMedia(data.media||[]);
     }catch{
       router.push("/tehiceesto/admin");
@@ -111,6 +125,8 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     };
   },[gift,base]);
 
+  const resolvedCopy=useMemo(()=>previewExperience&&gift?getExperienceCopy(previewExperience,gift.story_data?.script):null,[previewExperience,gift]);
+
   const photoMedia:ThiPhoto[]=media.filter(x=>x.kind==="image"&&x.url).map(x=>({
     url:x.url!,
     caption:x.caption||undefined,
@@ -125,7 +141,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   }
 
   async function save(){
-    if(!gift) return;
+    if(!gift||!previewExperience||!resolvedCopy) return;
     setSaving(true);setMessage("");
     try{
       await adminCall("updateGift",{
@@ -134,13 +150,14 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         recipientName:gift.recipient_name,
         occasion:gift.occasion||"",
         feeling:gift.feeling||"",
-        openingText:gift.opening_text||"",
-        letterText:gift.letter_text||"",
-        closingText:gift.closing_text||"",
+        openingText:resolvedCopy.intro.lead,
+        letterText:resolvedCopy.letter.body,
+        closingText:gift.scene_recipe.includes("proposal")?resolvedCopy.proposal.title:resolvedCopy.finale.title,
         musicUrl:gift.music_url||"",
         relationship:gift.story_data?.relationship||"",
         keyDate:gift.story_data?.keyDate||"",
         anecdote:gift.story_data?.anecdote||"",
+        script:gift.story_data?.script||{},
         sceneRecipe:gift.scene_recipe,
       });
       setMessage("Cambios guardados ✓");
@@ -228,7 +245,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <button onClick={()=>setPreview(false)}>← Volver al editor</button>
         <span>PREVIEW PRIVADO · {gift.recipient_name}</span>
       </div>
-      <ExperienceEngine experience={previewExperience} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} videoMedia={videoMedia}/>
+      <ExperienceEngine key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} videoMedia={videoMedia}/>
     </div>;
   }
 
@@ -241,7 +258,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <p className="thi-admin-sub">De {gift.giver_name} · <code>{gift.public_code}</code></p>
       </div>
       <div className="thi-admin-header-actions">
-        <button className="thi-ghost" onClick={()=>setPreview(true)}>Ver preview</button>
+        <button className="thi-ghost" onClick={()=>{setPreviewScene(null);setPreview(true)}}>Ver preview</button>
         {gift.status==="published"&&<Link className="thi-ghost" href={`/tehiceesto/r/${gift.public_code}`} target="_blank">Abrir regalo ↗</Link>}
         <button className={gift.status==="published"?"thi-publish on":"thi-publish"} onClick={togglePublish}>{gift.status==="published"?"✓ Publicado · despublicar":"Publicar regalo"}</button>
       </div>
@@ -259,9 +276,10 @@ export default function AdminGiftEditor({ code }: { code: string }) {
 
     <nav className="thi-editor-nav">
       <a href="#thi-historia">Historia</a>
+      <a href="#thi-guion">Guion</a>
       <a href="#thi-recorrido">Recorrido</a>
       <a href="#thi-archivos">Archivos</a>
-      <button onClick={()=>setPreview(true)}>Preview ↗</button>
+      <button onClick={()=>{setPreviewScene(null);setPreview(true)}}>Preview ↗</button>
     </nav>
 
     <section className="thi-admin-panel thi-editor-content-panel" id="thi-historia">
@@ -275,9 +293,21 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <label><span>Fecha importante</span><input type="date" value={gift.story_data?.keyDate||""} onChange={e=>patchGift("story_data",{...(gift.story_data||{}),keyDate:e.target.value})}/></label>
         <label><span>Canción / link</span><input value={gift.music_url||""} onChange={e=>patchGift("music_url",e.target.value)}/></label>
         <label className="wide"><span>Anécdota</span><textarea rows={4} value={gift.story_data?.anecdote||""} onChange={e=>patchGift("story_data",{...(gift.story_data||{}),anecdote:e.target.value})}/></label>
-        <label className="wide"><span>Entrada</span><textarea rows={3} value={gift.opening_text||""} onChange={e=>patchGift("opening_text",e.target.value)}/></label>
-        <label className="wide"><span>Carta</span><textarea className="thi-admin-letter" rows={8} value={gift.letter_text||""} onChange={e=>patchGift("letter_text",e.target.value)}/></label>
-        <label className="wide"><span>Cierre</span><textarea rows={3} value={gift.closing_text||""} onChange={e=>patchGift("closing_text",e.target.value)}/></label>
+      </div>
+
+      <div className="thi-copy-moved">
+        <span>✦</span><div><strong>Entrada, carta, globos, luz, botones y final ahora se editan en el Guion.</strong><small>El panel sincroniza automáticamente los campos antiguos al guardar.</small></div>
+      </div>
+
+      <div className="thi-admin-script-section" id="thi-guion">
+        <div className="thi-admin-panel-heading"><div><p className="thi-kicker">Guion emocional</p><h2>Cada palabra del regalo</h2><p>Editá escena por escena. Nada del texto visible queda bloqueado en el motor.</p></div></div>
+        <ScriptEditor
+          experience={previewExperience}
+          recipe={gift.scene_recipe}
+          value={gift.story_data?.script||{}}
+          onChange={script=>patchGift("story_data",{...(gift.story_data||{}),script})}
+          onPreviewScene={scene=>{setPreviewScene(scene);setPreview(true)}}
+        />
       </div>
 
       <div className="thi-admin-scenes" id="thi-recorrido">
