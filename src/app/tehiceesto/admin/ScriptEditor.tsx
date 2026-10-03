@@ -12,6 +12,12 @@ const sceneNames:Record<SceneType,string>={
   scratch:"Raspadita",hold:"Mantener",letter:"Carta",candles:"Velitas",balloons:"Globos",
   timeline:"Línea de tiempo",voices:"Audio / voces",quiz:"Pregunta",vault:"Bóveda",
   capsule:"Cápsula",video:"Video",proposal:"Propuesta",finale:"Final",
+  archive:"Archivo familiar",home:"La casa",legacy:"Legado",rituals:"Rituales",
+  chapters:"Capítulos",future:"Futuro",origin:"Origen",reasons:"Razones",
+  certainty:"Certeza",threshold:"Umbral",childhood:"Infancia",care:"Cuidados",
+  sacrifices:"Sacrificios",return:"Volver",lessons:"Lecciones",presence:"Presencia",
+  inheritance:"Herencia",lookback:"Mirar de nuevo",casefile:"Expediente",
+  insidejokes:"Códigos internos",incidents:"Incidentes",proof:"Pruebas",pact:"Pacto",
 };
 
 const sceneDescriptions:Partial<Record<SceneType,string>>={
