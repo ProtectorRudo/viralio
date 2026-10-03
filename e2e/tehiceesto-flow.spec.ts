@@ -27,6 +27,7 @@ async function advanceOne(page: Page) {
     await page.getByRole("button", { name: "Entrar" }).click();
   } else if (current === "door") {
     await page.locator(".thi-door-wrap").click();
+    await page.getByRole("button", { name: "Entrar →" }).click();
   } else if (current === "memories") {
     await page.getByRole("button", { name: /Seguir/ }).click();
   } else if (current === "stars") {
@@ -135,4 +136,25 @@ test("scene state resets when revisiting and restart always starts clean", async
 
   await waitForScene(page, "intro");
   await expect(page.locator(".thi-balloons button.pop")).toHaveCount(0);
+});
+
+
+test("unlocked scenes also advance from the persistent bottom control", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.locator(".thi-door-wrap").click();
+  await page.getByRole("button", { name: "Escena siguiente" }).click();
+  await waitForScene(page, "memories");
+  await page.getByRole("button", { name: "Escena siguiente" }).click();
+  await waitForScene(page, "stars");
+
+  const stars = page.locator(".thi-stars button");
+  await stars.nth(0).click();
+  await stars.nth(1).click();
+  await stars.nth(2).click();
+
+  await expect(page.getByRole("button", { name: "Escena siguiente" })).toBeEnabled();
+  await page.getByRole("button", { name: "Escena siguiente" }).click();
+  await waitForScene(page, "scratch");
 });
