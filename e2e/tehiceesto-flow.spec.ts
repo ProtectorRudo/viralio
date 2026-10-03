@@ -60,15 +60,18 @@ async function advanceOne(page: Page) {
   } else if (current === "timeline") {
     await page.getByRole("button", { name: /Seguir la historia/ }).click();
   } else if (current === "voices") {
+    const romanticVoice = page.getByRole("button", { name: "Reproducir nota de voz" });
     const fallbackVoice = page.locator(".thi-voices button").first();
-    if (await fallbackVoice.count()) {
+    if (await romanticVoice.count()) {
+      await romanticVoice.click();
+    } else if (await fallbackVoice.count()) {
       await fallbackVoice.click();
     } else {
       await page.locator(".thi-voice-audio audio").first().evaluate((el: HTMLAudioElement) => {
         el.dispatchEvent(new Event("play", { bubbles: true }));
       });
     }
-    await page.getByRole("button", { name: /Continuar/ }).click();
+    await page.getByRole("button", { name: /Continuar|Guardar esta voz/ }).click();
   } else if (current === "quiz") {
     await page.locator(".thi-quiz button").nth(1).click();
     await page.getByRole("button", { name: /Seguir/ }).click();
