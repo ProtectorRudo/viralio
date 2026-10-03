@@ -247,7 +247,24 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       </div>
     </header>
 
-    <section className="thi-admin-panel">
+    <section className="thi-editor-overview">
+      <article>
+        <span className="thi-editor-overview-icon" style={{"--editor-accent":base.accent} as React.CSSProperties}>{base.icon}</span>
+        <div><small>Experiencia</small><strong>{base.title}</strong></div>
+      </article>
+      <article><small>Escenas</small><strong>{gift.scene_recipe.length}</strong><span>en el recorrido</span></article>
+      <article><small>Archivos</small><strong>{media.length}</strong><span>fotos, audio y video</span></article>
+      <article><small>Estado</small><strong className={gift.status==="published"?"is-live":""}>{gift.status==="published"?"Publicado":"Borrador"}</strong><span>{gift.status==="published"?"link activo":"todavía privado"}</span></article>
+    </section>
+
+    <nav className="thi-editor-nav">
+      <a href="#thi-historia">Historia</a>
+      <a href="#thi-recorrido">Recorrido</a>
+      <a href="#thi-archivos">Archivos</a>
+      <button onClick={()=>setPreview(true)}>Preview ↗</button>
+    </nav>
+
+    <section className="thi-admin-panel thi-editor-content-panel" id="thi-historia">
       <div className="thi-admin-panel-heading"><div><p className="thi-kicker">Historia</p><h2>Contenido</h2></div><span className={`thi-status ${gift.status}`}>{gift.status}</span></div>
       <div className="thi-admin-form">
         <label><span>Quién regala</span><input value={gift.giver_name} onChange={e=>patchGift("giver_name",e.target.value)}/></label>
@@ -263,7 +280,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <label className="wide"><span>Cierre</span><textarea rows={3} value={gift.closing_text||""} onChange={e=>patchGift("closing_text",e.target.value)}/></label>
       </div>
 
-      <div className="thi-admin-scenes">
+      <div className="thi-admin-scenes" id="thi-recorrido">
         <div className="thi-admin-panel-heading"><div><p className="thi-kicker">Recorrido</p><h2>Escenas</h2></div></div>
         <div className="thi-scene-editor">
           {gift.scene_recipe.map((scene,index)=><div className="thi-scene-row" key={`${scene}-${index}`}><span>{String(index+1).padStart(2,"0")}</span><strong>{scenes.find(x=>x.type===scene)?.label||scene}</strong><div><button disabled={!index} onClick={()=>moveScene(index,-1)}>↑</button><button disabled={index===gift.scene_recipe.length-1} onClick={()=>moveScene(index,1)}>↓</button><button onClick={()=>removeScene(index)}>×</button></div></div>)}
@@ -274,7 +291,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       <div className="thi-admin-save-row"><span>{message}</span><button className="thi-primary" disabled={saving} onClick={save}>{saving?"Guardando…":"Guardar cambios"}</button></div>
     </section>
 
-    <section className="thi-admin-panel">
+    <section className="thi-admin-panel thi-editor-media-panel" id="thi-archivos">
       <div className="thi-admin-panel-heading">
         <div><p className="thi-kicker">Archivos</p><h2>Fotos, audios y videos</h2><p>Los archivos se guardan en storage privado y se entregan mediante URLs temporales.</p></div>
         <button className="thi-primary" onClick={()=>inputRef.current?.click()}>+ Subir archivos</button>
