@@ -564,3 +564,50 @@
   box-shadow:none;
 }
 .thi-experience-premium .thi-kicker{opacity:.88}
+
+
+/* physical interaction upgrades */
+.thi-scratch-real{
+  position:relative;overflow:hidden;isolation:isolate;touch-action:none;cursor:crosshair;
+  box-shadow:0 36px 100px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.04) inset;
+  background:linear-gradient(145deg,#f5efe9,#e9dfd6);
+}
+.thi-scratch-prize{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#1b171b;padding:25px;text-align:center}
+.thi-scratch-prize span{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#7b7179}
+.thi-scratch-prize strong{font-family:var(--thi-serif);font-size:clamp(26px,5vw,38px);line-height:1.02;max-width:400px;margin:9px 0}
+.thi-scratch-prize small{font-size:9px;color:#857a82;text-transform:uppercase;letter-spacing:.1em}
+.thi-scratch-prize i{font-style:normal;color:var(--scratch-accent);font-size:23px;margin-top:15px;text-shadow:0 0 24px color-mix(in srgb,var(--scratch-accent) 55%,transparent)}
+.thi-scratch-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:4;touch-action:none}
+.thi-scratch-fallback{
+  position:absolute;z-index:6;right:11px;bottom:10px;border:0;background:rgba(8,7,10,.58);backdrop-filter:blur(8px);
+  color:rgba(255,255,255,.66);border-radius:999px;padding:7px 10px;font-size:7px;text-transform:uppercase;letter-spacing:.11em;
+  opacity:.35;transition:opacity .25s,background .25s;cursor:pointer;
+}
+.thi-scratch-fallback.visible,.thi-scratch-fallback:hover{opacity:.92;background:rgba(8,7,10,.78)}
+.thi-scratch-real.done{cursor:default;animation:thiPrizeLand .6s cubic-bezier(.18,.8,.2,1) both}
+.thi-scratch-real.done .thi-scratch-prize i{animation:thiPrizeSpark 1.1s ease both}
+
+.thi-blow-controls{display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:5px}
+.thi-blow-mic{gap:10px;min-width:190px}.thi-blow-mic i{font-style:normal;font-size:12px}
+.thi-blow-mic.listening{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 85%,white),var(--accent));box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 30%,transparent);animation:thiMicListen 1.4s ease-in-out infinite}
+.thi-blow-mic.listening i{animation:thiMicPulse .8s ease-in-out infinite}
+.thi-blow-fallback{border:0;background:transparent;color:#6f6874;font-size:8px;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;padding:5px 8px}
+.thi-blow-fallback:hover{color:#b9b1bc}
+.thi-wish-made{margin:7px 0 0;color:var(--accent);font-size:8px;text-transform:uppercase;letter-spacing:.18em;animation:thiWishIn .5s ease both}
+
+/* more cinematic finale interactions */
+.thi-scene-letter .thi-envelope.open{animation:thiLetterLift .7s cubic-bezier(.18,.8,.2,1) both}
+.thi-scene-vault .thi-vault.open strong{letter-spacing:.18em;transition:letter-spacing .5s}
+.thi-scene-stars .thi-stars .revealed span{animation:thiStarLock .48s cubic-bezier(.18,.8,.2,1) both}
+.thi-theme-amistad .thi-scratch-real{transform:rotate(1deg)}
+.thi-theme-aniversario .thi-scratch-real{transform:rotate(-1deg)}
+.thi-theme-propuesta .thi-letter-aura{opacity:.09}
+.thi-theme-cumpleanos .thi-wish-made{color:#ffd36e;text-shadow:0 0 20px rgba(255,211,110,.28)}
+
+@keyframes thiPrizeLand{from{transform:scale(.98);filter:brightness(.8)}to{transform:scale(1);filter:brightness(1)}}
+@keyframes thiPrizeSpark{0%{opacity:0;transform:scale(.3) rotate(-18deg)}45%{opacity:1;transform:scale(1.8) rotate(9deg)}100%{opacity:.8;transform:scale(1) rotate(0)}}
+@keyframes thiMicListen{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 20%,transparent)}50%{box-shadow:0 0 0 11px color-mix(in srgb,var(--accent) 0%,transparent)}}
+@keyframes thiMicPulse{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:1;transform:scale(1.16)}}
+@keyframes thiWishIn{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes thiLetterLift{0%{transform:translateY(0)}45%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+@keyframes thiStarLock{0%{transform:scale(.7);filter:brightness(.6)}55%{transform:scale(1.35);filter:brightness(1.8)}100%{transform:scale(1.22);filter:brightness(1)}}
