@@ -138,6 +138,22 @@ export default function ExperienceEngine({
     }
   };
 
+  const playDemoVoice=(message:string)=>{
+    try{
+      if(typeof window==="undefined" || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance=new SpeechSynthesisUtterance(message);
+      utterance.lang="es-AR";
+      utterance.rate=.92;
+      utterance.pitch=.9;
+      const voices=window.speechSynthesis.getVoices();
+      const preferred=voices.find((voice)=>voice.lang.toLowerCase().startsWith("es-ar"))
+        || voices.find((voice)=>voice.lang.toLowerCase().startsWith("es"));
+      if(preferred) utterance.voice=preferred;
+      window.speechSynthesis.speak(utterance);
+    }catch{}
+  };
+
   const playFx=(kind:"chime"|"pop"|"door"|"seal"|"unlock")=>{
     try{
       const context=new AudioContext();
@@ -384,10 +400,35 @@ export default function ExperienceEngine({
       </section>;
 
       case "voices": return <section className="thi-scene thi-scene-voices thi-scene-rich">
-        <p className="thi-kicker">Hay gente esperando decirte algo</p>
-        <h2>Elegí una voz.</h2>
-        <div className="thi-voices">{audioMedia?.length ? audioMedia.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption || `Mensaje ${i+1}`}</strong><audio src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}/></article>) : voiceEntries.map((voice,i)=><button key={voice.name} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{voice.name}</strong><small>{voicesPlayed.includes(i)?`“${voice.message}”`:"Tocar para escuchar"}</small></button>)}</div>
-        <button className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>Continuar →</button>
+        <p className="thi-kicker">{experience.slug==="pareja"?"Hay cosas que prefiero decirte con mi voz":"Hay gente esperando decirte algo"}</p>
+        <h2>{experience.slug==="pareja"?"Escuchá esto.":"Elegí una voz."}</h2>
+        {audioMedia?.length
+          ? <div className="thi-voices">{audioMedia.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption || `Mensaje ${i+1}`}</strong><audio src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}/></article>)}</div>
+          : experience.slug==="pareja"
+            ? <div className="thi-romantic-audio">
+                {voiceEntries.slice(0,1).map((voice,i)=><button
+                  key={voice.name}
+                  className={voicesPlayed.includes(i)?"played":""}
+                  onClick={()=>{
+                    setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);
+                    haptic([7,18,7]);
+                    playDemoVoice(voice.message);
+                  }}
+                  aria-label="Reproducir nota de voz"
+                >
+                  <span className="thi-audio-avatar">{voice.name.slice(0,1)}</span>
+                  <span className="thi-audio-copy">
+                    <small>nota de voz · {voice.name}</small>
+                    <strong>{voicesPlayed.includes(i)?"Reproduciendo…":"Tocá para escuchar"}</strong>
+                    <i className="thi-waveform" aria-hidden="true">{Array.from({length:24}).map((_,bar)=><b key={bar}/>)}</i>
+                  </span>
+                  <span className="thi-audio-play">{voicesPlayed.includes(i)?"❚❚":"▶"}</span>
+                </button>)}
+                {voicesPlayed.length>0&&<p>“{voiceEntries[0].message}”</p>}
+              </div>
+            : <div className="thi-voices">{voiceEntries.map((voice,i)=><button key={voice.name} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6);}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{voice.name}</strong><small>{voicesPlayed.includes(i)?`“${voice.message}”`:"Tocar para escuchar"}</small></button>)}</div>
+        }
+        <button className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>{experience.slug==="pareja"?"Guardar esta voz →":"Continuar →"}</button>
       </section>;
 
       case "quiz": return <section className="thi-scene thi-scene-quiz thi-scene-rich">

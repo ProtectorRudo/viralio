@@ -55,12 +55,15 @@ export const experiences: Experience[] = [
     opening:"Hay miles de lugares en Internet. Este existe solamente para vos.",
     closing:"Y si pudiera elegir de nuevo, volvería a encontrarte.",
     tags:["Pareja","Amor","Sorpresa"],
-    recipe:["intro","door","memories","light","stars","scratch","hold","letter","finale"],
+    recipe:["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"],
     demo:{
       memories:[
         "El café que iba a durar media hora y terminó ocupando toda la tarde.",
         "La foto que casi no sacamos. Hoy es de mis favoritas.",
         "Ese viaje en el que nos perdimos y, por una vez, estuvo buenísimo.",
+      ],
+      voices:[
+        {name:"Julián",message:"No sé si alguna vez te lo dije así, pero desde que estás vos hay días comunes que se sienten distintos. Me gusta nuestra vida, incluso las partes que nadie subiría a una foto."},
       ],
       stars:[
         "Cómo hacés hogar incluso en lugares que no son nuestros.",

@@ -1037,3 +1037,28 @@
   ::view-transition-old(thi-scene),::view-transition-new(thi-scene){animation:none}
   .thi-light-ambient i,.thi-hold-rings i{animation:none}
 }
+
+
+/* pareja — intimate voice note */
+.thi-romantic-audio{width:min(650px,92vw);margin:26px 0 8px;display:flex;flex-direction:column;align-items:center}
+.thi-romantic-audio>button{
+  width:100%;min-height:145px;border:1px solid rgba(255,255,255,.1);border-radius:28px;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 7%,#121015),#0a090c 70%);
+  display:grid;grid-template-columns:58px 1fr 46px;gap:16px;align-items:center;padding:22px 24px;color:#fff;text-align:left;
+  box-shadow:0 34px 90px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.03);cursor:pointer;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+}
+.thi-romantic-audio>button:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 30%,rgba(255,255,255,.1));box-shadow:0 40px 100px rgba(0,0,0,.4),0 0 55px color-mix(in srgb,var(--accent) 7%,transparent)}
+.thi-romantic-audio>button.played{border-color:color-mix(in srgb,var(--accent) 44%,transparent);background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 12%,#121015),#0a090c 72%)}
+.thi-audio-avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-family:var(--thi-serif);font-size:23px;color:#fff;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 78%,white),color-mix(in srgb,var(--accent) 52%,#38101d));box-shadow:0 0 35px color-mix(in srgb,var(--accent) 14%,transparent)}
+.thi-audio-copy{display:flex;flex-direction:column;min-width:0}.thi-audio-copy>small{font-size:7px!important;text-transform:uppercase;letter-spacing:.15em;color:#716a75!important;margin:0 0 7px!important}.thi-audio-copy>strong{font-family:var(--thi-serif);font-size:20px;font-weight:400;color:#ece5ec}
+.thi-waveform{display:flex;align-items:center;gap:3px;height:34px;margin-top:11px;overflow:hidden}.thi-waveform b{width:2px;height:var(--bar,12px);border-radius:2px;background:color-mix(in srgb,var(--accent) 67%,#aaa);opacity:.52;transform-origin:center}
+.thi-waveform b:nth-child(4n+1){height:9px}.thi-waveform b:nth-child(4n+2){height:20px}.thi-waveform b:nth-child(4n+3){height:29px}.thi-waveform b:nth-child(4n){height:15px}
+.thi-romantic-audio>button.played .thi-waveform b{animation:thiVoiceWave .8s ease-in-out infinite alternate}.thi-romantic-audio>button.played .thi-waveform b:nth-child(3n+1){animation-delay:.18s}.thi-romantic-audio>button.played .thi-waveform b:nth-child(3n+2){animation-delay:.34s}
+.thi-audio-play{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--accent) 25%,rgba(255,255,255,.1));color:var(--accent);font-size:12px;background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.thi-romantic-audio>p{font-family:var(--thi-serif);font-size:clamp(20px,3vw,27px);font-style:italic;line-height:1.35;color:#cfc6cf;text-align:center;max-width:620px;margin:25px 0 5px;animation:thiHoldWords .7s cubic-bezier(.18,.8,.2,1) both}
+@keyframes thiVoiceWave{from{transform:scaleY(.45);opacity:.35}to{transform:scaleY(1.25);opacity:1}}
+@media(max-width:520px){
+  .thi-romantic-audio>button{grid-template-columns:48px 1fr 38px;padding:18px 16px;border-radius:22px}.thi-audio-avatar{width:46px;height:46px;font-size:19px}.thi-audio-copy>strong{font-size:18px}.thi-audio-play{width:36px;height:36px}.thi-waveform{gap:2px}.thi-romantic-audio>p{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){.thi-romantic-audio>button.played .thi-waveform b{animation:none}}

@@ -153,6 +153,9 @@ test("unlocked scenes also advance from the persistent bottom control", async ({
   await page.getByRole("button", { name: "Escena siguiente" }).click();
   await waitForScene(page, "memories");
   await page.getByRole("button", { name: "Escena siguiente" }).click();
+  await waitForScene(page, "voices");
+  await page.getByRole("button", { name: "Reproducir nota de voz" }).click();
+  await page.getByRole("button", { name: "Escena siguiente" }).click();
   await waitForScene(page, "light");
   await page.getByRole("button", { name: "Revelar recuerdo con luz" }).click();
   await page.getByRole("button", { name: "Escena siguiente" }).click();
@@ -166,4 +169,19 @@ test("unlocked scenes also advance from the persistent bottom control", async ({
   await expect(page.getByRole("button", { name: "Escena siguiente" })).toBeEnabled();
   await page.getByRole("button", { name: "Escena siguiente" }).click();
   await waitForScene(page, "scratch");
+});
+
+
+test("pareja includes an intimate voice-note scene before the light reveal", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.locator(".thi-door-wrap").click();
+  await page.getByRole("button", { name: "Entrar →" }).click();
+  await page.getByRole("button", { name: /Seguir/ }).click();
+  await waitForScene(page, "voices");
+  await expect(page.getByRole("heading", { name: "Escuchá esto." })).toBeVisible();
+  await page.getByRole("button", { name: "Reproducir nota de voz" }).click();
+  await expect(page.getByText(/desde que estás vos/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /Guardar esta voz/ })).toBeEnabled();
 });
