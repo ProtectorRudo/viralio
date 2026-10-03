@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { adminCall, SESSION_KEY } from "./api";
 import { experiences } from "../data";
 
@@ -16,6 +18,7 @@ type GiftRow = {
 };
 
 export default function AdminPortal() {
+  const router = useRouter();
   const [sessionReady, setSessionReady] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [accessKey, setAccessKey] = useState("");
@@ -93,7 +96,7 @@ export default function AdminPortal() {
         feeling: String(form.get("feeling") || ""),
       });
 
-      window.location.href = `/tehiceesto/admin/${data.code}`;
+      router.push(`/tehiceesto/admin/${data.code}`);
     } finally {
       setLoading(false);
     }
@@ -139,7 +142,7 @@ export default function AdminPortal() {
     <main className="thi-admin-shell">
       <header className="thi-admin-header">
         <div>
-          <a href="/tehiceesto" className="thi-admin-back">← Te Hice Esto</a>
+          <Link href="/tehiceesto" className="thi-admin-back">← Te Hice Esto</Link>
           <p className="thi-kicker">Operación</p>
           <h1>Regalos</h1>
         </div>
