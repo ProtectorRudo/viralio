@@ -196,6 +196,7 @@ export default function ExperienceEngine({
         <p className="thi-kicker">Hay algo del otro lado</p>
         <h2>Todo empieza abriendo una puerta.</h2>
         <div className="thi-door-light" aria-hidden="true"/>
+        <div className="thi-door-floor" aria-hidden="true"/>
         <button className={`thi-door-wrap ${doorOpen?"opening":""}`} onClick={openDoor}>
           <span className="thi-door-frame">
             <span className="thi-door"><i/><b/></span>
@@ -224,12 +225,16 @@ export default function ExperienceEngine({
         <div className="thi-sky-dust" aria-hidden="true"/>
         <p className="thi-kicker">Cosas que no quiero que olvides</p>
         <h2>Tocá las estrellas.</h2>
-        <div className="thi-stars">
+        <div className={`thi-stars ${stars.length>=3?"complete":""}`}>
+          <svg className="thi-constellation-lines" viewBox="0 0 700 350" aria-hidden="true">
+            <path d="M105 66 L585 50 L350 175 L130 305 L570 300 L350 175 Z"/>
+          </svg>
           {starLines.map((t,i)=>
             <button key={t} className={stars.includes(i)?"revealed":""} onClick={()=>{setStars(v=>v.includes(i)?v:[...v,i]);haptic(9);playFx("chime");}}>
               <span>✦</span><em>{stars.includes(i)?t:"Tocame"}</em><i/>
             </button>
           )}
+          {stars.length>=3&&<div className="thi-constellation-complete"><span>✦</span><small>constelación descubierta</small></div>}
         </div>
         <button className="thi-primary" disabled={stars.length<3} onClick={next}>{stars.length<3?`Descubrí ${3-stars.length} más`:"Continuar →"}</button>
       </section>;
@@ -261,7 +266,7 @@ export default function ExperienceEngine({
       case "candles": return <section className="thi-scene thi-scene-candles thi-scene-rich">
         <p className="thi-kicker">Pedí un deseo</p>
         <h2>Antes de seguir,<br/>faltan las velitas.</h2>
-        <div className={`thi-cake ${candlesOut?"out":""}`}><div className="thi-cake-shadow"/><div className="thi-cake-body"/><div className="thi-candles">{[0,1,2,3,4].map(i=><span key={i}><i/><b/></span>)}</div></div>
+        <div className={`thi-cake ${candlesOut?"out":""}`}><div className="thi-cake-shadow"/><div className="thi-cake-plate"/><div className="thi-cake-body"><span className="thi-cake-top"/><span className="thi-cake-icing"/><span className="thi-cake-sprinkles"/></div><div className="thi-candles">{[0,1,2,3,4].map(i=><span key={i}><i/><b/></span>)}</div></div>
         <CandleBlow blown={candlesOut} onBlow={()=>{setCandlesOut(true);haptic([10,20,10]);playFx("chime");}}/>
         {candlesOut&&<><p className="thi-wish-made">✦ deseo guardado</p><button className="thi-ghost" onClick={next}>Seguir →</button></>}
       </section>;
