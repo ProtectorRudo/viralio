@@ -136,14 +136,46 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.locator('[data-action="advance"]').click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
   await page.locator('[data-action="demo-voice"]').click();
+  await page.waitForTimeout(650);
+  await capture(page,testInfo,"tehiceesto-pareja-voice-390");
+
   await page.locator('[data-action="advance"]').click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","light");
   await page.locator('[data-action="light-reveal"]').click();
+  await page.waitForTimeout(650);
+  await capture(page,testInfo,"tehiceesto-pareja-light-390");
+
   await page.locator('[data-action="advance"]').click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","stars");
   const parejaStars=page.locator(".thi-stars-cinematic [data-action='star']");
   await parejaStars.nth(0).click();
   await page.waitForTimeout(700);
   await capture(page,testInfo,"tehiceesto-pareja-stars-390");
+  await parejaStars.nth(1).click();
+  await parejaStars.nth(2).click();
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","scratch");
+  await page.locator('[data-action="scratch-fallback"]').click();
+  await page.waitForTimeout(500);
+  await capture(page,testInfo,"tehiceesto-pareja-scratch-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hold");
+  await page.locator('[data-action="hold"]').press("Enter");
+  await page.waitForTimeout(650);
+  await capture(page,testInfo,"tehiceesto-pareja-hold-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
+  await page.locator('[data-action="open-letter"]').click();
+  await page.waitForTimeout(650);
+  await capture(page,testInfo,"tehiceesto-pareja-letter-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
+  await page.waitForTimeout(700);
+  await capture(page,testInfo,"tehiceesto-pareja-final-390");
 
   await page.goto("/tehiceesto/experiencias/cumpleanos");
   await page.locator('[data-action="advance"]').click();
