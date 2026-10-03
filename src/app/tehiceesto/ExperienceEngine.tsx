@@ -64,7 +64,7 @@ export default function ExperienceEngine({
       case "memories": return <section className="thi-scene">
         <p className="thi-kicker">Los recuerdos</p><h2>Hay días que terminan. Y otros que se quedan.</h2>
         <div className="thi-film">
-          {(displayPhotos.length ? displayPhotos : memories.map((caption,i)=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url || item.caption || i}>
+          {(displayPhotos.length ? displayPhotos : memories.map((caption)=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url || item.caption || i}>
             <div className="thi-memory-photo" style={item.url?{backgroundImage:`url("${item.url}")`,backgroundSize:item.fit||"cover",backgroundPosition:item.position||"center",backgroundRepeat:"no-repeat"}:undefined}><span>{String(i+1).padStart(2,"0")}</span></div>
             <p>{item.caption || memories[i%memories.length]}</p>
           </article>)}
