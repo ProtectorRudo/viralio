@@ -160,12 +160,10 @@ export default function ExperienceEngine({
     const destination=scenes[nextIndex];
     resetSceneState(destination);
     setDirection(dir);
-    setTransitioning(true);
+    setTransitioning(false);
+    setSceneIndex(nextIndex);
+    setRunId((value)=>value+1);
     haptic(8);
-    window.setTimeout(()=>{
-      setSceneIndex(nextIndex);
-      setTransitioning(false);
-    },160);
   };
 
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");
@@ -176,7 +174,40 @@ export default function ExperienceEngine({
     setDoorOpen(true);
     haptic([12,35,9]);
     playFx("door");
-    window.setTimeout(next,680);
+  };
+
+  const canAdvance=()=>{
+    switch(current){
+      case "intro":
+      case "memories":
+      case "timeline":
+      case "video":
+        return true;
+      case "door":
+        return doorOpen;
+      case "stars":
+        return stars.length>=3;
+      case "scratch":
+        return scratched;
+      case "letter":
+        return letterOpen;
+      case "candles":
+        return candlesOut;
+      case "balloons":
+        return popped.length>=3;
+      case "voices":
+        return voicesPlayed.length>0;
+      case "quiz":
+        return quizChoice!==null;
+      case "vault":
+        return vaultOpen;
+      case "capsule":
+        return capsuleOpen;
+      case "finale":
+      case "proposal":
+      default:
+        return false;
+    }
   };
 
   function scene(type:SceneType){
@@ -203,7 +234,10 @@ export default function ExperienceEngine({
             <span className="thi-door-world"/>
           </span>
         </button>
-        <p className="thi-hint">{doorOpen?"Entrando…":"Tocá la puerta"}</p>
+        {!doorOpen
+          ? <p className="thi-hint">Tocá la puerta</p>
+          : <button className="thi-primary thi-door-enter" onClick={next}>Entrar →</button>}
+
       </section>;
 
       case "memories": return <section className="thi-scene thi-scene-memories thi-scene-rich">
@@ -372,6 +406,12 @@ export default function ExperienceEngine({
       <button onClick={prev} disabled={!sceneIndex||transitioning} aria-label="Escena anterior">←</button>
       <div><span style={{width:`${progress}%`}}/></div>
       <small>{Math.round(progress)}%</small>
+      <button
+        className="thi-progress-next"
+        onClick={next}
+        disabled={!canAdvance()||sceneIndex>=total-1}
+        aria-label="Escena siguiente"
+      >→</button>
     </div>
   </main>;
 }
