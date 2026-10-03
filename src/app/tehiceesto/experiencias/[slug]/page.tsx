@@ -8,8 +8,8 @@ export default async function ExperiencePage({params}:{params:Promise<{slug:stri
   const experience=getExperience(slug);
   if(!experience) notFound();
 
-  return <>
+  return <div className={`thi-demo-page thi-demo-page-${experience.slug}`}>
     <div className="thi-demo-ribbon"><span>DEMO · {experience.title}</span><Link href="/tehiceesto/crear">Crear la mía →</Link></div>
     <ExperienceEngine experience={experience}/>
-  </>;
+  </div>;
 }

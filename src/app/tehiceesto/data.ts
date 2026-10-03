@@ -5,6 +5,7 @@ export type SceneType =
 
 export type DemoContent = {
   memories?: string[];
+  photos?: { url:string; position?:"center"|"top"|"bottom"|"left"|"right" }[];
   stars?: string[];
   scratchEyebrow?: string;
   scratchReward?: string;
@@ -61,6 +62,11 @@ export const experiences: Experience[] = [
         "El café que iba a durar media hora y terminó ocupando toda la tarde.",
         "La foto que casi no sacamos. Hoy es de mis favoritas.",
         "Ese viaje en el que nos perdimos y, por una vez, estuvo buenísimo.",
+      ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1769624569453-57a67f094a4b?auto=format&fit=crop&fm=jpg&q=72&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1725024306231-7f8dba540ac9?auto=format&fit=crop&fm=jpg&q=72&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1719682575943-6163aed11952?auto=format&fit=crop&fm=jpg&q=72&w=1400",position:"center"},
       ],
       voices:[
         {name:"Julián",message:"No sé si alguna vez te lo dije así, pero desde que estás vos hay días comunes que se sienten distintos. Me gusta nuestra vida, incluso las partes que nadie subiría a una foto."},
