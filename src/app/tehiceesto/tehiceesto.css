@@ -301,3 +301,17 @@
 @media(prefers-reduced-motion:reduce){
   .thi-root *,.thi-root *:before,.thi-root *:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
 }
+
+
+/* accessibility + mobile polish */
+.thi-root :focus-visible{outline:2px solid color-mix(in srgb,var(--thi-rose) 78%,white);outline-offset:3px}
+.thi-demo-ribbon{background:rgba(10,8,12,.72);box-shadow:0 14px 45px rgba(0,0,0,.28);border-color:rgba(255,255,255,.1)}
+.thi-demo-ribbon:before{content:"";width:5px;height:5px;border-radius:50%;background:#8fd9cb;box-shadow:0 0 0 0 rgba(143,217,203,.3);animation:thiPulse 2.2s infinite}
+.thi-demo-ribbon a{display:inline-flex;align-items:center;gap:6px;color:#f2edf3!important}
+.thi-experience-premium,.thi-preview-overlay,.thi-admin-preview-overlay{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+.thi-progress-premium{bottom:max(16px,env(safe-area-inset-bottom))}
+.thi-nav{padding-top:env(safe-area-inset-top)}
+@media(max-width:520px){
+  .thi-demo-ribbon{top:max(9px,env(safe-area-inset-top));font-size:7px}
+  .thi-progress-premium{width:calc(100vw - 24px)}
+}
