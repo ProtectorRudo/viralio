@@ -37,6 +37,24 @@ describe("tehiceesto.com host routing", () => {
     expect(response.headers.get("location")).toBe("https://tehiceesto.com/crear");
   });
 
+  it("blocks Viralio APIs on the Te Hice Esto domain", async () => {
+    const response = proxy(
+      request("https://tehiceesto.com/api/admin", "tehiceesto.com"),
+    );
+    expect(response.status).toBe(404);
+    expect(await response.text()).toBe("Not Found");
+  });
+
+  it("serves Te Hice Esto robots instead of Viralio robots", async () => {
+    const response = proxy(
+      request("https://tehiceesto.com/robots.txt", "tehiceesto.com"),
+    );
+    const body = await response.text();
+    expect(body).toContain("Disallow: /admin");
+    expect(body).toContain("Disallow: /r/");
+    expect(body).toContain("https://tehiceesto.com/sitemap.xml");
+  });
+
   it("does not affect viralio.net", () => {
     const response = proxy(
       request("https://viralio.net/tehiceesto", "viralio.net"),
