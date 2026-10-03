@@ -249,10 +249,11 @@ function VoiceRows({entries,onChange}:{entries:{name:string;message:string}[];on
 export default function ScriptEditor({experience,recipe,value,onChange,onPreviewScene}:{experience:Experience;recipe:SceneType[];value:DeepPartial<ExperienceCopy>;onChange:(value:DeepPartial<ExperienceCopy>)=>void;onPreviewScene:(scene:SceneType)=>void}){
   const uniqueScenes=useMemo(()=>Array.from(new Set(recipe)),[recipe]);
   const [selected,setSelected]=useState<"global"|SceneType>("global");
-  const active:selected is SceneType=selected!=="global";
-  const scene=active&&uniqueScenes.includes(selected)?selected:uniqueScenes[0];
+  const active=selected!=="global";
+  const selectedScene=active?selected as SceneType:uniqueScenes[0];
+  const scene=uniqueScenes.includes(selectedScene)?selectedScene:uniqueScenes[0];
   const resolved=getExperienceCopy(experience,value);
-  const section=active?scene:null;
+  const section:SceneType|null=active?scene:null;
   const sectionCustom=section?readPath(value,section)!==undefined:readPath(value,"ui")!==undefined;
 
   const update=(path:string,next:unknown)=>onChange(writePath(value,path,next));
