@@ -130,6 +130,7 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.locator('[data-action="advance"]').click();
   await expect(page.getByText(/Pasaron hace tiempo/i)).toBeVisible();
   await waitForLoadedImages(page, ".thi-theme-pareja .thi-memory-photo img");
+  await page.waitForTimeout(800);
   await capture(page, testInfo, "tehiceesto-pareja-memories-390");
 
   await page.locator('[data-action="advance"]').click();
@@ -141,6 +142,7 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","stars");
   const parejaStars=page.locator(".thi-stars-cinematic [data-action='star']");
   await parejaStars.nth(0).click();
+  await page.waitForTimeout(700);
   await capture(page,testInfo,"tehiceesto-pareja-stars-390");
 
   await page.goto("/tehiceesto/experiencias/cumpleanos");
