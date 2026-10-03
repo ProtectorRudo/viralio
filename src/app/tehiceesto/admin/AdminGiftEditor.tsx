@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from "../ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
@@ -231,14 +233,14 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   return <main className="thi-admin-shell">
     <header className="thi-admin-header">
       <div>
-        <a href="/tehiceesto/admin" className="thi-admin-back">← Regalos</a>
+        <Link href="/tehiceesto/admin" className="thi-admin-back">← Regalos</Link>
         <p className="thi-kicker">{base.eyebrow}</p>
         <h1>{gift.recipient_name}</h1>
         <p className="thi-admin-sub">De {gift.giver_name} · <code>{gift.public_code}</code></p>
       </div>
       <div className="thi-admin-header-actions">
         <button className="thi-ghost" onClick={()=>setPreview(true)}>Ver preview</button>
-        {gift.status==="published"&&<a className="thi-ghost" href={`/tehiceesto/r/${gift.public_code}`} target="_blank">Abrir regalo ↗</a>}
+        {gift.status==="published"&&<Link className="thi-ghost" href={`/tehiceesto/r/${gift.public_code}`} target="_blank">Abrir regalo ↗</Link>}
         <button className={gift.status==="published"?"thi-publish on":"thi-publish"} onClick={togglePublish}>{gift.status==="published"?"✓ Publicado · despublicar":"Publicar regalo"}</button>
       </div>
     </header>
@@ -294,7 +296,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             <label><span>Texto</span><input defaultValue={item.caption||""} onBlur={e=>updateMedia(item,{caption:e.target.value})}/></label>
             {item.kind==="image"&&<div className="thi-media-controls">
               <label><span>Encuadre</span><select value={fit} onChange={e=>updateMedia(item,{fit:e.target.value as "cover"|"contain"})}><option value="cover">Llenar marco</option><option value="contain">Mostrar completa</option></select></label>
-              <label><span>Foco</span><select value={position} onChange={e=>updateMedia(item,{position:e.target.value as Media["metadata"] extends infer _ ? any : never})}><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label>
+              <label><span>Foco</span><select value={position} onChange={e=>updateMedia(item,{position:e.target.value as "center"|"top"|"bottom"|"left"|"right"})}><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label>
             </div>}
             <div className="thi-media-actions"><button disabled={!index} onClick={()=>moveMedia(index,-1)}>↑</button><button disabled={index===media.length-1} onClick={()=>moveMedia(index,1)}>↓</button><button className="danger" onClick={()=>deleteMedia(item)}>Eliminar</button></div>
           </div>
