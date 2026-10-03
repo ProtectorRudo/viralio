@@ -237,7 +237,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     await load();
   }
 
-  if(loading||!gift||!base) return <main className="thi-admin-shell"><div className="thi-admin-loading">Cargando regalo…</div></main>;
+  if(loading||!gift||!base||!previewExperience||!resolvedCopy) return <main className="thi-admin-shell"><div className="thi-admin-loading">Cargando regalo…</div></main>;
 
   if(preview&&previewExperience){
     return <div className="thi-admin-preview-overlay">
