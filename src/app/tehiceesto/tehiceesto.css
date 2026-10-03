@@ -315,3 +315,18 @@
   .thi-demo-ribbon{top:max(9px,env(safe-area-inset-top));font-size:7px}
   .thi-progress-premium{width:calc(100vw - 24px)}
 }
+
+
+/* visual QA refinements */
+.thi-scene-stage{animation-duration:.48s}
+.thi-cake.out .thi-candles i,
+.thi-cake.out .thi-candles b{
+  opacity:0!important;
+  animation:none!important;
+  transform:translateX(-50%) scale(.1)!important;
+  transition:opacity .18s ease,transform .18s ease!important;
+}
+@keyframes thiSceneIn{
+  from{opacity:0;transform:translateY(12px) scale(.995);filter:blur(2px)}
+  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
