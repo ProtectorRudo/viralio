@@ -1,0 +1,89 @@
+import { notFound } from "next/navigation";
+import ExperienceEngine from "../../ExperienceEngine";
+import { getExperience } from "../../data";
+
+const SUPABASE_URL = "https://efvvadfxuyieswdqnsjg.supabase.co";
+const PUBLISHABLE_KEY = "sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
+
+type EdgeGift = {
+  experience_slug: string;
+  giver_name: string;
+  recipient_name: string;
+  opening_text: string | null;
+  letter_text: string | null;
+  closing_text: string | null;
+  scene_recipe: string[] | null;
+  theme_data: { accent?: string } | null;
+};
+
+type EdgeMedia = {
+  kind: "image" | "audio" | "video";
+  caption: string | null;
+  sort_order: number;
+  metadata: {
+    fit?: "cover" | "contain";
+    position?: "center" | "top" | "bottom" | "left" | "right";
+  } | null;
+  url: string | null;
+};
+
+export default async function PublishedGiftPage({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}) {
+  const { code } = await params;
+
+  if (!/^[a-f0-9]{18}$/.test(code)) notFound();
+
+  const response = await fetch(
+    `${SUPABASE_URL}/functions/v1/gift-read?code=${encodeURIComponent(code)}`,
+    {
+      headers: { apikey: PUBLISHABLE_KEY, accept: "application/json" },
+      cache: "no-store",
+    },
+  );
+
+  if (response.status === 404) notFound();
+  if (!response.ok) throw new Error("gift_read_failed");
+
+  const payload = (await response.json()) as { gift: EdgeGift; media: EdgeMedia[] };
+  const base = getExperience(payload.gift.experience_slug);
+  if (!base) notFound();
+
+  const experience = {
+    ...base,
+    demoGiver: payload.gift.giver_name,
+    demoRecipient: payload.gift.recipient_name,
+    opening: payload.gift.opening_text || base.opening,
+    closing: payload.gift.closing_text || base.closing,
+    recipe:
+      Array.isArray(payload.gift.scene_recipe) && payload.gift.scene_recipe.length
+        ? (payload.gift.scene_recipe as typeof base.recipe)
+        : base.recipe,
+    accent: payload.gift.theme_data?.accent || base.accent,
+  };
+
+  const ordered = [...(payload.media || [])].sort((a, b) => a.sort_order - b.sort_order);
+
+  return (
+    <ExperienceEngine
+      experience={experience}
+      letterText={payload.gift.letter_text || undefined}
+      photoMedia={ordered.filter((item) => item.kind === "image" && item.url).map((item) => ({
+        url: item.url as string,
+        caption: item.caption || undefined,
+        fit: item.metadata?.fit || "cover",
+        position: item.metadata?.position || "center",
+      }))}
+      audioMedia={ordered.filter((item) => item.kind === "audio" && item.url).map((item) => ({
+        url: item.url as string,
+        caption: item.caption || undefined,
+      }))}
+      videoMedia={ordered.filter((item) => item.kind === "video" && item.url).map((item) => ({
+        url: item.url as string,
+        caption: item.caption || undefined,
+      }))}
+    />
+  );
+}
