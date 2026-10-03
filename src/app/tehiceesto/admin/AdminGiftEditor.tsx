@@ -1,8 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @next/next/no-img-element, react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from "../ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
@@ -65,6 +66,7 @@ function humanSize(size?: number){
 }
 
 export default function AdminGiftEditor({ code }: { code: string }) {
+  const router = useRouter();
   const [gift,setGift]=useState<Gift|null>(null);
   const [media,setMedia]=useState<Media[]>([]);
   const [loading,setLoading]=useState(true);
@@ -79,14 +81,14 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     setLoading(true);
     try{
       if(!window.sessionStorage.getItem(SESSION_KEY)){
-        window.location.href="/tehiceesto/admin";
+        router.push("/tehiceesto/admin");
         return;
       }
       const data=await adminCall<{gift:Gift;media:Media[]}>("getGift",{code});
       setGift(data.gift);
       setMedia(data.media||[]);
     }catch{
-      window.location.href="/tehiceesto/admin";
+      router.push("/tehiceesto/admin");
     }finally{
       setLoading(false);
     }
