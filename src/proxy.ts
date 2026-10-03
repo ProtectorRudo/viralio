@@ -8,14 +8,68 @@ function hostWithoutPort(request: NextRequest) {
   return (request.headers.get("host") || "").split(":")[0].toLowerCase();
 }
 
+function teHiceEstoRobots() {
+  return new NextResponse(
+    [
+      "User-agent: *",
+      "Allow: /",
+      "Disallow: /admin",
+      "Disallow: /r/",
+      "",
+      "Sitemap: https://tehiceesto.com/sitemap.xml",
+      "",
+    ].join("\n"),
+    {
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "public, max-age=3600",
+      },
+    },
+  );
+}
+
+function teHiceEstoSitemap() {
+  const paths = [
+    "",
+    "/crear",
+    "/experiencias/pareja",
+    "/experiencias/cumpleanos",
+    "/experiencias/hijos",
+    "/experiencias/abuelos",
+    "/experiencias/aniversario",
+    "/experiencias/propuesta",
+    "/experiencias/mama-papa",
+    "/experiencias/amistad",
+  ];
+
+  const urls = paths
+    .map(
+      (path) =>
+        `  <url><loc>https://tehiceesto.com${path}</loc></url>`,
+    )
+    .join("\n");
+
+  return new NextResponse(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`,
+    {
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=3600",
+      },
+    },
+  );
+}
+
 export function proxy(request: NextRequest) {
   const host = hostWithoutPort(request);
   const { pathname, search } = request.nextUrl;
 
+  // Viralio and every other host keep their current routing untouched.
   if (host !== PRIMARY_HOST && host !== WWW_HOST) {
     return NextResponse.next();
   }
 
+  // Te Hice Esto has one canonical host.
   if (host === WWW_HOST) {
     const target = new URL(request.url);
     target.hostname = PRIMARY_HOST;
@@ -23,28 +77,49 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 308);
   }
 
-  if (
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/api/") ||
-    pathname === "/favicon.ico" ||
-    pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml"
-  ) {
+  // Shared Next.js runtime assets are required by both brands.
+  if (pathname.startsWith("/_next/")) {
     return NextResponse.next();
   }
 
-  // Keep the public URL clean if an old /tehiceesto link is opened
-  // on the new dedicated domain.
+  // Never expose Viralio APIs under the Te Hice Esto domain.
+  if (pathname.startsWith("/api/") || pathname === "/api") {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: { "cache-control": "no-store" },
+    });
+  }
+
+  // Host-specific public metadata so Te Hice Esto never inherits Viralio SEO.
+  if (pathname === "/robots.txt") {
+    return teHiceEstoRobots();
+  }
+
+  if (pathname === "/sitemap.xml") {
+    return teHiceEstoSitemap();
+  }
+
+  // Until the final Te Hice Esto icon is installed, avoid leaking Viralio's favicon.
+  if (pathname === "/favicon.ico") {
+    return new NextResponse(null, {
+      status: 204,
+      headers: { "cache-control": "public, max-age=86400" },
+    });
+  }
+
+  // Keep old prefixed links clean on the dedicated domain.
   if (pathname === LEGACY_PREFIX || pathname.startsWith(`${LEGACY_PREFIX}/`)) {
     const cleanPath = pathname.slice(LEGACY_PREFIX.length) || "/";
     const target = new URL(cleanPath + search, `https://${PRIMARY_HOST}`);
     return NextResponse.redirect(target, 308);
   }
 
-  // Serve the existing Te Hice Esto app internally while exposing
-  // first-class root URLs on tehiceesto.com.
+  // Expose only the Te Hice Esto subtree on tehiceesto.com.
+  // Unknown paths therefore resolve inside /tehiceesto and return its own 404,
+  // never another Viralio route.
   const target = request.nextUrl.clone();
-  target.pathname = pathname === "/" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`;
+  target.pathname =
+    pathname === "/" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`;
 
   return NextResponse.rewrite(target);
 }
