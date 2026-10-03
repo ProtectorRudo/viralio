@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState,type CSSProperties,type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect,useRef,useState,type CSSProperties,type PointerEvent as ReactPointerEvent } from "react";
 import { flushSync } from "react-dom";
 import type { Experience,SceneType } from "./data";
 import ScratchReveal from "./ScratchReveal";
@@ -41,7 +41,7 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
   </aside>;
 }
 
-export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,videoMedia,copyOverride,initialScene,storyContext}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string}}){
+export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string}}){
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
@@ -52,6 +52,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const [reasonsOpen,setReasonsOpen]=useState<number[]>([]);const [certaintyOpen,setCertaintyOpen]=useState<number[]>([]);const [thresholdHolding,setThresholdHolding]=useState(false);const [thresholdOpen,setThresholdOpen]=useState(false);
   const [careOpen,setCareOpen]=useState<number[]>([]);const [sacrificesOpen,setSacrificesOpen]=useState<number[]>([]);const [lessonsOpen,setLessonsOpen]=useState<number[]>([]);const [presenceOpen,setPresenceOpen]=useState<number[]>([]);const [inheritanceOpen,setInheritanceOpen]=useState<number[]>([]);const [returnOpen,setReturnOpen]=useState(false);const [lookbackOpen,setLookbackOpen]=useState(false);
   const [casefileOpen,setCasefileOpen]=useState(false);const [insideJokesOpen,setInsideJokesOpen]=useState<number[]>([]);const [incidentsOpen,setIncidentsOpen]=useState<number[]>([]);const [proofOpen,setProofOpen]=useState<number[]>([]);const [pactOpen,setPactOpen]=useState<number[]>([]);
+  const [soundtrackStarted,setSoundtrackStarted]=useState(false);const [soundtrackPaused,setSoundtrackPaused]=useState(false);
+  const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);
 
   const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
   const token=(value:string)=>value.replaceAll("{giver}",experience.demoGiver).replaceAll("{recipient}",experience.demoRecipient).replaceAll("{opening}",experience.opening).replaceAll("{closing}",experience.closing);
@@ -70,6 +72,23 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):demoPhotos):[];
   const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):demoPhotos;
   const hasAttachedMedia=(current!=="memories"&&currentPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
+
+  const fadeSoundtrack=(target:number,duration=650)=>{
+    const audio=soundtrackRef.current;if(!audio)return;
+    if(soundtrackFadeRef.current!==null)cancelAnimationFrame(soundtrackFadeRef.current);
+    const start=audio.volume;const startedAt=performance.now();
+    const tick=(now:number)=>{const elapsed=Math.min(1,(now-startedAt)/duration);const eased=1-Math.pow(1-elapsed,3);audio.volume=Math.max(0,Math.min(1,start+(target-start)*eased));if(elapsed<1)soundtrackFadeRef.current=requestAnimationFrame(tick);else soundtrackFadeRef.current=null};
+    soundtrackFadeRef.current=requestAnimationFrame(tick);
+  };
+  const startSoundtrack=async()=>{const audio=soundtrackRef.current;if(!audio||soundtrackStarted)return;try{audio.volume=0;await audio.play();setSoundtrackStarted(true);setSoundtrackPaused(false);fadeSoundtrack(.24,1500)}catch{}};
+  const pauseSoundtrack=()=>{const audio=soundtrackRef.current;if(!audio||audio.paused)return;fadeSoundtrack(0,260);window.setTimeout(()=>{audio.pause();setSoundtrackPaused(true)},280)};
+  const resumeSoundtrack=async()=>{const audio=soundtrackRef.current;if(!audio)return;try{audio.volume=0;await audio.play();setSoundtrackStarted(true);setSoundtrackPaused(false);fadeSoundtrack(.24,520)}catch{}};
+  const duckSoundtrack=()=>{if(soundtrackStarted&&!soundtrackPaused)fadeSoundtrack(.055,260)};
+  const restoreSoundtrack=()=>{if(soundtrackStarted&&!soundtrackPaused)fadeSoundtrack(["finale","proposal"].includes(current)?.11:.24,520)};
+  useEffect(()=>{if(soundtrackStarted&&!soundtrackPaused)fadeSoundtrack(["finale","proposal"].includes(current)?.11:.24,900)},[current,soundtrackStarted,soundtrackPaused]);
+  useEffect(()=>()=>{if(soundtrackFadeRef.current!==null)cancelAnimationFrame(soundtrackFadeRef.current)},[]);
+  const handleMediaPlay=(event:React.SyntheticEvent<HTMLElement>)=>{if((event.target as HTMLElement)===soundtrackRef.current)return;duckSoundtrack()};
+  const handleMediaRest=()=>restoreSoundtrack();
 
   const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([])};
   const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices")setVoicesPlayed([]);if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([])};
@@ -674,7 +693,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
   const moveAtmosphere=(event:ReactPointerEvent<HTMLElement>)=>{const node=event.currentTarget;const width=Math.max(window.innerWidth,1);const height=Math.max(window.innerHeight,1);node.style.setProperty("--pointer-left",`${event.clientX}px`);node.style.setProperty("--pointer-top",`${event.clientY}px`);node.style.setProperty("--parallax-x",`${((event.clientX/width)-.5)*18}px`);node.style.setProperty("--parallax-y",`${((event.clientY/height)-.5)*14}px`)};
 
-  return <main className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onPointerMove={moveAtmosphere}>
+  return <main className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onPointerMove={moveAtmosphere} onPointerDownCapture={()=>{if(soundtrackMedia&&!soundtrackStarted)void startSoundtrack()}} onPlayCapture={handleMediaPlay} onPauseCapture={handleMediaRest} onEndedCapture={handleMediaRest}>
+    {soundtrackMedia&&<audio ref={soundtrackRef} src={soundtrackMedia.url} preload="auto" loop playsInline/>}
+    {soundtrackMedia&&(soundtrackStarted||sceneIndex>0)&&<button type="button" className={`soundtrack-control ${soundtrackPaused?"paused":""} ${!soundtrackStarted?"not-started":""}`} onClick={(event)=>{event.stopPropagation();if(!soundtrackStarted)void startSoundtrack();else if(soundtrackPaused)void resumeSoundtrack();else pauseSoundtrack()}} aria-label={!soundtrackStarted?"Activar música":soundtrackPaused?"Reanudar música":"Pausar música"} aria-pressed={soundtrackStarted&&!soundtrackPaused}>
+      <span>{!soundtrackStarted||soundtrackPaused?"♪":"♫"}</span><div><small>{!soundtrackStarted?"Tocar para activar":soundtrackPaused?"Música pausada":"Sonando suave"}</small><strong>{soundtrackMedia.caption||"Música de fondo"}</strong></div><i aria-hidden="true"><b/><b/><b/><b/></i>
+    </button>}
     <div className="thi-pointer-light" aria-hidden="true"/><div className="thi-experience-noise" aria-hidden="true"/><div className="thi-experience-vignette" aria-hidden="true"/><div className="thi-experience-orb orb-a" aria-hidden="true"/><div className="thi-experience-orb orb-b" aria-hidden="true"/><div className="thi-theme-signature" aria-hidden="true"><i/><i/><i/></div>
     <div className="thi-scene-meta"><span>{token(copy.ui.sceneLabels[current])}</span><i/><small>{String(sceneIndex+1).padStart(2,"0")} / {String(total).padStart(2,"0")}</small></div>
     <button data-action="restart" className="thi-reset-journey" type="button" onClick={restart} aria-label={token(copy.ui.resetAria)}><span>↻</span><small>{token(copy.ui.resetLabel)}</small></button>
