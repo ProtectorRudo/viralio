@@ -67,7 +67,7 @@ export default function ExperienceEngine({
     window.setTimeout(()=>{
       setSceneIndex(nextIndex);
       setDoorOpen(false);
-      window.setTimeout(()=>setTransitioning(false),40);
+      setTransitioning(false);
     },210);
   };
 
