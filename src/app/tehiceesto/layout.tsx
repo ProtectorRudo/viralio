@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./tehiceesto.css";
+import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://tehiceesto.com"),
@@ -57,5 +58,5 @@ export const viewport: Viewport = {
 };
 
 export default function TeHiceEstoLayout({children}:{children:React.ReactNode}){
-  return <div className="thi-root">{children}</div>;
+  return <div className="thi-root">{children}<FloatingWhatsApp/></div>;
 }
