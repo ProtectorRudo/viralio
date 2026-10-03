@@ -1,7 +1,7 @@
 export type SceneType =
   | "intro" | "door" | "memories" | "stars" | "scratch" | "letter"
   | "finale" | "candles" | "balloons" | "timeline" | "voices" | "quiz"
-  | "vault" | "capsule" | "proposal" | "video";
+  | "vault" | "capsule" | "proposal" | "video" | "light" | "hold";
 
 export type DemoContent = {
   memories?: string[];
@@ -55,7 +55,7 @@ export const experiences: Experience[] = [
     opening:"Hay miles de lugares en Internet. Este existe solamente para vos.",
     closing:"Y si pudiera elegir de nuevo, volvería a encontrarte.",
     tags:["Pareja","Amor","Sorpresa"],
-    recipe:["intro","door","memories","stars","scratch","letter","finale"],
+    recipe:["intro","door","memories","light","stars","scratch","hold","letter","finale"],
     demo:{
       memories:[
         "El café que iba a durar media hora y terminó ocupando toda la tarde.",
@@ -87,7 +87,7 @@ export const experiences: Experience[] = [
     opening:"Hoy no queríamos mandarte solamente un mensaje. Queríamos hacerte un lugar.",
     closing:"Que este año te encuentre rodeada de todo lo que te hace bien.",
     tags:["Cumpleaños","Amigos","Familia"],
-    recipe:["intro","candles","balloons","memories","voices","letter","finale"],
+    recipe:["intro","candles","balloons","memories","light","voices","hold","letter","finale"],
     demo:{
       balloons:["Te queremos","Hoy mandás vos","Una cena pendiente","Un abrazo gigante","Elegís el plan","Otra vuelta al sol"],
       memories:[
@@ -116,7 +116,7 @@ export const experiences: Experience[] = [
     opening:"Antes de que puedas recordar todo esto, nosotros ya lo estábamos guardando para vos.",
     closing:"Crezcas cuanto crezcas, siempre vas a tener un lugar al que volver.",
     tags:["Hijos","Familia","Cápsula"],
-    recipe:["intro","timeline","memories","stars","capsule","letter","finale"],
+    recipe:["intro","timeline","memories","light","stars","capsule","hold","letter","finale"],
     demo:{
       timeline:[
         {title:"El día que llegaste",body:"El mundo siguió igual para todos. Para nosotros cambió entero."},
@@ -155,7 +155,7 @@ export const experiences: Experience[] = [
     opening:"Hay historias que no deberían quedar guardadas en una caja de fotos.",
     closing:"Tu historia también es la nuestra. Gracias por haberla empezado.",
     tags:["Abuelos","Legado","Familia"],
-    recipe:["intro","timeline","memories","voices","stars","letter","finale"],
+    recipe:["intro","timeline","memories","light","voices","stars","hold","letter","finale"],
     demo:{
       timeline:[
         {title:"Antes de nosotros",body:"Una vida entera ya estaba pasando antes de que llegáramos a conocerla."},
@@ -195,7 +195,7 @@ export const experiences: Experience[] = [
     opening:"Pasó otro año. Pero algunas cosas todavía me siguen pasando como el primer día.",
     closing:"Feliz nosotros.",
     tags:["Aniversario","Pareja","Recuerdos"],
-    recipe:["intro","timeline","memories","quiz","scratch","letter","finale"],
+    recipe:["intro","timeline","memories","light","quiz","scratch","hold","letter","finale"],
     demo:{
       timeline:[
         {title:"Nos conocimos",body:"Todavía podíamos hacernos los interesantes porque no sabíamos demasiado del otro."},
@@ -231,7 +231,7 @@ export const experiences: Experience[] = [
     opening:"Para llegar hasta esta pregunta primero tenemos que volver a pasar por algunas cosas.",
     closing:"¿Querés casarte conmigo?",
     tags:["Propuesta","Casamiento","Pareja"],
-    recipe:["intro","door","memories","stars","vault","letter","proposal"],
+    recipe:["intro","door","memories","light","stars","hold","vault","letter","proposal"],
     demo:{
       memories:[
         "La primera vez que pensé: ojalá esto dure mucho.",
@@ -260,7 +260,7 @@ export const experiences: Experience[] = [
     opening:"Hay cosas que uno siente toda la vida y tarda demasiado en decir.",
     closing:"Gracias por ser casa incluso cuando estamos lejos.",
     tags:["Mamá","Papá","Gratitud"],
-    recipe:["intro","memories","voices","stars","letter","scratch","finale"],
+    recipe:["intro","memories","light","voices","stars","hold","letter","scratch","finale"],
     demo:{
       memories:[
         "Esperarnos despierta aunque dijéramos que no hacía falta.",
@@ -298,7 +298,7 @@ export const experiences: Experience[] = [
     opening:"Advertencia: este archivo contiene pruebas de demasiadas malas decisiones juntas.",
     closing:"Gracias por estar en todas. Incluso en las que era mejor no estar.",
     tags:["Amistad","Humor","Recuerdos"],
-    recipe:["intro","quiz","memories","balloons","scratch","letter","finale"],
+    recipe:["intro","quiz","memories","light","balloons","scratch","hold","letter","finale"],
     demo:{
       quiz:{
         question:"¿Quién mandó el primer mensaje después de aquella pelea absurda?",

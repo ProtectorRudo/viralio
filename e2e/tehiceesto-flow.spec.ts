@@ -30,6 +30,12 @@ async function advanceOne(page: Page) {
     await page.getByRole("button", { name: "Entrar →" }).click();
   } else if (current === "memories") {
     await page.getByRole("button", { name: /Seguir/ }).click();
+  } else if (current === "light") {
+    await page.getByRole("button", { name: "Revelar recuerdo con luz" }).click();
+    await page.getByRole("button", { name: /Seguir con este recuerdo/ }).click();
+  } else if (current === "hold") {
+    await page.getByRole("button", { name: /Mantené|Mantené el|Mantené este/i }).press("Enter");
+    await page.getByRole("button", { name: "Seguir →" }).click();
   } else if (current === "stars") {
     const stars = page.locator(".thi-stars button");
     await stars.nth(0).click();
@@ -146,6 +152,9 @@ test("unlocked scenes also advance from the persistent bottom control", async ({
   await page.locator(".thi-door-wrap").click();
   await page.getByRole("button", { name: "Escena siguiente" }).click();
   await waitForScene(page, "memories");
+  await page.getByRole("button", { name: "Escena siguiente" }).click();
+  await waitForScene(page, "light");
+  await page.getByRole("button", { name: "Revelar recuerdo con luz" }).click();
   await page.getByRole("button", { name: "Escena siguiente" }).click();
   await waitForScene(page, "stars");
 

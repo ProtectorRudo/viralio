@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { flushSync } from "react-dom";
 import type { Experience, SceneType } from "./data";
 import ScratchReveal from "./ScratchReveal";
 import CandleBlow from "./CandleBlow";
+import LightReveal from "./LightReveal";
+import HoldReveal from "./HoldReveal";
+import { premiumMoments } from "./premiumMoments";
 
 export type ThiPhoto = { url:string; caption?:string; fit?:"cover"|"contain"; position?:"center"|"top"|"bottom"|"left"|"right" };
 export type ThiAudio = { url:string; caption?:string };
@@ -14,6 +18,7 @@ const sceneLabels: Record<SceneType,string> = {
   scratch:"Sorpresa", letter:"Carta", finale:"Final", candles:"Deseo",
   balloons:"Mensajes", timeline:"Historia", voices:"Voces", quiz:"Pregunta",
   vault:"Bóveda", capsule:"Futuro", proposal:"La pregunta", video:"Video",
+  light:"Instante", hold:"Promesa",
 };
 
 export default function ExperienceEngine({
@@ -43,6 +48,8 @@ export default function ExperienceEngine({
   const [capsuleOpen,setCapsuleOpen]=useState(false);
   const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);
   const [doorOpen,setDoorOpen]=useState(false);
+  const [lightRevealed,setLightRevealed]=useState(false);
+  const [holdRevealed,setHoldRevealed]=useState(false);
 
   const scenes=experience.recipe;
   const current=scenes[sceneIndex];
@@ -55,6 +62,7 @@ export default function ExperienceEngine({
     "Sin darnos cuenta, empezamos a coleccionar un mundo propio.",
   ];
   const demo=experience.demo;
+  const premiumMoment=premiumMoments[experience.slug] || premiumMoments.pareja;
   const memoryLines=demo.memories?.length ? demo.memories : defaultMemories;
   const starLines=demo.stars?.length ? demo.stars : [
     "Tu forma de hacer hogar.",
@@ -96,6 +104,8 @@ export default function ExperienceEngine({
     setCapsuleOpen(false);
     setVoicesPlayed([]);
     setDoorOpen(false);
+    setLightRevealed(false);
+    setHoldRevealed(false);
   };
 
   const resetSceneState=(type:SceneType)=>{
@@ -109,6 +119,8 @@ export default function ExperienceEngine({
     if(type==="capsule") setCapsuleOpen(false);
     if(type==="voices") setVoicesPlayed([]);
     if(type==="door") setDoorOpen(false);
+    if(type==="light") setLightRevealed(false);
+    if(type==="hold") setHoldRevealed(false);
   };
 
   const restart=()=>{
@@ -158,12 +170,28 @@ export default function ExperienceEngine({
   const moveTo=(nextIndex:number,dir:"forward"|"back")=>{
     if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex) return;
     const destination=scenes[nextIndex];
-    resetSceneState(destination);
-    setDirection(dir);
-    setTransitioning(false);
-    setSceneIndex(nextIndex);
-    setRunId((value)=>value+1);
+    const commitScene=()=>{
+      resetSceneState(destination);
+      setDirection(dir);
+      setTransitioning(false);
+      setSceneIndex(nextIndex);
+      setRunId((value)=>value+1);
+    };
+
     haptic(8);
+
+    if(typeof document!=="undefined" && typeof window!=="undefined"){
+      const viewDocument=document as Document & {
+        startViewTransition?: (update:()=>void)=>unknown;
+      };
+      const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if(viewDocument.startViewTransition && !reduced){
+        viewDocument.startViewTransition(()=>flushSync(commitScene));
+        return;
+      }
+    }
+
+    commitScene();
   };
 
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");
@@ -185,6 +213,10 @@ export default function ExperienceEngine({
         return true;
       case "door":
         return doorOpen;
+      case "light":
+        return lightRevealed;
+      case "hold":
+        return holdRevealed;
       case "stars":
         return stars.length>=3;
       case "scratch":
@@ -255,6 +287,21 @@ export default function ExperienceEngine({
         <button className="thi-primary" onClick={next}>Seguir <span>→</span></button>
       </section>;
 
+      case "light": return <section className="thi-scene thi-scene-light thi-scene-rich">
+        <p className="thi-kicker">{premiumMoment.light.kicker}</p>
+        <h2>{premiumMoment.light.title}</h2>
+        <LightReveal
+          accent={experience.accent}
+          kicker={premiumMoment.light.kicker}
+          title={premiumMoment.light.title}
+          secret={premiumMoment.light.secret}
+          hint={premiumMoment.light.hint}
+          revealed={lightRevealed}
+          onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime");}}
+        />
+        {lightRevealed&&<button className="thi-primary" onClick={next}>Seguir con este recuerdo →</button>}
+      </section>;
+
       case "stars": return <section className="thi-scene thi-scene-stars thi-scene-rich">
         <div className="thi-sky-dust" aria-hidden="true"/>
         <p className="thi-kicker">Cosas que no quiero que olvides</p>
@@ -285,6 +332,20 @@ export default function ExperienceEngine({
           onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime");}}
         />
         <button className="thi-primary" disabled={!scratched} onClick={next}>Ya lo descubrí →</button>
+      </section>;
+
+      case "hold": return <section className="thi-scene thi-scene-hold thi-scene-rich">
+        <p className="thi-kicker">{premiumMoment.hold.kicker}</p>
+        <h2>Hay cosas que merecen<br/>un segundo más.</h2>
+        <HoldReveal
+          accent={experience.accent}
+          symbol={premiumMoment.hold.symbol}
+          prompt={premiumMoment.hold.prompt}
+          reveal={premiumMoment.hold.reveal}
+          revealed={holdRevealed}
+          onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);playFx("seal");}}
+        />
+        {holdRevealed&&<button className="thi-primary" onClick={next}>Seguir →</button>}
       </section>;
 
       case "letter": return <section className="thi-scene thi-scene-letter thi-scene-rich">
@@ -382,7 +443,18 @@ export default function ExperienceEngine({
     }
   }
 
-  return <main className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current}>
+  const moveAtmosphere=(event:ReactPointerEvent<HTMLElement>)=>{
+    const node=event.currentTarget;
+    const width=Math.max(window.innerWidth,1);
+    const height=Math.max(window.innerHeight,1);
+    node.style.setProperty("--pointer-left",`${event.clientX}px`);
+    node.style.setProperty("--pointer-top",`${event.clientY}px`);
+    node.style.setProperty("--parallax-x",`${((event.clientX/width)-.5)*18}px`);
+    node.style.setProperty("--parallax-y",`${((event.clientY/height)-.5)*14}px`);
+  };
+
+  return <main className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onPointerMove={moveAtmosphere}>
+    <div className="thi-pointer-light" aria-hidden="true"/>
     <div className="thi-experience-noise" aria-hidden="true"/>
     <div className="thi-experience-vignette" aria-hidden="true"/>
     <div className="thi-experience-orb orb-a" aria-hidden="true"/>

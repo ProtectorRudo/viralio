@@ -134,6 +134,9 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.locator(".thi-door-wrap").click();
   await page.getByRole("button", { name: "Entrar →" }).click();
   await page.getByRole("button", { name: /Seguir/ }).click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene", "light");
+  await page.getByRole("button", { name: "Revelar recuerdo con luz" }).click();
+  await page.getByRole("button", { name: /Seguir con este recuerdo/ }).click();
   await expect(page.getByText(/Tocá las estrellas/i)).toBeVisible();
   const stars = page.locator(".thi-stars button");
   await stars.nth(0).click();
