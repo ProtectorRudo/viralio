@@ -40,6 +40,7 @@ type Media = {
     size?: number;
     fit?: "cover" | "contain";
     position?: "center" | "top" | "bottom" | "left" | "right";
+    scene?: SceneType;
   } | null;
   url: string | null;
 };
@@ -210,6 +211,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   }
 
   async function updateMedia(item:Media,patch:Partial<Media> & {fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType}){
+    if(!gift) return;
     const fallbackScene=defaultSceneForMedia(item.kind,gift.scene_recipe);
     const metadata={
       ...(item.metadata||{}),
