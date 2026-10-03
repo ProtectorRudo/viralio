@@ -114,30 +114,30 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await capture(page, testInfo, "tehiceesto-creator-390");
 
   await page.goto("/tehiceesto/experiencias/pareja");
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.locator('[data-action="advance"]').click();
   await expect(page.locator(".thi-door-wrap")).toBeVisible();
   await capture(page, testInfo, "tehiceesto-pareja-door-390");
-  await page.locator(".thi-door-wrap").click();
-  await page.getByRole("button", { name: "Entrar →" }).click();
-  await expect(page.getByText(/Hay días que terminan/i)).toBeVisible();
+  await page.locator('[data-action="open-door"]').click();
+  await page.locator('[data-action="advance"]').click();
+  await expect(page.getByText(/Pasaron hace tiempo/i)).toBeVisible();
   await capture(page, testInfo, "tehiceesto-pareja-memories-390");
 
   await page.goto("/tehiceesto/experiencias/cumpleanos");
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.locator('[data-action="advance"]').click();
   await expect(page.getByRole("button", { name: /Soplar de verdad/i })).toBeVisible();
   await capture(page, testInfo, "tehiceesto-cumple-candles-390");
-  await page.getByRole("button", { name: /apagarlas tocando/i }).click();
+  await page.locator('[data-action="blow-fallback"]').click();
   await capture(page, testInfo, "tehiceesto-cumple-wish-390");
 
   await page.goto("/tehiceesto/experiencias/propuesta");
-  await page.getByRole("button", { name: "Entrar" }).click();
-  await page.locator(".thi-door-wrap").click();
-  await page.getByRole("button", { name: "Entrar →" }).click();
-  await page.getByRole("button", { name: /Seguir/ }).click();
+  await page.locator('[data-action="advance"]').click();
+  await page.locator('[data-action="open-door"]').click();
+  await page.locator('[data-action="advance"]').click();
+  await page.locator('[data-action="advance"]').click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene", "light");
-  await page.getByRole("button", { name: "Revelar recuerdo con luz" }).click();
-  await page.getByRole("button", { name: /Seguir con este recuerdo/ }).click();
-  await expect(page.getByText(/Tocá las estrellas/i)).toBeVisible();
+  await page.locator('[data-action="light-reveal"]').click();
+  await page.locator('[data-action="advance"]').click();
+  await expect(page.getByText(/No son votos todavía/i)).toBeVisible();
   const stars = page.locator(".thi-stars button");
   await stars.nth(0).click();
   await stars.nth(1).click();
