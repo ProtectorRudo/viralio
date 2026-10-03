@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import ExperienceEngine from "./ExperienceEngine";
 import { experiences, getExperience } from "./data";
 
@@ -37,7 +38,7 @@ export default function CreatorWizard(){
 
   return <div className="thi-wizard-shell">
     <aside className="thi-wizard-aside">
-      <a href="/tehiceesto" className="thi-wizard-brand">TE HICE ESTO <span>♥</span></a>
+      <Link href="/tehiceesto" className="thi-wizard-brand">TE HICE ESTO <span>♥</span></Link>
       <div className="thi-wizard-aside-copy">
         <p className="thi-kicker">Crear una experiencia</p>
         <h2>No estás completando una plantilla.</h2>
