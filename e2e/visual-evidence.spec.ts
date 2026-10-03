@@ -120,9 +120,9 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
 
   await page.goto("/tehiceesto/experiencias/cumpleanos");
   await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page.getByRole("button", { name: /Soplar las velitas/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Soplar de verdad/i })).toBeVisible();
   await capture(page, testInfo, "tehiceesto-cumple-candles-390");
-  await page.getByRole("button", { name: /Soplar las velitas/i }).click();
+  await page.getByRole("button", { name: /apagarlas tocando/i }).click();
   await capture(page, testInfo, "tehiceesto-cumple-wish-390");
 
   await page.goto("/tehiceesto/experiencias/propuesta");
