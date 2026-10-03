@@ -124,12 +124,24 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.goto("/tehiceesto/experiencias/pareja");
   await page.locator('[data-action="advance"]').click();
   await expect(page.locator(".thi-door-wrap")).toBeVisible();
+  await page.waitForTimeout(700);
   await capture(page, testInfo, "tehiceesto-pareja-door-390");
   await page.locator('[data-action="open-door"]').click();
   await page.locator('[data-action="advance"]').click();
   await expect(page.getByText(/Pasaron hace tiempo/i)).toBeVisible();
   await waitForLoadedImages(page, ".thi-theme-pareja .thi-memory-photo img");
   await capture(page, testInfo, "tehiceesto-pareja-memories-390");
+
+  await page.locator('[data-action="advance"]').click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
+  await page.locator('[data-action="demo-voice"]').click();
+  await page.locator('[data-action="advance"]').click();
+  await page.locator('[data-action="light-reveal"]').click();
+  await page.locator('[data-action="advance"]').click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","stars");
+  const parejaStars=page.locator(".thi-stars-cinematic [data-action='star']");
+  await parejaStars.nth(0).click();
+  await capture(page,testInfo,"tehiceesto-pareja-stars-390");
 
   await page.goto("/tehiceesto/experiencias/cumpleanos");
   await page.locator('[data-action="advance"]').click();

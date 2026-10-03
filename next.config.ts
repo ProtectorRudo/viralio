@@ -9,7 +9,7 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   `script-src 'self' 'unsafe-inline'${development ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://images.unsplash.com",
   "font-src 'self' data:",
   `connect-src 'self' https://raw.githubusercontent.com${development ? " ws: wss:" : ""}`,
   "manifest-src 'self'",
