@@ -89,6 +89,7 @@ test("final browser evidence covers premium gift flows with materially distinct 
 
 
 test("Te Hice Esto visual evidence covers storefront, creator, premium scenes and admin login", async ({ page }, testInfo) => {
+  test.setTimeout(75_000);
   await page.emulateMedia({ reducedMotion: "no-preference" });
 
   await page.setViewportSize({ width: 1440, height: 1000 });

@@ -1358,3 +1358,144 @@
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(180deg,rgba(53,18,28,.08),transparent 45%,rgba(14,5,8,.15));
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   PAREJA QUALITY PASS II — contrast, editorial light, quieter UI
+   ═══════════════════════════════════════════════════════════ */
+.thi-theme-pareja .thi-primary:not(:disabled){
+  background:linear-gradient(135deg,#e49aae,#c96e88)!important;
+  color:#170b10!important;
+  border-color:rgba(255,222,230,.28)!important;
+  box-shadow:0 14px 42px rgba(166,63,93,.13)!important;
+  font-weight:700;
+}
+.thi-theme-pareja .thi-primary:not(:disabled):hover,
+.thi-theme-pareja .thi-primary:not(:disabled):focus-visible{
+  background:linear-gradient(135deg,#efadbd,#d47b94)!important;
+  transform:translateY(-2px);
+  box-shadow:0 18px 50px rgba(166,63,93,.2)!important;
+}
+.thi-theme-pareja .thi-primary:disabled{
+  background:transparent!important;
+  color:#58464d!important;
+  border-color:rgba(208,126,148,.16)!important;
+  opacity:1!important;
+}
+.thi-theme-pareja .thi-ghost{
+  border-color:rgba(255,255,255,.1);
+  color:#a399a1;
+  background:rgba(255,255,255,.015);
+}
+.thi-theme-pareja .thi-ghost:hover,.thi-theme-pareja .thi-ghost:focus-visible{
+  border-color:rgba(255,255,255,.2);color:#efe8ed;background:rgba(255,255,255,.035)
+}
+
+/* voice note: less app-card, more intimate recording */
+.thi-theme-pareja .thi-romantic-audio{width:min(620px,91vw);margin-top:20px}
+.thi-theme-pareja .thi-romantic-audio>button{
+  border-width:0 0 1px!important;
+  border-radius:0!important;
+  background:transparent!important;
+  padding:20px 4px 19px!important;
+  box-shadow:none!important;
+  grid-template-columns:44px 1fr 38px!important;
+}
+.thi-theme-pareja .thi-romantic-audio>button:hover{transform:none!important;border-color:rgba(229,154,174,.28)!important;box-shadow:none!important}
+.thi-theme-pareja .thi-audio-avatar{
+  width:42px;height:42px;background:transparent;border:1px solid rgba(228,151,172,.28);
+  box-shadow:none;color:#df91a6;font-size:17px
+}
+.thi-theme-pareja .thi-audio-copy>small{color:#75676d!important}
+.thi-theme-pareja .thi-audio-copy>strong{font-family:var(--thi-serif);font-style:italic;font-size:21px}
+.thi-theme-pareja .thi-audio-play{border:0;background:transparent;width:34px;height:34px}
+.thi-theme-pareja .thi-waveform b{background:#b66f82;opacity:.38}
+.thi-theme-pareja .thi-romantic-audio>p{
+  max-width:650px;font-size:clamp(21px,3.2vw,30px);line-height:1.38;color:#ddd1d7;margin-top:30px
+}
+
+/* light reveal should feel like darkness opening, not a component card */
+.thi-theme-pareja .thi-light-reveal{
+  width:min(760px,96vw);
+  height:min(410px,48vh);
+  min-height:330px;
+  border:0!important;
+  border-radius:0!important;
+  background:
+    radial-gradient(circle at 50% 52%,rgba(92,34,51,.12),transparent 34%),
+    transparent!important;
+  box-shadow:none!important;
+}
+.thi-theme-pareja .thi-light-reveal:before{
+  background:radial-gradient(130px circle at var(--light-x) var(--light-y),transparent 0 42%,rgba(6,4,6,.1) 56%,rgba(6,4,6,.93) 100%);
+}
+.thi-theme-pareja .thi-light-reveal:after{
+  background:radial-gradient(circle,rgba(255,226,233,.2),rgba(212,113,139,.07) 36%,transparent 70%);
+  filter:blur(9px)
+}
+.thi-theme-pareja .thi-light-secret strong{font-style:italic;font-weight:400}
+.thi-theme-pareja .thi-light-secret p{
+  font-size:clamp(22px,3.2vw,31px);max-width:600px;color:#eadfe5
+}
+.thi-theme-pareja .thi-light-reveal>em{
+  bottom:8px;color:#6f6268
+}
+.thi-theme-pareja .thi-light-reveal.revealed>em{color:#a87987}
+.thi-theme-pareja .thi-light-ambient i{opacity:.22}
+
+/* scratch: one physical keepsake, not a generic coupon widget */
+.thi-theme-pareja .thi-scratch{
+  width:min(500px,88vw);
+  aspect-ratio:1.72;
+  border-radius:3px!important;
+  border:1px solid rgba(96,59,69,.13)!important;
+  background:#eee5de!important;
+  box-shadow:0 32px 85px rgba(0,0,0,.34)!important;
+  transform:rotate(-.45deg)
+}
+.thi-theme-pareja .thi-scratch-prize{
+  background:
+    linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.15)),
+    #eee5de;
+}
+.thi-theme-pareja .thi-scratch-prize:before{
+  content:"";position:absolute;inset:8px;border:1px solid rgba(72,47,54,.1);pointer-events:none
+}
+.thi-theme-pareja .thi-scratch-prize>span{color:#8f7880;letter-spacing:.18em}
+.thi-theme-pareja .thi-scratch-prize>strong{
+  font-weight:400;font-style:italic;color:#34272c;font-size:clamp(23px,4vw,31px)
+}
+.thi-theme-pareja .thi-scratch-prize>small{color:#8e7d83}
+.thi-theme-pareja .thi-scratch-prize>i{color:#c66f88}
+
+/* letter: remove default boldness, make it read like a personal page */
+.thi-theme-pareja .thi-envelope .paper strong{
+  font-weight:400!important;
+  font-size:clamp(17px,2.7vw,20px)!important;
+  line-height:1.5!important;
+  color:#342a2d;
+}
+.thi-theme-pareja .thi-envelope .paper small{color:#8a7d76}
+.thi-theme-pareja .thi-envelope .paper em{font-family:var(--thi-serif);font-size:15px;color:#816f69}
+
+/* final: reactions are a whisper, not app controls */
+.thi-theme-pareja .thi-final .thi-reactions{gap:12px;margin-top:26px}
+.thi-theme-pareja .thi-final .thi-reactions button{
+  width:42px;height:42px;background:transparent;border-color:rgba(255,255,255,.085);
+  font-size:17px;color:#fff;box-shadow:none
+}
+.thi-theme-pareja .thi-final .thi-reactions button:hover{
+  background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.17);transform:translateY(-3px)
+}
+.thi-theme-pareja .thi-final>small{opacity:.42}
+
+/* mobile breathing room */
+@media(max-width:650px){
+  .thi-theme-pareja .thi-scene-voices h2{margin-bottom:10px}
+  .thi-theme-pareja .thi-romantic-audio{margin-top:8px}
+  .thi-theme-pareja .thi-romantic-audio>button{padding-inline:0!important}
+  .thi-theme-pareja .thi-light-reveal{width:100vw;height:370px;min-height:350px;margin-inline:-18px}
+  .thi-theme-pareja .thi-light-secret{padding-inline:34px}
+  .thi-theme-pareja .thi-scratch{width:86vw}
+  .thi-theme-pareja .thi-envelope .paper strong{font-size:17px!important}
+}
