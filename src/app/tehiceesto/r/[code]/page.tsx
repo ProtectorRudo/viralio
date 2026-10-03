@@ -11,7 +11,7 @@ type EdgeGift={
   story_data:{relationship?:string;keyDate?:string;anecdote?:string;script?:DeepPartial<ExperienceCopy>}|null;
   theme_data:{accent?:string}|null;
 };
-type EdgeMedia={kind:"image"|"audio"|"video";caption:string|null;sort_order:number;metadata:{fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right"}|null;url:string|null};
+type EdgeMedia={kind:"image"|"audio"|"video";caption:string|null;sort_order:number;metadata:{fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:import("../../data").SceneType}|null;url:string|null};
 
 export default async function PublishedGiftPage({params}:{params:Promise<{code:string}>}){
   const {code}=await params;if(!/^[a-f0-9]{18}$/.test(code))notFound();
@@ -22,7 +22,7 @@ export default async function PublishedGiftPage({params}:{params:Promise<{code:s
     recipe:Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?(payload.gift.scene_recipe as typeof base.recipe):base.recipe,accent:payload.gift.theme_data?.accent||base.accent};
   const ordered=[...(payload.media||[])].sort((a,b)=>a.sort_order-b.sort_order);
   return <ExperienceEngine experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
-    photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center"}))}
-    audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined}))}
-    videoMedia={ordered.filter(item=>item.kind==="video"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined}))}/>;
+    photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",scene:item.metadata?.scene}))}
+    audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
+    videoMedia={ordered.filter(item=>item.kind==="video"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}/>;
 }

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from "../ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
 import { getExperienceCopy, type DeepPartial, type ExperienceCopy } from "../experienceCopy";
+import { defaultSceneForMedia } from "../mediaRouting";
 import ScriptEditor from "./ScriptEditor";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
 
@@ -132,9 +133,10 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     caption:x.caption||undefined,
     fit:x.metadata?.fit||"cover",
     position:x.metadata?.position||"center",
+    scene:x.metadata?.scene,
   }));
-  const audioMedia:ThiAudio[]=media.filter(x=>x.kind==="audio"&&x.url).map(x=>({url:x.url!,caption:x.caption||undefined}));
-  const videoMedia:ThiVideo[]=media.filter(x=>x.kind==="video"&&x.url).map(x=>({url:x.url!,caption:x.caption||undefined}));
+  const audioMedia:ThiAudio[]=media.filter(x=>x.kind==="audio"&&x.url).map(x=>({url:x.url!,caption:x.caption||undefined,scene:x.metadata?.scene}));
+  const videoMedia:ThiVideo[]=media.filter(x=>x.kind==="video"&&x.url).map(x=>({url:x.url!,caption:x.caption||undefined,scene:x.metadata?.scene}));
 
   function patchGift<K extends keyof Gift>(key:K,value:Gift[K]){
     setGift(current=>current?{...current,[key]:value}:current);
@@ -207,10 +209,16 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     await load();
   }
 
-  async function updateMedia(item:Media,patch:Partial<Media> & {fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right"}){
-    const metadata={...(item.metadata||{}),fit:patch.fit??item.metadata?.fit??"cover",position:patch.position??item.metadata?.position??"center"};
+  async function updateMedia(item:Media,patch:Partial<Media> & {fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType}){
+    const fallbackScene=defaultSceneForMedia(item.kind,gift.scene_recipe);
+    const metadata={
+      ...(item.metadata||{}),
+      fit:patch.fit??item.metadata?.fit??"cover",
+      position:patch.position??item.metadata?.position??"center",
+      scene:patch.scene??item.metadata?.scene??fallbackScene,
+    };
     setMedia(current=>current.map(x=>x.id===item.id?{...x,caption:patch.caption??x.caption,metadata}:x));
-    await adminCall("updateMedia",{code,mediaId:item.id,caption:patch.caption??item.caption??"",fit:metadata.fit,position:metadata.position});
+    await adminCall("updateMedia",{code,mediaId:item.id,caption:patch.caption??item.caption??"",fit:metadata.fit,position:metadata.position,scene:metadata.scene});
     await load();
   }
 
@@ -323,16 +331,25 @@ export default function AdminGiftEditor({ code }: { code: string }) {
 
     <section className="thi-admin-panel thi-editor-media-panel" id="thi-archivos">
       <div className="thi-admin-panel-heading">
-        <div><p className="thi-kicker">Archivos</p><h2>Fotos, audios y videos</h2><p>Los archivos se guardan en storage privado y se entregan mediante URLs temporales.</p></div>
+        <div><p className="thi-kicker">Archivos</p><h2>Fotos, audios y videos</h2><p>Cada archivo pertenece a una escena concreta. Ahí aparece —y no antes— durante el recorrido.</p></div>
         <button className="thi-primary" onClick={()=>inputRef.current?.click()}>+ Subir archivos</button>
         <input ref={inputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,audio/mpeg,audio/mp4,audio/webm,audio/wav,video/mp4,video/webm,video/quicktime" onChange={e=>uploadFiles(e.target.files)}/>
       </div>
 
       {uploading.length>0&&<div className="thi-uploading">{uploading.map(name=><span key={name}>Subiendo {name}…</span>)}</div>}
 
-      {media.length===0?<div className="thi-admin-empty"><strong>Todavía no hay archivos.</strong><p>Subí el material y revisamos cada encuadre antes de publicar.</p></div>:
+      {media.length>0&&<div className="thi-media-scene-map">
+        {Array.from(new Set(gift.scene_recipe)).map((scene,index)=>{
+          const count=media.filter(item=>(item.metadata?.scene||defaultSceneForMedia(item.kind,gift.scene_recipe))===scene).length;
+          return <button key={scene} type="button" className={count?"has-media":""} onClick={()=>{setPreviewScene(scene);setPreview(true)}}>
+            <span>{String(index+1).padStart(2,"0")}</span><strong>{scenes.find(item=>item.type===scene)?.label||scene}</strong><b>{count}</b>
+          </button>;
+        })}
+      </div>}
+      {media.length===0?<div className="thi-admin-empty"><strong>Todavía no hay archivos.</strong><p>Subí el material y después elegí exactamente en qué escena aparece cada archivo.</p></div>:
       <div className="thi-media-grid">{media.map((item,index)=>{
         const fit=item.metadata?.fit||"cover"; const position=item.metadata?.position||"center";
+        const assignedScene=item.metadata?.scene||defaultSceneForMedia(item.kind,gift.scene_recipe);
         return <article className="thi-media-card" key={item.id}>
           <div className="thi-media-preview">
             {item.kind==="image"&&item.url&&<img src={item.url} alt={item.caption||item.metadata?.originalName||"Foto"} style={{objectFit:fit,objectPosition:position}}/>}
@@ -342,12 +359,13 @@ export default function AdminGiftEditor({ code }: { code: string }) {
           </div>
           <div className="thi-media-body">
             <div className="thi-media-name"><strong>{item.metadata?.originalName||"Archivo"}</strong><small>{humanSize(item.metadata?.size)}</small></div>
-            <label><span>Texto</span><input defaultValue={item.caption||""} onBlur={e=>updateMedia(item,{caption:e.target.value})}/></label>
+            <label className="thi-media-scene-select"><span>Aparece en</span><select value={assignedScene} onChange={e=>updateMedia(item,{scene:e.target.value as SceneType})}>{Array.from(new Set(gift.scene_recipe)).map(scene=><option key={scene} value={scene}>{scenes.find(x=>x.type===scene)?.label||scene}</option>)}</select></label>
+            <label><span>Texto / pie</span><input defaultValue={item.caption||""} onBlur={e=>updateMedia(item,{caption:e.target.value})}/></label>
             {item.kind==="image"&&<div className="thi-media-controls">
               <label><span>Encuadre</span><select value={fit} onChange={e=>updateMedia(item,{fit:e.target.value as "cover"|"contain"})}><option value="cover">Llenar marco</option><option value="contain">Mostrar completa</option></select></label>
               <label><span>Foco</span><select value={position} onChange={e=>updateMedia(item,{position:e.target.value as "center"|"top"|"bottom"|"left"|"right"})}><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label>
             </div>}
-            <div className="thi-media-actions"><button disabled={!index} onClick={()=>moveMedia(index,-1)}>↑</button><button disabled={index===media.length-1} onClick={()=>moveMedia(index,1)}>↓</button><button className="danger" onClick={()=>deleteMedia(item)}>Eliminar</button></div>
+            <div className="thi-media-actions"><button disabled={!index} onClick={()=>moveMedia(index,-1)}>↑</button><button disabled={index===media.length-1} onClick={()=>moveMedia(index,1)}>↓</button><button onClick={()=>{setPreviewScene(assignedScene);setPreview(true)}}>Ver escena ↗</button><button className="danger" onClick={()=>deleteMedia(item)}>Eliminar</button></div>
           </div>
         </article>
       })}</div>}

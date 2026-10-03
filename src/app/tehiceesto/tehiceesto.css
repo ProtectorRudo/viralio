@@ -1196,3 +1196,38 @@
 .thi-script-add{margin-top:8px;border:1px dashed rgba(255,255,255,.11);background:transparent;color:#8a838b;border-radius:8px;padding:9px 12px;font-size:9px;cursor:pointer}.thi-script-add:hover{color:#fff;border-color:rgba(255,255,255,.2)}
 @media(max-width:900px){.thi-script-editor{grid-template-columns:1fr}.thi-script-nav{position:relative;top:auto;flex-direction:row;overflow:auto;max-height:none}.thi-script-nav button{min-width:126px}.thi-script-head{flex-direction:column}.thi-script-head-actions{justify-content:flex-start}.thi-script-structured article{grid-template-columns:24px 1fr}.thi-script-structured article textarea{grid-column:2}.thi-script-structured article>button{grid-column:2;justify-self:start;padding-left:0}}
 @media(max-width:600px){.thi-script-workspace{padding:17px 14px;border-radius:13px}.thi-script-fields,.thi-script-global-grid{grid-template-columns:1fr}.thi-script-fields label.wide{grid-column:auto}.thi-script-scene-labels label{grid-template-columns:24px 74px 1fr}.thi-script-field-heading{flex-direction:column;gap:3px}.thi-script-head h3{font-size:26px}}
+
+
+/* ─────────────────────────────────────────────────────────
+   SCENE-DIRECTED MEDIA — every file appears where it belongs
+   ───────────────────────────────────────────────────────── */
+.thi-media-scene-map{display:flex;gap:7px;overflow:auto;padding:2px 0 16px;margin:4px 0 18px;scrollbar-width:thin}
+.thi-media-scene-map button{min-width:122px;border:1px solid rgba(255,255,255,.07);background:#09080a;color:#777079;border-radius:10px;padding:10px;display:grid;grid-template-columns:22px 1fr auto;gap:7px;align-items:center;text-align:left;cursor:pointer}
+.thi-media-scene-map button:hover{border-color:rgba(255,255,255,.14);color:#bdb5bd}.thi-media-scene-map button.has-media{background:#121014;border-color:rgba(216,146,165,.16);color:#e0d8de}
+.thi-media-scene-map span{font:500 7px ui-monospace,SFMono-Regular,Menlo,monospace;color:#5e5860}.thi-media-scene-map strong{font-size:9px;font-weight:600}.thi-media-scene-map b{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#070608;font-size:8px;color:#9a9299}
+.thi-media-scene-select select{border-color:rgba(216,146,165,.2)!important;background:linear-gradient(90deg,rgba(216,146,165,.06),transparent),#09080a!important}
+.thi-media-scene-select>span:after{content:" · momento exacto";color:#5f5960;font-size:7px;text-transform:none;letter-spacing:0}
+
+.thi-scene-stage{position:relative}
+.thi-scene-stage.has-attached-media>.thi-scene{padding-right:clamp(290px,27vw,390px)}
+.thi-attached-media{position:absolute;z-index:12;right:clamp(18px,3.4vw,54px);top:50%;transform:translateY(-50%);width:min(250px,22vw);display:flex;flex-direction:column;gap:10px;pointer-events:auto;animation:thiAttachedEnter .75s cubic-bezier(.18,.8,.2,1) both}
+.thi-attached-photo,.thi-attached-video{margin:0;background:#0b090c;border:1px solid rgba(255,255,255,.1);padding:7px;box-shadow:0 24px 65px rgba(0,0,0,.42);transform:rotate(-1.1deg)}
+.thi-attached-photo.p2{transform:rotate(1.4deg);margin-top:-22px;margin-left:28px}
+.thi-attached-photo img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#09080a}
+.thi-attached-video{transform:none;border-radius:9px;padding:6px}.thi-attached-video video{display:block;width:100%;max-height:190px;border-radius:5px;background:#000}
+.thi-attached-photo figcaption,.thi-attached-video figcaption{font-family:var(--thi-serif);font-size:12px;line-height:1.3;color:#cfc6cc;padding:8px 5px 3px}
+.thi-attached-audio{display:grid;grid-template-columns:32px 1fr;gap:9px;align-items:center;border:1px solid rgba(255,255,255,.1);background:rgba(10,8,11,.92);backdrop-filter:blur(16px);padding:10px;border-radius:9px;box-shadow:0 20px 55px rgba(0,0,0,.34)}
+.thi-attached-audio>span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 11%,#111);color:var(--accent);font-size:12px}.thi-attached-audio>div{min-width:0}.thi-attached-audio small{display:block;font-size:8px;color:#9e969e;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.thi-attached-audio audio{width:100%;height:28px;display:block}
+.thi-theme-pareja .thi-attached-photo{border-radius:1px;background:#e9dfda;padding:7px 7px 22px}.thi-theme-pareja .thi-attached-photo figcaption{color:#3d3035;font-size:11px}
+.thi-theme-abuelos .thi-attached-photo{background:#d9ccb8;border-color:#8d7553;padding-bottom:20px}.thi-theme-abuelos .thi-attached-photo figcaption{color:#33281c}
+.thi-theme-amistad .thi-attached-photo{transform:rotate(-3deg);box-shadow:8px 9px 0 rgba(121,183,255,.04),0 22px 60px rgba(0,0,0,.4)}
+.thi-theme-propuesta .thi-attached-photo,.thi-theme-propuesta .thi-attached-video{border-color:rgba(246,213,143,.16);background:#050505}
+@keyframes thiAttachedEnter{from{opacity:0;transform:translateY(calc(-50% + 18px)) scale(.96);filter:blur(6px)}to{opacity:1;transform:translateY(-50%) scale(1);filter:blur(0)}}
+@media(max-width:820px){
+  .thi-scene-stage.has-attached-media>.thi-scene{padding-right:20px;padding-bottom:210px}
+  .thi-attached-media{position:absolute;top:auto;right:auto;left:50%;bottom:76px;transform:translateX(-50%);width:min(300px,82vw);max-height:170px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 4px}
+  .thi-attached-photo,.thi-attached-video,.thi-attached-audio{transform:none!important;margin:0!important}
+  .thi-attached-photo img{aspect-ratio:16/10;max-height:105px}.thi-attached-photo figcaption,.thi-attached-video figcaption{font-size:10px}
+  .thi-attached-audio{grid-column:1/-1}.thi-attached-video{grid-column:1/-1}.thi-attached-video video{max-height:115px}
+  @keyframes thiAttachedEnter{from{opacity:0;transform:translateX(-50%) translateY(12px);filter:blur(6px)}to{opacity:1;transform:translateX(-50%) translateY(0);filter:blur(0)}}
+}
