@@ -78,3 +78,66 @@ test("final browser evidence covers premium gift flows with materially distinct 
   expect(atlasReward).toBe("token");
   expect(mokaReward).not.toBe(atlasReward);
 });
+
+
+test("Te Hice Esto visual evidence covers storefront, creator, premium scenes and admin login", async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/tehiceesto");
+  await expect(page.getByRole("heading", { name: /Un regalo que no se abre/i })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, "tehiceesto-home-1440");
+
+  await page.goto("/tehiceesto/crear");
+  await expect(page.getByRole("heading", { name: /Qué querés convertir/i })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, "tehiceesto-creator-1440");
+
+  await page.goto("/tehiceesto/admin");
+  await expect(page.getByRole("heading", { name: /Armado de regalos/i })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, "tehiceesto-admin-login-1440");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto("/tehiceesto");
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, "tehiceesto-home-390");
+
+  await page.goto("/tehiceesto/crear");
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, "tehiceesto-creator-390");
+
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.locator(".thi-door-wrap")).toBeVisible();
+  await capture(page, testInfo, "tehiceesto-pareja-door-390");
+  await page.locator(".thi-door-wrap").click();
+  await page.waitForTimeout(950);
+  await expect(page.getByText(/Hay días que terminan/i)).toBeVisible();
+  await capture(page, testInfo, "tehiceesto-pareja-memories-390");
+
+  await page.goto("/tehiceesto/experiencias/cumpleanos");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.getByRole("button", { name: /Soplar las velitas/i })).toBeVisible();
+  await capture(page, testInfo, "tehiceesto-cumple-candles-390");
+  await page.getByRole("button", { name: /Soplar las velitas/i }).click();
+  await capture(page, testInfo, "tehiceesto-cumple-wish-390");
+
+  await page.goto("/tehiceesto/experiencias/propuesta");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.locator(".thi-door-wrap").click();
+  await page.waitForTimeout(950);
+  await page.getByRole("button", { name: /Seguir/ }).click();
+  await expect(page.getByText(/Tocá las estrellas/i)).toBeVisible();
+  const stars = page.locator(".thi-stars button");
+  await stars.nth(0).click();
+  await stars.nth(1).click();
+  await stars.nth(2).click();
+  await capture(page, testInfo, "tehiceesto-propuesta-stars-390");
+
+  await page.goto("/tehiceesto/admin");
+  await expectNoHorizontalOverflow(page);
+  await capture(page, testInfo, "tehiceesto-admin-login-390");
+});
