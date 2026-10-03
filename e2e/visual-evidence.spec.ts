@@ -2,6 +2,14 @@ import { mkdirSync } from "node:fs";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { expectNoHorizontalOverflow, routeWhatsapp, scratchGift } from "./gift-flow";
 
+async function waitForLoadedImages(page: Page, selector: string) {
+  const images = page.locator(selector);
+  const count = await images.count();
+  for(let i=0;i<count;i++){
+    await expect.poll(()=>images.nth(i).evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0),{timeout:12_000}).toBe(true);
+  }
+}
+
 async function capture(page: Page, testInfo: TestInfo, name: string) {
   mkdirSync("visual-qa-evidence", { recursive: true });
   const screenshotPath = `visual-qa-evidence/${name}.png`;
@@ -120,6 +128,7 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await page.locator('[data-action="open-door"]').click();
   await page.locator('[data-action="advance"]').click();
   await expect(page.getByText(/Pasaron hace tiempo/i)).toBeVisible();
+  await waitForLoadedImages(page, ".thi-theme-pareja .thi-memory-photo img");
   await capture(page, testInfo, "tehiceesto-pareja-memories-390");
 
   await page.goto("/tehiceesto/experiencias/cumpleanos");
