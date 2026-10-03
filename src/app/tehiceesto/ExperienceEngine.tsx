@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState,type CSSProperties,type PointerEvent as ReactPointerEvent } from "react";
