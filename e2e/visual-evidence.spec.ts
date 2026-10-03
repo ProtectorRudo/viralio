@@ -89,7 +89,7 @@ test("final browser evidence covers premium gift flows with materially distinct 
 
 
 test("Te Hice Esto visual evidence covers storefront, creator, premium scenes and admin login", async ({ page }, testInfo) => {
-  test.setTimeout(75_000);
+  test.setTimeout(110_000);
   await page.emulateMedia({ reducedMotion: "no-preference" });
 
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -230,6 +230,56 @@ test("Te Hice Esto visual evidence covers storefront, creator, premium scenes an
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
   await page.waitForTimeout(600);
   await capture(page,testInfo,"tehiceesto-cumple-final-390");
+
+  await page.goto("/tehiceesto/experiencias/hijos");
+  await page.locator('[data-action="advance"]').click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","timeline");
+  await page.waitForTimeout(550);
+  await capture(page,testInfo,"tehiceesto-hijos-timeline-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","memories");
+  await waitForLoadedImages(page,".thi-theme-hijos .thi-memory-photo img");
+  await page.waitForTimeout(650);
+  await capture(page,testInfo,"tehiceesto-hijos-memories-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","light");
+  await page.locator('[data-action="light-reveal"]').click();
+  await page.waitForTimeout(450);
+  await capture(page,testInfo,"tehiceesto-hijos-light-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","stars");
+  const childStars=page.locator(".thi-theme-hijos .thi-stars [data-action='star']");
+  await childStars.nth(0).click();
+  await childStars.nth(2).click();
+  await childStars.nth(4).click();
+  await page.waitForTimeout(500);
+  await capture(page,testInfo,"tehiceesto-hijos-stars-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","capsule");
+  await page.locator('[data-action="open-capsule"]').click();
+  await page.waitForTimeout(500);
+  await capture(page,testInfo,"tehiceesto-hijos-capsule-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hold");
+  await page.locator('[data-action="hold"]').press("Enter");
+  await page.waitForTimeout(450);
+  await capture(page,testInfo,"tehiceesto-hijos-hold-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
+  await page.locator('[data-action="open-letter"]').click();
+  await page.waitForTimeout(550);
+  await capture(page,testInfo,"tehiceesto-hijos-letter-390");
+  await page.locator('[data-action="advance"]').click();
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
+  await page.waitForTimeout(600);
+  await capture(page,testInfo,"tehiceesto-hijos-final-390");
 
   await page.goto("/tehiceesto/experiencias/propuesta");
   await page.locator('[data-action="advance"]').click();

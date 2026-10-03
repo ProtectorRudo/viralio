@@ -142,6 +142,11 @@ export const experiences: Experience[] = [
         "La primera vez que dijiste una palabra y nosotros juramos que se entendió perfecto.",
         "Tus pequeñas costumbres, esas que algún día vamos a extrañar sin haberlo sabido.",
       ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1770261430784-5e08c7b7c803?auto=format&fit=crop&fm=jpg&q=74&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1650631939931-6858dd4d658b?auto=format&fit=crop&fm=jpg&q=74&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1774641374118-8305e055a060?auto=format&fit=crop&fm=jpg&q=74&w=1400",position:"center"},
+      ],
       stars:[
         "Tu curiosidad por absolutamente todo.",
         "La forma en que confiás en nosotros.",
