@@ -24,7 +24,7 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await capture(page,testInfo,"tehiceesto-premium-home-1440");
 
   await page.goto("/tehiceesto/crear");
-  await expect(page.getByRole("heading",{name:/Qué querés convertir en algo inolvidable/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Elegí la que más se parece a/i})).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-creator-1440");
 
