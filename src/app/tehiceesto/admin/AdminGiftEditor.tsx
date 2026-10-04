@@ -99,6 +99,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const [paymentReference,setPaymentReference]=useState("");
   const [paymentUrl,setPaymentUrl]=useState("");
   const [paymentSaving,setPaymentSaving]=useState(false);
+  const [checkoutCreating,setCheckoutCreating]=useState(false);
   const [media,setMedia]=useState<Media[]>([]);
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
@@ -263,6 +264,46 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     await load();
   }
 
+  async function createAutomaticCheckout(){
+    if(!gift)return;
+    const normalizedAmount=paymentAmount.trim()===""?null:Math.round(Number(paymentAmount.replace(",","."))*100);
+    if(normalizedAmount===null||!Number.isFinite(normalizedAmount)||normalizedAmount<=0){
+      setMessage("Ingresá primero el monto acordado.");
+      return;
+    }
+
+    setCheckoutCreating(true);
+    setMessage("");
+    try{
+      const prepared=await adminCall<{paymentToken:string;amountMinor:number;currency:string}>("prepareAutomaticCheckout",{
+        code,
+        amountMinor:normalizedAmount,
+      });
+
+      const response=await fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout",{
+        method:"POST",
+        headers:{"content-type":"application/json"},
+        body:JSON.stringify({action:"create",token:prepared.paymentToken}),
+      });
+      const data=await response.json().catch(()=>({})) as {checkoutUrl?:string;error?:string};
+      if(!response.ok||!data.checkoutUrl){
+        throw new Error(data.error||"checkout_create_failed");
+      }
+
+      setPaymentUrl(data.checkoutUrl);
+      setMessage("Link de Mercado Pago generado y conectado ✓");
+      await load();
+    }catch(error){
+      const reason=error instanceof Error?error.message:"checkout_create_failed";
+      setMessage(reason==="mercadopago_not_configured"
+        ?"Mercado Pago automático todavía no está configurado. Podés usar un link manual."
+        :"No pude generar el link automático. El link manual sigue disponible.");
+    }finally{
+      setCheckoutCreating(false);
+      setTimeout(()=>setMessage(""),3500);
+    }
+  }
+
   async function setPayment(status:Order["status"]){
     if(!gift) return;
     setPaymentSaving(true);
@@ -406,14 +447,19 @@ export default function AdminGiftEditor({ code }: { code: string }) {
           </label>
         </div>
         <div className="thi-payment-actions">
-          <button className="thi-payment-approve" disabled={paymentSaving} onClick={()=>setPayment("approved")}>
-            {paymentSaving?"Guardando…":"✓ Marcar pago aprobado"}
+          {order?.status!=="approved"&&(
+            <button className="thi-payment-auto" disabled={checkoutCreating||paymentSaving} onClick={createAutomaticCheckout}>
+              {checkoutCreating?"Creando cobro…":order?.checkout_url?"Regenerar link automático":"Generar link automático"}
+            </button>
+          )}
+          <button className="thi-payment-approve" disabled={paymentSaving||checkoutCreating} onClick={()=>setPayment("approved")}>
+            {paymentSaving?"Guardando…":"✓ Marcar pago aprobado manualmente"}
           </button>
           {order?.status==="approved"
-            ?<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("pending")}>Volver a pendiente</button>
-            :<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("cancelled")}>Cancelar pedido</button>}
+            ?<button className="thi-ghost" disabled={paymentSaving||checkoutCreating} onClick={()=>setPayment("pending")}>Volver a pendiente</button>
+            :<button className="thi-ghost" disabled={paymentSaving||checkoutCreating} onClick={()=>setPayment("cancelled")}>Cancelar pedido</button>}
         </div>
-        <small className="thi-payment-note">Si pegás un link de Mercado Pago, el cliente verá un botón de pago dentro de su seguimiento privado. Marcar “pagado” no cobra dinero: registra un cobro que ya verificaste.</small>
+        <small className="thi-payment-note">Con “Generar link automático”, Mercado Pago crea el cobro y el pedido pasa a Pagado solo cuando la plataforma confirma la acreditación. El botón manual queda como respaldo.</small>
       </section>
     )}
 
