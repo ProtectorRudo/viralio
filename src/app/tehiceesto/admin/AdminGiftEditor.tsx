@@ -26,8 +26,19 @@ type Gift = {
   closing_text: string | null;
   music_url: string | null;
   scene_recipe: SceneType[];
-  story_data: { relationship?: string; keyDate?: string; anecdote?: string; script?: DeepPartial<ExperienceCopy>; sceneContent?: SceneTextOverrides } | null;
+  story_data: { relationship?: string; keyDate?: string; anecdote?: string; script?: DeepPartial<ExperienceCopy>; sceneContent?: SceneTextOverrides; creator?: { submitted?: boolean; submittedAt?: string } } | null;
   theme_data: { accent?: string } | null;
+};
+
+type Order = {
+  status: "pending" | "approved" | "rejected" | "refunded" | "cancelled";
+  provider: string;
+  provider_reference: string | null;
+  amount_minor: number | null;
+  currency: string;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 type Media = {
@@ -82,6 +93,10 @@ function seedLegacyScript(gift:Gift):Gift{
 export default function AdminGiftEditor({ code }: { code: string }) {
   const router = useRouter();
   const [gift,setGift]=useState<Gift|null>(null);
+  const [order,setOrder]=useState<Order|null>(null);
+  const [paymentAmount,setPaymentAmount]=useState("");
+  const [paymentReference,setPaymentReference]=useState("");
+  const [paymentSaving,setPaymentSaving]=useState(false);
   const [media,setMedia]=useState<Media[]>([]);
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
@@ -99,8 +114,11 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         router.push("/tehiceesto/admin");
         return;
       }
-      const data=await adminCall<{gift:Gift;media:Media[]}>("getGift",{code});
+      const data=await adminCall<{gift:Gift;order:Order|null;media:Media[]}>("getGift",{code});
       setGift(seedLegacyScript(data.gift));
+      setOrder(data.order||null);
+      setPaymentAmount(data.order?.amount_minor != null ? String(data.order.amount_minor / 100) : "");
+      setPaymentReference(data.order?.provider_reference||"");
       setMedia(data.media||[]);
     }catch{
       router.push("/tehiceesto/admin");
@@ -242,11 +260,44 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     await load();
   }
 
+  async function setPayment(status:Order["status"]){
+    if(!gift) return;
+    setPaymentSaving(true);
+    setMessage("");
+    try{
+      const normalizedAmount=paymentAmount.trim()===""?null:Math.round(Number(paymentAmount.replace(",","."))*100);
+      if(normalizedAmount!==null&&(!Number.isFinite(normalizedAmount)||normalizedAmount<0)){
+        setMessage("Revisá el monto.");
+        return;
+      }
+      await adminCall("setPaymentStatus",{
+        code,
+        status,
+        amountMinor:normalizedAmount,
+        providerReference:paymentReference.trim(),
+      });
+      setMessage(status==="approved"?"Pago marcado como aprobado ✓":"Estado de pago actualizado ✓");
+      await load();
+    }catch{
+      setMessage("No se pudo actualizar el pago.");
+    }finally{
+      setPaymentSaving(false);
+      setTimeout(()=>setMessage(""),2200);
+    }
+  }
+
   async function togglePublish(){
     if(!gift) return;
     const action=gift.status==="published"?"unpublish":"publish";
-    await adminCall(action,{code});
-    await load();
+    setMessage("");
+    try{
+      await adminCall(action,{code});
+      await load();
+    }catch(error){
+      setMessage(error instanceof Error&&error.message==="payment_required"
+        ?"Este pedido todavía no tiene el pago aprobado."
+        :"No se pudo cambiar la publicación.");
+    }
   }
 
   if(loading||!gift||!base||!previewExperience||!resolvedCopy) return <main className="thi-admin-shell"><div className="thi-admin-loading">Cargando regalo…</div></main>;
@@ -273,7 +324,18 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       <div className="thi-admin-header-actions">
         <button className="thi-ghost" onClick={()=>{setPreviewScene(null);setPreview(true)}}>Ver preview</button>
         {gift.status==="published"&&<Link className="thi-ghost" href={`/tehiceesto/r/${gift.public_code}`} target="_blank">Abrir regalo ↗</Link>}
-        <button className={gift.status==="published"?"thi-publish on":"thi-publish"} onClick={togglePublish}>{gift.status==="published"?"✓ Publicado · despublicar":"Publicar regalo"}</button>
+        <button
+          className={gift.status==="published"?"thi-publish on":"thi-publish"}
+          onClick={togglePublish}
+          disabled={gift.status!=="published"&&Boolean(gift.story_data?.creator?.submitted)&&order?.status!=="approved"}
+          title={gift.status!=="published"&&gift.story_data?.creator?.submitted&&order?.status!=="approved"?"Primero aprobá el pago":undefined}
+        >
+          {gift.status==="published"
+            ?"✓ Publicado · despublicar"
+            :gift.story_data?.creator?.submitted&&order?.status!=="approved"
+              ?"Pago pendiente"
+              :"Publicar regalo"}
+        </button>
       </div>
     </header>
 
@@ -284,8 +346,42 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       </article>
       <article><small>Escenas</small><strong>{gift.scene_recipe.length}</strong><span>en el recorrido</span></article>
       <article><small>Archivos</small><strong>{media.length}</strong><span>fotos, audio y video</span></article>
-      <article><small>Estado</small><strong className={gift.status==="published"?"is-live":""}>{gift.status==="published"?"Publicado":"Borrador"}</strong><span>{gift.status==="published"?"link activo":"todavía privado"}</span></article>
+      <article><small>Estado</small><strong className={gift.status==="published"?"is-live":""}>{gift.status==="published"?"Publicado":gift.status==="paid"?"Pagado":gift.status==="awaiting_payment"?"Esperando pago":"Borrador"}</strong><span>{gift.status==="published"?"link activo":gift.status==="paid"?"listo para terminar":"todavía privado"}</span></article>
     </section>
+
+    {gift.story_data?.creator?.submitted&&(
+      <section className="thi-admin-panel thi-payment-panel" id="thi-pago">
+        <div className="thi-admin-panel-heading">
+          <div>
+            <p className="thi-kicker">Pedido comercial</p>
+            <h2>Pago</h2>
+            <p>El precio no se publica hasta que vos lo definas. Acá registrás el cobro real y recién entonces habilitamos la entrega.</p>
+          </div>
+          <span className={`thi-payment-badge ${order?.status||"pending"}`}>
+            {order?.status==="approved"?"Pagado":order?.status==="pending"||!order?"Pendiente":order.status}
+          </span>
+        </div>
+        <div className="thi-payment-grid">
+          <label>
+            <span>Monto acordado · ARS</span>
+            <input inputMode="decimal" value={paymentAmount} onChange={e=>setPaymentAmount(e.target.value)} placeholder="Ej. 25000"/>
+          </label>
+          <label>
+            <span>Referencia de Mercado Pago · opcional</span>
+            <input value={paymentReference} onChange={e=>setPaymentReference(e.target.value)} placeholder="ID o referencia del cobro"/>
+          </label>
+        </div>
+        <div className="thi-payment-actions">
+          <button className="thi-payment-approve" disabled={paymentSaving} onClick={()=>setPayment("approved")}>
+            {paymentSaving?"Guardando…":"✓ Marcar pago aprobado"}
+          </button>
+          {order?.status==="approved"
+            ?<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("pending")}>Volver a pendiente</button>
+            :<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("cancelled")}>Cancelar pedido</button>}
+        </div>
+        <small className="thi-payment-note">Marcar “pagado” no cobra dinero: registra un cobro que ya verificaste. La integración automática con Mercado Pago puede conectarse después sin cambiar este flujo.</small>
+      </section>
+    )}
 
     <nav className="thi-editor-nav">
       <a href="#thi-historia">Historia</a>
