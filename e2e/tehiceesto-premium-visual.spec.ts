@@ -16,7 +16,7 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await page.setViewportSize({width:1440,height:1000});
   await page.goto("/tehiceesto");
   await expect(page.getByRole("heading",{name:/No le mandes/i})).toBeVisible();
-  await expect(page.getByRole("heading",{name:/Nueve historias/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Elegí para quién es/i})).toBeVisible();
   await expect(page.getByText("Todo lo que hiciste sin pedir aplausos")).toBeVisible();
   await expect(page.getByText("Las cosas tuyas que quedaron en mí")).toBeVisible();
   await expect(page.getByText("Expediente: nuestra amistad")).toBeVisible();
