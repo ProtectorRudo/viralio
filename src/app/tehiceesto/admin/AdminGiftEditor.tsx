@@ -100,6 +100,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const [paymentUrl,setPaymentUrl]=useState("");
   const [paymentSaving,setPaymentSaving]=useState(false);
   const [checkoutCreating,setCheckoutCreating]=useState(false);
+  const [mpAutomaticReady,setMpAutomaticReady]=useState<boolean|null>(null);
   const [media,setMedia]=useState<Media[]>([]);
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
@@ -132,6 +133,21 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   }
 
   useEffect(()=>{ load(); },[code]);
+
+  useEffect(()=>{
+    let active=true;
+    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1",{cache:"no-store"})
+      .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
+      .then((data:{configured?:boolean})=>{if(active)setMpAutomaticReady(data.configured===true)})
+      .catch(()=>{if(active)setMpAutomaticReady(false)});
+    return()=>{active=false};
+  },[]);
+
+  useEffect(()=>{
+    if(order?.status!=="pending")return;
+    const timer=window.setInterval(()=>{if(document.visibilityState==="visible")load()},20_000);
+    return()=>window.clearInterval(timer);
+  },[order?.status,code]);
 
   const base=gift?getExperience(gift.experience_slug):undefined;
 
@@ -447,9 +463,15 @@ export default function AdminGiftEditor({ code }: { code: string }) {
           </label>
         </div>
         <div className="thi-payment-actions">
-          {order?.status!=="approved"&&(
-            <button className="thi-payment-auto" disabled={checkoutCreating||paymentSaving} onClick={createAutomaticCheckout}>
-              {checkoutCreating?"Creando cobro…":order?.checkout_url?"Regenerar link automático":"Generar link automático"}
+          {order?.status!=="approved"&&mpAutomaticReady!==false&&(
+            <button className="thi-payment-auto" disabled={checkoutCreating||paymentSaving||mpAutomaticReady===null} onClick={createAutomaticCheckout}>
+              {mpAutomaticReady===null
+                ?"Verificando Mercado Pago…"
+                :checkoutCreating
+                  ?"Creando cobro…"
+                  :order?.checkout_url
+                    ?"Regenerar link automático"
+                    :"Generar link automático"}
             </button>
           )}
           <button className="thi-payment-approve" disabled={paymentSaving||checkoutCreating} onClick={()=>setPayment("approved")}>
@@ -459,7 +481,17 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             ?<button className="thi-ghost" disabled={paymentSaving||checkoutCreating} onClick={()=>setPayment("pending")}>Volver a pendiente</button>
             :<button className="thi-ghost" disabled={paymentSaving||checkoutCreating} onClick={()=>setPayment("cancelled")}>Cancelar pedido</button>}
         </div>
-        <small className="thi-payment-note">Con “Generar link automático”, Mercado Pago crea el cobro y el pedido pasa a Pagado solo cuando la plataforma confirma la acreditación. El botón manual queda como respaldo.</small>
+        <div className={`thi-payment-provider-health ${mpAutomaticReady===true?"ready":mpAutomaticReady===false?"fallback":"checking"}`}>
+          <i/>
+          <span>{mpAutomaticReady===true
+            ?"Mercado Pago automático conectado"
+            :mpAutomaticReady===false
+              ?"Modo manual disponible"
+              :"Verificando conexión con Mercado Pago"}</span>
+        </div>
+        <small className="thi-payment-note">{mpAutomaticReady===false
+          ?"La automatización no respondió. Podés pegar un link de pago manual y marcar la acreditación desde acá sin frenar el pedido."
+          :"Con “Generar link automático”, Mercado Pago crea el cobro y el pedido pasa a Pagado solo cuando la plataforma confirma la acreditación. El botón manual queda como respaldo."}</small>
       </section>
     )}
 
