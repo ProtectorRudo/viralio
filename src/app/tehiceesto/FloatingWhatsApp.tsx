@@ -6,33 +6,36 @@ import { getExperience } from "./data";
 export default function FloatingWhatsApp() {
   const pathname = usePathname();
 
-  if (pathname.includes("/r/") || pathname.includes("/admin")) {
+  if (
+    pathname.includes("/r/") ||
+    pathname.includes("/admin") ||
+    pathname.includes("/pedido/") ||
+    pathname.endsWith("/crear")
+  ) {
     return null;
   }
 
-  const compact = pathname.includes("/experiencias/");\n  const home = pathname === "/" || pathname === "/tehiceesto";
-  const creatorCompact = pathname.endsWith("/crear");
-  const parts=pathname.split("/").filter(Boolean);
-  const expIndex=parts.indexOf("experiencias");
-  const experienceSlug=compact&&expIndex>=0 ? parts[expIndex+1]||"" : "";
+  const compact = pathname.includes("/experiencias/");
+  const home = pathname === "/" || pathname === "/tehiceesto";
+  const parts = pathname.split("/").filter(Boolean);
+  const expIndex = parts.indexOf("experiencias");
+  const experienceSlug = compact && expIndex >= 0 ? parts[expIndex + 1] || "" : "";
   const experience = experienceSlug ? getExperience(experienceSlug) : undefined;
 
   const message = experience
     ? `Hola! Vi el demo “${experience.title}” de Te Hice Esto y quiero crear uno para regalar. ¿Me contás cómo seguimos?`
-    : pathname.endsWith("/crear")
-      ? "Hola! Estoy armando un borrador en Te Hice Esto y quiero crear una experiencia para regalar. ¿Me contás cómo seguimos?"
-      : "Hola! Vi Te Hice Esto y quiero crear una experiencia para regalar. ¿Me contás cómo funciona?";
+    : "Hola! Vi Te Hice Esto y quiero crear una experiencia para regalar. ¿Me contás cómo funciona?";
 
   const whatsappHref =
     "https://wa.me/5492215653163?text=" + encodeURIComponent(message);
 
   return (
     <a
-      className={`floating-whatsapp ${home ? "floating-whatsapp--home" : ""} ${compact ? "floating-whatsapp--experience" : ""} ${creatorCompact ? "floating-whatsapp--creator" : ""}`}
+      className={`floating-whatsapp ${home ? "floating-whatsapp--home" : ""} ${compact ? "floating-whatsapp--experience" : ""}`}
       href={whatsappHref}
       target="_blank"
       rel="noreferrer noopener"
-      aria-label="Quiero crear el mío por WhatsApp"
+      aria-label="Consultar por Te Hice Esto en WhatsApp"
     >
       <span className="floating-whatsapp-icon" aria-hidden="true">
         <svg viewBox="0 0 32 32" role="img">
@@ -41,7 +44,7 @@ export default function FloatingWhatsApp() {
       </span>
       <span className="floating-whatsapp-copy">
         <small>¿Querés hacer uno?</small>
-        <strong>{compact || creatorCompact ? "Quiero el mío" : "Quiero crear el mío"}</strong>
+        <strong>{compact ? "Quiero el mío" : "Consultar"}</strong>
       </span>
       <span className="floating-whatsapp-arrow" aria-hidden="true">↗</span>
     </a>
