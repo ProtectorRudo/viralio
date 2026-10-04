@@ -5560,6 +5560,15 @@ body:has(.experience-entered) .demo-ribbon{
   max-width:1060px;
 }
 .home-final-cta h2 em{font-weight:400;color:#dcb19c}
+.home-price-card{
+  width:min(520px,100%);margin:-12px auto 26px;padding:16px 18px 15px;
+  border:1px solid rgba(230,188,168,.13);background:rgba(230,188,168,.025);
+  display:grid;grid-template-columns:1fr auto;gap:4px 18px;align-items:end;text-align:left
+}
+.home-price-card>span{font-size:7px;letter-spacing:.15em;color:#766b70;text-transform:uppercase}
+.home-price-card>strong{grid-row:1/3;grid-column:2;font-family:Georgia,"Times New Roman",serif;font-size:29px;font-weight:400;color:#eee6e1;white-space:nowrap}
+.home-price-card>p{margin:0;max-width:340px;color:#6d656c;font-size:9px;line-height:1.5}
+@media(max-width:560px){.home-price-card{grid-template-columns:1fr;text-align:center}.home-price-card>strong{grid-row:auto;grid-column:auto;font-size:34px;margin:5px 0}.home-price-card>p{margin:auto}}
 .home-final-cta small{margin-top:24px;color:#605b62;font-size:8px;letter-spacing:.12em;text-transform:uppercase}
 .home-footer{
   max-width:1260px;
@@ -6598,6 +6607,14 @@ body{
   font-size:12px;
   line-height:1.65;
 }
+.creator-price-summary{
+  margin-top:18px;width:min(390px,100%);padding:13px 14px;border-left:2px solid rgba(220,177,156,.45);
+  background:linear-gradient(90deg,rgba(220,177,156,.055),transparent 72%);
+  display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:end
+}
+.creator-price-summary>span{font-size:7px;letter-spacing:.14em;color:#746c72}
+.creator-price-summary>strong{grid-row:1/3;grid-column:2;font-family:Georgia,"Times New Roman",serif;font-size:27px;font-weight:400;color:#eee5df}
+.creator-price-summary>small{color:#686169;font-size:8px;letter-spacing:.04em}
 .creator-whatsapp-primary{
   width:min(610px,100%);
   min-height:76px;
