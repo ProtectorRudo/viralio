@@ -41,8 +41,15 @@ function stageIndex(stage:StatusPayload["stage"]){
   return Math.max(0,stages.findIndex(item=>item.key===stage));
 }
 
-export default async function OrderStatusPage({params}:{params:Promise<{code:string}>}){
+export default async function OrderStatusPage({
+  params,
+  searchParams,
+}:{
+  params:Promise<{code:string}>;
+  searchParams:Promise<{pago?:string}>;
+}){
   const {code}=await params;
+  const {pago}=await searchParams;
   if(!/^[a-f0-9]{18}$/.test(code))notFound();
 
   const response=await fetch(`${SUPABASE_URL}/functions/v1/order-status?code=${encodeURIComponent(code)}`,{
@@ -80,6 +87,26 @@ export default async function OrderStatusPage({params}:{params:Promise<{code:str
         <span>{data.stage==="ready"?"LISTA PARA ENTREGAR":data.stage==="production"?"EN PRODUCCIÓN":data.stage==="payment"?"ESPERANDO CONFIRMACIÓN DE PAGO":"RECIBIDA"}</span>
       </div>
     </section>
+
+    {pago&&["exitoso","pendiente","fallido"].includes(pago)&&(
+      <section className={`order-payment-return ${pago}`}>
+        <span>{pago==="fallido"?"×":pago==="pendiente"?"…":"✓"}</span>
+        <div>
+          <strong>{pago==="exitoso"
+            ?data.stage==="payment"?"Pago enviado · verificando acreditación":"Pago confirmado"
+            :pago==="pendiente"
+              ?"El pago quedó pendiente"
+              :"El pago no se completó"}</strong>
+          <p>{pago==="exitoso"
+            ?data.stage==="payment"
+              ?"Mercado Pago ya recibió la operación. La confirmación puede tardar unos segundos; esta pantalla se actualiza sola."
+              :"La acreditación ya quedó registrada en tu pedido."
+            :pago==="pendiente"
+              ?"No hace falta empezar de nuevo. Podés volver al botón de pago o consultarnos por WhatsApp."
+              :"Tu pedido sigue guardado. Podés intentar nuevamente cuando quieras sin perder nada."}</p>
+        </div>
+      </section>
+    )}
 
     <section className="order-status-timeline">
       {stages.map((item,index)=>{
