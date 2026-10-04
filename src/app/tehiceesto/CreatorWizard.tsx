@@ -139,33 +139,53 @@ export default function CreatorWizard() {
               <span className="eyebrow">01 · Elegí la experiencia</span>
               <h1>Elegí la que más se parece a <em>esa persona.</em></h1>
               <p>
-                No tenés que escribir la historia ni diseñar nada ahora. Elegís un estilo,
-                pagás y después nosotros nos ponemos en contacto para crearla con vos.
+                No comprás una plantilla para completar. Elegís una dirección creativa y,
+                después del pago, nosotros transformamos tus fotos, audios y recuerdos en una
+                experiencia hecha para esa persona.
               </p>
+              <div className="order-step-trust" aria-label="Cómo trabajamos">
+                <span><b>01</b> Elegís el mundo</span>
+                <span><b>02</b> Nos contás la historia</span>
+                <span><b>03</b> Nosotros la diseñamos</span>
+              </div>
             </header>
 
             <div className="order-template-grid">
-              {experiences.map((experience, index) => (
-                <article
-                  className="order-template-card"
-                  key={experience.slug}
-                  style={{ "--template-accent": experience.accent } as React.CSSProperties}
-                >
-                  <div className="order-template-number">{String(index + 1).padStart(2, "0")}</div>
-                  <div className="order-template-icon">{experience.icon}</div>
-                  <small>{experience.eyebrow}</small>
-                  <h2>{experience.title}</h2>
-                  <p>{experience.short}</p>
-                  <div className="order-template-actions">
-                    <button type="button" onClick={() => chooseTemplate(experience.slug)}>
-                      Elegir esta <span>→</span>
-                    </button>
-                    <Link href={`/tehiceesto/experiencias/${experience.slug}`} target="_blank">
-                      Ver demo ↗
-                    </Link>
-                  </div>
-                </article>
-              ))}
+              {experiences.map((experience, index) => {
+                const number = String(index + 1).padStart(2, "0");
+                return (
+                  <article
+                    className={`order-template-card order-template-${experience.slug}`}
+                    key={experience.slug}
+                    style={{ "--template-accent": experience.accent } as React.CSSProperties}
+                  >
+                    <div className="order-template-art" aria-hidden="true">
+                      <span>TH / {number}</span>
+                      <b>{experience.icon}</b>
+                      <em>{experience.tags[0]}</em>
+                    </div>
+                    <div className="order-template-copy">
+                      <div className="order-template-overline">
+                        <span>{number}</span>
+                        <small>{experience.eyebrow}</small>
+                      </div>
+                      <h2>{experience.title}</h2>
+                      <p>{experience.short}</p>
+                      <div className="order-template-tags" aria-label="Categorías">
+                        {experience.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
+                      </div>
+                      <div className="order-template-actions">
+                        <button type="button" onClick={() => chooseTemplate(experience.slug)}>
+                          Elegir esta <span>→</span>
+                        </button>
+                        <Link href={`/tehiceesto/experiencias/${experience.slug}`} target="_blank">
+                          Ver demo ↗
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </div>
         )}
