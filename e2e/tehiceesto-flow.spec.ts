@@ -91,3 +91,68 @@ test("premium haptics fire on tactile interactions",async({page})=>{
   await page.locator('[data-action="care-open"]').first().click();
   await expect.poll(async()=>JSON.stringify(await vibrations())).toContain("7");
 });
+
+
+test("creator handoff persists the private draft before opening WhatsApp",async({page})=>{
+  test.setTimeout(45_000);
+  const calls:string[]=[];
+  const code="0123456789abcdef01";
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const request=route.request();
+    const body=JSON.parse(request.postData()||"{}") as Record<string,unknown>;
+    const action=String(body.action||"");
+    calls.push(action);
+    if(action==="submitDraft"){
+      expect(body.experienceSlug).toBe("pareja");
+      expect(body.giverName).toBe("Mauro");
+      expect(body.recipientName).toBe("Ailin");
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({code})});
+    }
+    if(action==="resetCreatorMedia"){
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,removed:0})});
+    }
+    if(action==="prepareUpload"){
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({path:`${code}/creator-test-recuerdo.jpg`,token:"signed-token"})});
+    }
+    if(action==="registerMedia"){
+      expect(String(body.storagePath)).toContain(code);
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true})});
+    }
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+  });
+
+  await page.route("**/storage/v1/object/upload/sign/gift-media/**",route=>
+    route.fulfill({status:200,contentType:"application/json",body:"{}"})
+  );
+  await page.route("https://wa.me/**",route=>
+    route.fulfill({status:200,contentType:"text/html",body:"<html><body>whatsapp handoff</body></html>"})
+  );
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/crear");
+  await page.locator(".creator-step .primary-action").click();
+
+  await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
+  await page.getByPlaceholder("Ej. Ailín").fill("Ailin");
+  await page.getByRole("button",{name:"Seguir"}).click();
+
+  await page.getByRole("button",{name:"Agregar recuerdos"}).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name:"recuerdo.jpg",
+    mimeType:"image/jpeg",
+    buffer:Buffer.from("fake-jpeg"),
+  });
+  await page.getByRole("button",{name:"Escribir la parte importante"}).click();
+  await page.locator(".story-field-important textarea").fill("Esta es una carta de prueba para validar el flujo completo.");
+  await page.getByRole("button",{name:"Ver lo que creamos"}).click();
+
+  await page.locator("button.creator-whatsapp-primary").click();
+  await page.waitForURL(/wa\.me/);
+
+  expect(calls).toContain("submitDraft");
+  expect(calls).toContain("resetCreatorMedia");
+  expect(calls).toContain("prepareUpload");
+  expect(calls).toContain("registerMedia");
+  expect(decodeURIComponent(page.url())).toContain(code.toUpperCase());
+});
