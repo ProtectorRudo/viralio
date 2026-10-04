@@ -1,7 +1,10 @@
-export default function Loading(){
-  return <main className="system-loading" aria-live="polite" aria-busy="true">
-    <div className="system-loading-mark"><span>♥</span></div>
-    <small>TE HICE ESTO</small>
-    <p>Preparando la experiencia…</p>
-  </main>;
+export default function Loading() {
+  return (
+    <main className="thi-public-loading" aria-live="polite" aria-busy="true">
+      <div>
+        <strong>TE HICE ESTO ♥</strong>
+        <span aria-hidden="true" />
+      </div>
+    </main>
+  );
 }
