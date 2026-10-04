@@ -34,6 +34,7 @@ type Order = {
   status: "pending" | "approved" | "rejected" | "refunded" | "cancelled";
   provider: string;
   provider_reference: string | null;
+  checkout_url: string | null;
   amount_minor: number | null;
   currency: string;
   paid_at: string | null;
@@ -96,6 +97,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const [order,setOrder]=useState<Order|null>(null);
   const [paymentAmount,setPaymentAmount]=useState("");
   const [paymentReference,setPaymentReference]=useState("");
+  const [paymentUrl,setPaymentUrl]=useState("");
   const [paymentSaving,setPaymentSaving]=useState(false);
   const [media,setMedia]=useState<Media[]>([]);
   const [loading,setLoading]=useState(true);
@@ -119,6 +121,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       setOrder(data.order||null);
       setPaymentAmount(data.order?.amount_minor != null ? String(data.order.amount_minor / 100) : "");
       setPaymentReference(data.order?.provider_reference||"");
+      setPaymentUrl(data.order?.checkout_url||"");
       setMedia(data.media||[]);
     }catch{
       router.push("/tehiceesto/admin");
@@ -275,6 +278,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         status,
         amountMinor:normalizedAmount,
         providerReference:paymentReference.trim(),
+        checkoutUrl:paymentUrl.trim(),
       });
       setMessage(status==="approved"?"Pago marcado como aprobado ✓":"Estado de pago actualizado ✓");
       await load();
@@ -396,6 +400,10 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             <span>Referencia de Mercado Pago · opcional</span>
             <input value={paymentReference} onChange={e=>setPaymentReference(e.target.value)} placeholder="ID o referencia del cobro"/>
           </label>
+          <label className="wide">
+            <span>Link de pago · opcional</span>
+            <input value={paymentUrl} onChange={e=>setPaymentUrl(e.target.value)} placeholder="https://mpago.la/..."/>
+          </label>
         </div>
         <div className="thi-payment-actions">
           <button className="thi-payment-approve" disabled={paymentSaving} onClick={()=>setPayment("approved")}>
@@ -405,7 +413,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             ?<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("pending")}>Volver a pendiente</button>
             :<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("cancelled")}>Cancelar pedido</button>}
         </div>
-        <small className="thi-payment-note">Marcar “pagado” no cobra dinero: registra un cobro que ya verificaste. La integración automática con Mercado Pago puede conectarse después sin cambiar este flujo.</small>
+        <small className="thi-payment-note">Si pegás un link de Mercado Pago, el cliente verá un botón de pago dentro de su seguimiento privado. Marcar “pagado” no cobra dinero: registra un cobro que ya verificaste.</small>
       </section>
     )}
 
