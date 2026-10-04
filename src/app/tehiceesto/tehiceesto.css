@@ -58,6 +58,13 @@
 .thi-payment-approve:hover{background:rgba(143,217,203,.11)}
 .thi-payment-approve:disabled{opacity:.5;cursor:wait}
 .thi-payment-note{display:block;margin-top:13px;color:#625d65;font-size:8px;line-height:1.5;max-width:720px}
+.thi-payment-provider-health{margin-top:13px;display:inline-flex;align-items:center;gap:7px;color:#625d65;font-size:7px;letter-spacing:.08em;text-transform:uppercase}
+.thi-payment-provider-health i{width:6px;height:6px;border-radius:50%;background:#756e77;box-shadow:0 0 0 4px rgba(255,255,255,.025)}
+.thi-payment-provider-health.ready{color:#7faea5}
+.thi-payment-provider-health.ready i{background:#8fd9cb;box-shadow:0 0 0 4px rgba(143,217,203,.055)}
+.thi-payment-provider-health.fallback{color:#a58a72}
+.thi-payment-provider-health.fallback i{background:#d8b27e;box-shadow:0 0 0 4px rgba(216,178,126,.05)}
+.thi-payment-provider-health.checking i{animation:thiPulse 2s infinite}
 .thi-delivery-panel{position:relative;overflow:hidden}
 .thi-delivery-panel:before{content:"";position:absolute;width:300px;height:180px;border-radius:50%;right:-130px;top:-110px;background:#8fd9cb;filter:blur(95px);opacity:.045;pointer-events:none}
 .thi-delivery-link{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border:1px solid rgba(143,217,203,.14);background:rgba(143,217,203,.025)}
