@@ -18,7 +18,7 @@ const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
 
 type StatusPayload={
   code:string;
-  stage:"received"|"payment"|"production"|"ready";
+  stage:"received"|"payment"|"contact"|"production"|"ready";
   giftStatus:string;
   experienceSlug:string;
   giverName:string;
@@ -31,10 +31,11 @@ type StatusPayload={
 };
 
 const stages=[
-  {key:"received",index:"01",title:"Borrador recibido",copy:"Tu historia ya quedó guardada de forma privada."},
-  {key:"payment",index:"02",title:"Pago",copy:"Coordinamos y verificamos el pago antes de producir la versión final."},
-  {key:"production",index:"03",title:"Producción",copy:"Estamos afinando textos, recuerdos, sonidos y detalles de la experiencia."},
-  {key:"ready",index:"04",title:"Lista para entregar",copy:"La experiencia final ya está publicada en su link privado."},
+  {key:"received",index:"01",title:"Pedido recibido",copy:"Elegiste la experiencia y tus datos quedaron guardados de forma privada."},
+  {key:"payment",index:"02",title:"Pago",copy:"Tu lugar queda confirmado cuando Mercado Pago acredita el pago."},
+  {key:"contact",index:"03",title:"Nos contactamos",copy:"Con el pago aprobado, te escribimos nosotros para pedirte todo lo necesario."},
+  {key:"production",index:"04",title:"Producción",copy:"Con tus recuerdos y detalles armamos la experiencia final."},
+  {key:"ready",index:"05",title:"Lista para entregar",copy:"La experiencia final ya está publicada en su link privado."},
 ] as const;
 
 function stageIndex(stage:StatusPayload["stage"]){
@@ -78,13 +79,13 @@ export default async function OrderStatusPage({
 
     <section className="order-status-hero">
       <span className="order-status-kicker">PEDIDO · {data.code.toUpperCase()}</span>
-      <h1>{data.stage==="ready"?"Ya está listo.":data.stage==="production"?"Ya lo estamos haciendo.":data.stage==="payment"?"Tu historia ya llegó.":"Recibimos tu historia."}</h1>
+      <h1>{data.stage==="ready"?"Ya está listo.":data.stage==="production"?"Ya lo estamos haciendo.":data.stage==="contact"?"Ahora te escribimos nosotros.":data.stage==="payment"?"Tu pedido ya quedó reservado.":"Recibimos tu pedido."}</h1>
       <p>
         {experience?.icon||"✦"} {experience?.title||"Experiencia"} · de <strong>{data.giverName}</strong> para <strong>{data.recipientName}</strong>
       </p>
       <div className={`order-status-live ${data.stage}`}>
         <i/>
-        <span>{data.stage==="ready"?"LISTA PARA ENTREGAR":data.stage==="production"?"EN PRODUCCIÓN":data.stage==="payment"?"ESPERANDO CONFIRMACIÓN DE PAGO":"RECIBIDA"}</span>
+        <span>{data.stage==="ready"?"LISTA PARA ENTREGAR":data.stage==="production"?"EN PRODUCCIÓN":data.stage==="contact"?"PAGO CONFIRMADO · CONTACTO":data.stage==="payment"?"ESPERANDO CONFIRMACIÓN DE PAGO":"RECIBIDA"}</span>
       </div>
     </section>
 
@@ -136,12 +137,14 @@ export default async function OrderStatusPage({
       <section className="order-status-waiting">
         <div>
           <span>ESTADO ACTUAL</span>
-          <h2>{data.stage==="production"?"Estamos trabajando en los detalles.":data.stage==="payment"?"Seguimos por WhatsApp.":"Ya tenemos el punto de partida."}</h2>
+          <h2>{data.stage==="production"?"Estamos trabajando en los detalles.":data.stage==="contact"?"No tenés que hacer nada ahora.":data.stage==="payment"?"Falta confirmar el pago.":"Ya tenemos el punto de partida."}</h2>
           <p>{data.stage==="production"
             ?"Cuando la versión final quede publicada, este mismo link va a mostrarte el botón para abrirla."
-            :data.stage==="payment"
-              ?"El valor y el medio de pago se confirman por WhatsApp. Este seguimiento no cobra nada por sí solo."
-              :"Podés volver a este link cuando quieras para ver cómo avanza."}</p>
+            :data.stage==="contact"
+              ?"Con el pago confirmado, nos toca a nosotros: te vamos a escribir al WhatsApp o email que dejaste para pedirte fotos, audios y detalles."
+              :data.stage==="payment"
+                ?"Cuando Mercado Pago acredite la operación, pasamos al contacto y te escribimos nosotros."
+                :"Podés volver a este link cuando quieras para ver cómo avanza."}</p>
         </div>
         <div className="order-status-actions">
           {data.stage==="payment"&&data.order?.checkoutUrl&&(
