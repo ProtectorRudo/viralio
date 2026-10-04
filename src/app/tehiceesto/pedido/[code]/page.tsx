@@ -25,7 +25,7 @@ type StatusPayload={
   createdAt:string;
   updatedAt:string;
   publishedAt:string|null;
-  order:{status:string;amountMinor:number|null;currency:string;paidAt:string|null;updatedAt:string}|null;
+  order:{status:string;checkoutUrl:string|null;amountMinor:number|null;currency:string;paidAt:string|null;updatedAt:string}|null;
   giftUrl:string|null;
 };
 
@@ -115,7 +115,14 @@ export default async function OrderStatusPage({params}:{params:Promise<{code:str
               ?"El valor y el medio de pago se confirman por WhatsApp. Este seguimiento no cobra nada por sí solo."
               :"Podés volver a este link cuando quieras para ver cómo avanza."}</p>
         </div>
-        <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Consultar por WhatsApp ↗</a>
+        <div className="order-status-actions">
+          {data.stage==="payment"&&data.order?.checkoutUrl&&(
+            <a href={data.order.checkoutUrl} target="_blank" rel="noreferrer noopener" className="order-status-pay">
+              {amount?`Pagar ${amount}`:"Ir al pago"} <b>↗</b>
+            </a>
+          )}
+          <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Consultar por WhatsApp ↗</a>
+        </div>
       </section>
     )}
 
