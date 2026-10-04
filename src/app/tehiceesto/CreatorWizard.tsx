@@ -341,6 +341,17 @@ export default function CreatorWizard() {
     setSubmitError("");
   };
 
+  const removePhoto = (index: number) => {
+    const url = photoUrls[index];
+    if (url) URL.revokeObjectURL(url);
+    setPhotoUrls((items) => items.filter((_, itemIndex) => itemIndex !== index));
+    setPhotoNames((items) => items.filter((_, itemIndex) => itemIndex !== index));
+    setPhotoFiles((items) => items.filter((_, itemIndex) => itemIndex !== index));
+    setPhotosDirty(true);
+    if (submitState === "ready") setSubmitState("idle");
+    setSubmitError("");
+  };
+
   if (previewMode) {
     return (
       <div className="creator-preview-overlay">
@@ -552,6 +563,7 @@ export default function CreatorWizard() {
                 <figure key={url}>
                   <Image src={url} alt={photoNames[index] || "Recuerdo"} width={240} height={240} unoptimized />
                   <figcaption>0{index + 1}</figcaption>
+                  <button type="button" className="photo-remove" onClick={() => removePhoto(index)} aria-label={`Quitar ${photoNames[index] || `foto ${index + 1}`}`}>×</button>
                 </figure>
               ))}
             </div>
