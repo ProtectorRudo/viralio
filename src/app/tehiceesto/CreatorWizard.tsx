@@ -1,5 +1,6 @@
 "use client";
 
+// Occasion-first assisted purchase flow. Keep deploy-trigger edits batched.\n
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { experiences } from "./data";
