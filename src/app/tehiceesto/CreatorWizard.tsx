@@ -156,6 +156,7 @@ export default function CreatorWizard() {
   const [uploadDone, setUploadDone] = useState(0);
   const [submitError, setSubmitError] = useState("");
   const [photoNotice, setPhotoNotice] = useState("");
+  const [paymentPrepared, setPaymentPrepared] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -238,7 +239,7 @@ export default function CreatorWizard() {
     setSubmitState("saving");
 
     try {
-      const result = await creatorCall<{ code: string }>("submitDraft", {
+      const result = await creatorCall<{ code: string; checkoutReady?: boolean }>("submitDraft", {
         code: submittedCode || undefined,
         website: "",
         experienceSlug: baseExperience.slug,
@@ -256,6 +257,7 @@ export default function CreatorWizard() {
 
       const code = result.code;
       setSubmittedCode(code);
+      setPaymentPrepared(result.checkoutReady === true);
       window.localStorage.setItem(SUBMISSION_KEY, code);
 
       if (photosDirty) {
@@ -315,6 +317,7 @@ export default function CreatorWizard() {
     setPhotoFiles([]);
     setPhotosDirty(false);
     setSubmittedCode("");
+    setPaymentPrepared(false);
     setSubmitState("idle");
     setSubmitError("");
     setPhotoNotice("");
@@ -700,7 +703,7 @@ export default function CreatorWizard() {
                   <b>↗</b>
                 </a>
                 <a className="creator-status-link" href={`/tehiceesto/pedido/${submittedCode}`}>
-                  Ver seguimiento privado <span>↗</span>
+                  {paymentPrepared ? "Ver seguimiento y pago" : "Ver seguimiento privado"} <span>↗</span>
                 </a>
               </div>
             ) : (
@@ -744,7 +747,9 @@ export default function CreatorWizard() {
               </article>
               <article>
                 <span>02</span>
-                <div><strong>Coordinamos el pago</strong><p>Por WhatsApp te confirmo el valor y el medio de pago. Nada se cobra automáticamente desde esta pantalla.</p></div>
+                <div><strong>{paymentPrepared ? "Tu pago ya está preparado" : "Coordinamos el pago"}</strong><p>{paymentPrepared
+                  ? "En tu seguimiento privado ya aparece el botón seguro de Mercado Pago. Podés pagarlo cuando quieras."
+                  : "Por WhatsApp te confirmo el valor y el medio de pago. Nada se cobra automáticamente desde esta pantalla."}</p></div>
               </article>
               <article>
                 <span>03</span>
