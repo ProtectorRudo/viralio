@@ -5,10 +5,10 @@ import FloatingWhatsApp from "./FloatingWhatsApp";
 export const metadata: Metadata = {
   metadataBase: new URL("https://tehiceesto.com"),
   title: {
-    default: "Te Hice Esto | Regalos digitales personalizados para el alma",
-    template: "%s | Te Hice Esto",
+    default: "Te Hice Esto — Un regalo que se vive",
+    template: "%s — Te Hice Esto",
   },
-  description: "Convertimos tus fotos, audios, videos, cartas y recuerdos en una experiencia digital privada e interactiva para regalar.",
+  description: "Fotos, voces, cartas y recuerdos convertidos en una experiencia digital privada creada para una sola persona.",
   applicationName: "Te Hice Esto",
   alternates: {
     canonical: "/",
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     locale: "es_AR",
     url: "https://tehiceesto.com",
     siteName: "Te Hice Esto",
-    title: "Te Hice Esto | Regalos digitales para el alma",
-    description: "Tus recuerdos convertidos en un regalo privado e interactivo que se descubre desde el celular.",
+    title: "Te Hice Esto — Un regalo que se vive",
+    description: "Experiencias digitales privadas hechas con recuerdos reales y diseñadas para una sola persona.",
     images: [{
       url: "/brand-image",
       width: 1200,
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Te Hice Esto | Regalos digitales para el alma",
-    description: "Tus recuerdos convertidos en una experiencia digital privada para regalar.",
+    title: "Te Hice Esto — Un regalo que se vive",
+    description: "Fotos, voces, cartas y recuerdos convertidos en una experiencia privada que se vive desde el celular.",
     images: ["/brand-image"],
   },
   icons: {
