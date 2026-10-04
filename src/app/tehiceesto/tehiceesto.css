@@ -7685,3 +7685,319 @@ body:has(.home-shell) .header-create{
   .home-shell .home-hero:before{width:300px;height:300px;left:-180px;top:15%}
   .home-shell .artifact-card{box-shadow:0 24px 55px rgba(66,49,45,.18)}
 }
+
+
+/* =========================================================
+   HOME FINAL MOBILE PREMIUM PASS — editorial, calm, deliberate
+   ========================================================= */
+.home-shell{
+  background:
+    radial-gradient(circle at 8% 7%,rgba(226,169,151,.20),transparent 21%),
+    radial-gradient(circle at 92% 16%,rgba(164,174,226,.15),transparent 22%),
+    linear-gradient(180deg,#f7f3ed 0%,#f2ece5 52%,#f8f4ef 100%);
+  color:#241f21;
+}
+body:has(.home-shell){background:#f5f0ea}
+body:has(.home-shell) .site-header{
+  height:76px;
+  padding-inline:max(22px,calc((100vw - 1260px)/2));
+  background:rgba(247,243,237,.86);
+  border-bottom:1px solid rgba(48,37,41,.07);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+body:has(.home-shell) .site-header .brand{color:#251f22}
+body:has(.home-shell) .site-header nav a{color:#756c71}
+body:has(.home-shell) .site-header nav .header-create{
+  color:#fffaf6!important;
+  background:#272124;
+  border-color:#272124;
+}
+body:has(.home-shell) .site-header nav .header-create:hover{background:#181416}
+
+.home-shell .home-hero{
+  min-height:auto;
+  padding-top:138px;
+  padding-bottom:92px;
+}
+.home-shell .home-hero-copy{position:relative;z-index:3}
+.home-shell .home-hero-copy h1{
+  color:#241f21;
+  font-size:clamp(68px,7.4vw,112px);
+  line-height:.86;
+  letter-spacing:-.055em;
+}
+.home-shell .home-hero-copy h1 em{color:#b9715c}
+.home-shell .home-hero-copy h1>span{color:#3b3236}
+.home-shell .home-hero-copy>p{
+  color:#6f666a;
+  max-width:610px;
+  font-size:19px;
+  line-height:1.58;
+}
+.home-shell .home-hero-meta{color:#8f8488}
+.home-shell .home-primary{
+  background:#272124;
+  border-color:#272124;
+  color:#fffaf6!important;
+  box-shadow:0 14px 32px rgba(51,39,43,.12);
+}
+.home-shell .home-primary:hover{background:#171315;color:#fff!important}
+.home-shell .home-secondary{color:#756c70}
+.home-shell .home-secondary:hover{color:#241f21}
+
+.home-shell .artifact-stage{
+  filter:drop-shadow(0 28px 32px rgba(64,47,43,.10));
+}
+.home-shell .artifact-stage:before{
+  width:86%;
+  height:72%;
+  left:7%;
+  top:12%;
+  background:
+    radial-gradient(circle at 40% 42%,rgba(228,164,143,.28),transparent 52%),
+    radial-gradient(circle at 70% 62%,rgba(145,160,220,.17),transparent 52%);
+  filter:blur(34px);
+}
+.home-shell .artifact-card{
+  border-color:rgba(46,35,39,.13);
+  box-shadow:0 28px 70px rgba(55,41,38,.18);
+}
+.home-shell .artifact-card-mid{background:#e8e0d6}
+.home-shell .artifact-stamp{
+  background:rgba(247,243,237,.88);
+  box-shadow:0 12px 26px rgba(72,52,47,.08);
+}
+
+.home-shell .home-manifesto,
+.home-shell .catalog-editorial,
+.home-shell .home-process{position:relative;z-index:1}
+.home-shell .home-manifesto{border-top-color:rgba(53,42,46,.09)}
+.home-shell .manifesto-copy h2,
+.home-shell .catalog-editorial-head h2,
+.home-shell .process-intro h2,
+.home-shell .process-timeline h3{color:#292225}
+.home-shell .manifesto-points,
+.home-shell .catalog-list,
+.home-shell .process-timeline{border-top-color:rgba(53,42,46,.10)}
+.home-shell .manifesto-points article,
+.home-shell .catalog-row,
+.home-shell .process-timeline article{border-bottom-color:rgba(53,42,46,.09)}
+.home-shell .manifesto-points p,
+.home-shell .catalog-row>p,
+.home-shell .catalog-editorial-head>p,
+.home-shell .process-timeline p{color:#746b70}
+.home-shell .catalog-row:hover{background:rgba(255,255,255,.38)}
+
+.home-shell .home-contrast{
+  max-width:1160px;
+  min-height:430px;
+  margin:36px auto 130px;
+  grid-template-columns:1fr 56px 1fr;
+  border:0;
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow:0 28px 80px rgba(70,52,48,.10);
+  background:rgba(255,255,255,.34);
+}
+.home-shell .contrast-before,
+.home-shell .contrast-after{
+  min-height:430px;
+  padding:44px;
+}
+.home-shell .contrast-before{
+  background:
+    radial-gradient(circle at 18% 12%,rgba(220,198,190,.28),transparent 33%),
+    #ede7e1;
+}
+.home-shell .contrast-before>span{color:#8e8387}
+.home-shell .contrast-before p{color:#776e72}
+.home-shell .contrast-message{
+  margin:56px 0 18px;
+  width:min(240px,100%);
+  background:#fff;
+  box-shadow:0 14px 32px rgba(65,49,45,.08);
+}
+.home-shell .contrast-message small{color:#4f474b}
+.home-shell .contrast-after{
+  background:
+    radial-gradient(circle at 64% 42%,rgba(230,188,168,.12),transparent 34%),
+    linear-gradient(150deg,#171214,#0d0a0b);
+}
+.home-shell .contrast-after>span{color:#887b81}
+.home-shell .contrast-after>strong{
+  margin:54px 0 24px;
+  color:#f3ece8;
+  font-size:clamp(34px,3.5vw,49px);
+}
+.home-shell .contrast-after p{color:#978e92}
+.home-shell .contrast-divider{
+  background:#f5f0ea;
+  border-color:rgba(53,42,46,.08);
+}
+.home-shell .contrast-divider span{color:#9a8f93}
+
+.home-shell .home-final-cta{min-height:680px}
+.home-shell .home-final-cta h2{color:#292225}
+.home-shell .home-price-card{
+  background:rgba(255,255,255,.52);
+  border-color:rgba(57,43,48,.10);
+  box-shadow:0 20px 50px rgba(70,52,48,.06);
+}
+.home-shell .home-footer{border-top-color:rgba(53,42,46,.09)}
+
+.floating-whatsapp--home{
+  right:22px;
+  bottom:22px;
+  min-width:0;
+  width:56px;
+  height:56px;
+  min-height:56px;
+  padding:0;
+  grid-template-columns:1fr;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(31,27,29,.92);
+  border-color:rgba(255,255,255,.10);
+  box-shadow:0 14px 34px rgba(27,21,23,.18);
+  backdrop-filter:blur(14px);
+}
+.floating-whatsapp--home .floating-whatsapp-icon{width:38px;height:38px}
+.floating-whatsapp--home .floating-whatsapp-copy,
+.floating-whatsapp--home .floating-whatsapp-arrow{display:none}
+
+@media(max-width:700px){
+  body:has(.home-shell) .site-header{
+    height:68px;
+    padding-inline:20px;
+  }
+  body:has(.home-shell) .site-header nav a:not(.header-create){display:none}
+  body:has(.home-shell) .site-header nav .header-create{
+    min-height:36px;
+    display:inline-flex;
+    align-items:center;
+    padding:0 12px;
+    font-size:9px;
+  }
+  .home-shell .home-hero{
+    padding:104px 20px 62px;
+    gap:16px;
+  }
+  .home-shell .home-hero-meta{
+    top:82px;
+    left:20px;
+    right:20px;
+    font-size:7px;
+  }
+  .home-shell .home-hero-copy{padding-top:20px}
+  .home-shell .home-hero-copy h1{
+    font-size:clamp(52px,15.6vw,66px);
+    line-height:.90;
+    letter-spacing:-.047em;
+    margin:18px 0 24px;
+  }
+  .home-shell .home-hero-copy>p{
+    font-size:16px;
+    line-height:1.58;
+    max-width:34ch;
+  }
+  .home-shell .home-hero-actions{
+    gap:13px;
+    margin-top:28px;
+  }
+  .home-shell .home-primary{
+    min-height:48px;
+    padding:0 16px;
+    gap:20px;
+  }
+  .home-shell .artifact-stage{
+    width:100%;
+    height:420px;
+    margin-top:8px;
+  }
+  .home-shell .artifact-card{
+    width:210px;
+    height:300px;
+  }
+  .home-shell .artifact-card-back{
+    padding:20px;
+    transform:translate(-72%,-50%) rotate(-8deg);
+  }
+  .home-shell .artifact-card-mid{
+    transform:translate(-28%,-46%) rotate(5deg);
+  }
+  .home-shell .artifact-photo{height:190px}
+  .home-shell .artifact-card-front{
+    padding:25px 20px;
+    transform:translate(-48%,-48%) rotate(-1deg);
+  }
+  .home-shell .artifact-card-front>strong{
+    margin:24px 0 16px;
+    font-size:48px;
+  }
+  .home-shell .artifact-card-front p{font-size:13px}
+  .home-shell .artifact-enter{margin-top:26px}
+  .home-shell .artifact-stamp{right:2px;bottom:48px}
+
+  .home-shell .home-manifesto{padding:82px 20px}
+  .home-shell .manifesto-copy h2{font-size:45px;line-height:.98}
+  .home-shell .catalog-editorial{padding:82px 20px 92px}
+  .home-shell .catalog-editorial-head h2{font-size:47px;line-height:.96}
+  .home-shell .catalog-row{min-height:108px}
+  .home-shell .catalog-row-title h3{font-size:26px}
+  .home-shell .home-process{padding:84px 20px}
+  .home-shell .process-intro h2{font-size:44px;line-height:.98}
+  .home-shell .process-timeline h3{font-size:27px}
+
+  .home-shell .home-contrast{
+    margin:0 18px 88px;
+    border-radius:22px;
+    grid-template-columns:1fr;
+    box-shadow:0 20px 55px rgba(70,52,48,.10);
+  }
+  .home-shell .contrast-before,
+  .home-shell .contrast-after{
+    min-height:0;
+    padding:28px 24px;
+  }
+  .home-shell .contrast-before{padding-bottom:32px}
+  .home-shell .contrast-message{
+    margin:28px 0 14px;
+    width:min(220px,84%);
+    padding:13px 14px;
+  }
+  .home-shell .contrast-divider{
+    height:42px;
+    border:0;
+    border-top:1px solid rgba(53,42,46,.08);
+    border-bottom:1px solid rgba(53,42,46,.08);
+  }
+  .home-shell .contrast-divider span{transform:none}
+  .home-shell .contrast-after>strong{
+    margin:30px 0 20px;
+    font-size:34px;
+    max-width:10.5em;
+  }
+  .home-shell .contrast-progress{max-width:100%}
+
+  .home-shell .home-final-cta{
+    min-height:600px;
+    padding:82px 20px;
+  }
+  .home-shell .home-final-cta h2{
+    font-size:48px;
+    line-height:.95;
+    margin-bottom:34px;
+  }
+  .home-shell .home-price-card{
+    margin:0 auto 22px;
+  }
+  .floating-whatsapp--home{
+    right:max(14px,env(safe-area-inset-right));
+    bottom:max(16px,env(safe-area-inset-bottom));
+    width:52px;
+    height:52px;
+    min-height:52px;
+  }
+  .floating-whatsapp--home .floating-whatsapp-icon{width:34px;height:34px}
+}
