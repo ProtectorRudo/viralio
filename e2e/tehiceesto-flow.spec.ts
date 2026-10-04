@@ -46,3 +46,44 @@ for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without gettin
 test("scene state resets when revisiting and restart always starts clean",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/cumpleanos");await advanceOne(page);await waitForScene(page,"candles");await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");const balloons=page.locator('[data-action="balloon"]');await balloons.nth(0).click();await expect(balloons.nth(0)).toHaveClass(/pop/);await page.locator('[data-action="previous"]').click();await waitForScene(page,"candles");await expect(page.locator(".thi-birthday-ritual")).not.toHaveClass(/out/);await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");await expect(page.locator(".thi-balloons button.pop")).toHaveCount(0);await balloons.nth(0).click();await balloons.nth(1).click();await page.locator('.thi-reset-journey[data-action="restart"]').click();await waitForScene(page,"intro")});
 test("all visible scene copy can be overridden without changing the engine",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await expect(page.getByText(/armó esto pensando en vos/i)).toBeVisible();await page.locator('[data-action="advance"]').click();await expect(page.getByText(/No todo empieza con una fecha/i)).toBeVisible()});
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
+
+
+test("premium haptics fire on tactile interactions",async({page})=>{
+  await page.addInitScript(()=>{
+    (window as unknown as {__thiVibrations:(number|number[])[]}).__thiVibrations=[];
+    Object.defineProperty(navigator,"vibrate",{
+      configurable:true,
+      value:(pattern:number|number[])=>{
+        (window as unknown as {__thiVibrations:(number|number[])[]}).__thiVibrations.push(pattern);
+        return true;
+      },
+    });
+  });
+
+  const vibrations=()=>page.evaluate(()=>(window as unknown as {__thiVibrations:(number|number[])[]}).__thiVibrations);
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await page.locator('[data-action="advance"]').click();
+  await waitForScene(page,"door");
+  await page.locator('[data-action="open-door"]').click();
+  await expect.poll(async()=>JSON.stringify(await vibrations())).toContain(JSON.stringify([12,35,9]));
+
+  await page.goto("/tehiceesto/experiencias/cumpleanos");
+  await page.locator('[data-action="advance"]').click();
+  await waitForScene(page,"candles");
+  await page.locator('[data-action="blow-fallback"]').click();
+  await expect.poll(async()=>JSON.stringify(await vibrations())).toContain(JSON.stringify([10,20,10]));
+  await page.locator('[data-action="advance"]').click();
+  await waitForScene(page,"balloons");
+  await page.locator('[data-action="balloon"]').first().click();
+  await expect.poll(async()=>JSON.stringify(await vibrations())).toContain("10");
+
+  await page.goto("/tehiceesto/experiencias/mama");
+  await page.locator('[data-action="advance"]').click();
+  await waitForScene(page,"childhood");
+  await page.locator('.scene .primary-action').click();
+  await waitForScene(page,"care");
+  await page.locator('[data-action="care-open"]').first().click();
+  await expect.poll(async()=>JSON.stringify(await vibrations())).toContain("7");
+});
