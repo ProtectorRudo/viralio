@@ -87,6 +87,41 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
       };
     }).filter(item=>item.width>0&&(item.left<-4||item.right>window.innerWidth+4)).slice(0,20);
 
+    const cta=document.querySelector(".floating-whatsapp");
+    const ctaStyle=cta?(()=>{
+      const style=getComputedStyle(cta);
+      const chain=[];
+      let node=cta.parentElement;
+      while(node&&chain.length<5){
+        const parentStyle=getComputedStyle(node);
+        chain.push({
+          tag:node.tagName.toLowerCase(),
+          cls:typeof node.className==="string"?node.className.slice(0,100):"",
+          opacity:parentStyle.opacity,
+          filter:parentStyle.filter,
+          transform:parentStyle.transform,
+          isolation:parentStyle.isolation,
+          zIndex:parentStyle.zIndex,
+        });
+        node=node.parentElement;
+      }
+      return {
+        className:cta.className,
+        opacity:style.opacity,
+        backgroundColor:style.backgroundColor,
+        color:style.color,
+        borderColor:style.borderColor,
+        boxShadow:style.boxShadow,
+        zIndex:style.zIndex,
+        display:style.display,
+        visibility:style.visibility,
+        filter:style.filter,
+        transform:style.transform,
+        mixBlendMode:style.mixBlendMode,
+        chain,
+      };
+    })():null;
+
     return {
       innerWidth:window.innerWidth,
       scrollWidth:root.scrollWidth,
@@ -96,6 +131,7 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
       chrome,
       collisions,
       offenders,
+      ctaStyle,
     };
   });
 
