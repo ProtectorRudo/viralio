@@ -100,6 +100,8 @@ test("creator handoff persists the private draft before opening WhatsApp",async(
 
   await page.route("**/functions/v1/creator-api",async route=>{
     const request=route.request();
+    const cors={"access-control-allow-origin":"*","access-control-allow-headers":"apikey, content-type","access-control-allow-methods":"POST, OPTIONS"};
+    if(request.method()==="OPTIONS")return route.fulfill({status:204,headers:cors,body:""});
     const body=JSON.parse(request.postData()||"{}") as Record<string,unknown>;
     const action=String(body.action||"");
     calls.push(action);
@@ -107,24 +109,26 @@ test("creator handoff persists the private draft before opening WhatsApp",async(
       expect(body.experienceSlug).toBe("pareja");
       expect(body.giverName).toBe("Mauro");
       expect(body.recipientName).toBe("Ailin");
-      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({code})});
+      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({code})});
     }
     if(action==="resetCreatorMedia"){
-      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,removed:0})});
+      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({ok:true,removed:0})});
     }
     if(action==="prepareUpload"){
-      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({path:`${code}/creator-test-recuerdo.jpg`,token:"signed-token"})});
+      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({path:`${code}/creator-test-recuerdo.jpg`,token:"signed-token"})});
     }
     if(action==="registerMedia"){
       expect(String(body.storagePath)).toContain(code);
-      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true})});
+      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({ok:true})});
     }
-    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+    return route.fulfill({status:400,contentType:"application/json",headers:cors,body:JSON.stringify({error:"unexpected_action"})});
   });
 
-  await page.route("**/storage/v1/object/upload/sign/gift-media/**",route=>
-    route.fulfill({status:200,contentType:"application/json",body:"{}"})
-  );
+  await page.route("**/storage/v1/object/upload/sign/gift-media/**",route=>{
+    const cors={"access-control-allow-origin":"*","access-control-allow-headers":"apikey, x-upsert, content-type","access-control-allow-methods":"PUT, OPTIONS"};
+    if(route.request().method()==="OPTIONS")return route.fulfill({status:204,headers:cors,body:""});
+    return route.fulfill({status:200,contentType:"application/json",headers:cors,body:"{}"});
+  });
   await page.route("https://wa.me/**",route=>
     route.fulfill({status:200,contentType:"text/html",body:"<html><body>whatsapp handoff</body></html>"})
   );
