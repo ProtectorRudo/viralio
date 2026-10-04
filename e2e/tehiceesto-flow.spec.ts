@@ -1,5 +1,5 @@
 import { expect,test,type Page } from "playwright/test";
-const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama-papa","amistad"];
+const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","papa","amistad"];
 async function sceneName(page:Page){return page.locator("main.thi-experience").getAttribute("data-scene")}
 async function waitForScene(page:Page,name:string){await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene",name)}
 async function advanceOne(page:Page){
@@ -18,6 +18,28 @@ async function advanceOne(page:Page){
   else if(current==="quiz"){await page.locator('[data-action="quiz-answer"]').nth(1).click();await page.locator('[data-action="advance"]').click()}
   else if(current==="vault"){await page.locator('[data-action="open-vault"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="capsule"){await page.locator('[data-action="open-capsule"]').click();await page.locator('[data-action="advance"]').click()}
+  else if(current==="origin"||current==="childhood")await page.locator(".scene .primary-action").click();
+  else if(current==="archive"){await page.locator(".archive-folder").click();await page.locator(".scene .primary-action").click()}
+  else if(current==="home"){const items=page.locator(".home-memory button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="legacy"){await page.locator(".legacy-seal").click();await page.locator(".scene .primary-action").click()}
+  else if(current==="rituals"){const items=page.locator(".ritual-grid button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="chapters"){const items=page.locator(".chapter-stack button");await items.nth(0).click();await items.nth(1).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="future"){await page.locator(".future-card").click();await page.locator(".scene .primary-action").click()}
+  else if(current==="reasons"){const items=page.locator(".reason-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="certainty"){const items=page.locator(".certainty-lines button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="threshold"){await page.locator(".threshold-hold").press("Enter");await page.locator(".threshold-continue").click()}
+  else if(current==="care"){const items=page.locator(".care-grid button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="sacrifices"){const items=page.locator(".sacrifice-list button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="return"){await page.locator(".return-key").click();await page.locator(".scene .primary-action").click()}
+  else if(current==="lessons"){const items=page.locator(".lesson-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="presence"){const items=page.locator(".presence-track button");await items.nth(0).click();await items.nth(1).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="inheritance"){const items=page.locator(".inheritance-board button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="lookback"){await page.locator(".lookback-button").click();await page.locator(".scene .primary-action").click()}
+  else if(current==="casefile"){await page.locator(".casefile-folder").click();await page.locator(".scene .primary-action").click()}
+  else if(current==="insidejokes"){const items=page.locator(".joke-decoder button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="incidents"){const items=page.locator(".incident-stack button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="proof"){const items=page.locator(".proof-list button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="pact"){const items=page.locator(".pact-paper>button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene>.primary-action").click()}
   else throw new Error(`cannot_advance_from_${current}`);
 }
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
