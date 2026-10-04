@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import ExperienceEngine from "./ExperienceEngine";
 import { experiences, getExperience } from "./data";
+import { creatorCall, uploadCreatorFile } from "./creatorApi";
 
 type Draft = {
   experience: string;
@@ -20,7 +21,9 @@ type Draft = {
 };
 
 const STORAGE_KEY = "tehiceesto:draft:v1";
+const SUBMISSION_KEY = "tehiceesto:submission:v1";
 const feelings = ["Emoción", "Amor", "Sorpresa", "Diversión", "Nostalgia"];
+type SubmitState = "idle" | "saving" | "uploading" | "ready" | "error";
 
 
 const creatorPrompts: Record<string, {
@@ -144,14 +147,21 @@ export default function CreatorWizard() {
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [photoNames, setPhotoNames] = useState<string[]>([]);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [previewMode, setPreviewMode] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [submittedCode, setSubmittedCode] = useState("");
+  const [uploadDone, setUploadDone] = useState(0);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
         const saved = window.localStorage.getItem(STORAGE_KEY);
         if (saved) setDraft({ ...emptyDraft, ...(JSON.parse(saved) as Draft) });
+        const savedSubmission = window.localStorage.getItem(SUBMISSION_KEY) || "";
+        if (/^[a-f0-9]{18}$/.test(savedSubmission)) setSubmittedCode(savedSubmission);
       } catch {
         // A broken local draft should never block creation.
       } finally {
@@ -185,14 +195,17 @@ export default function CreatorWizard() {
   );
 
 
-  const creatorWhatsAppHref = useMemo(() => {
+  const whatsappHrefFor = (code = "") => {
     const clip = (value: string, max: number) => {
       const clean = value.trim().replace(/\s+/g, " ");
       return clean.length > max ? `${clean.slice(0, max - 1)}…` : clean;
     };
 
     const lines = [
-      "Hola! Armé un borrador en Te Hice Esto y quiero hacerlo real.",
+      code
+        ? "Hola! Acabo de enviar mi borrador desde Te Hice Esto y quiero avanzar."
+        : "Hola! Armé un borrador en Te Hice Esto y quiero hacerlo real.",
+      code ? `Código del borrador: ${code.toUpperCase()}` : "",
       "",
       `Experiencia: ${baseExperience.title}`,
       `De: ${draft.giverName || "—"}`,
@@ -201,28 +214,108 @@ export default function CreatorWizard() {
       draft.keyDate ? `Fecha importante: ${draft.keyDate}` : "",
       draft.relationship ? `Historia: ${clip(draft.relationship, 240)}` : "",
       draft.anecdote ? `Anécdota: ${clip(draft.anecdote, 190)}` : "",
-      `Fotos seleccionadas: ${photoUrls.length}`,
+      `${code ? "Fotos cargadas" : "Fotos seleccionadas"}: ${photoFiles.length}`,
       draft.musicUrl ? `Canción elegida: ${clip(draft.musicUrl, 160)}` : "",
       `Carta escrita: ${draft.letter.trim() ? "sí" : "todavía no"}`,
       "",
-      "Quiero avanzar con la creación. ¿Cómo seguimos?",
+      code
+        ? "El borrador ya quedó guardado de forma privada. Quiero terminar los detalles."
+        : "Quiero avanzar con la creación. ¿Cómo seguimos?",
     ].filter(Boolean);
 
     return `https://wa.me/5492215653163?text=${encodeURIComponent(lines.join("\n"))}`;
-  }, [baseExperience.title, draft, photoUrls.length]);
+  };
+
+  const creatorWhatsAppHref = whatsappHrefFor(submittedCode);
+
+  const submitDraft = async () => {
+    if (submitState === "saving" || submitState === "uploading") return null;
+    setSubmitError("");
+    setUploadDone(0);
+    setSubmitState("saving");
+
+    try {
+      const result = await creatorCall<{ code: string }>("submitDraft", {
+        code: submittedCode || undefined,
+        website: "",
+        experienceSlug: baseExperience.slug,
+        giverName: draft.giverName,
+        recipientName: draft.recipient,
+        feeling: draft.feeling,
+        relationship: draft.relationship,
+        keyDate: draft.keyDate,
+        anecdote: draft.anecdote,
+        openingText: draft.opening,
+        letterText: draft.letter,
+        closingText: draft.closing,
+        musicUrl: draft.musicUrl,
+      });
+
+      const code = result.code;
+      setSubmittedCode(code);
+      window.localStorage.setItem(SUBMISSION_KEY, code);
+
+      if (photoFiles.length > 0) {
+        setSubmitState("uploading");
+
+        for (let index = 0; index < photoFiles.length; index += 1) {
+          const file = photoFiles[index];
+          const prepared = await creatorCall<{ path: string; token: string }>("prepareUpload", {
+            code,
+            fileName: file.name,
+            mimeType: file.type,
+            size: file.size,
+          });
+
+          await uploadCreatorFile(prepared.path, prepared.token, file);
+          await creatorCall("registerMedia", {
+            code,
+            storagePath: prepared.path,
+            originalName: file.name,
+            mimeType: file.type,
+            size: file.size,
+            caption: index === 0 ? draft.anecdote : "",
+          });
+          setUploadDone(index + 1);
+        }
+      }
+
+      setSubmitState("ready");
+      return code;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "creator_request_failed";
+      setSubmitError(message);
+      setSubmitState("error");
+      return null;
+    }
+  };
+
+  const handoffToWhatsApp = async () => {
+    const code = submitState === "ready" && submittedCode ? submittedCode : await submitDraft();
+    if (!code) return;
+    window.location.href = whatsappHrefFor(code);
+  };
 
   const clearDraft = () => {
     if (!window.confirm("¿Borrar este borrador de este dispositivo?")) return;
     photoUrls.forEach((url) => URL.revokeObjectURL(url));
     window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(SUBMISSION_KEY);
     setDraft(emptyDraft);
     setPhotoUrls([]);
     setPhotoNames([]);
+    setPhotoFiles([]);
+    setSubmittedCode("");
+    setSubmitState("idle");
+    setSubmitError("");
+    setUploadDone(0);
     setStep(0);
   };
 
   const update = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
+    if (submitState === "ready") setSubmitState("idle");
+    setSubmitError("");
   };
 
   const selectPhotos = (files: FileList | null) => {
@@ -233,8 +326,11 @@ export default function CreatorWizard() {
       .filter((file) => file.type.startsWith("image/"))
       .slice(0, 10);
 
+    setPhotoFiles(selected);
     setPhotoNames(selected.map((file) => file.name));
     setPhotoUrls(selected.map((file) => URL.createObjectURL(file)));
+    if (submitState === "ready") setSubmitState("idle");
+    setSubmitError("");
   };
 
   if (previewMode) {
@@ -244,15 +340,15 @@ export default function CreatorWizard() {
           <button className="preview-close" onClick={() => setPreviewMode(false)}>
             ← Volver a editar
           </button>
-          <a
+          <button
             className="preview-whatsapp"
-            href={creatorWhatsAppHref}
-            target="_blank"
-            rel="noreferrer noopener"
+            type="button"
+            onClick={handoffToWhatsApp}
+            disabled={submitState === "saving" || submitState === "uploading"}
           >
-            <span>Quiero hacerlo real</span>
-            <strong>WhatsApp ↗</strong>
-          </a>
+            <span>{submitState === "uploading" ? `Subiendo ${uploadDone}/${photoFiles.length}` : "Quiero hacerlo real"}</span>
+            <strong>{submitState === "saving" ? "Guardando…" : submitState === "uploading" ? "Preparando…" : "WhatsApp ↗"}</strong>
+          </button>
         </div>
         <ExperienceEngine
           experience={personalizedExperience}
@@ -530,8 +626,10 @@ export default function CreatorWizard() {
           <div className="privacy-note">
             <span>◉</span>
             <div>
-              <strong>Tu borrador todavía vive sólo en este dispositivo.</strong>
-              <p>La historia permanece privada mientras editás. Las fotos de esta vista previa no quedan guardadas si cerrás o recargás la pestaña.</p>
+              <strong>{submittedCode ? "Tu borrador ya quedó guardado de forma privada." : "Tu borrador todavía vive sólo en este dispositivo."}</strong>
+              <p>{submittedCode
+                ? `Código ${submittedCode.toUpperCase()}. Tus textos quedaron guardados y las fotos se suben únicamente cuando tocás “Quiero crear el mío”.`
+                : "La historia permanece privada mientras editás. Las fotos de esta vista previa no quedan guardadas si cerrás o recargás la pestaña."}</p>
             </div>
           </div>
 
@@ -547,39 +645,72 @@ export default function CreatorWizard() {
           <section className="creator-conversion">
             <div className="creator-conversion-copy">
               <span className="eyebrow">Hacerlo real</span>
-              <h2>Ya hiciste la parte más difícil: contar por qué esa persona importa.</h2>
-              <p>
-                Mandame este borrador por WhatsApp. Me llega con la experiencia,
-                los nombres y el contexto que ya cargaste, así no empezamos de cero.
-              </p>
+              <h2>{submittedCode ? "Ya recibí tu historia. Ahora sólo falta convertirla en la versión final." : "Ya hiciste la parte más difícil: contar por qué esa persona importa."}</h2>
+              <p>{submittedCode
+                ? `El borrador ${submittedCode.toUpperCase()} quedó guardado de forma privada. Podés abrir WhatsApp sin volver a explicar nada.`
+                : "Al continuar guardo de forma privada la experiencia, tus textos y las fotos seleccionadas. Después abrimos WhatsApp con un código único para seguir desde exactamente acá."}</p>
             </div>
 
-            <a
-              className="creator-whatsapp-primary"
-              href={creatorWhatsAppHref}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <span className="creator-wa-mark">◉</span>
-              <div>
-                <small>CONTINUAR POR WHATSAPP</small>
-                <strong>Quiero crear el mío</strong>
+            {submitState === "ready" && submittedCode ? (
+              <a
+                className="creator-whatsapp-primary is-ready"
+                href={creatorWhatsAppHref}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <span className="creator-wa-mark">✓</span>
+                <div>
+                  <small>BORRADOR {submittedCode.toUpperCase()} · GUARDADO</small>
+                  <strong>Abrir WhatsApp y terminarlo</strong>
+                </div>
+                <b>↗</b>
+              </a>
+            ) : (
+              <button
+                className="creator-whatsapp-primary"
+                type="button"
+                onClick={handoffToWhatsApp}
+                disabled={submitState === "saving" || submitState === "uploading"}
+              >
+                <span className="creator-wa-mark">{submitState === "saving" || submitState === "uploading" ? "·" : "◉"}</span>
+                <div>
+                  <small>{submitState === "saving"
+                    ? "GUARDANDO TU HISTORIA"
+                    : submitState === "uploading"
+                      ? `SUBIENDO ${uploadDone} DE ${photoFiles.length} FOTOS`
+                      : "GUARDAR Y CONTINUAR POR WHATSAPP"}</small>
+                  <strong>{submitState === "saving"
+                    ? "Preparando tu borrador…"
+                    : submitState === "uploading"
+                      ? "Guardando tus recuerdos…"
+                      : "Quiero crear el mío"}</strong>
+                </div>
+                <b>{submitState === "saving" || submitState === "uploading" ? "…" : "↗"}</b>
+              </button>
+            )}
+
+            {submitState === "error" && (
+              <div className="creator-submit-error">
+                <strong>No perdimos tu borrador.</strong>
+                <p>No pude guardarlo automáticamente. Podés intentar otra vez o seguir por WhatsApp igualmente.</p>
+                <button type="button" onClick={handoffToWhatsApp}>Reintentar guardado</button>
+                <a href={whatsappHrefFor()} target="_blank" rel="noreferrer noopener">Seguir sin guardar ↗</a>
+                <small>{submitError}</small>
               </div>
-              <b>↗</b>
-            </a>
+            )}
 
             <div className="creator-next-steps">
               <article>
                 <span>01</span>
-                <div><strong>Me llega tu borrador</strong><p>Ya sé para quién es, qué experiencia elegiste y qué historia querés contar.</p></div>
+                <div><strong>Tu borrador queda identificado</strong><p>Recibo un código único con la experiencia, los nombres, tus textos y los recuerdos que subiste.</p></div>
               </article>
               <article>
                 <span>02</span>
-                <div><strong>Terminamos los detalles</strong><p>Fotos definitivas, audios, textos y cualquier ajuste para que no se sienta genérico.</p></div>
+                <div><strong>Terminamos los detalles juntos</strong><p>Desde WhatsApp sumamos audios, afinamos textos y hago los ajustes finos para que no se sienta genérico.</p></div>
               </article>
               <article>
                 <span>03</span>
-                <div><strong>Recibís el link privado</strong><p>Listo para mandárselo a esa persona cuando vos decidas.</p></div>
+                <div><strong>Recibís el link privado final</strong><p>Lo revisás antes de entregarlo. Recién cuando está perfecto queda listo para esa persona.</p></div>
               </article>
             </div>
           </section>
