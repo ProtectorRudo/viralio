@@ -21,6 +21,15 @@ describe("tehiceesto.com host routing", () => {
     );
   });
 
+  it("keeps private order tracking on the dedicated domain", () => {
+    const response = proxy(
+      request("https://tehiceesto.com/pedido/0123456789abcdef01", "tehiceesto.com"),
+    );
+    expect(response.headers.get("x-middleware-rewrite")).toContain(
+      "/tehiceesto/pedido/0123456789abcdef01",
+    );
+  });
+
   it("redirects old prefixed links to clean dedicated-domain paths", () => {
     const response = proxy(
       request("https://tehiceesto.com/tehiceesto/crear", "tehiceesto.com"),
