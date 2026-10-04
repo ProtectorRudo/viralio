@@ -3,11 +3,36 @@ import { headers } from "next/headers";
 import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
 
+const HOME_OCCASIONS: Record<string,string> = {
+  pareja: "PAREJA",
+  cumpleanos: "CUMPLEAÑOS",
+  mama: "MAMÁ",
+  papa: "PAPÁ",
+  hijos: "HIJO/A",
+  abuelos: "ABUELOS",
+  amistad: "AMISTAD",
+  aniversario: "ANIVERSARIO",
+  propuesta: "PROPUESTA",
+};
+
+const HOME_EXPERIENCE_ORDER = [
+  "pareja",
+  "cumpleanos",
+  "mama",
+  "papa",
+  "hijos",
+  "abuelos",
+  "amistad",
+  "aniversario",
+  "propuesta",
+];
+
 export default async function TeHiceEstoHome() {
   const host=(await headers()).get("host")?.split(":")[0].toLowerCase()||"";
   const dedicated=host==="tehiceesto.com"||host==="www.tehiceesto.com";
   const prefix=dedicated?"":"/tehiceesto";
   const href=(path="")=>`${prefix}${path}`||"/";
+  const homeExperiences=[...experiences].sort((a,b)=>HOME_EXPERIENCE_ORDER.indexOf(a.slug)-HOME_EXPERIENCE_ORDER.indexOf(b.slug));
 
   return (
     <>
@@ -107,35 +132,52 @@ export default async function TeHiceEstoHome() {
         <header className="catalog-editorial-head">
           <div>
             <span className="eyebrow">Colección 01—09</span>
-            <h2>Nueve historias.<br/><em>Nueve mundos distintos.</em></h2>
+            <h2>Elegí para quién es.<br/><em>Después elegí la historia.</em></h2>
           </div>
           <p>
-            Cada ocasión tiene su propia dirección de arte, ritmo e interacciones.
-            Elegí la persona. Después hacelo suyo.
+            Primero encontrá la ocasión: pareja, cumpleaños, mamá, papá, hijos y más.
+            Después entrá al demo que mejor representa lo que querés regalar.
           </p>
         </header>
 
         <div className="catalog-list">
-          {experiences.map((experience, index) => (
-            <Link
-              href={href(`/experiencias/${experience.slug}`)}
-              className="catalog-row"
-              key={experience.slug}
-              style={{ "--row-accent": experience.accent } as React.CSSProperties}
-            >
-              <span className="catalog-row-number">{String(index + 1).padStart(2, "0")}</span>
-              <div className="catalog-row-title">
-                <small>{experience.eyebrow}</small>
-                <h3>{experience.title}</h3>
-              </div>
-              <p>{experience.short}</p>
-              <div className="catalog-row-action">
-                <span>VIVIR DEMO</span>
-                <b>↗</b>
-              </div>
-              <i className="catalog-row-line" />
-            </Link>
-          ))}
+          {homeExperiences.map((experience, index) => {
+            const occasion=HOME_OCCASIONS[experience.slug]||experience.tags[0].toUpperCase();
+            return (
+              <Link
+                href={href(`/experiencias/${experience.slug}`)}
+                className="catalog-row"
+                key={experience.slug}
+                style={{ "--row-accent": experience.accent } as React.CSSProperties}
+              >
+                <span className="catalog-row-number">{String(index + 1).padStart(2, "0")}</span>
+                <div className="catalog-row-title">
+                  <small>EXPERIENCIA PARA</small>
+                  <h3 style={{
+                    fontFamily:"Arial, Helvetica, sans-serif",
+                    fontWeight:800,
+                    letterSpacing:".015em",
+                    color:"color-mix(in srgb,var(--row-accent) 74%,#4b4145)",
+                  }}>{occasion}</h3>
+                  <strong style={{
+                    display:"block",
+                    marginTop:"8px",
+                    color:"#292225",
+                    fontFamily:'Georgia, "Times New Roman", serif',
+                    fontSize:"clamp(21px,2.5vw,31px)",
+                    fontWeight:400,
+                    lineHeight:1.04,
+                  }}>{experience.title}</strong>
+                </div>
+                <p>{experience.short}</p>
+                <div className="catalog-row-action">
+                  <span>VER DEMO</span>
+                  <b>↗</b>
+                </div>
+                <i className="catalog-row-line" />
+              </Link>
+            );
+          })}
         </div>
       </section>
 
