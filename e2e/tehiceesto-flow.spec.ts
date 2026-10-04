@@ -93,74 +93,50 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 });
 
 
-test("creator handoff persists the private draft before opening WhatsApp",async({page})=>{
+test("assisted purchase chooses an experience, captures contact and opens checkout",async({page})=>{
   test.setTimeout(45_000);
-  const calls:string[]=[];
-  const code="0123456789abcdef01";
+  const code="THI-ORDER-TEST";
 
-  await page.route("**/functions/v1/creator-api",async route=>{
+  await page.route("**/functions/v1/order-create",async route=>{
     const request=route.request();
-    const cors={"access-control-allow-origin":"*","access-control-allow-headers":"apikey, content-type","access-control-allow-methods":"POST, OPTIONS"};
-    if(request.method()==="OPTIONS")return route.fulfill({status:204,headers:cors,body:""});
     const body=JSON.parse(request.postData()||"{}") as Record<string,unknown>;
-    const action=String(body.action||"");
-    calls.push(action);
-    if(action==="submitDraft"){
-      expect(body.experienceSlug).toBe("pareja");
-      expect(body.giverName).toBe("Mauro");
-      expect(body.recipientName).toBe("Ailin");
-      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({code})});
-    }
-    if(action==="resetCreatorMedia"){
-      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({ok:true,removed:0})});
-    }
-    if(action==="prepareUpload"){
-      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({path:`${code}/creator-test-recuerdo.jpg`,token:"signed-token"})});
-    }
-    if(action==="registerMedia"){
-      expect(String(body.storagePath)).toContain(code);
-      return route.fulfill({status:200,contentType:"application/json",headers:cors,body:JSON.stringify({ok:true})});
-    }
-    return route.fulfill({status:400,contentType:"application/json",headers:cors,body:JSON.stringify({error:"unexpected_action"})});
+    expect(body.experienceSlug).toBe("pareja");
+    expect(body.customerName).toBe("Mauro");
+    expect(body.email).toBe("mauro@example.com");
+    expect(String(body.whatsapp)).toContain("549221");
+    expect(body.consent).toBe(true);
+    return route.fulfill({
+      status:200,
+      contentType:"application/json",
+      headers:{"access-control-allow-origin":"*"},
+      body:JSON.stringify({
+        code,
+        priceMinor:2500000,
+        currency:"ARS",
+        checkoutUrl:"https://checkout.test/tehiceesto",
+        checkoutReady:true,
+      }),
+    });
   });
 
-  await page.route("**/storage/v1/object/upload/sign/gift-media/**",route=>{
-    const cors={"access-control-allow-origin":"*","access-control-allow-headers":"apikey, x-upsert, content-type","access-control-allow-methods":"PUT, OPTIONS"};
-    if(route.request().method()==="OPTIONS")return route.fulfill({status:204,headers:cors,body:""});
-    return route.fulfill({status:200,contentType:"application/json",headers:cors,body:"{}"});
-  });
-  await page.route("https://wa.me/**",route=>
-    route.fulfill({status:200,contentType:"text/html",body:"<html><body>whatsapp handoff</body></html>"})
+  await page.route("https://checkout.test/**",route=>
+    route.fulfill({status:200,contentType:"text/html",body:"<html><body>checkout</body></html>"})
   );
 
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear");
-  await page.locator(".creator-step .primary-action").click();
+  await page.getByRole("button",{name:/Elegir esta/i}).first().click();
 
   await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
-  await page.getByPlaceholder("Ej. Ailín").fill("Ailin");
-  await page.getByRole("button",{name:"Seguir"}).click();
+  await page.getByPlaceholder("Ej. +54 9 221 ...").fill("+54 9 221 555 1234");
+  await page.getByPlaceholder("tu@email.com").fill("mauro@example.com");
+  await page.locator('.order-consent input[type="checkbox"]').check();
+  await page.getByRole("button",{name:/Revisar y pagar/i}).click();
 
-  await page.getByRole("button",{name:"Agregar recuerdos"}).click();
-  await page.locator('input[type="file"]').setInputFiles({
-    name:"recuerdo.jpg",
-    mimeType:"image/jpeg",
-    buffer:Buffer.from("fake-jpeg"),
-  });
-  await page.getByRole("button",{name:"Escribir la parte importante"}).click();
-  await page.locator(".story-field-important textarea").fill("Esta es una carta de prueba para validar el flujo completo.");
-  await page.getByRole("button",{name:"Ver lo que creamos"}).click();
-
-  await page.locator("button.creator-whatsapp-primary").click();
-  await page.waitForURL(/wa\.me/);
-
-  expect(calls).toContain("submitDraft");
-  expect(calls).toContain("resetCreatorMedia");
-  expect(calls).toContain("prepareUpload");
-  expect(calls).toContain("registerMedia");
-  expect(decodeURIComponent(page.url())).toContain(code.toUpperCase());
+  await expect(page.getByRole("heading",{name:/Tu experiencia empieza acá/i})).toBeVisible();
+  await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
+  await page.waitForURL(/checkout\.test/);
 });
-
 
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
   const response=await request.get("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1");
