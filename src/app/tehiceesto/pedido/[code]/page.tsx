@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getExperience } from "../../data";
+import OrderStatusAutoRefresh from "./OrderStatusAutoRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -127,7 +128,10 @@ export default async function OrderStatusPage({params}:{params:Promise<{code:str
     )}
 
     <footer className="order-status-footer">
-      <Link href={`/tehiceesto/pedido/${data.code}`}>Actualizar estado ↻</Link>
+      <div className="order-status-footer-left">
+        <Link href={`/tehiceesto/pedido/${data.code}`}>Actualizar ahora ↻</Link>
+        <OrderStatusAutoRefresh active={data.stage!=="ready"}/>
+      </div>
       <span>Tu contenido no aparece en buscadores.</span>
     </footer>
   </main>;
