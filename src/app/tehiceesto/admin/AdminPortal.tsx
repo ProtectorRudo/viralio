@@ -16,6 +16,7 @@ type GiftRow = {
   created_at: string;
   published_at: string | null;
   story_data?: { creator?: { submitted?: boolean; submittedAt?: string } } | null;
+  order?: { status: string; amount_minor: number | null; currency: string; provider: string } | null;
 };
 
 export default function AdminPortal() {
@@ -84,8 +85,9 @@ export default function AdminPortal() {
   }
 
   const publishedCount = gifts.filter((gift) => gift.status === "published").length;
-  const draftCount = gifts.filter((gift) => gift.status === "draft").length;
+  const draftCount = gifts.filter((gift) => ["draft","awaiting_payment","paid"].includes(gift.status)).length;
   const creatorLeadCount = gifts.filter((gift) => gift.story_data?.creator?.submitted).length;
+  const pendingPaymentCount = gifts.filter((gift) => gift.order?.status === "pending").length;
 
   async function createGift(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -167,8 +169,8 @@ export default function AdminPortal() {
       <section className="thi-admin-stat-grid">
         <article><span>Total</span><strong>{gifts.length}</strong><small>regalos creados</small></article>
         <article><span>Publicados</span><strong>{publishedCount}</strong><small>links activos</small></article>
-        <article><span>Borradores</span><strong>{draftCount}</strong><small>en preparación</small></article>
-        <article className="accent"><span>Desde la web</span><strong>{creatorLeadCount}</strong><small>borradores enviados por clientes</small></article>
+        <article><span>En preparación</span><strong>{draftCount}</strong><small>borradores y pedidos activos</small></article>
+        <article className="accent"><span>Pagos pendientes</span><strong>{pendingPaymentCount}</strong><small>{creatorLeadCount} llegaron desde la web</small></article>
       </section>
 
       {showNew && (
@@ -253,6 +255,7 @@ export default function AdminPortal() {
                   <th>De</th>
                   <th>Experiencia</th>
                   <th>Origen</th>
+                  <th>Pago</th>
                   <th>Estado</th>
                   <th>Código</th>
                   <th>Creado</th>
@@ -275,8 +278,15 @@ export default function AdminPortal() {
                       </span>
                     </td>
                     <td>
+                      {gift.order ? (
+                        <span className={`thi-payment-badge ${gift.order.status}`}>
+                          {gift.order.status === "approved" ? "Pagado" : gift.order.status === "pending" ? "Pendiente" : gift.order.status}
+                        </span>
+                      ) : <span className="thi-payment-badge none">—</span>}
+                    </td>
+                    <td>
                       <span className={`thi-status ${gift.status}`}>
-                        {gift.status}
+                        {gift.status === "awaiting_payment" ? "esperando pago" : gift.status}
                       </span>
                     </td>
                     <td><code>{gift.public_code}</code></td>
