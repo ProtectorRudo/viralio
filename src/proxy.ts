@@ -38,7 +38,8 @@ function teHiceEstoSitemap() {
     "/experiencias/abuelos",
     "/experiencias/aniversario",
     "/experiencias/propuesta",
-    "/experiencias/mama-papa",
+    "/experiencias/mama",
+    "/experiencias/papa",
     "/experiencias/amistad",
   ];
 
@@ -120,7 +121,15 @@ export function proxy(request: NextRequest) {
   target.pathname =
     pathname === "/" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`;
 
-  return NextResponse.rewrite(target);
+  const response = NextResponse.rewrite(target);
+  if (pathname.startsWith("/r/")) {
+    response.headers.set("Referrer-Policy","no-referrer");
+    response.headers.set("X-Robots-Tag","noindex, nofollow, noarchive, noimageindex");
+    response.headers.set("Cache-Control","private, no-store, max-age=0, must-revalidate");
+    response.headers.set("X-Content-Type-Options","nosniff");
+    response.headers.set("Permissions-Policy","camera=(), microphone=(), geolocation=()");
+  }
+  return response;
 }
 
 export const config = {
