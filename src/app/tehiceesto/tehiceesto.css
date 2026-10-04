@@ -41,7 +41,30 @@
 .thi-payment-badge.pending{color:#d8b27e;border-color:rgba(216,178,126,.22);background:rgba(216,178,126,.05)}
 .thi-payment-badge.approved{color:#8fd9cb;border-color:rgba(143,217,203,.24);background:rgba(143,217,203,.055)}
 .thi-payment-badge.rejected,.thi-payment-badge.cancelled,.thi-payment-badge.refunded{color:#cf8f98;border-color:rgba(207,143,152,.18);background:rgba(207,143,152,.04)}
-.thi-payment-badge.none{color:#5b5660}.thi-status.published{color:#8fd9cb;border-color:rgba(143,217,203,.25);background:rgba(143,217,203,.05)}.thi-status.draft{color:#d2a0ac}.thi-status.awaiting_payment{color:#d8b27e;border-color:rgba(216,178,126,.2);background:rgba(216,178,126,.04)}.thi-status.paid{color:#8fd9cb;border-color:rgba(143,217,203,.22);background:rgba(143,217,203,.045)}.thi-publish{border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7196,#ed4e78);color:#fff;font-weight:700;cursor:pointer}.thi-publish.on{background:rgba(143,217,203,.08);color:#8fd9cb;border:1px solid rgba(143,217,203,.25)}
+.thi-payment-badge.none{color:#5b5660}
+.thi-commerce-panel{position:relative;overflow:hidden;margin-top:20px}
+.thi-commerce-panel:before{content:"";position:absolute;width:340px;height:210px;border-radius:50%;right:-150px;top:-130px;background:#8fd9cb;filter:blur(110px);opacity:.04;pointer-events:none}
+.thi-commerce-health{display:inline-flex;align-items:center;gap:7px;color:#655f67;font-size:7px;letter-spacing:.09em;text-transform:uppercase}
+.thi-commerce-health i{width:6px;height:6px;border-radius:50%;background:#777079;box-shadow:0 0 0 4px rgba(255,255,255,.025)}
+.thi-commerce-health.ready{color:#7faea5}.thi-commerce-health.ready i{background:#8fd9cb;box-shadow:0 0 0 4px rgba(143,217,203,.055)}
+.thi-commerce-health.fallback{color:#a58a72}.thi-commerce-health.fallback i{background:#d8b27e}
+.thi-commerce-health.checking i{animation:thiPulse 2s infinite}
+.thi-commerce-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:18px}
+.thi-commerce-grid>label,.thi-commerce-switch-wrap{border:1px solid var(--thi-line);background:#0b0a0e;padding:16px}
+.thi-commerce-grid>label>span,.thi-commerce-switch-wrap>span{display:block;color:#77717b;font-size:8px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:8px}
+.thi-commerce-grid input{width:100%;min-height:48px;border:1px solid rgba(255,255,255,.08);background:#111015;color:#eee;border-radius:10px;padding:0 13px;outline:0;font-size:15px}
+.thi-commerce-grid input:focus{border-color:rgba(143,217,203,.28)}
+.thi-commerce-grid small{display:block;margin-top:8px;color:#625c65;font-size:8px;line-height:1.45}
+.thi-commerce-switch{min-width:150px;min-height:46px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:#111015;color:#817a83;display:inline-flex;align-items:center;gap:11px;padding:0 14px;cursor:pointer}
+.thi-commerce-switch i{width:22px;height:22px;border-radius:50%;background:#3b373d;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.thi-commerce-switch strong{font-size:9px;letter-spacing:.06em}
+.thi-commerce-switch.on{border-color:rgba(143,217,203,.25);background:rgba(143,217,203,.055);color:#9fd4c9}
+.thi-commerce-switch.on i{background:#8fd9cb;box-shadow:0 0 0 5px rgba(143,217,203,.05)}
+.thi-commerce-switch:disabled{opacity:.45;cursor:not-allowed}
+.thi-commerce-actions{display:flex;align-items:center;gap:13px;margin-top:14px}
+.thi-commerce-actions>span{color:#8f868f;font-size:9px}
+@media(max-width:760px){.thi-commerce-grid{grid-template-columns:1fr}.thi-commerce-actions{align-items:flex-start;flex-direction:column}}
+.thi-status.published{color:#8fd9cb;border-color:rgba(143,217,203,.25);background:rgba(143,217,203,.05)}.thi-status.draft{color:#d2a0ac}.thi-status.awaiting_payment{color:#d8b27e;border-color:rgba(216,178,126,.2);background:rgba(216,178,126,.04)}.thi-status.paid{color:#8fd9cb;border-color:rgba(143,217,203,.22);background:rgba(143,217,203,.045)}.thi-publish{border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#ff7196,#ed4e78);color:#fff;font-weight:700;cursor:pointer}.thi-publish.on{background:rgba(143,217,203,.08);color:#8fd9cb;border:1px solid rgba(143,217,203,.25)}
 .thi-publish:disabled{opacity:.48;cursor:not-allowed;filter:saturate(.65)}
 .thi-payment-panel{position:relative;overflow:hidden}
 .thi-payment-panel:before{content:"";position:absolute;width:320px;height:180px;border-radius:50%;right:-120px;top:-120px;background:#8fd9cb;filter:blur(90px);opacity:.045;pointer-events:none}
