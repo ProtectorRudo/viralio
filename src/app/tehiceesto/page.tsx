@@ -16,7 +16,7 @@ export default async function TeHiceEstoHome() {
         <nav>
           <a href="#experiencias">Experiencias</a>
           <a href="#como-funciona">Cómo funciona</a>
-          <Link href={href("/crear")}>Crear una →</Link>
+          <Link className="header-create" href={href("/crear")}>Elegir una →</Link>
         </nav>
       </header>
       <main className="home-shell">
@@ -28,7 +28,7 @@ export default async function TeHiceEstoHome() {
         </div>
 
         <div className="home-hero-copy">
-          <span className="eyebrow">Regalos digitales hechos para una sola persona</span>
+          <span className="eyebrow">Una experiencia digital hecha para una sola persona</span>
           <h1>
             No le mandes
             <em> otro mensaje.</em>
@@ -40,7 +40,7 @@ export default async function TeHiceEstoHome() {
           </p>
           <div className="home-hero-actions">
             <Link className="home-primary" href={href("/crear")}>
-              Crear una experiencia <span>↗</span>
+              Elegir una experiencia <span>↗</span>
             </Link>
             <Link className="home-secondary" href={href("/experiencias/pareja")}>
               Entrar a un demo <span>→</span>
