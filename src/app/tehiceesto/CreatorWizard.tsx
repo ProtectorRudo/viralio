@@ -24,6 +24,32 @@ const INITIAL_CONTACT = {
   consent: false,
 };
 
+const OCCASION_META: Record<string, { label: string; filter: string; cta: string }> = {
+  pareja: { label: "PARA TU PAREJA", filter: "Pareja", cta: "Elegir para mi pareja" },
+  cumpleanos: { label: "CUMPLEAÑOS", filter: "Cumpleaños", cta: "Elegir cumpleaños" },
+  mama: { label: "PARA MAMÁ", filter: "Mamá", cta: "Elegir para mamá" },
+  papa: { label: "PARA PAPÁ", filter: "Papá", cta: "Elegir para papá" },
+  hijos: { label: "PARA TU HIJO/A", filter: "Hijo/a", cta: "Elegir para hijo/a" },
+  abuelos: { label: "PARA ABUELOS", filter: "Abuelos", cta: "Elegir para abuelos" },
+  amistad: { label: "PARA UN/A AMIGO/A", filter: "Amistad", cta: "Elegir amistad" },
+  aniversario: { label: "ANIVERSARIO", filter: "Pareja", cta: "Elegir aniversario" },
+  propuesta: { label: "PROPUESTA", filter: "Pareja", cta: "Elegir propuesta" },
+};
+
+const EXPERIENCE_FILTERS = ["Todas", "Pareja", "Cumpleaños", "Mamá", "Papá", "Hijo/a", "Abuelos", "Amistad"];
+
+const EXPERIENCE_ORDER = [
+  "pareja",
+  "cumpleanos",
+  "mama",
+  "papa",
+  "hijos",
+  "abuelos",
+  "amistad",
+  "aniversario",
+  "propuesta",
+];
+
 function normalizeWhatsApp(value: string) {
   return value.replace(/[^0-9+]/g, "").slice(0, 16);
 }
@@ -35,11 +61,22 @@ export default function CreatorWizard() {
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [orderCode, setOrderCode] = useState("");
+  const [activeFilter, setActiveFilter] = useState("Todas");
 
   const selected = useMemo(
     () => experiences.find((experience) => experience.slug === selectedSlug),
     [selectedSlug],
   );
+
+  const visibleExperiences = useMemo(() => {
+    const rank = new Map(EXPERIENCE_ORDER.map((slug, index) => [slug, index]));
+    return experiences
+      .filter((experience) => {
+        if (activeFilter === "Todas") return true;
+        return OCCASION_META[experience.slug]?.filter === activeFilter;
+      })
+      .sort((a, b) => (rank.get(a.slug) ?? 99) - (rank.get(b.slug) ?? 99));
+  }, [activeFilter]);
 
   const contactValid =
     contact.name.trim().length >= 2 &&
@@ -150,9 +187,35 @@ export default function CreatorWizard() {
               </div>
             </header>
 
+            <div className="order-occasion-picker">
+              <div className="order-occasion-picker-head">
+                <strong>¿PARA QUIÉN O PARA QUÉ OCASIÓN?</strong>
+                <span>Filtrá para encontrarla más rápido</span>
+              </div>
+              <div className="order-occasion-filters" role="group" aria-label="Filtrar experiencias por ocasión">
+                {EXPERIENCE_FILTERS.map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    className={activeFilter === filter ? "active" : ""}
+                    aria-pressed={activeFilter === filter}
+                    onClick={() => setActiveFilter(filter)}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="order-template-grid">
-              {experiences.map((experience, index) => {
+              {visibleExperiences.map((experience) => {
+                const index = experiences.findIndex((item) => item.slug === experience.slug);
                 const number = String(index + 1).padStart(2, "0");
+                const occasion = OCCASION_META[experience.slug] ?? {
+                  label: experience.tags[0].toUpperCase(),
+                  filter: experience.tags[0],
+                  cta: "Elegir experiencia",
+                };
                 return (
                   <article
                     className={`order-template-card order-template-${experience.slug}`}
@@ -163,28 +226,26 @@ export default function CreatorWizard() {
                       className={`order-template-art ${experience.demo.photos?.[0]?.url ? "has-photo" : ""}`}
                       aria-hidden="true"
                       style={experience.demo.photos?.[0]?.url ? {
-                        backgroundImage: `linear-gradient(180deg,rgba(24,19,21,.12),rgba(24,19,21,.48)), url("${experience.demo.photos[0].url}")`,
+                        backgroundImage: `linear-gradient(180deg,rgba(24,19,21,.10),rgba(24,19,21,.50)), url("${experience.demo.photos[0].url}")`,
                         backgroundSize: "cover",
                         backgroundPosition: experience.demo.photos[0].position || "center",
                       } : undefined}
                     >
                       <span>TH / {number}</span>
                       <b>{experience.icon}</b>
-                      <em>{experience.tags[0]}</em>
+                      <em>{occasion.label.replace("PARA ", "")}</em>
                     </div>
                     <div className="order-template-copy">
                       <div className="order-template-overline">
                         <span>{number}</span>
                         <small>{experience.eyebrow}</small>
                       </div>
+                      <strong className="order-template-occasion">{occasion.label}</strong>
                       <h2>{experience.title}</h2>
                       <p>{experience.short}</p>
-                      <div className="order-template-tags" aria-label="Categorías">
-                        {experience.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
-                      </div>
                       <div className="order-template-actions">
                         <button type="button" onClick={() => chooseTemplate(experience.slug)}>
-                          Elegir esta <span>→</span>
+                          {occasion.cta} <span>→</span>
                         </button>
                         <Link href={`/tehiceesto/experiencias/${experience.slug}`} target="_blank">
                           Ver demo ↗
