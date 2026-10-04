@@ -262,6 +262,11 @@ export const experiences: Experience[] = [
         "Ese viaje donde empecé a imaginar una vida entera, no sólo unas vacaciones.",
         "Una mañana cualquiera en la que entendí que mi lugar favorito ya no era un lugar.",
       ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1775717522396-5d56c0c9aeae?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1763129636696-0bda22154cf7?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1763129636465-f4016848a06f?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+      ],
       stars:[
         "Quiero desayunos apurados con vos.",
         "Quiero festejar las cosas enormes y también las ridículamente pequeñas.",
@@ -291,6 +296,11 @@ export const experiences: Experience[] = [
         "Esperarnos despierta aunque dijéramos que no hacía falta.",
         "Esos abrazos que de chicos parecían normales y de grandes entendimos todo lo que tenían.",
       ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1531983412531-1f49a365ffed?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1589169011402-8b2cbd1ee593?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1501886564641-e55a61b1f5da?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+      ],
       voices:[
         {name:"Tu hijo mayor",message:"Ahora que crecí entiendo muchas cosas que antes simplemente daba por hechas."},
         {name:"Tu hija",message:"Gracias por seguir siendo la primera persona a la que quiero contarle algo bueno."},
@@ -317,6 +327,11 @@ export const experiences: Experience[] = [
         "La mano sosteniendo la bici hasta que dejaste de hacerlo y yo ni me di cuenta.",
         "Esas salidas donde se hablaba poco pero quedaban un montón de cosas.",
         "Los consejos que tardé años en entender y un día empezaron a sonar distintos.",
+      ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1644941002474-6ee8ab0ee8cb?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1582236158876-7e6a7410bcee?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1590527548172-295fdcb1bab0?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
       ],
       voices:[
         {name:"Vale",message:"Ahora entiendo que muchas veces estabas enseñando sin decir que estabas enseñando."},
