@@ -7276,6 +7276,9 @@ body:has(.demo-ribbon) .soundtrack-control{
 .order-status-primary b{font-size:15px;font-weight:400}
 .order-status-ready>small{display:block;margin-top:12px;color:#5f5961;font-size:8px}
 .order-status-waiting{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;max-width:none}
+.order-status-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.order-status-pay{flex:none;min-height:45px;display:inline-flex;align-items:center;gap:18px;padding:0 15px;background:#ece5de;color:#181416!important;font-size:9px;font-weight:800;letter-spacing:.04em}
+.order-status-pay b{font-size:14px;font-weight:400}
 .order-status-whatsapp{flex:none;min-height:43px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid rgba(37,211,102,.18);background:rgba(37,211,102,.035);color:#bfc9c2!important;font-size:9px;letter-spacing:.04em}
 .order-status-footer{position:relative;z-index:2;margin-top:58px;padding-top:22px;border-top:1px solid rgba(255,255,255,.055);display:flex;justify-content:space-between;align-items:center;color:#555057;font-size:8px}
 .order-status-footer a{color:#7f7880!important}
@@ -7289,6 +7292,8 @@ body:has(.demo-ribbon) .soundtrack-control{
   .order-status-line{left:14px;top:50px;bottom:-18px;width:1px;height:auto;right:auto;transform:none}
   .order-status-timeline p{max-width:none}
   .order-status-waiting{display:block}
-  .order-status-whatsapp{margin-top:20px}
+  .order-status-actions{margin-top:20px;align-items:stretch}
+  .order-status-actions>*{width:100%;justify-content:center}
+  .order-status-whatsapp{margin-top:0}
   .order-status-footer{gap:20px;align-items:flex-start}
 }
