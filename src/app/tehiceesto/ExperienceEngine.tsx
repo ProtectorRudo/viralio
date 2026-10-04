@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect,useRef,useState,type CSSProperties,type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent } from "react";
 import { flushSync } from "react-dom";
 import type { Experience,SceneType } from "./data";
 import ScratchReveal from "./ScratchReveal";
@@ -121,7 +121,36 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
   const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([])};
   const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices")setVoicesPlayed([]);if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([])};
-  const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator)navigator.vibrate(pattern)};
+  const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator){try{navigator.vibrate(pattern)}catch{}}};
+  const passiveHapticPatterns:Record<string,number|number[]>={
+    "archive-open":[10,28,8],
+    "home-memory":7,
+    "legacy-open":[9,24,9],
+    "ritual-open":7,
+    "chapter-open":[7,18,7],
+    "future-open":[9,28,10],
+    "reason-open":7,
+    "certainty-open":[7,16,7],
+    "care-open":7,
+    "sacrifice-open":[8,20,8],
+    "return-open":[11,30,9],
+    "lesson-open":7,
+    "presence-open":7,
+    "inheritance-open":[7,18,7],
+    "lookback-open":[9,24,9],
+    "casefile-open":[10,30,8],
+    "insidejoke-open":7,
+    "incident-open":[8,18,8],
+    "proof-open":7,
+    "pact-open":[8,20,8],
+  };
+  const handlePassiveHaptic=(event:ReactMouseEvent<HTMLElement>)=>{
+    const target=event.target as Element|null;
+    const control=target?.closest<HTMLElement>("[data-action]");
+    if(!control||control.matches(":disabled,.open,.signed"))return;
+    const pattern=passiveHapticPatterns[control.dataset.action||""];
+    if(pattern!==undefined)haptic(pattern);
+  };
   const restart=()=>{resetAllInteractions();setDirection("back");setTransitioning(false);setSceneIndex(0);setRunId(v=>v+1);haptic([8,22,8])};
 
   const playDemoVoice=(message:string)=>{try{if(typeof window==="undefined"||!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(message);utterance.lang="es-AR";utterance.rate=.92;utterance.pitch=.9;const voices=window.speechSynthesis.getVoices();const preferred=voices.find(v=>v.lang.toLowerCase().startsWith("es-ar"))||voices.find(v=>v.lang.toLowerCase().startsWith("es"));if(preferred)utterance.voice=preferred;window.speechSynthesis.speak(utterance)}catch{}};
@@ -398,7 +427,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                   onPointerLeave={() => setThresholdHolding(false)}
                   onPointerCancel={() => setThresholdHolding(false)}
                   onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setThresholdOpen(true); }
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setThresholdOpen(true); haptic([14,34,18]); playFx("unlock"); }
                   }}
                   aria-label="Mantener presionado para continuar"
                 >
@@ -406,6 +435,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                     if (thresholdHolding) {
                       setThresholdOpen(true);
                       setThresholdHolding(false);
+                      haptic([14,34,18]);
+                      playFx("unlock");
                     }
                   }} />
                   <strong>Mantené presionado</strong>
@@ -722,7 +753,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
   const moveAtmosphere=(event:ReactPointerEvent<HTMLElement>)=>{const node=event.currentTarget;const width=Math.max(window.innerWidth,1);const height=Math.max(window.innerHeight,1);node.style.setProperty("--pointer-left",`${event.clientX}px`);node.style.setProperty("--pointer-top",`${event.clientY}px`);node.style.setProperty("--parallax-x",`${((event.clientX/width)-.5)*18}px`);node.style.setProperty("--parallax-y",`${((event.clientY/height)-.5)*14}px`)};
 
-  return <main ref={shellRef} className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onPointerMove={moveAtmosphere} onPointerDownCapture={()=>{if(soundtrackMedia&&!soundtrackStarted)void startSoundtrack()}} onPlayCapture={handleMediaPlay} onPauseCapture={handleMediaRest} onEndedCapture={handleMediaRest}>
+  return <main ref={shellRef} className={`thi-experience thi-experience-premium thi-theme-${experience.slug}`} style={{"--accent":experience.accent} as CSSProperties} data-experience={experience.slug} data-scene={current} onClickCapture={handlePassiveHaptic} onPointerMove={moveAtmosphere} onPointerDownCapture={()=>{if(soundtrackMedia&&!soundtrackStarted)void startSoundtrack()}} onPlayCapture={handleMediaPlay} onPauseCapture={handleMediaRest} onEndedCapture={handleMediaRest}>
     {soundtrackMedia&&<audio ref={soundtrackRef} src={soundtrackMedia.url} preload="auto" loop playsInline/>}
     {soundtrackMedia&&(soundtrackStarted||sceneIndex>0)&&<button type="button" className={`soundtrack-control ${soundtrackPaused?"paused":""} ${!soundtrackStarted?"not-started":""}`} onClick={(event)=>{event.stopPropagation();if(!soundtrackStarted)void startSoundtrack();else if(soundtrackPaused)void resumeSoundtrack();else pauseSoundtrack()}} aria-label={!soundtrackStarted?"Activar música":soundtrackPaused?"Reanudar música":"Pausar música"} aria-pressed={soundtrackStarted&&!soundtrackPaused}>
       <span>{!soundtrackStarted||soundtrackPaused?"♪":"♫"}</span><div><small>{!soundtrackStarted?"Tocar para activar":soundtrackPaused?"Música pausada":"Sonando suave"}</small><strong>{soundtrackMedia.caption||"Música de fondo"}</strong></div><i aria-hidden="true"><b/><b/><b/><b/></i>
