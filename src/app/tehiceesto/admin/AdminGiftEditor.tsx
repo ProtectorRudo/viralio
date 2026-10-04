@@ -300,6 +300,32 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     }
   }
 
+  function deliveryMessage(){
+    if(!gift) return "";
+    return [
+      `Ya está lista la experiencia para ${gift.recipient_name} ✨`,
+      "",
+      "Antes de enviársela, abrila vos una vez para revisarla:",
+      `https://tehiceesto.com/r/${gift.public_code}`,
+      "",
+      "Cuando quieras, ese mismo link es el que podés compartir.",
+      `Seguimiento del pedido: https://tehiceesto.com/pedido/${gift.public_code}`,
+    ].join("\n");
+  }
+
+  async function copyDelivery(kind:"link"|"message"){
+    if(!gift) return;
+    const value=kind==="link"?`https://tehiceesto.com/r/${gift.public_code}`:deliveryMessage();
+    try{
+      await navigator.clipboard.writeText(value);
+      setMessage(kind==="link"?"Link copiado ✓":"Mensaje de entrega copiado ✓");
+    }catch{
+      setMessage("No se pudo copiar automáticamente.");
+    }finally{
+      setTimeout(()=>setMessage(""),2200);
+    }
+  }
+
   if(loading||!gift||!base||!previewExperience||!resolvedCopy) return <main className="thi-admin-shell"><div className="thi-admin-loading">Cargando regalo…</div></main>;
 
   if(preview&&previewExperience){
@@ -380,6 +406,28 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             :<button className="thi-ghost" disabled={paymentSaving} onClick={()=>setPayment("cancelled")}>Cancelar pedido</button>}
         </div>
         <small className="thi-payment-note">Marcar “pagado” no cobra dinero: registra un cobro que ya verificaste. La integración automática con Mercado Pago puede conectarse después sin cambiar este flujo.</small>
+      </section>
+    )}
+
+    {gift.status==="published"&&(
+      <section className="thi-admin-panel thi-delivery-panel" id="thi-entrega">
+        <div className="thi-admin-panel-heading">
+          <div>
+            <p className="thi-kicker">Entrega</p>
+            <h2>Listo para mandar</h2>
+            <p>El regalo ya está online. Podés revisar el link, copiarlo o abrir WhatsApp con el mensaje de entrega preparado.</p>
+          </div>
+          <span className="thi-payment-badge approved">Link activo</span>
+        </div>
+        <div className="thi-delivery-link">
+          <code>tehiceesto.com/r/{gift.public_code}</code>
+          <button type="button" onClick={()=>copyDelivery("link")}>Copiar link</button>
+        </div>
+        <div className="thi-delivery-actions">
+          <button className="thi-primary" type="button" onClick={()=>copyDelivery("message")}>Copiar mensaje de entrega</button>
+          <a className="thi-ghost" href={`https://wa.me/?text=${encodeURIComponent(deliveryMessage())}`} target="_blank" rel="noreferrer noopener">Abrir WhatsApp ↗</a>
+          <Link className="thi-ghost" href={`/tehiceesto/r/${gift.public_code}`} target="_blank">Revisar regalo ↗</Link>
+        </div>
       </section>
     )}
 
