@@ -159,7 +159,15 @@ export default function CreatorWizard() {
                     key={experience.slug}
                     style={{ "--template-accent": experience.accent } as React.CSSProperties}
                   >
-                    <div className="order-template-art" aria-hidden="true">
+                    <div
+                      className="order-template-art"
+                      aria-hidden="true"
+                      style={experience.demo.photos?.[0]?.url ? {
+                        backgroundImage: `linear-gradient(180deg,rgba(24,19,21,.12),rgba(24,19,21,.48)), url("${experience.demo.photos[0].url}")`,
+                        backgroundSize: "cover",
+                        backgroundPosition: experience.demo.photos[0].position || "center",
+                      } : undefined}
+                    >
                       <span>TH / {number}</span>
                       <b>{experience.icon}</b>
                       <em>{experience.tags[0]}</em>
