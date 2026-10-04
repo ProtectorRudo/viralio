@@ -9149,3 +9149,160 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   color:#fff;
   text-shadow:0 3px 18px rgba(0,0,0,.34);
 }
+
+
+/* =========================================================
+   OCCASION-FIRST PICKER — clarity before poetry
+   ========================================================= */
+.order-occasion-picker{
+  margin:0 0 22px;
+  padding:18px 0 20px;
+  border-top:1px solid rgba(45,35,39,.11);
+  border-bottom:1px solid rgba(45,35,39,.11);
+}
+.order-occasion-picker-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:14px;
+}
+.order-occasion-picker-head strong{
+  color:#2a2326;
+  font-size:10px;
+  letter-spacing:.14em;
+}
+.order-occasion-picker-head span{
+  color:#8a7f84;
+  font-size:9px;
+}
+.order-occasion-filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.order-occasion-filters button{
+  min-height:36px;
+  padding:0 13px;
+  border:1px solid rgba(45,35,39,.12);
+  background:#fbf8f3;
+  color:#645b60;
+  cursor:pointer;
+  font-size:9px;
+  letter-spacing:.04em;
+  transition:background .2s,border-color .2s,color .2s,transform .2s;
+}
+.order-occasion-filters button:hover{
+  border-color:rgba(45,35,39,.22);
+  transform:translateY(-1px);
+}
+.order-occasion-filters button.active{
+  border-color:#241f21;
+  background:#241f21;
+  color:#fffaf5;
+}
+
+.creator-page .order-template-copy{
+  justify-content:flex-start;
+}
+.creator-page .order-template-overline{
+  margin-bottom:12px;
+}
+.creator-page .order-template-occasion{
+  display:block;
+  color:#9b5d4b;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(18px,2vw,25px);
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.02em;
+}
+.creator-page .order-template-card h2{
+  margin:8px 0 10px;
+  color:#2a2326;
+  font-size:26px;
+  line-height:1.04;
+}
+.creator-page .order-template-card .order-template-copy>p{
+  color:#655d61;
+}
+.creator-page .order-template-actions{
+  padding-top:20px;
+}
+.creator-page .order-template-actions button{
+  max-width:190px;
+  min-height:42px;
+  line-height:1.2;
+}
+.creator-page .order-template-art>em{
+  max-width:90%;
+  line-height:1.25;
+}
+
+@media(max-width:700px){
+  .order-occasion-picker{
+    margin-bottom:14px;
+    padding:15px 0 17px;
+  }
+  .order-occasion-picker-head{
+    display:block;
+    margin-bottom:12px;
+  }
+  .order-occasion-picker-head strong{
+    display:block;
+    font-size:9px;
+  }
+  .order-occasion-picker-head span{
+    display:block;
+    margin-top:5px;
+    font-size:8px;
+  }
+  .order-occasion-filters{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    gap:7px;
+    margin-inline:-16px;
+    padding:0 16px 4px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .order-occasion-filters::-webkit-scrollbar{display:none}
+  .order-occasion-filters button{
+    min-height:38px;
+    flex:0 0 auto;
+    padding:0 14px;
+    font-size:9px;
+  }
+  .creator-page .order-template-card{
+    grid-template-columns:92px minmax(0,1fr);
+  }
+  .creator-page .order-template-occasion{
+    margin-top:0;
+    font-size:21px;
+    letter-spacing:.01em;
+  }
+  .creator-page .order-template-card h2{
+    margin:7px 0 8px;
+    font-size:23px;
+  }
+  .creator-page .order-template-card .order-template-copy>p{
+    font-size:10px;
+    line-height:1.45;
+  }
+  .creator-page .order-template-actions{
+    padding-top:13px;
+  }
+  .creator-page .order-template-actions button{
+    max-width:none;
+    min-height:40px;
+    padding:0 11px;
+  }
+}
+
+@media(max-width:380px){
+  .creator-page .order-template-card{
+    grid-template-columns:82px minmax(0,1fr);
+  }
+  .creator-page .order-template-occasion{font-size:19px}
+  .creator-page .order-template-card h2{font-size:21px}
+}
