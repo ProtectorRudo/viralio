@@ -40,8 +40,6 @@ export default function AdminCopyEditor({
   const [saving,setSaving]=useState(false);
   const [overrides,setOverrides]=useState(initialOverrides);
 
-  useEffect(()=>setOverrides(initialOverrides),[initialOverrides]);
-
   const count=useMemo(
     ()=>Object.values(overrides).reduce((sum,scene)=>sum+Object.keys(scene).length,0),
     [overrides],
