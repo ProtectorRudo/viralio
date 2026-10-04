@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { experiences } from "./data";
+import { formatTeHiceEstoPrice } from "./pricing";
 
 export default async function TeHiceEstoHome() {
   const host=(await headers()).get("host")?.split(":")[0].toLowerCase()||"";
@@ -173,6 +174,11 @@ export default async function TeHiceEstoHome() {
         <div className="home-final-orbit" aria-hidden="true" />
         <span className="eyebrow">Hay alguien que ya sabés quién es</span>
         <h2>No busques otro regalo.<br/><em>Hacé algo que sólo pueda ser suyo.</em></h2>
+        <div className="home-price-card">
+          <span>EXPERIENCIA PERSONALIZADA</span>
+          <strong>{formatTeHiceEstoPrice()}</strong>
+          <p>Incluye personalización, armado de escenas, fotos, textos, interacciones y entrega en link privado.</p>
+        </div>
         <Link className="home-primary" href={href("/crear")}>
           Empezar ahora <span>↗</span>
         </Link>
