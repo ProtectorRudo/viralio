@@ -149,14 +149,17 @@ export default function CreatorWizard() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) setDraft({ ...emptyDraft, ...(JSON.parse(saved) as Draft) });
-    } catch {
-      // A broken local draft should never block creation.
-    } finally {
-      setHydrated(true);
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved) setDraft({ ...emptyDraft, ...(JSON.parse(saved) as Draft) });
+      } catch {
+        // A broken local draft should never block creation.
+      } finally {
+        setHydrated(true);
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
