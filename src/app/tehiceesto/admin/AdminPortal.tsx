@@ -250,6 +250,56 @@ export default function AdminPortal() {
         <article className="accent"><span>Pagos pendientes</span><strong>{pendingPaymentCount}</strong><small>{creatorLeadCount} llegaron desde la web</small></article>
       </section>
 
+      <section className="thi-admin-panel thi-commerce-panel">
+        <div className="thi-admin-panel-heading">
+          <div>
+            <p className="thi-kicker">Venta automática</p>
+            <h2>Precio y Mercado Pago</h2>
+            <p>Definí un precio base una sola vez. Si activás la automatización, cada pedido nuevo puede salir con su cobro preparado sin que tengas que armar el link a mano.</p>
+          </div>
+          <div className={`thi-commerce-health ${mpReady===true?"ready":mpReady===false?"fallback":"checking"}`}>
+            <i/>
+            <span>{mpReady===true?"Mercado Pago conectado":mpReady===false?"Modo manual":"Verificando"}</span>
+          </div>
+        </div>
+
+        <div className="thi-commerce-grid">
+          <label>
+            <span>Precio base · ARS</span>
+            <input
+              inputMode="decimal"
+              value={defaultPrice}
+              onChange={(event)=>setDefaultPrice(event.target.value)}
+              placeholder="Definir cuando quieras"
+            />
+            <small>No inventamos un importe: queda vacío hasta que vos decidas cuánto cobrar.</small>
+          </label>
+
+          <div className="thi-commerce-switch-wrap">
+            <span>Cobro automático</span>
+            <button
+              type="button"
+              className={commerce?.auto_checkout_enabled?"thi-commerce-switch on":"thi-commerce-switch"}
+              onClick={toggleAutoCheckout}
+              disabled={commerceSaving||mpReady===false}
+              aria-pressed={commerce?.auto_checkout_enabled===true}
+            >
+              <i/><strong>{commerce?.auto_checkout_enabled?"Activo":"Pausado"}</strong>
+            </button>
+            <small>{commerce?.auto_checkout_enabled
+              ?"Los nuevos pedidos usarán el precio base y recibirán su checkout automáticamente."
+              :"Seguís pudiendo generar el cobro manualmente desde cada pedido."}</small>
+          </div>
+        </div>
+
+        <div className="thi-commerce-actions">
+          <button className="thi-primary" type="button" onClick={saveCommerceSettings} disabled={commerceSaving}>
+            {commerceSaving?"Guardando…":"Guardar configuración"}
+          </button>
+          {commerceMessage&&<span>{commerceMessage}</span>}
+        </div>
+      </section>
+
       {showNew && (
         <section className="thi-admin-panel thi-admin-new-panel">
           <div className="thi-admin-panel-heading">
