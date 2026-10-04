@@ -81,7 +81,12 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-  for(let step=0;step<6&&await sceneName(page)!=="care";step++)await advanceOne(page);
+  for(let step=0;step<6;step++){
+    const current=await sceneName(page);
+    if(current==="care")break;
+    await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:4000}).not.toBe(current);
+  }
   await waitForScene(page,"care");
   await page.locator('[data-action="care-open"]').first().click();
   await expect.poll(async()=>JSON.stringify(await vibrations())).toContain("7");
