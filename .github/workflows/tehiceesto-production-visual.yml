@@ -1,0 +1,55 @@
+name: Te Hice Esto production visual audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-production-visual.yml"
+      - "scripts/tehiceesto-production-visual.mjs"
+      - "src/app/tehiceesto/**"
+      - "src/proxy.ts"
+      - "next.config.ts"
+
+concurrency:
+  group: tehiceesto-production-visual
+  cancel-in-progress: true
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Wait for premium production marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for i in {1..60}; do
+            body="$(curl -fsSL --max-time 25 https://tehiceesto.com/ || true)"
+            if printf '%s' "$body" | grep -Fq "No le mandes" && printf '%s' "$body" | grep -Fq "Expediente: nuestra amistad"; then
+              ok=1
+              break
+            fi
+            sleep 8
+          done
+          test "$ok" -eq 1
+      - name: Audit live production
+        run: node scripts/tehiceesto-production-visual.mjs
+      - name: Upload production screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tehiceesto-production-visual
+          path: tehiceesto-production-visual/
+          retention-days: 14
