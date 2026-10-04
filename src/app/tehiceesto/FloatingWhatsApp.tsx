@@ -10,7 +10,7 @@ export default function FloatingWhatsApp() {
     return null;
   }
 
-  const compact = pathname.includes("/experiencias/");
+  const compact = pathname.includes("/experiencias/");\n  const home = pathname === "/" || pathname === "/tehiceesto";
   const creatorCompact = pathname.endsWith("/crear");
   const parts=pathname.split("/").filter(Boolean);
   const expIndex=parts.indexOf("experiencias");
@@ -28,7 +28,7 @@ export default function FloatingWhatsApp() {
 
   return (
     <a
-      className={`floating-whatsapp ${compact ? "floating-whatsapp--experience" : ""} ${creatorCompact ? "floating-whatsapp--creator" : ""}`}
+      className={`floating-whatsapp ${home ? "floating-whatsapp--home" : ""} ${compact ? "floating-whatsapp--experience" : ""} ${creatorCompact ? "floating-whatsapp--creator" : ""}`}
       href={whatsappHref}
       target="_blank"
       rel="noreferrer noopener"
