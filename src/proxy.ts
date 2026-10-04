@@ -15,6 +15,7 @@ function teHiceEstoRobots() {
       "Allow: /",
       "Disallow: /admin",
       "Disallow: /r/",
+      "Disallow: /pedido/",
       "",
       "Sitemap: https://tehiceesto.com/sitemap.xml",
       "",
