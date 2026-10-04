@@ -6589,6 +6589,10 @@ body{
 }
 .creator-whatsapp-primary.is-ready .creator-wa-mark,
 .creator-whatsapp-primary.is-ready>b{color:#8fd9cb;border-color:rgba(143,217,203,.28)}
+.creator-ready-actions{width:min(610px,100%);display:grid;gap:10px}
+.creator-ready-actions .creator-whatsapp-primary{width:100%}
+.creator-status-link{justify-self:start;display:inline-flex;align-items:center;gap:8px;color:#858087!important;font-size:9px;letter-spacing:.055em;border-bottom:1px solid rgba(255,255,255,.09);padding-bottom:4px}
+.creator-status-link span{color:#8fd9cb}
 .creator-submit-error{
   width:min(610px,100%);
   margin-top:12px;
