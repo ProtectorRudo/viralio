@@ -208,6 +208,7 @@ export default function CreatorWizard() {
         ? "Hola! Acabo de enviar mi borrador desde Te Hice Esto y quiero avanzar."
         : "Hola! Armé un borrador en Te Hice Esto y quiero hacerlo real.",
       code ? `Código del borrador: ${code.toUpperCase()}` : "",
+      code ? `Seguimiento privado: https://tehiceesto.com/pedido/${code}` : "",
       "",
       `Experiencia: ${baseExperience.title}`,
       `De: ${draft.giverName || "—"}`,
@@ -684,19 +685,24 @@ export default function CreatorWizard() {
             </div>
 
             {submitState === "ready" && submittedCode ? (
-              <a
-                className="creator-whatsapp-primary is-ready"
-                href={creatorWhatsAppHref}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                <span className="creator-wa-mark">✓</span>
-                <div>
-                  <small>BORRADOR {submittedCode.toUpperCase()} · GUARDADO</small>
-                  <strong>Abrir WhatsApp y terminarlo</strong>
-                </div>
-                <b>↗</b>
-              </a>
+              <div className="creator-ready-actions">
+                <a
+                  className="creator-whatsapp-primary is-ready"
+                  href={creatorWhatsAppHref}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <span className="creator-wa-mark">✓</span>
+                  <div>
+                    <small>BORRADOR {submittedCode.toUpperCase()} · GUARDADO</small>
+                    <strong>Abrir WhatsApp y terminarlo</strong>
+                  </div>
+                  <b>↗</b>
+                </a>
+                <a className="creator-status-link" href={`/tehiceesto/pedido/${submittedCode}`}>
+                  Ver seguimiento privado <span>↗</span>
+                </a>
+              </div>
             ) : (
               <button
                 className="creator-whatsapp-primary"
