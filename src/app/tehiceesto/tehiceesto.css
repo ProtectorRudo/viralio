@@ -9126,3 +9126,26 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   .order-template-art{min-height:226px}
   .creator-page .order-template-card h2{font-size:24px}
 }
+
+
+/* Final tactile polish: real photographs carry the emotion; motion stays restrained. */
+.home-shell .artifact-card-back,
+.home-shell .artifact-card-mid,
+.home-shell .artifact-card-front{
+  animation:none !important;
+}
+.home-shell .artifact-photo{
+  background-color:#c8bbb0;
+}
+.order-template-art.has-photo{
+  background-color:#554b4f;
+}
+.order-template-art.has-photo>span,
+.order-template-art.has-photo>em{
+  color:rgba(255,255,255,.88);
+  text-shadow:0 1px 10px rgba(0,0,0,.32);
+}
+.order-template-art.has-photo>b{
+  color:#fff;
+  text-shadow:0 3px 18px rgba(0,0,0,.34);
+}
