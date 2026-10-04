@@ -15,6 +15,7 @@ type GiftRow = {
   recipient_name: string;
   created_at: string;
   published_at: string | null;
+  story_data?: { creator?: { submitted?: boolean; submittedAt?: string } } | null;
 };
 
 export default function AdminPortal() {
@@ -84,6 +85,7 @@ export default function AdminPortal() {
 
   const publishedCount = gifts.filter((gift) => gift.status === "published").length;
   const draftCount = gifts.filter((gift) => gift.status === "draft").length;
+  const creatorLeadCount = gifts.filter((gift) => gift.story_data?.creator?.submitted).length;
 
   async function createGift(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -166,7 +168,7 @@ export default function AdminPortal() {
         <article><span>Total</span><strong>{gifts.length}</strong><small>regalos creados</small></article>
         <article><span>Publicados</span><strong>{publishedCount}</strong><small>links activos</small></article>
         <article><span>Borradores</span><strong>{draftCount}</strong><small>en preparación</small></article>
-        <article className="accent"><span>Sistema</span><strong>●</strong><small>operativo y privado</small></article>
+        <article className="accent"><span>Desde la web</span><strong>{creatorLeadCount}</strong><small>borradores enviados por clientes</small></article>
       </section>
 
       {showNew && (
@@ -250,6 +252,7 @@ export default function AdminPortal() {
                   <th>Destinatario</th>
                   <th>De</th>
                   <th>Experiencia</th>
+                  <th>Origen</th>
                   <th>Estado</th>
                   <th>Código</th>
                   <th>Creado</th>
@@ -266,6 +269,11 @@ export default function AdminPortal() {
                     </td>
                     <td>{gift.giver_name}</td>
                     <td>{gift.experience_slug}</td>
+                    <td>
+                      <span className={gift.story_data?.creator?.submitted ? "thi-source-badge creator" : "thi-source-badge manual"}>
+                        {gift.story_data?.creator?.submitted ? "Web" : "Manual"}
+                      </span>
+                    </td>
                     <td>
                       <span className={`thi-status ${gift.status}`}>
                         {gift.status}
