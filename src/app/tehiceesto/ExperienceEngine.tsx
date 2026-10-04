@@ -173,7 +173,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="archive-dust" aria-hidden="true" />
             <p className="scene-kicker">Archivo familiar · reservado</p>
             <h2>Hay una vida entera guardada acá adentro.</h2>
-            <button className={`archive-folder ${archiveOpen ? "open" : ""}`} onClick={() => setArchiveOpen(true)}>
+            <button data-action="archive-open" className={`archive-folder ${archiveOpen ? "open" : ""}`} onClick={() => setArchiveOpen(true)}>
               <span className="archive-tab">FAMILIA · {experience.demoRecipient.toUpperCase()}</span>
               <span className="archive-cover">
                 <small>ARCHIVO Nº 01</small>
@@ -187,7 +187,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               </span>
             </button>
             {!archiveOpen && <p className="scene-hint">Tocá el archivo para abrirlo</p>}
-            {archiveOpen && <button className="primary-action" onClick={next}>Empezar por el principio</button>}
+            {archiveOpen && <button data-action="advance" className="primary-action" onClick={next}>Empezar por el principio</button>}
           </section>
         );
 
@@ -203,14 +203,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["Tus manos", "La manera de arreglar, preparar, señalar, acariciar y hacer que todo siguiera funcionando."],
                 ["Tus frases", "Las repetimos riéndonos. Y un día descubrimos que empezamos a decirlas igual que vos."],
               ].map(([title, copy], index) => (
-                <button key={title} className={homeOpen.includes(index) ? "open" : ""} onClick={() => setHomeOpen((items) => items.includes(index) ? items : [...items, index])}>
+                <button key={title} data-action="home-memory" className={homeOpen.includes(index) ? "open" : ""} onClick={() => setHomeOpen((items) => items.includes(index) ? items : [...items, index])}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <strong>{title}</strong>
                   <p>{homeOpen.includes(index) ? copy : "Tocá para recordar"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={homeOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={homeOpen.length < 3}>
               {homeOpen.length < 3 ? `Encontrá ${3 - homeOpen.length} recuerdos más` : "Escuchar a la familia"}
             </button>
           </section>
@@ -224,7 +224,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             </div>
             <p className="scene-kicker">Y entonces entendimos algo</p>
             <h2>Una familia también se parece a quien la enseñó a querer.</h2>
-            <button className={`legacy-seal ${legacyOpen ? "open" : ""}`} onClick={() => setLegacyOpen(true)}>
+            <button data-action="legacy-open" className={`legacy-seal ${legacyOpen ? "open" : ""}`} onClick={() => setLegacyOpen(true)}>
               <span>⌁</span>
               <strong>{legacyOpen ? "Mirá todo lo que empezó en vos" : "Tocá acá"}</strong>
             </button>
@@ -234,7 +234,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               </div>
             )}
             {legacyOpen && <p className="legacy-copy">No todo legado lleva apellido. A veces es una forma de poner la mesa, de llamar para saber si llegamos bien o de hacer sentir a alguien que siempre puede volver.</p>}
-            {legacyOpen && <button className="primary-action" onClick={next}>Una última cosa</button>}
+            {legacyOpen && <button data-action="advance" className="primary-action" onClick={next}>Una última cosa</button>}
           </section>
         );
 
@@ -250,14 +250,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["03", "El lado de la cama", "Pequeñas negociaciones que hace años dejaron de negociarse."],
                 ["04", "El idioma propio", "Palabras, caras y chistes que serían incomprensibles para cualquier otra persona."],
               ].map(([number, title, copy], index) => (
-                <button key={title} className={ritualsOpen.includes(index) ? "open" : ""} onClick={() => setRitualsOpen((items) => items.includes(index) ? items : [...items, index])}>
+                <button key={title} data-action="ritual-open" className={ritualsOpen.includes(index) ? "open" : ""} onClick={() => setRitualsOpen((items) => items.includes(index) ? items : [...items, index])}>
                   <span>{number}</span>
                   <strong>{title}</strong>
                   <p>{ritualsOpen.includes(index) ? copy : "Tocá para abrir"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={ritualsOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={ritualsOpen.length < 3}>
               {ritualsOpen.length < 3 ? `Abrí ${3 - ritualsOpen.length} más` : "Y también atravesamos cosas"}
             </button>
           </section>
@@ -274,14 +274,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["Lo que cambió", "Nosotros también. Y aun así encontramos maneras nuevas de reconocernos."],
                 ["Lo que sostuvimos", "Cuando era más fácil encerrarse cada uno en lo suyo, hubo veces en que elegimos acercarnos."],
               ].map(([title, copy], index) => (
-                <button key={title} className={chapterOpen.includes(index) ? "open" : ""} onClick={() => setChapterOpen((items) => items.includes(index) ? items : [...items, index])}>
+                <button key={title} data-action="chapter-open" className={chapterOpen.includes(index) ? "open" : ""} onClick={() => setChapterOpen((items) => items.includes(index) ? items : [...items, index])}>
                   <span>CAPÍTULO {String(index + 1).padStart(2, "0")}</span>
                   <strong>{title}</strong>
                   <p>{chapterOpen.includes(index) ? copy : "Abrir capítulo"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={chapterOpen.length < 2}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={chapterOpen.length < 2}>
               {chapterOpen.length < 2 ? "Abrí al menos dos capítulos" : "Seguir"}
             </button>
           </section>
@@ -293,13 +293,13 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="future-line" aria-hidden="true" />
             <p className="scene-kicker">No estamos celebrando sólo lo que pasó</p>
             <h2>También estamos celebrando que todavía hay cosas que no vivimos.</h2>
-            <button className={`future-card ${futureOpen ? "open" : ""}`} onClick={() => setFutureOpen(true)}>
+            <button data-action="future-open" className={`future-card ${futureOpen ? "open" : ""}`} onClick={() => setFutureOpen(true)}>
               <small>PRÓXIMO CAPÍTULO</small>
               <strong>{futureOpen ? "Todavía no sabemos exactamente qué viene." : "Abrir lo que sigue"}</strong>
               <p>{futureOpen ? "Pero quiero conocerlo con vos: más domingos, más lugares, más conversaciones, más versiones nuestras y algunos planes que hoy ni siquiera existen." : "Hay futuro guardado acá."}</p>
               <span>{futureOpen ? "∞" : "→"}</span>
             </button>
-            {futureOpen && <button className="primary-action" onClick={next}>Llegar al final</button>}
+            {futureOpen && <button data-action="advance" className="primary-action" onClick={next}>Llegar al final</button>}
           </section>
         );
 
@@ -323,7 +323,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <p>Que ibas a convertirte en la persona con la que iba a querer compartir las noticias buenas, los días comunes y también los difíciles.</p>
               </div>
             </div>
-            <button className="primary-action" onClick={next}>Seguir recordando</button>
+            <button data-action="advance" className="primary-action" onClick={next}>Seguir recordando</button>
           </section>
         );
 
@@ -341,7 +341,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               ].map(([number, title, copy], index) => (
                 <button
                   key={title}
-                  className={reasonsOpen.includes(index) ? "open" : ""}
+                  data-action="reason-open" className={reasonsOpen.includes(index) ? "open" : ""}
                   onClick={() => setReasonsOpen((items) => items.includes(index) ? items : [...items, index])}
                 >
                   <span>{number}</span>
@@ -352,7 +352,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={reasonsOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={reasonsOpen.length < 3}>
               {reasonsOpen.length < 3 ? `Abrí ${3 - reasonsOpen.length} más` : "Hay algo más"}
             </button>
           </section>
@@ -371,7 +371,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               ].map(([lead, copy], index) => (
                 <button
                   key={index}
-                  className={certaintyOpen.includes(index) ? "open" : ""}
+                  data-action="certainty-open" className={certaintyOpen.includes(index) ? "open" : ""}
                   onClick={() => setCertaintyOpen((items) => items.includes(index) ? items : [...items, index])}
                 >
                   <span>{certaintyOpen.includes(index) ? lead : "···"}</span>
@@ -379,7 +379,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={certaintyOpen.length < 3}>Seguir</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={certaintyOpen.length < 3}>Seguir</button>
           </section>
         );
 
@@ -392,7 +392,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             {!thresholdOpen ? (
               <>
                 <button
-                  className={`threshold-hold ${thresholdHolding ? "holding" : ""}`}
+                  data-action="threshold-hold" className={`threshold-hold ${thresholdHolding ? "holding" : ""}`}
                   onPointerDown={() => setThresholdHolding(true)}
                   onPointerUp={() => setThresholdHolding(false)}
                   onPointerLeave={() => setThresholdHolding(false)}
@@ -413,7 +413,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 </button>
               </>
             ) : (
-              <button className="primary-action threshold-continue" onClick={next}>Continuar</button>
+              <button data-action="advance" className="primary-action threshold-continue" onClick={next}>Continuar</button>
             )}
           </section>
         );
@@ -439,7 +439,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <p>Veía la comida servida, la ropa lista, el cumpleaños, la mano que aparecía cuando tenía miedo. No veía el cansancio, las cuentas, las dudas ni todo lo que acomodabas para que yo pudiera ser chico.</p>
               </div>
             </div>
-            <button className="primary-action" onClick={next}>Mirar esas fotos otra vez</button>
+            <button data-action="advance" className="primary-action" onClick={next}>Mirar esas fotos otra vez</button>
           </section>
         );
 
@@ -455,14 +455,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["03", "Estar antes de que lo pidiera", "Muchas veces entendiste qué me pasaba antes de que yo pudiera ponerle palabras."],
                 ["04", "Convertir rutina en hogar", "No eran grandes gestos. Era repetir pequeñas cosas durante años hasta volverlas parte de mí."],
               ].map(([n,title,copy],index)=>(
-                <button key={title} className={careOpen.includes(index) ? "open" : ""} onClick={()=>setCareOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={title} data-action="care-open" className={careOpen.includes(index) ? "open" : ""} onClick={()=>setCareOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{n}</span>
                   <strong>{title}</strong>
                   <p>{careOpen.includes(index) ? copy : "Tocá para recordar"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={careOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={careOpen.length < 3}>
               {careOpen.length < 3 ? `Descubrí ${3-careOpen.length} más` : "Hay algo que de chico no veía"}
             </button>
           </section>
@@ -481,13 +481,13 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["PREOCUPACIÓN", "Miedos que muchas veces llevaste en silencio para no pasármelos."],
                 ["VOS", "Y también quiero agradecerte por la mujer que siguió existiendo detrás de ser mamá."],
               ].map(([title,copy],index)=>(
-                <button key={title} className={sacrificesOpen.includes(index) ? "open" : ""} onClick={()=>setSacrificesOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={title} data-action="sacrifice-open" className={sacrificesOpen.includes(index) ? "open" : ""} onClick={()=>setSacrificesOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{title}</span>
                   <p>{sacrificesOpen.includes(index) ? copy : "Abrir"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={sacrificesOpen.length < 3}>Escuchar a la familia</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={sacrificesOpen.length < 3}>Escuchar a la familia</button>
           </section>
         );
 
@@ -498,11 +498,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <p className="scene-kicker">Hay algo que no cambia del todo</p>
             <h2>{returnOpen ? "No importa cuánto crezca: hay una parte de mí que siempre sabe volver a vos." : "Algunas personas se vuelven una dirección."}</h2>
             {!returnOpen ? (
-              <button className="return-key" onClick={()=>setReturnOpen(true)}>
+              <button data-action="return-open" className="return-key" onClick={()=>setReturnOpen(true)}>
                 <span>⌂</span><strong>Abrir la puerta</strong>
               </button>
             ) : (
-              <button className="primary-action" onClick={next}>Una última cosa</button>
+              <button data-action="advance" className="primary-action" onClick={next}>Una última cosa</button>
             )}
           </section>
         );
@@ -520,12 +520,12 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["03", "Cuidar", "Entendí que proteger no siempre es hablar. A veces es estar cerca, prever, acompañar y dejar que el otro intente."],
                 ["04", "Seguir", "Hay días en los que el coraje se parece menos a una hazaña y más a levantarse y hacer lo que toca."],
               ].map(([n,title,copy],index)=>(
-                <button key={title} className={lessonsOpen.includes(index) ? "open" : ""} onClick={()=>setLessonsOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={title} data-action="lesson-open" className={lessonsOpen.includes(index) ? "open" : ""} onClick={()=>setLessonsOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{n}</span><div><strong>{title}</strong><p>{lessonsOpen.includes(index) ? copy : "Abrir lección"}</p></div>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={lessonsOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={lessonsOpen.length < 3}>
               {lessonsOpen.length < 3 ? `Faltan ${3-lessonsOpen.length}` : "Seguir"}
             </button>
           </section>
@@ -542,14 +542,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["LA ESPERA", "Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía."],
                 ["LA MIRADA", "Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."],
               ].map(([title,copy],index)=>(
-                <button key={title} className={presenceOpen.includes(index) ? "open" : ""} onClick={()=>setPresenceOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={title} data-action="presence-open" className={presenceOpen.includes(index) ? "open" : ""} onClick={()=>setPresenceOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{String(index+1).padStart(2,"0")}</span>
                   <strong>{title}</strong>
                   <p>{presenceOpen.includes(index) ? copy : "Tocá para recordar"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={presenceOpen.length < 2}>Ver lo que quedó</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={presenceOpen.length < 2}>Ver lo que quedó</button>
           </section>
         );
 
@@ -565,12 +565,12 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["CIERTOS GESTOS", "Maneras de ordenar, manejar, cocinar, arreglar o pensar que aparecieron sin permiso."],
                 ["UNA PARTE DE TU CARÁCTER", "No todo. Pero lo suficiente como para reconocerte en mí de vez en cuando."],
               ].map(([title,copy],index)=>(
-                <button key={title} className={inheritanceOpen.includes(index) ? "open" : ""} onClick={()=>setInheritanceOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={title} data-action="inheritance-open" className={inheritanceOpen.includes(index) ? "open" : ""} onClick={()=>setInheritanceOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>0{index+1}</span><strong>{title}</strong><p>{inheritanceOpen.includes(index) ? copy : "Revelar"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={inheritanceOpen.length < 3}>Escuchar a la familia</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={inheritanceOpen.length < 3}>Escuchar a la familia</button>
           </section>
         );
 
@@ -581,9 +581,9 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <p className="scene-kicker">Ahora te miro distinto</p>
             <h2>{lookbackOpen ? "De grande dejé de verte sólo como “papá”. Empecé a ver también al hombre que estaba haciendo lo mejor que podía con lo que tenía." : "Hay una parte de crecer que también es volver a conocer a nuestros padres."}</h2>
             {!lookbackOpen ? (
-              <button className="lookback-button" onClick={()=>setLookbackOpen(true)}><span>→</span><strong>Mirar de nuevo</strong></button>
+              <button data-action="lookback-open" className="lookback-button" onClick={()=>setLookbackOpen(true)}><span>→</span><strong>Mirar de nuevo</strong></button>
             ) : (
-              <button className="primary-action" onClick={next}>Una última cosa</button>
+              <button data-action="advance" className="primary-action" onClick={next}>Una última cosa</button>
             )}
           </section>
         );
@@ -594,7 +594,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="casefile-scan" aria-hidden="true" />
             <p className="scene-kicker">EXPEDIENTE 021 · NIVEL DE ACCESO: CUESTIONABLE</p>
             <h2>Hay pruebas suficientes para confirmar que esto se nos fue de las manos hace años.</h2>
-            <button className={`casefile-folder ${casefileOpen ? "open" : ""}`} onClick={() => setCasefileOpen(true)}>
+            <button data-action="casefile-open" className={`casefile-folder ${casefileOpen ? "open" : ""}`} onClick={() => setCasefileOpen(true)}>
               <span className="casefile-tab">{experience.demoRecipient.toUpperCase()} + {experience.demoGiver.toUpperCase()}</span>
               <span className="casefile-cover">
                 <small>ARCHIVO CONFIDENCIAL</small>
@@ -609,7 +609,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               </span>
             </button>
             {!casefileOpen && <p className="scene-hint">Tocá para desclasificar</p>}
-            {casefileOpen && <button className="primary-action" onClick={next}>Ver evidencia</button>}
+            {casefileOpen && <button data-action="advance" className="primary-action" onClick={next}>Ver evidencia</button>}
           </section>
         );
 
@@ -625,14 +625,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["“5 MINUTOS”", "Unidad temporal sin relación demostrable con cinco minutos reales."],
                 ["EL NOMBRE PROHIBIDO", "No hace falta escribirlo. Ya sabés perfectamente de quién estamos hablando."],
               ].map(([code,meaning],index)=>(
-                <button key={code} className={insideJokesOpen.includes(index) ? "open" : ""} onClick={()=>setInsideJokesOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={code} data-action="insidejoke-open" className={insideJokesOpen.includes(index) ? "open" : ""} onClick={()=>setInsideJokesOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>CODE 0{index+1}</span>
                   <strong>{code}</strong>
                   <p>{insideJokesOpen.includes(index) ? meaning : "Tocá para decodificar"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={insideJokesOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={insideJokesOpen.length < 3}>
               {insideJokesOpen.length < 3 ? `Decodificá ${3-insideJokesOpen.length} más` : "Pasar a antecedentes"}
             </button>
           </section>
@@ -650,7 +650,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["CASO 028", "El plan sin plan", "Logística inexistente. Presupuesto dudoso. Resultado: inexplicablemente memorable."],
                 ["CASO 041", "La vez que dijimos “nunca más”", "El archivo registra múltiples reincidencias posteriores."],
               ].map(([caseNo,title,copy],index)=>(
-                <button key={caseNo} className={incidentsOpen.includes(index) ? "open" : ""} onClick={()=>setIncidentsOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={caseNo} data-action="incident-open" className={incidentsOpen.includes(index) ? "open" : ""} onClick={()=>setIncidentsOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{caseNo}</span>
                   <strong>{title}</strong>
                   <p>{incidentsOpen.includes(index) ? copy : "ABRIR INFORME"}</p>
@@ -658,7 +658,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={incidentsOpen.length < 3}>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={incidentsOpen.length < 3}>
               {incidentsOpen.length < 3 ? "La investigación continúa" : "Hay otra clase de pruebas"}
             </button>
           </section>
@@ -677,14 +677,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["ME DIJISTE LA VERDAD", "Incluso cuando hubiera sido mucho más cómodo darme la razón."],
                 ["TE QUEDASTE", "En versiones mías que ni yo sabía cuánto iban a durar."],
               ].map(([title,copy],index)=>(
-                <button key={title} className={proofOpen.includes(index) ? "open" : ""} onClick={()=>setProofOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={title} data-action="proof-open" className={proofOpen.includes(index) ? "open" : ""} onClick={()=>setProofOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{String(index+1).padStart(2,"0")}</span>
                   <strong>{title}</strong>
                   <p>{proofOpen.includes(index) ? copy : "Tocá"}</p>
                 </button>
               ))}
             </div>
-            <button className="primary-action" onClick={next} disabled={proofOpen.length < 3}>Ahora sí</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={proofOpen.length < 3}>Ahora sí</button>
           </section>
         );
 
@@ -701,7 +701,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 ["III", "Los logros de una persona se festejan sin medirlos contra la vida de la otra."],
                 ["IV", "Si todo se complica, existe siempre el derecho irrestricto a mandar “¿estás?”."],
               ].map(([n,copy],index)=>(
-                <button key={n} className={pactOpen.includes(index) ? "signed" : ""} onClick={()=>setPactOpen(items=>items.includes(index)?items:[...items,index])}>
+                <button key={n} data-action="pact-open" className={pactOpen.includes(index) ? "signed" : ""} onClick={()=>setPactOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{n}</span>
                   <p>{copy}</p>
                   <strong>{pactOpen.includes(index) ? "✓ ACEPTADO" : "ACEPTAR"}</strong>
@@ -711,7 +711,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <span>{experience.demoGiver}</span><i>+</i><span>{experience.demoRecipient}</span>
               </div>
             </div>
-            <button className="primary-action" onClick={next} disabled={pactOpen.length < 3}>Cerrar expediente</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={pactOpen.length < 3}>Cerrar expediente</button>
           </section>
         );
 
