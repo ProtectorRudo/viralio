@@ -83,6 +83,14 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // A non-sensitive deployment marker is exposed so CI can verify
+  // that Vercel is serving the exact commit being certified.
+  if (pathname === "/api/version") {
+    const target = request.nextUrl.clone();
+    target.pathname = `${LEGACY_PREFIX}/api/version`;
+    return NextResponse.rewrite(target);
+  }
+
   // Never expose Viralio APIs under the Te Hice Esto domain.
   if (pathname.startsWith("/api/") || pathname === "/api") {
     return new NextResponse("Not Found", {
