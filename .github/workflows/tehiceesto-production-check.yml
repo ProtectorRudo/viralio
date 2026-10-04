@@ -1,0 +1,63 @@
+name: Te Hice Esto production check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-production-check.yml"
+      - "src/app/tehiceesto/**"
+      - "src/proxy.ts"
+      - "next.config.ts"
+
+concurrency:
+  group: tehiceesto-production-check
+  cancel-in-progress: true
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Wait for Vercel production
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for i in {1..60}; do
+            body="$(curl -fsSL --max-time 25 https://tehiceesto.com/ || true)"
+            if printf '%s' "$body" | grep -Fq "No le mandes"               && printf '%s' "$body" | grep -Fq "Expediente: nuestra amistad"               && printf '%s' "$body" | grep -Fq "Todo lo que hiciste sin pedir aplausos"               && printf '%s' "$body" | grep -Fq "Las cosas tuyas que quedaron en mí"; then
+              ok=1
+              echo "Premium production home is live."
+              break
+            fi
+            echo "Production still stale or unavailable (attempt $i/60)"
+            sleep 8
+          done
+          test "$ok" -eq 1
+
+      - name: Verify dedicated routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A checks=(
+            ["/crear"]="Qué querés convertir en algo inolvidable"
+            ["/experiencias/mama"]="Todo lo que hiciste sin pedir aplausos"
+            ["/experiencias/papa"]="Las cosas tuyas que quedaron en mí"
+            ["/experiencias/amistad"]="Expediente: nuestra amistad"
+          )
+          for route in "${!checks[@]}"; do
+            body="$(curl -fsSL --max-time 25 "https://tehiceesto.com$route")"
+            printf '%s' "$body" | grep -Fq "${checks[$route]}"
+            echo "PASS $route"
+          done
+
+      - name: Reject legacy combined parent card
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsSL --max-time 25 https://tehiceesto.com/)"
+          if printf '%s' "$body" | grep -Fq "Mamá o papá"; then
+            echo "::error::Legacy combined parent card is still in production"
+            exit 1
+          fi
+          echo "No legacy parent card detected."
