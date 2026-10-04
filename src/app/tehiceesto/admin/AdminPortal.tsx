@@ -7,6 +7,13 @@ import { useRouter } from "next/navigation";
 import { adminCall, SESSION_KEY } from "./api";
 import { experiences } from "../data";
 
+type CommerceSettings = {
+  default_price_minor: number | null;
+  currency: string;
+  auto_checkout_enabled: boolean;
+  updated_at: string | null;
+};
+
 type GiftRow = {
   public_code: string;
   status: string;
@@ -26,14 +33,28 @@ export default function AdminPortal() {
   const [accessKey, setAccessKey] = useState("");
   const [loginError, setLoginError] = useState("");
   const [gifts, setGifts] = useState<GiftRow[]>([]);
+  const [commerce, setCommerce] = useState<CommerceSettings|null>(null);
+  const [defaultPrice, setDefaultPrice] = useState("");
+  const [commerceSaving, setCommerceSaving] = useState(false);
+  const [commerceMessage, setCommerceMessage] = useState("");
+  const [mpReady, setMpReady] = useState<boolean|null>(null);
   const [loading, setLoading] = useState(false);
   const [showNew, setShowNew] = useState(false);
 
   async function loadGifts() {
     setLoading(true);
     try {
-      const data = await adminCall<{ gifts: GiftRow[] }>("listGifts");
+      const [data, commerceData] = await Promise.all([
+        adminCall<{ gifts: GiftRow[] }>("listGifts"),
+        adminCall<{ settings: CommerceSettings }>("getCommerceSettings"),
+      ]);
       setGifts(data.gifts || []);
+      setCommerce(commerceData.settings);
+      setDefaultPrice(
+        commerceData.settings.default_price_minor != null
+          ? String(commerceData.settings.default_price_minor / 100)
+          : "",
+      );
       setLoggedIn(true);
     } catch {
       setLoggedIn(false);
@@ -43,6 +64,11 @@ export default function AdminPortal() {
   }
 
   useEffect(() => {
+    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1",{cache:"no-store"})
+      .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
+      .then((data:{configured?:boolean})=>setMpReady(data.configured===true))
+      .catch(()=>setMpReady(false));
+
     const hasSession = Boolean(window.sessionStorage.getItem(SESSION_KEY));
     setLoggedIn(hasSession);
     setSessionReady(true);
@@ -88,6 +114,57 @@ export default function AdminPortal() {
   const draftCount = gifts.filter((gift) => ["draft","awaiting_payment","paid"].includes(gift.status)).length;
   const creatorLeadCount = gifts.filter((gift) => gift.story_data?.creator?.submitted).length;
   const pendingPaymentCount = gifts.filter((gift) => gift.order?.status === "pending").length;
+
+  async function saveCommerceSettings() {
+    const priceMinor = defaultPrice.trim()===""
+      ? null
+      : Math.round(Number(defaultPrice.replace(",","."))*100);
+    if(priceMinor!==null&&(!Number.isFinite(priceMinor)||priceMinor<=0)){
+      setCommerceMessage("Revisá el precio.");
+      return;
+    }
+
+    setCommerceSaving(true);
+    setCommerceMessage("");
+    try{
+      const data=await adminCall<{settings:CommerceSettings}>("updateCommerceSettings",{
+        defaultPriceMinor:priceMinor,
+        autoCheckoutEnabled:commerce?.auto_checkout_enabled===true,
+      });
+      setCommerce({...data.settings,updated_at:new Date().toISOString()});
+      setCommerceMessage("Configuración guardada ✓");
+    }catch(error){
+      const reason=error instanceof Error?error.message:"save_failed";
+      setCommerceMessage(reason==="default_price_required"?"Definí un precio antes de activar el cobro automático.":"No se pudo guardar.");
+    }finally{
+      setCommerceSaving(false);
+      setTimeout(()=>setCommerceMessage(""),2500);
+    }
+  }
+
+  async function toggleAutoCheckout() {
+    if(!commerce)return;
+    const next=!commerce.auto_checkout_enabled;
+    const priceMinor=defaultPrice.trim()===""?null:Math.round(Number(defaultPrice.replace(",","."))*100);
+    if(next&&(priceMinor===null||!Number.isFinite(priceMinor)||priceMinor<=0)){
+      setCommerceMessage("Primero definí el precio base.");
+      return;
+    }
+    setCommerceSaving(true);
+    try{
+      const data=await adminCall<{settings:CommerceSettings}>("updateCommerceSettings",{
+        defaultPriceMinor:priceMinor,
+        autoCheckoutEnabled:next,
+      });
+      setCommerce({...data.settings,updated_at:new Date().toISOString()});
+      setCommerceMessage(next?"Cobro automático activado ✓":"Cobro automático pausado.");
+    }catch{
+      setCommerceMessage("No se pudo cambiar la automatización.");
+    }finally{
+      setCommerceSaving(false);
+      setTimeout(()=>setCommerceMessage(""),2500);
+    }
+  }
 
   async function createGift(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
