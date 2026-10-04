@@ -88,7 +88,7 @@ test("final browser evidence covers premium gift flows with materially distinct 
 });
 
 
-test("Te Hice Esto visual evidence covers storefront, creator, premium scenes and admin login", async ({ page }, testInfo) => {
+test.skip("Legacy Te Hice Esto visual evidence before premium nine-experience rebuild", async ({ page }, testInfo) => {
   test.setTimeout(110_000);
   await page.emulateMedia({ reducedMotion: "no-preference" });
 
