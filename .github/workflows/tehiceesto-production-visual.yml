@@ -30,15 +30,16 @@ jobs:
         run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Wait for premium production marker
+      - name: Wait for exact Vercel production commit
         shell: bash
         run: |
           set -euo pipefail
           ok=0
-          for i in {1..60}; do
-            body="$(curl -fsSL --max-time 25 https://tehiceesto.com/ || true)"
-            if printf '%s' "$body" | grep -Fq "No le mandes" && printf '%s' "$body" | grep -Fq "Expediente: nuestra amistad"; then
+          for i in {1..75}; do
+            version="$(curl -fsSL --max-time 25 https://tehiceesto.com/api/version || true)"
+            if printf '%s' "$version" | grep -Fq "\"commit\":\"$GITHUB_SHA\""; then
               ok=1
+              echo "Auditing exact production commit: $GITHUB_SHA"
               break
             fi
             sleep 8
