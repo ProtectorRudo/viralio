@@ -9365,3 +9365,26 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 }
 
 /* release marker: equal creator actions */
+
+
+/* Floating conversion CTA — internal checkout, no WhatsApp styling */
+.floating-create-cta:before{
+  background:linear-gradient(115deg,rgba(190,112,91,.16),transparent 32%,transparent 72%,rgba(139,126,187,.10));
+}
+.floating-create-cta:hover{
+  border-color:rgba(190,112,91,.32);
+}
+.floating-create-cta .floating-whatsapp-icon:before{
+  border-color:rgba(190,112,91,.32);
+  background:rgba(190,112,91,.08);
+  box-shadow:inset 0 0 18px rgba(190,112,91,.045);
+}
+.floating-create-cta .floating-whatsapp-icon:after{
+  border-color:rgba(190,112,91,.12);
+}
+.floating-create-cta .floating-whatsapp-icon svg{
+  fill:#d58a74;
+}
+.floating-create-cta:hover .floating-whatsapp-arrow{
+  color:#d58a74;
+}
