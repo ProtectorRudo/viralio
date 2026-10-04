@@ -61,6 +61,7 @@ describe("tehiceesto.com host routing", () => {
     const body = await response.text();
     expect(body).toContain("Disallow: /admin");
     expect(body).toContain("Disallow: /r/");
+    expect(body).toContain("Disallow: /pedido/");
     expect(body).toContain("https://tehiceesto.com/sitemap.xml");
   });
 
