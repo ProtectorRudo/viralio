@@ -5,6 +5,7 @@ import Image from "next/image";
 import ExperienceEngine from "./ExperienceEngine";
 import { experiences, getExperience } from "./data";
 import { creatorCall, uploadCreatorFile } from "./creatorApi";
+import { formatTeHiceEstoPrice } from "./pricing";
 
 type Draft = {
   experience: string;
@@ -685,6 +686,11 @@ export default function CreatorWizard() {
               <p>{submittedCode
                 ? `El borrador ${submittedCode.toUpperCase()} quedó guardado de forma privada. Podés abrir WhatsApp sin volver a explicar nada.`
                 : "Al continuar guardo de forma privada la experiencia, tus textos y las fotos seleccionadas. Después abrimos WhatsApp con un código único para seguir desde exactamente acá."}</p>
+              <div className="creator-price-summary">
+                <span>PRECIO DE LA EXPERIENCIA</span>
+                <strong>{formatTeHiceEstoPrice()}</strong>
+                <small>Pago único · sin suscripción</small>
+              </div>
             </div>
 
             {submitState === "ready" && submittedCode ? (
@@ -748,8 +754,8 @@ export default function CreatorWizard() {
               <article>
                 <span>02</span>
                 <div><strong>{paymentPrepared ? "Tu pago ya está preparado" : "Coordinamos el pago"}</strong><p>{paymentPrepared
-                  ? "En tu seguimiento privado ya aparece el botón seguro de Mercado Pago. Podés pagarlo cuando quieras."
-                  : "Por WhatsApp te confirmo el valor y el medio de pago. Nada se cobra automáticamente desde esta pantalla."}</p></div>
+                  ? `En tu seguimiento privado ya aparece el botón seguro por ${formatTeHiceEstoPrice()}. Podés pagarlo cuando quieras.`
+                  : `El valor es ${formatTeHiceEstoPrice()}. Por WhatsApp te paso el medio de pago y seguimos desde acá.`}</p></div>
               </article>
               <article>
                 <span>03</span>
