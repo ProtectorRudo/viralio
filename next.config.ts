@@ -9,11 +9,11 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   `script-src 'self' 'unsafe-inline'${development ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://images.unsplash.com",
+  "img-src 'self' data: blob: https://images.unsplash.com https://efvvadfxuyieswdqnsjg.supabase.co",
   "font-src 'self' data:",
-  `connect-src 'self' https://raw.githubusercontent.com${development ? " ws: wss:" : ""}`,
+  `connect-src 'self' https://raw.githubusercontent.com https://efvvadfxuyieswdqnsjg.supabase.co${development ? " ws: wss:" : ""}`,
   "manifest-src 'self'",
-  "media-src 'self' blob:",
+  "media-src 'self' blob: https://efvvadfxuyieswdqnsjg.supabase.co",
   "worker-src 'self' blob:",
 ].join("; ");
 
