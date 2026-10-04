@@ -2,13 +2,14 @@ import { notFound } from "next/navigation";
 import ExperienceEngine from "../../ExperienceEngine";
 import { getExperience } from "../../data";
 import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
+import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
 
 const SUPABASE_URL="https://efvvadfxuyieswdqnsjg.supabase.co";
 const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
 
 type EdgeGift={
   experience_slug:string;giver_name:string;recipient_name:string;opening_text:string|null;letter_text:string|null;closing_text:string|null;scene_recipe:string[]|null;
-  story_data:{relationship?:string;keyDate?:string;anecdote?:string;script?:DeepPartial<ExperienceCopy>}|null;
+  story_data:{relationship?:string;keyDate?:string;anecdote?:string;script?:DeepPartial<ExperienceCopy>;sceneContent?:SceneTextOverrides}|null;
   theme_data:{accent?:string}|null;
 };
 type EdgeMedia={kind:"image"|"audio"|"video";caption:string|null;sort_order:number;metadata:{fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:import("../../data").SceneType;role?:"voice"|"soundtrack"}|null;url:string|null};
@@ -27,5 +28,6 @@ export default async function PublishedGiftPage({params}:{params:Promise<{code:s
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     storyContext={{keyDate:payload.gift.story_data?.keyDate,anecdote:payload.gift.story_data?.anecdote}}
+    sceneTextOverrides={normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent)}
     videoMedia={ordered.filter(item=>item.kind==="video"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}/>;
 }
