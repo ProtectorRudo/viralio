@@ -9306,3 +9306,60 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   .creator-page .order-template-occasion{font-size:19px}
   .creator-page .order-template-card h2{font-size:21px}
 }
+
+
+/* Equal-weight experience actions: primary choice + secondary demo */
+.creator-page .order-template-actions{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  align-items:stretch;
+  justify-content:stretch;
+}
+.creator-page .order-template-actions button,
+.creator-page .order-template-actions a{
+  width:100%;
+  min-width:0;
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-sizing:border-box;
+  padding:0 12px;
+  border:1px solid #241f21;
+  font-size:8px;
+  font-weight:800;
+  line-height:1.15;
+  letter-spacing:.035em;
+  text-align:center;
+  text-decoration:none;
+}
+.creator-page .order-template-actions button{
+  max-width:none;
+  background:#241f21;
+  color:#fffaf5;
+}
+.creator-page .order-template-actions a{
+  background:#fbf8f3;
+  color:#241f21 !important;
+  border-bottom:1px solid #241f21;
+}
+.creator-page .order-template-actions a:hover{
+  background:#efe8e1;
+  color:#241f21 !important;
+}
+
+@media(max-width:700px){
+  .creator-page .order-template-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .creator-page .order-template-actions button,
+  .creator-page .order-template-actions a{
+    min-height:42px;
+    padding:0 8px;
+    font-size:7.5px;
+  }
+}
