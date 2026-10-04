@@ -7350,3 +7350,140 @@ body:has(.demo-ribbon) .soundtrack-control{
   .order-status-whatsapp{margin-top:0}
   .order-status-footer{gap:20px;align-items:flex-start}
 }
+
+
+/* =========================================================
+   ASSISTED PURCHASE FLOW — choose, contact, pay
+   ========================================================= */
+.order-flow{
+  width:min(1220px,100%);margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:56px;
+  position:relative;z-index:2
+}
+.order-flow-rail{
+  position:sticky;top:105px;align-self:start;min-height:620px;display:flex;flex-direction:column;padding:6px 0 0
+}
+.order-flow-brand{font-size:10px;font-weight:800;letter-spacing:.18em;color:#eee9e3!important}
+.order-flow-progress{margin-top:52px;display:grid;gap:18px}
+.order-flow-progress>div{display:grid;grid-template-columns:30px 1fr;align-items:center;gap:10px;opacity:.34}
+.order-flow-progress>div.active,.order-flow-progress>div.done{opacity:1}
+.order-flow-progress span{
+  width:28px;height:28px;border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;
+  font-size:8px;color:#756f78
+}
+.order-flow-progress .active span{border-color:rgba(220,177,156,.26);color:#deb7a3;background:rgba(220,177,156,.04)}
+.order-flow-progress .done span{border-color:rgba(143,217,203,.22);color:#8fd9cb}
+.order-flow-progress strong{font-size:9px;letter-spacing:.06em;color:#7c7680;font-weight:500}
+.order-flow-progress .active strong{color:#ddd6d9}
+.order-flow-price{margin-top:auto;padding-top:22px;border-top:1px solid rgba(255,255,255,.07)}
+.order-flow-price small{display:block;font-size:7px;letter-spacing:.15em;color:#605b63}
+.order-flow-price strong{display:block;margin-top:8px;font-family:Georgia,"Times New Roman",serif;font-size:31px;font-weight:400;color:#eee6e1}
+.order-flow-price span{display:block;margin-top:3px;color:#6a646c;font-size:8px}
+.order-flow-main{min-width:0}
+.order-step{animation:orderStepIn .45s ease both}
+@keyframes orderStepIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.order-step-head{max-width:780px;margin-bottom:34px}
+.order-step-head.compact{max-width:720px}
+.order-step-head h1{margin:14px 0 16px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(50px,6vw,78px);line-height:.92;font-weight:400;letter-spacing:-.05em;color:#eee9e3}
+.order-step-head h1 em{font-weight:400;color:#dcb19c}
+.order-step-head>p{max-width:660px;margin:0;color:#817a83;font-size:12px;line-height:1.65}
+.order-back{border:0;background:transparent;color:#756f78;padding:0;margin:0 0 25px;cursor:pointer;font-size:9px;letter-spacing:.04em}
+.order-template-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.order-template-card{
+  min-height:300px;position:relative;overflow:hidden;padding:18px 18px 16px;border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(255,255,255,.008));display:flex;flex-direction:column;
+  transition:transform .28s,border-color .28s,background .28s
+}
+.order-template-card:before{
+  content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-95px;top:-110px;
+  background:var(--template-accent);filter:blur(75px);opacity:.11;pointer-events:none
+}
+.order-template-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.025)}
+.order-template-number{font-size:7px;letter-spacing:.13em;color:#5d5860}
+.order-template-icon{font-size:25px;margin:30px 0 14px}
+.order-template-card>small{font-size:7px;letter-spacing:.13em;color:#706970;text-transform:uppercase}
+.order-template-card h2{margin:6px 0 9px;font-family:Georgia,"Times New Roman",serif;font-size:28px;line-height:1;font-weight:400;color:#e7e0e3}
+.order-template-card>p{margin:0;color:#756f78;font-size:10px;line-height:1.5;max-width:260px}
+.order-template-actions{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:20px}
+.order-template-actions button{
+  min-height:38px;border:1px solid rgba(255,255,255,.10);background:#ece5de;color:#181416;padding:0 11px;cursor:pointer;
+  font-size:8px;font-weight:800;letter-spacing:.04em
+}
+.order-template-actions button span{margin-left:8px}
+.order-template-actions a{color:#736d75!important;font-size:8px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:3px}
+.order-selected-template{
+  max-width:680px;display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;padding:13px 14px;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);margin-bottom:16px
+}
+.order-selected-template>span{font-size:24px}
+.order-selected-template small{display:block;font-size:7px;letter-spacing:.13em;color:#625c64}
+.order-selected-template strong{display:block;margin-top:3px;font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:400}
+.order-selected-template a{color:#777079!important;font-size:8px}
+.order-contact-form{max-width:680px;display:grid;gap:12px}
+.order-contact-form>label:not(.order-consent){display:block;padding:14px 15px;border:1px solid rgba(255,255,255,.07);background:#0a090c}
+.order-contact-form label>span{display:block;margin-bottom:7px;color:#827b83;font-size:8px;letter-spacing:.10em;text-transform:uppercase}
+.order-contact-form input[type="text"],.order-contact-form input[type="email"],.order-contact-form input[type="tel"],.order-contact-form label>input:not([type="checkbox"]){
+  width:100%;min-height:44px;border:0;border-bottom:1px solid rgba(255,255,255,.08);background:transparent;color:#eee9e3;outline:0;font-size:14px;padding:0
+}
+.order-contact-form input:focus{border-color:rgba(220,177,156,.35)}
+.order-contact-form label>small{display:block;margin-top:7px;color:#5f5961;font-size:8px}
+.order-consent{
+  display:grid!important;grid-template-columns:18px 1fr;gap:10px;align-items:start;padding:12px 2px!important;border:0!important;background:transparent!important
+}
+.order-consent input{margin:2px 0 0;accent-color:#8fd9cb}
+.order-consent span{margin:0!important;text-transform:none!important;letter-spacing:0!important;color:#6f6971!important;font-size:9px!important;line-height:1.5}
+.order-primary{
+  margin-top:8px;min-height:52px;border:0;background:#ece5de;color:#181416;padding:0 18px;display:flex;align-items:center;
+  justify-content:space-between;font-size:10px;font-weight:800;cursor:pointer
+}
+.order-primary:disabled{opacity:.35;cursor:not-allowed}
+.order-review-card{max-width:720px;border:1px solid rgba(255,255,255,.075);background:linear-gradient(145deg,rgba(255,255,255,.022),rgba(255,255,255,.008));padding:18px}
+.order-review-template{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.order-review-template>span{font-size:26px}
+.order-review-template small{display:block;font-size:7px;letter-spacing:.12em;color:#625d64}
+.order-review-template strong{display:block;margin-top:3px;font-family:Georgia,"Times New Roman",serif;font-size:23px;font-weight:400}
+.order-review-card dl{margin:0;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06);display:grid;gap:9px}
+.order-review-card dl>div{display:grid;grid-template-columns:120px 1fr;gap:14px}
+.order-review-card dt{color:#5f5961;font-size:8px;text-transform:uppercase;letter-spacing:.10em}
+.order-review-card dd{margin:0;color:#a8a0a8;font-size:10px;overflow-wrap:anywhere}
+.order-review-price{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:19px 0}
+.order-review-price small{display:block;color:#635d64;font-size:7px;letter-spacing:.14em}
+.order-review-price strong{display:block;margin-top:5px;font-family:Georgia,"Times New Roman",serif;font-size:39px;font-weight:400;color:#eee5df}
+.order-review-price>span{color:#6e6870;font-size:8px;padding-bottom:7px}
+.order-pay-button{
+  width:100%;min-height:72px;border:1px solid rgba(83,160,245,.20);background:linear-gradient(110deg,rgba(83,160,245,.10),rgba(255,255,255,.02));
+  color:#e9e4e5;display:grid;grid-template-columns:1fr auto 22px;align-items:center;gap:12px;text-align:left;padding:13px 15px;cursor:pointer
+}
+.order-pay-button>span{font-size:8px;letter-spacing:.11em;color:#8493a7}
+.order-pay-button>strong{font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:400}
+.order-pay-button>b{font-size:16px;font-weight:400;color:#8db8ef}
+.order-pay-button:disabled{opacity:.55;cursor:wait}
+.order-payment-unavailable,.order-submit-error{
+  display:grid;grid-template-columns:30px 1fr;gap:12px;padding:14px;border:1px solid rgba(216,178,126,.14);background:rgba(216,178,126,.025)
+}
+.order-payment-unavailable>span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(216,178,126,.20);color:#d8b27e}
+.order-payment-unavailable strong,.order-submit-error strong{display:block;font-family:Georgia,"Times New Roman",serif;font-size:16px;font-weight:400}
+.order-payment-unavailable p,.order-submit-error p{margin:5px 0 7px;color:#756e75;font-size:9px;line-height:1.5}
+.order-payment-unavailable a{color:#a9937d!important;font-size:8px}
+.order-submit-error{border-color:rgba(207,143,152,.14);background:rgba(207,143,152,.025)}
+.order-submit-error button{border:0;background:transparent;color:#cf9ba2;padding:0;text-decoration:underline;cursor:pointer;font-size:8px}
+.order-submit-error small{display:block;margin-top:6px;color:#5d565d;font-size:7px}
+.order-after-payment{margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.order-after-payment article{padding:10px 9px;border-top:1px solid rgba(255,255,255,.07)}
+.order-after-payment span{font-size:7px;color:#5a555c}
+.order-after-payment p{margin:7px 0 0;color:#6d676f;font-size:8px;line-height:1.45}
+@media(max-width:980px){
+  .order-flow{grid-template-columns:1fr;gap:30px}
+  .order-flow-rail{position:relative;top:auto;min-height:auto;display:block}
+  .order-flow-progress{grid-template-columns:repeat(3,1fr);margin-top:24px}
+  .order-flow-price{margin-top:18px;padding-top:15px}
+  .order-template-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .order-step-head h1{font-size:49px}
+  .order-template-grid{grid-template-columns:1fr}
+  .order-template-card{min-height:245px}
+  .order-selected-template{grid-template-columns:38px 1fr}.order-selected-template>a{grid-column:2}
+  .order-review-card dl>div{grid-template-columns:90px 1fr}
+  .order-review-price{display:block}.order-review-price>span{display:block;margin-top:6px;padding:0}
+  .order-after-payment{grid-template-columns:1fr 1fr}
+}
