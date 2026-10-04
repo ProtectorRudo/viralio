@@ -5035,6 +5035,7 @@ body:has(.experience-entered) .demo-ribbon{
   letter-spacing:.04em;
   transition:transform .3s,background .3s,color .3s;
 }
+.thi-root a.home-primary{color:#171315}
 .home-primary span{font-size:16px;transition:transform .3s}
 .home-primary:hover{transform:translateY(-2px);background:#fff}
 .home-primary:hover span{transform:translate(2px,-2px)}
