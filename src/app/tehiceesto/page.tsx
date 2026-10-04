@@ -46,6 +46,11 @@ export default async function TeHiceEstoHome() {
               Entrar a un demo <span>→</span>
             </Link>
           </div>
+          <div className="home-proof-line" aria-label="Qué incluye">
+            <span><b>01</b> Dirección creativa</span>
+            <span><b>02</b> Personalización real</span>
+            <span><b>03</b> Link privado</span>
+          </div>
         </div>
 
         <div className="artifact-stage" aria-label="Vista previa de una experiencia">
