@@ -129,25 +129,25 @@ export default async function TeHiceEstoHome() {
 
       <section className="home-process" id="como-funciona">
         <div className="process-intro">
-          <span className="eyebrow">Del recuerdo a la experiencia</span>
-          <h2>Vos traés lo que pasó.<br/>Nosotros diseñamos <em>cómo se siente volver.</em></h2>
+          <span className="eyebrow">Simple para vos · personal para esa persona</span>
+          <h2>Elegís el punto de partida.<br/>Nosotros hacemos <em>todo lo demás.</em></h2>
         </div>
         <div className="process-timeline">
           <article>
             <span>01</span>
-            <div><small>LA PERSONA</small><h3>Elegís para quién.</h3><p>Pareja, mamá, papá, amistad, hijos, abuelos o un momento único.</p></div>
+            <div><small>LA EXPERIENCIA</small><h3>Elegís la que más te gusta.</h3><p>Podés entrar a todos los demos antes de decidir.</p></div>
           </article>
           <article>
             <span>02</span>
-            <div><small>LA HISTORIA</small><h3>Nos contás lo que sólo ustedes saben.</h3><p>Fotos, frases, audios, anécdotas y esos detalles que una plantilla jamás podría inventar.</p></div>
+            <div><small>LA RESERVA</small><h3>Dejás tus datos y pagás {formatTeHiceEstoPrice()}.</h3><p>No tenés que preparar fotos ni textos en ese momento.</p></div>
           </article>
           <article>
             <span>03</span>
-            <div><small>LA DIRECCIÓN</small><h3>Todo se convierte en escenas.</h3><p>Ritmo, silencios, sorpresas y gestos interactivos diseñados alrededor del vínculo.</p></div>
+            <div><small>EL CONTACTO</small><h3>Te escribimos nosotros.</h3><p>Después del pago te pedimos fotos, audios, nombres, anécdotas y detalles.</p></div>
           </article>
           <article>
             <span>04</span>
-            <div><small>EL MOMENTO</small><h3>Le mandás un link. El resto pasa ahí.</h3><p>Privado, pensado para celular y hecho para que la pantalla desaparezca cuando importa.</p></div>
+            <div><small>LA ENTREGA</small><h3>La creamos y recibís el link privado.</h3><p>Nosotros hacemos la dirección, los textos, el ritmo y los efectos. Vos sólo revisás antes de entregarla.</p></div>
           </article>
         </div>
       </section>
@@ -177,7 +177,7 @@ export default async function TeHiceEstoHome() {
         <div className="home-price-card">
           <span>EXPERIENCIA PERSONALIZADA</span>
           <strong>{formatTeHiceEstoPrice()}</strong>
-          <p>Incluye personalización, armado de escenas, fotos, textos, interacciones y entrega en link privado.</p>
+          <p>Incluye dirección creativa, personalización completa, escenas interactivas y entrega en link privado.</p>
         </div>
         <Link className="home-primary" href={href("/crear")}>
           Empezar ahora <span>↗</span>
