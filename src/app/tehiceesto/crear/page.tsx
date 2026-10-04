@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import CreatorWizard from "../CreatorWizard";
 
 export const metadata: Metadata = {
-  title: "Crear una experiencia",
+  title: "Elegí tu experiencia",
   description:
-    "Elegí para quién es, contá la historia y armá una primera versión privada de su experiencia.",
+    "Elegí la experiencia, dejá tus datos y pagá. Después nos ponemos en contacto para crearla con vos.",
 };
 
 export default function CreatePage(){
