@@ -738,10 +738,14 @@ export default function CreatorWizard() {
               </article>
               <article>
                 <span>02</span>
-                <div><strong>Terminamos los detalles juntos</strong><p>Desde WhatsApp sumamos audios, afinamos textos y hago los ajustes finos para que no se sienta genérico.</p></div>
+                <div><strong>Coordinamos el pago</strong><p>Por WhatsApp te confirmo el valor y el medio de pago. Nada se cobra automáticamente desde esta pantalla.</p></div>
               </article>
               <article>
                 <span>03</span>
+                <div><strong>Terminamos los detalles juntos</strong><p>Sumamos audios, afinamos textos y hago los ajustes finos para que no se sienta genérico.</p></div>
+              </article>
+              <article>
+                <span>04</span>
                 <div><strong>Recibís el link privado final</strong><p>Lo revisás antes de entregarlo. Recién cuando está perfecto queda listo para esa persona.</p></div>
               </article>
             </div>
