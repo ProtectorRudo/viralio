@@ -7487,3 +7487,5 @@ body:has(.demo-ribbon) .soundtrack-control{
   .order-review-price{display:block}.order-review-price>span{display:block;margin-top:6px;padding:0}
   .order-after-payment{grid-template-columns:1fr 1fr}
 }
+
+.creator-page~.floating-whatsapp,.order-status-shell~.floating-whatsapp{display:none!important}
