@@ -155,6 +155,7 @@ export default function CreatorWizard() {
   const [submittedCode, setSubmittedCode] = useState("");
   const [uploadDone, setUploadDone] = useState(0);
   const [submitError, setSubmitError] = useState("");
+  const [photoNotice, setPhotoNotice] = useState("");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -315,6 +316,7 @@ export default function CreatorWizard() {
     setSubmittedCode("");
     setSubmitState("idle");
     setSubmitError("");
+    setPhotoNotice("");
     setUploadDone(0);
     setStep(0);
   };
@@ -329,10 +331,18 @@ export default function CreatorWizard() {
     if (!files) return;
 
     photoUrls.forEach((url) => URL.revokeObjectURL(url));
-    const selected = Array.from(files)
-      .filter((file) => file.type.startsWith("image/"))
-      .slice(0, 10);
+    const incoming = Array.from(files);
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
+    const valid = incoming.filter((file) => allowedTypes.has(file.type.toLowerCase()) && file.size > 0 && file.size <= 15 * 1024 * 1024);
+    const selected = valid.slice(0, 10);
+    const rejected = incoming.length - valid.length;
+    const extra = Math.max(0, valid.length - 10);
 
+    setPhotoNotice(
+      rejected > 0 || extra > 0
+        ? [rejected > 0 ? `${rejected} archivo${rejected === 1 ? "" : "s"} no se pudo usar` : "", extra > 0 ? "Sólo se guardan las primeras 10 fotos" : ""].filter(Boolean).join(" · ")
+        : "",
+    );
     setPhotoFiles(selected);
     setPhotosDirty(true);
     setPhotoNames(selected.map((file) => file.name));
@@ -554,8 +564,10 @@ export default function CreatorWizard() {
             />
             <span className="upload-icon">＋</span>
             <strong>Subir hasta 10 fotos</strong>
-            <small>JPG, PNG, WEBP o HEIC · se usan únicamente dentro de esta vista previa privada</small>
+            <small>JPG, PNG, WEBP o HEIC · hasta 15 MB por foto · máximo 10</small>
           </label>
+
+          {photoNotice && <p className="upload-photo-notice">{photoNotice}</p>}
 
           {photoUrls.length > 0 && (
             <div className="photo-preview-grid">
