@@ -15,7 +15,7 @@ const HOME_OCCASIONS: Record<string,string> = {
   propuesta: "PROPUESTA",
 };
 
-const HOME_EXPERIENCE_ORDER = [
+// release marker: home occasion hierarchy\nconst HOME_EXPERIENCE_ORDER = [
   "pareja",
   "cumpleanos",
   "mama",
