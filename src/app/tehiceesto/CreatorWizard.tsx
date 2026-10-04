@@ -160,7 +160,7 @@ export default function CreatorWizard() {
                     style={{ "--template-accent": experience.accent } as React.CSSProperties}
                   >
                     <div
-                      className="order-template-art"
+                      className={`order-template-art ${experience.demo.photos?.[0]?.url ? "has-photo" : ""}`}
                       aria-hidden="true"
                       style={experience.demo.photos?.[0]?.url ? {
                         backgroundImage: `linear-gradient(180deg,rgba(24,19,21,.12),rgba(24,19,21,.48)), url("${experience.demo.photos[0].url}")`,
