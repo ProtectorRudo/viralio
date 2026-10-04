@@ -191,6 +191,11 @@ export const experiences: Experience[] = [
         "Tu receta escrita a mano, con medidas que sólo vos entendés.",
         "Ese sillón donde escuchamos historias que hoy repetimos nosotros.",
       ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1758874959821-5484186a8d21?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1758612898635-9f1db65dfecb?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
+      ],
       voices:[
         {name:"Laura",message:"Mamá, gracias por enseñarnos que cuidar también puede parecerse a cocinar de más."},
         {name:"Martín",message:"Hay un montón de cosas mías que recién de grande entendí que vienen de vos."},
@@ -230,6 +235,11 @@ export const experiences: Experience[] = [
         "Nuestro primer viaje: demasiadas cosas en una valija y cero organización.",
         "La primera casa que empezó a sentirse nuestra.",
         "Una noche absolutamente común que, por alguna razón, todavía recuerdo.",
+      ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1776266100976-87661a787a9c?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1782787542614-7dece643af6d?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1776266099419-dde2d16f4df6?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
       ],
       quiz:{
         question:"¿Dónde fue nuestro primer beso?",
@@ -365,6 +375,11 @@ export const experiences: Experience[] = [
         "La noche que dijimos «una sola» y vimos amanecer.",
         "Una foto objetivamente horrible que jamás vamos a borrar.",
         "El audio de siete minutos que resolvió exactamente cero problemas pero ayudó muchísimo.",
+      ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1755705153160-67b29c7718ee?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1582298538104-fe2e74c27f59?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
+        {url:"https://images.unsplash.com/photo-1772723246474-60568f39cbd9?auto=format&fit=crop&fm=jpg&q=78&w=1400",position:"center"},
       ],
       balloons:["Ese secreto sigue a salvo","Te debo una cena","No subas esa foto","Plan improvisado","Audio de 11 minutos","Somos un peligro"],
       scratchEyebrow:"Cupón oficial",
