@@ -148,6 +148,7 @@ export default function CreatorWizard() {
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [photoNames, setPhotoNames] = useState<string[]>([]);
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photosDirty, setPhotosDirty] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
@@ -255,7 +256,11 @@ export default function CreatorWizard() {
       setSubmittedCode(code);
       window.localStorage.setItem(SUBMISSION_KEY, code);
 
-      if (photoFiles.length > 0) {
+      if (photosDirty) {
+        await creatorCall("resetCreatorMedia", { code });
+      }
+
+      if (photoFiles.length > 0 && photosDirty) {
         setSubmitState("uploading");
 
         for (let index = 0; index < photoFiles.length; index += 1) {
@@ -280,6 +285,7 @@ export default function CreatorWizard() {
         }
       }
 
+      setPhotosDirty(false);
       setSubmitState("ready");
       return code;
     } catch (error) {
@@ -305,6 +311,7 @@ export default function CreatorWizard() {
     setPhotoUrls([]);
     setPhotoNames([]);
     setPhotoFiles([]);
+    setPhotosDirty(false);
     setSubmittedCode("");
     setSubmitState("idle");
     setSubmitError("");
@@ -327,6 +334,7 @@ export default function CreatorWizard() {
       .slice(0, 10);
 
     setPhotoFiles(selected);
+    setPhotosDirty(true);
     setPhotoNames(selected.map((file) => file.name));
     setPhotoUrls(selected.map((file) => URL.createObjectURL(file)));
     if (submitState === "ready") setSubmitState("idle");
