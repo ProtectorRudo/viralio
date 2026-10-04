@@ -165,7 +165,9 @@ test("creator handoff persists the private draft before opening WhatsApp",async(
 test("automatic Mercado Pago backend is configured",async({request})=>{
   const response=await request.get("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1");
   expect(response.ok()).toBeTruthy();
-  const data=await response.json() as {configured?:boolean;provider?:string};
+  const data=await response.json() as {configured?:boolean;tokenValid?:boolean;webhookSecretPresent?:boolean;provider?:string};
   expect(data.provider).toBe("mercadopago");
+  expect(data.tokenValid).toBe(true);
+  expect(data.webhookSecretPresent).toBe(true);
   expect(data.configured).toBe(true);
 });
