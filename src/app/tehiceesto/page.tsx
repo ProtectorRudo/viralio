@@ -63,7 +63,14 @@ export default async function TeHiceEstoHome() {
           </div>
           <div className="artifact-card artifact-card-mid">
             <small>02 · UN RECUERDO</small>
-            <div className="artifact-photo">
+            <div
+              className="artifact-photo"
+              style={experiences[0]?.demo.photos?.[0]?.url ? {
+                backgroundImage: `linear-gradient(180deg,rgba(18,14,15,.02) 35%,rgba(18,14,15,.38)), url("${experiences[0].demo.photos[0].url}")`,
+                backgroundSize: "cover",
+                backgroundPosition: experiences[0].demo.photos[0].position || "center",
+              } : undefined}
+            >
               <span>VERANO · 2022</span>
             </div>
             <p>“Ese día todavía no sabíamos que iba a quedar para siempre.”</p>
