@@ -125,7 +125,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
 
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear");
-  await page.getByRole("button",{name:/Elegir esta/i}).first().click();
+  await page.getByRole("button",{name:/Elegir para mi pareja/i}).click();
 
   await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
   await page.getByPlaceholder("Ej. +54 9 221 ...").fill("+54 9 221 555 1234");
