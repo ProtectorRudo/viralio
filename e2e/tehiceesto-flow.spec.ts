@@ -9,7 +9,7 @@ async function advanceOne(page:Page){
   else if(current==="memories"||current==="timeline"||current==="video")await page.locator('[data-action="advance"]').click();
   else if(current==="light"){await page.locator('[data-action="light-reveal"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="hold"){await page.locator('[data-action="hold"]').press("Enter");await page.locator('[data-action="advance"]').click()}
-  else if(current==="stars"){const items=page.locator('[data-action="star"]');await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator('[data-action="advance"]').click()}
+  else if(current==="stars"){const items=page.locator('[data-action="star"]');const count=await items.count();for(let i=0;i<count;i++)await items.nth(i).click();await page.locator('[data-action="advance"]').click()}
   else if(current==="scratch"){await page.locator('[data-action="scratch-fallback"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="letter"){await page.locator('[data-action="open-letter"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="candles"){await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click()}
