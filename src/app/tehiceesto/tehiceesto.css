@@ -12197,3 +12197,45 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   }
   .thi-pair-constellation-lines path.is-drawn{stroke-dashoffset:0}
 }
+
+
+/* =========================================================
+   SCRATCH — MOBILE RELIABILITY PASS · OCT 2026
+   Continuous touch surface, no overlapping commercial chrome.
+   ========================================================= */
+.thi-scratch-canvas{
+  touch-action:none!important;
+  overscroll-behavior:contain;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  cursor:crosshair;
+}
+.thi-scratch-real{
+  touch-action:none!important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.thi-theme-pareja[data-scene="scratch"] .thi-progress-premium,
+.thi-theme-pareja[data-scene="scratch"] .thi-reset-journey{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.thi-root:has(.thi-theme-pareja[data-scene="scratch"]) .floating-create-cta.floating-whatsapp--experience{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  transform:translateY(14px) scale(.96);
+}
+.thi-theme-pareja[data-scene="scratch"] .thi-scene-meta{
+  opacity:.30;
+}
+@media(max-width:650px){
+  .thi-theme-pareja[data-scene="scratch"] .thi-scratch{
+    width:min(88vw,430px);
+  }
+  .thi-theme-pareja[data-scene="scratch"] .thi-scratch-canvas{
+    cursor:default;
+  }
+}
