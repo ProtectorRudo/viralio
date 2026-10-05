@@ -11967,7 +11967,6 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   opacity:1;
   cursor:pointer;
   filter:drop-shadow(0 0 12px rgba(244,196,186,.22));
-  animation:thiPairNodeFloat 3.2s ease-in-out infinite;
 }
 .thi-pair-star-node.is-active>span{
   width:8px;
@@ -12009,11 +12008,6 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   0%{opacity:.50;transform:scale(.55)}
   100%{opacity:0;transform:scale(1.55)}
 }
-@keyframes thiPairNodeFloat{
-  0%,100%{transform:translate(-50%,-50%) scale(1)}
-  50%{transform:translate(-50%,-50%) scale(1.08)}
-}
-
 .thi-pair-stars-story{
   position:relative;
   z-index:5;
@@ -12195,7 +12189,6 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 }
 @media(prefers-reduced-motion:reduce){
   .thi-pair-constellation-lines path.is-drawn,
-  .thi-pair-star-node.is-active,
   .thi-pair-star-node.is-active>i,
   .thi-pair-stars-story.has-story>blockquote,
   .thi-pair-stars-finale,
