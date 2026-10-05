@@ -15,6 +15,7 @@ export default function ScratchReveal({
   const startedRef=useRef(false);
   const lastPointRef=useRef<Point|null>(null);
   const moveCountRef=useRef(0);
+  const coverageRef=useRef(new Set<number>());
   const revealedRef=useRef(revealed);
   const [started,setStarted]=useState(false);
 
@@ -99,6 +100,48 @@ export default function ScratchReveal({
     };
   };
 
+
+  const completeReveal=()=>{
+    if(revealedRef.current)return true;
+    revealedRef.current=true;
+    onReveal();
+    return true;
+  };
+
+  const recordCoverage=(from:Point,to:Point)=>{
+    const canvas=canvasRef.current;
+    if(!canvas||revealedRef.current)return false;
+    const rect=canvas.getBoundingClientRect();
+    const cols=20;
+    const rows=12;
+    const cellW=Math.max(rect.width/cols,1);
+    const cellH=Math.max(rect.height/rows,1);
+    const distance=Math.hypot(to.x-from.x,to.y-from.y);
+    const steps=Math.max(1,Math.ceil(distance/10));
+
+    for(let step=0;step<=steps;step++){
+      const t=step/steps;
+      const x=from.x+(to.x-from.x)*t;
+      const y=from.y+(to.y-from.y)*t;
+      const centerCol=Math.floor(x/cellW);
+      const centerRow=Math.floor(y/cellH);
+
+      for(let dy=-2;dy<=2;dy++){
+        for(let dx=-2;dx<=2;dx++){
+          const col=centerCol+dx;
+          const row=centerRow+dy;
+          if(col<0||col>=cols||row<0||row>=rows)continue;
+          const cx=(col+.5)*cellW;
+          const cy=(row+.5)*cellH;
+          if(Math.hypot(cx-x,cy-y)<=36)coverageRef.current.add(row*cols+col);
+        }
+      }
+    }
+
+    if(coverageRef.current.size/(cols*rows)>=.20)return completeReveal();
+    return false;
+  };
+
   const eraseSegment=(from:Point,to:Point)=>{
     const canvas=canvasRef.current;
     if(!canvas||revealedRef.current)return;
@@ -122,8 +165,10 @@ export default function ScratchReveal({
       ctx.restore();
     };
 
-    drawStroke(70,.26);
-    drawStroke(54,.92);
+    drawStroke(72,.28);
+    drawStroke(56,.96);
+
+    recordCoverage(from,to);
 
     // A soft dab at the current point removes gaps produced by sparse touch events.
     ctx.save();
@@ -160,11 +205,7 @@ export default function ScratchReveal({
     }
 
     const scratched=sampled?transparent/sampled:0;
-    if(scratched>=.235){
-      revealedRef.current=true;
-      onReveal();
-      return true;
-    }
+    if(scratched>=.18)return completeReveal();
     return false;
   };
 
