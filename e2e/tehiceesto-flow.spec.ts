@@ -93,6 +93,69 @@ test("pair scratch card reveals from real drag gestures without fallback",async(
 });
 
 
+test("pair scratch card reveals from touch pointer gestures on mobile",async({page})=>{
+  test.setTimeout(60_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+
+  for(let step=0;step<12;step++){
+    const current=await sceneName(page);
+    if(current==="scratch")break;
+    const before=current;
+    await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(before);
+  }
+
+  await waitForScene(page,"scratch");
+  const canvas=page.locator('[data-action="scratch-canvas"]');
+  await expect(canvas).toBeVisible();
+
+  const box=await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  if(!box)throw new Error("scratch_touch_canvas_missing_box");
+
+  const left=box.x+28;
+  const right=box.x+box.width-28;
+  const top=box.y+38;
+  const bottom=box.y+box.height-38;
+  const pointerId=17;
+  const rows=6;
+
+  await canvas.dispatchEvent("pointerdown",{
+    pointerId,pointerType:"touch",isPrimary:true,buttons:1,
+    clientX:left,clientY:top,
+  });
+
+  for(let row=0;row<rows;row++){
+    const y=top+row*((bottom-top)/(rows-1));
+    const fromX=row%2===0?left:right;
+    const toX=row%2===0?right:left;
+    const segments=20;
+    for(let segment=0;segment<=segments;segment++){
+      const x=fromX+(toX-fromX)*(segment/segments);
+      await canvas.dispatchEvent("pointermove",{
+        pointerId,pointerType:"touch",isPrimary:true,buttons:1,
+        clientX:x,clientY:y,
+      });
+      if(await canvas.count()===0)break;
+    }
+    if(await canvas.count()===0)break;
+  }
+
+  if(await canvas.count()){
+    await canvas.dispatchEvent("pointerup",{
+      pointerId,pointerType:"touch",isPrimary:true,buttons:0,
+      clientX:right,clientY:bottom,
+    });
+  }
+
+  await expect(canvas).toHaveCount(0);
+  await expect(page.getByRole("button",{name:/Acepto el trato/i})).toBeVisible();
+  await expect(page.locator('[data-action="scratch-fallback"]')).toHaveCount(0);
+});
+
+
 test("premium haptics fire on tactile interactions",async({page})=>{
   await page.addInitScript(()=>{
     (window as unknown as {__thiVibrations:(number|number[])[]}).__thiVibrations=[];
