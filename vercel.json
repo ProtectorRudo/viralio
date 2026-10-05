@@ -2,7 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "football-data": false
+      "football-data": false,
+      "tehiceesto-work": false
     }
   }
 }
