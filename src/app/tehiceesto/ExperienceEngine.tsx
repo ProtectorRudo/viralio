@@ -1131,6 +1131,24 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
       case"proposal":return <section className="thi-scene thi-final thi-proposal thi-scene-rich"><div className="thi-proposal-rings" aria-hidden="true"><i/><i/><i/></div><p className="thi-kicker">{token(copy.proposal.kicker)}</p><span className="thi-ring">◇</span><h2>{token(copy.proposal.title)}</h2><p className="thi-lead">{token(copy.proposal.lead)}</p><div className="thi-reactions">{copy.proposal.reactions.map(x=><button key={x} onClick={()=>haptic([10,20,10])}>{token(x)}</button>)}</div><small>{token(copy.proposal.createdWith)}</small></section>;
       case"finale":default:
+        if(experience.slug==="mama"){
+          const mamaFinalReactionIcons=[
+            {label:"Me llegó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="14.5" cy="14.5" r="9.2"/><path d="M10.9 12.4h.1M18.1 12.4h.1M11.2 18.4c1.1-1 2.2-1.4 3.4-1.4 1.3 0 2.4.5 3.3 1.4M25.9 22.7c0 2-1.3 3.3-2.9 3.3s-2.9-1.3-2.9-3.3c0-1.6 1.5-3.7 2.9-5.5 1.5 1.8 2.9 3.9 2.9 5.5Z"/></svg>},
+            {label:"Amor",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27 6.8 18.2C3.1 14.7 3.5 9.1 7.5 6.6c3-1.9 6.6-1.2 8.5 1.4 1.9-2.6 5.5-3.3 8.5-1.4 4 2.5 4.4 8.1.7 11.6L16 27Z"/></svg>},
+            {label:"Me emocionó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4.2c4.2 5.2 8 10.1 8 14.6a8 8 0 1 1-16 0c0-4.5 3.8-9.4 8-14.6Z"/></svg>},
+            {label:"Hermoso",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m15.8 3.7 1.8 6.7 6.7 1.8-6.7 1.8-1.8 6.7-1.8-6.7-6.7-1.8 6.7-1.8 1.8-6.7ZM24.5 18.7l1 3.7 3.7 1-3.7 1-1 3.7-1-3.7-3.7-1 3.7-1 1-3.7Z"/></svg>},
+          ];
+          return <section className="thi-scene thi-final thi-mama-finale thi-scene-rich">
+            <div className="thi-mama-finale-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/><span/></div>
+            <p className="thi-kicker">{token(copy.finale.kicker)}</p>
+            <h2>{token(copy.finale.title)}</h2>
+            <div className="thi-mama-finale-divider" aria-hidden="true"><i/><b>✦</b><i/></div>
+            <p className="thi-lead">{token(copy.finale.lead)}</p>
+            <div className="thi-mama-finale-reactions" aria-label="¿Qué te hizo sentir?">{mamaFinalReactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
+            <button data-action="restart" className="thi-mama-finale-restart" onClick={restart}><span>↺</span>{token(copy.finale.restartLabel)}</button>
+            <small className="thi-mama-finale-signature">{token(copy.finale.createdWith)}</small>
+          </section>;
+        }
         if(experience.slug==="pareja"){
           const finalInitials=`${(experience.demoRecipient||"E").trim().charAt(0).toUpperCase()} + ${(experience.demoGiver||"J").trim().charAt(0).toUpperCase()}`;
           const finalYear="2026";
