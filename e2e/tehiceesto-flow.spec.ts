@@ -48,6 +48,37 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("pair hold scene is cinematic, distraction-free and responds while holding",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="hold"){
+    await advanceOne(page);
+  }
+  await waitForScene(page,"hold");
+
+  const hold=page.locator('[data-action="hold"]');
+  const ritual=page.locator(".thi-hold-reveal.cinematic");
+  await expect(ritual).toBeVisible();
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+
+  const box=await hold.boundingBox();
+  if(!box)throw new Error("hold control has no bounding box");
+  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
+  await page.mouse.down();
+  await page.waitForTimeout(1250);
+  await expect(ritual).toHaveAttribute("data-hold-phase","almost");
+  await expect(page.getByText("Un poquito más…")).toBeVisible();
+  await page.mouse.up();
+  await expect(ritual).toHaveAttribute("data-hold-phase","idle");
+
+  await hold.press("Enter");
+  await expect(ritual).toHaveClass(/revealed/);
+  await expect(page.locator('[data-action="advance"]')).toBeVisible();
+});
+
+
 test("pair demo voice can pause and resume without restarting",async({page})=>{
   await page.addInitScript(()=>{
     const calls={speak:0,pause:0,resume:0,cancel:0};
