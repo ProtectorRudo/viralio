@@ -57,6 +57,11 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
       return Math.abs(matrix.m11);
     });
   }).toBeLessThan(.2);
+  await expect.poll(async()=>{
+    return page.locator(".thi-pair-threshold-leaf").evaluate((node)=>
+      getComputedStyle(node).getPropertyValue("--door-swing-direction").trim()
+    );
+  }).toBe("inward");
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-pareja-threshold-390");
 
