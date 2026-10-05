@@ -148,6 +148,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
   },
   mama:{
     intro:{kicker:"Tus hijos hicieron algo para vos",cta:"Abrir esto",footnote:""},
+    memories:{kicker:"Recuerdos",title:["Algunos momentos terminan.","Otros se quedan."],cta:"Seguir con la historia →"},
   },
   "mama-papa":{
     intro:{kicker:"Hay gracias que tardamos demasiado en decir",cta:"Entrar",footnote:"Esto no reemplaza un abrazo. Pero quería dejarlo escrito"},
