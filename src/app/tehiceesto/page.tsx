@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
 
+// release: premium editorial home
+
 const OCCASIONS = [
   { slug:"pareja", label:"Pareja", note:"Para decir lo que un mensaje no alcanza." },
   { slug:"cumpleanos", label:"Cumpleaños", note:"Un cumpleaños convertido en recorrido." },
