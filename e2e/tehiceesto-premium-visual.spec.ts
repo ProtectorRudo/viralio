@@ -56,7 +56,13 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
       const matrix=new DOMMatrix(getComputedStyle(node).transform);
       return Math.abs(matrix.m11);
     });
-  }).toBeLessThan(.2);
+  }).toBeGreaterThan(.35);
+  await expect.poll(async()=>{
+    return page.locator(".thi-pair-threshold-leaf").evaluate((node)=>{
+      const matrix=new DOMMatrix(getComputedStyle(node).transform);
+      return Math.abs(matrix.m11);
+    });
+  }).toBeLessThan(.68);
   await expect.poll(async()=>{
     return page.locator(".thi-pair-threshold-leaf").evaluate((node)=>
       getComputedStyle(node).getPropertyValue("--door-swing-direction").trim()
