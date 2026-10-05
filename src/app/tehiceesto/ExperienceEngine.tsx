@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+// github-bridge release: mama-without-return
+
 // github-bridge release: cinematic-pair-intro
 // github-bridge release: premium-threshold-door
 
