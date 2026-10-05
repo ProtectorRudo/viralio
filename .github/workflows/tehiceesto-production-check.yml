@@ -48,10 +48,10 @@ jobs:
         run: |
           set -euo pipefail
           body="$(curl -fsSL --max-time 25 https://tehiceesto.com/)"
-          printf '%s' "$body" | grep -Fq "No le mandes"
-          printf '%s' "$body" | grep -Fq "Expediente: nuestra amistad"
-          printf '%s' "$body" | grep -Fq "Todo lo que hiciste sin pedir aplausos"
-          printf '%s' "$body" | grep -Fq "Las cosas tuyas que quedaron en mí"
+          printf '%s' "$body" | grep -Fq "Hay regalos que se abren una vez"
+          printf '%s' "$body" | grep -Fq "¿Para quién lo estás haciendo?"
+          printf '%s' "$body" | grep -Fq "No recibe una página"
+          printf '%s' "$body" | grep -Fq "Experiencia personalizada"
           echo "Premium production home is live."
 
       - name: Verify dedicated routes
