@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "./tehiceesto.css";
+import "./tehiceesto-premium-v1.css";
+import "./tehiceesto-live.css";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export const metadata: Metadata = {
