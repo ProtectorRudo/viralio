@@ -48,6 +48,37 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("pair letter scene opens as a premium physical keepsake without commercial chrome",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="letter"){
+    await advanceOne(page);
+  }
+  await waitForScene(page,"letter");
+
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+  await expect(page.locator(".thi-reset-journey")).toBeHidden();
+  await expect(page.getByText("Tocá el sello")).toBeVisible();
+
+  const envelope=page.locator('[data-action="open-letter"]');
+  await envelope.click();
+  await page.waitForTimeout(1450);
+
+  await expect(envelope).toHaveClass(/open/);
+  await expect(page.locator(".thi-pair-letter")).toHaveClass(/is-open/);
+  await expect(page.locator(".thi-envelope .paper em")).toBeVisible();
+  await expect(page.getByRole("button",{name:"Continuar →"})).toBeVisible();
+
+  const signature=page.locator(".thi-envelope .paper em");
+  const box=await signature.boundingBox();
+  if(!box)throw new Error("letter signature has no bounding box");
+  expect(box.y).toBeGreaterThan(0);
+  expect(box.y+box.height).toBeLessThan(844);
+});
+
+
 test("pair hold scene is cinematic, distraction-free and responds while holding",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
