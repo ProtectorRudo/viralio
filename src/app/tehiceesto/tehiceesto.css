@@ -13710,19 +13710,31 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   box-shadow:
     -20px 8px 46px rgba(0,0,0,.20),
     18px 0 38px rgba(0,0,0,.22);
-  filter:brightness(.86) saturate(.88);
+  filter:brightness(.94) saturate(.90);
 }
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-light{
-  width:82%;
+  width:94%;
   opacity:1;
-  transform:translateZ(-112px);
+  transform:translateZ(-104px);
   background:
-    radial-gradient(circle at 42% 48%,rgba(255,214,176,.98) 0 16%,rgba(255,169,129,.92) 31%,rgba(255,118,159,.58) 55%,transparent 78%),
-    linear-gradient(90deg,rgba(255,104,157,.42) 0%,rgba(255,142,118,.88) 43%,rgba(255,203,157,.98) 72%,rgba(255,160,117,.68) 100%);
+    radial-gradient(circle at 44% 48%,
+      rgba(255,250,231,1) 0%,
+      rgba(255,238,205,1) 18%,
+      rgba(255,210,164,.98) 36%,
+      rgba(255,173,145,.88) 54%,
+      rgba(255,139,177,.52) 70%,
+      transparent 88%),
+    linear-gradient(90deg,
+      rgba(255,164,190,.30) 0%,
+      rgba(255,207,171,.82) 28%,
+      rgba(255,241,213,1) 62%,
+      rgba(255,213,171,.96) 82%,
+      rgba(255,176,144,.72) 100%);
+  filter:brightness(1.10) saturate(.95);
   box-shadow:
-    0 0 48px rgba(255,104,157,.38),
-    0 0 94px rgba(255,145,111,.52),
-    0 0 180px rgba(255,176,128,.34);
+    0 0 54px rgba(255,238,210,.66),
+    0 0 110px rgba(255,199,157,.58),
+    0 0 190px rgba(255,158,169,.28);
 }
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold-floor{
   z-index:0;
@@ -13737,13 +13749,14 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   opacity:1;
   background:
     linear-gradient(180deg,
-      rgba(255,194,158,.46) 0%,
-      rgba(255,132,157,.23) 34%,
-      rgba(172,84,83,.10) 60%,
-      transparent 88%);
+      rgba(255,244,214,.62) 0%,
+      rgba(255,211,173,.42) 26%,
+      rgba(255,171,168,.24) 52%,
+      rgba(172,84,83,.10) 70%,
+      transparent 92%);
   box-shadow:
-    0 0 34px rgba(255,139,121,.20),
-    0 0 70px rgba(255,106,159,.10);
+    0 0 44px rgba(255,227,196,.26),
+    0 0 90px rgba(255,176,159,.16);
 }
 
 
@@ -13763,12 +13776,13 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 }
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-frame{
   background:
-    radial-gradient(ellipse at 70% 48%,rgba(255,179,137,.34),transparent 38%),
-    radial-gradient(ellipse at 86% 50%,rgba(255,103,159,.23),transparent 48%),
-    linear-gradient(180deg,rgba(42,20,24,.80),rgba(11,7,9,.98));
+    radial-gradient(ellipse at 68% 48%,rgba(255,244,217,.62),transparent 34%),
+    radial-gradient(ellipse at 83% 50%,rgba(255,187,153,.34),transparent 46%),
+    radial-gradient(ellipse at 92% 50%,rgba(255,133,176,.20),transparent 56%),
+    linear-gradient(180deg,rgba(46,22,25,.70),rgba(12,7,10,.97));
   box-shadow:
-    inset 0 0 32px rgba(255,148,122,.12),
-    0 0 34px rgba(255,105,154,.08);
+    inset 0 0 44px rgba(255,225,195,.18),
+    0 0 44px rgba(255,175,157,.12);
 }
 
 /* release retry: warm pair-door glow v2 */
