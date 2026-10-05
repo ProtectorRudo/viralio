@@ -44,18 +44,18 @@ export default function ScratchReveal({
       ctx.clearRect(0,0,rect.width,rect.height);
 
       const gradient=ctx.createLinearGradient(0,0,rect.width,rect.height);
-      gradient.addColorStop(0,"#a8a2aa");
-      gradient.addColorStop(.20,"#655f67");
-      gradient.addColorStop(.45,"#958e97");
-      gradient.addColorStop(.70,"#514c54");
-      gradient.addColorStop(1,"#837b84");
+      gradient.addColorStop(0,"#f8e3a6");
+      gradient.addColorStop(.20,"#b77b1f");
+      gradient.addColorStop(.45,"#f1c45e");
+      gradient.addColorStop(.70,"#8f5c16");
+      gradient.addColorStop(1,"#d9a53a");
       ctx.fillStyle=gradient;
       ctx.fillRect(0,0,rect.width,rect.height);
 
       ctx.save();
       ctx.globalAlpha=.14;
       for(let x=-rect.height;x<rect.width+rect.height;x+=16){
-        ctx.strokeStyle=x%32===0?"#fff":"#111";
+        ctx.strokeStyle=x%32===0?"#fff4cf":"#6d430e";
         ctx.lineWidth=1;
         ctx.beginPath();
         ctx.moveTo(x,0);
@@ -67,7 +67,7 @@ export default function ScratchReveal({
       ctx.save();
       ctx.globalAlpha=.075;
       for(let y=9;y<rect.height;y+=13){
-        ctx.strokeStyle="#fff";
+        ctx.strokeStyle="#fff1bf";
         ctx.lineWidth=.55;
         ctx.beginPath();
         ctx.moveTo(0,y);
@@ -139,7 +139,7 @@ export default function ScratchReveal({
 
     const progress=coverageRef.current.size/(cols*rows);
     canvas.dataset.scratchProgress=progress.toFixed(3);
-    if(progress>=.34)completeReveal();
+    if(progress>=.56)completeReveal();
   };
 
   const erase=(from:Point,to:Point)=>{
