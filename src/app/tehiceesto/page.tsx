@@ -6,6 +6,7 @@ import { formatTeHiceEstoPrice } from "./pricing";
 // release: premium editorial home
 // release: documentary reactions
 // release retry: reactions-v2
+// github-bridge release: documentary-reactions
 
 const OCCASIONS = [
   { slug:"pareja", label:"Pareja", note:"Para decir lo que un mensaje no alcanza." },
