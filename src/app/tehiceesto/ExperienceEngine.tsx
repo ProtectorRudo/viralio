@@ -108,8 +108,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const fadeSoundtrack=(target:number,duration=650)=>{
     const audio=soundtrackRef.current;if(!audio)return;
     if(soundtrackFadeRef.current!==null)cancelAnimationFrame(soundtrackFadeRef.current);
-    const start=audio.volume;const startedAt=performance.now();
-    const tick=(now:number)=>{const elapsed=Math.min(1,(now-startedAt)/duration);const eased=1-Math.pow(1-elapsed,3);audio.volume=Math.max(0,Math.min(1,start+(target-start)*eased));if(elapsed<1)soundtrackFadeRef.current=requestAnimationFrame(tick);else soundtrackFadeRef.current=null};
+    const start=audio.volume;let startedAt:number|null=null;
+    const tick=(now:number)=>{if(startedAt===null)startedAt=now;const elapsed=Math.min(1,(now-startedAt)/duration);const eased=1-Math.pow(1-elapsed,3);audio.volume=Math.max(0,Math.min(1,start+(target-start)*eased));if(elapsed<1)soundtrackFadeRef.current=requestAnimationFrame(tick);else soundtrackFadeRef.current=null};
     soundtrackFadeRef.current=requestAnimationFrame(tick);
   };
   const startSoundtrack=async()=>{const audio=soundtrackRef.current;if(!audio||soundtrackStarted)return;try{audio.volume=0;await audio.play();setSoundtrackStarted(true);setSoundtrackPaused(false);fadeSoundtrack(.24,1500)}catch{}};
@@ -794,7 +794,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       case"finale":default:
         if(experience.slug==="pareja"){
           const finalInitials=`${(experience.demoRecipient||"E").trim().charAt(0).toUpperCase()} + ${(experience.demoGiver||"J").trim().charAt(0).toUpperCase()}`;
-          const finalYear=new Date().getFullYear();
+          const finalYear="2026";
           const reactionIcons=[
             {label:"Me llegó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27 6.8 18.2C3.1 14.7 3.5 9.1 7.5 6.6c3-1.9 6.6-1.2 8.5 1.4 1.9-2.6 5.5-3.3 8.5-1.4 4 2.5 4.4 8.1.7 11.6L16 27Z"/></svg>},
             {label:"Me hizo sonreír",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10.5"/><path d="M11.5 18.2c1.1 2.2 2.7 3.3 4.5 3.3s3.4-1.1 4.5-3.3M12.2 13h.1M19.7 13h.1"/></svg>},
