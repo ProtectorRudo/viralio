@@ -146,6 +146,9 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     letter:{kicker:"Antes de preguntarte",title:["Quiero que sepas","qué estoy eligiendo."],sealHint:"Abrir la carta",cta:"Ahora sí →"},
     proposal:{kicker:"Ahora sí",lead:"No hace falta tocar nada más. Mirá a la persona que tenés enfrente.",createdWith:"este momento empezó en Te Hice Esto"},
   },
+  mama:{
+    intro:{kicker:"Tus hijos hicieron algo para vos",cta:"Abrir esto",footnote:""},
+  },
   "mama-papa":{
     intro:{kicker:"Hay gracias que tardamos demasiado en decir",cta:"Entrar",footnote:"Esto no reemplaza un abrazo. Pero quería dejarlo escrito"},
     memories:{kicker:"Cosas que de chicos parecían normales",title:["De grandes entendimos","todo lo que había atrás."],cta:"Seguir →"},
