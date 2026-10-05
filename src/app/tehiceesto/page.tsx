@@ -242,6 +242,135 @@ export default async function TeHiceEstoHome() {
           </div>
         </section>
 
+        <section className="thh-reactions" id="reacciones">
+          <header className="thh-section-head thh-section-head-centered thh-reactions-head">
+            <span className="thh-kicker">LO QUE PASÓ DESPUÉS</span>
+            <h2>Mensajes que queremos guardar.</h2>
+            <p>
+              Así puede sentirse una experiencia cuando llega a la persona correcta.
+              Estos mensajes son ejemplos ilustrativos hasta sumar reacciones reales autorizadas.
+            </p>
+          </header>
+
+          <div className="thh-reactions-grid">
+            <article className="thh-reaction-card">
+              <div className="thh-reaction-card-head">
+                <span>PARA MAMÁ</span>
+                <small>EJEMPLO VISUAL</small>
+              </div>
+
+              <div className="thh-chat-window">
+                <div className="thh-chat-meta">
+                  <span className="thh-chat-avatar">M</span>
+                  <div><strong>Mamá</strong><small>WhatsApp</small></div>
+                  <b>•••</b>
+                </div>
+                <div className="thh-chat-stream">
+                  <div className="thh-chat-bubble">
+                    No sabés lo que lloró mi mamá 😭
+                    <time>21:17</time>
+                  </div>
+                  <div className="thh-chat-bubble">
+                    Gracias de verdad, quedó hermoso. No me esperaba para nada esa parte del audio.
+                    <time>21:18</time>
+                  </div>
+                  <div className="thh-chat-bubble">
+                    Ya lo compartió con toda la familia jajaja
+                    <time>21:18</time>
+                  </div>
+                </div>
+              </div>
+
+              <div className="thh-reaction-preview thh-reaction-preview-mama">
+                <small>PARA VOS</small>
+                <strong>Mamá</strong>
+                <span>Gracias por estar siempre.</span>
+              </div>
+            </article>
+
+            <article className="thh-reaction-card">
+              <div className="thh-reaction-card-head">
+                <span>PARA PAREJA</span>
+                <small>EJEMPLO VISUAL</small>
+              </div>
+
+              <div className="thh-chat-window">
+                <div className="thh-chat-meta">
+                  <span className="thh-chat-avatar">P</span>
+                  <div><strong>Pareja</strong><small>WhatsApp</small></div>
+                  <b>•••</b>
+                </div>
+                <div className="thh-chat-stream">
+                  <div className="thh-chat-bubble">
+                    Te juro que pensé que era un link cualquiera...
+                    <time>23:02</time>
+                  </div>
+                  <div className="thh-chat-bubble">
+                    Pero cuando apareció el audio me agarró de sorpresa. Está increíble.
+                    <time>23:04</time>
+                  </div>
+                  <div className="thh-chat-audio">
+                    <span>▶</span>
+                    <i/><i/><i/><i/><i/><i/><i/><i/>
+                    <b>0:27</b>
+                  </div>
+                </div>
+              </div>
+
+              <div className="thh-reaction-preview thh-reaction-preview-pareja">
+                <small>NUESTRA</small>
+                <strong>Historia</strong>
+                <span>Un recorrido hecho sólo para ustedes.</span>
+              </div>
+            </article>
+
+            <article className="thh-reaction-card">
+              <div className="thh-reaction-card-head">
+                <span>PARA CUMPLEAÑOS</span>
+                <small>EJEMPLO VISUAL</small>
+              </div>
+
+              <div className="thh-chat-window">
+                <div className="thh-chat-meta">
+                  <span className="thh-chat-avatar">C</span>
+                  <div><strong>Cumpleaños</strong><small>WhatsApp</small></div>
+                  <b>•••</b>
+                </div>
+                <div className="thh-chat-stream">
+                  <div className="thh-chat-bubble">
+                    Sos un genio!! Le encantó, no paraba de sonreír 😍
+                    <time>18:24</time>
+                  </div>
+                  <div className="thh-chat-bubble">
+                    Lo estuvo mirando varias veces durante el día.
+                    <time>18:25</time>
+                  </div>
+                  <div className="thh-chat-bubble">
+                    Gracias por los detalles. Se nota el cariño con el que está hecho.
+                    <time>18:26</time>
+                  </div>
+                </div>
+              </div>
+
+              <div className="thh-reaction-preview thh-reaction-preview-cumple">
+                <small>HOY ES TU DÍA</small>
+                <strong>Feliz cumple</strong>
+                <span>Velas, recuerdos y sorpresas.</span>
+              </div>
+            </article>
+          </div>
+
+          <div className="thh-reactions-foot">
+            <div>
+              <span aria-hidden="true">◇</span>
+              <p>Cuando tengamos mensajes reales autorizados, reemplazamos estos ejemplos sin cambiar el diseño.</p>
+            </div>
+            <Link className="thh-button thh-button-primary thh-reactions-cta" href={href("/crear")}>
+              Crear la mía <span>→</span>
+            </Link>
+          </div>
+        </section>
+
         <section className="thh-pricing">
           <div
             className="thh-pricing-photo"
