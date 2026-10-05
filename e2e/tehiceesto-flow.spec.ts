@@ -48,6 +48,45 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("pair finale is a clean premium epilogue with integrated conversion CTA",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="finale"){
+    await advanceOne(page);
+  }
+  await waitForScene(page,"finale");
+
+  await expect(page.locator(".thi-pair-finale")).toBeVisible();
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+  await expect(page.locator(".thi-reset-journey")).toBeHidden();
+  await expect(page.locator(".thi-scene-meta")).toBeHidden();
+
+  const seal=page.locator(".thi-pair-finale-seal");
+  await expect(seal).toBeVisible();
+  await expect(seal.locator("strong")).not.toHaveText("");
+
+  const reactions=page.locator(".thi-pair-finale-reactions button");
+  await expect(reactions).toHaveCount(4);
+  await reactions.first().click();
+  await expect(reactions.first()).toHaveAttribute("aria-pressed","true");
+
+  const create=page.locator('[data-action="create-story"]');
+  await expect(create).toHaveAttribute("href","/tehiceesto/crear");
+  await page.waitForTimeout(3400);
+  await expect(create).toBeVisible();
+
+  const box=await create.boundingBox();
+  if(!box)throw new Error("final create CTA has no bounding box");
+  expect(box.y).toBeGreaterThan(0);
+  expect(box.y+box.height).toBeLessThanOrEqual(844);
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
+
 test("pair letter scene opens as a premium physical keepsake without commercial chrome",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
