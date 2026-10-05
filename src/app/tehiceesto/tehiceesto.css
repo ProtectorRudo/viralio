@@ -18070,3 +18070,106 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
     transition-delay:0s!important;
   }
 }
+
+
+/* =========================================================
+   MAMÁ · CARTA V3 — TRUE CLOSED STATE · OCT 2026
+   Nothing from the letter is visible before the ritual starts.
+   ========================================================= */
+.thi-theme-mama[data-scene="letter"] .thi-envelope{
+  width:min(448px,79vw);
+  height:246px;
+  margin-top:clamp(38px,4.5svh,52px);
+}
+
+/* True closed state: clip the contents and keep the paper completely invisible. */
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open){
+  overflow:hidden;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+  opacity:0!important;
+  visibility:hidden!important;
+  transform:translateY(138px) rotate(0deg)!important;
+  box-shadow:none!important;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open{
+  overflow:visible;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+  opacity:1!important;
+  visibility:visible!important;
+  transition:
+    opacity .34s .56s ease,
+    transform .92s .62s cubic-bezier(.16,.84,.16,1),
+    box-shadow .78s .58s ease,
+    filter .78s .58s ease;
+}
+
+/* Keep the instruction on the dark scene, visually detached from the object. */
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-hint{
+  margin-top:12px;
+  color:#c3a991;
+  text-shadow:0 2px 18px rgba(0,0,0,.42);
+}
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-hint:before{
+  width:30px;
+  background:linear-gradient(90deg,transparent,rgba(205,164,120,.50));
+}
+
+/* Slightly quieter title so the sealed envelope becomes the hero. */
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+  width:min(660px,88vw);
+  font-size:clamp(40px,5.7vw,60px);
+  line-height:.98;
+}
+
+/* Sales CTA should whisper until the emotional action is completed. */
+.thi-root:has(.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open)) .floating-create-cta.floating-whatsapp--experience{
+  opacity:.52;
+  transform:scale(.93);
+  filter:saturate(.78);
+}
+.thi-root:has(.thi-theme-mama[data-scene="letter"] .thi-envelope.open) .floating-create-cta.floating-whatsapp--experience{
+  opacity:.92;
+  transform:scale(1);
+  filter:none;
+}
+
+@media(max-width:650px){
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter{
+    padding-top:92px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+    width:91vw;
+    font-size:clamp(36px,10vw,44px);
+    line-height:.98;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope{
+    width:min(82vw,395px);
+    height:222px;
+    margin-top:40px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+    transform:translateY(132px)!important;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-108px) rotate(-.18deg);
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-hint{
+    margin-top:14px;
+    font-size:15px;
+  }
+}
+@media(max-width:390px){
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+    font-size:35px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope{
+    width:84vw;
+    height:210px;
+    margin-top:34px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+    transform:translateY(126px)!important;
+  }
+}
