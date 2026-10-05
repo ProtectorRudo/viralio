@@ -186,9 +186,10 @@ export default function ScratchReveal({
     if(!draggingRef.current||revealedRef.current)return;
 
     const native=event.nativeEvent;
-    const coalesced=typeof native.getCoalescedEvents==="function"?native.getCoalescedEvents():[native];
+    const rawCoalesced=typeof native.getCoalescedEvents==="function"?native.getCoalescedEvents():[];
+    const samples=rawCoalesced.length?rawCoalesced:[native];
 
-    for(const sample of coalesced){
+    for(const sample of samples){
       const next=pointFromClient(sample.clientX,sample.clientY);
       if(!next)continue;
       const previous=lastPointRef.current||next;
