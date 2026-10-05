@@ -48,6 +48,39 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("pair threshold door swings inward behind the jamb",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  await page.locator('[data-action="advance"]').click();
+  await waitForScene(page,"door");
+
+  const leaf=page.locator(".thi-pair-threshold-leaf");
+  const closedBox=await leaf.boundingBox();
+  if(!closedBox)throw new Error("closed threshold door has no bounding box");
+
+  await page.locator('[data-action="open-door"]').click();
+  await expect(page.locator(".thi-pair-threshold")).toHaveClass(/is-open/);
+  await page.waitForTimeout(1150);
+
+  const openBox=await leaf.boundingBox();
+  if(!openBox)throw new Error("open threshold door has no bounding box");
+  expect(openBox.width).toBeLessThan(closedBox.width*.58);
+
+  const depth=await leaf.evaluate(el=>{
+    const transform=getComputedStyle(el).transform;
+    const matrix=new DOMMatrixReadOnly(transform);
+    const frame=el.closest(".thi-pair-threshold-frame");
+    return {
+      z:matrix.m43,
+      jambZ:frame?getComputedStyle(frame,"::after").zIndex:"",
+    };
+  });
+  expect(depth.z).toBeLessThan(-70);
+  expect(depth.jambZ).toBe("6");
+});
+
+
 test("pair finale is a clean premium epilogue with integrated conversion CTA",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
