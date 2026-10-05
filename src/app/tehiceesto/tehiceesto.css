@@ -11188,7 +11188,7 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
     linear-gradient(180deg,#120d10,#090709);
   border:1px solid rgba(79,50,57,.48);
   box-shadow:8px 0 30px rgba(0,0,0,.34);
-  transition:transform .82s cubic-bezier(.18,.8,.2,1),box-shadow .82s ease;
+  transition:transform .95s cubic-bezier(.18,.82,.18,1),box-shadow .95s ease;
 }
 .thi-pair-threshold-leaf:after{
   content:"";
@@ -11223,17 +11223,17 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   transform:perspective(1100px) rotateY(-14deg);
 }
 .thi-pair-threshold.is-open .thi-pair-threshold-leaf{
-  transform:perspective(1100px) rotateY(-38deg);
-  box-shadow:18px 0 42px rgba(0,0,0,.36);
+  transform:perspective(1100px) rotateY(-86deg);
+  box-shadow:26px 0 62px rgba(0,0,0,.44);
 }
 .thi-pair-threshold.is-open .thi-pair-threshold-light{
-  width:34%;
+  width:54%;
   opacity:1;
   box-shadow:
-    0 0 34px rgba(248,187,177,.38),
-    0 0 110px rgba(231,139,129,.18);
+    0 0 42px rgba(248,187,177,.44),
+    0 0 150px rgba(231,139,129,.24);
 }
-.thi-pair-threshold.is-open .thi-pair-threshold-floor{opacity:.82}
+.thi-pair-threshold.is-open .thi-pair-threshold-floor{opacity:.95}
 .thi-pair-threshold-hint{
   position:relative;
   z-index:2;
