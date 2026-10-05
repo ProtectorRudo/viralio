@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect,useRef,useState,type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useEffect,useRef,useState,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type TouchEvent as ReactTouchEvent,
+} from "react";
 
 type Point={x:number;y:number};
 
@@ -36,6 +41,7 @@ export default function ScratchReveal({
       canvas.height=Math.max(1,Math.floor(rect.height*ratio));
       canvas.style.width=`${rect.width}px`;
       canvas.style.height=`${rect.height}px`;
+      canvas.dataset.scratchProgress="0";
 
       const ctx=canvas.getContext("2d");
       if(!ctx)return;
@@ -100,7 +106,6 @@ export default function ScratchReveal({
     };
   };
 
-
   const completeReveal=()=>{
     if(revealedRef.current)return true;
     revealedRef.current=true;
@@ -117,7 +122,7 @@ export default function ScratchReveal({
     const cellW=Math.max(rect.width/cols,1);
     const cellH=Math.max(rect.height/rows,1);
     const distance=Math.hypot(to.x-from.x,to.y-from.y);
-    const steps=Math.max(1,Math.ceil(distance/10));
+    const steps=Math.max(1,Math.ceil(distance/9));
 
     for(let step=0;step<=steps;step++){
       const t=step/steps;
@@ -133,12 +138,14 @@ export default function ScratchReveal({
           if(col<0||col>=cols||row<0||row>=rows)continue;
           const cx=(col+.5)*cellW;
           const cy=(row+.5)*cellH;
-          if(Math.hypot(cx-x,cy-y)<=36)coverageRef.current.add(row*cols+col);
+          if(Math.hypot(cx-x,cy-y)<=38)coverageRef.current.add(row*cols+col);
         }
       }
     }
 
-    if(coverageRef.current.size/(cols*rows)>=.20)return completeReveal();
+    const progress=coverageRef.current.size/(cols*rows);
+    canvas.dataset.scratchProgress=progress.toFixed(3);
+    if(progress>=.18)return completeReveal();
     return false;
   };
 
@@ -148,8 +155,6 @@ export default function ScratchReveal({
     const ctx=canvas.getContext("2d");
     if(!ctx)return;
 
-    // Context is kept in CSS-pixel coordinates via the DPR transform.
-    // This avoids the old double-scaling bug on high-density mobile screens.
     const drawStroke=(width:number,alpha:number)=>{
       ctx.save();
       ctx.globalCompositeOperation="destination-out";
@@ -165,28 +170,27 @@ export default function ScratchReveal({
       ctx.restore();
     };
 
-    drawStroke(72,.28);
-    drawStroke(56,.96);
+    drawStroke(76,.30);
+    drawStroke(60,.98);
 
-    recordCoverage(from,to);
-
-    // A soft dab at the current point removes gaps produced by sparse touch events.
     ctx.save();
     ctx.globalCompositeOperation="destination-out";
-    const radius=35;
+    const radius=38;
     const gradient=ctx.createRadialGradient(to.x,to.y,radius*.18,to.x,to.y,radius);
     gradient.addColorStop(0,"rgba(0,0,0,1)");
-    gradient.addColorStop(.58,"rgba(0,0,0,.96)");
-    gradient.addColorStop(.82,"rgba(0,0,0,.48)");
+    gradient.addColorStop(.58,"rgba(0,0,0,.98)");
+    gradient.addColorStop(.82,"rgba(0,0,0,.50)");
     gradient.addColorStop(1,"rgba(0,0,0,0)");
     ctx.fillStyle=gradient;
     ctx.beginPath();
     ctx.arc(to.x,to.y,radius,0,Math.PI*2);
     ctx.fill();
     ctx.restore();
+
+    recordCoverage(from,to);
   };
 
-  const measure=()=>{
+  const measurePixels=()=>{
     const canvas=canvasRef.current;
     if(!canvas||revealedRef.current)return false;
     const ctx=canvas.getContext("2d",{willReadFrequently:true});
@@ -199,55 +203,87 @@ export default function ScratchReveal({
     let sampled=0;
     const pixelStride=22;
     for(let pixel=0;pixel<width*height;pixel+=pixelStride){
-      const alpha=data[pixel*4+3];
       sampled+=1;
-      if(alpha<90)transparent+=1;
+      if(data[pixel*4+3]<100)transparent+=1;
     }
 
     const scratched=sampled?transparent/sampled:0;
-    if(scratched>=.18)return completeReveal();
+    if(scratched>=.16)return completeReveal();
     return false;
   };
 
-  const begin=(event:ReactPointerEvent<HTMLCanvasElement>)=>{
+  const beginAt=(clientX:number,clientY:number)=>{
     if(revealedRef.current)return;
     draggingRef.current=true;
     startedRef.current=true;
     setStarted(true);
     moveCountRef.current=0;
-
-    const point=pointFromClient(event.clientX,event.clientY);
+    const point=pointFromClient(clientX,clientY);
     lastPointRef.current=point;
     if(point)eraseSegment(point,point);
-
-    try{event.currentTarget.setPointerCapture(event.pointerId)}catch{}
   };
 
-  const move=(event:ReactPointerEvent<HTMLCanvasElement>)=>{
+  const moveAt=(clientX:number,clientY:number)=>{
     if(!draggingRef.current||revealedRef.current)return;
-
-    const native=event.nativeEvent;
-    const rawCoalesced=typeof native.getCoalescedEvents==="function"?native.getCoalescedEvents():[];
-    const samples=rawCoalesced.length?rawCoalesced:[native];
-
-    for(const sample of samples){
-      const next=pointFromClient(sample.clientX,sample.clientY);
-      if(!next)continue;
-      const previous=lastPointRef.current||next;
-      eraseSegment(previous,next);
-      lastPointRef.current=next;
-    }
-
+    const next=pointFromClient(clientX,clientY);
+    if(!next)return;
+    const previous=lastPointRef.current||next;
+    eraseSegment(previous,next);
+    lastPointRef.current=next;
     moveCountRef.current+=1;
-    if(moveCountRef.current%5===0)measure();
+    if(moveCountRef.current%6===0)measurePixels();
   };
 
-  const end=(event:ReactPointerEvent<HTMLCanvasElement>)=>{
+  const endAt=()=>{
     if(!draggingRef.current)return;
     draggingRef.current=false;
     lastPointRef.current=null;
-    measure();
+    measurePixels();
+  };
+
+  const pointerDown=(event:ReactPointerEvent<HTMLCanvasElement>)=>{
+    beginAt(event.clientX,event.clientY);
+    try{event.currentTarget.setPointerCapture(event.pointerId)}catch{}
+  };
+
+  const pointerMove=(event:ReactPointerEvent<HTMLCanvasElement>)=>{
+    if(!draggingRef.current)return;
+    const native=event.nativeEvent;
+    const raw=typeof native.getCoalescedEvents==="function"?native.getCoalescedEvents():[];
+    const samples=raw.length?raw:[native];
+    for(const sample of samples)moveAt(sample.clientX,sample.clientY);
+  };
+
+  const pointerEnd=(event:ReactPointerEvent<HTMLCanvasElement>)=>{
+    endAt();
     try{event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+  };
+
+  const mouseDown=(event:ReactMouseEvent<HTMLCanvasElement>)=>{
+    event.preventDefault();
+    beginAt(event.clientX,event.clientY);
+  };
+  const mouseMove=(event:ReactMouseEvent<HTMLCanvasElement>)=>{
+    if(!draggingRef.current)return;
+    moveAt(event.clientX,event.clientY);
+  };
+  const mouseEnd=()=>endAt();
+
+  const touchStart=(event:ReactTouchEvent<HTMLCanvasElement>)=>{
+    const touch=event.touches[0];
+    if(!touch)return;
+    event.preventDefault();
+    beginAt(touch.clientX,touch.clientY);
+  };
+  const touchMove=(event:ReactTouchEvent<HTMLCanvasElement>)=>{
+    const touch=event.touches[0];
+    if(!touch)return;
+    event.preventDefault();
+    moveAt(touch.clientX,touch.clientY);
+  };
+  const touchEnd=(event:ReactTouchEvent<HTMLCanvasElement>)=>{
+    event.preventDefault();
+    endAt();
   };
 
   return <div
@@ -263,13 +299,22 @@ export default function ScratchReveal({
 
     {!revealed&&<canvas
       data-action="scratch-canvas"
+      data-scratch-progress="0"
       ref={canvasRef}
       className="thi-scratch-canvas"
-      onPointerDown={begin}
-      onPointerMove={move}
-      onPointerUp={end}
-      onPointerCancel={end}
-      onLostPointerCapture={end}
+      onPointerDown={pointerDown}
+      onPointerMove={pointerMove}
+      onPointerUp={pointerEnd}
+      onPointerCancel={pointerEnd}
+      onLostPointerCapture={pointerEnd}
+      onMouseDown={mouseDown}
+      onMouseMove={mouseMove}
+      onMouseUp={mouseEnd}
+      onMouseLeave={()=>{if(draggingRef.current)mouseEnd()}}
+      onTouchStart={touchStart}
+      onTouchMove={touchMove}
+      onTouchEnd={touchEnd}
+      onTouchCancel={touchEnd}
     />}
 
     {!revealed&&<button
