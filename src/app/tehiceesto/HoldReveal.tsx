@@ -67,12 +67,12 @@ export default function HoldReveal({
   };
 
   useEffect(()=>{
-    if(!revealed){
-      completedRef.current=false;
-      setVisualProgress(0);
-      setPhase("idle");
-    }
-    return reset;
+    if(!revealed)completedRef.current=false;
+    return ()=>{
+      if(frameRef.current!==null)cancelAnimationFrame(frameRef.current);
+      frameRef.current=null;
+      startedAtRef.current=null;
+    };
   },[revealed]);
 
   const mainLabel=cinematic

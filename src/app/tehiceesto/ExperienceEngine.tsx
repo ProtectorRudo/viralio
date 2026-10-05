@@ -6,6 +6,7 @@
 
 import { useEffect,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent } from "react";
 import { flushSync } from "react-dom";
+import Link from "next/link";
 import type { Experience,SceneType } from "./data";
 import ScratchReveal from "./ScratchReveal";
 import CandleBlow from "./CandleBlow";
@@ -49,7 +50,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
-  const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");
+  const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [finalReaction,setFinalReaction]=useState<number|null>(null);
   const [doorOpen,setDoorOpen]=useState(false);const [lightRevealed,setLightRevealed]=useState(false);const [holdRevealed,setHoldRevealed]=useState(false);const [lastStar,setLastStar]=useState<number|null>(null);
   const [archiveOpen,setArchiveOpen]=useState(false);const [homeOpen,setHomeOpen]=useState<number[]>([]);const [legacyOpen,setLegacyOpen]=useState(false);
   const [ritualsOpen,setRitualsOpen]=useState<number[]>([]);const [chapterOpen,setChapterOpen]=useState<number[]>([]);const [futureOpen,setFutureOpen]=useState(false);
@@ -108,8 +109,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const fadeSoundtrack=(target:number,duration=650)=>{
     const audio=soundtrackRef.current;if(!audio)return;
     if(soundtrackFadeRef.current!==null)cancelAnimationFrame(soundtrackFadeRef.current);
-    const start=audio.volume;const startedAt=performance.now();
-    const tick=(now:number)=>{const elapsed=Math.min(1,(now-startedAt)/duration);const eased=1-Math.pow(1-elapsed,3);audio.volume=Math.max(0,Math.min(1,start+(target-start)*eased));if(elapsed<1)soundtrackFadeRef.current=requestAnimationFrame(tick);else soundtrackFadeRef.current=null};
+    const start=audio.volume;let startedAt:number|null=null;
+    const tick=(now:number)=>{if(startedAt===null)startedAt=now;const elapsed=Math.min(1,(now-startedAt)/duration);const eased=1-Math.pow(1-elapsed,3);audio.volume=Math.max(0,Math.min(1,start+(target-start)*eased));if(elapsed<1)soundtrackFadeRef.current=requestAnimationFrame(tick);else soundtrackFadeRef.current=null};
     soundtrackFadeRef.current=requestAnimationFrame(tick);
   };
   const startSoundtrack=async()=>{const audio=soundtrackRef.current;if(!audio||soundtrackStarted)return;try{audio.volume=0;await audio.play();setSoundtrackStarted(true);setSoundtrackPaused(false);fadeSoundtrack(.24,1500)}catch{}};
@@ -122,8 +123,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const handleMediaPlay=(event:React.SyntheticEvent<HTMLElement>)=>{if((event.target as HTMLElement)===soundtrackRef.current)return;duckSoundtrack()};
   const handleMediaRest=()=>restoreSoundtrack();
 
-  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([])};
-  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle")};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([])};
+  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null)};
+  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle")};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([]);if(type==="finale")setFinalReaction(null)};
   const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator){try{navigator.vibrate(pattern)}catch{}}};
   const passiveHapticPatterns:Record<string,number|number[]>={
     "archive-open":[10,28,8],
@@ -791,7 +792,30 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         );
 
       case"proposal":return <section className="thi-scene thi-final thi-proposal thi-scene-rich"><div className="thi-proposal-rings" aria-hidden="true"><i/><i/><i/></div><p className="thi-kicker">{token(copy.proposal.kicker)}</p><span className="thi-ring">◇</span><h2>{token(copy.proposal.title)}</h2><p className="thi-lead">{token(copy.proposal.lead)}</p><div className="thi-reactions">{copy.proposal.reactions.map(x=><button key={x} onClick={()=>haptic([10,20,10])}>{token(x)}</button>)}</div><small>{token(copy.proposal.createdWith)}</small></section>;
-      case"finale":default:return <section className="thi-scene thi-final thi-scene-rich"><div className="thi-final-sparks" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div><p className="thi-kicker">{token(copy.finale.kicker)}</p><h2>{token(copy.finale.title)}</h2><p className="thi-lead">{token(copy.finale.lead)}</p><div className="thi-reactions">{copy.finale.reactions.map(x=><button key={x} onClick={()=>haptic(7)}>{token(x)}</button>)}</div><button data-action="restart" className="thi-ghost" onClick={restart}>{token(copy.finale.restartLabel)}</button><small>{token(copy.finale.createdWith)}</small></section>;
+      case"finale":default:
+        if(experience.slug==="pareja"){
+          const finalInitials=`${(experience.demoRecipient||"E").trim().charAt(0).toUpperCase()} + ${(experience.demoGiver||"J").trim().charAt(0).toUpperCase()}`;
+          const finalYear="2026";
+          const reactionIcons=[
+            {label:"Me llegó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27 6.8 18.2C3.1 14.7 3.5 9.1 7.5 6.6c3-1.9 6.6-1.2 8.5 1.4 1.9-2.6 5.5-3.3 8.5-1.4 4 2.5 4.4 8.1.7 11.6L16 27Z"/></svg>},
+            {label:"Me hizo sonreír",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10.5"/><path d="M11.5 18.2c1.1 2.2 2.7 3.3 4.5 3.3s3.4-1.1 4.5-3.3M12.2 13h.1M19.7 13h.1"/></svg>},
+            {label:"Me emocionó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="15.5" cy="15.5" r="10"/><path d="M11.5 18.7c1.3-1.2 2.7-1.8 4.1-1.8 1.5 0 2.8.6 4 1.8M11.7 12.9h.1M19.2 12.9h.1M24.9 22.8c0 2-1.3 3.2-2.8 3.2s-2.8-1.2-2.8-3.2c0-1.6 1.4-3.6 2.8-5.3 1.4 1.7 2.8 3.7 2.8 5.3Z"/></svg>},
+            {label:"Hermoso",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m16 4 1.7 6.3L24 12l-6.3 1.7L16 20l-1.7-6.3L8 12l6.3-1.7L16 4ZM24.5 19l.9 3.6 3.6.9-3.6.9-.9 3.6-.9-3.6-3.6-.9 3.6-.9.9-3.6Z"/></svg>},
+          ];
+          return <section className="thi-scene thi-final thi-pair-finale thi-scene-rich">
+            <div className="thi-pair-finale-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><span/><span/></div>
+            <p className="thi-kicker">{token(copy.finale.kicker)}</p>
+            <h2>{token(copy.finale.title)}</h2>
+            <p className="thi-lead">{token(copy.finale.lead)}</p>
+            <div className="thi-pair-finale-divider" aria-hidden="true"><i/><b>✦</b><i/></div>
+            <div className="thi-pair-finale-seal" aria-label={`Sello ${finalInitials}, ${finalYear}`}><strong>{finalInitials}</strong><small>{finalYear}</small><i aria-hidden="true"/></div>
+            <div className="thi-pair-finale-reactions" aria-label="¿Qué te hizo sentir?">{reactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
+            <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
+            <Link data-action="create-story" className="thi-pair-finale-create" href="/tehiceesto/crear"><span>Crear una historia así</span><b>→</b></Link>
+            <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
+          </section>;
+        }
+        return <section className="thi-scene thi-final thi-scene-rich"><div className="thi-final-sparks" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div><p className="thi-kicker">{token(copy.finale.kicker)}</p><h2>{token(copy.finale.title)}</h2><p className="thi-lead">{token(copy.finale.lead)}</p><div className="thi-reactions">{copy.finale.reactions.map(x=><button key={x} onClick={()=>haptic(7)}>{token(x)}</button>)}</div><button data-action="restart" className="thi-ghost" onClick={restart}>{token(copy.finale.restartLabel)}</button><small>{token(copy.finale.createdWith)}</small></section>;
     }
   }
 
