@@ -21,6 +21,7 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await expect(page.getByRole("link",{name:/Papá/i})).toBeVisible();
   await expect(page.getByRole("link",{name:/Amistad/i})).toBeVisible();
   await expect(page.getByRole("heading",{name:/No recibe una página/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Mensajes que queremos guardar/i})).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-home-1440");
 
