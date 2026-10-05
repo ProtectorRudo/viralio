@@ -12802,10 +12802,14 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
     inset 0 0 0 1px rgba(112,83,60,.08);
   transform:translateY(205px) rotate(.15deg);
   transform-origin:50% 100%;
+  opacity:0;
+  visibility:hidden;
   transition:
     transform 1.08s cubic-bezier(.16,.82,.2,1) .30s,
     box-shadow 1.1s ease .28s,
-    filter 1.1s ease .28s;
+    filter 1.1s ease .28s,
+    opacity .22s ease .26s,
+    visibility 0s linear .26s;
 }
 .thi-theme-pareja[data-scene="letter"] .thi-envelope .paper:after{
   content:"";
@@ -12960,6 +12964,8 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 }
 .thi-theme-pareja[data-scene="letter"] .thi-envelope.open .paper{
   transform:translateY(-184px) rotate(-.35deg);
+  opacity:1;
+  visibility:visible;
   box-shadow:
     0 30px 72px rgba(44,23,16,.22),
     0 0 74px rgba(255,221,184,.12),
