@@ -6,6 +6,7 @@
 
 import { useEffect,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent } from "react";
 import { flushSync } from "react-dom";
+import Link from "next/link";
 import type { Experience,SceneType } from "./data";
 import ScratchReveal from "./ScratchReveal";
 import CandleBlow from "./CandleBlow";
@@ -810,7 +811,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="thi-pair-finale-seal" aria-label={`Sello ${finalInitials}, ${finalYear}`}><strong>{finalInitials}</strong><small>{finalYear}</small><i aria-hidden="true"/></div>
             <div className="thi-pair-finale-reactions" aria-label="¿Qué te hizo sentir?">{reactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
-            <a data-action="create-story" className="thi-pair-finale-create" href="/tehiceesto/crear"><span>Crear una historia así</span><b>→</b></a>
+            <Link data-action="create-story" className="thi-pair-finale-create" href="/tehiceesto/crear"><span>Crear una historia así</span><b>→</b></Link>
             <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
           </section>;
         }
