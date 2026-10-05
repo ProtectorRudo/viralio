@@ -507,11 +507,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         return (
           <section className="scene scene-childhood">
             <div className="childhood-light" aria-hidden="true" />
+            <div className="childhood-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
             <p className="scene-kicker">Volver un segundo atrás</p>
             <h2>Hubo un tiempo en que el mundo era enorme y mamá era el lugar conocido.</h2>
             <div className="childhood-memory">
               <div
                 className="childhood-photo"
+                role="img"
+                aria-label="Recuerdo de mamá con su hijo"
                 style={{
                   backgroundImage: `url("${scenePhotos[0]?.url || premiumFallbackPhotos[0]}")`,
                   backgroundSize: scenePhotos[0]?.fit || "cover",
@@ -520,11 +523,13 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               />
               <div className="childhood-note">
                 <small>RECUERDO · 01</small>
+                <span className="childhood-note-rule" aria-hidden="true" />
                 <strong>Yo no veía todo.</strong>
-                <p>Veía la comida servida, la ropa lista, el cumpleaños, la mano que aparecía cuando tenía miedo. No veía el cansancio, las cuentas, las dudas ni todo lo que acomodabas para que yo pudiera ser chico.</p>
+                <p>Veía la comida servida, la ropa lista, el cumpleaños, la mano que aparecía cuando tenía miedo.</p>
+                <p>No veía el cansancio, las cuentas, las dudas ni todo lo que acomodabas para que yo pudiera ser chico.</p>
               </div>
             </div>
-            <button data-action="advance" className="primary-action" onClick={next}>Mirar esas fotos otra vez</button>
+            <button data-action="advance" className="primary-action childhood-continue" onClick={next}>Seguir recordando <span>→</span></button>
           </section>
         );
 

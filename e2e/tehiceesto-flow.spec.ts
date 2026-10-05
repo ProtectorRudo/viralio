@@ -48,6 +48,34 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("mama childhood is a premium editorial album without sales interruption",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/mama");
+  await waitForScene(page,"intro");
+  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await waitForScene(page,"childhood");
+
+  await expect(page.getByText("Volver un segundo atrás",{exact:false})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Hubo un tiempo en que el mundo era enorme/i})).toBeVisible();
+  await expect(page.locator(".childhood-memory")).toBeVisible();
+  await expect(page.locator(".childhood-photo")).toBeVisible();
+  await expect(page.getByText("Yo no veía todo.")).toBeVisible();
+  await expect(page.locator(".childhood-note p")).toHaveCount(2);
+
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeVisible();
+
+  const cta=page.getByRole("button",{name:/Seguir recordando/i});
+  await expect(cta).toBeVisible();
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await cta.click();
+  await waitForScene(page,"memories");
+});
+
+
 test("mama intro is premium, story-first and has no headphone prompt",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
