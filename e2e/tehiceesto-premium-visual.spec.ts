@@ -80,6 +80,26 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await page.waitForTimeout(1250);
   await capture(page,testInfo,"tehiceesto-premium-pareja-light-revealed-390");
 
+  await page.getByRole("button",{name:/Seguir con este recuerdo/i}).click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","stars");
+  await expect(page.getByRole("heading",{name:/Hay cosas tuyas/i})).toBeVisible();
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-pair-star-node.is-active")).toHaveCount(1);
+  await page.locator(".thi-pair-star-node.is-active").click();
+  await expect(page.getByText(/Cómo hacés hogar/i)).toBeVisible();
+  await page.locator(".thi-pair-star-node.is-active").click();
+  await expect(page.getByText(/Tu risa cuando algo te causa gracia de verdad/i)).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await capture(page,testInfo,"tehiceesto-premium-pareja-constellation-progress-390");
+
+  while(await page.locator(".thi-pair-star-node.is-active").count()){
+    await page.locator(".thi-pair-star-node.is-active").click();
+  }
+  await expect(page.getByText("Ya estaban todas ahí.")).toBeVisible();
+  await expect(page.getByText(/Cinco cosas tuyas que Julián no quería dejar sin decir/i)).toBeVisible();
+  await expect(page.getByRole("button",{name:/Me las guardo/i})).toBeVisible();
+  await capture(page,testInfo,"tehiceesto-premium-pareja-constellation-complete-390");
+
   for(const [slug,scene,openSelector] of [
     ["abuelos","archive",".archive-folder"],
     ["mama","childhood",null],
