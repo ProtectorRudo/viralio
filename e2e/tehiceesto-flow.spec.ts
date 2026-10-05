@@ -14,7 +14,7 @@ async function advanceOne(page:Page){
   else if(current==="letter"){await page.locator('[data-action="open-letter"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="candles"){await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="balloons"){const items=page.locator('[data-action="balloon"]');await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator('[data-action="advance"]').click()}
-  else if(current==="voices"){const demo=page.locator('[data-action="demo-voice"]').first();if(await demo.count())await demo.click();else await page.locator('[data-action="real-audio"]').first().evaluate((el:HTMLAudioElement)=>el.dispatchEvent(new Event("play",{bubbles:true})));await page.locator('[data-action="advance"]').click()}
+  else if(current==="voices"){const mamaChoices=page.locator('[data-action="mama-voice-choice"]');if(await mamaChoices.count()){for(let i=0;i<3;i++){await page.locator('[data-action="mama-voice-choice"]').nth(i).click();await page.locator('[data-action="mama-voice-toggle"]').click();await page.locator('[data-action="mama-voice-back"]').click()}await page.locator('[data-action="advance"]').click()}else{const demo=page.locator('[data-action="demo-voice"]').first();if(await demo.count())await demo.click();else await page.locator('[data-action="real-audio"]').first().evaluate((el:HTMLAudioElement)=>el.dispatchEvent(new Event("play",{bubbles:true})));await page.locator('[data-action="advance"]').click()}}
   else if(current==="quiz"){await page.locator('[data-action="quiz-answer"]').nth(1).click();await page.locator('[data-action="advance"]').click()}
   else if(current==="vault"){await page.locator('[data-action="open-vault"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="capsule"){await page.locator('[data-action="open-capsule"]').click();await page.locator('[data-action="advance"]').click()}
@@ -207,6 +207,70 @@ test("mama sacrifices reveal all four invisible costs before the final resolutio
 
   await next.click();
   await waitForScene(page,"voices");
+});
+
+
+test("mama voices are a premium listening room with pause resume and three-message completion",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/mama");
+  await waitForScene(page,"intro");
+  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await waitForScene(page,"childhood");
+  await page.getByRole("button",{name:/Seguir recordando/i}).click();
+  await waitForScene(page,"memories");
+
+  const memoryNext=page.locator(".thi-mama-memory-local-nav > button").last();
+  await memoryNext.click();
+  await memoryNext.click();
+  await page.getByRole("button",{name:/Seguir con la historia/i}).click();
+  await waitForScene(page,"care");
+
+  const care=page.locator(".mama-care-file");
+  for(let i=0;i<3;i++)await care.nth(i).click();
+  await page.getByRole("button",{name:/Seguir/i}).click();
+  await waitForScene(page,"sacrifices");
+
+  const sacrifices=page.locator(".mama-sacrifice-trigger");
+  for(let i=0;i<4;i++)await sacrifices.nth(i).click();
+  await page.getByRole("button",{name:/Seguir/i}).click();
+  await waitForScene(page,"voices");
+
+  await expect(page.locator(".thi-mama-voice-picker")).toBeVisible();
+  await expect(page.locator(".mama-voice-choice")).toHaveCount(0);
+  await expect(page.locator('[data-action="mama-voice-choice"]')).toHaveCount(3);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+
+  await page.locator('[data-action="mama-voice-choice"]').nth(0).click();
+  await expect(page.locator(".thi-mama-voice-player")).toBeVisible();
+
+  const toggle=page.locator('[data-action="mama-voice-toggle"]');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-label","Pausar mensaje");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-label","Continuar mensaje");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-label","Pausar mensaje");
+
+  await page.locator('[data-action="mama-voice-back"]').click();
+  await page.locator('[data-action="mama-voice-choice"]').nth(1).click();
+  await page.locator('[data-action="mama-voice-toggle"]').click();
+  await page.locator('[data-action="mama-voice-back"]').click();
+  await page.locator('[data-action="mama-voice-choice"]').nth(2).click();
+  await page.locator('[data-action="mama-voice-toggle"]').click();
+  await page.locator('[data-action="mama-voice-back"]').click();
+
+  await expect(page.locator(".thi-mama-voices-complete")).toBeVisible();
+  await expect(page.getByText(/Tres voces\./)).toBeVisible();
+  await expect(page.getByText(/Una misma cosa/)).toBeVisible();
+  const next=page.getByRole("button",{name:/Seguir/i});
+  await expect(next).toBeVisible();
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await next.click();
+  await waitForScene(page,"letter");
 });
 
 
