@@ -299,7 +299,7 @@ export const experiences: Experience[] = [
     opening:"Hay una edad en la que uno cree que mamá puede con todo. Después uno crece y empieza a entender cuánto había detrás.",
     closing:"Gracias por ser hogar mucho antes de que yo entendiera lo que significaba esa palabra.",
     tags:["Mamá","Gratitud","Infancia"],
-    recipe:["intro","childhood","memories","care","sacrifices","voices","letter","return","finale"],
+    recipe:["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
     demo:{
       memories:[
         "La comida servida, la ropa lista y todo eso que parecía aparecer solo.",
