@@ -76,6 +76,40 @@ test("mama childhood is a premium editorial album without sales interruption",as
 });
 
 
+test("mama memories use a focused editorial photo deck and reveal CTA at the end",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/mama");
+  await waitForScene(page,"intro");
+  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await waitForScene(page,"childhood");
+  await page.getByRole("button",{name:/Seguir recordando/i}).click();
+  await waitForScene(page,"memories");
+
+  await expect(page.locator(".thi-mama-memories")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Algunos momentos terminan/i})).toBeVisible();
+  await expect(page.locator(".thi-mama-memory-card")).toHaveCount(3);
+  await expect(page.locator(".thi-mama-memory-card.is-active")).toHaveCount(1);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+  await expect(page.getByRole("button",{name:/Seguir con la historia/i})).toHaveCount(0);
+
+  const nextMemory=page.locator(".thi-mama-memory-local-nav > button").last();
+  await nextMemory.click();
+  await expect(page.locator(".thi-mama-memory-deck")).toHaveAttribute("data-active","1");
+  await nextMemory.click();
+  await expect(page.locator(".thi-mama-memory-deck")).toHaveAttribute("data-active","2");
+
+  const continueButton=page.getByRole("button",{name:/Seguir con la historia/i});
+  await expect(continueButton).toBeVisible();
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await continueButton.click();
+  await waitForScene(page,"care");
+});
+
+
 test("mama intro is premium, story-first and has no headphone prompt",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
