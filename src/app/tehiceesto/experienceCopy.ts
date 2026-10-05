@@ -80,7 +80,7 @@ const BASE_COPY: ExperienceCopy = {
 const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
   pareja:{
     ui:{sceneLabels:{intro:"Para vos",door:"Umbral",memories:"Nosotros",voices:"Tu voz",light:"Ese instante",stars:"Lo que elijo",scratch:"Pendiente",hold:"Quedate",letter:"Lo que faltaba",finale:"Nosotros"} as Record<SceneType,string>},
-    intro:{kicker:"{giver} armó esto pensando en vos",cta:"Entrá despacio",footnote:"Ponete auriculares si podés · nadie más tiene que escuchar esto"},
+    intro:{kicker:"{giver} armó esto pensando en vos",cta:"Entrá despacio",footnote:"Lo nuestro también merecía un lugar así."},
     door:{kicker:"No todo empieza con una fecha",title:["A veces empieza","con animarse a entrar."],closedHint:"Abrila cuando quieras",openCta:"Seguir entrando →"},
     memories:{kicker:"Tres momentos que todavía me acuerdo perfecto",title:["Pasaron hace tiempo.","Pero siguen siendo nuestros."],cta:"Hay algo más →"},
     voices:{kicker:"No quería escribir todo",title:["Esta parte preferí","decírtela."],noteLabel:"nota de voz · {name}",playLabel:"Escuchar su voz",playingLabel:"Esto era lo que quería decirte",cta:"Guardar esta voz →"},
