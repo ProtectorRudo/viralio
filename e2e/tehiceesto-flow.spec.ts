@@ -93,11 +93,22 @@ test("mama memories use a focused editorial photo deck and reveal CTA at the end
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
   await expect(page.getByRole("button",{name:/Seguir con la historia/i})).toHaveCount(0);
 
-  const nextMemory=page.locator(".thi-mama-memory-local-nav > button").last();
-  await nextMemory.click();
-  await expect(page.locator(".thi-mama-memory-deck")).toHaveAttribute("data-active","1");
-  await nextMemory.click();
-  await expect(page.locator(".thi-mama-memory-deck")).toHaveAttribute("data-active","2");
+  const deck=page.locator(".thi-mama-memory-deck");
+  await expect(deck).toHaveCSS("touch-action","pan-y");
+  const box=await deck.boundingBox();
+  if(!box)throw new Error("mama memory deck has no bounding box");
+  const swipeLeft=async(pointerId:number)=>{
+    const y=box.y+Math.min(box.height*.42,260);
+    const startX=box.x+box.width*.78;
+    const endX=box.x+box.width*.24;
+    await deck.dispatchEvent("pointerdown",{pointerId,pointerType:"touch",isPrimary:true,clientX:startX,clientY:y,buttons:1});
+    await deck.dispatchEvent("pointermove",{pointerId,pointerType:"touch",isPrimary:true,clientX:(startX+endX)/2,clientY:y+2,buttons:1});
+    await deck.dispatchEvent("pointerup",{pointerId,pointerType:"touch",isPrimary:true,clientX:endX,clientY:y+2,buttons:0});
+  };
+  await swipeLeft(31);
+  await expect(deck).toHaveAttribute("data-active","1");
+  await swipeLeft(32);
+  await expect(deck).toHaveAttribute("data-active","2");
 
   const continueButton=page.getByRole("button",{name:/Seguir con la historia/i});
   await expect(continueButton).toBeVisible();

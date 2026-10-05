@@ -59,7 +59,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const [casefileOpen,setCasefileOpen]=useState(false);const [insideJokesOpen,setInsideJokesOpen]=useState<number[]>([]);const [incidentsOpen,setIncidentsOpen]=useState<number[]>([]);const [proofOpen,setProofOpen]=useState<number[]>([]);const [pactOpen,setPactOpen]=useState<number[]>([]);
   const [soundtrackStarted,setSoundtrackStarted]=useState(false);const [soundtrackPaused,setSoundtrackPaused]=useState(false);
   const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);const demoVoiceMessageRef=useRef<string|null>(null);const demoVoiceRunRef=useRef(0);
-  const shellRef=useRef<HTMLElement|null>(null);
+  const shellRef=useRef<HTMLElement|null>(null);const mamaMemorySwipeRef=useRef<{pointerId:number|null;x:number;y:number}>({pointerId:null,x:0,y:0});
 
   const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
   useEffect(()=>{
@@ -202,12 +202,32 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           const safeItems=mamaMemoryItems.length?mamaMemoryItems:[{url:"",caption:memoryLines[0]||"",fit:"cover" as const,position:"center" as const}];
           const active=Math.min(mamaMemoryIndex,safeItems.length-1);
           const labels=["LO COTIDIANO","LO QUE CUIDABA","LO QUE QUEDA"];
-          const goMemory=(nextIndex:number)=>{const clamped=Math.max(0,Math.min(safeItems.length-1,nextIndex));setMamaMemoryIndex(clamped);haptic(7)};
+          const goMemory=(nextIndex:number)=>{const clamped=Math.max(0,Math.min(safeItems.length-1,nextIndex));if(clamped===active)return;setMamaMemoryIndex(clamped);haptic(7)};
+          const memorySwipeStart=(event:ReactPointerEvent<HTMLDivElement>)=>{
+            if(!event.isPrimary)return;
+            mamaMemorySwipeRef.current={pointerId:event.pointerId,x:event.clientX,y:event.clientY};
+            try{event.currentTarget.setPointerCapture(event.pointerId)}catch{}
+          };
+          const memorySwipeEnd=(event:ReactPointerEvent<HTMLDivElement>)=>{
+            const start=mamaMemorySwipeRef.current;
+            if(start.pointerId!==event.pointerId)return;
+            mamaMemorySwipeRef.current={pointerId:null,x:0,y:0};
+            try{if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+            const dx=event.clientX-start.x;
+            const dy=event.clientY-start.y;
+            if(Math.abs(dx)<46||Math.abs(dx)<Math.abs(dy)*1.2)return;
+            if(dx<0&&active<safeItems.length-1)goMemory(active+1);
+            if(dx>0&&active>0)goMemory(active-1);
+          };
+          const memorySwipeCancel=(event:ReactPointerEvent<HTMLDivElement>)=>{
+            if(mamaMemorySwipeRef.current.pointerId!==event.pointerId)return;
+            mamaMemorySwipeRef.current={pointerId:null,x:0,y:0};
+          };
           return <section className="thi-scene thi-mama-memories thi-scene-rich">
             <div className="thi-mama-memories-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
             <p className="thi-kicker">{token(copy.memories.kicker)}</p>
             <h2>{titleLines(copy.memories.title)}</h2>
-            <div className="thi-mama-memory-deck" data-active={active}>
+            <div className="thi-mama-memory-deck" data-active={active} onPointerDown={memorySwipeStart} onPointerUp={memorySwipeEnd} onPointerCancel={memorySwipeCancel} aria-label="Álbum de recuerdos. Deslizá hacia los costados para cambiar de foto.">
               {safeItems.map((item,i)=>{
                 const relation=i-active;
                 const positionClass=relation===0?"is-active":relation===-1?"is-prev":relation===1?"is-next":"is-hidden";
@@ -229,7 +249,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               <div aria-label={`Recuerdo ${active+1} de ${safeItems.length}`}>{safeItems.map((_,i)=><button type="button" key={i} className={i===active?"is-active":""} aria-label={`Ir al recuerdo ${i+1}`} onClick={()=>goMemory(i)}/>)}</div>
               <button type="button" aria-label="Recuerdo siguiente" disabled={active>=safeItems.length-1} onClick={()=>goMemory(active+1)}>→</button>
             </div>
-            {active>=safeItems.length-1?<button data-action="advance" className="thi-mama-memories-continue" onClick={next}>Seguir con la historia <span>→</span></button>:<p className="thi-mama-memory-hint">seguí recorriendo los recuerdos <span>→</span></p>}
+            {active>=safeItems.length-1?<button data-action="advance" className="thi-mama-memories-continue" onClick={next}>Seguir con la historia <span>→</span></button>:<p className="thi-mama-memory-hint">deslizá para recorrer los recuerdos <span>→</span></p>}
           </section>;
         }
         return <section className="thi-scene thi-scene-memories thi-scene-rich"><p className="thi-kicker">{token(copy.memories.kicker)}</p><h2>{titleLines(copy.memories.title)}</h2>{storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}<div className="thi-film">{(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url||item.caption||i}><div className="thi-memory-photo">{item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}<span>{String(i+1).padStart(2,"0")}</span><i className="thi-photo-sheen"/></div><p>{token(item.caption||memoryLines[i%memoryLines.length])}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.memories.cta)}</button></section>;
