@@ -48,6 +48,33 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("mama intro is premium, story-first and has no headphone prompt",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/mama");
+  await waitForScene(page,"intro");
+
+  await expect(page.locator(".thi-mama-intro")).toBeVisible();
+  await expect(page.getByText("Tus hijos hicieron algo para vos",{exact:false})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Mamá"})).toBeVisible();
+  await expect(page.getByText(/Hay una edad en la que uno cree que mamá puede con todo/i)).toBeVisible();
+  await expect(page.getByText(/Mejor con auriculares/i)).toHaveCount(0);
+
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+  await expect(page.locator(".thi-reset-journey")).toBeHidden();
+  await expect(page.locator(".thi-scene-meta")).toBeHidden();
+
+  const open=page.getByRole("button",{name:/Abrir esto/i});
+  await expect(open).toBeVisible();
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await open.click();
+  await waitForScene(page,"childhood");
+});
+
+
 test("pair threshold door swings inward behind the jamb",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
