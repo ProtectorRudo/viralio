@@ -48,6 +48,51 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("pair scratch card reveals from real drag gestures without fallback",async({page})=>{
+  test.setTimeout(60_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+
+  for(let step=0;step<12;step++){
+    const current=await sceneName(page);
+    if(current==="scratch")break;
+    const before=current;
+    await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(before);
+  }
+
+  await waitForScene(page,"scratch");
+  await expect(page.locator('[data-action="scratch-canvas"]')).toBeVisible();
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+
+  const canvas=page.locator('[data-action="scratch-canvas"]');
+  const box=await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  if(!box)throw new Error("scratch_canvas_missing_box");
+
+  const left=box.x+28;
+  const right=box.x+box.width-28;
+  const top=box.y+38;
+  const rows=5;
+
+  await page.mouse.move(left,top);
+  await page.mouse.down();
+  for(let row=0;row<rows;row++){
+    const y=top+row*((box.height-76)/(rows-1));
+    const fromX=row%2===0?left:right;
+    const toX=row%2===0?right:left;
+    await page.mouse.move(fromX,y,{steps:3});
+    await page.mouse.move(toX,y,{steps:18});
+  }
+  await page.mouse.up();
+
+  await expect(page.locator('[data-action="scratch-canvas"]')).toHaveCount(0);
+  await expect(page.getByRole("button",{name:/Acepto el trato/i})).toBeVisible();
+  await expect(page.locator('[data-action="scratch-fallback"]')).toHaveCount(0);
+});
+
+
 test("premium haptics fire on tactile interactions",async({page})=>{
   await page.addInitScript(()=>{
     (window as unknown as {__thiVibrations:(number|number[])[]}).__thiVibrations=[];
