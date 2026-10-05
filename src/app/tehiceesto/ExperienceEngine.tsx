@@ -2,6 +2,7 @@
 "use client";
 
 // github-bridge release: cinematic-pair-intro
+// github-bridge release: premium-threshold-door
 
 import { useEffect,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent } from "react";
 import { flushSync } from "react-dom";
