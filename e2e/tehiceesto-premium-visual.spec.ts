@@ -60,6 +60,26 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-pareja-threshold-390");
 
+  await page.getByRole("button",{name:/Seguir entrando/i}).click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","memories");
+  await page.locator('.thi-scene-memories [data-action="advance"]').click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
+  await page.locator('[data-action="demo-voice"]').first().click();
+  await page.locator('[data-action="advance"]').click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","light");
+  await expect(page.getByRole("heading",{name:"Encontralo."})).toHaveCount(1);
+  await expect(page.locator(".thi-light-photo-reveal img")).toBeVisible();
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  const lightReveal=page.locator(".thi-light-reveal-cinematic");
+  await lightReveal.hover({position:{x:118,y:290}});
+  await expectNoHorizontalOverflow(page);
+  await capture(page,testInfo,"tehiceesto-premium-pareja-light-search-390");
+  await lightReveal.click({position:{x:150,y:280}});
+  await expect(page.getByText("No recuerdo exactamente qué dijimos. Sí recuerdo que no quería que terminara.")).toBeVisible();
+  await expect(page.getByRole("button",{name:/Seguir con este recuerdo/i})).toBeVisible();
+  await page.waitForTimeout(1250);
+  await capture(page,testInfo,"tehiceesto-premium-pareja-light-revealed-390");
+
   for(const [slug,scene,openSelector] of [
     ["abuelos","archive",".archive-folder"],
     ["mama","childhood",null],
