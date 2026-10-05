@@ -11351,3 +11351,303 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
     top:14px;
   }
 }
+
+
+/* =========================================================
+   PAREJA — FOUND MEMORY / CINEMATIC LIGHT SEARCH · OCT 2026
+   ========================================================= */
+.thi-theme-pareja[data-scene="light"]{
+  background:
+    radial-gradient(circle at 13% 10%,rgba(120,31,54,.24),transparent 30%),
+    radial-gradient(circle at 82% 82%,rgba(82,33,55,.10),transparent 30%),
+    linear-gradient(158deg,#100609 0%,#080506 48%,#040304 100%);
+}
+.thi-theme-pareja[data-scene="light"]:before{
+  opacity:.43;
+  background:
+    radial-gradient(ellipse at 10% 24%,rgba(156,47,74,.15),transparent 34%),
+    radial-gradient(ellipse at 88% 76%,rgba(95,37,62,.07),transparent 30%);
+}
+.thi-theme-pareja[data-scene="light"]:after{
+  opacity:.08;
+  background-image:
+    radial-gradient(circle at 12% 18%,rgba(255,235,230,.78) 0 1px,transparent 1.4px),
+    radial-gradient(circle at 84% 31%,rgba(255,227,224,.52) 0 1px,transparent 1.4px),
+    radial-gradient(circle at 25% 81%,rgba(255,225,220,.38) 0 1px,transparent 1.3px);
+  background-size:300px 300px,390px 390px,450px 450px;
+}
+.thi-pair-light-scene{
+  min-height:100svh;
+  padding:108px 0 82px!important;
+  justify-content:center;
+}
+.thi-pair-light-scene>.thi-kicker{
+  position:relative;
+  z-index:7;
+  width:min(760px,90vw);
+  margin:0 auto 15px;
+  color:rgba(239,215,219,.62);
+  font-size:clamp(8px,1vw,10px);
+  font-weight:600;
+  letter-spacing:.245em;
+}
+.thi-pair-light-scene>h2{
+  position:relative;
+  z-index:7;
+  width:min(760px,92vw);
+  margin:0 auto 20px;
+  color:#fff7f3;
+  font-family:var(--thi-serif);
+  font-size:clamp(57px,8vw,94px);
+  font-style:italic;
+  font-weight:400;
+  line-height:.94;
+  letter-spacing:-.055em;
+  text-shadow:0 14px 50px rgba(0,0,0,.34);
+}
+.thi-light-reveal-cinematic{
+  --light-x:50%;
+  --light-y:48%;
+  position:relative;
+  width:min(820px,100vw);
+  height:clamp(470px,61svh,720px);
+  min-height:0;
+  margin:0 auto;
+  padding:0;
+  overflow:hidden;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:#fff;
+  cursor:none;
+  touch-action:none;
+  isolation:isolate;
+  -webkit-tap-highlight-color:transparent;
+}
+.thi-light-reveal-cinematic:before,
+.thi-light-reveal-cinematic:after{
+  content:none!important;
+}
+.thi-light-photo-base,
+.thi-light-photo-reveal{
+  position:absolute;
+  inset:-2px;
+  display:block;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 8%,#000 91%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 8%,#000 91%,transparent 100%);
+}
+.thi-light-photo-base:after,
+.thi-light-photo-reveal:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(8,4,6,.58) 0%,rgba(8,4,6,.10) 30%,rgba(8,4,6,.08) 62%,rgba(6,3,5,.66) 100%),
+    radial-gradient(circle at 50% 52%,transparent 25%,rgba(5,3,5,.26) 73%,rgba(4,3,4,.65) 100%);
+}
+.thi-light-photo-base img,
+.thi-light-photo-reveal img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  transform:scale(1.015);
+}
+.thi-light-photo-base{
+  opacity:.18;
+  filter:brightness(.28) saturate(.60) contrast(1.08);
+}
+.thi-light-photo-reveal{
+  z-index:2;
+  opacity:.98;
+  clip-path:circle(108px at var(--light-x) var(--light-y));
+  filter:brightness(.80) saturate(.90) contrast(1.04) sepia(.05);
+  transition:
+    clip-path 1.15s cubic-bezier(.16,.84,.18,1),
+    filter 1.15s ease,
+    opacity .8s ease;
+}
+.thi-light-reveal-cinematic.revealed .thi-light-photo-base{
+  opacity:0;
+  transition:opacity .72s ease;
+}
+.thi-light-reveal-cinematic.revealed .thi-light-photo-reveal{
+  clip-path:circle(145% at var(--light-x) var(--light-y));
+  filter:brightness(.86) saturate(.92) contrast(1.03) sepia(.07);
+}
+.thi-light-beam{
+  position:absolute;
+  z-index:3;
+  left:var(--light-x);
+  top:var(--light-y);
+  width:285px;
+  height:285px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle,
+      rgba(255,239,214,.32) 0%,
+      rgba(245,189,164,.18) 20%,
+      rgba(216,114,123,.075) 43%,
+      transparent 70%);
+  filter:blur(5px);
+  mix-blend-mode:screen;
+  box-shadow:0 0 75px rgba(234,147,139,.10);
+  transition:opacity .75s ease,transform .75s ease;
+}
+.thi-light-reveal-cinematic.revealed .thi-light-beam{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(2.3);
+}
+.thi-light-cinema-grain{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+  opacity:.15;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.33'/%3E%3C/svg%3E");
+  mix-blend-mode:soft-light;
+}
+.thi-light-cinema-quote{
+  position:absolute;
+  z-index:6;
+  left:50%;
+  bottom:62px;
+  width:min(670px,84%);
+  transform:translate(-50%,18px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .8s .55s ease,transform .8s .55s cubic-bezier(.16,.84,.18,1);
+}
+.thi-light-cinema-quote p{
+  margin:0;
+  color:#f6e2d8;
+  font-family:var(--thi-serif);
+  font-size:clamp(22px,3.3vw,35px);
+  font-style:italic;
+  font-weight:400;
+  line-height:1.25;
+  letter-spacing:-.02em;
+  text-align:center;
+  text-shadow:0 3px 24px rgba(0,0,0,.75);
+}
+.thi-light-reveal-cinematic.revealed .thi-light-cinema-quote{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+.thi-light-reveal-cinematic>em{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  margin:0;
+  color:rgba(224,208,210,.56);
+  font-style:normal;
+  font-size:7px;
+  font-weight:500;
+  letter-spacing:.20em;
+  line-height:1.35;
+  text-transform:uppercase;
+  white-space:nowrap;
+  text-shadow:0 2px 14px rgba(0,0,0,.55);
+  transition:color .5s ease,opacity .5s ease;
+}
+.thi-light-reveal-cinematic.revealed>em{
+  color:rgba(242,221,215,.70);
+}
+.thi-pair-light-continue{
+  position:relative;
+  z-index:8;
+  min-width:255px!important;
+  min-height:58px!important;
+  margin-top:22px!important;
+  padding:0 27px!important;
+  border:1px solid rgba(237,182,193,.30)!important;
+  border-radius:999px!important;
+  background:linear-gradient(180deg,rgba(73,38,46,.76),rgba(47,25,31,.86))!important;
+  color:#fff7f4!important;
+  box-shadow:0 14px 40px rgba(18,8,11,.25)!important;
+  backdrop-filter:blur(10px);
+  font-family:var(--thi-serif)!important;
+  font-size:16px!important;
+  font-weight:400!important;
+  animation:thiPairThresholdReveal .75s .35s both;
+}
+.thi-theme-pareja[data-scene="light"] .thi-progress-premium,
+.thi-theme-pareja[data-scene="light"] .thi-reset-journey{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.thi-theme-pareja[data-scene="light"] .thi-scene-meta{
+  top:18px;
+  opacity:.36;
+}
+.thi-root:has(.thi-theme-pareja[data-scene="light"]) .floating-create-cta.floating-whatsapp--experience{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  transform:translateY(14px) scale(.96);
+}
+@media(max-width:650px){
+  .thi-pair-light-scene{
+    padding:96px 0 72px!important;
+  }
+  .thi-pair-light-scene>.thi-kicker{
+    width:90vw;
+    margin-bottom:12px;
+    font-size:7px;
+    letter-spacing:.22em;
+  }
+  .thi-pair-light-scene>h2{
+    width:90vw;
+    margin-bottom:10px;
+    font-size:clamp(54px,16vw,76px);
+  }
+  .thi-light-reveal-cinematic{
+    width:100vw;
+    height:clamp(510px,64svh,680px);
+  }
+  .thi-light-photo-reveal{
+    clip-path:circle(92px at var(--light-x) var(--light-y));
+  }
+  .thi-light-beam{
+    width:240px;
+    height:240px;
+  }
+  .thi-light-cinema-quote{
+    bottom:60px;
+    width:82%;
+  }
+  .thi-light-cinema-quote p{
+    font-size:clamp(21px,6.5vw,29px);
+    line-height:1.26;
+  }
+  .thi-light-reveal-cinematic>em{
+    bottom:20px;
+    font-size:6px;
+    letter-spacing:.18em;
+  }
+  .thi-pair-light-continue{
+    min-width:236px!important;
+    min-height:55px!important;
+    margin-top:18px!important;
+    font-size:15px!important;
+  }
+  .thi-theme-pareja[data-scene="light"] .thi-scene-meta{
+    top:14px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-light-photo-reveal,
+  .thi-light-beam,
+  .thi-light-cinema-quote{
+    transition:none!important;
+  }
+}
