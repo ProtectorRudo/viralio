@@ -63,11 +63,15 @@ test("pair letter scene opens as a premium physical keepsake without commercial 
   await expect(page.getByText("Tocá el sello")).toBeVisible();
 
   const envelope=page.locator('[data-action="open-letter"]');
+  const paper=page.locator(".thi-envelope .paper");
+  await expect(paper).toBeHidden();
+
   await envelope.click();
   await page.waitForTimeout(1450);
 
   await expect(envelope).toHaveClass(/open/);
   await expect(page.locator(".thi-pair-letter")).toHaveClass(/is-open/);
+  await expect(paper).toBeVisible();
   await expect(page.locator(".thi-envelope .paper em")).toBeVisible();
   await expect(page.getByRole("button",{name:"Continuar →"})).toBeVisible();
 
