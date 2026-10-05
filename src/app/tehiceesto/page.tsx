@@ -4,6 +4,7 @@ import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
 
 // release: premium editorial home
+// release: documentary reactions
 
 const OCCASIONS = [
   { slug:"pareja", label:"Pareja", note:"Para decir lo que un mensaje no alcanza." },
