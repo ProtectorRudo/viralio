@@ -11182,13 +11182,13 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   display:block;
   z-index:2;
   transform-origin:left center;
-  transform:perspective(1100px) rotateY(-7deg);
+  transform:perspective(1100px) rotateY(7deg);
   background:
     linear-gradient(90deg,rgba(255,255,255,.018),transparent 24%),
     linear-gradient(180deg,#120d10,#090709);
   border:1px solid rgba(79,50,57,.48);
-  box-shadow:8px 0 30px rgba(0,0,0,.34);
-  transition:transform .95s cubic-bezier(.18,.82,.18,1),box-shadow .95s ease;
+  box-shadow:-7px 0 26px rgba(0,0,0,.28);
+  transition:transform .95s cubic-bezier(.18,.82,.18,1),box-shadow .95s ease,filter .95s ease;
 }
 .thi-pair-threshold-leaf:after{
   content:"";
@@ -11220,11 +11220,13 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   transition:opacity .7s ease;
 }
 .thi-pair-threshold-door:hover .thi-pair-threshold-leaf{
-  transform:perspective(1100px) rotateY(-14deg);
+  transform:perspective(1100px) rotateY(14deg);
 }
 .thi-pair-threshold.is-open .thi-pair-threshold-leaf{
-  transform:perspective(1100px) rotateY(-86deg);
-  box-shadow:26px 0 62px rgba(0,0,0,.44);
+  --door-swing-direction:inward;
+  transform:perspective(1100px) rotateY(86deg);
+  box-shadow:-18px 0 46px rgba(0,0,0,.30);
+  filter:brightness(.72);
 }
 .thi-pair-threshold.is-open .thi-pair-threshold-light{
   width:54%;
