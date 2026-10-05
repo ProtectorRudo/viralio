@@ -181,7 +181,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");const prev=()=>moveTo(Math.max(0,sceneIndex-1),"back");
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
 
-  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=3;case"presence":return presenceOpen.length>=2;case"inheritance":return inheritanceOpen.length>=3;case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
+  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=3;case"presence":return presenceOpen.length>=2;case"inheritance":return inheritanceOpen.length>=3;case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
     switch(type){
@@ -663,6 +663,82 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         );
 
       case "sacrifices":
+        if(experience.slug==="mama"){
+          const sacrificeItems=[
+            {
+              n:"01",
+              title:"TIEMPO",
+              headline:"Horas que eran tuyas y terminaron siendo nuestras.",
+              copy:"Días, noches, esperas y planes que cambiaste sin hacer ruido."
+            },
+            {
+              n:"02",
+              title:"ENERGÍA",
+              headline:"Una energía que no se veía, pero siempre estaba.",
+              copy:"Tu fuerza para seguir, incluso cuando estabas cansada. Tu ánimo, tu paciencia, tu sonrisa para que todo estuviera bien."
+            },
+            {
+              n:"03",
+              title:"PREOCUPACIÓN",
+              headline:"Había miedos que llevabas vos para que nosotros no tuviéramos que llevarlos.",
+              copy:"Prever, cuidar, preguntar, esperar despierta. Muchas cosas recién las entendimos cuando crecimos."
+            },
+            {
+              n:"04",
+              title:"VOS",
+              headline:"Y también estabas vos.",
+              copy:"La mujer detrás de ser mamá. Con sueños, cansancio, dudas y una vida propia que demasiadas veces quedó para después."
+            },
+          ];
+          return (
+            <section className={`scene scene-sacrifices scene-sacrifices-mama sacrifices-open-${Math.min(sacrificesOpen.length,4)}`}>
+              <div className="mama-sacrifice-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
+              <p className="scene-kicker">Lo invisible también cuenta</p>
+              <h2>Ahora entiendo que muchas veces vos quedabas última para que nosotros pudiéramos ir primero.</h2>
+              <div className="mama-sacrifice-ledger">
+                <div className="mama-sacrifice-spine" aria-hidden="true"/>
+                {sacrificeItems.map((item,index)=>{
+                  const isOpen=sacrificesOpen.includes(index);
+                  const photo=scenePhotos[index%Math.max(1,scenePhotos.length)];
+                  return (
+                    <article key={item.title} className={`mama-sacrifice-entry ${isOpen?"open":""} ${index===3?"is-self":""}`}>
+                      <button
+                        type="button"
+                        data-action="sacrifice-open"
+                        aria-expanded={isOpen}
+                        className="mama-sacrifice-trigger"
+                        onClick={()=>setSacrificesOpen(items=>items.includes(index)?items:[...items,index])}
+                      >
+                        <span className="mama-sacrifice-node" aria-hidden="true"/>
+                        <small>{item.n}</small>
+                        <strong>{item.title}</strong>
+                        <em>{isOpen?"✓":"Descubrir"}</em>
+                        <i aria-hidden="true">{isOpen?"⌄":"›"}</i>
+                      </button>
+                      <div className="mama-sacrifice-reveal" aria-hidden={!isOpen}>
+                        <div className="mama-sacrifice-paper">
+                          <div className="mama-sacrifice-copy">
+                            <strong>{item.headline}</strong>
+                            <p>{item.copy}</p>
+                          </div>
+                          {photo?.url&&<figure className="mama-sacrifice-photo">
+                            <img src={photo.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:photo.fit||"cover",objectPosition:photo.position||"center"}}/>
+                            <span aria-hidden="true"/>
+                          </figure>}
+                          <div className="mama-sacrifice-botanical" aria-hidden="true"><i/><i/><i/><b/></div>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+              {sacrificesOpen.length>=4&&<div className="mama-sacrifice-resolution">
+                <p>Nunca fue “simplemente ser mamá”.</p>
+                <button data-action="advance" className="mama-sacrifice-continue" onClick={next}>Seguir <span>→</span></button>
+              </div>}
+            </section>
+          );
+        }
         return (
           <section className="scene scene-sacrifices">
             <p className="scene-kicker">Lo invisible también cuenta</p>
