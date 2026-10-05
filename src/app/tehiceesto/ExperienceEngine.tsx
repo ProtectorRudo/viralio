@@ -165,8 +165,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   };
   const stopDemoVoice=()=>{demoVoiceRunRef.current+=1;demoVoiceMessageRef.current=null;setDemoVoiceStatus("idle");if(mamaVoiceAudioRef.current){try{mamaVoiceAudioRef.current.pause()}catch{}}setMamaVoiceRealPlaying(false);if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}restoreSoundtrack()};
   const toggleDemoVoice=(message:string)=>{
+    const fallbackToggle=()=>{
+      if(demoVoiceMessageRef.current===message&&demoVoiceStatus==="playing"){setDemoVoiceStatus("paused");restoreSoundtrack();return}
+      if(demoVoiceMessageRef.current===message&&demoVoiceStatus==="paused"){setDemoVoiceStatus("playing");duckSoundtrack();return}
+      demoVoiceMessageRef.current=message;setDemoVoiceStatus("playing");duckSoundtrack();
+    };
     try{
-      if(typeof window==="undefined"||!("speechSynthesis" in window))return;
+      if(typeof window==="undefined"){fallbackToggle();return}
+      if(!("speechSynthesis" in window)){fallbackToggle();return}
       const synth=window.speechSynthesis;
       if(demoVoiceMessageRef.current===message&&demoVoiceStatus==="playing"){synth.pause();setDemoVoiceStatus("paused");restoreSoundtrack();return}
       if(demoVoiceMessageRef.current===message&&demoVoiceStatus==="paused"){synth.resume();setDemoVoiceStatus("playing");duckSoundtrack();return}
@@ -180,7 +186,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       const finish=()=>{if(demoVoiceRunRef.current!==run)return;demoVoiceMessageRef.current=null;setDemoVoiceStatus("idle");restoreSoundtrack()};
       utterance.onend=finish;utterance.onerror=finish;
       demoVoiceMessageRef.current=message;setDemoVoiceStatus("playing");duckSoundtrack();synth.speak(utterance);
-    }catch{}
+    }catch{fallbackToggle()}
   };
   const restart=()=>{stopDemoVoice();resetAllInteractions();setDirection("back");setTransitioning(false);setSceneIndex(0);setRunId(v=>v+1);haptic([8,22,8])};
   const playFx=(kind:"chime"|"pop"|"door"|"seal"|"unlock")=>{try{const context=new AudioContext();const oscillator=context.createOscillator();const gain=context.createGain();const now=context.currentTime;oscillator.connect(gain);gain.connect(context.destination);const presets={chime:{type:"sine" as OscillatorType,start:760,end:1180,duration:.34,volume:.035},pop:{type:"triangle" as OscillatorType,start:240,end:72,duration:.12,volume:.05},door:{type:"sine" as OscillatorType,start:95,end:48,duration:.42,volume:.035},seal:{type:"triangle" as OscillatorType,start:330,end:180,duration:.18,volume:.035},unlock:{type:"sine" as OscillatorType,start:420,end:820,duration:.42,volume:.035}};const preset=presets[kind];oscillator.type=preset.type;oscillator.frequency.setValueAtTime(preset.start,now);oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,preset.end),now+preset.duration);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(preset.volume,now+.02);gain.gain.exponentialRampToValueAtTime(.0001,now+preset.duration);oscillator.start(now);oscillator.stop(now+preset.duration+.02);window.setTimeout(()=>void context.close(),Math.ceil((preset.duration+.1)*1000))}catch{}};
