@@ -85,7 +85,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     memories:{kicker:"Tres momentos que todavía me acuerdo perfecto",title:["Pasaron hace tiempo.","Pero siguen siendo nuestros."],cta:"Hay algo más →"},
     voices:{kicker:"No quería escribir todo",title:["Esta parte preferí","decírtela."],noteLabel:"nota de voz · {name}",playLabel:"Escuchar su voz",playingLabel:"Esto era lo que quería decirte",cta:"Guardar esta voz →"},
     light:{kicker:"Hay un recuerdo que siempre vuelve",title:"Encontralo.",secret:"No recuerdo exactamente qué dijimos. Sí recuerdo que no quería que terminara.",hint:"Deslizá el dedo por la oscuridad.",revealedLabel:"Quedate un segundo acá.",cta:"Seguir con este recuerdo →"},
-    stars:{kicker:"Cinco cosas muy tuyas",title:["No son grandes promesas.","Son las que más importan."],hiddenLabel:"descubrir",completeLabel:"ya encontraste tres",cta:"Me las guardo →"},
+    stars:{kicker:"Cinco cosas muy tuyas",title:["Hay cosas tuyas","que siempre elegiría."],hiddenLabel:"descubrir",completeLabel:"cinco cosas tuyas",cta:"Me las guardo →"},
     scratch:{kicker:"Una deuda pendiente, oficialmente",title:["Esto no podía quedar","solamente en palabras."],coverTitle:"RASPÁ DESPACIO",coverHint:"hay un plan abajo",fallbackLabel:"abrir igual",cta:"Acepto el trato →"},
     hold:{kicker:"Quedate un segundo acá",title:["Antes de la carta,","quiero que sientas esto."],instruction:"no lo sueltes todavía",cta:"Ahora sí →"},
     letter:{kicker:"Esto sí necesitaba palabras",title:["No quería mandártelo","en un mensaje cualquiera."],sealHint:"Abrí la carta",cta:"Quiero seguir →"},
