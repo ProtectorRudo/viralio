@@ -29,7 +29,7 @@ async function advanceOne(page:Page){
   else if(current==="certainty"){const items=page.locator(".certainty-lines button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
   else if(current==="threshold"){await page.locator(".threshold-hold").press("Enter");await page.locator(".threshold-continue").click()}
   else if(current==="care"){const premium=page.locator(".mama-care-file");if(await premium.count()){await premium.nth(0).click();await premium.nth(1).click();await premium.nth(2).click();await page.locator(".mama-care-continue").click()}else{const items=page.locator(".care-grid button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
-  else if(current==="sacrifices"){const items=page.locator(".sacrifice-list button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="sacrifices"){const premium=page.locator(".mama-sacrifice-trigger");if(await premium.count()){await premium.nth(0).click();await premium.nth(1).click();await premium.nth(2).click();await premium.nth(3).click();await page.locator(".mama-sacrifice-continue").click()}else{const items=page.locator(".sacrifice-list button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="return"){await page.locator(".return-key").click();await page.locator(".scene .primary-action").click()}
   else if(current==="lessons"){const items=page.locator(".lesson-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
   else if(current==="presence"){const items=page.locator(".presence-track button");await items.nth(0).click();await items.nth(1).click();await page.locator(".scene .primary-action").click()}
@@ -159,6 +159,54 @@ test("mama care reveals a premium invisible-care archive before continuing",asyn
 
   await next.click();
   await waitForScene(page,"sacrifices");
+});
+
+
+test("mama sacrifices reveal all four invisible costs before the final resolution",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/mama");
+  await waitForScene(page,"intro");
+  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await waitForScene(page,"childhood");
+  await page.getByRole("button",{name:/Seguir recordando/i}).click();
+  await waitForScene(page,"memories");
+
+  const memoryNext=page.locator(".thi-mama-memory-local-nav > button").last();
+  await memoryNext.click();
+  await memoryNext.click();
+  await page.getByRole("button",{name:/Seguir con la historia/i}).click();
+  await waitForScene(page,"care");
+
+  const care=page.locator(".mama-care-file");
+  for(let i=0;i<3;i++)await care.nth(i).click();
+  await page.getByRole("button",{name:/Seguir/i}).click();
+  await waitForScene(page,"sacrifices");
+
+  await expect(page.locator(".scene-sacrifices-mama")).toBeVisible();
+  await expect(page.locator(".mama-sacrifice-entry")).toHaveCount(4);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+  await expect(page.locator(".mama-sacrifice-continue")).toHaveCount(0);
+
+  const entries=page.locator(".mama-sacrifice-entry");
+  for(let i=0;i<4;i++){
+    await entries.nth(i).locator(".mama-sacrifice-trigger").click();
+    await expect(entries.nth(i)).toHaveClass(/open/);
+    await expect(entries.nth(i).locator(".mama-sacrifice-trigger")).toHaveAttribute("aria-expanded","true");
+  }
+
+  await expect(page.locator(".scene-sacrifices-mama")).toHaveClass(/sacrifices-open-4/);
+  await expect(page.getByText("Y también estabas vos.")).toBeVisible();
+  await expect(page.getByText(/Nunca fue “simplemente ser mamá”/)).toBeVisible();
+
+  const next=page.getByRole("button",{name:/Seguir/i});
+  await expect(next).toBeVisible();
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await next.click();
+  await waitForScene(page,"voices");
 });
 
 
