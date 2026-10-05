@@ -14602,7 +14602,13 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   margin:38px auto 0;
   perspective:1400px;
   overflow:visible;
+  touch-action:pan-y;
+  overscroll-behavior-x:contain;
+  -webkit-user-select:none;
+  user-select:none;
+  cursor:grab;
 }
+.thi-mama-memory-deck:active{cursor:grabbing}
 .thi-mama-memory-card{
   position:absolute;
   left:50%;
