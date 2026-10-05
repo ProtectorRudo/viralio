@@ -48,6 +48,58 @@ test("all visible scene copy can be overridden without changing the engine",asyn
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
+test("pair demo voice can pause and resume without restarting",async({page})=>{
+  await page.addInitScript(()=>{
+    const calls={speak:0,pause:0,resume:0,cancel:0};
+    class FakeUtterance{
+      text:string;
+      lang="";
+      rate=1;
+      pitch=1;
+      voice:null=null;
+      onend:(()=>void)|null=null;
+      onerror:(()=>void)|null=null;
+      constructor(text:string){this.text=text}
+    }
+    Object.defineProperty(window,"SpeechSynthesisUtterance",{configurable:true,value:FakeUtterance});
+    Object.defineProperty(window,"speechSynthesis",{
+      configurable:true,
+      value:{
+        getVoices:()=>[],
+        speak:()=>{calls.speak+=1},
+        pause:()=>{calls.pause+=1},
+        resume:()=>{calls.resume+=1},
+        cancel:()=>{calls.cancel+=1},
+      },
+    });
+    (window as unknown as {__speechCalls:typeof calls}).__speechCalls=calls;
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  await advanceOne(page);
+  await waitForScene(page,"door");
+  await advanceOne(page);
+  await waitForScene(page,"memories");
+  await advanceOne(page);
+  await waitForScene(page,"voices");
+
+  const voice=page.locator('[data-action="demo-voice"]').first();
+  await voice.click();
+  await expect(voice).toHaveAttribute("aria-label","Pausar audio");
+  await expect.poll(()=>page.evaluate(()=>(window as unknown as {__speechCalls:{speak:number}}).__speechCalls.speak)).toBe(1);
+
+  await voice.click();
+  await expect(voice).toHaveAttribute("aria-label","Continuar audio");
+  await expect.poll(()=>page.evaluate(()=>(window as unknown as {__speechCalls:{pause:number}}).__speechCalls.pause)).toBe(1);
+
+  await voice.click();
+  await expect(voice).toHaveAttribute("aria-label","Pausar audio");
+  await expect.poll(()=>page.evaluate(()=>(window as unknown as {__speechCalls:{resume:number}}).__speechCalls.resume)).toBe(1);
+});
+
+
 test("pair scratch card reveals from real drag gestures without fallback",async({page})=>{
   test.setTimeout(60_000);
   await page.setViewportSize({width:390,height:844});
