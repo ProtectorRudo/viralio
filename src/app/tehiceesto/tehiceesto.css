@@ -11047,3 +11047,307 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 }
 
 /* release: cinematic-pair-intro-ready */
+
+
+/* =========================================================
+   PAREJA — UMBRAL CINEMATIC LIGHT DOOR · OCT 2026
+   ========================================================= */
+.thi-theme-pareja[data-scene="door"]{
+  background:
+    radial-gradient(circle at 14% 12%,rgba(121,34,57,.27),transparent 31%),
+    radial-gradient(circle at 82% 76%,rgba(94,38,58,.11),transparent 31%),
+    linear-gradient(158deg,#12070a 0%,#090506 47%,#050405 100%);
+}
+.thi-theme-pareja[data-scene="door"]:before{
+  opacity:.52;
+  background:
+    radial-gradient(ellipse at 10% 25%,rgba(158,52,79,.18),transparent 34%),
+    radial-gradient(ellipse at 88% 72%,rgba(111,43,64,.08),transparent 30%);
+}
+.thi-theme-pareja[data-scene="door"]:after{
+  opacity:.12;
+  background-image:
+    radial-gradient(circle at 14% 17%,rgba(255,236,232,.86) 0 1px,transparent 1.45px),
+    radial-gradient(circle at 81% 28%,rgba(255,230,229,.66) 0 1px,transparent 1.45px),
+    radial-gradient(circle at 24% 75%,rgba(255,228,226,.52) 0 1px,transparent 1.35px);
+  background-size:260px 260px,340px 340px,390px 390px;
+}
+.thi-pair-threshold{
+  min-height:100svh;
+  padding:118px 20px 95px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.thi-pair-threshold-atmosphere{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 58%,rgba(180,98,113,.08),transparent 23%),
+    radial-gradient(circle at 47% 82%,rgba(152,67,83,.05),transparent 25%);
+  filter:blur(24px);
+}
+.thi-pair-threshold-orbit{
+  position:absolute;
+  z-index:-1;
+  top:11%;
+  left:50%;
+  width:min(92vw,860px);
+  aspect-ratio:1;
+  transform:translateX(-50%);
+  border:1px solid rgba(218,169,176,.07);
+  border-radius:50%;
+  pointer-events:none;
+}
+.thi-pair-threshold-copy{
+  position:relative;
+  z-index:2;
+  width:min(920px,92vw);
+}
+.thi-pair-threshold .thi-kicker{
+  margin:0 0 19px;
+  color:rgba(241,220,223,.63);
+  font-size:clamp(8px,1vw,10px);
+  font-weight:600;
+  letter-spacing:.245em;
+}
+.thi-pair-threshold h2{
+  margin:0;
+  color:#fff7f3;
+  font-family:var(--thi-serif);
+  font-size:clamp(50px,7vw,86px);
+  font-style:italic;
+  font-weight:400;
+  line-height:.98;
+  letter-spacing:-.05em;
+  text-shadow:0 12px 44px rgba(0,0,0,.34);
+}
+.thi-pair-threshold-door{
+  position:relative;
+  z-index:2;
+  width:min(220px,48vw);
+  aspect-ratio:.62/1;
+  margin:44px 0 18px;
+  padding:0;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  perspective:1200px;
+}
+.thi-pair-threshold-frame{
+  position:absolute;
+  inset:0;
+  display:block;
+  border:1px solid rgba(95,60,66,.58);
+  background:linear-gradient(180deg,rgba(31,18,20,.84),rgba(15,10,12,.94));
+  box-shadow:
+    0 22px 60px rgba(0,0,0,.34),
+    inset 0 0 0 1px rgba(167,113,120,.05);
+}
+.thi-pair-threshold-frame:before{
+  content:"";
+  position:absolute;
+  inset:11px;
+  border:1px solid rgba(119,73,81,.26);
+  pointer-events:none;
+}
+.thi-pair-threshold-light{
+  position:absolute;
+  right:5%;
+  top:3%;
+  width:10%;
+  height:94%;
+  display:block;
+  opacity:.54;
+  background:linear-gradient(180deg,#f3c0b8 0%,#df8e89 52%,#efb8aa 100%);
+  filter:blur(.5px);
+  box-shadow:
+    0 0 24px rgba(244,179,168,.23),
+    0 0 76px rgba(227,133,124,.12);
+  transition:width .78s cubic-bezier(.18,.8,.2,1),opacity .78s ease,box-shadow .78s ease;
+}
+.thi-pair-threshold-leaf{
+  position:absolute;
+  left:8%;
+  top:4%;
+  width:78%;
+  height:92%;
+  display:block;
+  z-index:2;
+  transform-origin:left center;
+  transform:perspective(1100px) rotateY(-7deg);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.018),transparent 24%),
+    linear-gradient(180deg,#120d10,#090709);
+  border:1px solid rgba(79,50,57,.48);
+  box-shadow:8px 0 30px rgba(0,0,0,.34);
+  transition:transform .82s cubic-bezier(.18,.8,.2,1),box-shadow .82s ease;
+}
+.thi-pair-threshold-leaf:after{
+  content:"";
+  position:absolute;
+  inset:18px 15px;
+  border:1px solid rgba(108,65,73,.18);
+}
+.thi-pair-threshold-leaf i{
+  position:absolute;
+  right:12px;
+  top:50%;
+  width:2px;
+  height:29px;
+  transform:translateY(-50%);
+  border-radius:999px;
+  background:rgba(228,190,196,.40);
+}
+.thi-pair-threshold-floor{
+  position:absolute;
+  left:48%;
+  right:3%;
+  bottom:-34px;
+  height:68px;
+  opacity:.46;
+  background:linear-gradient(180deg,rgba(240,174,164,.34),transparent 74%);
+  filter:blur(8px);
+  transform:perspective(260px) rotateX(58deg);
+  transform-origin:top;
+  transition:opacity .7s ease;
+}
+.thi-pair-threshold-door:hover .thi-pair-threshold-leaf{
+  transform:perspective(1100px) rotateY(-14deg);
+}
+.thi-pair-threshold.is-open .thi-pair-threshold-leaf{
+  transform:perspective(1100px) rotateY(-38deg);
+  box-shadow:18px 0 42px rgba(0,0,0,.36);
+}
+.thi-pair-threshold.is-open .thi-pair-threshold-light{
+  width:34%;
+  opacity:1;
+  box-shadow:
+    0 0 34px rgba(248,187,177,.38),
+    0 0 110px rgba(231,139,129,.18);
+}
+.thi-pair-threshold.is-open .thi-pair-threshold-floor{opacity:.82}
+.thi-pair-threshold-hint{
+  position:relative;
+  z-index:2;
+  margin:4px 0 0;
+  color:#8e777b;
+  font-family:var(--thi-serif);
+  font-size:13px;
+  font-style:italic;
+}
+.thi-pair-threshold-whisper{
+  position:relative;
+  z-index:2;
+  margin:14px 0 0;
+  color:#dbc2bf;
+  font-family:var(--thi-serif);
+  font-size:clamp(18px,2.15vw,27px);
+  font-style:italic;
+  line-height:1.35;
+  animation:thiPairThresholdReveal .7s .08s both;
+}
+.thi-pair-threshold-cta{
+  position:relative;
+  z-index:2;
+  min-width:250px;
+  min-height:62px;
+  margin-top:24px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:0 29px;
+  border:1px solid rgba(238,183,194,.31);
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(72,38,45,.72),rgba(49,26,31,.84));
+  color:#fff7f5;
+  font-family:var(--thi-serif);
+  font-size:17px;
+  font-weight:400;
+  cursor:pointer;
+  box-shadow:0 14px 38px rgba(18,8,11,.26);
+  backdrop-filter:blur(10px);
+  animation:thiPairThresholdReveal .7s .2s both;
+  transition:transform .25s ease,border-color .25s ease,background .25s ease;
+}
+.thi-pair-threshold-cta:hover{
+  transform:translateY(-2px);
+  border-color:rgba(244,196,205,.48);
+  background:linear-gradient(180deg,rgba(86,44,53,.78),rgba(56,29,35,.88));
+}
+.thi-pair-threshold-cta b{
+  color:#e7c5c8;
+  font-size:14px;
+  font-weight:400;
+}
+.thi-theme-pareja[data-scene="door"] .thi-progress-premium,
+.thi-theme-pareja[data-scene="door"] .thi-reset-journey{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.thi-theme-pareja[data-scene="door"] .thi-scene-meta{
+  top:18px;
+  opacity:.42;
+  color:#6d5e62;
+}
+.thi-theme-pareja[data-scene="door"] .thi-scene-meta>span{color:#8a7479}
+.thi-theme-pareja[data-scene="door"] .thi-scene-meta>i{
+  width:42px;
+  background:#3e3034;
+}
+.thi-root:has(.thi-theme-pareja[data-scene="door"]) .floating-create-cta.floating-whatsapp--experience{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  transform:translateY(14px) scale(.96);
+}
+@keyframes thiPairThresholdReveal{
+  from{opacity:0;transform:translateY(9px);filter:blur(4px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+@media(max-width:650px){
+  .thi-pair-threshold{
+    min-height:100svh;
+    padding:100px 18px 78px;
+  }
+  .thi-pair-threshold .thi-kicker{
+    margin-bottom:15px;
+    font-size:7px;
+    letter-spacing:.22em;
+  }
+  .thi-pair-threshold h2{
+    width:min(365px,92vw);
+    margin:auto;
+    font-size:clamp(43px,12vw,60px);
+    line-height:.98;
+  }
+  .thi-pair-threshold-door{
+    width:min(162px,42vw);
+    margin-top:38px;
+    margin-bottom:14px;
+  }
+  .thi-pair-threshold-whisper{
+    max-width:330px;
+    margin-top:13px;
+    font-size:16px;
+  }
+  .thi-pair-threshold-hint{font-size:12px}
+  .thi-pair-threshold-cta{
+    min-width:218px;
+    min-height:56px;
+    margin-top:20px;
+    font-size:16px;
+  }
+  .thi-theme-pareja[data-scene="door"] .thi-scene-meta{
+    top:14px;
+  }
+}
