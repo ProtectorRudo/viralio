@@ -28,7 +28,7 @@ async function advanceOne(page:Page){
   else if(current==="reasons"){const items=page.locator(".reason-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
   else if(current==="certainty"){const items=page.locator(".certainty-lines button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
   else if(current==="threshold"){await page.locator(".threshold-hold").press("Enter");await page.locator(".threshold-continue").click()}
-  else if(current==="care"){const items=page.locator(".care-grid button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="care"){const premium=page.locator(".mama-care-file");if(await premium.count()){await premium.nth(0).click();await premium.nth(1).click();await premium.nth(2).click();await page.locator(".mama-care-continue").click()}else{const items=page.locator(".care-grid button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="sacrifices"){const items=page.locator(".sacrifice-list button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
   else if(current==="return"){await page.locator(".return-key").click();await page.locator(".scene .primary-action").click()}
   else if(current==="lessons"){const items=page.locator(".lesson-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
@@ -118,6 +118,47 @@ test("mama memories use a focused editorial photo deck and reveal CTA at the end
 
   await continueButton.click();
   await waitForScene(page,"care");
+});
+
+
+test("mama care reveals a premium invisible-care archive before continuing",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/mama");
+  await waitForScene(page,"intro");
+  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await waitForScene(page,"childhood");
+  await page.getByRole("button",{name:/Seguir recordando/i}).click();
+  await waitForScene(page,"memories");
+
+  const memoryNext=page.locator(".thi-mama-memory-local-nav > button").last();
+  await memoryNext.click();
+  await memoryNext.click();
+  await page.getByRole("button",{name:/Seguir con la historia/i}).click();
+  await waitForScene(page,"care");
+
+  await expect(page.locator(".scene-care-mama")).toBeVisible();
+  await expect(page.locator(".mama-care-file")).toHaveCount(3);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeHidden();
+  await expect(page.locator(".mama-care-continue")).toHaveCount(0);
+
+  const cards=page.locator(".mama-care-file");
+  for(let i=0;i<3;i++){
+    await cards.nth(i).click();
+    await expect(cards.nth(i)).toHaveClass(/open/);
+    await expect(cards.nth(i)).toHaveAttribute("aria-expanded","true");
+  }
+
+  await expect(page.locator(".scene-care-mama")).toHaveClass(/care-open-3/);
+  await expect(page.getByText("Ahora entiendo todo lo que había detrás.")).toBeVisible();
+  const next=page.getByRole("button",{name:/Seguir/i});
+  await expect(next).toBeVisible();
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await next.click();
+  await waitForScene(page,"sacrifices");
 });
 
 
