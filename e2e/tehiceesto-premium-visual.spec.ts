@@ -51,6 +51,12 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await page.locator(".thi-pair-threshold-door").click();
   await expect(page.getByText("Del otro lado estamos nosotros.")).toBeVisible();
   await expect(page.getByRole("button",{name:/Seguir entrando/i})).toBeVisible();
+  await expect.poll(async()=>{
+    return page.locator(".thi-pair-threshold-leaf").evaluate((node)=>{
+      const matrix=new DOMMatrix(getComputedStyle(node).transform);
+      return Math.abs(matrix.m11);
+    });
+  }).toBeLessThan(.2);
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-pareja-threshold-390");
 
