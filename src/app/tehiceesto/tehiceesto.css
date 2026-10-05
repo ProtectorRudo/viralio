@@ -10978,6 +10978,7 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   pointer-events:none!important;
 }
 .thi-root:has(.thi-theme-pareja[data-scene="intro"]) .floating-create-cta.floating-whatsapp--experience{
+  visibility:hidden!important;
   opacity:0!important;
   pointer-events:none!important;
   transform:translateY(14px) scale(.96);
