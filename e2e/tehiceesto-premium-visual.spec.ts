@@ -15,11 +15,12 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
 
   await page.setViewportSize({width:1440,height:1000});
   await page.goto("/tehiceesto");
-  await expect(page.getByRole("heading",{name:/No le mandes/i})).toBeVisible();
-  await expect(page.getByRole("heading",{name:/Elegí para quién es/i})).toBeVisible();
-  await expect(page.getByText("Todo lo que hiciste sin pedir aplausos")).toBeVisible();
-  await expect(page.getByText("Las cosas tuyas que quedaron en mí")).toBeVisible();
-  await expect(page.getByText("Expediente: nuestra amistad")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Hay regalos que se abren una vez/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/¿Para quién lo estás haciendo\?/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Mamá/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Papá/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Amistad/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/No recibe una página/i})).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-home-1440");
 
