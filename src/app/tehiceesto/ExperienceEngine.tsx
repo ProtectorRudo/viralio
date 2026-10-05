@@ -59,7 +59,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const [casefileOpen,setCasefileOpen]=useState(false);const [insideJokesOpen,setInsideJokesOpen]=useState<number[]>([]);const [incidentsOpen,setIncidentsOpen]=useState<number[]>([]);const [proofOpen,setProofOpen]=useState<number[]>([]);const [pactOpen,setPactOpen]=useState<number[]>([]);
   const [soundtrackStarted,setSoundtrackStarted]=useState(false);const [soundtrackPaused,setSoundtrackPaused]=useState(false);
   const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);const demoVoiceMessageRef=useRef<string|null>(null);const demoVoiceRunRef=useRef(0);const mamaVoiceAudioRef=useRef<HTMLAudioElement|null>(null);
-  const shellRef=useRef<HTMLElement|null>(null);const mamaMemorySwipeRef=useRef<{pointerId:number|null;x:number;y:number}>({pointerId:null,x:0,y:0});
+  const shellRef=useRef<HTMLElement|null>(null);const mamaMemorySwipeRef=useRef<{pointerId:number|null;x:number;y:number}>({pointerId:null,x:0,y:0});const mamaLetterSwipeRef=useRef<{pointerId:number|null;x:number;y:number;swiped:boolean}>({pointerId:null,x:0,y:0,swiped:false});
 
   const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
   useEffect(()=>{
@@ -180,6 +180,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const moveTo=(nextIndex:number,dir:"forward"|"back")=>{if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex)return;stopDemoVoice();const destination=scenes[nextIndex];const commitScene=()=>{resetSceneState(destination);setDirection(dir);setTransitioning(false);setSceneIndex(nextIndex);setRunId(v=>v+1)};haptic(8);if(typeof document!=="undefined"&&typeof window!=="undefined"){const viewDocument=document as Document&{startViewTransition?:(update:()=>void)=>unknown};const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(viewDocument.startViewTransition&&!reduced){viewDocument.startViewTransition(()=>flushSync(commitScene));return}}commitScene()};
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");const prev=()=>moveTo(Math.max(0,sceneIndex-1),"back");
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
+  const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
 
   const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=3;case"presence":return presenceOpen.length>=2;case"inheritance":return inheritanceOpen.length>=3;case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
@@ -290,7 +291,54 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       {experience.slug==="pareja"?(stars.length===starLines.length&&<button data-action="advance" className="thi-pair-stars-cta" onClick={next}>{token(copy.stars.cta)}</button>):<button data-action="advance" className="thi-primary" disabled={stars.length<3} onClick={next}>{stars.length<3?countText(copy.stars.remainingOne,copy.stars.remainingMany,3-stars.length):token(copy.stars.cta)}</button>}</section>;
       case"scratch":return <section className="thi-scene thi-scene-scratch thi-scene-rich"><p className="thi-kicker">{token(copy.scratch.kicker)}</p><h2>{titleLines(copy.scratch.title)}</h2><ScratchReveal accent={experience.accent} eyebrow={token(copy.scratch.eyebrow)} reward={token(copy.scratch.reward)} note={token(copy.scratch.note)} coverTitle={token(copy.scratch.coverTitle)} coverHint={token(copy.scratch.coverHint)} fallbackLabel={token(copy.scratch.fallbackLabel)} revealed={scratched} onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime")}}/><button data-action="advance" className="thi-primary" disabled={!scratched} onClick={next}>{token(copy.scratch.cta)}</button></section>;
       case"hold":return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
-      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"?"thi-pair-letter":""} ${letterOpen?"is-open":""}`}><div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div><p className="thi-kicker">{token(copy.letter.kicker)}</p><h2>{titleLines(copy.letter.title)}</h2><div className="thi-letter-aura" aria-hidden="true"/><button data-action="open-letter" className={`thi-envelope ${letterOpen?"open":""}`} onClick={()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")}} aria-label={letterOpen?"Carta abierta":token(copy.letter.sealHint)}><span className="back"/><span className="flap"/><span className="paper"><small>{token(copy.letter.recipientLabel)}</small><strong>{copyOverride?.letter?.body?token(String(copyOverride.letter.body)):letterText||token(copy.letter.body)}</strong><em>{token(copy.letter.signature)}</em></span><span className="front"/><span className="wax"><i/><b>♥</b></span></button>{!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}</section>;
+      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"?"thi-pair-letter":""} ${experience.slug==="mama"?"thi-mama-letter":""} ${letterOpen?"is-open":""}`}>
+        <div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
+        <p className="thi-kicker">{token(copy.letter.kicker)}</p>
+        <h2>{titleLines(copy.letter.title)}</h2>
+        <div className="thi-letter-aura" aria-hidden="true"/>
+        <button
+          data-action="open-letter"
+          className={`thi-envelope ${letterOpen?"open":""}`}
+          onClick={()=>{
+            if(experience.slug==="mama"&&mamaLetterSwipeRef.current.swiped){
+              mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped:false};
+              return;
+            }
+            openLetter();
+          }}
+          onPointerDown={experience.slug==="mama"?(event)=>{
+            if(letterOpen||!event.isPrimary)return;
+            mamaLetterSwipeRef.current={pointerId:event.pointerId,x:event.clientX,y:event.clientY,swiped:false};
+            try{event.currentTarget.setPointerCapture(event.pointerId)}catch{}
+          }:undefined}
+          onPointerUp={experience.slug==="mama"?(event)=>{
+            const start=mamaLetterSwipeRef.current;
+            if(letterOpen||start.pointerId!==event.pointerId)return;
+            const dx=event.clientX-start.x;
+            const dy=event.clientY-start.y;
+            const swiped=Math.abs(dx)>=42&&Math.abs(dx)>Math.abs(dy)*1.1;
+            mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped};
+            try{if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+            if(swiped)openLetter();
+          }:undefined}
+          onPointerCancel={experience.slug==="mama"?(event)=>{
+            if(mamaLetterSwipeRef.current.pointerId!==event.pointerId)return;
+            mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped:false};
+          }:undefined}
+          aria-label={letterOpen?"Carta abierta":experience.slug==="mama"?"Deslizá para abrir la carta":token(copy.letter.sealHint)}
+        >
+          <span className="back"/>
+          <span className="flap"/>
+          <span className="paper">
+            <small>{token(copy.letter.recipientLabel)}</small>
+            <strong>{copyOverride?.letter?.body?token(String(copyOverride.letter.body)):letterText||token(copy.letter.body)}</strong>
+            <em>{token(copy.letter.signature)}</em>
+          </span>
+          <span className="front"/>
+          <span className="wax"><i/><b>♥</b></span>
+        </button>
+        {!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":experience.slug==="mama"?"Deslizá para abrir":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}
+      </section>;
       case"candles":return <section className="thi-scene thi-scene-candles thi-scene-rich"><p className="thi-kicker">{token(copy.candles.kicker)}</p><h2>{titleLines(copy.candles.title)}</h2>{experience.slug==="cumpleanos"?<div className={`thi-birthday-ritual ${candlesOut?"out":""}`}>
         <div className="thi-birthday-candlelight" aria-hidden="true"/>
         <div className="thi-birthday-table" aria-hidden="true"/>
