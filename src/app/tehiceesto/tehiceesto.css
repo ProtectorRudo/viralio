@@ -17802,3 +17802,271 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 /* deploy retry 2: premium mama letter */
 
 /* release: premium mama letter live */
+
+
+/* =========================================================
+   MAMÁ · CARTA V2 — CLOSED ENVELOPE RITUAL · OCT 2026
+   Closed first. Seal -> flap -> letter. The reward is earned.
+   ========================================================= */
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter{
+  padding-top:clamp(104px,12svh,132px);
+}
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+  width:min(700px,90vw);
+  font-size:clamp(42px,6.1vw,64px);
+  line-height:.97;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope{
+  width:min(470px,82vw);
+  height:258px;
+  margin-top:clamp(42px,5svh,58px);
+  margin-bottom:20px;
+  filter:drop-shadow(0 28px 42px rgba(0,0,0,.48));
+}
+
+/* CLOSED: the letter is completely inside the envelope. */
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+  z-index:3;
+  transform:translateY(124px) rotate(-.08deg);
+  filter:brightness(.96);
+  box-shadow:none;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .flap{
+  z-index:6;
+  transform:rotateX(0deg);
+  filter:brightness(.96);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .front{
+  z-index:5;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .wax{
+  z-index:9;
+  top:55%;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper>small,
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper>strong,
+.thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper>em{
+  opacity:0;
+  transform:translateY(7px);
+}
+
+/* Paper contents only arrive after the envelope has actually opened. */
+.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>small,
+.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>strong,
+.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>em{
+  transition:opacity .42s ease,transform .52s cubic-bezier(.2,.75,.2,1);
+}
+
+/* More physical paper construction in the closed state. */
+.thi-theme-mama[data-scene="letter"] .thi-envelope .back{
+  background:
+    linear-gradient(116deg,rgba(255,255,255,.15),transparent 24%),
+    repeating-linear-gradient(8deg,rgba(91,57,37,.021) 0 1px,transparent 1px 4px),
+    linear-gradient(156deg,#c99a70 0%,#b27e57 58%,#956342 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.23),
+    inset 0 -20px 42px rgba(72,39,25,.13),
+    0 1px 0 rgba(255,255,255,.04);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope .flap{
+  height:66%;
+  background:
+    linear-gradient(165deg,rgba(255,255,255,.15),transparent 37%),
+    repeating-linear-gradient(9deg,rgba(88,54,34,.018) 0 1px,transparent 1px 5px),
+    linear-gradient(147deg,#d4ad86 0%,#b6815a 84%);
+  box-shadow:inset 0 -1px 0 rgba(80,48,30,.16);
+  transition:
+    transform .72s .16s cubic-bezier(.16,.86,.16,1),
+    filter .55s ease,
+    z-index 0s .52s;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope .front{
+  background:
+    linear-gradient(116deg,rgba(255,255,255,.09),transparent 24%),
+    repeating-linear-gradient(7deg,rgba(75,47,31,.016) 0 1px,transparent 1px 4px),
+    linear-gradient(145deg,#bd8a61 0%,#a8734e 70%,#91603f 100%);
+  box-shadow:
+    inset 0 -18px 32px rgba(71,38,23,.10),
+    inset 0 1px 0 rgba(255,255,255,.14);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope .wax{
+  width:58px;
+  height:58px;
+  transition:
+    opacity .28s .06s ease,
+    transform .38s .04s cubic-bezier(.22,.8,.22,1),
+    filter .35s ease;
+}
+
+/* OPENING SEQUENCE
+   1) seal releases
+   2) flap folds back
+   3) paper rises
+*/
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open{
+  transform:translateY(14px);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .wax{
+  opacity:0;
+  transform:translate(-50%,-50%) rotate(12deg) scale(1.18);
+  filter:blur(1px) brightness(1.1);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .flap{
+  z-index:2;
+  transform:rotateX(-178deg);
+  filter:brightness(.82);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+  z-index:4;
+  transform:translateY(-132px) rotate(-.22deg);
+  transition:
+    transform .92s .62s cubic-bezier(.16,.84,.16,1),
+    box-shadow .78s .58s ease,
+    filter .78s .58s ease;
+  box-shadow:
+    0 30px 66px rgba(37,20,13,.22),
+    0 0 58px rgba(236,174,116,.08),
+    inset 0 0 44px rgba(117,75,44,.03);
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper>small{
+  opacity:1;
+  transform:translateY(0);
+  transition-delay:1.02s;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper>strong{
+  opacity:1;
+  transform:translateY(0);
+  transition-delay:1.10s;
+}
+.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper>em{
+  opacity:1;
+  transform:rotate(-3deg) translateY(0);
+  transition-delay:1.18s;
+}
+
+/* While reading, everything else politely gets out of the way. */
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter.is-open>.thi-kicker{
+  opacity:.24;
+  transform:translateY(-6px);
+}
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter.is-open>h2{
+  opacity:.11;
+  transform:translateY(-10px) scale(.98);
+  filter:blur(.8px);
+}
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter.is-open .thi-letter-aura{
+  opacity:.84;
+  transform:translate(-50%,-48%) scale(1.08);
+}
+.thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-primary{
+  margin-top:46px;
+}
+
+/* Sales CTA stays present, but never competes with the ritual. */
+.thi-root:has(.thi-theme-mama[data-scene="letter"]:not([data-letter-open="true"])) .floating-create-cta.floating-whatsapp--experience{
+  opacity:.72;
+  transform:scale(.96);
+}
+
+@media(max-width:650px){
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter{
+    padding-top:96px;
+    padding-inline:14px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-kicker{
+    margin-bottom:15px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+    width:92vw;
+    font-size:clamp(38px,10.7vw,47px);
+    line-height:.96;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope{
+    width:min(87vw,420px);
+    height:232px;
+    margin-top:46px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+    left:7%;
+    right:7%;
+    height:306px;
+    padding:25px 24px 25px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+    transform:translateY(116px) rotate(-.06deg);
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-114px) rotate(-.2deg);
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .paper>strong{
+    font-size:clamp(16px,4.25vw,19px);
+    line-height:1.37;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .paper>em{
+    font-size:24px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .wax{
+    width:53px;
+    height:53px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-primary{
+    margin-top:42px;
+  }
+}
+@media(max-width:390px){
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter{
+    padding-top:90px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+    font-size:37px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope{
+    width:89vw;
+    height:220px;
+    margin-top:40px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+    height:292px;
+    padding:23px 21px 23px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+    transform:translateY(111px);
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-104px) rotate(-.18deg);
+  }
+}
+@media(max-height:760px) and (max-width:650px){
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter{
+    padding-top:80px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-mama-letter>h2{
+    font-size:34px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope{
+    height:204px;
+    margin-top:34px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+    height:272px;
+    padding:20px 20px 21px;
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope:not(.open) .paper{
+    transform:translateY(103px);
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-92px);
+  }
+  .thi-theme-mama[data-scene="letter"] .thi-envelope .paper>strong{
+    font-size:14px;
+    line-height:1.33;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper,
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper>small,
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper>strong,
+  .thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper>em{
+    transition-delay:0s!important;
+  }
+}
