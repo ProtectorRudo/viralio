@@ -13706,19 +13706,19 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
   transform:perspective(980px) translate3d(-2px,0,-28px) rotateY(10deg);
 }
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-leaf{
-  transform:perspective(980px) translate3d(-8px,0,-150px) rotateY(76deg) scale(.965);
+  transform:perspective(980px) translate3d(-5px,0,-82px) rotateY(58deg) scale(.98);
   box-shadow:
-    -22px 6px 44px rgba(0,0,0,.16),
-    22px 0 42px rgba(0,0,0,.32);
-  filter:brightness(.58) saturate(.72);
+    -20px 8px 46px rgba(0,0,0,.20),
+    18px 0 38px rgba(0,0,0,.22);
+  filter:brightness(.78) saturate(.82);
 }
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-light{
-  width:62%;
+  width:74%;
   opacity:1;
-  transform:translateZ(-170px);
+  transform:translateZ(-118px);
   box-shadow:
-    0 0 44px rgba(248,187,177,.40),
-    0 0 145px rgba(231,139,129,.22);
+    0 0 58px rgba(248,187,177,.52),
+    0 0 165px rgba(231,139,129,.30);
 }
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold-floor{
   z-index:0;
@@ -13732,4 +13732,25 @@ body:has(.home-shell) .site-header nav .header-create:hover{background:#3a3135}
 .thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-floor{
   opacity:.92;
   background:linear-gradient(180deg,rgba(241,175,165,.28),rgba(132,73,72,.08) 45%,transparent 82%);
+}
+
+
+.thi-theme-pareja[data-scene="door"] .thi-pair-threshold-leaf:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  background:
+    linear-gradient(90deg,rgba(255,213,201,.14),rgba(255,188,176,.025) 38%,transparent 66%),
+    linear-gradient(180deg,rgba(255,255,255,.035),transparent 42%);
+  transition:opacity .7s ease;
+}
+.thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-leaf:after{
+  opacity:.95;
+}
+.thi-theme-pareja[data-scene="door"] .thi-pair-threshold.is-open .thi-pair-threshold-frame{
+  background:
+    radial-gradient(ellipse at 72% 46%,rgba(244,177,165,.18),transparent 44%),
+    linear-gradient(180deg,rgba(35,19,22,.82),rgba(11,7,9,.98));
 }
