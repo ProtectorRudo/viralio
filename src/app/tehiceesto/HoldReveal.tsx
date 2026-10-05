@@ -17,8 +17,14 @@ export default function HoldReveal({
 
   const setVisualProgress=(progress:number)=>{
     const degrees=Math.round(progress*360);
-    buttonRef.current?.style.setProperty("--hold-progress",`${degrees}deg`);
-    buttonRef.current?.style.setProperty("--hold-charge",progress.toFixed(3));
+    const button=buttonRef.current;
+    button?.style.setProperty("--hold-progress",`${degrees}deg`);
+    button?.style.setProperty("--hold-charge",progress.toFixed(3));
+    button?.style.setProperty("--hold-glow",`${Math.round(70+progress*55)}px`);
+    button?.style.setProperty("--hold-core-scale",(1+progress*.035).toFixed(3));
+    button?.style.setProperty("--hold-heart-scale",(.95+progress*.11).toFixed(3));
+    button?.style.setProperty("--hold-halo-opacity",(.18+progress*.7).toFixed(3));
+    button?.parentElement?.style.setProperty("--hold-atmosphere-scale",(.92+progress*.13).toFixed(3));
   };
 
   const reset=()=>{
