@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+// github-bridge release: cinematic-pair-intro
+
 import { useEffect,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent,type PointerEvent as ReactPointerEvent } from "react";
 import { flushSync } from "react-dom";
 import type { Experience,SceneType } from "./data";
