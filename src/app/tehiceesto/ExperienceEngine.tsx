@@ -155,7 +155,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     const pattern=passiveHapticPatterns[control.dataset.action||""];
     if(pattern!==undefined)haptic(pattern);
   };
-  const stopDemoVoice=()=>{demoVoiceRunRef.current+=1;demoVoiceMessageRef.current=null;setDemoVoiceStatus("idle");if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}restoreSoundtrack()};
+  const stopDemoVoice=()=>{demoVoiceRunRef.current+=1;demoVoiceMessageRef.current=null;setDemoVoiceStatus("idle");if(mamaVoiceAudioRef.current){try{mamaVoiceAudioRef.current.pause()}catch{}}setMamaVoiceRealPlaying(false);if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}restoreSoundtrack()};
   const toggleDemoVoice=(message:string)=>{
     try{
       if(typeof window==="undefined"||!("speechSynthesis" in window))return;
@@ -375,7 +375,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                   onTimeUpdate={event=>{const el=event.currentTarget;setMamaVoiceProgress(el.duration?Math.min(100,(el.currentTime/el.duration)*100):0)}}
                   onEnded={()=>{setMamaVoiceRealPlaying(false);setMamaVoiceProgress(100);setVoicesPlayed(v=>v.includes(active)?v:[...v,active]);restoreSoundtrack()}}
                 />}
-                <button data-action="mama-voice-toggle" className="thi-mama-voice-play" onClick={toggleMamaVoice} aria-label={isPlaying?"Pausar mensaje":isPaused?"Continuar mensaje":"Escuchar mensaje"}>{isPlaying?"Ⅱ":"▶"}</button>
+                <button data-action="mama-voice-toggle" data-voice-state={isPlaying?"playing":isPaused?"paused":voicesPlayed.includes(active)?"played":"idle"} className="thi-mama-voice-play" onClick={toggleMamaVoice} aria-label={isPlaying?"Pausar mensaje":isPaused?"Continuar mensaje":"Escuchar mensaje"}>{isPlaying?"Ⅱ":"▶"}</button>
                 <p className="thi-mama-voice-status">{isPlaying?"Escuchando…":isPaused?"Pausado":voicesPlayed.includes(active)?"Mensaje escuchado":"Tocá para escuchar"}</p>
               </article>
               <button data-action="mama-voice-back" className="thi-mama-voice-back" onClick={backToVoices}>{allHeard?"Ya escuché todas":"Escuchar otra voz"} <span>→</span></button>
