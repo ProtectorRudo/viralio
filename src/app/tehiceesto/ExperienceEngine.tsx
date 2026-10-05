@@ -591,6 +591,53 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         );
 
       case "care":
+        if(experience.slug==="mama"){
+          const careItems=[
+            {n:"01",label:"LO QUE NADIE VEÍA",title:"Recordar por todos",copy:"Fechas, turnos, tareas, lo que faltaba en casa. Lo llevabas adentro sin pedir que nadie lo notara."},
+            {n:"02",label:"HACER ESPACIO",title:"Hacer lugar",copy:"En la mesa, en el día, en el presupuesto y hasta en el cansancio. De alguna manera siempre aparecía lugar para nosotros."},
+            {n:"03",label:"ANTES DE PEDIRLO",title:"Estar antes de que lo pidiera",copy:"Muchas veces entendiste qué me pasaba antes de que yo pudiera ponerle palabras. Ya estabas ahí cuando todavía no sabía cómo pedir ayuda."},
+          ];
+          return (
+            <section className={`scene scene-care scene-care-mama care-open-${Math.min(careOpen.length,3)}`}>
+              <div className="mama-care-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
+              <p className="scene-kicker">Las cosas que parecían pequeñas</p>
+              <h2>Gran parte del amor estaba escondido en <em>cosas que nadie aplaudía.</em></h2>
+              <div className="mama-care-divider" aria-hidden="true"><i/><span>♡</span><i/></div>
+              <div className="mama-care-files" aria-label="Archivo de cuidados invisibles">
+                {careItems.map((item,index)=>{
+                  const isOpen=careOpen.includes(index);
+                  return (
+                    <button
+                      key={item.title}
+                      type="button"
+                      data-action="care-open"
+                      aria-expanded={isOpen}
+                      className={`mama-care-file ${isOpen?"open":""}`}
+                      onClick={()=>setCareOpen(items=>items.includes(index)?items:[...items,index])}
+                    >
+                      <span className="mama-care-file-tab" aria-hidden="true"/>
+                      <span className="mama-care-file-head">
+                        <small>{item.n} · {item.label}</small>
+                        {!isOpen&&<i aria-hidden="true">›</i>}
+                      </span>
+                      <strong>{item.title}</strong>
+                      <span className="mama-care-file-rule" aria-hidden="true"/>
+                      <p>{isOpen?item.copy:"Tocá para abrir"}</p>
+                      {isOpen&&<span className="mama-care-botanical" aria-hidden="true"><i/><i/><i/><b/></span>}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mama-care-mini-progress" aria-label={`${Math.min(careOpen.length,3)} de 3 cuidados descubiertos`}>
+                {[0,1,2].map(index=><i key={index} className={careOpen.includes(index)?"done":""}/>)}
+              </div>
+              {careOpen.length>=3&&<div className="mama-care-resolution">
+                <p>Ahora entiendo todo lo que había detrás.</p>
+                <button data-action="advance" className="mama-care-continue" onClick={next}>Seguir <span>→</span></button>
+              </div>}
+            </section>
+          );
+        }
         return (
           <section className="scene scene-care">
             <p className="scene-kicker">Las cosas que parecían pequeñas</p>
