@@ -39,6 +39,13 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-creator-390");
 
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await expect(page.getByText("Lo nuestro también merecía un lugar así.")).toBeVisible();
+  await expect(page.getByText(/Ponete auriculares/i)).toHaveCount(0);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expectNoHorizontalOverflow(page);
+  await capture(page,testInfo,"tehiceesto-premium-pareja-intro-390");
+
   for(const [slug,scene,openSelector] of [
     ["abuelos","archive",".archive-folder"],
     ["mama","childhood",null],
