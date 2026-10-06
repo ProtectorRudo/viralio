@@ -297,7 +297,7 @@ export const experiences: Experience[] = [
     demoRecipient:"Mamá",
     demoGiver:"Tus hijos",
     opening:"Hay una edad en la que uno cree que mamá puede con todo. Después uno crece y empieza a entender cuánto había detrás.",
-    closing:"Gracias por ser hogar mucho antes de que yo entendiera lo que significaba esa palabra.",
+    closing:"Gracias por ser hogar mucho antes de que supiéramos todo lo que esa palabra significaba.",
     tags:["Mamá","Gratitud","Infancia"],
     recipe:["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
     // release-mama-flow: return scene removed
