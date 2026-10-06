@@ -34,6 +34,7 @@ function conversion(row:AffiliateRow){
 
 export default function AffiliateAdminDashboard(){
   const [ready,setReady]=useState(false);
+  const [hasSession,setHasSession]=useState(false);
   const [overview,setOverview]=useState<Overview|null>(null);
   const [loading,setLoading]=useState(false);
   const [message,setMessage]=useState("");
@@ -60,10 +61,17 @@ export default function AffiliateAdminDashboard(){
   }
 
   useEffect(()=>{
+    const active=Boolean(window.sessionStorage.getItem(SESSION_KEY));
+    setHasSession(active);
     setReady(true);
-    if(window.sessionStorage.getItem(SESSION_KEY))void load();
+    if(active)void load();
+    const expired=()=>setHasSession(false);
+    window.addEventListener("thi-admin-session-expired",expired);
     const id=window.setInterval(()=>{if(window.sessionStorage.getItem(SESSION_KEY))void load(true)},10000);
-    return()=>window.clearInterval(id);
+    return()=>{
+      window.clearInterval(id);
+      window.removeEventListener("thi-admin-session-expired",expired);
+    };
   },[]);
 
   async function create(event:FormEvent<HTMLFormElement>){
@@ -133,7 +141,7 @@ export default function AffiliateAdminDashboard(){
 
   if(!ready)return <main className="thi-admin-shell"><div className="thi-admin-loading">Cargando…</div></main>;
 
-  if(!window.sessionStorage.getItem(SESSION_KEY)){
+  if(!hasSession){
     return <main className="thi-admin-shell thi-aff-admin-locked">
       <section><span>PANEL INTERNO</span><h1>Afiliados</h1><p>Necesitás iniciar sesión en el panel principal.</p><Link href="/tehiceesto/admin">Volver al admin →</Link></section>
     </main>;
