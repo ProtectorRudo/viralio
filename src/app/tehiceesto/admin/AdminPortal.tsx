@@ -22,7 +22,13 @@ type GiftRow = {
   recipient_name: string;
   created_at: string;
   published_at: string | null;
-  story_data?: { creator?: { submitted?: boolean; submittedAt?: string } } | null;
+  story_data?: {
+    creator?: {
+      submitted?: boolean;
+      submittedAt?: string;
+      contact?: { name?: string; email?: string; whatsapp?: string };
+    };
+  } | null;
   order?: { status: string; amount_minor: number | null; currency: string; provider: string } | null;
 };
 
@@ -64,7 +70,7 @@ export default function AdminPortal() {
   }
 
   useEffect(() => {
-    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1",{cache:"no-store"})
+    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1",{cache:"no-store"})
       .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
       .then((data:{configured?:boolean})=>setMpReady(data.configured===true))
       .catch(()=>setMpReady(false));
@@ -383,6 +389,7 @@ export default function AdminPortal() {
                   <th>De</th>
                   <th>Experiencia</th>
                   <th>Origen</th>
+                  <th>Contacto</th>
                   <th>Pago</th>
                   <th>Estado</th>
                   <th>Código</th>
@@ -404,6 +411,22 @@ export default function AdminPortal() {
                       <span className={gift.story_data?.creator?.submitted ? "thi-source-badge creator" : "thi-source-badge manual"}>
                         {gift.story_data?.creator?.submitted ? "Web" : "Manual"}
                       </span>
+                    </td>
+                    <td>
+                      {gift.story_data?.creator?.contact ? (
+                        <div className="thi-admin-contact-cell">
+                          <strong>{gift.story_data.creator.contact.name||gift.giver_name}</strong>
+                          {gift.story_data.creator.contact.whatsapp ? (
+                            <a
+                              href={`https://wa.me/${gift.story_data.creator.contact.whatsapp.replace(/\D/g,"")}`}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                            >
+                              {gift.story_data.creator.contact.whatsapp}
+                            </a>
+                          ) : <small>{gift.story_data.creator.contact.email||"—"}</small>}
+                        </div>
+                      ) : <span className="thi-payment-badge none">—</span>}
                     </td>
                     <td>
                       {gift.order ? (
