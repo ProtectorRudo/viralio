@@ -14,6 +14,7 @@ function teHiceEstoRobots() {
       "User-agent: *",
       "Allow: /",
       "Disallow: /admin",
+      "Disallow: /afiliados/",
       "Disallow: /r/",
       "Disallow: /pedido/",
       "",
