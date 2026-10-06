@@ -17,6 +17,7 @@ function teHiceEstoRobots() {
       "Disallow: /afiliados/",
       "Disallow: /r/",
       "Disallow: /pedido/",
+      "Disallow: /mercadopago/",
       "",
       "Sitemap: https://tehiceesto.com/sitemap.xml",
       "",
