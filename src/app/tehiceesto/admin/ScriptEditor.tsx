@@ -181,9 +181,13 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
   ],
   lessons:[
     {path:"lessons.kicker",label:"Frase superior",kind:"text"},
-    {path:"lessons.title",label:"Título",kind:"textarea"},
-    {path:"lessons.items",label:"Lecciones",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 3."},
+    {path:"lessons.title",label:"Título principal",kind:"textarea"},
+    {path:"lessons.accentTitle",label:"Línea destacada",kind:"text"},
+    {path:"lessons.titleTail",label:"Cierre del título",kind:"textarea"},
+    {path:"lessons.items",label:"Recuerdos emocionales",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 4 para Papá."},
     {path:"lessons.closedLabel",label:"Texto antes de abrir",kind:"text"},
+    {path:"lessons.outroTitle",label:"Frase de cierre",kind:"text"},
+    {path:"lessons.outroBody",label:"Cierre emocional",kind:"textarea"},
     {path:"lessons.cta",label:"Botón para continuar",kind:"text"},
   ],
   presence:[
