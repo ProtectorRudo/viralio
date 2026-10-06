@@ -1,5 +1,3 @@
-import "server-only";
-
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 const PAYMENT_BRIDGE =
