@@ -1,0 +1,57 @@
+name: QA Te Hice Esto final referral checkout
+
+on:
+  push:
+    branches: [qa-final-circuit-20261006]
+    paths:
+      - ".github/workflows/qa-tehiceesto-final-circuit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  final-circuit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Validate referral to live checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1"
+          KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN"
+          ORIGIN="https://tehiceesto.com"
+          VISITOR="$(python - <<'PY'
+          import uuid
+          print(uuid.uuid4())
+          PY
+          )"
+
+          track="$(curl -fsSL --max-time 30 "$API/affiliate-public"             -H "content-type: application/json"             -H "apikey: $KEY"             -H "origin: $ORIGIN"             --data "{\"action\":\"track\",\"code\":\"qa-circuito-final\",\"visitorId\":\"$VISITOR\",\"source\":\"qa-final\",\"landingPath\":\"/\",\"referrerDomain\":\"github-actions.qa\"}")"
+          echo "$track"
+
+          affiliate_token="$(TRACK="$track" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["TRACK"])
+          assert data.get("ok") is True, data
+          token=data.get("affiliateToken","")
+          assert len(token) >= 30, data
+          print(token)
+          PY
+          )"
+
+          order="$(curl -fsSL --max-time 45 "$API/order-create"             -H "content-type: application/json"             -H "apikey: $KEY"             -H "origin: $ORIGIN"             --data "{\"experienceSlug\":\"pareja\",\"customerName\":\"QA Circuito Final\",\"email\":\"qa-circuito-final@tehiceesto.invalid\",\"whatsapp\":\"+5492210000000\",\"consent\":true,\"website\":\"\",\"affiliateToken\":\"$affiliate_token\"}")"
+          echo "$order"
+
+          ORDER="$order" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["ORDER"])
+          assert data.get("affiliateAttributed") is True, data
+          assert data.get("checkoutReady") is True, data
+          assert str(data.get("checkoutUrl","")).startswith("https://"), data
+          assert data.get("currency")=="ARS", data
+          assert data.get("priceMinor")==2500000, data
+          assert len(data.get("code",""))==18, data
+          print("FINAL_REFERRAL_CHECKOUT_OK")
+          print("ORDER_CODE="+data["code"])
+          PY
