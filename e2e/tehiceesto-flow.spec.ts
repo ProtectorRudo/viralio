@@ -467,8 +467,10 @@ test("pair letter scene opens as a premium physical keepsake without commercial 
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
   await waitForScene(page,"intro");
-  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="letter"){
+  for(let step=0;step<16 && await sceneName(page)!=="letter";step++){
+    const before=await sceneName(page);
     await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(before);
   }
   await waitForScene(page,"letter");
 
@@ -503,18 +505,15 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
   await page.goto("/tehiceesto/experiencias/pareja");
   await waitForScene(page,"intro");
 
-  const hold=page.locator('[data-action="hold"]');
-  const ritual=page.locator(".thi-hold-reveal.cinematic");
-  for(let step=0;step<12;step++){
-    if(await ritual.count())break;
-    const current=await sceneName(page);
-    if(current==="hold"){
-      await page.waitForTimeout(700);
-      continue;
-    }
+  for(let step=0;step<16 && await sceneName(page)!=="hold";step++){
+    const before=await sceneName(page);
     await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(before);
   }
   await waitForScene(page,"hold");
+
+  const hold=page.locator('[data-action="hold"]');
+  const ritual=page.locator(".thi-hold-reveal.cinematic");
   await expect(ritual).toBeVisible({timeout:15_000});
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
