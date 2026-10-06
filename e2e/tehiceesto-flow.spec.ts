@@ -95,6 +95,62 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
 });
 
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
+
+test("Papa premium keeps the emotional journey clean, audible and reset at the top",async({page})=>{
+  test.setTimeout(45_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/papa");
+
+  await expect(page.getByText("Tus hijos hicieron esto para vos")).toBeVisible();
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+
+  await advanceOne(page);
+  await waitForScene(page,"memories");
+  await expect(page.locator(".thi-memory")).toHaveCount(3);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+
+  await page.locator('[data-action="advance"]').click();
+  await waitForScene(page,"lessons");
+  await expect(page.getByText(/cobrar sentido/i)).toBeVisible();
+  const lessonItems=page.locator(".lesson-ledger button");
+  await lessonItems.nth(0).click();await lessonItems.nth(1).click();await lessonItems.nth(2).click();
+  await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+  await page.locator(".scene-lessons .primary-action").click();
+  await waitForScene(page,"presence");
+  await expect.poll(()=>page.evaluate(()=>window.scrollY),{timeout:1500}).toBeLessThan(12);
+
+  const presence=page.locator(".presence-track button");await presence.nth(0).click();await presence.nth(1).click();
+  await page.locator(".scene-presence .primary-action").click();
+  await waitForScene(page,"inheritance");
+  const inheritance=page.locator(".inheritance-board button");await inheritance.nth(0).click();await inheritance.nth(1).click();await inheritance.nth(2).click();
+  await page.locator(".scene-inheritance .primary-action").click();
+
+  await waitForScene(page,"voices");
+  const demoVoice=page.locator(".thi-papa-voice-list [data-action='demo-voice']").first();
+  await expect(demoVoice).toBeVisible();
+  await demoVoice.click();
+  await expect(demoVoice).toHaveClass(/heard/);
+  await page.locator(".thi-papa-voice-continue").click();
+
+  await waitForScene(page,"letter");
+  const paper=page.locator(".thi-papa-letter .thi-envelope .paper");
+  await expect.poll(()=>paper.evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))).toBeLessThan(.05);
+  await page.locator('[data-action="open-letter"]').click();
+  await expect.poll(()=>paper.evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))).toBeGreaterThan(.9);
+  await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await page.locator(".thi-papa-letter [data-action='advance']").click();
+
+  await waitForScene(page,"lookback");
+  await page.locator(".lookback-button").click();
+  await page.locator(".scene-lookback .primary-action").click();
+  await waitForScene(page,"finale");
+  await expect(page.locator(".thi-papa-finale")).toBeVisible();
+  await expect(page.getByText(/forman parte de nosotros/i)).toBeVisible();
+  await expect.poll(()=>page.locator(".floating-whatsapp--experience").evaluate(el=>getComputedStyle(el).visibility)).toBe("visible");
+
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
 test("scene state resets when revisiting and restart always starts clean",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/cumpleanos");await advanceOne(page);await waitForScene(page,"candles");await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");const balloons=page.locator('[data-action="balloon"]');await balloons.nth(0).click();await expect(balloons.nth(0)).toHaveClass(/pop/);await page.locator('[data-action="previous"]').click();await waitForScene(page,"candles");await expect(page.locator(".thi-birthday-ritual")).not.toHaveClass(/out/);await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");await expect(page.locator(".thi-balloons button.pop")).toHaveCount(0);await balloons.nth(0).click();await balloons.nth(1).click();await page.locator('.thi-reset-journey[data-action="restart"]').click();await waitForScene(page,"intro")});
 test("all visible scene copy can be overridden without changing the engine",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await expect(page.getByText(/armó esto pensando en vos/i)).toBeVisible();await page.locator('[data-action="advance"]').click();await expect(page.getByText(/No todo empieza con una fecha/i)).toBeVisible()});
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
