@@ -1000,3 +1000,159 @@
   .thh-v2-recorrido-copy h2{font-size:42px}
   .thh-v2-price strong{font-size:51px}
 }
+
+
+/* =========================================================
+   HOME V2 · PAYMENT VALUE & TRUST · OCT 2026
+   ========================================================= */
+.thh-v2-price-main h2 em{
+  display:block;
+  margin-top:7px;
+  color:#ad634f;
+  font-style:normal;
+}
+
+.thh-v2-price-story{
+  max-width:610px;
+  margin:0 0 30px;
+  color:#6e6367;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  line-height:1.62;
+}
+
+.thh-v2-price-intro{
+  margin:0 0 22px;
+  color:#3d3336;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:18px;
+  line-height:1.42;
+}
+
+.thh-v2-price-value li{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.thh-v2-price-value li>strong{
+  color:#3d3336;
+  font-size:10px;
+  font-weight:700;
+}
+
+.thh-v2-price-value li>span{
+  color:#81777a;
+  font-size:9px;
+}
+
+.thh-v2-payment-trust{
+  display:grid;
+  grid-template-columns:38px 1fr;
+  gap:12px;
+  align-items:center;
+  margin:0 0 20px;
+  padding:14px 15px;
+  border:1px solid rgba(47,37,40,.10);
+  border-radius:10px;
+  background:#f7f1e9;
+}
+
+.thh-v2-payment-lock{
+  width:34px;
+  height:34px;
+  position:relative;
+  display:block;
+  border-radius:50%;
+  background:#efe1d7;
+}
+
+.thh-v2-payment-lock:before{
+  content:"";
+  position:absolute;
+  left:10px;
+  top:14px;
+  width:14px;
+  height:11px;
+  border:1.6px solid #ad634f;
+  border-radius:3px;
+  box-sizing:border-box;
+}
+
+.thh-v2-payment-lock:after{
+  content:"";
+  position:absolute;
+  left:13px;
+  top:8px;
+  width:8px;
+  height:8px;
+  border:1.6px solid #ad634f;
+  border-bottom:0;
+  border-radius:8px 8px 0 0;
+  box-sizing:border-box;
+}
+
+.thh-v2-payment-trust strong{
+  display:block;
+  color:#332a2d;
+  font-size:10px;
+}
+
+.thh-v2-payment-trust p{
+  margin:3px 0 0;
+  color:#7b7074;
+  font-size:8.5px;
+  line-height:1.4;
+}
+
+.thh-v2-price-closing{
+  margin:14px auto 0;
+  max-width:390px;
+  color:#807477;
+  text-align:center;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:10px;
+  font-style:italic;
+  line-height:1.45;
+}
+
+@media(max-width:760px){
+  .thh-v2-price-main h2{
+    font-size:34px;
+    line-height:.98;
+  }
+
+  .thh-v2-price-main h2 em{
+    margin-top:6px;
+  }
+
+  .thh-v2-price-story{
+    margin-bottom:24px;
+    font-size:12.5px;
+    line-height:1.55;
+  }
+
+  .thh-v2-price-intro{
+    font-size:15px;
+  }
+
+  .thh-v2-price-value ul{
+    gap:14px;
+  }
+
+  .thh-v2-price-value li{
+    padding-left:31px;
+  }
+
+  .thh-v2-price-value li>strong{
+    font-size:9.5px;
+  }
+
+  .thh-v2-price-value li>span{
+    font-size:8.3px;
+  }
+
+  .thh-v2-payment-trust{
+    margin-top:4px;
+  }
+}

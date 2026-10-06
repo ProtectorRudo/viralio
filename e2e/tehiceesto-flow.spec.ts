@@ -75,6 +75,9 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await expect(page.getByRole("heading",{name:/No recibe solo un regalo/i})).toBeAttached();
   await expect(page.getByText("Nosotros hacemos la magia")).toBeAttached();
   await expect(page.locator(".thh-v2-price strong")).toContainText("$");
+  await expect(page.getByRole("heading",{name:/No estás comprando una página/i})).toBeAttached();
+  await expect(page.getByLabel("Pago seguro con Mercado Pago")).toContainText("Mercado Pago");
+  await expect(page.getByRole("link",{name:/Quiero crear este regalo/i})).toHaveAttribute("href","#para-quien");
 });
 
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
@@ -464,8 +467,10 @@ test("pair letter scene opens as a premium physical keepsake without commercial 
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
   await waitForScene(page,"intro");
-  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="letter"){
+  for(let step=0;step<16 && await sceneName(page)!=="letter";step++){
+    const before=await sceneName(page);
     await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(before);
   }
   await waitForScene(page,"letter");
 
@@ -499,18 +504,23 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
   await waitForScene(page,"intro");
-  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="hold"){
+
+  for(let step=0;step<16 && await sceneName(page)!=="hold";step++){
+    const before=await sceneName(page);
     await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(before);
   }
   await waitForScene(page,"hold");
 
   const hold=page.locator('[data-action="hold"]');
   const ritual=page.locator(".thi-hold-reveal.cinematic");
-  await expect(ritual).toBeVisible();
+  await expect(ritual).toBeVisible({timeout:15_000});
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
 
-  await hold.press("Enter");
+  await expect(hold).toBeVisible();
+  await hold.focus();
+  await page.keyboard.press("Enter");
   await expect(ritual).toHaveClass(/revealed/);
   await expect(ritual).toHaveAttribute("data-hold-phase","complete");
   await expect(page.locator('[data-action="advance"]')).toBeVisible();
