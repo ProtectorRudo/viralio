@@ -271,6 +271,18 @@ test("mama voices are a premium listening room with pause resume and three-messa
 
   await next.click();
   await waitForScene(page,"letter");
+
+  await expect(page.getByText("Hay palabras que merecían llegar hasta acá")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Después de entender tantas cosas/i})).toBeVisible();
+  await page.locator('[data-action="open-letter"]').click();
+  await expect(page.getByText(/Mucho de lo bueno que hay en nosotros empezó con vos/)).toBeVisible();
+  await page.getByRole("button",{name:/Guardar estas palabras/i}).click();
+  await waitForScene(page,"finale");
+
+  await expect(page.locator(".thi-mama-finale")).toBeVisible();
+  await expect(page.getByText("Por si alguna vez dudás")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Gracias por ser hogar mucho antes/i})).toBeVisible();
+  await expect(page.getByText(/Mirá todo lo que construiste/)).toBeVisible();
 });
 
 
