@@ -221,6 +221,29 @@ test("mama sacrifices reveal all four invisible costs before the final resolutio
 
 
 test("mama voices are a premium listening room with resilient playback and three-message completion",async({page})=>{
+  await page.addInitScript(()=>{
+    class FakeUtterance{
+      text:string;
+      lang="";
+      rate=1;
+      pitch=1;
+      voice:null=null;
+      onend:(()=>void)|null=null;
+      onerror:(()=>void)|null=null;
+      constructor(text:string){this.text=text}
+    }
+    Object.defineProperty(window,"SpeechSynthesisUtterance",{configurable:true,value:FakeUtterance});
+    Object.defineProperty(window,"speechSynthesis",{
+      configurable:true,
+      value:{
+        getVoices:()=>[],
+        speak:()=>{},
+        pause:()=>{},
+        resume:()=>{},
+        cancel:()=>{},
+      },
+    });
+  });
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
