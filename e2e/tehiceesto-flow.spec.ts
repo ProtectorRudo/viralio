@@ -313,6 +313,19 @@ test("mama voices are a premium listening room with resilient playback and three
   await expect(page.getByRole("heading",{name:/Después de entender tantas cosas/i})).toBeVisible();
   await page.locator('[data-action="open-letter"]').click();
   await expect(page.getByText(/Mucho de lo bueno que hay en nosotros empezó con vos/)).toBeVisible();
+
+  const mamaPaper=page.locator(".thi-mama-letter .thi-envelope.open .paper");
+  await expect(mamaPaper).toBeVisible();
+  const paperFit=await mamaPaper.evaluate(el=>({
+    clientHeight:el.clientHeight,
+    scrollHeight:el.scrollHeight,
+    clientWidth:el.clientWidth,
+    scrollWidth:el.scrollWidth,
+  }));
+  expect(paperFit.scrollHeight).toBeLessThanOrEqual(paperFit.clientHeight+1);
+  expect(paperFit.scrollWidth).toBeLessThanOrEqual(paperFit.clientWidth+1);
+  await expect(mamaPaper.locator("em")).toBeVisible();
+
   await page.getByRole("button",{name:/Guardar estas palabras/i}).click();
   await waitForScene(page,"finale");
 
