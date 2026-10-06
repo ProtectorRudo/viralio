@@ -52,6 +52,6 @@ jobs:
           assert data.get("currency")=="ARS", data
           assert data.get("priceMinor")==2500000, data
           assert len(data.get("code",""))==18, data
-          print("FINAL_REFERRAL_CHECKOUT_OK")
+          print("FINAL_REFERRAL_CHECKOUT_OK_RETRY")
           print("ORDER_CODE="+data["code"])
           PY
