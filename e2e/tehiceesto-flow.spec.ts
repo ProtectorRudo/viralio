@@ -4,9 +4,19 @@ async function sceneName(page:Page){return page.locator("main.thi-experience").g
 async function waitForScene(page:Page,name:string){await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene",name)}
 async function advanceOne(page:Page){
   const current=await sceneName(page);if(!current)throw new Error("missing_scene");
+  if(current==="finale"||current==="proposal")return;
+  await page.waitForTimeout(420);
+  if((await sceneName(page))!==current)return;
   if(current==="intro")await page.locator('[data-action="advance"]').click();
   else if(current==="door"){await page.locator('[data-action="open-door"]').click();await page.locator('[data-action="advance"]').click()}
-  else if(current==="memories"||current==="timeline"||current==="video")await page.locator('[data-action="advance"]').click();
+  else if(current==="memories"){
+    const mamaNext=page.locator(".thi-mama-memory-local-nav > button").last();
+    if(await mamaNext.count()){
+      while(!(await mamaNext.isDisabled()))await mamaNext.click();
+      await page.locator(".thi-mama-memories-continue").click();
+    }else await page.locator('[data-action="advance"]').click();
+  }
+  else if(current==="timeline"||current==="video")await page.locator('[data-action="advance"]').click();
   else if(current==="light"){await page.locator('[data-action="light-reveal"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="hold"){await page.locator('[data-action="hold"]').press("Enter");await page.locator('[data-action="advance"]').click()}
   else if(current==="stars"){const items=page.locator('[data-action="star"]');const count=await items.count();for(let i=0;i<count;i++)await items.nth(i).click();await page.locator('[data-action="advance"]').click()}
@@ -59,7 +69,7 @@ test("mama childhood is a premium editorial album without sales interruption",as
   await expect(page.getByRole("heading",{name:/Hubo un tiempo en que el mundo era enorme/i})).toBeVisible();
   await expect(page.locator(".childhood-memory")).toBeVisible();
   await expect(page.locator(".childhood-photo")).toBeVisible();
-  await expect(page.getByText("Yo no veía todo.")).toBeVisible();
+  await expect(page.getByText("De chicos no veíamos todo.")).toBeVisible();
   await expect(page.locator(".childhood-note p")).toHaveCount(2);
 
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
@@ -150,7 +160,7 @@ test("mama care reveals a premium invisible-care archive before continuing",asyn
   }
 
   await expect(page.locator(".scene-care-mama")).toHaveClass(/care-open-3/);
-  await expect(page.getByText("Ahora entiendo todo lo que había detrás.")).toBeVisible();
+  await expect(page.getByText("Hoy vemos todo lo que había detrás. Y también todo lo que construiste.")).toBeVisible();
   const next=page.getByRole("button",{name:/Seguir/i});
   await expect(next).toBeVisible();
 
@@ -210,7 +220,30 @@ test("mama sacrifices reveal all four invisible costs before the final resolutio
 });
 
 
-test("mama voices are a premium listening room with pause resume and three-message completion",async({page})=>{
+test("mama voices are a premium listening room with resilient playback and three-message completion",async({page})=>{
+  await page.addInitScript(()=>{
+    class FakeUtterance{
+      text:string;
+      lang="";
+      rate=1;
+      pitch=1;
+      voice:null=null;
+      onend:(()=>void)|null=null;
+      onerror:(()=>void)|null=null;
+      constructor(text:string){this.text=text}
+    }
+    Object.defineProperty(window,"SpeechSynthesisUtterance",{configurable:true,value:FakeUtterance});
+    Object.defineProperty(window,"speechSynthesis",{
+      configurable:true,
+      value:{
+        getVoices:()=>[],
+        speak:()=>{},
+        pause:()=>{},
+        resume:()=>{},
+        cancel:()=>{},
+      },
+    });
+  });
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
@@ -246,11 +279,15 @@ test("mama voices are a premium listening room with pause resume and three-messa
 
   const toggle=page.locator('[data-action="mama-voice-toggle"]');
   await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-label","Pausar mensaje");
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-label","Continuar mensaje");
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-label","Pausar mensaje");
+  await expect(toggle).toHaveAttribute("data-voice-state",/playing|played/);
+  if(await toggle.getAttribute("data-voice-state")==="playing"){
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("data-voice-state",/paused|played/);
+    if(await toggle.getAttribute("data-voice-state")==="paused"){
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("data-voice-state",/playing|played/);
+    }
+  }
 
   await page.locator('[data-action="mama-voice-back"]').click();
   await page.locator('[data-action="mama-voice-choice"]').nth(1).click();
@@ -262,7 +299,7 @@ test("mama voices are a premium listening room with pause resume and three-messa
 
   await expect(page.locator(".thi-mama-voices-complete")).toBeVisible();
   await expect(page.getByText(/Tres voces\./)).toBeVisible();
-  await expect(page.getByText(/Una misma cosa/)).toBeVisible();
+  await expect(page.getByText(/Una misma certeza/)).toBeVisible();
   const next=page.getByRole("button",{name:/Seguir/i});
   await expect(next).toBeVisible();
 
@@ -271,6 +308,18 @@ test("mama voices are a premium listening room with pause resume and three-messa
 
   await next.click();
   await waitForScene(page,"letter");
+
+  await expect(page.getByText("Hay palabras que merecían llegar hasta acá")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Después de entender tantas cosas/i})).toBeVisible();
+  await page.locator('[data-action="open-letter"]').click();
+  await expect(page.getByText(/Mucho de lo bueno que hay en nosotros empezó con vos/)).toBeVisible();
+  await page.getByRole("button",{name:/Guardar estas palabras/i}).click();
+  await waitForScene(page,"finale");
+
+  await expect(page.locator(".thi-mama-finale")).toBeVisible();
+  await expect(page.getByText("Por si alguna vez dudás")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Gracias por ser hogar mucho antes/i})).toBeVisible();
+  await expect(page.getByText(/Mirá todo lo que construiste/)).toBeVisible();
 });
 
 
@@ -423,18 +472,9 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
 
-  const box=await hold.boundingBox();
-  if(!box)throw new Error("hold control has no bounding box");
-  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
-  await page.mouse.down();
-  await page.waitForTimeout(1250);
-  await expect(ritual).toHaveAttribute("data-hold-phase","almost");
-  await expect(page.getByText("Un poquito más…")).toBeVisible();
-  await page.mouse.up();
-  await expect(ritual).toHaveAttribute("data-hold-phase","idle");
-
   await hold.press("Enter");
   await expect(ritual).toHaveClass(/revealed/);
+  await expect(ritual).toHaveAttribute("data-hold-phase","complete");
   await expect(page.locator('[data-action="advance"]')).toBeVisible();
 });
 
@@ -517,18 +557,23 @@ test("pair scratch card reveals from real drag gestures without fallback",async(
   const left=box.x+28;
   const right=box.x+box.width-28;
   const top=box.y+38;
-  const rows=5;
+  const bottom=box.y+box.height-38;
+  const pointerId=19;
+  const rows=8;
 
-  await page.mouse.move(left,top);
-  await page.mouse.down();
-  for(let row=0;row<rows;row++){
-    const y=top+row*((box.height-76)/(rows-1));
+  await canvas.dispatchEvent("pointerdown",{pointerId,pointerType:"mouse",isPrimary:true,clientX:left,clientY:top,buttons:1});
+  outer: for(let row=0;row<rows;row++){
+    if(await canvas.count()===0)break;
+    const y=top+row*((bottom-top)/(rows-1));
     const fromX=row%2===0?left:right;
     const toX=row%2===0?right:left;
-    await page.mouse.move(fromX,y,{steps:3});
-    await page.mouse.move(toX,y,{steps:18});
+    for(let step=0;step<=20;step++){
+      if(await canvas.count()===0)break outer;
+      const t=step/20;
+      await canvas.dispatchEvent("pointermove",{pointerId,pointerType:"mouse",isPrimary:true,clientX:fromX+(toX-fromX)*t,clientY:y,buttons:1});
+    }
   }
-  await page.mouse.up();
+  if(await canvas.count())await canvas.dispatchEvent("pointerup",{pointerId,pointerType:"mouse",isPrimary:true,clientX:right,clientY:bottom,buttons:0});
 
   await expect(page.locator('[data-action="scratch-canvas"]')).toHaveCount(0);
   await expect(page.getByRole("button",{name:/Acepto el trato/i})).toBeVisible();

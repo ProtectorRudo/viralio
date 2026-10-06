@@ -297,15 +297,15 @@ export const experiences: Experience[] = [
     demoRecipient:"Mamá",
     demoGiver:"Tus hijos",
     opening:"Hay una edad en la que uno cree que mamá puede con todo. Después uno crece y empieza a entender cuánto había detrás.",
-    closing:"Gracias por ser hogar mucho antes de que yo entendiera lo que significaba esa palabra.",
+    closing:"Gracias por ser hogar mucho antes de que supiéramos todo lo que esa palabra significaba.",
     tags:["Mamá","Gratitud","Infancia"],
     recipe:["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
     // release-mama-flow: return scene removed
     demo:{
       memories:[
-        "La comida servida, la ropa lista y todo eso que parecía aparecer solo.",
-        "Esperarnos despierta aunque dijéramos que no hacía falta.",
-        "Esos abrazos que de chicos parecían normales y de grandes entendimos todo lo que tenían.",
+        "La comida servida, la ropa lista y esa forma tuya de hacer que lo cotidiano se sintiera cuidado.",
+        "Esperarnos despierta aunque dijéramos que no hacía falta. Hoy sabemos que era otra forma de decir «estoy acá».",
+        "Esos abrazos que de chicos parecían normales y hoy sabemos que eran una de las formas más simples de sentirnos en casa.",
       ],
       photos:[
         {url:"https://images.unsplash.com/photo-1531983412531-1f49a365ffed?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
@@ -315,9 +315,9 @@ export const experiences: Experience[] = [
       voices:[
         {name:"Tu hijo mayor",message:"Ahora que crecí entiendo muchas cosas que antes simplemente daba por hechas."},
         {name:"Tu hija",message:"Gracias por seguir siendo la primera persona a la que quiero contarle algo bueno."},
-        {name:"Todos",message:"No te lo decimos suficiente, pero gran parte de lo que somos empezó con vos."},
+        {name:"Todos",message:"Si alguna vez dudás de todo lo que hiciste bien, miranos: hay muchísimas cosas tuyas viviendo en nosotros."},
       ],
-      letter:"De chico veía lo que hacías. De grande empecé a entender todo lo que había detrás. Gracias por cada cosa invisible que sostuvo nuestra vida.",
+      letter:"De chicos veíamos todo lo que hacías, pero no siempre entendíamos lo que había detrás. Hoy sí. Y también entendemos algo más: no sólo nos cuidaste; nos enseñaste, con miles de gestos pequeños, cómo se quiere a alguien de verdad. Mucho de lo bueno que hay en nosotros empezó con vos. Gracias por ser mamá, pero también gracias por ser vos.",
     },
   },
   {
