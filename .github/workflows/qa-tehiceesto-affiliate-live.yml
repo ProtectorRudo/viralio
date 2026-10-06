@@ -1,0 +1,84 @@
+name: QA Te Hice Esto affiliate live
+
+on:
+  push:
+    branches: [qa-affiliate-live-20261006]
+    paths:
+      - ".github/workflows/qa-tehiceesto-affiliate-live.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  affiliate-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Validate referral route and affiliate APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1"
+          KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN"
+          ORIGIN="https://tehiceesto.com"
+          VISITOR="$(python - <<'PY'
+          import uuid
+          print(uuid.uuid4())
+          PY
+          )"
+
+          body="$(curl -fsSL --max-time 30 "https://tehiceesto.com/r/prueba-control-2026?src=qa-live")"
+          printf '%s' "$body" | grep -Fq "Abriendo tu experiencia"
+
+          track="$(curl -fsSL --max-time 30 "$API/affiliate-public"             -H "content-type: application/json"             -H "apikey: $KEY"             -H "origin: $ORIGIN"             --data "{\"action\":\"track\",\"code\":\"prueba-control-2026\",\"visitorId\":\"$VISITOR\",\"source\":\"qa-live\",\"landingPath\":\"/\",\"referrerDomain\":\"github-actions.qa\"}")"
+          echo "$track"
+
+          affiliate_token="$(TRACK="$track" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["TRACK"])
+          assert data.get("ok") is True, data
+          token=data.get("affiliateToken","")
+          assert len(token) >= 30, data
+          print(token)
+          PY
+          )"
+
+          order="$(curl -fsSL --max-time 30 "$API/order-create"             -H "content-type: application/json"             -H "apikey: $KEY"             -H "origin: $ORIGIN"             --data "{\"experienceSlug\":\"pareja\",\"customerName\":\"Prueba QA Live\",\"email\":\"qa-live@tehiceesto.invalid\",\"whatsapp\":\"+5492210000000\",\"consent\":true,\"website\":\"\",\"affiliateToken\":\"$affiliate_token\"}")"
+          echo "$order"
+
+          ORDER="$order" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["ORDER"])
+          assert data.get("affiliateAttributed") is True, data
+          assert data.get("checkoutReady") is False, data
+          assert data.get("currency") == "ARS", data
+          assert data.get("priceMinor") == 2500000, data
+          assert data.get("code"), data
+          print("ORDER_CODE="+data["code"])
+          PY
+
+          login="$(curl -fsSL --max-time 30 "$API/affiliate-public"             -H "content-type: application/json"             -H "apikey: $KEY"             -H "origin: $ORIGIN"             --data '{\"action\":\"login\",\"identifier\":\"prueba-control-2026\",\"password\":\"PruebaTeHiceEsto!2026\"}')"
+          echo "$login"
+
+          session="$(LOGIN="$login" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["LOGIN"])
+          token=data.get("token","")
+          assert len(token) >= 30, data
+          assert data.get("affiliate",{}).get("slug") == "prueba-control-2026", data
+          print(token)
+          PY
+          )"
+
+          dashboard="$(curl -fsSL --max-time 30 "$API/affiliate-public"             -H "content-type: application/json"             -H "apikey: $KEY"             -H "origin: $ORIGIN"             -H "x-affiliate-session: $session"             --data '{\"action\":\"dashboard\"}')"
+          echo "$dashboard"
+
+          DASH="$dashboard" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["DASH"])
+          assert data.get("affiliate",{}).get("slug") == "prueba-control-2026", data
+          stats=data.get("stats") or {}
+          assert int(stats.get("clicks") or 0) >= 1, stats
+          assert int(stats.get("attributed_orders") or 0) >= 1, stats
+          print("LIVE_AFFILIATE_QA_OK")
+          PY
