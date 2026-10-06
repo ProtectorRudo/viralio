@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { adminCall, SESSION_KEY } from "./api";
@@ -22,7 +22,13 @@ type GiftRow = {
   recipient_name: string;
   created_at: string;
   published_at: string | null;
-  story_data?: { creator?: { submitted?: boolean; submittedAt?: string } } | null;
+  story_data?: {
+    creator?: {
+      submitted?: boolean;
+      submittedAt?: string;
+      contact?: { name?: string; email?: string; whatsapp?: string };
+    };
+  } | null;
   order?: { status: string; amount_minor: number | null; currency: string; provider: string } | null;
 };
 
@@ -40,15 +46,25 @@ export default function AdminPortal() {
   const [mpReady, setMpReady] = useState<boolean|null>(null);
   const [loading, setLoading] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [saleAlert, setSaleAlert] = useState("");
+  const approvedSeen = useRef<number|null>(null);
 
-  async function loadGifts() {
-    setLoading(true);
+  async function loadGifts(silent=false) {
+    if(!silent)setLoading(true);
     try {
       const [data, commerceData] = await Promise.all([
         adminCall<{ gifts: GiftRow[] }>("listGifts"),
         adminCall<{ settings: CommerceSettings }>("getCommerceSettings"),
       ]);
-      setGifts(data.gifts || []);
+      const nextGifts=data.gifts||[];
+      const approvedNow=nextGifts.filter((gift)=>gift.order?.status==="approved").length;
+      if(approvedSeen.current!==null&&approvedNow>approvedSeen.current){
+        const difference=approvedNow-approvedSeen.current;
+        setSaleAlert(difference===1?"Entró una nueva venta pagada ✓":`Entraron ${difference} nuevas ventas pagadas ✓`);
+        window.setTimeout(()=>setSaleAlert(""),7000);
+      }
+      approvedSeen.current=approvedNow;
+      setGifts(nextGifts);
       setCommerce(commerceData.settings);
       setDefaultPrice(
         commerceData.settings.default_price_minor != null
@@ -59,12 +75,12 @@ export default function AdminPortal() {
     } catch {
       setLoggedIn(false);
     } finally {
-      setLoading(false);
+      if(!silent)setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1",{cache:"no-store"})
+    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1",{cache:"no-store"})
       .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
       .then((data:{configured?:boolean})=>setMpReady(data.configured===true))
       .catch(()=>setMpReady(false));
@@ -78,6 +94,14 @@ export default function AdminPortal() {
     window.addEventListener("thi-admin-session-expired", expire);
     return () => window.removeEventListener("thi-admin-session-expired", expire);
   }, []);
+
+  useEffect(()=>{
+    if(!loggedIn)return;
+    const timer=window.setInterval(()=>{
+      if(document.visibilityState==="visible")void loadGifts(true);
+    },10_000);
+    return()=>window.clearInterval(timer);
+  },[loggedIn]);
 
   async function login(event: React.FormEvent) {
     event.preventDefault();
@@ -244,6 +268,8 @@ export default function AdminPortal() {
         </div>
       </header>
 
+      {saleAlert&&<div className="thi-sale-alert"><strong>{saleAlert}</strong><span>Ya aparece en el panel con los datos del comprador.</span></div>}
+
       <section className="thi-admin-stat-grid">
         <article><span>Total</span><strong>{gifts.length}</strong><small>regalos creados</small></article>
         <article><span>Publicados</span><strong>{publishedCount}</strong><small>links activos</small></article>
@@ -364,7 +390,7 @@ export default function AdminPortal() {
             <p className="thi-kicker">Actividad</p>
             <h2>Últimos regalos</h2>
           </div>
-          <button className="thi-ghost" onClick={loadGifts} disabled={loading}>
+          <button className="thi-ghost" onClick={()=>void loadGifts()} disabled={loading}>
             {loading ? "Actualizando…" : "Actualizar"}
           </button>
         </div>
@@ -383,6 +409,7 @@ export default function AdminPortal() {
                   <th>De</th>
                   <th>Experiencia</th>
                   <th>Origen</th>
+                  <th>Contacto</th>
                   <th>Pago</th>
                   <th>Estado</th>
                   <th>Código</th>
@@ -404,6 +431,22 @@ export default function AdminPortal() {
                       <span className={gift.story_data?.creator?.submitted ? "thi-source-badge creator" : "thi-source-badge manual"}>
                         {gift.story_data?.creator?.submitted ? "Web" : "Manual"}
                       </span>
+                    </td>
+                    <td>
+                      {gift.story_data?.creator?.contact ? (
+                        <div className="thi-admin-contact-cell">
+                          <strong>{gift.story_data.creator.contact.name||gift.giver_name}</strong>
+                          {gift.story_data.creator.contact.whatsapp ? (
+                            <a
+                              href={`https://wa.me/${gift.story_data.creator.contact.whatsapp.replace(/\D/g,"")}`}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                            >
+                              {gift.story_data.creator.contact.whatsapp}
+                            </a>
+                          ) : <small>{gift.story_data.creator.contact.email||"—"}</small>}
+                        </div>
+                      ) : <span className="thi-payment-badge none">—</span>}
                     </td>
                     <td>
                       {gift.order ? (

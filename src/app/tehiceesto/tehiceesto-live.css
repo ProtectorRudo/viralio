@@ -2280,3 +2280,76 @@
   font-family:Georgia,"Times New Roman",serif;
   font-size:13px;
 }
+
+
+/* Commercial circuit: buyer contact visibility */
+.thi-order-contact-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin:18px 0;
+  padding:18px 20px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+}
+.thi-order-contact-card.paid{
+  border-color:rgba(70,190,116,.32);
+  box-shadow:0 16px 40px rgba(24,120,70,.09);
+}
+.thi-order-contact-card>div:first-child{
+  display:grid;
+  gap:4px;
+}
+.thi-order-contact-card span{
+  font-size:.68rem;
+  letter-spacing:.14em;
+  font-weight:800;
+  opacity:.65;
+}
+.thi-order-contact-card strong{font-size:1.08rem}
+.thi-order-contact-card small{opacity:.68}
+.thi-order-contact-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:flex-end;
+}
+.thi-order-contact-actions a{text-decoration:none}
+.thi-admin-contact-cell{
+  display:grid;
+  gap:3px;
+  min-width:145px;
+}
+.thi-admin-contact-cell strong{font-size:.9rem}
+.thi-admin-contact-cell a,
+.thi-admin-contact-cell small{
+  font-size:.75rem;
+  opacity:.72;
+  color:inherit;
+  text-decoration:none;
+}
+.thi-admin-contact-cell a:hover{text-decoration:underline}
+@media (max-width:720px){
+  .thi-order-contact-card{align-items:flex-start;flex-direction:column}
+  .thi-order-contact-actions{width:100%;justify-content:flex-start}
+}
+
+.thi-sale-alert{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 18px;
+  padding:14px 18px;
+  border:1px solid rgba(70,190,116,.35);
+  border-radius:16px;
+  background:rgba(38,132,80,.09);
+  box-shadow:0 14px 38px rgba(24,120,70,.08);
+}
+.thi-sale-alert strong{font-size:.92rem}
+.thi-sale-alert span{font-size:.78rem;opacity:.68}
+@media (max-width:720px){
+  .thi-sale-alert{align-items:flex-start;flex-direction:column}
+}
