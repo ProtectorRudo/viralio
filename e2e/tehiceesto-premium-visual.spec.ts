@@ -136,3 +136,53 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-papa-390");
 });
+
+
+test("Papa premium release visual contract",async({page},testInfo)=>{
+  test.setTimeout(60_000);
+  await page.emulateMedia({reducedMotion:"no-preference"});
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/papa");
+
+  await page.waitForTimeout(850);
+  await expectNoHorizontalOverflow(page);
+  await capture(page,testInfo,"tehiceesto-papa-release-01-intro-390");
+
+  await page.locator('[data-action="advance"]').click();
+  await page.waitForTimeout(850);
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","memories");
+  await capture(page,testInfo,"tehiceesto-papa-release-02-memories-390");
+
+  await page.locator('[data-action="advance"]').click();
+  await page.waitForTimeout(650);
+  for(const i of [0,1,2]) await page.locator(".lesson-ledger button").nth(i).click();
+  await page.locator(".scene-lessons .primary-action").click();
+  await page.waitForTimeout(650);
+  for(const i of [0,1]) await page.locator(".presence-track button").nth(i).click();
+  await page.locator(".scene-presence .primary-action").click();
+  await page.waitForTimeout(650);
+  for(const i of [0,1,2]) await page.locator(".inheritance-board button").nth(i).click();
+  await page.locator(".scene-inheritance .primary-action").click();
+  await page.waitForTimeout(850);
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
+  await capture(page,testInfo,"tehiceesto-papa-release-03-voices-390");
+  await page.locator(".thi-papa-voice-list [data-action='demo-voice']").first().click();
+  await page.locator(".thi-papa-voice-continue").click();
+  await page.waitForTimeout(850);
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
+  await capture(page,testInfo,"tehiceesto-papa-release-04-letter-closed-390");
+  await page.locator('[data-action="open-letter"]').click();
+  await page.waitForTimeout(850);
+  await capture(page,testInfo,"tehiceesto-papa-release-05-letter-open-390");
+  await page.locator(".thi-papa-letter [data-action='advance']").click();
+  await page.waitForTimeout(650);
+  await page.locator(".lookback-button").click();
+  await page.locator(".scene-lookback .primary-action").click();
+  await page.waitForTimeout(1200);
+
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
+  await expectNoHorizontalOverflow(page);
+  await capture(page,testInfo,"tehiceesto-papa-release-06-finale-390");
+});

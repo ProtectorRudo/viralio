@@ -329,15 +329,15 @@ export const experiences: Experience[] = [
     accent:"#a9b7c9",
     demoRecipient:"Papá",
     demoGiver:"Tus hijos",
-    opening:"De chico pensé que simplemente sabías cómo hacer las cosas. De grande entendí que muchas veces estabas aprendiendo mientras me enseñabas.",
-    closing:"Hay cosas tuyas que ya forman parte de mí. Gracias por haberlas dejado sin siquiera proponértelo.",
+    opening:"Durante años pensamos que simplemente sabías cómo hacer las cosas. Con el tiempo entendimos que muchas veces estabas aprendiendo mientras nos enseñabas.",
+    closing:"Hay cosas tuyas que ya forman parte de nosotros. Gracias por haberlas dejado sin siquiera proponértelo.",
     tags:["Papá","Legado","Gratitud"],
     recipe:["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
     demo:{
       memories:[
-        "La mano sosteniendo la bici hasta que dejaste de hacerlo y yo ni me di cuenta.",
-        "Esas salidas donde se hablaba poco pero quedaban un montón de cosas.",
-        "Los consejos que tardé años en entender y un día empezaron a sonar distintos.",
+        "La mano sosteniendo la bici hasta que un día ya no hizo falta. Recién después entendimos todo lo que había en ese gesto.",
+        "Esas salidas donde se hablaba poco y, sin embargo, volvíamos con un montón de cosas.",
+        "Los consejos que tardamos años en entender y un día empezaron a sonar distintos.",
       ],
       photos:[
         {url:"https://images.unsplash.com/photo-1644941002474-6ee8ab0ee8cb?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
@@ -349,7 +349,7 @@ export const experiences: Experience[] = [
         {name:"Lucas",message:"Hay gestos tuyos que me descubro haciendo sin haberlos aprendido a propósito."},
         {name:"Todos",message:"Gracias por estar tantas veces de formas que recién de grandes supimos ver."},
       ],
-      letter:"De grande dejé de verte solamente como papá y empecé a entender también al hombre que estaba haciendo lo mejor que podía. Gracias por todo lo que quedó en mí.",
+      letter:"Con los años dejamos de verte solamente como papá y empezamos a entender también al hombre que estaba haciendo lo mejor que podía. Gracias por todo lo que quedó en nosotros.",
     },
   },
   {

@@ -188,15 +188,15 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       demoVoiceMessageRef.current=message;setDemoVoiceStatus("playing");duckSoundtrack();synth.speak(utterance);
     }catch{fallbackToggle()}
   };
-  const restart=()=>{stopDemoVoice();resetAllInteractions();setDirection("back");setTransitioning(false);setSceneIndex(0);setRunId(v=>v+1);haptic([8,22,8])};
+  const restart=()=>{stopDemoVoice();resetAllInteractions();setDirection("back");setTransitioning(false);setSceneIndex(0);setRunId(v=>v+1);if(typeof window!=="undefined")requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:"auto"}));haptic([8,22,8])};
   const playFx=(kind:"chime"|"pop"|"door"|"seal"|"unlock")=>{try{const context=new AudioContext();const oscillator=context.createOscillator();const gain=context.createGain();const now=context.currentTime;oscillator.connect(gain);gain.connect(context.destination);const presets={chime:{type:"sine" as OscillatorType,start:760,end:1180,duration:.34,volume:.035},pop:{type:"triangle" as OscillatorType,start:240,end:72,duration:.12,volume:.05},door:{type:"sine" as OscillatorType,start:95,end:48,duration:.42,volume:.035},seal:{type:"triangle" as OscillatorType,start:330,end:180,duration:.18,volume:.035},unlock:{type:"sine" as OscillatorType,start:420,end:820,duration:.42,volume:.035}};const preset=presets[kind];oscillator.type=preset.type;oscillator.frequency.setValueAtTime(preset.start,now);oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,preset.end),now+preset.duration);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(preset.volume,now+.02);gain.gain.exponentialRampToValueAtTime(.0001,now+preset.duration);oscillator.start(now);oscillator.stop(now+preset.duration+.02);window.setTimeout(()=>void context.close(),Math.ceil((preset.duration+.1)*1000))}catch{}};
 
-  const moveTo=(nextIndex:number,dir:"forward"|"back")=>{if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex)return;stopDemoVoice();const destination=scenes[nextIndex];const commitScene=()=>{resetSceneState(destination);setDirection(dir);setTransitioning(false);setSceneIndex(nextIndex);setRunId(v=>v+1)};haptic(8);if(typeof document!=="undefined"&&typeof window!=="undefined"){const viewDocument=document as Document&{startViewTransition?:(update:()=>void)=>unknown};const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(viewDocument.startViewTransition&&!reduced){viewDocument.startViewTransition(()=>flushSync(commitScene));return}}commitScene()};
+  const moveTo=(nextIndex:number,dir:"forward"|"back")=>{if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex)return;stopDemoVoice();const destination=scenes[nextIndex];const commitScene=()=>{resetSceneState(destination);setDirection(dir);setTransitioning(false);setSceneIndex(nextIndex);setRunId(v=>v+1);if(typeof window!=="undefined")requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:"auto"}))};haptic(8);if(typeof document!=="undefined"&&typeof window!=="undefined"){const viewDocument=document as Document&{startViewTransition?:(update:()=>void)=>unknown};const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(viewDocument.startViewTransition&&!reduced){viewDocument.startViewTransition(()=>flushSync(commitScene));return}}commitScene()};
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");const prev=()=>moveTo(Math.max(0,sceneIndex-1),"back");
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
   const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
 
-  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=3;case"presence":return presenceOpen.length>=2;case"inheritance":return inheritanceOpen.length>=3;case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
+  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
     switch(type){
@@ -305,7 +305,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       {experience.slug==="pareja"?(stars.length===starLines.length&&<button data-action="advance" className="thi-pair-stars-cta" onClick={next}>{token(copy.stars.cta)}</button>):<button data-action="advance" className="thi-primary" disabled={stars.length<3} onClick={next}>{stars.length<3?countText(copy.stars.remainingOne,copy.stars.remainingMany,3-stars.length):token(copy.stars.cta)}</button>}</section>;
       case"scratch":return <section className="thi-scene thi-scene-scratch thi-scene-rich"><p className="thi-kicker">{token(copy.scratch.kicker)}</p><h2>{titleLines(copy.scratch.title)}</h2><ScratchReveal accent={experience.accent} eyebrow={token(copy.scratch.eyebrow)} reward={token(copy.scratch.reward)} note={token(copy.scratch.note)} coverTitle={token(copy.scratch.coverTitle)} coverHint={token(copy.scratch.coverHint)} fallbackLabel={token(copy.scratch.fallbackLabel)} revealed={scratched} onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime")}}/><button data-action="advance" className="thi-primary" disabled={!scratched} onClick={next}>{token(copy.scratch.cta)}</button></section>;
       case"hold":return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
-      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"?"thi-pair-letter":""} ${experience.slug==="mama"?"thi-mama-letter":""} ${letterOpen?"is-open":""}`}>
+      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"?"thi-pair-letter":""} ${experience.slug==="mama"?"thi-mama-letter":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
         <div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
         <p className="thi-kicker">{token(copy.letter.kicker)}</p>
         <h2>{titleLines(copy.letter.title)}</h2>
@@ -455,6 +455,48 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <span className="thi-mama-voice-list-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
               </button>)}
             </div>
+          </section>;
+        }
+        if(experience.slug==="papa"){
+          const count=Math.max(currentAudios.length,voiceEntries.length);
+          const entries=Array.from({length:count},(_,i)=>({
+            name:token(currentAudios[i]?.caption||voiceEntries[i]?.name||`Mensaje ${i+1}`),
+            message:token(voiceEntries[i]?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
+            audio:currentAudios[i],
+          }));
+          const togglePapaVoice=async(index:number)=>{
+            const entry=entries[index];
+            setVoicesPlayed(v=>v.includes(index)?v:[...v,index]);haptic([7,18,7]);
+            if(entry.audio){
+              stopDemoVoice();
+              const audio=shellRef.current?.querySelector<HTMLAudioElement>(`audio[data-papa-audio="${index}"]`);
+              if(!audio)return;
+              shellRef.current?.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(other=>{if(other!==audio&&!other.paused)other.pause()});
+              try{if(audio.paused)await audio.play();else audio.pause()}catch{}
+              return;
+            }
+            toggleDemoVoice(entry.message);
+          };
+          return <section className="thi-scene thi-scene-voices thi-papa-voices thi-scene-rich">
+            <div className="thi-papa-voice-atmosphere" aria-hidden="true"><i/><i/><b/></div>
+            <p className="thi-kicker">{token(copy.voices.kicker)}</p>
+            <h2>{titleLines(copy.voices.title)}</h2>
+            <p className="thi-papa-voice-intro">{currentAudios.length?"Elegí una voz. Cada mensaje conserva este mismo recorrido y diseño.":"Tocá una voz. Esta demo la reproduce para que puedas sentir cómo funciona la experiencia con audio."}</p>
+            <div className="thi-papa-voice-list">
+              {entries.slice(0,3).map((entry,i)=><button
+                type="button"
+                data-action="demo-voice"
+                key={`${entry.name}-${i}`}
+                className={voicesPlayed.includes(i)?"heard":""}
+                onClick={()=>void togglePapaVoice(i)}
+              >
+                <span className="thi-papa-voice-index">{String(i+1).padStart(2,"0")}</span>
+                <span className="thi-papa-voice-copy"><small>UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>{voicesPlayed.includes(i)?`“${entry.message}”`:token(copy.voices.playLabel)}</em><i aria-hidden="true">{Array.from({length:20}).map((_,bar)=><b key={bar}/>)}</i></span>
+                <span className="thi-papa-voice-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
+                {entry.audio&&<audio data-papa-audio={i} src={entry.audio.url} preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);duckSoundtrack()}} onPause={restoreSoundtrack} onEnded={restoreSoundtrack}/>}
+              </button>)}
+            </div>
+            <button data-action="advance" className="thi-primary thi-papa-voice-continue" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button>
           </section>;
         }
         return <section className="thi-scene thi-scene-voices thi-scene-rich"><p className="thi-kicker">{token(copy.voices.kicker)}</p><h2>{titleLines(copy.voices.title)}</h2>{currentAudios.length?<div className="thi-voices">{currentAudios.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption||`Mensaje ${i+1}`}</strong><audio data-action="real-audio" src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}/></article>)}</div>:experience.slug==="pareja"?<div className="thi-romantic-audio">{voiceEntries.slice(0,1).map((voice,i)=><button data-action="demo-voice" key={voice.name} className={`${voicesPlayed.includes(i)?"played ":""}${demoVoiceStatus}`} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic([7,18,7]);toggleDemoVoice(token(voice.message))}} aria-label={demoVoiceStatus==="playing"?"Pausar audio":demoVoiceStatus==="paused"?"Continuar audio":token(copy.voices.playLabel)}><span className="thi-audio-avatar">{voice.name.slice(0,1)}</span><span className="thi-audio-copy"><small>{token(copy.voices.noteLabel.replace("{name}",voice.name))}</small><strong>{demoVoiceStatus==="playing"?token(copy.voices.playingLabel):demoVoiceStatus==="paused"?"Pausado · tocá para continuar":token(copy.voices.playLabel)}</strong><i className="thi-waveform" aria-hidden="true">{Array.from({length:24}).map((_,bar)=><b key={bar}/>)}</i></span><span className="thi-audio-play">{demoVoiceStatus==="playing"?"❚❚":"▶"}</span></button>)}{voicesPlayed.length>0&&<p>“{token(voiceEntries[0].message)}”</p>}</div>:<div className="thi-voices">{voiceEntries.map((voice,i)=><button data-action="demo-voice" key={voice.name} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{token(voice.name)}</strong><small>{voicesPlayed.includes(i)?`“${token(voice.message)}”`:token(copy.voices.playLabel)}</small></button>)}</div>}<button data-action="advance" className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button></section>;
@@ -933,83 +975,78 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </section>
         );
 
-      case "lessons":
+      case "lessons":{
+        const rows=copy.lessons.items.map((item,index)=>{const [title,...body]=item.split("|");return {index,title:token(title.trim()||`Lección ${index+1}`),body:token(body.join("|").trim())}}).filter(item=>item.title);
+        const required=Math.min(3,rows.length);
         return (
           <section className="scene scene-lessons">
             <div className="lesson-line" aria-hidden="true" />
-            <p className="scene-kicker">Todo lo que me enseñaste sin dar una clase</p>
-            <h2>Muchas lecciones tuyas tardaron años en hacer sentido.</h2>
+            <p className="scene-kicker">{token(copy.lessons.kicker)}</p>
+            <h2>{token(copy.lessons.title)}</h2>
             <div className="lesson-ledger">
-              {[
-                ["01", "Resolver", "No saber no era una excusa para quedarse quieto. Primero se mira, se prueba, se pregunta y se vuelve a intentar."],
-                ["02", "Cumplir", "Llegar, llamar, hacerse cargo, sostener la palabra incluso cuando nadie está mirando."],
-                ["03", "Cuidar", "Entendí que proteger no siempre es hablar. A veces es estar cerca, prever, acompañar y dejar que el otro intente."],
-                ["04", "Seguir", "Hay días en los que el coraje se parece menos a una hazaña y más a levantarse y hacer lo que toca."],
-              ].map(([n,title,copy],index)=>(
-                <button key={title} data-action="lesson-open" className={lessonsOpen.includes(index) ? "open" : ""} onClick={()=>setLessonsOpen(items=>items.includes(index)?items:[...items,index])}>
-                  <span>{n}</span><div><strong>{title}</strong><p>{lessonsOpen.includes(index) ? copy : "Abrir lección"}</p></div>
+              {rows.map(({index,title,body})=>(
+                <button key={`${title}-${index}`} data-action="lesson-open" className={lessonsOpen.includes(index) ? "open" : ""} onClick={()=>setLessonsOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{String(index+1).padStart(2,"0")}</span><div><strong>{title}</strong><p>{lessonsOpen.includes(index) ? body : token(copy.lessons.closedLabel)}</p></div>
                 </button>
               ))}
             </div>
-            <button data-action="advance" className="primary-action" onClick={next} disabled={lessonsOpen.length < 3}>
-              {lessonsOpen.length < 3 ? `Faltan ${3-lessonsOpen.length}` : "Seguir"}
+            <button data-action="advance" className="primary-action" onClick={next} disabled={lessonsOpen.length < required}>
+              {lessonsOpen.length < required ? `Faltan ${required-lessonsOpen.length}` : token(copy.lessons.cta)}
             </button>
           </section>
         );
+      }
 
-      case "presence":
+      case "presence":{
+        const rows=copy.presence.items.map((item,index)=>{const [title,...body]=item.split("|");return {index,title:token(title.trim()||`Presencia ${index+1}`),body:token(body.join("|").trim())}}).filter(item=>item.title);
+        const required=Math.min(2,rows.length);
         return (
           <section className="scene scene-presence">
-            <p className="scene-kicker">Las formas de estar</p>
-            <h2>No todos los recuerdos importantes tienen una conversación.</h2>
+            <p className="scene-kicker">{token(copy.presence.kicker)}</p>
+            <h2>{token(copy.presence.title)}</h2>
             <div className="presence-track">
-              {[
-                ["LA MANO", "La que sostenía la bici, señalaba cómo hacerlo o aparecía en un hombro cuando hacía falta."],
-                ["LA ESPERA", "Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía."],
-                ["LA MIRADA", "Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."],
-              ].map(([title,copy],index)=>(
-                <button key={title} data-action="presence-open" className={presenceOpen.includes(index) ? "open" : ""} onClick={()=>setPresenceOpen(items=>items.includes(index)?items:[...items,index])}>
+              {rows.map(({index,title,body})=>(
+                <button key={`${title}-${index}`} data-action="presence-open" className={presenceOpen.includes(index) ? "open" : ""} onClick={()=>setPresenceOpen(items=>items.includes(index)?items:[...items,index])}>
                   <span>{String(index+1).padStart(2,"0")}</span>
                   <strong>{title}</strong>
-                  <p>{presenceOpen.includes(index) ? copy : "Tocá para recordar"}</p>
+                  <p>{presenceOpen.includes(index) ? body : token(copy.presence.closedLabel)}</p>
                 </button>
               ))}
             </div>
-            <button data-action="advance" className="primary-action" onClick={next} disabled={presenceOpen.length < 2}>Ver lo que quedó</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={presenceOpen.length < required}>{token(copy.presence.cta)}</button>
           </section>
         );
+      }
 
-      case "inheritance":
+      case "inheritance":{
+        const rows=copy.inheritance.items.map((item,index)=>{const [title,...body]=item.split("|");return {index,title:token(title.trim()||`Herencia ${index+1}`),body:token(body.join("|").trim())}}).filter(item=>item.title);
+        const required=Math.min(3,rows.length);
         return (
           <section className="scene scene-inheritance">
-            <p className="scene-kicker">La herencia que no se firma</p>
-            <h2>Hay cosas tuyas que un día descubrí viviendo en mí.</h2>
+            <p className="scene-kicker">{token(copy.inheritance.kicker)}</p>
+            <h2>{token(copy.inheritance.title)}</h2>
             <div className="inheritance-board">
-              {[
-                ["LA FORMA DE MIRAR UN PROBLEMA", "Antes de pedir ayuda, trato de entender cómo funciona."],
-                ["ALGUNAS FRASES", "Juraba que nunca las iba a decir. Ahora salen solas."],
-                ["CIERTOS GESTOS", "Maneras de ordenar, manejar, cocinar, arreglar o pensar que aparecieron sin permiso."],
-                ["UNA PARTE DE TU CARÁCTER", "No todo. Pero lo suficiente como para reconocerte en mí de vez en cuando."],
-              ].map(([title,copy],index)=>(
-                <button key={title} data-action="inheritance-open" className={inheritanceOpen.includes(index) ? "open" : ""} onClick={()=>setInheritanceOpen(items=>items.includes(index)?items:[...items,index])}>
-                  <span>0{index+1}</span><strong>{title}</strong><p>{inheritanceOpen.includes(index) ? copy : "Revelar"}</p>
+              {rows.map(({index,title,body})=>(
+                <button key={`${title}-${index}`} data-action="inheritance-open" className={inheritanceOpen.includes(index) ? "open" : ""} onClick={()=>setInheritanceOpen(items=>items.includes(index)?items:[...items,index])}>
+                  <span>{String(index+1).padStart(2,"0")}</span><strong>{title}</strong><p>{inheritanceOpen.includes(index) ? body : token(copy.inheritance.closedLabel)}</p>
                 </button>
               ))}
             </div>
-            <button data-action="advance" className="primary-action" onClick={next} disabled={inheritanceOpen.length < 3}>Escuchar a la familia</button>
+            <button data-action="advance" className="primary-action" onClick={next} disabled={inheritanceOpen.length < required}>{token(copy.inheritance.cta)}</button>
           </section>
         );
+      }
 
       case "lookback":
         return (
           <section className={`scene scene-lookback ${lookbackOpen ? "open" : ""}`}>
             <div className="lookback-horizon" aria-hidden="true" />
-            <p className="scene-kicker">Ahora te miro distinto</p>
-            <h2>{lookbackOpen ? "De grande dejé de verte sólo como “papá”. Empecé a ver también al hombre que estaba haciendo lo mejor que podía con lo que tenía." : "Hay una parte de crecer que también es volver a conocer a nuestros padres."}</h2>
+            <p className="scene-kicker">{token(copy.lookback.kicker)}</p>
+            <h2>{token(lookbackOpen ? copy.lookback.openTitle : copy.lookback.closedTitle)}</h2>
             {!lookbackOpen ? (
-              <button data-action="lookback-open" className="lookback-button" onClick={()=>setLookbackOpen(true)}><span>→</span><strong>Mirar de nuevo</strong></button>
+              <button data-action="lookback-open" className="lookback-button" onClick={()=>setLookbackOpen(true)}><span>→</span><strong>{token(copy.lookback.openLabel)}</strong></button>
             ) : (
-              <button data-action="advance" className="primary-action" onClick={next}>Una última cosa</button>
+              <button data-action="advance" className="primary-action" onClick={next}>{token(copy.lookback.cta)}</button>
             )}
           </section>
         );
@@ -1181,6 +1218,18 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
             <Link data-action="create-story" className="thi-pair-finale-create" href="/tehiceesto/crear"><span>Crear una historia así</span><b>→</b></Link>
             <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
+          </section>;
+        }
+        if(experience.slug==="papa"){
+          return <section className="thi-scene thi-final thi-papa-finale thi-scene-rich">
+            <div className="thi-papa-finale-atmosphere" aria-hidden="true"><i/><i/><i/><b/><b/></div>
+            <p className="thi-kicker">{token(copy.finale.kicker)}</p>
+            <div className="thi-papa-finale-mark" aria-hidden="true"><span/><strong>∞</strong><span/></div>
+            <h2>{token(copy.finale.title)}</h2>
+            <p className="thi-lead">{token(copy.finale.lead)}</p>
+            <div className="thi-papa-finale-reactions" aria-label="¿Qué te hizo sentir?">{copy.finale.reactions.map((x,index)=><button type="button" key={x} className={finalReaction===index?"is-selected":""} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}><span>{index===0?"◌":index===1?"♥":index===2?"◫":"✦"}</span><small>{token(x)}</small></button>)}</div>
+            <button data-action="restart" className="thi-papa-finale-restart" onClick={restart}><span>↺</span>{token(copy.finale.restartLabel)}</button>
+            <small className="thi-papa-finale-signature">{token(copy.finale.createdWith)}</small>
           </section>;
         }
         return <section className="thi-scene thi-final thi-scene-rich"><div className="thi-final-sparks" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div><p className="thi-kicker">{token(copy.finale.kicker)}</p><h2>{token(copy.finale.title)}</h2><p className="thi-lead">{token(copy.finale.lead)}</p><div className="thi-reactions">{copy.finale.reactions.map(x=><button key={x} onClick={()=>haptic(7)}>{token(x)}</button>)}</div><button data-action="restart" className="thi-ghost" onClick={restart}>{token(copy.finale.restartLabel)}</button><small>{token(copy.finale.createdWith)}</small></section>;

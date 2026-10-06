@@ -39,6 +39,10 @@ const sceneDescriptions:Partial<Record<SceneType,string>>={
   video:"Textos que enmarcan un video real.",
   proposal:"La escena final de una propuesta.",
   finale:"La última frase que queremos que quede resonando.",
+  lessons:"Aprendizajes de Papá. Cada renglón usa el formato Título | Texto.",
+  presence:"Formas concretas en las que estuvo presente. Formato Título | Texto.",
+  inheritance:"Gestos, frases y rasgos que quedaron en quien recibe el regalo. Formato Título | Texto.",
+  lookback:"El giro adulto: dejar de mirar sólo al padre y reconocer también al hombre.",
 };
 
 const fields:Partial<Record<SceneType,FieldDef[]>>={
@@ -174,6 +178,34 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
     {path:"video.title",label:"Título",kind:"lines"},
     {path:"video.placeholder",label:"Texto si todavía no hay video",kind:"text"},
     {path:"video.cta",label:"Botón para continuar",kind:"text"},
+  ],
+  lessons:[
+    {path:"lessons.kicker",label:"Frase superior",kind:"text"},
+    {path:"lessons.title",label:"Título",kind:"textarea"},
+    {path:"lessons.items",label:"Lecciones",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 3."},
+    {path:"lessons.closedLabel",label:"Texto antes de abrir",kind:"text"},
+    {path:"lessons.cta",label:"Botón para continuar",kind:"text"},
+  ],
+  presence:[
+    {path:"presence.kicker",label:"Frase superior",kind:"text"},
+    {path:"presence.title",label:"Título",kind:"textarea"},
+    {path:"presence.items",label:"Formas de estar",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 2."},
+    {path:"presence.closedLabel",label:"Texto antes de revelar",kind:"text"},
+    {path:"presence.cta",label:"Botón para continuar",kind:"text"},
+  ],
+  inheritance:[
+    {path:"inheritance.kicker",label:"Frase superior",kind:"text"},
+    {path:"inheritance.title",label:"Título",kind:"textarea"},
+    {path:"inheritance.items",label:"Cosas que quedaron",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 3."},
+    {path:"inheritance.closedLabel",label:"Texto antes de revelar",kind:"text"},
+    {path:"inheritance.cta",label:"Botón para continuar",kind:"text"},
+  ],
+  lookback:[
+    {path:"lookback.kicker",label:"Frase superior",kind:"text"},
+    {path:"lookback.closedTitle",label:"Frase antes de revelar",kind:"textarea"},
+    {path:"lookback.openTitle",label:"Frase revelada",kind:"textarea"},
+    {path:"lookback.openLabel",label:"Botón para revelar",kind:"text"},
+    {path:"lookback.cta",label:"Botón para continuar",kind:"text"},
   ],
   finale:[
     {path:"finale.kicker",label:"Frase superior",kind:"text"},
