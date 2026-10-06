@@ -3991,6 +3991,17 @@
     radial-gradient(circle at 72% 76%,rgba(184,150,104,.08),transparent 24%),
     linear-gradient(180deg,#05080c 0%,#030507 100%)!important;
 }
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-experience-orb.orb-a{
+  background:#7890aa!important;
+  opacity:.075!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-experience-orb.orb-b{
+  background:#b89668!important;
+  opacity:.055!important;
+  right:-330px!important;
+  bottom:-330px!important;
+}
+
 .thi-template-live.thi-theme-papa[data-scene="lessons"]:after{
   content:"";
   position:fixed;
