@@ -59,7 +59,7 @@ test("mama childhood is a premium editorial album without sales interruption",as
   await expect(page.getByRole("heading",{name:/Hubo un tiempo en que el mundo era enorme/i})).toBeVisible();
   await expect(page.locator(".childhood-memory")).toBeVisible();
   await expect(page.locator(".childhood-photo")).toBeVisible();
-  await expect(page.getByText("Yo no veía todo.")).toBeVisible();
+  await expect(page.getByText("De chicos no veíamos todo.")).toBeVisible();
   await expect(page.locator(".childhood-note p")).toHaveCount(2);
 
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
@@ -150,7 +150,7 @@ test("mama care reveals a premium invisible-care archive before continuing",asyn
   }
 
   await expect(page.locator(".scene-care-mama")).toHaveClass(/care-open-3/);
-  await expect(page.getByText("Ahora entiendo todo lo que había detrás.")).toBeVisible();
+  await expect(page.getByText("Hoy vemos todo lo que había detrás. Y también todo lo que construiste.")).toBeVisible();
   const next=page.getByRole("button",{name:/Seguir/i});
   await expect(next).toBeVisible();
 
@@ -262,7 +262,7 @@ test("mama voices are a premium listening room with pause resume and three-messa
 
   await expect(page.locator(".thi-mama-voices-complete")).toBeVisible();
   await expect(page.getByText(/Tres voces\./)).toBeVisible();
-  await expect(page.getByText(/Una misma cosa/)).toBeVisible();
+  await expect(page.getByText(/Una misma certeza/)).toBeVisible();
   const next=page.getByRole("button",{name:/Seguir/i});
   await expect(next).toBeVisible();
 
