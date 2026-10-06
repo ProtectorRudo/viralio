@@ -537,19 +537,22 @@ test("pair scratch card reveals from real drag gestures without fallback",async(
   const rows=8;
 
   await canvas.dispatchEvent("pointerdown",{pointerId,pointerType:"mouse",isPrimary:true,clientX:left,clientY:top,buttons:1});
-  for(let row=0;row<rows;row++){
+  outer: for(let row=0;row<rows;row++){
+    if(await canvas.count()===0)break;
     const y=top+row*((bottom-top)/(rows-1));
     const fromX=row%2===0?left:right;
     const toX=row%2===0?right:left;
     for(let step=0;step<=20;step++){
+      if(await canvas.count()===0)break outer;
       const t=step/20;
       await canvas.dispatchEvent("pointermove",{pointerId,pointerType:"mouse",isPrimary:true,clientX:fromX+(toX-fromX)*t,clientY:y,buttons:1});
     }
   }
-  await canvas.dispatchEvent("pointerup",{pointerId,pointerType:"mouse",isPrimary:true,clientX:right,clientY:bottom,buttons:0});
+  if(await canvas.count())await canvas.dispatchEvent("pointerup",{pointerId,pointerType:"mouse",isPrimary:true,clientX:right,clientY:bottom,buttons:0});
 
-  await expect.poll(async()=>Number(await canvas.getAttribute("data-scratch-progress")||0)).toBeGreaterThan(0);
-  await expect(page.locator('[data-action="scratch-fallback"]')).toBeVisible();
+  await expect(page.locator('[data-action="scratch-canvas"]')).toHaveCount(0);
+  await expect(page.getByRole("button",{name:/Acepto el trato/i})).toBeVisible();
+  await expect(page.locator('[data-action="scratch-fallback"]')).toHaveCount(0);
 });
 
 
