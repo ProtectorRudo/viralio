@@ -1,0 +1,28 @@
+name: QA Te Hice Esto Mercado Pago config
+
+on:
+  push:
+    branches: [qa-affiliate-live-20261006]
+    paths:
+      - ".github/workflows/qa-tehiceesto-mp-config.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Inspect Mercado Pago environment readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsSL --max-time 30 'https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-mp-config-status')"
+          echo "$body"
+          STATUS="$body" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["STATUS"])
+          for key in ["oauthClientConfigured","encryptionKeyPresent","accessTokenPresent","webhookSecretPresent"]:
+              print(f"{key}={str(bool(data.get(key))).lower()}")
+          PY
