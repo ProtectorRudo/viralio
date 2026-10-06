@@ -3,3 +3,82 @@
    Scope experience overrides under .thi-template-live.
    Never edit tehiceesto-premium-v1.css after premium-v1 has been sold.
 */
+
+/* =========================================================
+   MAMÁ · CARTA LIVE V4 — RESPONSIVE LONG-LETTER FIX
+   Future/demo template only. premium-v1 remains frozen.
+   ========================================================= */
+.thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+  height:auto;
+  min-height:360px;
+}
+
+.thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+  z-index:5;
+  overflow:hidden;
+}
+
+@media(max-width:650px){
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+    left:6%;
+    right:6%;
+    height:auto;
+    min-height:354px;
+    padding:24px 22px 28px;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>small{
+    font-size:clamp(16px,4vw,18px)!important;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>strong{
+    margin:16px 0 14px;
+    font-size:clamp(15px,3.8vw,17px);
+    line-height:1.34;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>em{
+    margin-top:8px;
+    font-size:clamp(21px,5.5vw,24px);
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-126px) rotate(-.16deg);
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-mama-letter>.thi-primary{
+    margin-top:52px;
+  }
+}
+
+@media(max-width:390px){
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+    min-height:350px;
+    padding:22px 20px 26px;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>strong{
+    font-size:clamp(14.5px,3.9vw,16px);
+    line-height:1.33;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-120px) rotate(-.14deg);
+  }
+}
+
+@media(max-height:760px) and (max-width:650px){
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper{
+    min-height:336px;
+    padding:20px 19px 24px;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope .paper>strong{
+    font-size:14px;
+    line-height:1.29;
+  }
+
+  .thi-template-live.thi-theme-mama[data-scene="letter"] .thi-envelope.open .paper{
+    transform:translateY(-112px) rotate(-.12deg);
+  }
+}
