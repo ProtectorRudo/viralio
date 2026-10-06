@@ -810,9 +810,30 @@ test("affiliate dashboards stay private and mobile-safe",async({page})=>{
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
-test("invalid affiliate referral safely returns to Te Hice Esto",async({page})=>{
-  await page.goto("/tehiceesto/r/x");
-  await expect(page).toHaveURL(/\/tehiceesto\/?$/);
+test("affiliate referral stores attribution and returns to Te Hice Esto",async({page})=>{
+  await page.route("**/functions/v1/affiliate-public",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    expect(body.action).toBe("track");
+    expect(body.code).toBe("sofia");
+    expect(body.source).toBe("instagram");
+    return route.fulfill({
+      status:200,
+      contentType:"application/json",
+      headers:{"access-control-allow-origin":"*"},
+      body:JSON.stringify({
+        ok:true,
+        affiliateSlug:"sofia",
+        affiliateToken:"affiliate-token-test-12345678901234567890",
+        expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString(),
+      }),
+    });
+  });
+
+  await page.goto("/tehiceesto/r/sofia?src=instagram");
+  await page.waitForURL(/\/tehiceesto\/?$/);
+  const cookies=await page.context().cookies();
+  expect(cookies.find(cookie=>cookie.name==="thi_affiliate_code")?.value).toBe("sofia");
+  expect(cookies.find(cookie=>cookie.name==="thi_affiliate_token")?.value).toBe("affiliate-token-test-12345678901234567890");
 });
 
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
