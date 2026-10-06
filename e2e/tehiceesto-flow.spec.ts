@@ -52,6 +52,31 @@ async function advanceOne(page:Page){
   else if(current==="pact"){const items=page.locator(".pact-paper>button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene>.primary-action").click()}
   else throw new Error(`cannot_advance_from_${current}`);
 }
+test("home v2 explains the product fast and makes recipient choice immediate",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto");
+
+  await expect(page.locator(".thh-home-v2")).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Un regalo hecho con sus recuerdos/i})).toBeVisible();
+  await expect(page.getByText(/Convertimos tus fotos, audios y mensajes/i)).toBeVisible();
+  await expect(page.locator(".thh-v2-meta")).toContainText("Desde");
+  await expect(page.locator(".thh-v2-meta strong")).toContainText("$");
+
+  const chooser=page.locator(".thh-v2-chooser");
+  await expect(chooser).toBeVisible();
+  await expect(chooser.getByText("¿Para quién querés hacerlo?")).toBeVisible();
+  await expect(page.locator(".thh-v2-recipient")).toHaveCount(6);
+  await expect(page.getByRole("link",{name:"Ver experiencia para Mamá"})).toHaveAttribute("href","/tehiceesto/experiencias/mama");
+
+  await expect(page.locator(".floating-whatsapp--home")).toBeHidden();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+
+  await expect(page.getByRole("heading",{name:/No recibe una página/i})).toBeAttached();
+  await expect(page.getByText("Nosotros hacemos la magia")).toBeAttached();
+  await expect(page.locator(".thh-v2-price strong")).toContainText("$");
+});
+
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
 test("scene state resets when revisiting and restart always starts clean",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/cumpleanos");await advanceOne(page);await waitForScene(page,"candles");await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");const balloons=page.locator('[data-action="balloon"]');await balloons.nth(0).click();await expect(balloons.nth(0)).toHaveClass(/pop/);await page.locator('[data-action="previous"]').click();await waitForScene(page,"candles");await expect(page.locator(".thi-birthday-ritual")).not.toHaveClass(/out/);await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");await expect(page.locator(".thi-balloons button.pop")).toHaveCount(0);await balloons.nth(0).click();await balloons.nth(1).click();await page.locator('.thi-reset-journey[data-action="restart"]').click();await waitForScene(page,"intro")});
 test("all visible scene copy can be overridden without changing the engine",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await expect(page.getByText(/armó esto pensando en vos/i)).toBeVisible();await page.locator('[data-action="advance"]').click();await expect(page.getByText(/No todo empieza con una fecha/i)).toBeVisible()});
