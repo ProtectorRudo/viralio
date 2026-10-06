@@ -407,9 +407,9 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <p className="thi-kicker">Voz</p>
             <div className="thi-mama-voice-checks" aria-label="Tres mensajes escuchados">{entries.map((_,i)=><i key={i}>✓</i>)}</div>
             <div className="thi-mama-voice-photo-stack" aria-hidden="true">{entries.map((entry,i)=><figure key={i} className={`v${i+1}`}>{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}</figure>)}</div>
-            <h2>Tres voces.<br/>Una misma cosa<br/>por decirte.</h2>
+            <h2>Tres voces.<br/>Una misma certeza.</h2>
             <span className="thi-mama-voice-complete-rule" aria-hidden="true"/>
-            <p>Gracias por escuchar todo lo que tenían para decirte.</p>
+            <p>Todo lo que diste sigue viviendo en nosotros.</p>
             <button data-action="advance" className="thi-mama-voice-final-cta" onClick={next}>Seguir <span>→</span></button>
           </section>;
           if(active!==null){
@@ -737,9 +737,9 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               <div className="childhood-note">
                 <small>RECUERDO · 01</small>
                 <span className="childhood-note-rule" aria-hidden="true" />
-                <strong>Yo no veía todo.</strong>
-                <p>Veía la comida servida, la ropa lista, el cumpleaños, la mano que aparecía cuando tenía miedo.</p>
-                <p>No veía el cansancio, las cuentas, las dudas ni todo lo que acomodabas para que yo pudiera ser chico.</p>
+                <strong>De chicos no veíamos todo.</strong>
+                <p>Veíamos la comida servida, la ropa lista, el cumpleaños, la mano que aparecía cuando teníamos miedo.</p>
+                <p>No veíamos el cansancio, las cuentas, las dudas ni todo lo que acomodabas para que pudiéramos ser chicos.</p>
               </div>
             </div>
             <button data-action="advance" className="primary-action childhood-continue" onClick={next}>Seguir recordando <span>→</span></button>
@@ -788,7 +788,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 {[0,1,2].map(index=><i key={index} className={careOpen.includes(index)?"done":""}/>)}
               </div>
               {careOpen.length>=3&&<div className="mama-care-resolution">
-                <p>Ahora entiendo todo lo que había detrás.</p>
+                <p>Hoy vemos todo lo que había detrás. Y también todo lo que construiste.</p>
                 <button data-action="advance" className="mama-care-continue" onClick={next}>Seguir <span>→</span></button>
               </div>}
             </section>
@@ -843,14 +843,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               n:"04",
               title:"VOS",
               headline:"Y también estabas vos.",
-              copy:"La mujer detrás de ser mamá. Con sueños, cansancio, dudas y una vida propia que demasiadas veces quedó para después."
+              copy:"La mujer detrás de ser mamá. Con sueños, cansancio, dudas, ganas y una vida propia. Hoy también queremos celebrar esa parte tuya."
             },
           ];
           return (
             <section className={`scene scene-sacrifices scene-sacrifices-mama sacrifices-open-${Math.min(sacrificesOpen.length,4)}`}>
               <div className="mama-sacrifice-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
               <p className="scene-kicker">Lo invisible también cuenta</p>
-              <h2>Ahora entiendo que muchas veces vos quedabas última para que nosotros pudiéramos ir primero.</h2>
+              <h2>Hoy entendemos cuántas veces hiciste lugar para nosotros, incluso cuando vos también necesitabas uno.</h2>
               <div className="mama-sacrifice-ledger">
                 <div className="mama-sacrifice-spine" aria-hidden="true"/>
                 {sacrificeItems.map((item,index)=>{
@@ -889,7 +889,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 })}
               </div>
               {sacrificesOpen.length>=4&&<div className="mama-sacrifice-resolution">
-                <p>Nunca fue “simplemente ser mamá”.</p>
+                <p>Nunca fue “simplemente ser mamá”. Fue construir una parte enorme de quienes somos.</p>
                 <button data-action="advance" className="mama-sacrifice-continue" onClick={next}>Seguir <span>→</span></button>
               </div>}
             </section>
