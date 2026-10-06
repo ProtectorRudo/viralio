@@ -30,6 +30,15 @@ describe("tehiceesto.com host routing", () => {
     );
   });
 
+  it("rewrites private Mercado Pago routes inside the Te Hice Esto subtree", () => {
+    const response = proxy(
+      request("https://tehiceesto.com/mercadopago/webhook?type=order", "tehiceesto.com"),
+    );
+    expect(response.headers.get("x-middleware-rewrite")).toContain(
+      "/tehiceesto/mercadopago/webhook?type=order",
+    );
+  });
+
   it("redirects old prefixed links to clean dedicated-domain paths", () => {
     const response = proxy(
       request("https://tehiceesto.com/tehiceesto/crear", "tehiceesto.com"),
@@ -62,6 +71,7 @@ describe("tehiceesto.com host routing", () => {
     expect(body).toContain("Disallow: /admin");
     expect(body).toContain("Disallow: /r/");
     expect(body).toContain("Disallow: /pedido/");
+    expect(body).toContain("Disallow: /mercadopago/");
     expect(body).toContain("https://tehiceesto.com/sitemap.xml");
   });
 
