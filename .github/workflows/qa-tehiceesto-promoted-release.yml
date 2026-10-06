@@ -1,0 +1,43 @@
+name: QA Te Hice Esto promoted release
+
+on:
+  push:
+    branches: [qa-live-release-20261006]
+    paths:
+      - ".github/workflows/qa-tehiceesto-promoted-release.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Verify promoted release
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED="0b648b87ac5038bafae4130ddc1b8b637e715533"
+
+          version="$(curl -fsSL --max-time 30 https://tehiceesto.com/api/version)"
+          echo "$version"
+          printf '%s' "$version" | grep -Fq "\"commit\":\"$EXPECTED\""
+
+          home="$(curl -fsSL --max-time 30 https://tehiceesto.com/)"
+          printf '%s' "$home" | grep -Fq "Un regalo que la emociona"
+          printf '%s' "$home" | grep -Fq "Pago seguro con Mercado Pago"
+
+          create="$(curl -fsSL --max-time 30 https://tehiceesto.com/crear)"
+          printf '%s' "$create" | grep -Fq "Elegí la que más se parece a"
+
+          admin="$(curl -fsSL --max-time 30 https://tehiceesto.com/admin)"
+          printf '%s' "$admin" | grep -Fq "Armado de regalos"
+
+          affiliates="$(curl -fsSL --max-time 30 https://tehiceesto.com/admin/afiliados)"
+          printf '%s' "$affiliates" | grep -Fq "Afiliados"
+
+          status="$(curl -sS -o /tmp/webhook-body -w '%{http_code}' --max-time 30 https://tehiceesto.com/mercadopago/webhook)"
+          test "$status" = "405"
+
+          echo "PROMOTED_RELEASE_OK"
