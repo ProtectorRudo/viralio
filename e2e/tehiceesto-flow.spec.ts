@@ -60,7 +60,7 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await expect(page.getByRole("heading",{name:/Un regalo que la emociona/i})).toBeVisible();
   await expect(page.getByText(/Transformamos tus fotos, audios y mensajes/i)).toBeVisible();
   await expect(page.locator(".thh-v2-meta")).toContainText("Desde");
-  await expect(page.locator(".thh-v2-meta strong")).toContainText("$");
+  await expect(page.locator(".thh-v2-trust-price strong")).toContainText("$");
   await expect(page.locator(".thh-v2-trust-chip")).toHaveCount(4);
 
   const chooser=page.locator(".thh-v2-chooser");
