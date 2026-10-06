@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AFFILIATE_SESSION_KEY, affiliateCall } from "./api";
 
@@ -49,7 +49,7 @@ export default function AffiliateDashboard(){
   const [nextPassword,setNextPassword]=useState("");
   const [passwordMessage,setPasswordMessage]=useState("");
 
-  async function load(nextPeriod=period,silent=false){
+  const load=useCallback(async(nextPeriod:"7"|"30"|"all",silent=false)=>{
     if(!silent)setLoading(true);
     try{
       const data=await affiliateCall<Stats>("stats",{period:nextPeriod});
@@ -61,23 +61,28 @@ export default function AffiliateDashboard(){
     }finally{
       if(!silent)setLoading(false);
     }
-  }
+  },[]);
 
   useEffect(()=>{
-    const token=window.localStorage.getItem(AFFILIATE_SESSION_KEY);
-    setLogged(Boolean(token));
-    setReady(true);
-    if(token)void load("30");
+    const timer=window.setTimeout(()=>{
+      const token=window.localStorage.getItem(AFFILIATE_SESSION_KEY);
+      setLogged(Boolean(token));
+      setReady(true);
+      if(token)void load("30");
+    },0);
     const expired=()=>{setLogged(false);setStats(null)};
     window.addEventListener("thi-affiliate-session-expired",expired);
-    return()=>window.removeEventListener("thi-affiliate-session-expired",expired);
-  },[]);
+    return()=>{
+      window.clearTimeout(timer);
+      window.removeEventListener("thi-affiliate-session-expired",expired);
+    };
+  },[load]);
 
   useEffect(()=>{
     if(!logged)return;
     const id=window.setInterval(()=>{void load(period,true)},5000);
     return()=>window.clearInterval(id);
-  },[logged,period]);
+  },[logged,period,load]);
 
   async function login(event:FormEvent){
     event.preventDefault();
