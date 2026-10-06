@@ -86,7 +86,10 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await expect(trust).toContainText("Mercado Pago");
   await expect(page.locator(".thh-trust-card")).toHaveCount(12);
   expect(await scroller.evaluate(el=>el.scrollWidth>el.clientWidth)).toBe(true);
-  await expect.poll(()=>scroller.evaluate(el=>el.scrollLeft),{timeout:3000}).toBeGreaterThan(0);
+  const reduced=await page.evaluate(()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if(!reduced){
+    await expect.poll(()=>scroller.evaluate(el=>el.scrollLeft),{timeout:3000}).toBeGreaterThan(0);
+  }
 });
 
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
