@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   cleanPaymentToken,
+  mercadoPagoIdempotencyKey,
   paymentBridge,
   syncPaymentBridge,
   type BridgeConfig,
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
         authorization: `Bearer ${accessToken}`,
         "content-type": "application/json",
         accept: "application/json",
-        "x-idempotency-key": `thi-${token}`,
+        "x-idempotency-key": mercadoPagoIdempotencyKey(token),
       },
       body: JSON.stringify({
         type: "online",
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
             success_url: `${root}/pedido/${config.code}?pago=exitoso`,
             pending_url: `${root}/pedido/${config.code}?pago=pendiente`,
             failure_url: `${root}/pedido/${config.code}?pago=fallido`,
+            auto_return: "approved",
           },
         },
       }),
