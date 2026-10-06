@@ -2257,3 +2257,26 @@
   .thi-aff-bars span{display:none}
   .thi-aff-public-footer{display:grid}
 }
+
+
+.thi-aff-redirect{
+  min-height:100svh;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:14px;
+  background:#f7f2eb;
+  color:#3b3034;
+  text-align:center;
+}
+.thi-aff-redirect-mark{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:18px;
+  letter-spacing:.18em;
+}
+.thi-aff-redirect p{
+  margin:0;
+  color:#8c7f83;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:13px;
+}
