@@ -57,8 +57,8 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await page.goto("/tehiceesto");
 
   await expect(page.locator(".thh-home-v2")).toBeVisible();
-  await expect(page.getByRole("heading",{name:/Un regalo hecho con sus recuerdos/i})).toBeVisible();
-  await expect(page.getByText(/Convertimos tus fotos, audios y mensajes/i)).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Un regalo que la emociona/i})).toBeVisible();
+  await expect(page.getByText(/Transformamos tus fotos, audios y mensajes/i)).toBeVisible();
   await expect(page.locator(".thh-v2-meta")).toContainText("Desde");
   await expect(page.locator(".thh-v2-meta strong")).toContainText("$");
 
@@ -72,7 +72,7 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 
-  await expect(page.getByRole("heading",{name:/No recibe una página/i})).toBeAttached();
+  await expect(page.getByRole("heading",{name:/No recibe solo un regalo/i})).toBeAttached();
   await expect(page.getByText("Nosotros hacemos la magia")).toBeAttached();
   await expect(page.locator(".thh-v2-price strong")).toContainText("$");
 });
