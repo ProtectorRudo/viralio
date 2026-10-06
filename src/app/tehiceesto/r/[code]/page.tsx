@@ -5,6 +5,7 @@ import { getExperience } from "../../data";
 import { getExperience as getPremiumV1Experience } from "../../template-v1/data";
 import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
+import AffiliateRedirect from "./AffiliateRedirect";
 
 const SUPABASE_URL="https://efvvadfxuyieswdqnsjg.supabase.co";
 const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
@@ -16,8 +17,20 @@ type EdgeGift={
 };
 type EdgeMedia={kind:"image"|"audio"|"video";caption:string|null;sort_order:number;metadata:{fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:import("../../data").SceneType;role?:"voice"|"soundtrack"}|null;url:string|null};
 
-export default async function PublishedGiftPage({params}:{params:Promise<{code:string}>}){
-  const {code}=await params;if(!/^[a-f0-9]{18}$/.test(code))notFound();
+export default async function PublishedGiftPage({
+  params,
+  searchParams,
+}:{
+  params:Promise<{code:string}>;
+  searchParams:Promise<{src?:string|string[]}>;
+}){
+  const {code}=await params;
+  if(!/^[a-f0-9]{18}$/.test(code)){
+    if(!/^[a-z0-9][a-z0-9-]{2,49}$/.test(code))notFound();
+    const query=await searchParams;
+    const source=Array.isArray(query.src)?query.src[0]||"":query.src||"";
+    return <AffiliateRedirect code={code} source={source.slice(0,60).toLowerCase()}/>;
+  }
   const response=await fetch(`${SUPABASE_URL}/functions/v1/gift-read?code=${encodeURIComponent(code)}`,{headers:{apikey:PUBLISHABLE_KEY,accept:"application/json"},cache:"no-store"});
   if(response.status===404)notFound();if(!response.ok)throw new Error("gift_read_failed");
   const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
