@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
+import HomeTrustMarquee from "./HomeTrustMarquee";
 
 const RECIPIENTS = [
   { slug:"pareja", label:"Pareja", mark:"♡" },
@@ -237,6 +238,8 @@ export default async function TeHiceEstoHome() {
             <p className="thh-v2-price-closing">Vos nos das los recuerdos. Nosotros hacemos que se conviertan en algo inolvidable.</p>
           </div>
         </section>
+
+        <HomeTrustMarquee />
 
         <footer className="thh-footer thh-v2-footer">
           <div>
