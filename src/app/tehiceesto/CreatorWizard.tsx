@@ -5,7 +5,6 @@ import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
-import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./creatorApi";
 
 type Step = 0 | 1 | 2;
 type SubmitState = "idle" | "submitting" | "unavailable" | "error";
@@ -105,11 +104,12 @@ export default function CreatorWizard() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/order-create`, {
+      const dedicated = window.location.hostname === "tehiceesto.com" || window.location.hostname === "www.tehiceesto.com";
+      const endpoint = dedicated ? "/api/order-create" : "/tehiceesto/api/order-create";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          apikey: SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({
           experienceSlug: selected.slug,
