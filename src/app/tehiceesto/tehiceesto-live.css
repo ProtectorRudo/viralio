@@ -3979,3 +3979,521 @@
   .thi-papa-memory-photo>i{transition:none}
   .thi-papa-memory-hint span{animation:none}
 }
+
+
+/* PAPA · EMOTIONAL LEGACY CHAPTERS V2 · OCT 2026
+   Turns "lessons" into intimate ways a father loved and stayed.
+   Live template only; premium-v1 snapshots remain frozen.
+   ========================================================= */
+.thi-template-live.thi-theme-papa[data-scene="lessons"]{
+  background:
+    radial-gradient(circle at 50% 18%,rgba(116,145,178,.12),transparent 27%),
+    radial-gradient(circle at 72% 76%,rgba(184,150,104,.08),transparent 24%),
+    linear-gradient(180deg,#05080c 0%,#030507 100%)!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-experience-orb.orb-a{
+  background:#7890aa!important;
+  opacity:.075!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-experience-orb.orb-b{
+  background:#b89668!important;
+  opacity:.055!important;
+  right:-330px!important;
+  bottom:-330px!important;
+}
+
+.thi-template-live.thi-theme-papa[data-scene="lessons"]:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:.34;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 4px),
+    radial-gradient(circle at 50% 46%,transparent 34%,rgba(0,0,0,.42) 100%);
+}
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-scene-stage{
+  position:relative;
+  z-index:3;
+}
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-papa-lessons{
+  min-height:100svh;
+  overflow:visible;
+  justify-content:flex-start;
+  padding-top:118px;
+  padding-bottom:142px;
+  background:transparent!important;
+}
+.thi-papa-lessons-atmosphere{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.thi-papa-lessons-atmosphere:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:315px;
+  width:min(860px,88vw);
+  height:520px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(110,139,170,.11),rgba(110,139,170,.025) 45%,transparent 72%);
+  filter:blur(22px);
+}
+.thi-papa-lessons-atmosphere i{
+  position:absolute;
+  width:1px;
+  top:110px;
+  bottom:90px;
+  background:linear-gradient(transparent,rgba(169,183,201,.08),transparent);
+}
+.thi-papa-lessons-atmosphere i:first-child{left:12%}
+.thi-papa-lessons-atmosphere i:nth-child(2){right:12%}
+.thi-papa-lessons-atmosphere b{
+  position:absolute;
+  border:1px solid rgba(184,150,104,.045);
+  border-radius:50%;
+  left:50%;
+  transform:translateX(-50%);
+}
+.thi-papa-lessons-atmosphere b:nth-of-type(1){width:520px;height:520px;top:270px}
+.thi-papa-lessons-atmosphere b:nth-of-type(2){width:760px;height:760px;top:150px;opacity:.5}
+
+.thi-papa-lessons-head{
+  position:relative;
+  z-index:3;
+  width:min(900px,92vw);
+  margin:0 auto 34px;
+  text-align:center;
+}
+.thi-papa-lessons-head .scene-kicker{
+  margin:0 0 18px;
+  color:#8294a8!important;
+  font-size:8px;
+  line-height:1.5;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+}
+.thi-papa-lessons-head .scene-kicker:after{
+  content:"";
+  display:block;
+  width:48px;
+  height:1px;
+  margin:16px auto 0;
+  background:linear-gradient(90deg,transparent,#b89668,transparent);
+}
+.thi-papa-lessons-head h2{
+  max-width:850px!important;
+  margin:0 auto!important;
+  color:#eef2f5;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(48px,6.5vw,76px)!important;
+  font-weight:400!important;
+  line-height:.98!important;
+  letter-spacing:-.048em!important;
+  text-wrap:balance;
+}
+.thi-papa-lessons-head h2>span,
+.thi-papa-lessons-head h2>em{
+  display:block;
+}
+.thi-papa-lessons-head h2>em{
+  margin:3px 0 2px;
+  color:#c69b68;
+  font-weight:400;
+  font-style:italic;
+  text-shadow:0 12px 44px rgba(184,150,104,.12);
+}
+.thi-papa-lessons-head h2>span:last-child{
+  color:#dfe5ea;
+}
+
+.thi-papa-lesson-timeline{
+  width:min(900px,94vw);
+  position:relative;
+  z-index:3;
+  display:grid;
+  gap:12px;
+  margin:2px auto 0;
+  padding-left:42px;
+}
+.thi-papa-lesson-line{
+  position:absolute;
+  left:16px;
+  top:32px;
+  bottom:32px;
+  width:1px;
+  background:linear-gradient(180deg,#b89668 0%,rgba(184,150,104,.48) 74%,rgba(184,150,104,.08) 100%);
+  box-shadow:0 0 16px rgba(184,150,104,.12);
+}
+.thi-papa-lesson-card{
+  min-height:118px;
+  position:relative;
+  display:grid;
+  grid-template-columns:58px minmax(0,1fr) 38px;
+  align-items:center;
+  gap:14px;
+  padding:18px 17px 18px 19px;
+  overflow:hidden;
+  border:1px solid rgba(169,183,201,.12);
+  border-radius:16px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),transparent 28%),
+    rgba(7,11,16,.88);
+  color:#e8edf1;
+  text-align:left;
+  box-shadow:0 16px 44px rgba(0,0,0,.18);
+  cursor:pointer;
+  transition:
+    min-height .38s cubic-bezier(.2,.8,.2,1),
+    transform .28s ease,
+    border-color .32s ease,
+    background .32s ease,
+    box-shadow .32s ease;
+}
+.thi-papa-lesson-card:hover,
+.thi-papa-lesson-card:focus-visible{
+  transform:translateY(-2px);
+  border-color:rgba(184,150,104,.26);
+  outline:none;
+}
+.thi-papa-lesson-card.open{
+  min-height:190px;
+  border-color:rgba(184,150,104,.46);
+  background:
+    linear-gradient(100deg,rgba(184,150,104,.07),transparent 42%),
+    rgba(8,12,17,.95);
+  box-shadow:
+    0 28px 70px rgba(0,0,0,.28),
+    inset 0 0 0 1px rgba(184,150,104,.055);
+}
+.thi-papa-lesson-node{
+  position:absolute;
+  left:-34px;
+  top:50%;
+  width:14px;
+  height:14px;
+  transform:translateY(-50%);
+  border:1px solid rgba(184,150,104,.92);
+  border-radius:50%;
+  background:#05080c;
+  box-shadow:0 0 0 5px rgba(184,150,104,.025);
+  transition:background .3s,box-shadow .3s,transform .3s;
+}
+.thi-papa-lesson-card.open .thi-papa-lesson-node{
+  background:#d3a56e;
+  box-shadow:
+    0 0 0 5px rgba(184,150,104,.10),
+    0 0 22px rgba(184,150,104,.32);
+  transform:translateY(-50%) scale(1.03);
+}
+.thi-papa-lesson-number{
+  position:relative;
+  z-index:4;
+  align-self:start;
+  padding-top:3px;
+  color:#74869a;
+  font:400 21px/1 Georgia,"Times New Roman",serif;
+}
+.thi-papa-lesson-content{
+  position:relative;
+  z-index:4;
+  align-self:center;
+  min-width:0;
+  max-width:66%;
+}
+.thi-papa-lesson-content strong{
+  display:block;
+  margin:0;
+  color:#f0f3f5;
+  font:400 clamp(24px,3.1vw,34px)/1.05 Georgia,"Times New Roman",serif;
+  letter-spacing:-.025em;
+  text-wrap:balance;
+}
+.thi-papa-lesson-content p{
+  margin:9px 0 0;
+  max-width:560px;
+  color:#718093;
+  font-size:9px;
+  line-height:1.55;
+  letter-spacing:.03em;
+  transition:color .3s,font-size .3s;
+}
+.thi-papa-lesson-card.open .thi-papa-lesson-content p{
+  color:#b2bcc6;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  line-height:1.6;
+  letter-spacing:0;
+}
+.thi-papa-lesson-visual{
+  position:absolute;
+  z-index:1;
+  top:0;
+  right:0;
+  bottom:0;
+  width:44%;
+  overflow:hidden;
+  opacity:.28;
+  transition:opacity .4s ease,filter .4s ease,transform .45s cubic-bezier(.2,.8,.2,1);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 38%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 38%,#000 100%);
+}
+.thi-papa-lesson-visual img{
+  width:100%;
+  height:100%;
+  display:block;
+  filter:saturate(.55) sepia(.10) brightness(.67) contrast(1.08);
+  transform:scale(1.035);
+}
+.thi-papa-lesson-visual i{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(4,7,10,.03),rgba(4,7,10,.28)),
+    radial-gradient(circle at 75% 45%,transparent 24%,rgba(4,7,10,.24));
+}
+.thi-papa-lesson-card.open .thi-papa-lesson-visual{
+  opacity:.58;
+  transform:scale(1.012);
+}
+.thi-papa-lesson-card.open .thi-papa-lesson-visual img{
+  filter:saturate(.64) sepia(.12) brightness(.78) contrast(1.08);
+}
+.thi-papa-lesson-chevron{
+  position:relative;
+  z-index:5;
+  grid-column:3;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  justify-self:end;
+  border:1px solid rgba(184,150,104,.28);
+  border-radius:50%;
+  background:rgba(4,7,10,.52);
+  color:#c3a274;
+  font-size:18px;
+  line-height:1;
+}
+.thi-papa-lesson-card.open .thi-papa-lesson-chevron{
+  border-color:rgba(184,150,104,.54);
+  background:rgba(184,150,104,.08);
+}
+
+.thi-papa-lessons-hint{
+  position:relative;
+  z-index:3;
+  margin:18px auto 0!important;
+  color:#617084!important;
+  font-size:8px!important;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.thi-papa-lessons-outro{
+  position:relative;
+  z-index:3;
+  width:min(690px,90vw);
+  margin:44px auto 0;
+  text-align:center;
+  animation:thiPapaLegacyIn .72s cubic-bezier(.2,.8,.2,1) both;
+}
+.thi-papa-lessons-outro>i{
+  display:block;
+  width:46px;
+  height:1px;
+  margin:0 auto 18px;
+  background:linear-gradient(90deg,transparent,#b89668,transparent);
+}
+.thi-papa-lessons-outro>strong{
+  display:block;
+  color:#e9edf1;
+  font:400 clamp(24px,3vw,34px)/1.18 Georgia,"Times New Roman",serif;
+}
+.thi-papa-lessons-outro>p{
+  max-width:620px;
+  margin:10px auto 0;
+  color:#8398af;
+  font:italic 400 clamp(19px,2.5vw,27px)/1.34 Georgia,"Times New Roman",serif;
+  text-wrap:balance;
+}
+.thi-papa-lessons-cta{
+  min-width:270px;
+  min-height:58px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:28px;
+  padding:0 28px;
+  border:1px solid rgba(240,204,156,.58);
+  border-radius:999px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.20),transparent 30%),
+    linear-gradient(135deg,#d7ad78,#a87947);
+  color:#090b0e;
+  box-shadow:
+    0 18px 54px rgba(0,0,0,.32),
+    0 0 34px rgba(184,150,104,.10),
+    inset 0 1px 0 rgba(255,255,255,.34);
+  font:400 16px/1 Georgia,"Times New Roman",serif;
+  cursor:pointer;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.thi-papa-lessons-cta:hover,
+.thi-papa-lessons-cta:focus-visible{
+  transform:translateY(-2px);
+  box-shadow:
+    0 23px 62px rgba(0,0,0,.38),
+    0 0 42px rgba(184,150,104,.14),
+    inset 0 1px 0 rgba(255,255,255,.38);
+  outline:none;
+}
+@keyframes thiPapaLegacyIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Remove interface chrome from this intimate chapter; the demo ribbon stays. */
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-scene-meta,
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-reset-journey,
+.thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-progress-premium{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@media(max-width:650px){
+  .thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-papa-lessons{
+    padding:112px 13px 118px!important;
+  }
+  .thi-papa-lessons-head{
+    width:94vw;
+    margin-bottom:27px;
+  }
+  .thi-papa-lessons-head .scene-kicker{
+    width:90vw;
+    margin-left:auto;
+    margin-right:auto;
+    font-size:6.8px;
+    line-height:1.55;
+    letter-spacing:.20em;
+  }
+  .thi-papa-lessons-head h2{
+    width:92vw;
+    font-size:clamp(38px,10.4vw,46px)!important;
+    line-height:.96!important;
+  }
+  .thi-papa-lessons-head h2>em{
+    margin:5px 0 4px;
+  }
+  .thi-papa-lesson-timeline{
+    width:94vw;
+    gap:9px;
+    padding-left:33px;
+  }
+  .thi-papa-lesson-line{
+    left:12px;
+    top:28px;
+    bottom:28px;
+  }
+  .thi-papa-lesson-card{
+    min-height:104px;
+    grid-template-columns:38px minmax(0,1fr) 32px;
+    gap:10px;
+    padding:15px 11px 15px 13px;
+    border-radius:13px;
+  }
+  .thi-papa-lesson-card.open{
+    min-height:175px;
+  }
+  .thi-papa-lesson-node{
+    left:-28px;
+    width:12px;
+    height:12px;
+  }
+  .thi-papa-lesson-number{
+    font-size:18px;
+    padding-top:3px;
+  }
+  .thi-papa-lesson-content{
+    max-width:72%;
+  }
+  .thi-papa-lesson-content strong{
+    font-size:clamp(21px,5.7vw,25px);
+    line-height:1.04;
+  }
+  .thi-papa-lesson-content p{
+    margin-top:7px;
+    font-size:7px;
+  }
+  .thi-papa-lesson-card.open .thi-papa-lesson-content p{
+    font-size:12px;
+    line-height:1.52;
+  }
+  .thi-papa-lesson-visual{
+    width:45%;
+    opacity:.20;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 46%,#000 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 46%,#000 100%);
+  }
+  .thi-papa-lesson-card.open .thi-papa-lesson-visual{opacity:.50}
+  .thi-papa-lesson-chevron{
+    width:30px;
+    height:30px;
+    font-size:16px;
+  }
+  .thi-papa-lessons-hint{
+    width:88vw;
+    font-size:6.8px!important;
+    line-height:1.5;
+  }
+  .thi-papa-lessons-outro{
+    width:91vw;
+    margin-top:36px;
+  }
+  .thi-papa-lessons-outro>strong{
+    font-size:24px;
+  }
+  .thi-papa-lessons-outro>p{
+    width:88vw;
+    font-size:20px;
+    line-height:1.34;
+  }
+  .thi-papa-lessons-cta{
+    width:min(82vw,320px);
+    min-width:0;
+    min-height:54px;
+    margin-top:24px;
+    padding-inline:18px;
+    font-size:15px;
+  }
+}
+
+@media(max-width:390px){
+  .thi-template-live.thi-theme-papa[data-scene="lessons"] .thi-papa-lessons{
+    padding-top:108px!important;
+  }
+  .thi-papa-lessons-head h2{
+    width:94vw;
+    font-size:38px!important;
+  }
+  .thi-papa-lesson-timeline{width:95vw;padding-left:31px}
+  .thi-papa-lesson-card{
+    grid-template-columns:34px minmax(0,1fr) 30px;
+    padding-inline:10px;
+  }
+  .thi-papa-lesson-content{max-width:75%}
+  .thi-papa-lesson-content strong{font-size:21px}
+  .thi-papa-lesson-card.open .thi-papa-lesson-content p{font-size:11.5px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .thi-papa-lesson-card,
+  .thi-papa-lesson-node,
+  .thi-papa-lesson-visual,
+  .thi-papa-lessons-cta{transition:none}
+  .thi-papa-lessons-outro{animation:none}
+}

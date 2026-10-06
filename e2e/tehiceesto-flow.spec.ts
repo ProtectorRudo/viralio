@@ -41,7 +41,7 @@ async function advanceOne(page:Page){
   else if(current==="care"){const premium=page.locator(".mama-care-file");if(await premium.count()){await premium.nth(0).click();await premium.nth(1).click();await premium.nth(2).click();await page.locator(".mama-care-continue").click()}else{const items=page.locator(".care-grid button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="sacrifices"){const premium=page.locator(".mama-sacrifice-trigger");if(await premium.count()){await premium.nth(0).click();await premium.nth(1).click();await premium.nth(2).click();await premium.nth(3).click();await page.locator(".mama-sacrifice-continue").click()}else{const items=page.locator(".sacrifice-list button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="return"){await page.locator(".return-key").click();await page.locator(".scene .primary-action").click()}
-  else if(current==="lessons"){const items=page.locator(".lesson-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="lessons"){const premium=page.locator(".thi-papa-lesson-card");if(await premium.count()){for(let i=1;i<await premium.count();i++)await premium.nth(i).click();await page.locator(".thi-papa-lessons-cta").click()}else{const items=page.locator(".lesson-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="presence"){const items=page.locator(".presence-track button");await items.nth(0).click();await items.nth(1).click();await page.locator(".scene .primary-action").click()}
   else if(current==="inheritance"){const items=page.locator(".inheritance-board button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
   else if(current==="lookback"){await page.locator(".lookback-button").click();await page.locator(".scene .primary-action").click()}
@@ -116,11 +116,15 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
 
   await page.locator('[data-action="advance"]').click();
   await waitForScene(page,"lessons");
-  await expect(page.getByText(/cobrar sentido/i)).toBeVisible();
-  const lessonItems=page.locator(".lesson-ledger button");
-  await lessonItems.nth(0).click();await lessonItems.nth(1).click();await lessonItems.nth(2).click();
+  await expect(page.getByText(/No fueron solo consejos/i)).toBeVisible();
+  await expect(page.getByText(/Fueron formas de quererme/i)).toBeVisible();
+  const lessonItems=page.locator(".thi-papa-lesson-card");
+  await expect(lessonItems).toHaveCount(4);
+  await expect(lessonItems.nth(0)).toHaveClass(/open/);
+  for(const i of [1,2,3]) await lessonItems.nth(i).click();
+  await expect(page.getByText(/tienen tu forma de querer/i)).toBeVisible();
   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
-  await page.locator(".scene-lessons .primary-action").click();
+  await page.locator(".thi-papa-lessons-cta").click();
   await waitForScene(page,"presence");
   await expect.poll(()=>page.evaluate(()=>window.scrollY),{timeout:1500}).toBeLessThan(12);
 
