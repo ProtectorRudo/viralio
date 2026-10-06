@@ -2,6 +2,7 @@ import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
   mercadoPagoBridgeStatus,
+  mercadoPagoIdempotencyKey,
   moneyMinor,
   verifyMercadoPagoWebhookSignature,
 } from "../src/lib/tehiceesto-payments";
@@ -12,6 +13,14 @@ describe("Te Hice Esto Mercado Pago integration", () => {
     expect(mercadoPagoBridgeStatus("refunded", "refunded")).toBe("refunded");
     expect(mercadoPagoBridgeStatus("failed", "cc_rejected")).toBe("rejected");
     expect(mercadoPagoBridgeStatus("created", "created")).toBe("pending");
+  });
+
+  it("builds a deterministic UUID idempotency key per local payment token", () => {
+    const key = mercadoPagoIdempotencyKey("0123456789abcdef0123456789abcdef0123456789abcdef");
+    expect(key).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-8[0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(key).toBe(
+      mercadoPagoIdempotencyKey("0123456789abcdef0123456789abcdef0123456789abcdef"),
+    );
   });
 
   it("converts Mercado Pago decimal amounts to minor units", () => {
