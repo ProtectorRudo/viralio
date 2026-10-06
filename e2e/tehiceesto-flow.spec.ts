@@ -77,7 +77,7 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await expect(page.locator(".thh-v2-price strong")).toContainText("$");
   await expect(page.getByRole("heading",{name:/No estás comprando una página/i})).toBeAttached();
   await expect(page.getByLabel("Pago seguro con Mercado Pago")).toContainText("Mercado Pago");
-  await expect(page.getByRole("link",{name:/Quiero crear este regalo/i})).toHaveAttribute("href","#para-quien");
+  await expect(page.getByRole("link",{name:/Quiero crear este regalo/i})).toHaveAttribute("href","/tehiceesto/crear");
 
   const trust=page.locator(".thh-trust-marquee");
   const scroller=page.locator(".thh-trust-scroller");
