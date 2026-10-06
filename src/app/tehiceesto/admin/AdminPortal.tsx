@@ -390,7 +390,7 @@ export default function AdminPortal() {
             <p className="thi-kicker">Actividad</p>
             <h2>Últimos regalos</h2>
           </div>
-          <button className="thi-ghost" onClick={loadGifts} disabled={loading}>
+          <button className="thi-ghost" onClick={()=>void loadGifts()} disabled={loading}>
             {loading ? "Actualizando…" : "Actualizar"}
           </button>
         </div>
