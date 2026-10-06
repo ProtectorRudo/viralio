@@ -32,13 +32,17 @@ export default function HomeTrustMarquee(){
 
     let frame=0;
     let last=performance.now();
+    let position=el.scrollLeft;
     const tick=(now:number)=>{
       const delta=Math.min(40,now-last);
       last=now;
-      if(!pausedRef.current){
-        el.scrollLeft+=delta*0.025;
+      if(pausedRef.current){
+        position=el.scrollLeft;
+      }else{
+        position+=delta*0.025;
         const loopPoint=el.scrollWidth/2;
-        if(loopPoint>0 && el.scrollLeft>=loopPoint)el.scrollLeft-=loopPoint;
+        if(loopPoint>0 && position>=loopPoint)position-=loopPoint;
+        el.scrollLeft=position;
       }
       frame=requestAnimationFrame(tick);
     };
