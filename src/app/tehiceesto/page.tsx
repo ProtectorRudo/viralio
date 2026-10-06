@@ -52,16 +52,31 @@ export default async function TeHiceEstoHome() {
               creada para hacer feliz a esa persona y recordarle cuánto significa para vos.
             </p>
 
-            <div className="thh-v2-meta">
-              <span>Desde <strong>{formatTeHiceEstoPrice()}</strong></span>
-              <i/>
-              <span>pago único</span>
-              <i/>
-              <span>nosotros hacemos todo</span>
+            <div className="thh-v2-meta" aria-label="Detalles de compra">
+              <span className="thh-v2-trust-chip thh-v2-trust-price">
+                <b aria-hidden="true">◇</b>
+                <span>Desde <strong>{formatTeHiceEstoPrice()}</strong></span>
+              </span>
+              <span className="thh-v2-trust-chip">
+                <b aria-hidden="true">▭</b>
+                <span>Pago <strong>único</strong></span>
+              </span>
+              <span className="thh-v2-trust-chip">
+                <b aria-hidden="true">♡</b>
+                <span>Lo hacemos <strong>por vos</strong></span>
+              </span>
+              <span className="thh-v2-trust-chip">
+                <b aria-hidden="true">▢</b>
+                <span>Link <strong>privado</strong></span>
+              </span>
             </div>
 
             <div className="thh-v2-chooser" id="para-quien">
-              <p>¿Para quién querés hacerlo?</p>
+              <div className="thh-v2-chooser-head">
+                <span>Elegí el tipo de historia</span>
+                <h2>¿Para quién querés hacerlo?<i aria-hidden="true">♡</i></h2>
+              </div>
+
               <div className="thh-v2-recipient-grid">
                 {RECIPIENTS.map((item)=>(
                   <Link
@@ -72,21 +87,27 @@ export default async function TeHiceEstoHome() {
                   >
                     <span aria-hidden="true">{item.mark}</span>
                     <strong>{item.label}</strong>
-                    <b aria-hidden="true">→</b>
+                    <b aria-hidden="true">›</b>
                   </Link>
                 ))}
               </div>
+
               <div className="thh-v2-more">
                 <span>También para</span>
                 <Link href={href("/experiencias/abuelos")}>Abuelos</Link>
                 <Link href={href("/experiencias/aniversario")}>Aniversario</Link>
                 <Link href={href("/experiencias/propuesta")}>Propuesta</Link>
               </div>
-            </div>
 
-            <Link className="thh-button thh-button-primary thh-v2-hero-cta" href={href("/experiencias/mama")}>
-              Ver una experiencia <span>→</span>
-            </Link>
+              <Link className="thh-button thh-button-primary thh-v2-hero-cta" href={href("/crear")}>
+                <strong>Crear mi regalo</strong>
+                <span aria-hidden="true">→</span>
+              </Link>
+              <p className="thh-v2-cta-note">
+                <span className="thh-v2-mini-lock" aria-hidden="true"/>
+                Después elegís la experiencia y pagás de forma segura con <strong>Mercado Pago</strong>.
+              </p>
+            </div>
           </div>
 
           <div className="thh-v2-hero-visual" aria-label="Ejemplo visual de una experiencia Te Hice Esto">
@@ -130,6 +151,21 @@ export default async function TeHiceEstoHome() {
                 <p>Gracias por estar siempre.<br/>Por hacer la vida más linda, más simple, más nuestra.</p>
                 <em>♡</em>
               </div>
+            </div>
+
+            <div className="thh-v2-paper-note thh-v2-paper-note-top" aria-hidden="true">
+              <span>Pequeños momentos,<br/>grandes historias.</span>
+              <b>♡</b>
+            </div>
+
+            <div className="thh-v2-audio-float" aria-hidden="true">
+              <span>▶</span>
+              <i/><i/><i/><i/><i/><i/>
+            </div>
+
+            <div className="thh-v2-paper-note thh-v2-paper-note-bottom" aria-hidden="true">
+              <span>Gracias por estar<br/>siempre.</span>
+              <b>♡</b>
             </div>
 
             <div className="thh-v2-visual-tag">
