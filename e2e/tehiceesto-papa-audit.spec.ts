@@ -11,7 +11,7 @@ async function capture(page:Page,testInfo:TestInfo,name:string){
 
 async function auditScene(page:Page,testInfo:TestInfo,name:string){
   await expectNoHorizontalOverflow(page);
-  await page.waitForTimeout(220);
+  await page.waitForTimeout(950);
   await capture(page,testInfo,`audit-papa-${name}-390`);
 }
 
