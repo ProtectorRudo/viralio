@@ -29,18 +29,23 @@ export async function POST(request: NextRequest) {
     return json({ error: "mercadopago_not_configured" }, 503);
   }
 
-  let body: Record<string, any> = {};
+  let body: Record<string, unknown> = {};
   try {
     body = await request.json();
   } catch {
     return json({ error: "invalid_json" }, 400);
   }
 
+  const bodyData =
+    body.data && typeof body.data === "object"
+      ? (body.data as Record<string, unknown>)
+      : {};
+
   const dataId = String(
-    request.nextUrl.searchParams.get("data.id") || body?.data?.id || "",
+    request.nextUrl.searchParams.get("data.id") || bodyData.id || "",
   ).trim();
   const topic = String(
-    request.nextUrl.searchParams.get("type") || body?.type || "",
+    request.nextUrl.searchParams.get("type") || body.type || "",
   )
     .trim()
     .toLowerCase();
@@ -81,7 +86,7 @@ export async function POST(request: NextRequest) {
       return json({ error: "provider_lookup_failed" }, 502);
     }
 
-    const order = (await response.json()) as Record<string, any>;
+    const order = (await response.json()) as Record<string, unknown>;
     const externalReference = String(order.external_reference || "");
 
     if (!externalReference.startsWith("thi_")) {
