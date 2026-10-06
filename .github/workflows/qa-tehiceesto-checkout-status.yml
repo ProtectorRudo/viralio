@@ -1,0 +1,30 @@
+name: QA Te Hice Esto checkout status
+
+on:
+  push:
+    branches: [qa-affiliate-live-20261006]
+    paths:
+      - ".github/workflows/qa-tehiceesto-checkout-status.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  checkout-status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Inspect Mercado Pago readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsSL --max-time 30 'https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1')"
+          echo "$body"
+          STATUS="$body" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["STATUS"])
+          assert data.get("provider")=="mercadopago", data
+          print("CONFIGURED="+str(bool(data.get("configured"))).lower())
+          print("TOKEN_VALID="+str(bool(data.get("tokenValid"))).lower())
+          print("WEBHOOK_SECRET_PRESENT="+str(bool(data.get("webhookSecretPresent"))).lower())
+          PY
