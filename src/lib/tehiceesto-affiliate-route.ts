@@ -14,7 +14,9 @@ export async function handleAffiliateRedirect(
 ){
   const host=request.headers.get("host")||"tehiceesto.com";
   const origin=new URL(request.url).origin;
-  const destination=dedicatedHost(host)?"/":"/tehiceesto";
+  const dedicated=dedicatedHost(host);
+  const destination=dedicated?"/":"/tehiceesto";
+  const sharedCookie=dedicated?{domain:".tehiceesto.com"}:{};
   const fallback=NextResponse.redirect(new URL(destination,origin),302);
 
   if(!/^[a-z0-9][a-z0-9-]{2,49}$/.test(code)){
@@ -57,6 +59,7 @@ export async function handleAffiliateRedirect(
       secure:process.env.NODE_ENV==="production",
       path:"/",
       maxAge:365*24*60*60,
+      ...sharedCookie,
     });
 
     if(response.ok&&data.tracked&&data.attributionToken){
@@ -66,6 +69,7 @@ export async function handleAffiliateRedirect(
         secure:process.env.NODE_ENV==="production",
         path:"/",
         maxAge:30*24*60*60,
+        ...sharedCookie,
       });
     }
     return result;
@@ -76,6 +80,7 @@ export async function handleAffiliateRedirect(
       secure:process.env.NODE_ENV==="production",
       path:"/",
       maxAge:365*24*60*60,
+      ...sharedCookie,
     });
     return fallback;
   }
