@@ -79,7 +79,8 @@ export default function AffiliateAdminDashboard(){
 
   async function create(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setLoading(true);setMessage("");
-    const form=new FormData(event.currentTarget);
+    const formElement=event.currentTarget;
+    const form=new FormData(formElement);
     try{
       const result=await affiliateAdminCall<{
         affiliate:{name:string;email:string;linkUrl:string};
@@ -96,7 +97,7 @@ export default function AffiliateAdminDashboard(){
         dashboardUrl:result.dashboardUrl,temporaryPassword:result.temporaryPassword,
       });
       setShowNew(false);
-      event.currentTarget.reset();
+      formElement.reset();
       await load();
     }catch(error){
       const reason=error instanceof Error?error.message:"create_failed";
