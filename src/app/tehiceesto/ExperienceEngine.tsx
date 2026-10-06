@@ -196,7 +196,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
   const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
 
-  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
+  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
     switch(type){
@@ -1012,6 +1012,61 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
       case "lessons":{
         const rows=copy.lessons.items.map((item,index)=>{const [title,...body]=item.split("|");return {index,title:token(title.trim()||`Lección ${index+1}`),body:token(body.join("|").trim())}}).filter(item=>item.title);
+        if(experience.slug==="papa"){
+          const opened=new Set([0,...lessonsOpen]);
+          const allOpen=opened.size>=rows.length;
+          const visualSource=(photoMedia?.length?photoMedia:demoPhotos).slice(0,Math.max(rows.length,4));
+          return (
+            <section className="scene scene-lessons thi-papa-lessons">
+              <div className="thi-papa-lessons-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
+              <header className="thi-papa-lessons-head">
+                <p className="scene-kicker">{token(copy.lessons.kicker)}</p>
+                <h2>
+                  <span>{token(copy.lessons.title)}</span>
+                  {copy.lessons.accentTitle&&<em>{token(copy.lessons.accentTitle)}</em>}
+                  {copy.lessons.titleTail&&<span>{token(copy.lessons.titleTail)}</span>}
+                </h2>
+              </header>
+              <div className="thi-papa-lesson-timeline" aria-label="Cosas que un padre deja sin darse cuenta">
+                <span className="thi-papa-lesson-line" aria-hidden="true"/>
+                {rows.map(({index,title,body})=>{
+                  const isOpen=opened.has(index);
+                  const visual=visualSource[index]||visualSource[index%Math.max(visualSource.length,1)];
+                  return <button
+                    key={`${title}-${index}`}
+                    type="button"
+                    data-action="lesson-open"
+                    className={`thi-papa-lesson-card ${isOpen?"open":""}`}
+                    onClick={()=>setLessonsOpen(items=>items.includes(index)?items:[...items,index])}
+                    aria-expanded={isOpen}
+                  >
+                    <span className="thi-papa-lesson-node" aria-hidden="true"/>
+                    <span className="thi-papa-lesson-number">{String(index+1).padStart(2,"0")}</span>
+                    <span className="thi-papa-lesson-content">
+                      <strong>{title}</strong>
+                      <p>{isOpen?body:token(copy.lessons.closedLabel)}</p>
+                    </span>
+                    <span className="thi-papa-lesson-visual" aria-hidden="true">
+                      {visual?.url&&<img src={visual.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:visual.fit||"cover",objectPosition:visual.position||"center"}}/>}
+                      <i/>
+                    </span>
+                    <span className="thi-papa-lesson-chevron" aria-hidden="true">{isOpen?"⌃":"⌄"}</span>
+                  </button>;
+                })}
+              </div>
+              {allOpen?(
+                <div className="thi-papa-lessons-outro">
+                  <i aria-hidden="true"/>
+                  <strong>{token(copy.lessons.outroTitle)}</strong>
+                  <p>{token(copy.lessons.outroBody)}</p>
+                  <button data-action="advance" className="thi-papa-lessons-cta" onClick={next}>{token(copy.lessons.cta)}</button>
+                </div>
+              ):(
+                <p className="thi-papa-lessons-hint">Tocá cada recuerdo para descubrir lo que dejó en vos.</p>
+              )}
+            </section>
+          );
+        }
         const required=Math.min(3,rows.length);
         return (
           <section className="scene scene-lessons">
