@@ -1,0 +1,318 @@
+/* Te Hice Esto · affiliate system */
+
+.thi-aff-shell{
+  min-height:100svh;
+  background:#f6f1e9;
+  color:#282124;
+  font-family:Arial,Helvetica,sans-serif;
+}
+.thi-aff-shell *{box-sizing:border-box}
+.thi-aff-brand{
+  color:#2e2729;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:15px;
+  letter-spacing:.18em;
+  text-decoration:none;
+}
+.thi-aff-kicker{
+  display:block;
+  color:#a75f4d;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.19em;
+}
+.thi-aff-loading{
+  min-height:100svh;
+  display:grid;
+  place-items:center;
+  color:#796f72;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.thi-aff-login-shell{
+  display:grid;
+  place-items:center;
+  padding:28px;
+  background:
+    radial-gradient(circle at 22% 18%,rgba(255,255,255,.8),transparent 28%),
+    linear-gradient(145deg,#f8f4ee,#eee2d8);
+}
+.thi-aff-login{
+  width:min(520px,100%);
+  padding:45px;
+  border:1px solid rgba(48,37,40,.12);
+  border-radius:18px;
+  background:rgba(253,250,246,.94);
+  box-shadow:0 34px 90px rgba(58,40,36,.08);
+}
+.thi-aff-login .thi-aff-brand{display:block;margin-bottom:58px}
+.thi-aff-login h1{
+  margin:12px 0 18px;
+  color:#241e20;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:55px;
+  font-weight:400;
+  line-height:.92;
+  letter-spacing:-.045em;
+}
+.thi-aff-login h1 em{color:#ad634f;font-style:normal}
+.thi-aff-login>p{
+  margin:0 0 28px;
+  color:#746a6d;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  line-height:1.55;
+}
+.thi-aff-login form,.thi-aff-security form{
+  display:grid;
+  gap:14px;
+}
+.thi-aff-login label,.thi-aff-security label{
+  display:grid;
+  gap:7px;
+}
+.thi-aff-login label>span,.thi-aff-security label>span{
+  color:#665c60;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+.thi-aff-login input,.thi-aff-security input{
+  min-height:48px;
+  padding:0 14px;
+  border:1px solid rgba(48,37,40,.14);
+  border-radius:9px;
+  outline:none;
+  background:#fffdf9;
+  color:#2b2426;
+  font-size:14px;
+}
+.thi-aff-login input:focus,.thi-aff-security input:focus{border-color:#ad634f;box-shadow:0 0 0 3px rgba(173,99,79,.08)}
+.thi-aff-login button,.thi-aff-security form>button{
+  min-height:50px;
+  border:0;
+  border-radius:9px;
+  background:#ad634f;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+.thi-aff-error{color:#a33d38}
+
+.thi-aff-top{
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:0 max(24px,calc((100vw - 1240px)/2));
+  border-bottom:1px solid rgba(48,37,40,.09);
+  background:rgba(250,247,242,.92);
+  backdrop-filter:blur(16px);
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.thi-aff-top>div{display:flex;align-items:center;gap:18px}
+.thi-aff-top>button{
+  border:0;
+  background:none;
+  color:#81767a;
+  font-size:9px;
+  cursor:pointer;
+}
+.thi-aff-live,.thi-aff-admin-live{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#7b7775;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.thi-aff-live i,.thi-aff-admin-live i{
+  width:7px;height:7px;border-radius:50%;background:#5d9b75;box-shadow:0 0 0 4px rgba(93,155,117,.11);
+}
+.thi-aff-hero{
+  max-width:1240px;
+  margin:0 auto;
+  padding:72px 24px 34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:24px;
+}
+.thi-aff-hero h1{
+  margin:10px 0 4px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(48px,6vw,78px);
+  font-weight:400;
+  line-height:.95;
+  letter-spacing:-.045em;
+}
+.thi-aff-hero p{margin:0;color:#807579;font-family:Georgia,"Times New Roman",serif;font-size:15px}
+.thi-aff-rate{
+  min-width:210px;
+  padding:20px 22px;
+  border:1px solid rgba(48,37,40,.10);
+  border-radius:12px;
+  background:#fbf7f2;
+}
+.thi-aff-rate>span{display:block;color:#9a5d4e;font-size:7px;font-weight:800;letter-spacing:.15em}
+.thi-aff-rate strong{display:block;margin:4px 0;color:#2e2528;font-family:Georgia,"Times New Roman",serif;font-size:38px;font-weight:400}
+.thi-aff-rate small{color:#81767a;font-size:8px}
+
+.thi-aff-link-card{
+  max-width:1192px;
+  margin:0 auto 22px;
+  padding:26px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:18px 26px;
+  border:1px solid rgba(48,37,40,.10);
+  border-radius:15px;
+  background:#2b2326;
+  color:#f7eee8;
+  box-shadow:0 22px 60px rgba(48,33,30,.09);
+}
+.thi-aff-link-card>div:first-child>span{font-size:7px;font-weight:800;letter-spacing:.16em;color:#cf9887}
+.thi-aff-link-card>div:first-child>strong{
+  display:block;margin:8px 0 5px;font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:400;word-break:break-all;
+}
+.thi-aff-link-card>div:first-child>p{max-width:690px;margin:0;color:#c7b9b5;font-size:9px;line-height:1.5}
+.thi-aff-link-card>button{
+  align-self:center;min-width:135px;min-height:48px;border:1px solid rgba(255,255,255,.16);border-radius:9px;background:#ad634f;color:white;font-weight:800;cursor:pointer;
+}
+.thi-aff-channel-links{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.thi-aff-channel-links button{
+  min-height:32px;padding:0 12px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.05);color:#e8dcd7;font-size:8px;cursor:pointer;
+}
+.thi-aff-periods{
+  max-width:1192px;margin:0 auto 16px;padding:0 2px;display:flex;align-items:center;gap:8px;
+}
+.thi-aff-periods>span{margin-right:6px;color:#988d91;font-size:7px;font-weight:800;letter-spacing:.14em}
+.thi-aff-periods button{border:1px solid rgba(48,37,40,.10);border-radius:999px;background:#faf6f0;color:#766b6f;padding:8px 13px;font-size:8px;cursor:pointer}
+.thi-aff-periods button.active{background:#2f272a;color:#fff;border-color:#2f272a}
+
+.thi-aff-kpis,.thi-aff-money-grid,.thi-aff-grid-2,.thi-aff-panel{
+  max-width:1192px;margin-left:auto;margin-right:auto;
+}
+.thi-aff-kpis{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;
+}
+.thi-aff-kpis article,.thi-aff-money-grid article{
+  min-height:138px;padding:20px;border:1px solid rgba(48,37,40,.10);border-radius:12px;background:#fbf8f3;
+}
+.thi-aff-kpis article.accent{background:#ad634f;color:#fff;border-color:#ad634f}
+.thi-aff-kpis span,.thi-aff-money-grid span{display:block;font-size:7px;font-weight:800;letter-spacing:.14em;color:#9a7770}
+.thi-aff-kpis article.accent span,.thi-aff-kpis article.accent small{color:#f1dcd4}
+.thi-aff-kpis strong,.thi-aff-money-grid strong{
+  display:block;margin:13px 0 6px;font-family:Georgia,"Times New Roman",serif;font-size:34px;font-weight:400;line-height:.95;
+}
+.thi-aff-kpis small,.thi-aff-money-grid small{color:#887d81;font-size:8px}
+.thi-aff-money-grid{
+  display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px;margin-bottom:10px;
+}
+.thi-aff-money-grid article.main{background:#2b2326;color:#fff}
+.thi-aff-money-grid article.main span{color:#cf9989}
+.thi-aff-money-grid article.main p{margin:8px 0 0;color:#c9bab7;font-size:8px;line-height:1.45}
+
+.thi-aff-panel{
+  margin-bottom:10px;padding:24px;border:1px solid rgba(48,37,40,.10);border-radius:12px;background:#fbf8f3;
+}
+.thi-aff-panel-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}
+.thi-aff-panel-head span{color:#a05f4f;font-size:7px;font-weight:800;letter-spacing:.15em}
+.thi-aff-panel-head h2{margin:4px 0 0;font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:400}
+.thi-aff-panel-head>small{color:#9a8f92;font-size:7px}
+.thi-aff-chart{height:180px;display:flex;align-items:end;gap:5px;padding-top:12px;overflow:hidden}
+.thi-aff-chart-day{min-width:0;flex:1;display:grid;gap:7px;justify-items:center}
+.thi-aff-chart-bar{width:100%;height:145px;display:flex;align-items:end;justify-content:center;gap:1px;border-bottom:1px solid rgba(48,37,40,.10)}
+.thi-aff-chart-bar i{width:42%;max-width:9px;display:block;border-radius:6px 6px 1px 1px;background:#d5b5a8;min-height:3px}
+.thi-aff-chart-bar b{width:36%;max-width:7px;display:block;border-radius:6px 6px 1px 1px;background:#ad634f;min-height:7px}
+.thi-aff-chart-day>span{color:#9b9094;font-size:6px}
+.thi-aff-grid-2{display:grid;grid-template-columns:1fr 1.35fr;gap:10px}
+.thi-aff-source-list,.thi-aff-sales-list{display:grid}
+.thi-aff-source-list>div,.thi-aff-sales-list>div{min-height:48px;display:grid;align-items:center;border-top:1px solid rgba(48,37,40,.08)}
+.thi-aff-source-list>div{grid-template-columns:1fr auto auto;gap:14px}
+.thi-aff-source-list strong{font-size:10px}.thi-aff-source-list span,.thi-aff-source-list b{font-size:8px;color:#82777b}.thi-aff-source-list b{color:#ad634f}
+.thi-aff-sales-list>div{grid-template-columns:52px 1fr auto auto;gap:12px}
+.thi-aff-sales-list span{font-size:7px;color:#988d91}.thi-aff-sales-list strong{font-size:9px}.thi-aff-sales-list b{font-size:9px}.thi-aff-sales-list em{font-size:8px;color:#7a927f;font-style:normal}
+.thi-aff-empty{color:#8a7f82;font-size:9px}
+
+.thi-aff-security{padding:0;overflow:hidden}
+.thi-aff-settings-toggle{width:100%;min-height:56px;padding:0 20px;border:0;background:transparent;text-align:left;color:#3d3437;font-family:Georgia,"Times New Roman",serif;font-size:16px;cursor:pointer}
+.thi-aff-security form{padding:0 20px 20px;grid-template-columns:1fr 1fr auto}
+.thi-aff-security form>button{align-self:end;padding:0 18px}
+.thi-aff-security form>small{grid-column:1/-1;color:#756a6d}
+.thi-aff-footer{
+  max-width:1192px;margin:48px auto 0;padding:30px 0 50px;border-top:1px solid rgba(48,37,40,.10);display:flex;justify-content:space-between;gap:24px;color:#8a7f82;
+}
+.thi-aff-footer strong{display:block;color:#3a3134;font-family:Georgia,"Times New Roman",serif;letter-spacing:.16em;font-weight:400}
+.thi-aff-footer span,.thi-aff-footer p{font-size:8px}.thi-aff-footer p{max-width:430px;text-align:right;line-height:1.5}
+
+/* Admin affiliates */
+.thi-admin-affiliate-link{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.thi-aff-admin-shell{background:#f5f0e8}
+.thi-aff-admin-header .thi-aff-admin-sub{max-width:580px;margin:8px 0 0;color:#82777a;font-size:10px;line-height:1.5}
+.thi-aff-admin-message{max-width:1240px;margin:14px auto;padding:11px 16px;border:1px solid rgba(173,99,79,.18);border-radius:9px;background:#f8eee7;color:#875143;font-size:9px}
+.thi-aff-credentials{
+  max-width:1240px;margin:16px auto;padding:26px;display:grid;grid-template-columns:1fr 1.6fr auto;gap:22px;border:1px solid rgba(48,37,40,.12);border-radius:13px;background:#2c2427;color:#f8eee9;
+}
+.thi-aff-credentials>div>span{color:#d29a89;font-size:7px;font-weight:800;letter-spacing:.16em}
+.thi-aff-credentials h2{margin:6px 0 3px;font-family:Georgia,"Times New Roman",serif;font-size:30px;font-weight:400}
+.thi-aff-credentials p{margin:0;color:#c9bbb7;font-size:8px}
+.thi-aff-credentials dl{display:grid;gap:6px;margin:0}
+.thi-aff-credentials dl>div{display:grid;grid-template-columns:110px 1fr 58px;gap:10px;align-items:center}
+.thi-aff-credentials dt{color:#a99b98;font-size:7px}.thi-aff-credentials dd{margin:0;font-family:monospace;font-size:9px;overflow:hidden;text-overflow:ellipsis}
+.thi-aff-credentials dl button{min-height:28px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.06);color:#fff;font-size:7px;cursor:pointer}
+.thi-aff-new{max-width:1240px;margin:16px auto}
+.thi-aff-new-form{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:12px;align-items:end}
+.thi-aff-new-form label{display:grid;gap:6px}.thi-aff-new-form label>span{font-size:8px;font-weight:700;color:#6f6367}
+.thi-aff-new-form input{min-height:43px;padding:0 11px;border:1px solid rgba(48,37,40,.12);border-radius:8px;background:#fffdf9}
+.thi-aff-new-form small{font-size:6.5px;color:#9a8e92}
+.thi-aff-percent-input{position:relative}.thi-aff-percent-input input{width:100%;padding-right:28px}.thi-aff-percent-input b{position:absolute;right:10px;top:14px;color:#a05f4f;font-size:9px}
+.thi-aff-admin-kpis{max-width:1240px;margin:16px auto;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.thi-aff-admin-kpis article{min-height:118px;padding:18px;border:1px solid rgba(48,37,40,.10);border-radius:11px;background:#fbf8f3}
+.thi-aff-admin-kpis article.accent{background:#ad634f;color:#fff}
+.thi-aff-admin-kpis span{display:block;color:#96766e;font-size:6.5px;font-weight:800;letter-spacing:.13em}.thi-aff-admin-kpis article.accent span,.thi-aff-admin-kpis article.accent small{color:#f0d8d1}
+.thi-aff-admin-kpis strong{display:block;margin:12px 0 5px;font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:400}.thi-aff-admin-kpis small{font-size:7px;color:#8e8286}
+.thi-aff-admin-table-panel{max-width:1240px;margin:16px auto}
+.thi-aff-admin-table{min-width:1380px}
+.thi-aff-rank{display:flex;align-items:center;gap:9px}.thi-aff-rank>span{color:#b1887c;font-size:8px}.thi-aff-rank strong{display:block}.thi-aff-rank small{display:block;margin-top:3px;color:#9b8f92;font-size:7px}
+.thi-aff-link-copy{border:0;background:none;color:#9d5e4e;text-decoration:underline;text-underline-offset:3px;font-size:8px;cursor:pointer}
+.thi-aff-cell-note{display:block;margin-top:3px;color:#9c9094;font-size:6.5px}
+.thi-aff-commission-edit{display:flex;align-items:center;gap:3px}.thi-aff-commission-edit input{width:46px;min-height:30px;border:1px solid rgba(48,37,40,.12);border-radius:6px;text-align:right;padding:0 5px}.thi-aff-commission-edit span{font-size:8px}.thi-aff-commission-edit button{width:28px;height:28px;border:0;border-radius:6px;background:#eadad1;color:#9c5b4a;cursor:pointer}
+.thi-aff-status{display:inline-flex;padding:6px 8px;border-radius:999px;font-size:7px;font-weight:800}.thi-aff-status.active{background:#e5efe8;color:#557d63}.thi-aff-status.paused{background:#eee9e6;color:#8b7e82}
+.thi-aff-row-actions{display:flex;gap:4px}.thi-aff-row-actions button{min-height:28px;border:1px solid rgba(48,37,40,.10);border-radius:6px;background:#faf6f0;color:#665b5f;font-size:6.5px;cursor:pointer}.thi-aff-row-actions button.pay{background:#2d2528;color:#fff}.thi-aff-row-actions button:disabled{opacity:.35;cursor:not-allowed}
+.thi-aff-admin-locked{display:grid;place-items:center;min-height:100svh}.thi-aff-admin-locked>section{max-width:460px;padding:35px;border:1px solid rgba(48,37,40,.10);border-radius:14px;background:#fbf8f3}.thi-aff-admin-locked span{font-size:7px;letter-spacing:.15em;color:#a05f4f}.thi-aff-admin-locked h1{font-family:Georgia,"Times New Roman",serif;font-size:42px;font-weight:400;margin:8px 0}.thi-aff-admin-locked p{color:#7d7276;font-size:10px}.thi-aff-admin-locked a{color:#9d5d4d;font-size:9px}
+
+@media(max-width:900px){
+  .thi-aff-top{padding:0 16px}
+  .thi-aff-hero{padding:48px 16px 25px;align-items:flex-start;flex-direction:column}
+  .thi-aff-rate{width:100%}
+  .thi-aff-link-card,.thi-aff-periods,.thi-aff-kpis,.thi-aff-money-grid,.thi-aff-grid-2,.thi-aff-panel,.thi-aff-footer{margin-left:16px;margin-right:16px}
+  .thi-aff-kpis{grid-template-columns:1fr 1fr}
+  .thi-aff-money-grid{grid-template-columns:1fr 1fr}.thi-aff-money-grid article.main{grid-column:1/-1}
+  .thi-aff-grid-2{grid-template-columns:1fr}
+  .thi-aff-security form{grid-template-columns:1fr}
+  .thi-aff-security form>small{grid-column:auto}
+  .thi-aff-new-form{grid-template-columns:1fr 1fr}
+  .thi-aff-admin-kpis{grid-template-columns:1fr 1fr;margin-left:16px;margin-right:16px}
+  .thi-aff-admin-kpis article:last-child{grid-column:1/-1}
+  .thi-aff-credentials{margin-left:16px;margin-right:16px;grid-template-columns:1fr}
+  .thi-aff-admin-message,.thi-aff-new,.thi-aff-admin-table-panel{margin-left:16px;margin-right:16px}
+}
+@media(max-width:560px){
+  .thi-aff-login-shell{padding:14px}.thi-aff-login{padding:30px 20px}.thi-aff-login .thi-aff-brand{margin-bottom:38px}.thi-aff-login h1{font-size:44px}
+  .thi-aff-top{min-height:64px}.thi-aff-live{display:none}
+  .thi-aff-hero h1{font-size:50px}
+  .thi-aff-link-card{grid-template-columns:1fr;padding:20px}.thi-aff-link-card>button{width:100%}
+  .thi-aff-kpis{grid-template-columns:1fr 1fr;gap:8px}.thi-aff-kpis article{min-height:122px;padding:16px}.thi-aff-kpis strong{font-size:28px}
+  .thi-aff-money-grid{grid-template-columns:1fr}.thi-aff-money-grid article.main{grid-column:auto}
+  .thi-aff-panel{padding:18px}
+  .thi-aff-chart{gap:2px}.thi-aff-chart-day>span{display:none}
+  .thi-aff-sales-list>div{grid-template-columns:44px 1fr auto}.thi-aff-sales-list em{grid-column:2/4}
+  .thi-aff-footer{flex-direction:column}.thi-aff-footer p{text-align:left}
+  .thi-aff-new-form{grid-template-columns:1fr}
+  .thi-aff-admin-kpis{grid-template-columns:1fr 1fr}.thi-aff-admin-kpis article:last-child{grid-column:1/-1}
+  .thi-aff-credentials dl>div{grid-template-columns:1fr 52px}.thi-aff-credentials dt{grid-column:1/-1}.thi-aff-credentials dd{grid-column:1}
+}

@@ -753,7 +753,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
   test.setTimeout(45_000);
   const code="THI-ORDER-TEST";
 
-  await page.route("**/functions/v1/order-create",async route=>{
+  await page.route("**/tehiceesto/api/order-create",async route=>{
     const request=route.request();
     const body=JSON.parse(request.postData()||"{}") as Record<string,unknown>;
     expect(body.experienceSlug).toBe("pareja");
@@ -792,6 +792,69 @@ test("assisted purchase chooses an experience, captures contact and opens checko
   await expect(page.getByRole("heading",{name:/Tu experiencia empieza acá/i})).toBeVisible();
   await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
   await page.waitForURL(/checkout\.test/);
+});
+
+
+test("affiliate dashboard shows live transparent performance without buyer data",async({page})=>{
+  await page.addInitScript(()=>window.localStorage.setItem("thi_affiliate_session","test-session"));
+  await page.route("**/functions/v1/affiliate-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as {action?:string};
+    if(body.action!=="stats")return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"invalid_action"})});
+    return route.fulfill({
+      status:200,
+      contentType:"application/json",
+      headers:{"access-control-allow-origin":"*"},
+      body:JSON.stringify({
+        live:true,
+        period:"30",
+        affiliate:{slug:"sofia",name:"Sofía Demo",email:"sofia@example.com",whatsapp:null,commissionBps:2000},
+        links:[{code:"sofia",label:"Principal",status:"active",url:"https://tehiceesto.com/a/sofia"}],
+        metrics:{clicks:140,uniqueVisitors:100,orders:9,sales:5,conversion:.05,revenueMinor:12500000,commissionEarnedMinor:2500000,commissionPendingMinor:1500000,commissionPaidMinor:1000000,currency:"ARS"},
+        sources:[{source:"tiktok",clicks:90,visitors:70,sales:4},{source:"instagram",clicks:50,visitors:30,sales:1}],
+        daily:Array.from({length:30},(_,index)=>({date:`2026-09-${String(index+1).padStart(2,"0")}`,clicks:index%5,visitors:index%4,sales:index===29?2:0,revenueMinor:index===29?5000000:0})),
+        recentSales:[{date:"2026-10-06T12:00:00Z",experienceSlug:"mama",amountMinor:2500000,currency:"ARS",commissionMinor:500000,commissionStatus:"pending",source:"tiktok"}],
+        payouts:[],
+        updatedAt:new Date().toISOString(),
+      }),
+    });
+  });
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/afiliados");
+  await expect(page.getByRole("heading",{name:/Hola, Sofía/i})).toBeVisible();
+  await expect(page.getByText("100")).toBeVisible();
+  await expect(page.getByText("$ 125.000",{exact:false})).toBeVisible();
+  await expect(page.getByText(/Mercado Pago/i)).toBeVisible();
+  await expect(page.getByText("sofia@example.com")).toHaveCount(0);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
+test("affiliate admin compares all influencers and exposes payout controls",async({page})=>{
+  await page.addInitScript(()=>window.sessionStorage.setItem("thi_admin_session","test-admin-session"));
+  await page.route("**/functions/v1/affiliate-admin-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as {action?:string};
+    if(body.action!=="overview")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true})});
+    return route.fulfill({
+      status:200,
+      contentType:"application/json",
+      headers:{"access-control-allow-origin":"*"},
+      body:JSON.stringify({
+        affiliates:[
+          {id:"11111111-1111-4111-8111-111111111111",slug:"sofia",name:"Sofía",email:"sofia@example.com",whatsapp:null,status:"active",commissionBps:2000,createdAt:"2026-10-01T00:00:00Z",lastLoginAt:null,primaryLinkCode:"sofia",linkUrl:"https://tehiceesto.com/a/sofia",clicks:140,uniqueVisitors:100,clicks30d:140,visitors30d:100,orders:9,sales:5,revenueMinor:12500000,orders30d:9,sales30d:5,revenue30dMinor:12500000,commissionEarnedMinor:2500000,commissionPendingMinor:1500000,commissionPaidMinor:1000000},
+          {id:"22222222-2222-4222-8222-222222222222",slug:"juan",name:"Juan",email:"juan@example.com",whatsapp:null,status:"paused",commissionBps:1500,createdAt:"2026-10-01T00:00:00Z",lastLoginAt:null,primaryLinkCode:"juan",linkUrl:"https://tehiceesto.com/a/juan",clicks:50,uniqueVisitors:40,clicks30d:50,visitors30d:40,orders:3,sales:1,revenueMinor:2500000,orders30d:3,sales30d:1,revenue30dMinor:2500000,commissionEarnedMinor:375000,commissionPendingMinor:375000,commissionPaidMinor:0}
+        ],
+        totals:{clicks:190,uniqueVisitors:140,orders:12,sales:6,revenueMinor:15000000,commissionPendingMinor:1875000,commissionPaidMinor:1000000,activeAffiliates:1,totalAffiliates:2,currency:"ARS"},
+        updatedAt:new Date().toISOString(),
+      }),
+    });
+  });
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto("/tehiceesto/admin/afiliados");
+  await expect(page.getByRole("heading",{name:"Afiliados"})).toBeVisible();
+  await expect(page.getByText("Sofía",{exact:true})).toBeVisible();
+  await expect(page.getByText("Juan",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Pagar"}).first()).toBeEnabled();
+  await expect(page.getByText("$ 150.000",{exact:false})).toBeVisible();
 });
 
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
