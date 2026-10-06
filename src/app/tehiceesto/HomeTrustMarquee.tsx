@@ -35,7 +35,7 @@ export default function HomeTrustMarquee(){
     const tick=(now:number)=>{
       const delta=Math.min(40,now-last);
       last=now;
-      if(!pausedRef.current && document.visibilityState==="visible"){
+      if(!pausedRef.current){
         el.scrollLeft+=delta*0.025;
         const loopPoint=el.scrollWidth/2;
         if(loopPoint>0 && el.scrollLeft>=loopPoint)el.scrollLeft-=loopPoint;
