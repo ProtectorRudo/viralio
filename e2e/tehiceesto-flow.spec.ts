@@ -761,6 +761,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
     expect(body.email).toBe("mauro@example.com");
     expect(String(body.whatsapp)).toContain("549221");
     expect(body.consent).toBe(true);
+    expect(body.affiliateToken).toBe("affiliate-token-test-12345678901234567890");
     return route.fulfill({
       status:200,
       contentType:"application/json",
@@ -781,6 +782,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
 
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear");
+  await page.evaluate(()=>{document.cookie="thi_affiliate_token=affiliate-token-test-12345678901234567890; path=/; SameSite=Lax"});
   await page.getByRole("button",{name:/Elegir para mi pareja/i}).click();
 
   await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
@@ -792,6 +794,25 @@ test("assisted purchase chooses an experience, captures contact and opens checko
   await expect(page.getByRole("heading",{name:/Tu experiencia empieza acá/i})).toBeVisible();
   await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
   await page.waitForURL(/checkout\.test/);
+});
+
+test("affiliate dashboards stay private and mobile-safe",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+
+  await page.goto("/tehiceesto/afiliados/sofia");
+  await expect(page.getByRole("heading",{name:/Tu recomendación/i})).toBeVisible();
+  await expect(page.getByText(/datos de compradores permanecen privados/i)).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+
+  await page.goto("/tehiceesto/admin/afiliados");
+  await expect(page.getByRole("heading",{name:"Afiliados"})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Ir al panel/i})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("invalid affiliate referral safely returns to Te Hice Esto",async({page})=>{
+  await page.goto("/tehiceesto/r/x");
+  await expect(page).toHaveURL(/\/tehiceesto\/?$/);
 });
 
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
