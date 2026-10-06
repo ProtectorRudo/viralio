@@ -3732,7 +3732,7 @@
   transition:opacity .28s ease,transform .28s ease,filter .28s ease;
   filter:saturate(.82) brightness(.78);
 }
-.thi-papa-memory-card:first-child,
+.thi-papa-memory-card.is-active,
 .thi-papa-memory-card:hover,
 .thi-papa-memory-card:focus-within{
   opacity:1;
@@ -3896,12 +3896,11 @@
 }
 
 /* Keep the demo ribbon clear of the editorial heading. */
-.thi-template-live.thi-theme-papa[data-scene="memories"] .thi-scene-meta{
-  top:70px;
-  color:#6e7d90;
-}
+.thi-template-live.thi-theme-papa[data-scene="memories"] .thi-scene-meta,
 .thi-template-live.thi-theme-papa[data-scene="memories"] .thi-reset-journey{
-  top:68px;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
 
 @media(max-width:650px){
@@ -3936,7 +3935,6 @@
     opacity:.42;
     transform:scale(.955);
   }
-  .thi-papa-memory-card:first-child{opacity:1;transform:scale(1);filter:none}
   .thi-papa-memory-frame{padding:7px 7px 0}
   .thi-papa-memory-copy{
     min-height:132px;
@@ -3952,12 +3950,6 @@
     min-height:50px;
     margin-top:17px;
     font-size:13px;
-  }
-  .thi-template-live.thi-theme-papa[data-scene="memories"] .thi-scene-meta{
-    top:65px;
-  }
-  .thi-template-live.thi-theme-papa[data-scene="memories"] .thi-reset-journey{
-    top:63px;
   }
 }
 
