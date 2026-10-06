@@ -193,8 +193,11 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
   presence:[
     {path:"presence.kicker",label:"Frase superior",kind:"text"},
     {path:"presence.title",label:"Título",kind:"textarea"},
-    {path:"presence.items",label:"Formas de estar",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 2."},
+    {path:"presence.subtitle",label:"Bajada emocional",kind:"text"},
+    {path:"presence.items",label:"Formas de estar",kind:"lines",hint:"Una por renglón: Título | Texto. Para Papá, mantené 3."},
     {path:"presence.closedLabel",label:"Texto antes de revelar",kind:"text"},
+    {path:"presence.outroTitle",label:"Frase de cierre",kind:"text"},
+    {path:"presence.outroBody",label:"Cierre emocional",kind:"textarea"},
     {path:"presence.cta",label:"Botón para continuar",kind:"text"},
   ],
   inheritance:[
