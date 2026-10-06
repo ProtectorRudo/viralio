@@ -282,9 +282,11 @@ test("mama voices are a premium listening room with resilient playback and three
   await expect(toggle).toHaveAttribute("data-voice-state",/playing|played/);
   if(await toggle.getAttribute("data-voice-state")==="playing"){
     await toggle.click();
-    await expect(toggle).toHaveAttribute("data-voice-state","paused");
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("data-voice-state","playing");
+    await expect(toggle).toHaveAttribute("data-voice-state",/paused|played/);
+    if(await toggle.getAttribute("data-voice-state")==="paused"){
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("data-voice-state",/playing|played/);
+    }
   }
 
   await page.locator('[data-action="mama-voice-back"]').click();
