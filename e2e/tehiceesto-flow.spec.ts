@@ -106,8 +106,13 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
 
   await advanceOne(page);
   await waitForScene(page,"memories");
-  await expect(page.locator(".thi-memory")).toHaveCount(3);
+  await expect(page.locator(".thi-papa-memory-card")).toHaveCount(3);
+  await expect(page.locator(".thi-papa-memory-copy small").first()).toContainText("01");
+  await expect(page.getByRole("button",{name:/Seguir con la historia/i})).toBeVisible();
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
+  await expect(page.locator(".thi-progress-premium")).toBeVisible();
+  const papaMemoriesBackground=await page.locator("main.thi-experience").evaluate(el=>getComputedStyle(el).backgroundImage);
+  expect(papaMemoriesBackground).not.toBe("none");
 
   await page.locator('[data-action="advance"]').click();
   await waitForScene(page,"lessons");

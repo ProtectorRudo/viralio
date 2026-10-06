@@ -58,7 +58,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
-  const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);
+  const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);const [papaMemoryIndex,setPapaMemoryIndex]=useState(0);
   const [doorOpen,setDoorOpen]=useState(false);const [lightRevealed,setLightRevealed]=useState(false);const [holdRevealed,setHoldRevealed]=useState(false);const [lastStar,setLastStar]=useState<number|null>(null);
   const [archiveOpen,setArchiveOpen]=useState(false);const [homeOpen,setHomeOpen]=useState<number[]>([]);const [legacyOpen,setLegacyOpen]=useState(false);
   const [ritualsOpen,setRitualsOpen]=useState<number[]>([]);const [chapterOpen,setChapterOpen]=useState<number[]>([]);const [futureOpen,setFutureOpen]=useState(false);
@@ -131,8 +131,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const handleMediaPlay=(event:React.SyntheticEvent<HTMLElement>)=>{if((event.target as HTMLElement)===soundtrackRef.current)return;duckSoundtrack()};
   const handleMediaRest=()=>restoreSoundtrack();
 
-  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null);setMamaMemoryIndex(0)};
-  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false)};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([]);if(type==="finale")setFinalReaction(null);if(type==="memories")setMamaMemoryIndex(0)};
+  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null);setMamaMemoryIndex(0);setPapaMemoryIndex(0)};
+  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false)};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([]);if(type==="finale")setFinalReaction(null);if(type==="memories"){setMamaMemoryIndex(0);setPapaMemoryIndex(0)}};
   const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator){try{navigator.vibrate(pattern)}catch{}}};
   const passiveHapticPatterns:Record<string,number|number[]>={
     "archive-open":[10,28,8],
@@ -265,6 +265,41 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               <button type="button" aria-label="Recuerdo siguiente" disabled={active>=safeItems.length-1} onClick={()=>goMemory(active+1)}>→</button>
             </div>
             {active>=safeItems.length-1?<button data-action="advance" className="thi-mama-memories-continue" onClick={next}>Seguir con la historia <span>→</span></button>:<p className="thi-mama-memory-hint">deslizá para recorrer los recuerdos <span>→</span></p>}
+          </section>;
+        }
+        if(experience.slug==="papa"){
+          const items=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,3);
+          const labels=["LO COTIDIANO","LO QUE ESTUVO","LO QUE QUEDA"];
+          return <section className="thi-scene thi-scene-memories thi-papa-memories thi-scene-rich">
+            <div className="thi-papa-memories-atmosphere" aria-hidden="true"><i/><i/><b/></div>
+            <p className="thi-kicker">{token(copy.memories.kicker)}</p>
+            <h2>{titleLines(copy.memories.title)}</h2>
+            {storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}
+            <div className="thi-papa-memory-gallery" data-active={papaMemoryIndex} aria-label="Galería de recuerdos. Deslizá hacia los costados para recorrerla." onScroll={event=>{
+              const gallery=event.currentTarget;
+              const cards=Array.from(gallery.querySelectorAll<HTMLElement>(".thi-papa-memory-card"));
+              if(!cards.length)return;
+              const center=gallery.scrollLeft+gallery.clientWidth/2;
+              let closest=0;let distance=Number.POSITIVE_INFINITY;
+              cards.forEach((card,index)=>{const cardCenter=card.offsetLeft+card.offsetWidth/2;const nextDistance=Math.abs(cardCenter-center);if(nextDistance<distance){distance=nextDistance;closest=index}});
+              if(closest!==papaMemoryIndex)setPapaMemoryIndex(closest);
+            }}>
+              {items.map((item,i)=><article className={`thi-papa-memory-card ${i===papaMemoryIndex?"is-active":""}`} key={item.url||item.caption||i}>
+                <div className="thi-papa-memory-frame">
+                  <div className="thi-papa-memory-photo">
+                    {item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}
+                    <i aria-hidden="true"/>
+                    <span>{String(i+1).padStart(2,"0")}</span>
+                  </div>
+                  <div className="thi-papa-memory-copy">
+                    <small>{String(i+1).padStart(2,"0")} · {labels[i]||"RECUERDO"}</small>
+                    <p>{token(item.caption||memoryLines[i%memoryLines.length])}</p>
+                  </div>
+                </div>
+              </article>)}
+            </div>
+            <p className="thi-papa-memory-hint">Deslizá para recorrer los recuerdos <span>→</span></p>
+            <button data-action="advance" className="thi-papa-memory-continue" onClick={next}>Seguir con la historia <span>→</span></button>
           </section>;
         }
         return <section className="thi-scene thi-scene-memories thi-scene-rich"><p className="thi-kicker">{token(copy.memories.kicker)}</p><h2>{titleLines(copy.memories.title)}</h2>{storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}<div className="thi-film">{(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url||item.caption||i}><div className="thi-memory-photo">{item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}<span>{String(i+1).padStart(2,"0")}</span><i className="thi-photo-sheen"/></div><p>{token(item.caption||memoryLines[i%memoryLines.length])}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.memories.cta)}</button></section>;
