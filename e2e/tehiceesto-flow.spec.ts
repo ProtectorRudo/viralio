@@ -60,13 +60,15 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await expect(page.getByRole("heading",{name:/Un regalo que la emociona/i})).toBeVisible();
   await expect(page.getByText(/Transformamos tus fotos, audios y mensajes/i)).toBeVisible();
   await expect(page.locator(".thh-v2-meta")).toContainText("Desde");
-  await expect(page.locator(".thh-v2-meta strong")).toContainText("$");
+  await expect(page.locator(".thh-v2-trust-price strong")).toContainText("$");
+  await expect(page.locator(".thh-v2-trust-chip")).toHaveCount(4);
 
   const chooser=page.locator(".thh-v2-chooser");
   await expect(chooser).toBeVisible();
   await expect(chooser.getByText("¿Para quién querés hacerlo?")).toBeVisible();
   await expect(page.locator(".thh-v2-recipient")).toHaveCount(6);
   await expect(page.getByRole("link",{name:"Ver experiencia para Mamá"})).toHaveAttribute("href","/tehiceesto/experiencias/mama");
+  await expect(page.getByRole("link",{name:/Crear mi regalo/i})).toHaveAttribute("href","/tehiceesto/crear");
 
   await expect(page.locator(".floating-whatsapp--home")).toBeHidden();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
