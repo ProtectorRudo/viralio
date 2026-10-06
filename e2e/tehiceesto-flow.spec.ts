@@ -78,6 +78,18 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   await expect(page.getByRole("heading",{name:/No estás comprando una página/i})).toBeAttached();
   await expect(page.getByLabel("Pago seguro con Mercado Pago")).toContainText("Mercado Pago");
   await expect(page.getByRole("link",{name:/Quiero crear este regalo/i})).toHaveAttribute("href","#para-quien");
+
+  const trust=page.locator(".thh-trust-marquee");
+  const scroller=page.locator(".thh-trust-scroller");
+  await expect(trust).toBeAttached();
+  await expect(trust.getByRole("heading",{name:/Cuidado en cada detalle/i})).toBeAttached();
+  await expect(trust).toContainText("Mercado Pago");
+  await expect(page.locator(".thh-trust-card")).toHaveCount(12);
+  expect(await scroller.evaluate(el=>el.scrollWidth>el.clientWidth)).toBe(true);
+  const reduced=await page.evaluate(()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if(!reduced){
+    await expect.poll(()=>scroller.evaluate(el=>el.scrollLeft),{timeout:3000}).toBeGreaterThan(0);
+  }
 });
 
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
