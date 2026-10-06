@@ -162,25 +162,30 @@ test("Papa premium release visual contract",async({page},testInfo)=>{
   await page.waitForTimeout(500);
   await capture(page,testInfo,"tehiceesto-papa-release-04-lessons-complete-390");
   await page.locator(".thi-papa-lessons-cta").click();
-  await page.waitForTimeout(650);
-  for(const i of [0,1]) await page.locator(".presence-track button").nth(i).click();
-  await page.locator(".scene-presence .primary-action").click();
+  await page.waitForTimeout(850);
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","presence");
+  await expect(page.locator(".thi-papa-presence-card")).toHaveCount(3);
+  await capture(page,testInfo,"tehiceesto-papa-release-05-presence-silent-390");
+  for(const i of [1,2]) await page.locator(".thi-papa-presence-card").nth(i).click();
+  await page.waitForTimeout(500);
+  await capture(page,testInfo,"tehiceesto-papa-release-06-presence-complete-390");
+  await page.locator(".thi-papa-presence-cta").click();
   await page.waitForTimeout(650);
   for(const i of [0,1,2]) await page.locator(".inheritance-board button").nth(i).click();
   await page.locator(".scene-inheritance .primary-action").click();
   await page.waitForTimeout(850);
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
-  await capture(page,testInfo,"tehiceesto-papa-release-05-voices-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-07-voices-390");
   await page.locator(".thi-papa-voice-list [data-action='demo-voice']").first().click();
   await page.locator(".thi-papa-voice-continue").click();
   await page.waitForTimeout(850);
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
-  await capture(page,testInfo,"tehiceesto-papa-release-06-letter-closed-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-08-letter-closed-390");
   await page.locator('[data-action="open-letter"]').click();
   await page.waitForTimeout(850);
-  await capture(page,testInfo,"tehiceesto-papa-release-07-letter-open-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-09-letter-open-390");
   await page.locator(".thi-papa-letter [data-action='advance']").click();
   await page.waitForTimeout(650);
   await page.locator(".lookback-button").click();
@@ -189,5 +194,5 @@ test("Papa premium release visual contract",async({page},testInfo)=>{
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
   await expectNoHorizontalOverflow(page);
-  await capture(page,testInfo,"tehiceesto-papa-release-08-finale-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-10-finale-390");
 });

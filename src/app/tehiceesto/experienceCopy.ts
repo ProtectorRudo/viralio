@@ -38,7 +38,7 @@ export type ExperienceCopy = {
   capsule: { kicker:string; title:string[]; year:string; closed:string; open:string; closedLabel:string; openLabel:string; cta:string };
   video: { kicker:string; title:string[]; placeholder:string; cta:string };
   lessons: { kicker:string; title:string; accentTitle:string; titleTail:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
-  presence: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
+  presence: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   inheritance: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
   lookback: { kicker:string; closedTitle:string; openTitle:string; openLabel:string; cta:string };
   finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string };
@@ -96,12 +96,15 @@ const BASE_COPY: ExperienceCopy = {
   presence:{
     kicker:"Las formas de estar",
     title:"No todos los recuerdos importantes tienen una conversación.",
+    subtitle:"",
     items:[
       "LA MANO | La que sostenía la bici, señalaba cómo hacerlo o aparecía en un hombro cuando hacía falta.",
       "LA ESPERA | Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía.",
       "LA MIRADA | Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."
     ],
     closedLabel:"Tocá para recordar",
+    outroTitle:"Y un día lo entendí:",
+    outroBody:"Muchas veces no estabas diciendo ‘te quiero’. Lo estabas haciendo.",
     cta:"Ver lo que quedó"
   },
   inheritance:{
@@ -239,6 +242,20 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
       outroTitle:"Y un día entendí algo más:",
       outroBody:"Muchas de las cosas que hoy más me sostienen tienen tu forma de querer.",
       cta:"Ver lo que dejaste en mí →"
+    },
+    presence:{
+      kicker:"Las formas de estar",
+      title:"Hay formas de estar que uno entiende recién después.",
+      subtitle:"Las tuyas fueron algunas de ellas.",
+      items:[
+        "LA MANO | La que sostenía la bici, señalaba cómo hacerlo o aparecía en un hombro cuando hacía falta.",
+        "LA ESPERA | Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía.",
+        "LA MIRADA | Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."
+      ],
+      closedLabel:"Tocá para recordar",
+      outroTitle:"Con los años entendimos algo:",
+      outroBody:"Muchas veces no estabas diciendo ‘te quiero’. Lo estabas haciendo.",
+      cta:"Ver todo lo que quedó de vos →"
     },
     voices:{
       kicker:"Hay cosas que se sienten distinto cuando las escuchás",
