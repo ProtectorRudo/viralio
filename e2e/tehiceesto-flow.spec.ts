@@ -3,8 +3,10 @@ const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","
 async function sceneName(page:Page){return page.locator("main.thi-experience").getAttribute("data-scene")}
 async function waitForScene(page:Page,name:string){await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene",name)}
 async function advanceOne(page:Page){
-  await page.waitForTimeout(420);
   const current=await sceneName(page);if(!current)throw new Error("missing_scene");
+  if(current==="finale"||current==="proposal")return;
+  await page.waitForTimeout(420);
+  if((await sceneName(page))!==current)return;
   if(current==="intro")await page.locator('[data-action="advance"]').click();
   else if(current==="door"){await page.locator('[data-action="open-door"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="memories"){
@@ -539,7 +541,7 @@ test("pair scratch card reveals from real drag gestures without fallback",async(
   const left=box.x+28;
   const right=box.x+box.width-28;
   const top=box.y+38;
-  const rows=5;
+  const rows=8;
 
   await page.mouse.move(left,top);
   await page.mouse.down();
