@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 const PAYMENT_BRIDGE =
   "https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/payment-bridge";
@@ -17,6 +17,11 @@ export function cleanPaymentToken(value: unknown) {
   const token = String(value || "").trim().toLowerCase();
   if (!/^[a-f0-9]{48}$/.test(token)) throw new Error("invalid_token");
   return token;
+}
+
+export function mercadoPagoIdempotencyKey(token: string) {
+  const hex = createHash("sha256").update(token).digest("hex").slice(0, 32);
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
 export function signPaymentBridge(token: string, message: string) {
