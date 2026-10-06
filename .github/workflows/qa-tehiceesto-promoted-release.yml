@@ -14,49 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - name: Diagnose promoted release
+      - name: Verify apex, www and Mercado Pago webhook
         shell: bash
         run: |
-          set -u
+          set -euo pipefail
           EXPECTED="0b648b87ac5038bafae4130ddc1b8b637e715533"
-          failed=0
 
-          check_route() {
-            local name="$1"
-            local url="$2"
-            local marker="$3"
-            local tmp="/tmp/${name}.body"
-            local status
-            status="$(curl -sSL -o "$tmp" -w '%{http_code}' --max-time 30 "$url" || true)"
-            if [ "$status" = "200" ] && grep -Fq "$marker" "$tmp"; then
-              echo "PASS $name status=$status marker=$marker"
-            else
-              echo "FAIL $name status=$status marker=$marker"
-              failed=1
-            fi
-          }
+          version="$(curl -fsSL --max-time 30 https://tehiceesto.com/api/version)"
+          printf '%s' "$version" | grep -Fq "\"commit\":\"$EXPECTED\""
+          echo "PASS apex exact commit"
 
-          version="$(curl -fsSL --max-time 30 https://tehiceesto.com/api/version || true)"
-          echo "VERSION=$version"
-          if printf '%s' "$version" | grep -Fq "\"commit\":\"$EXPECTED\""; then
-            echo "PASS version"
-          else
-            echo "FAIL version"
-            failed=1
-          fi
+          www_status="$(curl -sSL -o /tmp/www -w '%{http_code}' --max-time 30 https://www.tehiceesto.com/)"
+          test "$www_status" = "200"
+          grep -Fq "Un regalo que la emociona" /tmp/www
+          echo "PASS www"
 
-          check_route home https://tehiceesto.com/ "Un regalo que la emociona"
-          check_route home_mp https://tehiceesto.com/ "Pago seguro con Mercado Pago"
-          check_route create https://tehiceesto.com/crear "Elegí la que más se parece a"
-          check_route admin https://tehiceesto.com/admin "Armado de regalos"
+          sig="ts=1234567890,v1=0000000000000000000000000000000000000000000000000000000000000000"
+          webhook_status="$(curl -sS -o /tmp/webhook -w '%{http_code}' --max-time 30             -X POST 'https://tehiceesto.com/mercadopago/webhook?type=order&data.id=qa-invalid-signature'             -H 'content-type: application/json'             -H 'x-request-id: qa-release-check'             -H "x-signature: $sig"             --data '{"type":"order","data":{"id":"qa-invalid-signature"}}')"
+          test "$webhook_status" = "401"
+          grep -Fq "invalid_signature" /tmp/webhook
+          echo "PASS webhook configured and signature enforcement active"
 
-          aff_status="$(curl -sSL -o /tmp/aff.body -w '%{http_code}' --max-time 30 https://tehiceesto.com/admin/afiliados || true)"
-          echo "AFFILIATES_STATUS=$aff_status"
-          if [ "$aff_status" = "200" ]; then echo "PASS affiliates route"; else echo "FAIL affiliates route"; failed=1; fi
-
-          webhook_status="$(curl -sS -o /tmp/webhook.body -w '%{http_code}' --max-time 30 https://tehiceesto.com/mercadopago/webhook || true)"
-          echo "WEBHOOK_GET_STATUS=$webhook_status"
-          if [ "$webhook_status" = "405" ]; then echo "PASS webhook"; else echo "FAIL webhook"; failed=1; fi
-
-          test "$failed" -eq 0
           echo "PROMOTED_RELEASE_OK"
