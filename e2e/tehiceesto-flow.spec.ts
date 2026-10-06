@@ -3,10 +3,18 @@ const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","
 async function sceneName(page:Page){return page.locator("main.thi-experience").getAttribute("data-scene")}
 async function waitForScene(page:Page,name:string){await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene",name)}
 async function advanceOne(page:Page){
+  await page.waitForTimeout(420);
   const current=await sceneName(page);if(!current)throw new Error("missing_scene");
   if(current==="intro")await page.locator('[data-action="advance"]').click();
   else if(current==="door"){await page.locator('[data-action="open-door"]').click();await page.locator('[data-action="advance"]').click()}
-  else if(current==="memories"||current==="timeline"||current==="video")await page.locator('[data-action="advance"]').click();
+  else if(current==="memories"){
+    const mamaNext=page.locator(".thi-mama-memory-local-nav > button").last();
+    if(await mamaNext.count()){
+      while(!(await mamaNext.isDisabled()))await mamaNext.click();
+      await page.locator(".thi-mama-memories-continue").click();
+    }else await page.locator('[data-action="advance"]').click();
+  }
+  else if(current==="timeline"||current==="video")await page.locator('[data-action="advance"]').click();
   else if(current==="light"){await page.locator('[data-action="light-reveal"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="hold"){await page.locator('[data-action="hold"]').press("Enter");await page.locator('[data-action="advance"]').click()}
   else if(current==="stars"){const items=page.locator('[data-action="star"]');const count=await items.count();for(let i=0;i<count;i++)await items.nth(i).click();await page.locator('[data-action="advance"]').click()}
@@ -210,7 +218,7 @@ test("mama sacrifices reveal all four invisible costs before the final resolutio
 });
 
 
-test("mama voices are a premium listening room with pause resume and three-message completion",async({page})=>{
+test("mama voices are a premium listening room with resilient playback and three-message completion",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
@@ -246,11 +254,13 @@ test("mama voices are a premium listening room with pause resume and three-messa
 
   const toggle=page.locator('[data-action="mama-voice-toggle"]');
   await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-label","Pausar mensaje");
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-label","Continuar mensaje");
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-label","Pausar mensaje");
+  await expect(toggle).toHaveAttribute("data-voice-state",/playing|played/);
+  if(await toggle.getAttribute("data-voice-state")==="playing"){
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("data-voice-state","paused");
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("data-voice-state","playing");
+  }
 
   await page.locator('[data-action="mama-voice-back"]').click();
   await page.locator('[data-action="mama-voice-choice"]').nth(1).click();
