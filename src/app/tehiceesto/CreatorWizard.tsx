@@ -55,6 +55,13 @@ function normalizeWhatsApp(value: string) {
   return value.replace(/[^0-9+]/g, "").slice(0, 16);
 }
 
+function readCookie(name:string){
+  if(typeof document==="undefined")return "";
+  const prefix=`${name}=`;
+  const item=document.cookie.split("; ").find((part)=>part.startsWith(prefix));
+  return item?decodeURIComponent(item.slice(prefix.length)):"";
+}
+
 export default function CreatorWizard() {
   const [step, setStep] = useState<Step>(0);
   const [selectedSlug, setSelectedSlug] = useState("");
@@ -118,6 +125,7 @@ export default function CreatorWizard() {
           whatsapp: normalizeWhatsApp(contact.whatsapp),
           consent: contact.consent,
           website: "",
+          affiliateToken: readCookie("thi_affiliate_token"),
         }),
       });
 

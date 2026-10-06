@@ -236,6 +236,7 @@ export default function AdminPortal() {
         </div>
 
         <div className="thi-admin-header-actions">
+          <Link className="thi-ghost" href="/tehiceesto/admin/afiliados">Afiliados ↗</Link>
           <button className="thi-primary" onClick={() => setShowNew(true)}>
             + Nuevo regalo
           </button>

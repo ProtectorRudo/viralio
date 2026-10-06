@@ -761,6 +761,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
     expect(body.email).toBe("mauro@example.com");
     expect(String(body.whatsapp)).toContain("549221");
     expect(body.consent).toBe(true);
+    expect(body.affiliateToken).toBe("affiliate-token-test-12345678901234567890");
     return route.fulfill({
       status:200,
       contentType:"application/json",
@@ -781,6 +782,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
 
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear");
+  await page.evaluate(()=>{document.cookie="thi_affiliate_token=affiliate-token-test-12345678901234567890; path=/; SameSite=Lax"});
   await page.getByRole("button",{name:/Elegir para mi pareja/i}).click();
 
   await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
@@ -792,6 +794,46 @@ test("assisted purchase chooses an experience, captures contact and opens checko
   await expect(page.getByRole("heading",{name:/Tu experiencia empieza acá/i})).toBeVisible();
   await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
   await page.waitForURL(/checkout\.test/);
+});
+
+test("affiliate dashboards stay private and mobile-safe",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+
+  await page.goto("/tehiceesto/afiliados/sofia");
+  await expect(page.getByRole("heading",{name:/Tu recomendación/i})).toBeVisible();
+  await expect(page.getByText(/datos de compradores permanecen privados/i)).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+
+  await page.goto("/tehiceesto/admin/afiliados");
+  await expect(page.getByRole("heading",{name:"Afiliados"})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Ir al panel/i})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("affiliate referral stores attribution and returns to Te Hice Esto",async({page})=>{
+  await page.route("**/functions/v1/affiliate-public",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    expect(body.action).toBe("track");
+    expect(body.code).toBe("sofia");
+    expect(body.source).toBe("instagram");
+    return route.fulfill({
+      status:200,
+      contentType:"application/json",
+      headers:{"access-control-allow-origin":"*"},
+      body:JSON.stringify({
+        ok:true,
+        affiliateSlug:"sofia",
+        affiliateToken:"affiliate-token-test-12345678901234567890",
+        expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString(),
+      }),
+    });
+  });
+
+  await page.goto("/tehiceesto/r/sofia?src=instagram");
+  await page.waitForURL(/\/tehiceesto\/?$/);
+  const cookies=await page.context().cookies();
+  expect(cookies.find(cookie=>cookie.name==="thi_affiliate_code")?.value).toBe("sofia");
+  expect(cookies.find(cookie=>cookie.name==="thi_affiliate_token")?.value).toBe("affiliate-token-test-12345678901234567890");
 });
 
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{

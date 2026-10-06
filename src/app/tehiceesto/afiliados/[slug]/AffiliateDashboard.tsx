@@ -1,0 +1,159 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+"use client";
+
+import Link from "next/link";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { AFFILIATE_SESSION_KEY, affiliatePublicCall } from "../../affiliateApi";
+
+type DashboardData={
+  affiliate:{slug:string;name:string;email:string;commissionBps:number;status:string};
+  stats:{
+    clicks?:number;unique_visitors?:number;attributed_orders?:number;approved_sales?:number;
+    revenue_minor?:number;commission_earned_minor?:number;commission_pending_minor?:number;commission_paid_minor?:number;
+    clicks_30d?:number;visitors_30d?:number;sales_30d?:number;revenue_30d_minor?:number;
+  };
+  links:{id:string;code:string;label:string;status:string}[];
+  series:{date:string;clicks:number;uniqueVisitors:number;sales:number;revenueMinor:number}[];
+  sources:Record<string,{clicks:number;sales:number}>;
+  recentSales:{id:string;date:string;experienceSlug:string;saleAmountMinor:number;commissionAmountMinor:number;status:string}[];
+  payouts:{id:string;amount_minor:number;status:string;paid_at:string|null;created_at:string;notes:string|null}[];
+  updatedAt:string;
+};
+
+const money=(minor:number)=>new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format((Number(minor)||0)/100);
+const pct=(value:number)=>`${(Number(value||0)*100).toFixed(1).replace(".",",")}%`;
+
+export default function AffiliateDashboard({slug}:{slug:string}){
+  const [session,setSession]=useState("");
+  const [ready,setReady]=useState(false);
+  const [data,setData]=useState<DashboardData|null>(null);
+  const [error,setError]=useState("");
+  const [loading,setLoading]=useState(false);
+
+  async function load(token:string,silent=false){
+    if(!token)return;
+    if(!silent)setLoading(true);
+    try{
+      const payload=await affiliatePublicCall<DashboardData>("dashboard",{},token);
+      setData(payload);setError("");
+    }catch{
+      window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);
+      setSession("");setData(null);
+      if(!silent)setError("Tu sesión venció. Volvé a ingresar.");
+    }finally{setReady(true);if(!silent)setLoading(false);}
+  }
+
+  useEffect(()=>{
+    const token=window.sessionStorage.getItem(AFFILIATE_SESSION_KEY)||"";
+    setSession(token);setReady(true);
+    if(token)void load(token);
+  },[]);
+
+  useEffect(()=>{
+    if(!session)return;
+    const timer=window.setInterval(()=>{if(document.visibilityState==="visible")void load(session,true)},8000);
+    return()=>window.clearInterval(timer);
+  },[session]);
+
+  async function login(event:FormEvent<HTMLFormElement>){
+    event.preventDefault();setLoading(true);setError("");
+    const form=new FormData(event.currentTarget);
+    try{
+      const result=await affiliatePublicCall<{token:string}>("login",{identifier:slug,password:String(form.get("password")||"")});
+      window.sessionStorage.setItem(AFFILIATE_SESSION_KEY,result.token);
+      setSession(result.token);
+      await load(result.token);
+    }catch{setError("La contraseña no es correcta o el acceso está pausado.");}
+    finally{setLoading(false);}
+  }
+
+  async function logout(){
+    if(session)try{await affiliatePublicCall("logout",{},session);}catch{}
+    window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);setSession("");setData(null);
+  }
+
+  const conversion=useMemo(()=>{
+    const visitors=Number(data?.stats?.unique_visitors||0),sales=Number(data?.stats?.approved_sales||0);
+    return visitors?sales/visitors:0;
+  },[data]);
+
+  const maxClicks=Math.max(1,...(data?.series||[]).map(d=>d.clicks||0));
+
+  if(!ready)return <main className="thi-aff-public-shell"><div className="thi-admin-loading">Cargando…</div></main>;
+
+  if(!session||!data)return(
+    <main className="thi-aff-public-shell thi-aff-login-shell">
+      <section className="thi-aff-login-card">
+        <Link href="/tehiceesto" className="thi-aff-brand">TE HICE ESTO</Link>
+        <span className="thi-aff-login-mark">↗</span>
+        <p className="thi-kicker">Programa de afiliados</p>
+        <h1>Tu recomendación.<br/><em>Tus números.</em></h1>
+        <p>Entrá a tu panel privado para ver visitas, ventas y comisiones en tiempo real.</p>
+        <form onSubmit={login}>
+          <label><span>Influencer</span><input value={slug} readOnly/></label>
+          <label><span>Contraseña</span><input name="password" type="password" autoFocus required minLength={8}/></label>
+          {error&&<small className="thi-aff-login-error">{error}</small>}
+          <button className="thi-primary" disabled={loading}>{loading?"Entrando…":"Ver mi dashboard →"}</button>
+        </form>
+        <small>Los datos de compradores permanecen privados.</small>
+      </section>
+    </main>
+  );
+
+  const primary=data.links.find(link=>link.status==="active")||data.links[0];
+  const shareUrl=primary?`https://tehiceesto.com/r/${primary.code}`:"";
+
+  return(
+    <main className="thi-aff-public-shell">
+      <header className="thi-aff-public-head">
+        <div>
+          <Link href="/tehiceesto" className="thi-aff-brand">TE HICE ESTO</Link>
+          <p className="thi-kicker">Panel de afiliado</p>
+          <h1>Hola, {data.affiliate.name}.</h1>
+          <p>Esto es lo que está generando tu recomendación.</p>
+        </div>
+        <div className="thi-aff-public-actions"><span className="thi-aff-live"><i/> EN VIVO</span><button className="thi-ghost" onClick={logout}>Salir</button></div>
+      </header>
+
+      <section className="thi-aff-share-card">
+        <div><span>TU LINK PERSONAL</span><strong>{shareUrl||"Sin link activo"}</strong><small>Compartilo en historias, bio, WhatsApp o donde quieras.</small></div>
+        <button disabled={!shareUrl} onClick={()=>shareUrl&&navigator.clipboard.writeText(shareUrl)}>Copiar link</button>
+      </section>
+
+      <section className="thi-aff-public-kpis">
+        <article><span>PERSONAS QUE LLEGARON</span><strong>{Number(data.stats.unique_visitors||0).toLocaleString("es-AR")}</strong><small>{Number(data.stats.clicks||0).toLocaleString("es-AR")} clics</small></article>
+        <article><span>COMPRAS APROBADAS</span><strong>{Number(data.stats.approved_sales||0)}</strong><small>{pct(conversion)} conversión</small></article>
+        <article><span>VENTAS GENERADAS</span><strong>{money(Number(data.stats.revenue_minor||0))}</strong><small>facturación atribuida</small></article>
+        <article className="accent"><span>TU COMISIÓN</span><strong>{money(Number(data.stats.commission_earned_minor||0))}</strong><small>{money(Number(data.stats.commission_pending_minor||0))} por cobrar</small></article>
+      </section>
+
+      <section className="thi-aff-public-grid">
+        <article className="thi-aff-chart-card">
+          <div className="thi-aff-card-head"><div><span>ÚLTIMOS 30 DÍAS</span><h2>Personas que llegaron</h2></div><small>Actualizado {new Date(data.updatedAt).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}</small></div>
+          <div className="thi-aff-bars" aria-label="Visitas de los últimos 30 días">
+            {data.series.map(day=><div key={day.date} title={`${day.date}: ${day.clicks} clics`}><i style={{height:`${Math.max(4,(day.clicks/maxClicks)*100)}%`}}/><span>{day.date.slice(8)}</span></div>)}
+          </div>
+        </article>
+
+        <article className="thi-aff-money-card">
+          <span>COMISIONES</span>
+          <div><small>Pendiente</small><strong>{money(Number(data.stats.commission_pending_minor||0))}</strong></div>
+          <div><small>Ya pagado</small><strong>{money(Number(data.stats.commission_paid_minor||0))}</strong></div>
+          <p>Cada venta aparece cuando Mercado Pago confirma el pago. Si hay una devolución, también se refleja.</p>
+        </article>
+      </section>
+
+      <section className="thi-aff-public-table">
+        <div className="thi-aff-card-head"><div><span>TRANSPARENCIA</span><h2>Últimas ventas</h2></div><small>Sin datos privados del comprador</small></div>
+        {data.recentSales.length===0?<div className="thi-aff-empty"><strong>Todavía no hay ventas aprobadas.</strong><p>Cuando llegue la primera, va a aparecer acá automáticamente.</p></div>:(
+          <div className="thi-aff-table-wrap"><table>
+            <thead><tr><th>Fecha</th><th>Experiencia</th><th>Venta</th><th>Tu comisión</th><th>Estado</th></tr></thead>
+            <tbody>{data.recentSales.map(sale=><tr key={sale.id}><td>{new Date(sale.date).toLocaleDateString("es-AR")}</td><td>{sale.experienceSlug}</td><td>{money(sale.saleAmountMinor)}</td><td>{money(sale.commissionAmountMinor)}</td><td><span className={`thi-aff-sale-status ${sale.status}`}>{sale.status==="pending"?"Por cobrar":sale.status==="paid"?"Pagada":"Revertida"}</span></td></tr>)}</tbody>
+          </table></div>
+        )}
+      </section>
+
+      <footer className="thi-aff-public-footer"><strong>TE HICE ESTO</strong><span>Programa de afiliados · datos actualizados automáticamente</span></footer>
+    </main>
+  );
+}
