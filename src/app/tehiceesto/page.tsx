@@ -42,13 +42,13 @@ export default async function TeHiceEstoHome() {
           <div className="thh-v2-hero-copy">
             <span className="thh-kicker">EXPERIENCIAS DIGITALES PERSONALIZADAS</span>
             <h1>
-              Un regalo hecho<br/>con sus recuerdos.
-              <em>Se vuelve a abrir.</em>
+              Un regalo que la emociona.
+              <em>La hace sonreír. Y le queda para siempre.</em>
             </h1>
 
             <p className="thh-v2-lead">
-              Convertimos tus fotos, audios y mensajes en una experiencia interactiva privada,
-              hecha especialmente para esa persona.
+              Transformamos tus fotos, audios y mensajes en una experiencia digital privada,
+              creada para hacer feliz a esa persona y recordarle cuánto significa para vos.
             </p>
 
             <div className="thh-v2-meta">
@@ -140,11 +140,11 @@ export default async function TeHiceEstoHome() {
 
         <section className="thh-v2-recorrido" id="recorrido">
           <div className="thh-v2-recorrido-copy">
-            <span className="thh-kicker">MÁS QUE UN REGALO, UN RECORRIDO</span>
-            <h2>No recibe una página.<em>Recibe un recorrido.</em></h2>
+            <span className="thh-kicker">MÁS QUE UN REGALO, UNA EMOCIÓN</span>
+            <h2>No recibe solo un regalo.<em>Recibe ese momento que le queda en el corazón.</em></h2>
             <p>
-              Combinamos tus fotos, audios, cartas y recuerdos en una experiencia digital cuidada
-              al detalle, para que pueda volver a su historia una y otra vez.
+              Cada experiencia está pensada para emocionar de verdad: hacerla sonreír, sorprenderla,
+              recordarle cuánto la aman y dejarle un recuerdo que puede volver a abrir una y otra vez.
             </p>
             <Link className="thh-v2-text-link" href={href("/experiencias/pareja")}>
               Ver cómo se siente <span>→</span>
@@ -154,19 +154,19 @@ export default async function TeHiceEstoHome() {
           <div className="thh-v2-feature-grid">
             <article>
               <span aria-hidden="true">▧</span>
-              <div><strong>Fotos</strong><p>Sus momentos más especiales.</p></div>
+              <div><strong>Fotos</strong><p>Sus momentos más especiales, convertidos en escena.</p></div>
             </article>
             <article>
               <span aria-hidden="true">≋</span>
-              <div><strong>Audios</strong><p>Tu voz, sus risas, esos sonidos que lo dicen todo.</p></div>
+              <div><strong>Audios</strong><p>Tu voz, sus risas y esas palabras que hacen sentir cerca.</p></div>
             </article>
             <article>
               <span aria-hidden="true">≡</span>
-              <div><strong>Cartas</strong><p>Palabras que aparecen en el momento justo.</p></div>
+              <div><strong>Cartas</strong><p>Mensajes que llegan al corazón en el momento justo.</p></div>
             </article>
             <article>
               <span aria-hidden="true">✦</span>
-              <div><strong>Recuerdos</strong><p>Escenas y detalles que hacen única su historia.</p></div>
+              <div><strong>Recuerdos</strong><p>Detalles y escenas pensadas para emocionar de verdad.</p></div>
             </article>
           </div>
         </section>
