@@ -26,7 +26,19 @@ type Gift = {
   closing_text: string | null;
   music_url: string | null;
   scene_recipe: SceneType[];
-  story_data: { relationship?: string; keyDate?: string; anecdote?: string; script?: DeepPartial<ExperienceCopy>; sceneContent?: SceneTextOverrides; creator?: { submitted?: boolean; submittedAt?: string } } | null;
+  story_data: {
+    relationship?: string;
+    keyDate?: string;
+    anecdote?: string;
+    script?: DeepPartial<ExperienceCopy>;
+    sceneContent?: SceneTextOverrides;
+    creator?: {
+      submitted?: boolean;
+      submittedAt?: string;
+      contactedAt?: string;
+      contact?: { name?: string; email?: string; whatsapp?: string };
+    };
+  } | null;
   theme_data: { accent?: string } | null;
 };
 
@@ -150,6 +162,13 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   },[order?.status,code]);
 
   const base=gift?getExperience(gift.experience_slug):undefined;
+  const creatorContact=gift?.story_data?.creator?.contact;
+  const creatorWhatsApp=String(creatorContact?.whatsapp||"").replace(/\D/g,"");
+  const creatorMessage=gift
+    ? order?.status==="approved"
+      ? `Hola ${creatorContact?.name||gift.giver_name}, ya recibimos tu pago de Te Hice Esto ✨. Ahora seguimos con el armado de tu experiencia y te contactamos por acá.`
+      : `Hola ${creatorContact?.name||gift.giver_name}, recibimos tu pedido de Te Hice Esto ✨. Si necesitás algo, seguimos por acá.`
+    : "";
 
   const previewExperience=useMemo(()=>{
     if(!gift||!base) return null;
@@ -448,6 +467,30 @@ export default function AdminGiftEditor({ code }: { code: string }) {
             {order?.status==="approved"?"Pagado":order?.status==="pending"||!order?"Pendiente":order.status}
           </span>
         </div>
+        {creatorContact&&(
+          <div className={order?.status==="approved"?"thi-order-contact-card paid":"thi-order-contact-card"}>
+            <div>
+              <span>{order?.status==="approved"?"CLIENTE PAGADO · CONTACTAR":"DATOS DEL CLIENTE"}</span>
+              <strong>{creatorContact.name||gift.giver_name}</strong>
+              <small>{creatorContact.whatsapp||"Sin WhatsApp"} · {creatorContact.email||"Sin email"}</small>
+            </div>
+            <div className="thi-order-contact-actions">
+              {creatorWhatsApp&&(
+                <a
+                  className="thi-primary"
+                  href={`https://wa.me/${creatorWhatsApp}?text=${encodeURIComponent(creatorMessage)}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Abrir WhatsApp ↗
+                </a>
+              )}
+              {creatorContact.email&&(
+                <a className="thi-ghost" href={`mailto:${creatorContact.email}`}>Enviar email</a>
+              )}
+            </div>
+          </div>
+        )}
         <div className="thi-payment-grid">
           <label>
             <span>Monto acordado · ARS</span>
