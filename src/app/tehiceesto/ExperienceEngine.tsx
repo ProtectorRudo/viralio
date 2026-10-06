@@ -457,23 +457,43 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             </div>
           </section>;
         }
-        if(experience.slug==="papa"&&!currentAudios.length){
+        if(experience.slug==="papa"){
+          const count=Math.max(currentAudios.length,voiceEntries.length);
+          const entries=Array.from({length:count},(_,i)=>({
+            name:token(currentAudios[i]?.caption||voiceEntries[i]?.name||`Mensaje ${i+1}`),
+            message:token(voiceEntries[i]?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
+            audio:currentAudios[i],
+          }));
+          const togglePapaVoice=async(index:number)=>{
+            const entry=entries[index];
+            setVoicesPlayed(v=>v.includes(index)?v:[...v,index]);haptic([7,18,7]);
+            if(entry.audio){
+              stopDemoVoice();
+              const audio=shellRef.current?.querySelector<HTMLAudioElement>(`audio[data-papa-audio="${index}"]`);
+              if(!audio)return;
+              shellRef.current?.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(other=>{if(other!==audio&&!other.paused)other.pause()});
+              try{if(audio.paused)await audio.play();else audio.pause()}catch{}
+              return;
+            }
+            toggleDemoVoice(entry.message);
+          };
           return <section className="thi-scene thi-scene-voices thi-papa-voices thi-scene-rich">
             <div className="thi-papa-voice-atmosphere" aria-hidden="true"><i/><i/><b/></div>
             <p className="thi-kicker">{token(copy.voices.kicker)}</p>
             <h2>{titleLines(copy.voices.title)}</h2>
-            <p className="thi-papa-voice-intro">Tocá una voz. Esta demo la reproduce para que puedas sentir cómo funciona la experiencia con audio.</p>
+            <p className="thi-papa-voice-intro">{currentAudios.length?"Elegí una voz. Cada mensaje conserva este mismo recorrido y diseño.":"Tocá una voz. Esta demo la reproduce para que puedas sentir cómo funciona la experiencia con audio."}</p>
             <div className="thi-papa-voice-list">
-              {voiceEntries.slice(0,3).map((voice,i)=><button
+              {entries.slice(0,3).map((entry,i)=><button
                 type="button"
                 data-action="demo-voice"
-                key={`${voice.name}-${i}`}
+                key={`${entry.name}-${i}`}
                 className={voicesPlayed.includes(i)?"heard":""}
-                onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic([7,18,7]);toggleDemoVoice(token(voice.message))}}
+                onClick={()=>void togglePapaVoice(i)}
               >
                 <span className="thi-papa-voice-index">{String(i+1).padStart(2,"0")}</span>
-                <span className="thi-papa-voice-copy"><small>UN MENSAJE PARA VOS</small><strong>{token(voice.name)}</strong><em>{voicesPlayed.includes(i)?`“${token(voice.message)}”`:token(copy.voices.playLabel)}</em><i aria-hidden="true">{Array.from({length:20}).map((_,bar)=><b key={bar}/>)}</i></span>
+                <span className="thi-papa-voice-copy"><small>UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>{voicesPlayed.includes(i)?`“${entry.message}”`:token(copy.voices.playLabel)}</em><i aria-hidden="true">{Array.from({length:20}).map((_,bar)=><b key={bar}/>)}</i></span>
                 <span className="thi-papa-voice-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
+                {entry.audio&&<audio data-papa-audio={i} src={entry.audio.url} preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);duckSoundtrack()}} onPause={restoreSoundtrack} onEnded={restoreSoundtrack}/>}
               </button>)}
             </div>
             <button data-action="advance" className="thi-primary thi-papa-voice-continue" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button>
