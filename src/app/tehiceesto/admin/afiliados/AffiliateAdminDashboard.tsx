@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { SESSION_KEY } from "../api";
 import { affiliateAdminCall } from "../affiliateApi";
@@ -43,7 +43,7 @@ export default function AffiliateAdminDashboard(){
   const [commissionEdits,setCommissionEdits]=useState<Record<string,string>>({});
   const [copied,setCopied]=useState("");
 
-  async function load(silent=false){
+  const load=useCallback(async(silent=false)=>{
     if(!silent)setLoading(true);
     try{
       const data=await affiliateAdminCall<Overview>("overview");
@@ -58,21 +58,24 @@ export default function AffiliateAdminDashboard(){
     }finally{
       if(!silent)setLoading(false);
     }
-  }
+  },[]);
 
   useEffect(()=>{
-    const active=Boolean(window.sessionStorage.getItem(SESSION_KEY));
-    setHasSession(active);
-    setReady(true);
-    if(active)void load();
+    const timer=window.setTimeout(()=>{
+      const active=Boolean(window.sessionStorage.getItem(SESSION_KEY));
+      setHasSession(active);
+      setReady(true);
+      if(active)void load();
+    },0);
     const expired=()=>setHasSession(false);
     window.addEventListener("thi-admin-session-expired",expired);
     const id=window.setInterval(()=>{if(window.sessionStorage.getItem(SESSION_KEY))void load(true)},10000);
     return()=>{
+      window.clearTimeout(timer);
       window.clearInterval(id);
       window.removeEventListener("thi-admin-session-expired",expired);
     };
-  },[]);
+  },[load]);
 
   async function create(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setLoading(true);setMessage("");
