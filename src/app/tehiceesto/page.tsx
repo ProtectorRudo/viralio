@@ -232,10 +232,10 @@ export default async function TeHiceEstoHome() {
               </div>
             </div>
 
-            <a className="thh-button thh-button-primary" href="#para-quien">
+            <Link className="thh-button thh-button-primary" href={href("/crear")}>
               Quiero crear este regalo <span>→</span>
-            </a>
-            <p className="thh-v2-price-closing">Vos nos das los recuerdos. Nosotros hacemos que se conviertan en algo inolvidable.</p>
+            </Link>
+            <p className="thh-v2-price-closing">En el siguiente paso elegís la experiencia, dejás tus datos y pagás de forma segura con Mercado Pago.</p>
           </div>
         </section>
 
