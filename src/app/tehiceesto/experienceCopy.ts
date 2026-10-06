@@ -37,6 +37,10 @@ export type ExperienceCopy = {
   vault: { kicker:string; title:string[]; closedLabel:string; openLabel:string; closedSmall:string; openSmall:string; reveal:string; cta:string };
   capsule: { kicker:string; title:string[]; year:string; closed:string; open:string; closedLabel:string; openLabel:string; cta:string };
   video: { kicker:string; title:string[]; placeholder:string; cta:string };
+  lessons: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
+  presence: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
+  inheritance: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
+  lookback: { kicker:string; closedTitle:string; openTitle:string; openLabel:string; cta:string };
   finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string };
   proposal: { kicker:string; title:string; lead:string; reactions:string[]; createdWith:string };
 };
@@ -73,6 +77,48 @@ const BASE_COPY: ExperienceCopy = {
   vault:{kicker:"Última cerradura",title:["Hay algo guardado para vos."],closedLabel:"TOCÁ PARA ABRIR",openLabel:"ABIERTO",closedSmall:"último secreto",openSmall:"acceso concedido",reveal:"No era un objeto. Era una pregunta.",cta:"Abrir la última carta →"},
   capsule:{kicker:"Para volver algún día",title:["Guardamos algo para","tu yo del futuro."],year:"2036",closed:"Hay palabras que pueden esperar.",open:"Ojalá sigas teniendo esa misma curiosidad por el mundo.",closedLabel:"Abrir cápsula",openLabel:"Abriste una cápsula del tiempo",cta:"Guardar este momento →"},
   video:{kicker:"Un momento para mirar sin apuro",title:["Hay recuerdos que necesitan","movimiento y sonido."],placeholder:"Un video especial vive acá",cta:"Continuar →"},
+  lessons:{
+    kicker:"Todo lo que me enseñaste sin dar una clase",
+    title:"Muchas lecciones tuyas tardaron años en cobrar sentido.",
+    items:[
+      "Resolver | No saber no era una excusa para quedarse quieto. Primero se mira, se prueba, se pregunta y se vuelve a intentar.",
+      "Cumplir | Llegar, llamar, hacerse cargo, sostener la palabra incluso cuando nadie está mirando.",
+      "Cuidar | Entendí que proteger no siempre es hablar. A veces es estar cerca, prever, acompañar y dejar que el otro intente.",
+      "Seguir | Hay días en los que el coraje se parece menos a una hazaña y más a levantarse y hacer lo que toca."
+    ],
+    closedLabel:"Abrir lección",
+    cta:"Seguir"
+  },
+  presence:{
+    kicker:"Las formas de estar",
+    title:"No todos los recuerdos importantes tienen una conversación.",
+    items:[
+      "LA MANO | La que sostenía la bici, señalaba cómo hacerlo o aparecía en un hombro cuando hacía falta.",
+      "LA ESPERA | Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía.",
+      "LA MIRADA | Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."
+    ],
+    closedLabel:"Tocá para recordar",
+    cta:"Ver lo que quedó"
+  },
+  inheritance:{
+    kicker:"La herencia que no se firma",
+    title:"Hay cosas tuyas que un día descubrí viviendo en mí.",
+    items:[
+      "LA FORMA DE MIRAR UN PROBLEMA | Antes de pedir ayuda, trato de entender cómo funciona.",
+      "ALGUNAS FRASES | Juraba que nunca las iba a decir. Ahora salen solas.",
+      "CIERTOS GESTOS | Maneras de ordenar, manejar, cocinar, arreglar o pensar que aparecieron sin permiso.",
+      "UNA PARTE DE TU CARÁCTER | No todo. Pero lo suficiente como para reconocerte en mí de vez en cuando."
+    ],
+    closedLabel:"Revelar",
+    cta:"Escuchar a la familia"
+  },
+  lookback:{
+    kicker:"Ahora te miro distinto",
+    closedTitle:"Hay una parte de crecer que también es volver a conocer a nuestros padres.",
+    openTitle:"Con el tiempo dejé de verte sólo como “papá”. Empecé a ver también al hombre que estaba haciendo lo mejor que podía con lo que tenía.",
+    openLabel:"Mirar de nuevo",
+    cta:"Una última cosa"
+  },
   finale:{kicker:"Una última cosa",title:"{closing}",lead:"Este lugar va a seguir acá para cuando quieras volver.",reactions:["🥹","❤️","😭","✨"],restartLabel:"Volver al comienzo",createdWith:"creado con ♥ en Te Hice Esto"},
   proposal:{kicker:"Y ahora sí",title:"{closing}",lead:"No hace falta tocar nada más. Este momento es de ustedes.",reactions:["Sí ❤️","😭","✨"],createdWith:"creado con ♥ en Te Hice Esto"},
 };
@@ -162,6 +208,38 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     letter:{kicker:"Esto sí queríamos dejarlo escrito",title:["Porque algún día","también vamos a necesitar volver."],sealHint:"Abrir",cta:"Guardar →"},
     scratch:{kicker:"Ahora te toca a vos",title:["Una vez, por favor,","dejá que te cuidemos."],coverTitle:"ESTO ES PARA VOS",coverHint:"raspá para descubrir",fallbackLabel:"abrir regalo",cta:"Acepto →"},
     finale:{kicker:"Gracias por ser casa",lead:"Incluso cuando todos crecimos, hay lugares a los que seguimos volviendo.",restartLabel:"Volver"},
+  },
+  papa:{
+    intro:{
+      kicker:"Tus hijos hicieron esto para vos",
+      cta:"Entrar",
+      footnote:"Ponete auriculares si podés · son unos minutos sólo para vos"
+    },
+    memories:{
+      kicker:"Cosas que quedaron",
+      title:["Hay recuerdos que parecían pequeños.","Hasta que pasó el tiempo."],
+      cta:"Seguir →"
+    },
+    voices:{
+      kicker:"Hay cosas que se sienten distinto cuando las escuchás",
+      title:["Tres voces.","Una misma certeza."],
+      playLabel:"Tocá para escuchar",
+      playingLabel:"Escuchando…",
+      cta:"Guardar estas voces →"
+    },
+    letter:{
+      kicker:"La parte que no entraba en una foto",
+      title:["Hay palabras que merecen","abrirse despacio."],
+      sealHint:"Rompé el sello",
+      cta:"Guardar estas palabras →"
+    },
+    finale:{
+      kicker:"Lo que queda",
+      lead:"No era sólo todo lo que hiciste. Era la forma en que estuviste. Y muchas de esas cosas siguen viviendo en nosotros.",
+      reactions:["Me llegó","Gracias","Me emocionó","Hermoso"],
+      restartLabel:"Volver al comienzo",
+      createdWith:"hecho con gratitud en Te Hice Esto"
+    }
   },
   amistad:{
     intro:{kicker:"Archivo confidencial · acceso sólo para {recipient}",cta:"Abrir expediente",footnote:"Si aparece una foto comprometedora, negamos todo"},
