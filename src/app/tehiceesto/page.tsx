@@ -200,8 +200,13 @@ export default async function TeHiceEstoHome() {
 
         <section className="thh-v2-pricing">
           <div className="thh-v2-price-main">
-            <span className="thh-kicker">UNA EXPERIENCIA HECHA PARA ESA PERSONA</span>
-            <h2>Experiencia personalizada</h2>
+            <span className="thh-kicker">UNA EXPERIENCIA HECHA SÓLO PARA ESA PERSONA</span>
+            <h2>No estás comprando una página.<em>Estás regalando un recuerdo que puede volver a sentir.</em></h2>
+            <p className="thh-v2-price-story">
+              Nosotros transformamos su historia en una experiencia cuidada de principio a fin:
+              damos ritmo a los recuerdos, lugar a las fotos, a las voces y a las palabras para que
+              cada momento llegue cuando tiene que llegar.
+            </p>
             <div className="thh-v2-price">
               <strong>{formatTeHiceEstoPrice()}</strong>
               <span>pago único</span>
@@ -209,15 +214,27 @@ export default async function TeHiceEstoHome() {
           </div>
 
           <div className="thh-v2-price-value">
+            <p className="thh-v2-price-intro">Todo lo necesario para convertir sus recuerdos en un regalo realmente inolvidable.</p>
             <ul>
-              <li>Experiencia digital privada</li>
-              <li>Fotos, audios, mensajes y escenas interactivas</li>
-              <li>Armado realizado por nosotros</li>
-              <li>Link listo para regalar y volver a abrir</li>
+              <li><strong>Personalizada con su propia historia</strong><span>Fotos, audios, nombres y mensajes.</span></li>
+              <li><strong>Nosotros hacemos todo el armado</strong><span>No necesitás diseñar ni editar nada.</span></li>
+              <li><strong>Lista para regalar</strong><span>Recibís un link privado y terminado.</span></li>
+              <li><strong>Para volver a sentirlo</strong><span>Puede abrirla todas las veces que quiera.</span></li>
+              <li><strong>Sin suscripciones</strong><span>Un único pago, sin cuotas mensuales del servicio.</span></li>
             </ul>
+
+            <div className="thh-v2-payment-trust" aria-label="Pago seguro con Mercado Pago">
+              <span className="thh-v2-payment-lock" aria-hidden="true"/>
+              <div>
+                <strong>Compra segura</strong>
+                <p>Pago procesado de forma segura por Mercado Pago.</p>
+              </div>
+            </div>
+
             <a className="thh-button thh-button-primary" href="#para-quien">
-              Elegir para quién <span>→</span>
+              Quiero crear este regalo <span>→</span>
             </a>
+            <p className="thh-v2-price-closing">Vos nos das los recuerdos. Nosotros hacemos que se conviertan en algo inolvidable.</p>
           </div>
         </section>
 
