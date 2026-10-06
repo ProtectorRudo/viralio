@@ -1,0 +1,33 @@
+name: QA Te Hice Esto checkout end-to-end
+
+on:
+  push:
+    branches: [qa-mp-live-20261006]
+    paths:
+      - ".github/workflows/qa-tehiceesto-checkout-e2e.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Create live checkout without paying
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsSL --max-time 40 'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/order-create'             -H 'content-type: application/json'             -H 'apikey: sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN'             -H 'origin: https://tehiceesto.com'             --data '{"experienceSlug":"pareja","customerName":"QA Checkout Final","email":"qa-checkout-final@tehiceesto.invalid","whatsapp":"+5492210000000","consent":true,"website":"","affiliateToken":""}')"
+          echo "$body"
+
+          BODY="$body" python - <<'PY'
+          import json, os
+          data=json.loads(os.environ["BODY"])
+          assert data.get("checkoutReady") is True, data
+          assert str(data.get("checkoutUrl","")).startswith("https://"), data
+          assert data.get("priceMinor")==2500000, data
+          assert data.get("currency")=="ARS", data
+          assert len(data.get("code",""))==18, data
+          print("CHECKOUT_E2E_OK")
+          PY
