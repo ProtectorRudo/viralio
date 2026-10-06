@@ -37,7 +37,7 @@ export type ExperienceCopy = {
   vault: { kicker:string; title:string[]; closedLabel:string; openLabel:string; closedSmall:string; openSmall:string; reveal:string; cta:string };
   capsule: { kicker:string; title:string[]; year:string; closed:string; open:string; closedLabel:string; openLabel:string; cta:string };
   video: { kicker:string; title:string[]; placeholder:string; cta:string };
-  lessons: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
+  lessons: { kicker:string; title:string; accentTitle:string; titleTail:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   presence: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
   inheritance: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
   lookback: { kicker:string; closedTitle:string; openTitle:string; openLabel:string; cta:string };
@@ -80,6 +80,8 @@ const BASE_COPY: ExperienceCopy = {
   lessons:{
     kicker:"Todo lo que me enseñaste sin dar una clase",
     title:"Muchas lecciones tuyas tardaron años en cobrar sentido.",
+    accentTitle:"",
+    titleTail:"",
     items:[
       "Resolver | No saber no era una excusa para quedarse quieto. Primero se mira, se prueba, se pregunta y se vuelve a intentar.",
       "Cumplir | Llegar, llamar, hacerse cargo, sostener la palabra incluso cuando nadie está mirando.",
@@ -87,6 +89,8 @@ const BASE_COPY: ExperienceCopy = {
       "Seguir | Hay días en los que el coraje se parece menos a una hazaña y más a levantarse y hacer lo que toca."
     ],
     closedLabel:"Abrir lección",
+    outroTitle:"Y un día entendí algo más:",
+    outroBody:"Muchas de esas cosas ya estaban viviendo en mí.",
     cta:"Seguir"
   },
   presence:{
@@ -219,6 +223,22 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
       kicker:"Cosas que quedaron",
       title:["Hay recuerdos que parecían pequeños.","Hasta que pasó el tiempo."],
       cta:"Seguir →"
+    },
+    lessons:{
+      kicker:"Hay cosas que un padre deja sin darse cuenta",
+      title:"No fueron solo consejos.",
+      accentTitle:"Fueron formas de quererme",
+      titleTail:"que recién con el tiempo entendí.",
+      items:[
+        "Tu manera de estar | A veces no hacían falta grandes palabras. Estabas ahí, y eso me hacía sentir cuidado, seguro y querido.",
+        "Todo lo que hiciste por mí | Ir, volver, esperar, ocuparte, resolver en silencio. Con el tiempo entendí cuánto amor había en todo eso.",
+        "Eso tuyo que se quedó en mí | Hay gestos, frases y maneras de mirar la vida en las que, sin querer, todavía te encuentro.",
+        "Lo que todavía me acompaña | Incluso hoy, en los días difíciles, aparece algo tuyo empujándome a seguir."
+      ],
+      closedLabel:"Tocá para recordar",
+      outroTitle:"Y un día entendí algo más:",
+      outroBody:"Muchas de las cosas que hoy más me sostienen tienen tu forma de querer.",
+      cta:"Ver lo que dejaste en mí →"
     },
     voices:{
       kicker:"Hay cosas que se sienten distinto cuando las escuchás",
