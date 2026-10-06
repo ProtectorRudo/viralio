@@ -15,12 +15,12 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
 
   await page.setViewportSize({width:1440,height:1000});
   await page.goto("/tehiceesto");
-  await expect(page.getByRole("heading",{name:/Un regalo hecho con sus recuerdos/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Un regalo que la emociona/i})).toBeVisible();
   await expect(page.locator(".thh-v2-chooser")).toBeVisible();
   await expect(page.getByRole("link",{name:"Ver experiencia para Mamá"})).toBeVisible();
   await expect(page.getByRole("link",{name:"Ver experiencia para Papá"})).toBeVisible();
   await expect(page.getByRole("link",{name:"Ver experiencia para Amistad"})).toBeVisible();
-  await expect(page.getByRole("heading",{name:/No recibe una página/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/No recibe solo un regalo/i})).toBeVisible();
   await expect(page.getByText("Nosotros hacemos la magia")).toBeVisible();
   await expect(page.locator(".floating-whatsapp--home")).toBeHidden();
   await expectNoHorizontalOverflow(page);
