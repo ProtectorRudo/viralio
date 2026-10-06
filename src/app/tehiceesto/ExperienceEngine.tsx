@@ -267,6 +267,33 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             {active>=safeItems.length-1?<button data-action="advance" className="thi-mama-memories-continue" onClick={next}>Seguir con la historia <span>→</span></button>:<p className="thi-mama-memory-hint">deslizá para recorrer los recuerdos <span>→</span></p>}
           </section>;
         }
+        if(experience.slug==="papa"){
+          const items=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,3);
+          const labels=["LO COTIDIANO","LO QUE ESTUVO","LO QUE QUEDA"];
+          return <section className="thi-scene thi-scene-memories thi-papa-memories thi-scene-rich">
+            <div className="thi-papa-memories-atmosphere" aria-hidden="true"><i/><i/><b/></div>
+            <p className="thi-kicker">{token(copy.memories.kicker)}</p>
+            <h2>{titleLines(copy.memories.title)}</h2>
+            {storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}
+            <div className="thi-papa-memory-gallery" aria-label="Galería de recuerdos. Deslizá hacia los costados para recorrerla.">
+              {items.map((item,i)=><article className="thi-papa-memory-card" key={item.url||item.caption||i}>
+                <div className="thi-papa-memory-frame">
+                  <div className="thi-papa-memory-photo">
+                    {item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}
+                    <i aria-hidden="true"/>
+                    <span>{String(i+1).padStart(2,"0")}</span>
+                  </div>
+                  <div className="thi-papa-memory-copy">
+                    <small>{String(i+1).padStart(2,"0")} · {labels[i]||"RECUERDO"}</small>
+                    <p>{token(item.caption||memoryLines[i%memoryLines.length])}</p>
+                  </div>
+                </div>
+              </article>)}
+            </div>
+            <p className="thi-papa-memory-hint">Deslizá para recorrer los recuerdos <span>→</span></p>
+            <button data-action="advance" className="thi-papa-memory-continue" onClick={next}>Seguir con la historia <span>→</span></button>
+          </section>;
+        }
         return <section className="thi-scene thi-scene-memories thi-scene-rich"><p className="thi-kicker">{token(copy.memories.kicker)}</p><h2>{titleLines(copy.memories.title)}</h2>{storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}<div className="thi-film">{(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url||item.caption||i}><div className="thi-memory-photo">{item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}<span>{String(i+1).padStart(2,"0")}</span><i className="thi-photo-sheen"/></div><p>{token(item.caption||memoryLines[i%memoryLines.length])}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.memories.cta)}</button></section>;
       }
       case"light":return <section className={`thi-scene thi-scene-light thi-scene-rich ${experience.slug==="pareja"?"thi-pair-light-scene":""}`}><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><LightReveal accent={experience.accent} kicker={token(copy.light.kicker)} title={token(copy.light.title)} secret={token(copy.light.secret)} hint={token(copy.light.hint)} revealedLabel={token(copy.light.revealedLabel)} ariaLabel={token(copy.light.ariaLabel)} revealed={lightRevealed} cinematic={experience.slug==="pareja"} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className={`thi-primary ${experience.slug==="pareja"?"thi-pair-light-continue":""}`} onClick={next}>{token(copy.light.cta)}</button>}</section>;
