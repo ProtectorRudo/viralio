@@ -751,7 +751,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           const careItems=[
             {n:"01",label:"LO QUE NADIE VEÍA",title:"Recordar por todos",copy:"Fechas, turnos, tareas, lo que faltaba en casa. Lo llevabas adentro sin pedir que nadie lo notara."},
             {n:"02",label:"HACER ESPACIO",title:"Hacer lugar",copy:"En la mesa, en el día, en el presupuesto y hasta en el cansancio. De alguna manera siempre aparecía lugar para nosotros."},
-            {n:"03",label:"ANTES DE PEDIRLO",title:"Estar antes de que lo pidiera",copy:"Muchas veces entendiste qué me pasaba antes de que yo pudiera ponerle palabras. Ya estabas ahí cuando todavía no sabía cómo pedir ayuda."},
+            {n:"03",label:"ANTES DE PEDIRLO",title:"Estar antes de que lo pidiéramos",copy:"Muchas veces entendiste qué nos pasaba antes de que pudiéramos ponerle palabras. Ya estabas ahí cuando todavía no sabíamos cómo pedir ayuda."},
           ];
           return (
             <section className={`scene scene-care scene-care-mama care-open-${Math.min(careOpen.length,3)}`}>
