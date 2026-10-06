@@ -513,7 +513,9 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
 
-  await hold.press("Enter");
+  await expect(hold).toBeVisible();
+  await hold.focus();
+  await page.keyboard.press("Enter");
   await expect(ritual).toHaveClass(/revealed/);
   await expect(ritual).toHaveAttribute("data-hold-phase","complete");
   await expect(page.locator('[data-action="advance"]')).toBeVisible();
