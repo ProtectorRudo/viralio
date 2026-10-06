@@ -449,12 +449,14 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
 
   const box=await hold.boundingBox();
   if(!box)throw new Error("hold control has no bounding box");
-  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
-  await page.mouse.down();
+  const holdPointer=29;
+  const holdX=box.x+box.width/2;
+  const holdY=box.y+box.height/2;
+  await hold.dispatchEvent("pointerdown",{pointerId:holdPointer,pointerType:"touch",isPrimary:true,clientX:holdX,clientY:holdY,buttons:1});
   await page.waitForTimeout(1250);
   await expect(ritual).toHaveAttribute("data-hold-phase","almost");
   await expect(page.getByText("Un poquito más…")).toBeVisible();
-  await page.mouse.up();
+  await hold.dispatchEvent("pointerup",{pointerId:holdPointer,pointerType:"touch",isPrimary:true,clientX:holdX,clientY:holdY,buttons:0});
   await expect(ritual).toHaveAttribute("data-hold-phase","idle");
 
   await hold.press("Enter");
@@ -541,18 +543,21 @@ test("pair scratch card reveals from real drag gestures without fallback",async(
   const left=box.x+28;
   const right=box.x+box.width-28;
   const top=box.y+38;
+  const bottom=box.y+box.height-38;
+  const pointerId=19;
   const rows=8;
 
-  await page.mouse.move(left,top);
-  await page.mouse.down();
+  await canvas.dispatchEvent("pointerdown",{pointerId,pointerType:"mouse",isPrimary:true,clientX:left,clientY:top,buttons:1});
   for(let row=0;row<rows;row++){
-    const y=top+row*((box.height-76)/(rows-1));
+    const y=top+row*((bottom-top)/(rows-1));
     const fromX=row%2===0?left:right;
     const toX=row%2===0?right:left;
-    await page.mouse.move(fromX,y,{steps:3});
-    await page.mouse.move(toX,y,{steps:18});
+    for(let step=0;step<=20;step++){
+      const t=step/20;
+      await canvas.dispatchEvent("pointermove",{pointerId,pointerType:"mouse",isPrimary:true,clientX:fromX+(toX-fromX)*t,clientY:y,buttons:1});
+    }
   }
-  await page.mouse.up();
+  await canvas.dispatchEvent("pointerup",{pointerId,pointerType:"mouse",isPrimary:true,clientX:right,clientY:bottom,buttons:0});
 
   await expect(page.locator('[data-action="scratch-canvas"]')).toHaveCount(0);
   await expect(page.getByRole("button",{name:/Acepto el trato/i})).toBeVisible();
