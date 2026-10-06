@@ -2335,3 +2335,21 @@
   .thi-order-contact-card{align-items:flex-start;flex-direction:column}
   .thi-order-contact-actions{width:100%;justify-content:flex-start}
 }
+
+.thi-sale-alert{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 18px;
+  padding:14px 18px;
+  border:1px solid rgba(70,190,116,.35);
+  border-radius:16px;
+  background:rgba(38,132,80,.09);
+  box-shadow:0 14px 38px rgba(24,120,70,.08);
+}
+.thi-sale-alert strong{font-size:.92rem}
+.thi-sale-alert span{font-size:.78rem;opacity:.68}
+@media (max-width:720px){
+  .thi-sale-alert{align-items:flex-start;flex-direction:column}
+}
