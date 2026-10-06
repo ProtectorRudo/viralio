@@ -56,8 +56,8 @@ export default function AffiliateDashboard(){
       setStats(data);
       setLogged(true);
     }catch{
-      setLogged(false);
-      setStats(null);
+      // A transient network error must not log the influencer out.
+      // 401 handling is centralized in affiliateCall via the session-expired event.
     }finally{
       if(!silent)setLoading(false);
     }
