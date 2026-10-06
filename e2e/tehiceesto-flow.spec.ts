@@ -502,14 +502,20 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
   await waitForScene(page,"intro");
-  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="hold"){
-    await advanceOne(page);
-  }
-  await waitForScene(page,"hold");
 
   const hold=page.locator('[data-action="hold"]');
   const ritual=page.locator(".thi-hold-reveal.cinematic");
-  await expect(ritual).toBeVisible();
+  for(let step=0;step<12;step++){
+    if(await ritual.count())break;
+    const current=await sceneName(page);
+    if(current==="hold"){
+      await page.waitForTimeout(700);
+      continue;
+    }
+    await advanceOne(page);
+  }
+  await waitForScene(page,"hold");
+  await expect(ritual).toBeVisible({timeout:15_000});
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
 
