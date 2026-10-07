@@ -1425,6 +1425,81 @@ test("affiliate referral stores attribution and returns to Te Hice Esto",async({
   expect(cookies.find(cookie=>cookie.name==="thi_affiliate_token")?.value).toBe("affiliate-token-test-12345678901234567890");
 });
 
+test("affiliate dashboard shows the same settlement ledger as the admin",async({page})=>{
+  const days=Array.from({length:30},(_,index)=>({
+    date:new Date(Date.UTC(2026,9,index+1)).toISOString().slice(0,10),clicks:index===29?4:0,uniqueVisitors:index===29?3:0,sales:0,revenueMinor:0,
+  }));
+  await page.route("**/functions/v1/affiliate-public",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="login")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({token:"affiliate-session-test-token-1234567890"})});
+    if(body.action==="dashboard")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+      affiliate:{slug:"sofia",name:"Sofía Test",email:"sofia@example.com",commissionBps:2000,status:"active"},
+      stats:{clicks:4,unique_visitors:3,approved_sales:2,revenue_minor:5000000,commission_earned_minor:1000000,commission_pending_minor:400000,commission_paid_minor:600000},
+      links:[{id:"link-1",code:"sofia",label:"Principal",status:"active"}],
+      series:days,sources:{instagram:{clicks:4,sales:2}},
+      recentSales:[{id:"sale-1",date:"2026-10-06T18:00:00Z",experienceSlug:"pareja",saleAmountMinor:2500000,commissionAmountMinor:500000,status:"paid"}],
+      payouts:[{id:"pay-1",amount_minor:600000,status:"paid",paid_at:"2026-10-06T20:00:00Z",created_at:"2026-10-06T20:00:00Z",notes:"Liquidación semanal",provider_reference:"TRX-001",period_from:"2026-10-01T12:00:00Z",period_to:"2026-10-05T18:00:00Z",sales_count:2}],
+      updatedAt:"2026-10-07T20:00:00Z",
+    })});
+    if(body.action==="logout")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true})});
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/afiliados/sofia");
+  await page.getByLabel("Contraseña").fill("Password123!");
+  await page.getByRole("button",{name:/Ver mi dashboard/i}).click();
+  await expect(page.getByRole("heading",{name:/Hola, Sofía Test/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Pagos que ya te registramos/i})).toBeVisible();
+  await expect(page.getByText("2 ventas",{exact:true})).toBeVisible();
+  await expect(page.getByText("TRX-001",{exact:true})).toBeVisible();
+  await expect(page.getByText("Liquidado",{exact:true}).last()).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("admin affiliate panel registers a payout and preserves its settlement history",async({page})=>{
+  let settled=false;
+  let payoutPayload:Record<string,unknown>|null=null;
+  await page.addInitScript(()=>window.sessionStorage.setItem("thi_admin_session","admin-session-test-token-1234567890"));
+  await page.route("**/functions/v1/affiliate-admin",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    const affiliate={
+      id:"11111111-1111-4111-8111-111111111111",slug:"sofia",name:"Sofía Test",email:"sofia@example.com",whatsapp:null,status:"active",
+      commission_bps:2000,primary_link_code:"sofia",clicks:20,unique_visitors:15,attributed_orders:4,approved_sales:3,revenue_minor:7500000,
+      commission_earned_minor:1500000,commission_pending_minor:settled?0:900000,commission_paid_minor:settled?1500000:600000,
+      clicks_30d:20,visitors_30d:15,sales_30d:3,revenue_30d_minor:7500000,
+    };
+    if(body.action==="list")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+      affiliates:[affiliate],totals:{clicks:20,uniqueVisitors:15,orders:4,sales:3,revenueMinor:7500000,commissionMinor:1500000,pendingMinor:settled?0:900000,paidMinor:settled?1500000:600000},
+    })});
+    if(body.action==="detail")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+      affiliate,
+      links:[{id:"link-1",code:"sofia",label:"Principal",status:"active"}],
+      commissions:[],
+      payouts:[{id:"pay-1",amount_minor:600000,status:"paid",paid_at:"2026-10-06T20:00:00Z",created_at:"2026-10-06T20:00:00Z",provider_reference:"TRX-001",notes:"Primera liquidación",period_from:"2026-10-01T12:00:00Z",period_to:"2026-10-05T18:00:00Z",sales_count:2}],
+      series:[],
+    })});
+    if(body.action==="payout"){payoutPayload=body;settled=true;return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,payoutId:"pay-2"})});}
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/admin/afiliados");
+  await page.getByText("Sofía Test",{exact:true}).click();
+  await expect(page.getByRole("heading",{name:/Marcar comisión como pagada/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Liquidaciones registradas/i})).toBeVisible();
+  await expect(page.getByText("2 ventas",{exact:true})).toBeVisible();
+  await page.getByPlaceholder("Ej. transferencia 07/10").fill("TRX-002");
+  await page.getByPlaceholder("Ej. liquidación quincenal").fill("Pago hasta venta 3");
+  page.once("dialog",dialog=>dialog.accept());
+  await page.getByRole("button",{name:/Pago liquidado/i}).click();
+  await expect.poll(()=>Boolean(payoutPayload)).toBe(true);
+  expect(payoutPayload?.providerReference).toBe("TRX-002");
+  expect(payoutPayload?.notes).toBe("Pago hasta venta 3");
+  await expect(page.getByText(/Pago liquidado registrado/i)).toBeVisible();
+  await expect(page.getByRole("button",{name:/Sin saldo pendiente/i})).toBeDisabled();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
   const response=await request.get("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1");
   expect(response.ok()).toBeTruthy();
