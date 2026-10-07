@@ -706,23 +706,18 @@ export default function CustomerStudio({code}:{code:string}){
   const scratchRewardValue=(scratchRewardSource&&sceneTextOverrides.scratch?.[scratchRewardSource])||scratchRewardSource;
   const scratchNoteValue=(scratchNoteSource&&sceneTextOverrides.scratch?.[scratchNoteSource])||scratchNoteSource;
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
-  const previewSceneIndex=Math.max(0,effectiveRecipe.indexOf(previewScene));
-  const previewSceneLabel=SCENE_LABELS[previewScene]?.title||"Parte del regalo";
   const previewFirstScene=effectiveRecipe[0]||"";
   const previewSceneIsValid=Boolean(previewScene&&effectiveRecipe.includes(previewScene));
-
-  useEffect(()=>{
-    if(step!==5||!previewFirstScene||previewSceneIsValid)return;
-    setPreviewScene(previewFirstScene);
-  },[step,previewFirstScene,previewSceneIsValid]);
-
+  const resolvedPreviewScene=previewSceneIsValid?previewScene:previewFirstScene;
+  const previewSceneIndex=Math.max(0,effectiveRecipe.indexOf(resolvedPreviewScene));
+  const previewSceneLabel=SCENE_LABELS[resolvedPreviewScene]?.title||"Parte del regalo";
 
   function movePreviewScene(direction:-1|1){
     if(!effectiveRecipe.length)return;
-    const currentIndex=previewSceneIsValid?previewSceneIndex:0;
+    const currentIndex=previewSceneIndex;
     const targetIndex=Math.max(0,Math.min(effectiveRecipe.length-1,currentIndex+direction));
     const target=effectiveRecipe[targetIndex];
-    if(!target||target===previewScene)return;
+    if(!target||target===resolvedPreviewScene)return;
     setPreviewScene(target);
     window.requestAnimationFrame(()=>{
       document.querySelector(".studio-preview-stage")?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -1005,7 +1000,7 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>goToStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
         </div>
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
-        <div className="studio-preview-stage"><Preview gift={{...gift,scene_recipe:effectiveRecipe}} media={media} sceneTextOverrides={sceneTextOverrides} previewScene={previewScene||previewFirstScene} onSceneChange={scene=>setPreviewScene(scene)}/></div>
+        <div className="studio-preview-stage"><Preview gift={{...gift,scene_recipe:effectiveRecipe}} media={media} sceneTextOverrides={sceneTextOverrides} previewScene={resolvedPreviewScene} onSceneChange={scene=>setPreviewScene(scene)}/></div>
         <nav className="studio-preview-journey-nav" aria-label="Navegar por las partes del regalo">
           <button type="button" className="studio-preview-nav-button back" disabled={previewSceneIndex<=0} onClick={()=>movePreviewScene(-1)}>← <span>Anterior</span></button>
           <div>
