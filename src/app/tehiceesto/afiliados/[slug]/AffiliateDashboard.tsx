@@ -16,7 +16,7 @@ type DashboardData={
   series:{date:string;clicks:number;uniqueVisitors:number;sales:number;revenueMinor:number}[];
   sources:Record<string,{clicks:number;sales:number}>;
   recentSales:{id:string;date:string;experienceSlug:string;saleAmountMinor:number;commissionAmountMinor:number;status:string}[];
-  payouts:{id:string;amount_minor:number;status:string;paid_at:string|null;created_at:string;notes:string|null}[];
+  payouts:{id:string;amount_minor:number;status:string;paid_at:string|null;created_at:string;notes:string|null;provider_reference:string|null;period_from:string|null;period_to:string|null;sales_count:number}[];
   updatedAt:string;
 };
 
@@ -124,7 +124,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
         <article><span>PERSONAS QUE LLEGARON</span><strong>{Number(data.stats.unique_visitors||0).toLocaleString("es-AR")}</strong><small>{Number(data.stats.clicks||0).toLocaleString("es-AR")} clics</small></article>
         <article><span>COMPRAS APROBADAS</span><strong>{Number(data.stats.approved_sales||0)}</strong><small>{pct(conversion)} conversión</small></article>
         <article><span>VENTAS GENERADAS</span><strong>{money(Number(data.stats.revenue_minor||0))}</strong><small>facturación atribuida</small></article>
-        <article className="accent"><span>TU COMISIÓN</span><strong>{money(Number(data.stats.commission_earned_minor||0))}</strong><small>{money(Number(data.stats.commission_pending_minor||0))} por cobrar</small></article>
+        <article className="accent"><span>TU COMISIÓN</span><strong>{money(Number(data.stats.commission_earned_minor||0))}</strong><small>{money(Number(data.stats.commission_pending_minor||0))} por liquidar · {money(Number(data.stats.commission_paid_minor||0))} ya liquidado</small></article>
       </section>
 
       <section className="thi-aff-public-grid">
@@ -148,11 +148,28 @@ export default function AffiliateDashboard({slug}:{slug:string}){
         {data.recentSales.length===0?<div className="thi-aff-empty"><strong>Todavía no hay ventas aprobadas.</strong><p>Cuando llegue la primera, va a aparecer acá automáticamente.</p></div>:(
           <div className="thi-aff-table-wrap"><table>
             <thead><tr><th>Fecha</th><th>Experiencia</th><th>Venta</th><th>Tu comisión</th><th>Estado</th></tr></thead>
-            <tbody>{data.recentSales.map(sale=><tr key={sale.id}><td>{new Date(sale.date).toLocaleDateString("es-AR")}</td><td>{sale.experienceSlug}</td><td>{money(sale.saleAmountMinor)}</td><td>{money(sale.commissionAmountMinor)}</td><td><span className={`thi-aff-sale-status ${sale.status}`}>{sale.status==="pending"?"Por cobrar":sale.status==="paid"?"Pagada":"Revertida"}</span></td></tr>)}</tbody>
+            <tbody>{data.recentSales.map(sale=><tr key={sale.id}><td>{new Date(sale.date).toLocaleDateString("es-AR")}</td><td>{sale.experienceSlug}</td><td>{money(sale.saleAmountMinor)}</td><td>{money(sale.commissionAmountMinor)}</td><td><span className={`thi-aff-sale-status ${sale.status}`}>{sale.status==="pending"?"Por liquidar":sale.status==="paid"?"Liquidada":"Revertida"}</span></td></tr>)}</tbody>
           </table></div>
         )}
       </section>
 
+      <section className="thi-aff-public-table thi-aff-payout-history">
+        <div className="thi-aff-card-head"><div><span>LIQUIDACIONES</span><h2>Pagos que ya te registramos</h2></div><small>Historial visible para las dos partes</small></div>
+        <p className="thi-aff-payout-intro">Cuando Mauro te paga por transferencia u otro medio, queda asentado acá. Ese pago cierra las comisiones incluidas y las ventas siguientes vuelven a sumar como pendiente.</p>
+        {data.payouts.length===0?<div className="thi-aff-empty"><strong>Todavía no hay liquidaciones registradas.</strong><p>Tu saldo pendiente seguirá acumulándose hasta el primer pago.</p></div>:(
+          <div className="thi-aff-table-wrap"><table className="thi-aff-settlement-table">
+            <thead><tr><th>Fecha</th><th>Ventas incluidas</th><th>Período</th><th>Monto</th><th>Referencia</th><th>Estado</th></tr></thead>
+            <tbody>{data.payouts.map(payout=><tr key={payout.id}>
+              <td>{new Date(payout.paid_at||payout.created_at).toLocaleDateString("es-AR")}</td>
+              <td>{Number(payout.sales_count||0)} venta{Number(payout.sales_count||0)===1?"":"s"}</td>
+              <td>{payout.period_from&&payout.period_to?`${new Date(payout.period_from).toLocaleDateString("es-AR")} → ${new Date(payout.period_to).toLocaleDateString("es-AR")}`:"—"}</td>
+              <td><strong>{money(payout.amount_minor)}</strong></td>
+              <td>{payout.provider_reference||payout.notes||"—"}</td>
+              <td><span className={`thi-aff-sale-status ${payout.status}`}>{payout.status==="paid"?"Liquidado":"Cancelado"}</span></td>
+            </tr>)}</tbody>
+          </table></div>
+        )}
+      </section>
       <footer className="thi-aff-public-footer"><strong>TE HICE ESTO</strong><span>Programa de afiliados · datos actualizados automáticamente</span></footer>
     </main>
   );
