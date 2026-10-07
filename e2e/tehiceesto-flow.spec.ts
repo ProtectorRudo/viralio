@@ -1425,6 +1425,45 @@ test("affiliate referral stores attribution and returns to Te Hice Esto",async({
   expect(cookies.find(cookie=>cookie.name==="thi_affiliate_token")?.value).toBe("affiliate-token-test-12345678901234567890");
 });
 
+test("admin creates an influencer with a referral link and private dashboard access",async({page})=>{
+  let createPayload:Record<string,unknown>|null=null;
+  let created=false;
+  await page.addInitScript(()=>window.sessionStorage.setItem("thi_admin_session","admin-session-test-token-1234567890"));
+  await page.route("**/functions/v1/affiliate-admin",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="list")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+      affiliates:created?[{id:"22222222-2222-4222-8222-222222222222",slug:"sofia-test",name:"Sofía Test",email:"sofia@example.com",whatsapp:"+5492215550000",status:"active",commission_bps:2000,primary_link_code:"sofia-test",clicks:0,unique_visitors:0,attributed_orders:0,approved_sales:0,revenue_minor:0,commission_earned_minor:0,commission_pending_minor:0,commission_paid_minor:0,clicks_30d:0,visitors_30d:0,sales_30d:0,revenue_30d_minor:0}]:[],
+      totals:{clicks:0,uniqueVisitors:0,orders:0,sales:0,revenueMinor:0,commissionMinor:0,pendingMinor:0,paidMinor:0},
+    })});
+    if(body.action==="create"){
+      createPayload=body;created=true;
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+        affiliate:{id:"22222222-2222-4222-8222-222222222222",slug:"sofia-test",name:"Sofía Test",email:"sofia@example.com"},
+        initialPassword:"TempPass123!",
+        shareUrl:"https://tehiceesto.com/r/sofia-test",
+        dashboardUrl:"https://tehiceesto.com/afiliados/sofia-test",
+      })});
+    }
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/admin/afiliados");
+  await page.getByRole("button",{name:/Nuevo influencer/i}).click();
+  await page.getByPlaceholder("Ej. Sofía López").fill("Sofía Test");
+  await page.getByPlaceholder("sofia").fill("sofia-test");
+  await page.getByPlaceholder("sofia@email.com").fill("sofia@example.com");
+  await page.getByPlaceholder("+54 9 ...").fill("+5492215550000");
+  await page.getByRole("button",{name:/Crear influencer/i}).click();
+  await expect.poll(()=>Boolean(createPayload)).toBe(true);
+  const recordedCreate=createPayload as Record<string,unknown>;
+  expect(recordedCreate.slug).toBe("sofia-test");
+  expect(recordedCreate.commissionBps).toBe(2000);
+  await expect(page.getByText("https://tehiceesto.com/r/sofia-test",{exact:true})).toBeVisible();
+  await expect(page.getByText("https://tehiceesto.com/afiliados/sofia-test",{exact:true})).toBeVisible();
+  await expect(page.getByText("TempPass123!",{exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
 test("affiliate dashboard shows the same settlement ledger as the admin",async({page})=>{
   const days=Array.from({length:30},(_,index)=>({
     date:new Date(Date.UTC(2026,9,index+1)).toISOString().slice(0,10),clicks:index===29?4:0,uniqueVisitors:index===29?3:0,sales:0,revenueMinor:0,
