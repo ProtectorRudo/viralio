@@ -119,14 +119,14 @@ export default function StudioVisualTextEditor({
     >
       <span>{enabled?"✓":"Aa"}</span>
       <div>
-        <small>{count?count+" textos cambiados":"OPCIONAL"}</small>
-        <strong>{enabled?"Tocá una frase":"Cambiar cualquier texto"}</strong>
+        <small>{enabled?"MODO EDICIÓN":count?count+" textos cambiados":"OPCIONAL"}</small>
+        <strong>{enabled?"Salir de editar textos":"Cambiar un texto tocándolo"}</strong>
       </div>
     </button>
 
     {enabled&&!selection&&<div className="studio-copy-hint">
-      <strong>Ahora tocá cualquier frase del regalo.</strong>
-      <p>Cuando quieras seguir recorriendo la experiencia, salí del modo edición.</p>
+      <strong>Tocá la frase que querés cambiar.</strong>
+      <p>Cuando termines, tocá “Salir de editar textos” para seguir recorriendo el regalo.</p>
     </div>}
 
     {selection&&<div className="studio-copy-sheet">
