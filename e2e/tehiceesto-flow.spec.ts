@@ -1432,8 +1432,8 @@ test("admin creates an influencer with a referral link and private dashboard acc
   await page.route("**/functions/v1/affiliate-admin",async route=>{
     const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
     if(body.action==="list")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
-      affiliates:created?[{id:"22222222-2222-4222-8222-222222222222",slug:"sofia-test",name:"Sofía Test",email:"sofia@example.com",whatsapp:"+5492215550000",status:"active",commission_bps:2000,primary_link_code:"sofia-test",clicks:0,unique_visitors:0,attributed_orders:0,approved_sales:0,revenue_minor:0,commission_earned_minor:0,commission_pending_minor:0,commission_paid_minor:0,clicks_30d:0,visitors_30d:0,sales_30d:0,revenue_30d_minor:0}]:[],
-      totals:{clicks:0,uniqueVisitors:0,orders:0,sales:0,revenueMinor:0,commissionMinor:0,pendingMinor:0,paidMinor:0},
+      affiliates:created?[{id:"22222222-2222-4222-8222-222222222222",slug:"sofia-test",name:"Sofía Test",email:"sofia@example.com",whatsapp:"+5492215550000",status:"active",commission_bps:2000,primary_link_code:"sofia-test",clicks:0,unique_visitors:0,attributed_orders:0,approved_sales:0,revenue_minor:0,commission_earned_minor:0,commission_pending_minor:0,commission_available_minor:0,commission_paid_minor:0,commission_reversed_after_payout_minor:0,clicks_30d:0,visitors_30d:0,sales_30d:0,revenue_30d_minor:0}]:[],
+      totals:{clicks:0,uniqueVisitors:0,orders:0,sales:0,revenueMinor:0,commissionMinor:0,pendingMinor:0,availableMinor:0,paidMinor:0},
     })});
     if(body.action==="create"){
       createPayload=body;created=true;
@@ -1473,7 +1473,7 @@ test("affiliate dashboard shows the same settlement ledger as the admin",async({
     if(body.action==="login")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({token:"affiliate-session-test-token-1234567890"})});
     if(body.action==="dashboard")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
       affiliate:{slug:"sofia",name:"Sofía Test",email:"sofia@example.com",commissionBps:2000,status:"active"},
-      stats:{clicks:4,unique_visitors:3,approved_sales:2,revenue_minor:5000000,commission_earned_minor:1000000,commission_pending_minor:400000,commission_paid_minor:600000},
+      stats:{clicks:4,unique_visitors:3,approved_sales:2,revenue_minor:5000000,commission_earned_minor:1000000,commission_pending_minor:400000,commission_available_minor:400000,commission_paid_minor:600000,commission_reversed_after_payout_minor:0},
       links:[{id:"link-1",code:"sofia",label:"Principal",status:"active"}],
       series:days,sources:{instagram:{clicks:4,sales:2}},
       recentSales:[{id:"sale-1",date:"2026-10-06T18:00:00Z",experienceSlug:"pareja",saleAmountMinor:2500000,commissionAmountMinor:500000,status:"paid"}],
@@ -1505,7 +1505,7 @@ test("admin affiliate panel can settle only the oldest pending sales and preserv
     const affiliate={
       id:"11111111-1111-4111-8111-111111111111",slug:"sofia",name:"Sofía Test",email:"sofia@example.com",whatsapp:null,status:"active",
       commission_bps:2000,primary_link_code:"sofia",clicks:20,unique_visitors:15,attributed_orders:5,approved_sales:5,revenue_minor:7500000,
-      commission_earned_minor:1500000,commission_pending_minor:settled?300000:900000,commission_paid_minor:settled?1200000:600000,
+      commission_earned_minor:1500000,commission_pending_minor:settled?300000:900000,commission_available_minor:settled?300000:900000,commission_paid_minor:settled?1200000:600000,commission_reversed_after_payout_minor:0,
       clicks_30d:20,visitors_30d:15,sales_30d:5,revenue_30d_minor:7500000,
     };
     const baseCommission=(id:string,date:string,status:string,payoutId:string|null)=>({
@@ -1525,7 +1525,7 @@ test("admin affiliate panel can settle only the oldest pending sales and preserv
       ...(settled?[{id:"pay-2",amount_minor:600000,status:"paid",paid_at:"2026-10-07T20:00:00Z",created_at:"2026-10-07T20:00:00Z",provider_reference:"TRX-002",notes:"Pago hasta venta 2",period_from:"2026-10-07T10:00:00Z",period_to:"2026-10-07T11:00:00Z",sales_count:2}]:[]),
     ];
     if(body.action==="list")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
-      affiliates:[affiliate],totals:{clicks:20,uniqueVisitors:15,orders:5,sales:5,revenueMinor:7500000,commissionMinor:1500000,pendingMinor:settled?300000:900000,paidMinor:settled?1200000:600000},
+      affiliates:[affiliate],totals:{clicks:20,uniqueVisitors:15,orders:5,sales:5,revenueMinor:7500000,commissionMinor:1500000,pendingMinor:settled?300000:900000,availableMinor:settled?300000:900000,paidMinor:settled?1200000:600000},
     })});
     if(body.action==="detail")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({affiliate,links:[{id:"link-1",code:"sofia",label:"Principal",status:"active"}],commissions,payouts,series:[]})});
     if(body.action==="payout"){payoutPayload=body;settled=true;return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,payout:{payoutId:"pay-2",amountMinor:600000,salesCount:2}})});}
@@ -1554,6 +1554,27 @@ test("admin affiliate panel can settle only the oldest pending sales and preserv
   await expect(countInput).toHaveValue("1");
   await expect(page.getByText("TRX-002",{exact:true})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+test("affiliate panels show refund adjustments without allowing an overpayment",async({page})=>{
+  await page.addInitScript(()=>window.sessionStorage.setItem("thi_admin_session","admin-session-test-token-1234567890"));
+  await page.route("**/functions/v1/affiliate-admin",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    const affiliate={
+      id:"33333333-3333-4333-8333-333333333333",slug:"refund-test",name:"Refund Test",email:"refund@example.com",whatsapp:null,status:"active",commission_bps:2000,primary_link_code:"refund-test",
+      clicks:6,unique_visitors:5,attributed_orders:3,approved_sales:2,revenue_minor:5000000,commission_earned_minor:1000000,commission_pending_minor:500000,commission_available_minor:0,commission_paid_minor:1000000,commission_reversed_after_payout_minor:500000,
+      clicks_30d:6,visitors_30d:5,sales_30d:2,revenue_30d_minor:5000000,
+    };
+    const commissions=[{id:"pending-1",order_id:"order-pending",gross_amount_minor:2500000,commission_amount_minor:500000,status:"pending",approved_at:"2026-10-07T18:00:00Z",created_at:"2026-10-07T18:00:00Z",payout_id:null,paid_at:null,reversed_at:null}];
+    if(body.action==="list")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({affiliates:[affiliate],totals:{clicks:6,uniqueVisitors:5,orders:3,sales:2,revenueMinor:5000000,commissionMinor:1000000,pendingMinor:500000,availableMinor:0,paidMinor:1000000}})});
+    if(body.action==="detail")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({affiliate,links:[{id:"l1",code:"refund-test",label:"Principal",status:"active"}],commissions,payouts:[{id:"p1",amount_minor:1000000,status:"paid",paid_at:"2026-10-07T17:00:00Z",created_at:"2026-10-07T17:00:00Z",provider_reference:"TRX-R",notes:"Pago anterior",period_from:"2026-10-05T10:00:00Z",period_to:"2026-10-06T10:00:00Z",sales_count:2}],series:[]})});
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+  });
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/admin/afiliados");
+  await page.getByText("Refund Test",{exact:true}).click();
+  await expect(page.getByText("Saldo retenido por ajuste",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Sin saldo pendiente/i})).toBeDisabled();
+  await expect(page.getByText(/devoluciones ya descontadas/i)).toBeVisible();
 });
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
   const response=await request.get("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1");
