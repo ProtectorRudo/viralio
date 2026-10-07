@@ -1260,7 +1260,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.getByRole("button",{name:/Ver vista previa/i}).click();
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
-  const copyTool=page.getByRole("button",{name:/Editar textos de esta parte/i});
+  const copyTool=page.getByRole("button",{name:/Editar textos/i});
   await expect(copyTool).toBeVisible();
   await copyTool.click();
   await expect(page.getByText(/Cuando guardes el cambio, el recorrido se habilita solo/i)).toBeVisible();
@@ -1451,7 +1451,7 @@ test("admin creates an influencer with a referral link and private dashboard acc
   await page.goto("/tehiceesto/admin/afiliados");
   await page.getByRole("button",{name:/Nuevo influencer/i}).click();
   await page.getByPlaceholder("Ej. Sofía López").fill("Sofía Test");
-  await page.getByPlaceholder("sofia").fill("sofia-test");
+  await page.getByPlaceholder("sofia",{exact:true}).fill("sofia-test");
   await page.getByPlaceholder("sofia@email.com").fill("sofia@example.com");
   await page.getByPlaceholder("+54 9 ...").fill("+5492215550000");
   await page.getByRole("button",{name:/Crear influencer/i}).click();
