@@ -989,34 +989,17 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
 });
 
 
-test("studio recovery asks only for purchase email",async({page})=>{
+test("studio recovery sends a private email link instead of granting access from a known email",async({page})=>{
   const code="1111222233334444aa";
-  const recoveredToken="e".repeat(64);
-  let recovered=false;
+  let requested=false;
 
-  await page.route("**/functions/v1/creator-api",async route=>{
+  await page.route("**/functions/v1/gift-account",async route=>{
     const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
-    if(body.action==="recoverStudioAccess"){
-      expect(body.code).toBe(code);
-      expect(body.email).toBe("cliente@ejemplo.com");
-      expect(body.whatsapp).toBeUndefined();
-      recovered=true;
-      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,editorToken:recoveredToken})});
-    }
-    if(body.action==="openStudio"){
-      expect(body.editorToken).toBe(recoveredToken);
-      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
-        gift:{
-          public_code:code,status:"paid",template_version:"live",experience_slug:"pareja",
-          giver_name:"Mauro",recipient_name:"Ailín",occasion:null,feeling:"Emoción",
-          opening_text:null,letter_text:null,closing_text:null,music_url:null,
-          scene_recipe:["intro","door","stars","scratch","hold","letter","finale"],
-          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
-        },
-        order:{status:"approved",amount_minor:2500000,currency:"ARS"},media:[],
-      })});
-    }
-    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected"})});
+    expect(body.action).toBe("requestLink");
+    expect(body.code).toBe(code);
+    expect(body.email).toBe("cliente@ejemplo.com");
+    requested=true;
+    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true})});
   });
 
   await page.setViewportSize({width:390,height:844});
@@ -1026,12 +1009,13 @@ test("studio recovery asks only for purchase email",async({page})=>{
   await expect(page.locator('input[type="email"]')).toHaveCount(1);
   await expect(page.locator('input[type="tel"]')).toHaveCount(0);
   await expect(page.getByText(/teléfono ni contraseña/i)).toBeVisible();
+  await expect(page.getByText(/no damos acceso sólo con conocer el email/i)).toBeVisible();
 
   await page.locator('input[type="email"]').fill("cliente@ejemplo.com");
-  await page.getByRole("button",{name:/Entrar a mi regalo/i}).click();
-  await expect.poll(()=>recovered).toBe(true);
-  await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto/i})).toBeVisible();
-  expect(await page.evaluate(code=>localStorage.getItem(`thi_editor_access:${code}`),code)).toBe(recoveredToken);
+  await page.getByRole("button",{name:/Mandarme el acceso/i}).click();
+  await expect.poll(()=>requested).toBe(true);
+  await expect(page.getByText(/Revisá tu email/i)).toBeVisible();
+  await expect(page.getByRole("button",{name:/Reenviar acceso/i})).toBeVisible();
 });
 
 test("my gifts shows a chooser when this device has multiple purchases",async({page})=>{
