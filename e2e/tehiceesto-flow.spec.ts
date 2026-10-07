@@ -1117,8 +1117,8 @@ test("customer studio makes media replace and remove obvious",async({page})=>{
   await expect.poll(()=>replaced).toBe(true);
   await expect(page.getByText(/lo cambiamos sin mover nada/i)).toBeVisible();
 
+  page.once("dialog",dialog=>dialog.accept());
   await photo.getByRole("button",{name:"Quitar"}).click();
-  await page.getByRole("button",{name:"Aceptar"}).click().catch(()=>{});
   await expect(page.locator(".studio-photo-grid article")).toHaveCount(0);
 
   await page.getByRole("button",{name:/Continuar/i}).click();
