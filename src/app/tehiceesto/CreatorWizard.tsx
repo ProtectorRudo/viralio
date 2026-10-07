@@ -16,6 +16,7 @@ type OrderResult = {
   currency: string;
   checkoutUrl: string | null;
   checkoutReady: boolean;
+  editorToken?: string;
 };
 
 const INITIAL_CONTACT = {
@@ -138,6 +139,9 @@ export default function CreatorWizard() {
       }
 
       setOrderCode(data.code);
+      if (data.editorToken) {
+        window.localStorage.setItem(`thi_editor_access:${data.code}`, data.editorToken);
+      }
 
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -185,14 +189,14 @@ export default function CreatorWizard() {
               <span className="eyebrow">01 · Elegí la experiencia</span>
               <h1>Elegí la que más se parece a <em>esa persona.</em></h1>
               <p>
-                No comprás una plantilla para completar. Elegís una dirección creativa y,
-                después del pago, nosotros transformamos tus fotos, audios y recuerdos en una
-                experiencia hecha para esa persona.
+                Elegís el mundo que más se parece a esa persona. Después del pago,
+                una guía simple te acompaña para cargar fotos, audios y palabras sin tocar
+                el diseño, los efectos ni las animaciones.
               </p>
               <div className="order-step-trust" aria-label="Cómo trabajamos">
                 <span><b>01</b> Elegís el mundo</span>
-                <span><b>02</b> Nos contás la historia</span>
-                <span><b>03</b> Nosotros la diseñamos</span>
+                <span><b>02</b> Pagás de forma segura</span>
+                <span><b>03</b> La hacés tuya, paso a paso</span>
               </div>
             </header>
 
@@ -273,10 +277,10 @@ export default function CreatorWizard() {
             <header className="order-step-head compact">
               <button className="order-back" type="button" onClick={() => setStep(0)}>← Cambiar experiencia</button>
               <span className="eyebrow">02 · Tus datos</span>
-              <h1>Nosotros hacemos el resto.</h1>
+              <h1>Dos datos y ya está.</h1>
               <p>
-                Estos datos se usan únicamente para gestionar tu pedido y contactarte
-                después del pago para pedirte fotos, audios, textos y detalles.
+                Los usamos para guardar tu compra y para que puedas recuperar la edición
+                desde otro dispositivo si alguna vez la necesitás.
               </p>
             </header>
 
@@ -311,7 +315,7 @@ export default function CreatorWizard() {
                   placeholder="Ej. +54 9 221 ..."
                   required
                 />
-                <small>Por acá coordinamos la creación después del pago.</small>
+                <small>También sirve para recuperar tu acceso si cambiás de celular.</small>
               </label>
 
               <label>
@@ -351,10 +355,11 @@ export default function CreatorWizard() {
             <header className="order-step-head compact">
               <button className="order-back" type="button" onClick={() => setStep(1)}>← Editar datos</button>
               <span className="eyebrow">03 · Confirmar y pagar</span>
-              <h1>Tu experiencia empieza acá.</h1>
+              <h1>Pagás. Y empezás a crear.</h1>
               <p>
-                Después del pago nos ponemos en contacto con vos. Recién ahí te pedimos
-                todo lo necesario para crear una versión realmente personal.
+                Cuando Mercado Pago confirme la compra, entrás a un estudio guiado:
+                subís tus recuerdos, cambiás las palabras, ocultás lo que no quieras y
+                ves el resultado antes de compartirlo.
               </p>
             </header>
 
@@ -422,9 +427,9 @@ export default function CreatorWizard() {
 
               <div className="order-after-payment">
                 <article><span>01</span><p>Elegís y pagás.</p></article>
-                <article><span>02</span><p>Te escribimos nosotros.</p></article>
-                <article><span>03</span><p>Nos pasás recuerdos y detalles.</p></article>
-                <article><span>04</span><p>Diseñamos y entregamos el link privado.</p></article>
+                <article><span>02</span><p>Se habilita tu estudio privado.</p></article>
+                <article><span>03</span><p>Subís fotos, audios y tus palabras.</p></article>
+                <article><span>04</span><p>Publicás y recibís tu link al instante.</p></article>
               </div>
             </div>
           </div>
