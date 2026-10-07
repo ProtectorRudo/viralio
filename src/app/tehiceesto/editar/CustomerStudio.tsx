@@ -228,6 +228,8 @@ export default function CustomerStudio({code}:{code:string}){
   const fileInputRef=useRef<HTMLInputElement|null>(null);
   const audioInputRef=useRef<HTMLInputElement|null>(null);
   const videoInputRef=useRef<HTMLInputElement|null>(null);
+  const replaceInputRef=useRef<HTMLInputElement|null>(null);
+  const [replaceTarget,setReplaceTarget]=useState<StudioMedia|null>(null);
 
   const loadStudio=useCallback(async(token:string)=>{
     setLoading(true);setMessage("");
@@ -331,6 +333,40 @@ export default function CustomerStudio({code}:{code:string}){
         ?"Llegaste al máximo de archivos de esta experiencia."
         :"Uno de los archivos no pudo subirse. Probá con otro.");
     }finally{setUploading([])}
+  }
+
+  async function replaceMediaFile(files:FileList|null){
+    const file=files?.[0];
+    const target=replaceTarget;
+    if(!file||!target||!editorToken)return;
+    setUploading([file.name]);setMessage("");
+    try{
+      const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
+        code,editorToken,fileName:file.name,mimeType:file.type,size:file.size,
+      });
+      if(prepared.kind!==target.kind){
+        setMessage(target.kind==="image"?"Elegí una imagen.":target.kind==="audio"?"Elegí un audio.":"Elegí un video.");
+        return;
+      }
+      await uploadCreatorFile(prepared.path,prepared.token,file);
+      await creatorCall("replaceStudioMedia",{
+        code,editorToken,mediaId:target.id,storagePath:prepared.path,kind:prepared.kind,
+        originalName:file.name,mimeType:file.type,size:file.size,
+      });
+      await loadStudio(editorToken);
+      setMessage("Listo, lo cambiamos sin mover nada ✓");
+    }catch{
+      setMessage("No pudimos reemplazar ese archivo. Probá con otro.");
+    }finally{
+      setUploading([]);
+      setReplaceTarget(null);
+      if(replaceInputRef.current)replaceInputRef.current.value="";
+    }
+  }
+
+  function chooseReplacement(item:StudioMedia){
+    setReplaceTarget(item);
+    window.setTimeout(()=>replaceInputRef.current?.click(),0);
   }
 
   async function updateMedia(item:StudioMedia,patch:Record<string,unknown>){
@@ -525,11 +561,19 @@ export default function CustomerStudio({code}:{code:string}){
             <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>←</button>
             <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>→</button>
             <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar":"Ver completa"}</button>
+            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
         {videos.length===0&&<button className="studio-extra-upload" type="button" onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>}
         <input ref={videoInputRef} hidden type="file" accept="video/mp4,video/webm,video/quicktime" onChange={event=>uploadFiles(event.target.files,"video")}/>
+        <input
+          ref={replaceInputRef}
+          hidden
+          type="file"
+          accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,.m4a,.mp3,.wav":"video/mp4,video/webm,video/quicktime"}
+          onChange={event=>replaceMediaFile(event.target.files)}
+        />
       </div>}
 
       {step===2&&<div className="studio-panel">
@@ -542,7 +586,10 @@ export default function CustomerStudio({code}:{code:string}){
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
           <label className="studio-audio-role"><span>Este audio es…</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Un mensaje de voz</option><option value="soundtrack">Música de fondo</option></select></label>
-          <button type="button" className="studio-remove" onClick={()=>deleteMedia(item)}>Quitar</button>
+          <div className="studio-audio-actions">
+            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
+            <button type="button" className="studio-remove" onClick={()=>deleteMedia(item)}>Quitar</button>
+          </div>
         </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>La experiencia funciona igual sin ellos. Si tenés uno, acá puede convertirse en uno de los momentos más fuertes.</p></div>}
       </div>}
 
