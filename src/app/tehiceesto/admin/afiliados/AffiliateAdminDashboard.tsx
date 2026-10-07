@@ -10,11 +10,12 @@ type AffiliateRow={
   id:string;slug:string;name:string;email:string;whatsapp:string|null;status:"active"|"paused";
   commission_bps:number;primary_link_code:string|null;clicks:number;unique_visitors:number;
   attributed_orders:number;approved_sales:number;revenue_minor:number;
-  commission_earned_minor:number;commission_pending_minor:number;commission_paid_minor:number;
+  commission_earned_minor:number;commission_pending_minor:number;commission_available_minor:number;commission_paid_minor:number;
+  commission_reversed_after_payout_minor:number;
   clicks_30d:number;visitors_30d:number;sales_30d:number;revenue_30d_minor:number;
 };
 
-type Totals={clicks:number;uniqueVisitors:number;orders:number;sales:number;revenueMinor:number;commissionMinor:number;pendingMinor:number;paidMinor:number};
+type Totals={clicks:number;uniqueVisitors:number;orders:number;sales:number;revenueMinor:number;commissionMinor:number;pendingMinor:number;availableMinor:number;paidMinor:number};
 
 type Detail={
   affiliate:AffiliateRow;
@@ -26,11 +27,24 @@ type Detail={
 
 const money=(minor:number)=>new Intl.NumberFormat("es-AR",{style:"currency",currency:"ARS",maximumFractionDigits:0}).format((Number(minor)||0)/100);
 const pct=(value:number)=>`${(Number(value||0)*100).toFixed(1).replace(".",",")}%`;
+function payableCountFor(detail:Detail){
+  let available=Number(detail.affiliate.commission_available_minor||0);
+  let count=0;
+  const pending=[...detail.commissions]
+    .filter(item=>item.status==="pending")
+    .sort((a,b)=>new Date(a.approved_at||a.created_at).getTime()-new Date(b.approved_at||b.created_at).getTime());
+  for(const item of pending){
+    const amount=Number(item.commission_amount_minor||0);
+    if(amount<=0||amount>available)break;
+    available-=amount;count++;
+  }
+  return count;
+}
 
 export default function AffiliateAdminDashboard(){
   const [ready,setReady]=useState(false);
   const [rows,setRows]=useState<AffiliateRow[]>([]);
-  const [totals,setTotals]=useState<Totals>({clicks:0,uniqueVisitors:0,orders:0,sales:0,revenueMinor:0,commissionMinor:0,pendingMinor:0,paidMinor:0});
+  const [totals,setTotals]=useState<Totals>({clicks:0,uniqueVisitors:0,orders:0,sales:0,revenueMinor:0,commissionMinor:0,pendingMinor:0,availableMinor:0,paidMinor:0});
   const [loading,setLoading]=useState(false);
   const [showCreate,setShowCreate]=useState(false);
   const [detail,setDetail]=useState<Detail|null>(null);
@@ -96,7 +110,7 @@ export default function AffiliateAdminDashboard(){
     try{
       const next=await affiliateAdminCall<Detail>("detail",{id});
       setDetail(next);
-      setPayoutCount(String(next.commissions.filter(item=>item.status==="pending").length||""));
+      setPayoutCount(String(payableCountFor(next)||""));
     }finally{setLoading(false);}
   }
 
@@ -134,14 +148,18 @@ export default function AffiliateAdminDashboard(){
       setMessage(`Pago liquidado registrado por ${money(selectedPayoutAmount)} ✓`);
       const next=await affiliateAdminCall<Detail>("detail",{id:detail.affiliate.id});
       setDetail(next);
-      setPayoutCount(String(next.commissions.filter(item=>item.status==="pending").length||""));
+      setPayoutCount(String(payableCountFor(next)||""));
       await load(true);
     }catch(error){
       setMessage(error instanceof Error&&error.message==="nothing_to_pay"
         ?"No hay comisiones pendientes para liquidar."
-        :error instanceof Error&&error.message==="invalid_commission_count"
-          ?"Revisá cuántas ventas querés incluir."
-          :"No se pudo registrar la liquidación.");
+        :error instanceof Error&&error.message==="no_available_balance"
+          ?"Hay ventas pendientes, pero hoy no existe saldo neto disponible para liquidar por ajustes de devoluciones."
+          :error instanceof Error&&error.message==="payout_exceeds_available_balance"
+            ?"Ese corte supera el saldo neto disponible. Elegí menos ventas."
+            :error instanceof Error&&error.message==="invalid_commission_count"
+              ?"Revisá cuántas ventas querés incluir."
+              :"No se pudo registrar la liquidación.");
     }finally{setPayoutBusy(false);}
   }
 
@@ -149,11 +167,13 @@ export default function AffiliateAdminDashboard(){
     .filter(item=>item.status==="pending")
     .sort((a,b)=>new Date(a.approved_at||a.created_at).getTime()-new Date(b.approved_at||b.created_at).getTime());
   const requestedPayoutCount=Number(payoutCount);
-  const selectedPayoutCount=pendingCommissions.length
-    ?Math.min(pendingCommissions.length,Math.max(1,Number.isFinite(requestedPayoutCount)&&requestedPayoutCount>0?Math.floor(requestedPayoutCount):pendingCommissions.length))
+  const maxPayableCount=detail?payableCountFor(detail):0;
+  const selectedPayoutCount=maxPayableCount
+    ?Math.min(maxPayableCount,Math.max(1,Number.isFinite(requestedPayoutCount)&&requestedPayoutCount>0?Math.floor(requestedPayoutCount):maxPayableCount))
     :0;
   const selectedPayoutAmount=pendingCommissions.slice(0,selectedPayoutCount).reduce((sum,item)=>sum+Number(item.commission_amount_minor||0),0);
   const remainingPayoutCount=Math.max(0,pendingCommissions.length-selectedPayoutCount);
+  const hasRefundAdjustment=Boolean(detail&&Number(detail.affiliate.commission_pending_minor||0)>Number(detail.affiliate.commission_available_minor||0));
   const conversion=useMemo(()=>totals.uniqueVisitors?totals.sales/totals.uniqueVisitors:0,[totals]);
 
   if(!ready)return <main className="thi-aff-admin-shell"><div className="thi-admin-loading">Cargando afiliados…</div></main>;
@@ -187,7 +207,7 @@ export default function AffiliateAdminDashboard(){
         <article><span>VISITAS</span><strong>{totals.uniqueVisitors.toLocaleString("es-AR")}</strong><small>{totals.clicks.toLocaleString("es-AR")} clics</small></article>
         <article><span>VENTAS</span><strong>{totals.sales}</strong><small>{pct(conversion)} conversión</small></article>
         <article className="accent"><span>FACTURACIÓN</span><strong>{money(totals.revenueMinor)}</strong><small>atribuida a influencers</small></article>
-        <article><span>COMISIONES</span><strong>{money(totals.commissionMinor)}</strong><small>{money(totals.pendingMinor)} pendientes · {money(totals.paidMinor)} liquidados</small></article>
+        <article><span>COMISIONES</span><strong>{money(totals.commissionMinor)}</strong><small>{money(totals.availableMinor)} a liquidar · {money(totals.paidMinor)} liquidados</small></article>
       </section>
 
       {created&&(
@@ -222,7 +242,7 @@ export default function AffiliateAdminDashboard(){
         <div className="thi-aff-section-head"><div><p className="thi-kicker">Rendimiento</p><h2>Todos los influencers</h2></div><button className="thi-ghost" onClick={()=>load()}>{loading?"Actualizando…":"Actualizar"}</button></div>
         {rows.length===0?<div className="thi-admin-empty"><strong>Todavía no hay influencers.</strong><p>Creá el primero y su actividad aparecerá acá en vivo.</p></div>:(
           <div className="thi-aff-table-wrap"><table className="thi-aff-table">
-            <thead><tr><th>Influencer</th><th>Visitas</th><th>Ventas</th><th>Conv.</th><th>Facturación</th><th>Comisión</th><th>Pendiente</th><th>Liquidado</th><th>Estado</th></tr></thead>
+            <thead><tr><th>Influencer</th><th>Visitas</th><th>Ventas</th><th>Conv.</th><th>Facturación</th><th>Comisión</th><th>A liquidar</th><th>Liquidado</th><th>Estado</th></tr></thead>
             <tbody>{rows.map((row)=>(
               <tr key={row.id} onClick={()=>openDetail(row.id)}>
                 <td><strong>{row.name}</strong><small>/r/{row.primary_link_code||row.slug}</small></td>
@@ -231,7 +251,7 @@ export default function AffiliateAdminDashboard(){
                 <td>{pct(Number(row.unique_visitors)?Number(row.approved_sales)/Number(row.unique_visitors):0)}</td>
                 <td>{money(Number(row.revenue_minor||0))}</td>
                 <td>{money(Number(row.commission_earned_minor||0))}</td>
-                <td>{money(Number(row.commission_pending_minor||0))}</td>
+                <td>{money(Number(row.commission_available_minor||0))}</td>
                 <td>{money(Number(row.commission_paid_minor||0))}</td>
                 <td><span className={`thi-aff-status ${row.status}`}>{row.status==="active"?"Activo":"Pausado"}</span></td>
               </tr>
@@ -249,7 +269,7 @@ export default function AffiliateAdminDashboard(){
           <div className="thi-aff-detail-stats">
             <article><span>VENTAS</span><strong>{detail.affiliate.approved_sales}</strong></article>
             <article><span>FACTURACIÓN</span><strong>{money(detail.affiliate.revenue_minor)}</strong></article>
-            <article><span>PENDIENTE</span><strong>{money(detail.affiliate.commission_pending_minor)}</strong></article>
+            <article><span>A LIQUIDAR</span><strong>{money(detail.affiliate.commission_available_minor)}</strong></article>
             <article><span>PAGADO</span><strong>{money(detail.affiliate.commission_paid_minor)}</strong></article>
           </div>
           <div className="thi-aff-manage">
@@ -265,15 +285,15 @@ export default function AffiliateAdminDashboard(){
             <div className="thi-aff-settlement-copy">
               <p className="thi-kicker">Liquidación manual</p>
               <h3>Marcar comisión como pagada</h3>
-              <p>No mueve dinero. Cuando vos le pagues por transferencia u otro medio, registralo acá. Las ventas incluidas pasan a “liquidadas” y las nuevas vuelven a acumularse desde cero.</p>
+              <p>No mueve dinero. Cuando vos le pagues por transferencia u otro medio, registralo acá. Se liquidan primero las ventas más antiguas. Si hubo una devolución después de un pago, el sistema descuenta ese ajuste antes de permitir otra liquidación.</p>
             </div>
             <div className="thi-aff-settlement-form">
-              <label><span>Ventas a incluir</span><input type="number" min="1" max={pendingCommissions.length||1} step="1" value={payoutCount} onChange={event=>setPayoutCount(event.target.value)} placeholder={pendingCommissions.length?String(pendingCommissions.length):"0"}/></label>
+              <label><span>Ventas a incluir</span><input type="number" min="1" max={maxPayableCount||1} step="1" value={payoutCount} onChange={event=>setPayoutCount(event.target.value)} placeholder={maxPayableCount?String(maxPayableCount):"0"}/></label>
               <label><span>Referencia <em>opcional</em></span><input value={payoutReference} onChange={event=>setPayoutReference(event.target.value)} placeholder="Ej. transferencia 07/10"/></label>
               <label><span>Nota <em>opcional</em></span><input value={payoutNotes} onChange={event=>setPayoutNotes(event.target.value)} placeholder="Ej. liquidación quincenal"/></label>
               <div className="thi-aff-settlement-summary" aria-live="polite">
-                <strong>{selectedPayoutCount?`${selectedPayoutCount} venta${selectedPayoutCount===1?"":"s"} · ${money(selectedPayoutAmount)}`:"Sin saldo pendiente"}</strong>
-                <span>{selectedPayoutCount?(remainingPayoutCount?`Después quedarán ${remainingPayoutCount} venta${remainingPayoutCount===1?"":"s"} pendientes.`:"Esta liquidación deja el saldo pendiente en cero."):"Las nuevas ventas volverán a acumularse acá."}</span>
+                <strong>{selectedPayoutCount?`${selectedPayoutCount} venta${selectedPayoutCount===1?"":"s"} · ${money(selectedPayoutAmount)}`:hasRefundAdjustment?"Saldo retenido por ajuste":"Sin saldo pendiente"}</strong>
+                <span>{selectedPayoutCount?(remainingPayoutCount?`Después quedarán ${remainingPayoutCount} venta${remainingPayoutCount===1?"":"s"} pendientes.`:"Esta liquidación deja el saldo pendiente en cero."):hasRefundAdjustment?`Hay ${money(Number(detail?.affiliate.commission_pending_minor||0))} pendientes en ventas, pero ${money(Number(detail?.affiliate.commission_available_minor||0))} disponibles hoy por devoluciones ya descontadas.`:"Las nuevas ventas volverán a acumularse acá."}</span>
               </div>
               <button className="thi-primary thi-aff-settle-button" disabled={!selectedPayoutCount||!selectedPayoutAmount||payoutBusy} onClick={payout}>
                 {payoutBusy?"Registrando…":selectedPayoutCount?`Pago liquidado · ${money(selectedPayoutAmount)}`:"Sin saldo pendiente"}
