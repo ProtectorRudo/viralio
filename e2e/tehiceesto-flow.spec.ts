@@ -1195,6 +1195,8 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.goto(`/tehiceesto/editar/${code}`);
 
   await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto\?/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Mis regalos/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Mis regalos/i})).toHaveAttribute("href","/tehiceesto/mis-regalos");
   await expect(page.getByText(/scene_recipe|metadata/i)).toHaveCount(0);
   mkdirSync("visual-qa-evidence",{recursive:true});
   const startShot="visual-qa-evidence/tehiceesto-studio-mobile-start.png";
@@ -1227,6 +1229,16 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await copySheet.getByRole("button",{name:/Guardar y seguir/i}).click();
   await expect(page.getByRole("button",{name:/Editar textos de esta parte/i})).toBeVisible();
   await expect(page.locator(".studio-copy-hint")).toHaveCount(0);
+
+  const previewNav=page.getByRole("navigation",{name:/Navegar por las partes del regalo/i});
+  await expect(previewNav).toBeVisible();
+  await expect(previewNav.getByRole("button",{name:/Anterior/i})).toBeDisabled();
+  await expect(previewNav.getByText(/PARTE 1 DE/i)).toBeVisible();
+  await previewNav.getByRole("button",{name:/Siguiente/i}).click();
+  await expect.poll(()=>sceneName(page)).toBe("door");
+  await expect(previewNav.getByText(/PARTE 2 DE/i)).toBeVisible();
+  await previewNav.getByRole("button",{name:/Anterior/i}).click();
+  await expect.poll(()=>sceneName(page)).toBe("intro");
 
   const visited:string[]=[];
   for(let index=0;index<12;index++){
