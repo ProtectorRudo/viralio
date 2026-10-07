@@ -630,7 +630,7 @@ test("pair finale is a clean premium epilogue with integrated conversion CTA",as
   await expect(reactions.first()).toHaveAttribute("aria-pressed","true");
 
   const create=page.locator('[data-action="create-story"]');
-  await expect(create).toHaveAttribute("href","/tehiceesto/crear");
+  await expect(create).toHaveAttribute("href","/tehiceesto/crear?experiencia=pareja");
   await page.waitForTimeout(3400);
   await expect(create).toBeVisible();
 
@@ -917,6 +917,15 @@ test("premium haptics fire on tactile interactions",async({page})=>{
   await expect.poll(async()=>JSON.stringify(await vibrations())).toContain("7");
 });
 
+
+test("preselected experience skips the chooser and keeps the purchase obvious",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/crear?experiencia=pareja");
+  await expect(page.getByRole("heading",{name:/Tres datos y listo/i})).toBeVisible();
+  await expect(page.getByText("Nuestra historia",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Elegir para mi pareja/i})).toHaveCount(0);
+  await expect(page.getByRole("button",{name:/Revisar y pagar/i})).toBeEnabled();
+});
 
 test("self-serve purchase chooses an experience, captures contact and opens checkout",async({page})=>{
   test.setTimeout(45_000);
