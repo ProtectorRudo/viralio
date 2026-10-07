@@ -57,7 +57,7 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
 export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,previewScene,onSceneChange,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;previewScene?:SceneType;onSceneChange?:(scene:SceneType,index:number,total:number)=>void;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
   const requestedInitialScene=previewScene||initialScene;
   const initialSceneIndex=requestedInitialScene?Math.max(0,experience.recipe.indexOf(requestedInitialScene)):0;
-  const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
+  const [internalSceneIndex,setInternalSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
   const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);
   const [doorOpen,setDoorOpen]=useState(false);const [lightRevealed,setLightRevealed]=useState(false);const [holdRevealed,setHoldRevealed]=useState(false);const [lastStar,setLastStar]=useState<number|null>(null);
@@ -76,16 +76,9 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     if(scene==="light")return (photoMedia||[]).some(item=>mediaBelongsToScene("image",item.scene,"light"));
     return true;
   }):experience.recipe;
+  const controlledSceneIndex=previewScene?scenes.indexOf(previewScene):-1;
+  const sceneIndex=controlledSceneIndex>=0?controlledSceneIndex:internalSceneIndex;
   const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/Math.max(total,1))*100;
-  useEffect(()=>{
-    if(!previewScene)return;
-    const target=scenes.indexOf(previewScene);
-    if(target<0||target===sceneIndex)return;
-    setDirection(target>sceneIndex?"forward":"back");
-    setTransitioning(false);
-    setSceneIndex(target);
-    setRunId(value=>value+1);
-  },[previewScene,sceneIndex,scenes]);
   useEffect(()=>{
     if(current)onSceneChange?.(current,sceneIndex,total);
   },[current,sceneIndex,total,onSceneChange]);
@@ -202,10 +195,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       demoVoiceMessageRef.current=message;setDemoVoiceStatus("playing");duckSoundtrack();synth.speak(utterance);
     }catch{}
   };
-  const restart=()=>{stopDemoVoice();resetAllInteractions();setDirection("back");setTransitioning(false);setSceneIndex(0);setRunId(v=>v+1);haptic([8,22,8])};
+  const commitSceneIndex=(nextIndex:number)=>{const destination=scenes[nextIndex];if(previewScene&&onSceneChange&&destination){onSceneChange(destination,nextIndex,total);return}setInternalSceneIndex(nextIndex)};
+  const restart=()=>{stopDemoVoice();resetAllInteractions();setDirection("back");setTransitioning(false);commitSceneIndex(0);setRunId(v=>v+1);haptic([8,22,8])};
   const playFx=(kind:"chime"|"pop"|"door"|"seal"|"unlock")=>{try{const context=new AudioContext();const oscillator=context.createOscillator();const gain=context.createGain();const now=context.currentTime;oscillator.connect(gain);gain.connect(context.destination);const presets={chime:{type:"sine" as OscillatorType,start:760,end:1180,duration:.34,volume:.035},pop:{type:"triangle" as OscillatorType,start:240,end:72,duration:.12,volume:.05},door:{type:"sine" as OscillatorType,start:95,end:48,duration:.42,volume:.035},seal:{type:"triangle" as OscillatorType,start:330,end:180,duration:.18,volume:.035},unlock:{type:"sine" as OscillatorType,start:420,end:820,duration:.42,volume:.035}};const preset=presets[kind];oscillator.type=preset.type;oscillator.frequency.setValueAtTime(preset.start,now);oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,preset.end),now+preset.duration);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(preset.volume,now+.02);gain.gain.exponentialRampToValueAtTime(.0001,now+preset.duration);oscillator.start(now);oscillator.stop(now+preset.duration+.02);window.setTimeout(()=>void context.close(),Math.ceil((preset.duration+.1)*1000))}catch{}};
 
-  const moveTo=(nextIndex:number,dir:"forward"|"back")=>{if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex)return;stopDemoVoice();const destination=scenes[nextIndex];const commitScene=()=>{resetSceneState(destination);setDirection(dir);setTransitioning(false);setSceneIndex(nextIndex);setRunId(v=>v+1)};haptic(8);if(typeof document!=="undefined"&&typeof window!=="undefined"){const viewDocument=document as Document&{startViewTransition?:(update:()=>void)=>unknown};const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(viewDocument.startViewTransition&&!reduced){viewDocument.startViewTransition(()=>flushSync(commitScene));return}}commitScene()};
+  const moveTo=(nextIndex:number,dir:"forward"|"back")=>{if(nextIndex<0||nextIndex>=total||nextIndex===sceneIndex)return;stopDemoVoice();const destination=scenes[nextIndex];const commitScene=()=>{resetSceneState(destination);setDirection(dir);setTransitioning(false);commitSceneIndex(nextIndex);setRunId(v=>v+1)};haptic(8);if(typeof document!=="undefined"&&typeof window!=="undefined"){const viewDocument=document as Document&{startViewTransition?:(update:()=>void)=>unknown};const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(viewDocument.startViewTransition&&!reduced){viewDocument.startViewTransition(()=>flushSync(commitScene));return}}commitScene()};
   const next=()=>moveTo(Math.min(total-1,sceneIndex+1),"forward");const prev=()=>moveTo(Math.max(0,sceneIndex-1),"back");
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
   const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
