@@ -119,9 +119,11 @@ export default function StudioVisualTextEditor({
     >
       <span>{enabled?"✓":"Aa"}</span>
       <div>
-        <small>{enabled?"TOCÁ UNA FRASE":count?count+" textos cambiados":"OPCIONAL"}</small>
-        <strong>{enabled?"Editando textos":"Editar textos de esta parte"}</strong>
+        <small>{enabled?"MODO EDICIÓN ACTIVO":count?(count===1?"1 TEXTO CAMBIADO":count+" TEXTOS CAMBIADOS"):"PERSONALIZÁ ESTA PARTE"}</small>
+        <strong>{enabled?"Ahora tocá una frase":"Editar textos"}</strong>
+        <p>{enabled?"Elegí dentro del regalo la frase que querés cambiar.":"Tocá acá y después elegí cualquier texto de esta parte para cambiarlo."}</p>
       </div>
+      <b aria-hidden="true">{enabled?"✓":"→"}</b>
     </button>
 
     {enabled&&!selection&&<div className="studio-copy-hint">
