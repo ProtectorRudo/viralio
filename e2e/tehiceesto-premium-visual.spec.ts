@@ -139,7 +139,23 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
 
 
 test("Papa premium release visual contract",async({page},testInfo)=>{
-  test.setTimeout(60_000);
+  test.setTimeout(75_000);
+  await page.addInitScript(()=>{
+    class FakeUtterance{
+      text:string;lang="";rate=1;pitch=1;voice:null=null;
+      onboundary:((event:{charIndex:number})=>void)|null=null;
+      onend:(()=>void)|null=null;onerror:(()=>void)|null=null;
+      constructor(text:string){this.text=text}
+    }
+    const state={current:null as FakeUtterance|null};
+    Object.defineProperty(window,"SpeechSynthesisUtterance",{configurable:true,value:FakeUtterance});
+    Object.defineProperty(window,"speechSynthesis",{configurable:true,value:{
+      getVoices:()=>[],
+      speak:(utterance:FakeUtterance)=>{state.current=utterance},
+      pause:()=>{},resume:()=>{},cancel:()=>{},
+    }});
+    (window as unknown as {__papaSpeech:typeof state}).__papaSpeech=state;
+  });
   await page.emulateMedia({reducedMotion:"no-preference"});
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/papa");
@@ -181,16 +197,36 @@ test("Papa premium release visual contract",async({page},testInfo)=>{
   await page.waitForTimeout(850);
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
-  await capture(page,testInfo,"tehiceesto-papa-release-09-voices-390");
-  await page.locator(".thi-papa-voice-list [data-action='demo-voice']").first().click();
-  await page.locator(".thi-papa-voice-continue").click();
+  await expect(page.locator(".thi-papa-voice-card-v2")).toHaveCount(3);
+  await capture(page,testInfo,"tehiceesto-papa-release-09-voices-idle-390");
+
+  const voiceControls=page.locator(".thi-papa-voice-control");
+  await voiceControls.nth(0).click();
+  await page.evaluate(()=>{const state=(window as unknown as {__papaSpeech:{current:{text:string;onboundary?:((event:{charIndex:number})=>void)|null}}}).__papaSpeech;state.current.onboundary?.({charIndex:Math.floor(state.current.text.length*.45)});});
+  await page.waitForTimeout(350);
+  await capture(page,testInfo,"tehiceesto-papa-release-10-voices-playing-390");
+
+  await voiceControls.nth(0).click();
+  await expect(voiceControls.nth(0)).toHaveAttribute("data-voice-state","paused");
+  await page.waitForTimeout(250);
+  await capture(page,testInfo,"tehiceesto-papa-release-11-voices-paused-390");
+  await voiceControls.nth(0).click();
+  await page.evaluate(()=>{const state=(window as unknown as {__papaSpeech:{current:{onend?:(()=>void)|null}}}).__papaSpeech;state.current.onend?.();});
+
+  for(const i of [1,2]){
+    await voiceControls.nth(i).click();
+    await page.evaluate(()=>{const state=(window as unknown as {__papaSpeech:{current:{onend?:(()=>void)|null}}}).__papaSpeech;state.current.onend?.();});
+  }
+  await expect(page.locator(".thi-papa-voice-final-cta")).toBeEnabled();
+  await capture(page,testInfo,"tehiceesto-papa-release-12-voices-complete-390");
+  await page.locator(".thi-papa-voice-final-cta").click();
   await page.waitForTimeout(850);
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
-  await capture(page,testInfo,"tehiceesto-papa-release-10-letter-closed-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-13-letter-closed-390");
   await page.locator('[data-action="open-letter"]').click();
   await page.waitForTimeout(850);
-  await capture(page,testInfo,"tehiceesto-papa-release-11-letter-open-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-14-letter-open-390");
   await page.locator(".thi-papa-letter [data-action='advance']").click();
   await page.waitForTimeout(650);
   await page.locator(".lookback-button").click();
@@ -199,5 +235,5 @@ test("Papa premium release visual contract",async({page},testInfo)=>{
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","finale");
   await expectNoHorizontalOverflow(page);
-  await capture(page,testInfo,"tehiceesto-papa-release-12-finale-390");
+  await capture(page,testInfo,"tehiceesto-papa-release-15-finale-390");
 });

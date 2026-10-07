@@ -32,7 +32,7 @@ export type ExperienceCopy = {
   candles: { kicker:string; title:string[]; micIdle:string; micActive:string; tapFallback:string; tapUnavailable:string; wishLabel:string; cta:string };
   balloons: { kicker:string; title:string[]; items:string[]; remainingOne:string; remainingMany:string; cta:string; popLabel:string };
   timeline: { kicker:string; title:string[]; entries:TimelineEntry[]; cta:string };
-  voices: { kicker:string; title:string[]; entries:VoiceEntry[]; noteLabel:string; playLabel:string; playingLabel:string; cta:string };
+  voices: { kicker:string; title:string[]; intro:string; cardIntros:string[]; entries:VoiceEntry[]; noteLabel:string; playLabel:string; playingLabel:string; outroTitle:string; outroBody:string; cta:string };
   quiz: { kicker:string; question:string; answers:string[]; correctIndex:number; after:string; cta:string };
   vault: { kicker:string; title:string[]; closedLabel:string; openLabel:string; closedSmall:string; openSmall:string; reveal:string; cta:string };
   capsule: { kicker:string; title:string[]; year:string; closed:string; open:string; closedLabel:string; openLabel:string; cta:string };
@@ -72,7 +72,7 @@ const BASE_COPY: ExperienceCopy = {
   candles:{kicker:"Pedí un deseo",title:["Antes de seguir,","faltan las velitas."],micIdle:"Soplar de verdad",micActive:"Soplá ahora…",tapFallback:"o apagarlas tocando",tapUnavailable:"Apagar tocando",wishLabel:"✦ deseo guardado",cta:"Seguir →"},
   balloons:{kicker:"No todos los globos están vacíos",title:["Reventá tres."],items:[],remainingOne:"Falta 1",remainingMany:"Faltan {count}",cta:"Continuar →",popLabel:"POP"},
   timeline:{kicker:"El tiempo también cuenta historias",title:["Tres momentos.","Una misma historia."],entries:[],cta:"Seguir la historia →"},
-  voices:{kicker:"Hay gente esperando decirte algo",title:["Elegí una voz."],entries:[],noteLabel:"nota de voz · {name}",playLabel:"Tocá para escuchar",playingLabel:"Reproduciendo…",cta:"Continuar →"},
+  voices:{kicker:"Hay gente esperando decirte algo",title:["Elegí una voz."],intro:"",cardIntros:[],entries:[],noteLabel:"nota de voz · {name}",playLabel:"Tocá para escuchar",playingLabel:"Reproduciendo…",outroTitle:"",outroBody:"",cta:"Continuar →"},
   quiz:{kicker:"A ver cuánto te acordás",question:"¿Dónde empezó esta historia?",answers:["En un mensaje","En una salida que casi se cancela","En un lugar que ya no existe"],correctIndex:1,after:"La respuesta importa menos que todo lo que vino después.",cta:"Seguir →"},
   vault:{kicker:"Última cerradura",title:["Hay algo guardado para vos."],closedLabel:"TOCÁ PARA ABRIR",openLabel:"ABIERTO",closedSmall:"último secreto",openSmall:"acceso concedido",reveal:"No era un objeto. Era una pregunta.",cta:"Abrir la última carta →"},
   capsule:{kicker:"Para volver algún día",title:["Guardamos algo para","tu yo del futuro."],year:"2036",closed:"Hay palabras que pueden esperar.",open:"Ojalá sigas teniendo esa misma curiosidad por el mundo.",closedLabel:"Abrir cápsula",openLabel:"Abriste una cápsula del tiempo",cta:"Guardar este momento →"},
@@ -276,11 +276,15 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
       cta:"Escuchar algo que todavía quiero decirte →"
     },
     voices:{
-      kicker:"Hay cosas que se sienten distinto cuando las escuchás",
-      title:["Tres voces.","Una misma certeza."],
+      kicker:"Hay cosas que no queríamos dejar solamente escritas",
+      title:["Queríamos que las escucharas","con nuestra voz."],
+      intro:"Porque algunas palabras cambian cuando las dice alguien que te quiere.",
+      cardIntros:["Hay algo que quería decirte hace tiempo.","Hay gestos tuyos que me descubro haciendo.","Esto queríamos decírtelo juntos."],
       playLabel:"Tocá para escuchar",
       playingLabel:"Escuchando…",
-      cta:"Guardar estas voces →"
+      outroTitle:"Hay palabras que quizás ya sabías.",
+      outroBody:"Pero necesitábamos que las escucharas de nosotros.",
+      cta:"Guardar estas voces y seguir →"
     },
     letter:{
       kicker:"La parte que no entraba en una foto",

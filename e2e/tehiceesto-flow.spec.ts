@@ -1,5 +1,5 @@
 import { expect,test,type Page } from "playwright/test";
-const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","papa","amistad"];
+const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","amistad"];
 async function sceneName(page:Page){return page.locator("main.thi-experience").getAttribute("data-scene")}
 async function waitForScene(page:Page,name:string){await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene",name)}
 async function advanceOne(page:Page){
@@ -97,7 +97,25 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
 
 test("Papa premium keeps the emotional journey clean, audible and reset at the top",async({page})=>{
-  test.setTimeout(45_000);
+  test.setTimeout(60_000);
+  await page.addInitScript(()=>{
+    class FakeUtterance{
+      text:string;lang="";rate=1;pitch=1;voice:null=null;
+      onboundary:((event:{charIndex:number})=>void)|null=null;
+      onend:(()=>void)|null=null;onerror:(()=>void)|null=null;
+      constructor(text:string){this.text=text}
+    }
+    const state={current:null as FakeUtterance|null,calls:{speak:0,pause:0,resume:0,cancel:0}};
+    Object.defineProperty(window,"SpeechSynthesisUtterance",{configurable:true,value:FakeUtterance});
+    Object.defineProperty(window,"speechSynthesis",{configurable:true,value:{
+      getVoices:()=>[],
+      speak:(utterance:FakeUtterance)=>{state.current=utterance;state.calls.speak+=1},
+      pause:()=>{state.calls.pause+=1},
+      resume:()=>{state.calls.resume+=1},
+      cancel:()=>{state.calls.cancel+=1},
+    }});
+    (window as unknown as {__papaSpeech:typeof state}).__papaSpeech=state;
+  });
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/papa");
 
@@ -150,11 +168,41 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await page.locator(".thi-papa-inheritance-cta").click();
 
   await waitForScene(page,"voices");
-  const demoVoice=page.locator(".thi-papa-voice-list [data-action='demo-voice']").first();
-  await expect(demoVoice).toBeVisible();
-  await demoVoice.click();
-  await expect(demoVoice).toHaveClass(/heard/);
-  await page.locator(".thi-papa-voice-continue").click();
+  await expect(page.getByText(/Queríamos que las escucharas/i)).toBeVisible();
+  await expect(page.getByText(/algunas palabras cambian/i)).toBeVisible();
+  const voiceControls=page.locator(".thi-papa-voice-control");
+  await expect(voiceControls).toHaveCount(3);
+  const voiceCta=page.locator(".thi-papa-voice-final-cta");
+  await expect(voiceCta).toBeDisabled();
+
+  const first=voiceControls.nth(0);
+  await first.click();
+  await expect(first).toHaveAttribute("data-voice-state","playing");
+  await expect(page.locator(".thi-papa-voice-card-v2").nth(0)).toHaveClass(/is-playing/);
+  await first.click();
+  await expect(first).toHaveAttribute("data-voice-state","paused");
+  await expect.poll(()=>page.evaluate(()=>(window as unknown as {__papaSpeech:{calls:{pause:number}}}).__papaSpeech.calls.pause)).toBe(1);
+  await first.click();
+  await expect(first).toHaveAttribute("data-voice-state","playing");
+  await expect.poll(()=>page.evaluate(()=>(window as unknown as {__papaSpeech:{calls:{resume:number}}}).__papaSpeech.calls.resume)).toBe(1);
+  await page.evaluate(()=>{const state=(window as unknown as {__papaSpeech:{current:{text:string;onboundary?:((event:{charIndex:number})=>void)|null;onend?:(()=>void)|null}}}).__papaSpeech;state.current.onboundary?.({charIndex:Math.floor(state.current.text.length*.55)});});
+  await expect(page.locator(".thi-papa-voice-wave-v2").nth(0).locator("b.done")).not.toHaveCount(0);
+  await expect(first).not.toHaveAttribute("data-voice-state","completed");
+  await page.evaluate(()=>{const state=(window as unknown as {__papaSpeech:{current:{onend?:(()=>void)|null}}}).__papaSpeech;state.current.onend?.();});
+  await expect(first).toHaveAttribute("data-voice-state","completed");
+
+  for(const i of [1,2]){
+    const control=voiceControls.nth(i);
+    await control.click();
+    await expect(control).toHaveAttribute("data-voice-state","playing");
+    await page.evaluate(()=>{const state=(window as unknown as {__papaSpeech:{current:{onend?:(()=>void)|null}}}).__papaSpeech;state.current.onend?.();});
+    await expect(control).toHaveAttribute("data-voice-state","completed");
+  }
+
+  await expect(page.getByText(/Hay palabras que quizás ya sabías/i)).toBeVisible();
+  await expect(page.getByText(/necesitábamos que las escucharas/i)).toBeVisible();
+  await expect(voiceCta).toBeEnabled();
+  await voiceCta.click();
 
   await waitForScene(page,"letter");
   const paper=page.locator(".thi-papa-letter .thi-envelope .paper");

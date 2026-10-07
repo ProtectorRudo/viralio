@@ -58,7 +58,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
-  const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);const [papaMemoryIndex,setPapaMemoryIndex]=useState(0);
+  const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [papaVoiceIndex,setPapaVoiceIndex]=useState<number|null>(null);const [papaVoicePlaying,setPapaVoicePlaying]=useState(false);const [papaVoiceProgress,setPapaVoiceProgress]=useState<Record<number,number>>({});const [papaVoiceCurrent,setPapaVoiceCurrent]=useState<Record<number,number>>({});const [papaVoiceDuration,setPapaVoiceDuration]=useState<Record<number,number>>({});const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);const [papaMemoryIndex,setPapaMemoryIndex]=useState(0);
   const [doorOpen,setDoorOpen]=useState(false);const [lightRevealed,setLightRevealed]=useState(false);const [holdRevealed,setHoldRevealed]=useState(false);const [lastStar,setLastStar]=useState<number|null>(null);
   const [archiveOpen,setArchiveOpen]=useState(false);const [homeOpen,setHomeOpen]=useState<number[]>([]);const [legacyOpen,setLegacyOpen]=useState(false);
   const [ritualsOpen,setRitualsOpen]=useState<number[]>([]);const [chapterOpen,setChapterOpen]=useState<number[]>([]);const [futureOpen,setFutureOpen]=useState(false);
@@ -66,7 +66,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const [careOpen,setCareOpen]=useState<number[]>([]);const [sacrificesOpen,setSacrificesOpen]=useState<number[]>([]);const [lessonsOpen,setLessonsOpen]=useState<number[]>([]);const [presenceOpen,setPresenceOpen]=useState<number[]>([]);const [inheritanceOpen,setInheritanceOpen]=useState<number[]>([]);const [returnOpen,setReturnOpen]=useState(false);const [lookbackOpen,setLookbackOpen]=useState(false);
   const [casefileOpen,setCasefileOpen]=useState(false);const [insideJokesOpen,setInsideJokesOpen]=useState<number[]>([]);const [incidentsOpen,setIncidentsOpen]=useState<number[]>([]);const [proofOpen,setProofOpen]=useState<number[]>([]);const [pactOpen,setPactOpen]=useState<number[]>([]);
   const [soundtrackStarted,setSoundtrackStarted]=useState(false);const [soundtrackPaused,setSoundtrackPaused]=useState(false);
-  const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);const demoVoiceMessageRef=useRef<string|null>(null);const demoVoiceRunRef=useRef(0);const mamaVoiceAudioRef=useRef<HTMLAudioElement|null>(null);
+  const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);const demoVoiceMessageRef=useRef<string|null>(null);const demoVoiceRunRef=useRef(0);const mamaVoiceAudioRef=useRef<HTMLAudioElement|null>(null);const papaVoiceRunRef=useRef(0);const papaVoiceActiveRef=useRef<number|null>(null);
   const shellRef=useRef<HTMLElement|null>(null);const mamaMemorySwipeRef=useRef<{pointerId:number|null;x:number;y:number}>({pointerId:null,x:0,y:0});const mamaLetterSwipeRef=useRef<{pointerId:number|null;x:number;y:number;swiped:boolean}>({pointerId:null,x:0,y:0,swiped:false});
 
   const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
@@ -131,8 +131,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const handleMediaPlay=(event:React.SyntheticEvent<HTMLElement>)=>{if((event.target as HTMLElement)===soundtrackRef.current)return;duckSoundtrack()};
   const handleMediaRest=()=>restoreSoundtrack();
 
-  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null);setMamaMemoryIndex(0);setPapaMemoryIndex(0)};
-  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false)};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([]);if(type==="finale")setFinalReaction(null);if(type==="memories"){setMamaMemoryIndex(0);setPapaMemoryIndex(0)}};
+  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setPapaVoiceIndex(null);setPapaVoicePlaying(false);setPapaVoiceProgress({});setPapaVoiceCurrent({});setPapaVoiceDuration({});papaVoiceActiveRef.current=null;setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null);setMamaMemoryIndex(0);setPapaMemoryIndex(0)};
+  const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setPapaVoiceIndex(null);setPapaVoicePlaying(false);setPapaVoiceProgress({});setPapaVoiceCurrent({});setPapaVoiceDuration({});papaVoiceActiveRef.current=null};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([]);if(type==="finale")setFinalReaction(null);if(type==="memories"){setMamaMemoryIndex(0);setPapaMemoryIndex(0)}};
   const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator){try{navigator.vibrate(pattern)}catch{}}};
   const passiveHapticPatterns:Record<string,number|number[]>={
     "archive-open":[10,28,8],
@@ -163,7 +163,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     const pattern=passiveHapticPatterns[control.dataset.action||""];
     if(pattern!==undefined)haptic(pattern);
   };
-  const stopDemoVoice=()=>{demoVoiceRunRef.current+=1;demoVoiceMessageRef.current=null;setDemoVoiceStatus("idle");if(mamaVoiceAudioRef.current){try{mamaVoiceAudioRef.current.pause()}catch{}}setMamaVoiceRealPlaying(false);if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}restoreSoundtrack()};
+  const stopDemoVoice=()=>{demoVoiceRunRef.current+=1;papaVoiceRunRef.current+=1;demoVoiceMessageRef.current=null;setDemoVoiceStatus("idle");if(mamaVoiceAudioRef.current){try{mamaVoiceAudioRef.current.pause()}catch{}}setMamaVoiceRealPlaying(false);if(shellRef.current){shellRef.current.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(audio=>{try{audio.pause()}catch{}})}setPapaVoicePlaying(false);papaVoiceActiveRef.current=null;if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}restoreSoundtrack()};
   const toggleDemoVoice=(message:string)=>{
     const fallbackToggle=()=>{
       if(demoVoiceMessageRef.current===message&&demoVoiceStatus==="playing"){setDemoVoiceStatus("paused");restoreSoundtrack();return}
@@ -196,7 +196,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
   const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
 
-  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return experience.slug==="papa"?new Set([0,...presenceOpen]).size>=copy.presence.items.length:presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return experience.slug==="papa"?new Set([0,...inheritanceOpen]).size>=copy.inheritance.items.length:inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
+  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):experience.slug==="papa"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return experience.slug==="papa"?new Set([0,...presenceOpen]).size>=copy.presence.items.length:presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return experience.slug==="papa"?new Set([0,...inheritanceOpen]).size>=copy.inheritance.items.length:inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
     switch(type){
@@ -493,45 +493,143 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </section>;
         }
         if(experience.slug==="papa"){
-          const count=Math.max(currentAudios.length,voiceEntries.length);
-          const entries=Array.from({length:count},(_,i)=>({
-            name:token(currentAudios[i]?.caption||voiceEntries[i]?.name||`Mensaje ${i+1}`),
-            message:token(voiceEntries[i]?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
-            audio:currentAudios[i],
-          }));
+          const count=Math.min(3,Math.max(currentAudios.length,voiceEntries.length));
+          const estimateDuration=(message:string)=>Math.max(12,Math.ceil(message.trim().split(/\s+/).filter(Boolean).length/2.2));
+          const formatVoiceTime=(seconds:number)=>{const safe=Math.max(0,Math.floor(Number.isFinite(seconds)?seconds:0));return `${Math.floor(safe/60)}:${String(safe%60).padStart(2,"0")}`};
+          const entries=Array.from({length:count},(_,i)=>{
+            const voice=voiceEntries[i]||voiceEntries[0];
+            const audio=currentAudios[i];
+            const photo=scenePhotos[i%Math.max(1,scenePhotos.length)];
+            return {
+              name:token(audio?.caption||voice?.name||`Mensaje ${i+1}`),
+              message:token(voice?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
+              intro:token(copy.voices.cardIntros[i]||copy.voices.cardIntros[0]||"Hay algo que quería decirte."),
+              audio,
+              photo,
+            };
+          });
+          const pauseAllPapaRealAudio=(except?:HTMLAudioElement)=>{
+            shellRef.current?.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(audio=>{if(audio!==except&&!audio.paused){try{audio.pause()}catch{}}});
+          };
+          const togglePapaDemoSpeech=(index:number,message:string)=>{
+            if(typeof window==="undefined"||!("speechSynthesis" in window))return;
+            const synth=window.speechSynthesis;
+            const estimated=papaVoiceDuration[index]||estimateDuration(message);
+            setPapaVoiceDuration(values=>({...values,[index]:estimated}));
+            if(papaVoiceActiveRef.current===index){
+              if(papaVoicePlaying){
+                try{synth.pause()}catch{}
+                setPapaVoicePlaying(false);restoreSoundtrack();haptic(6);return;
+              }
+              if(!voicesPlayed.includes(index)&&(papaVoiceProgress[index]||0)>0){
+                try{synth.resume()}catch{}
+                setPapaVoicePlaying(true);duckSoundtrack();haptic(6);return;
+              }
+            }
+            papaVoiceRunRef.current+=1;
+            const run=papaVoiceRunRef.current;
+            try{synth.cancel()}catch{}
+            pauseAllPapaRealAudio();
+            const utterance=new SpeechSynthesisUtterance(message);
+            utterance.lang="es-AR";utterance.rate=.92;utterance.pitch=.9;
+            const preferred=synth.getVoices().find(v=>v.lang.toLowerCase().startsWith("es-ar"))||synth.getVoices().find(v=>v.lang.toLowerCase().startsWith("es"));
+            if(preferred)utterance.voice=preferred;
+            papaVoiceActiveRef.current=index;setPapaVoiceIndex(index);setPapaVoicePlaying(true);
+            setPapaVoiceProgress(values=>({...values,[index]:.001}));setPapaVoiceCurrent(values=>({...values,[index]:0}));
+            utterance.onboundary=event=>{
+              if(papaVoiceRunRef.current!==run)return;
+              const nextProgress=Math.max(0,Math.min(1,(event.charIndex||0)/Math.max(1,message.length)));
+              setPapaVoiceProgress(values=>({...values,[index]:nextProgress}));
+              setPapaVoiceCurrent(values=>({...values,[index]:estimated*nextProgress}));
+            };
+            const finish=(completed:boolean)=>{
+              if(papaVoiceRunRef.current!==run)return;
+              setPapaVoicePlaying(false);
+              if(completed){
+                setPapaVoiceProgress(values=>({...values,[index]:1}));
+                setPapaVoiceCurrent(values=>({...values,[index]:estimated}));
+                setVoicesPlayed(values=>values.includes(index)?values:[...values,index]);
+                haptic([8,18,8]);
+              }
+              restoreSoundtrack();
+            };
+            utterance.onend=()=>finish(true);utterance.onerror=()=>finish(false);
+            duckSoundtrack();haptic([7,18,7]);synth.speak(utterance);
+          };
           const togglePapaVoice=async(index:number)=>{
-            const entry=entries[index];
-            setVoicesPlayed(v=>v.includes(index)?v:[...v,index]);haptic([7,18,7]);
+            const entry=entries[index];if(!entry)return;
             if(entry.audio){
-              stopDemoVoice();
+              if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}
+              papaVoiceRunRef.current+=1;
               const audio=shellRef.current?.querySelector<HTMLAudioElement>(`audio[data-papa-audio="${index}"]`);
               if(!audio)return;
-              shellRef.current?.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(other=>{if(other!==audio&&!other.paused)other.pause()});
-              try{if(audio.paused)await audio.play();else audio.pause()}catch{}
+              pauseAllPapaRealAudio(audio);
+              papaVoiceActiveRef.current=index;setPapaVoiceIndex(index);
+              try{if(audio.paused){if(audio.ended||(Number.isFinite(audio.duration)&&audio.duration>0&&audio.currentTime>=audio.duration-.05))audio.currentTime=0;await audio.play()}else audio.pause()}catch{}
+              haptic(7);
               return;
             }
-            toggleDemoVoice(entry.message);
+            togglePapaDemoSpeech(index,entry.message);
           };
-          return <section className="thi-scene thi-scene-voices thi-papa-voices thi-scene-rich">
+          const allHeard=voicesPlayed.length>=count;
+          return <section className="thi-scene thi-scene-voices thi-papa-voices thi-papa-voices-v2 thi-scene-rich">
             <div className="thi-papa-voice-atmosphere" aria-hidden="true"><i/><i/><b/></div>
+            <div className="thi-papa-voice-hero-photo" aria-hidden="true">{scenePhotos[0]?.url&&<img src={scenePhotos[0].url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:scenePhotos[0].fit||"cover",objectPosition:scenePhotos[0].position||"center"}}/>}<i/></div>
             <p className="thi-kicker">{token(copy.voices.kicker)}</p>
             <h2>{titleLines(copy.voices.title)}</h2>
-            <p className="thi-papa-voice-intro">{currentAudios.length?"Elegí una voz. Cada mensaje conserva este mismo recorrido y diseño.":"Tocá una voz. Esta demo la reproduce para que puedas sentir cómo funciona la experiencia con audio."}</p>
-            <div className="thi-papa-voice-list">
-              {entries.slice(0,3).map((entry,i)=><button
-                type="button"
-                data-action="demo-voice"
-                key={`${entry.name}-${i}`}
-                className={voicesPlayed.includes(i)?"heard":""}
-                onClick={()=>void togglePapaVoice(i)}
-              >
-                <span className="thi-papa-voice-index">{String(i+1).padStart(2,"0")}</span>
-                <span className="thi-papa-voice-copy"><small>UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>{voicesPlayed.includes(i)?`“${entry.message}”`:token(copy.voices.playLabel)}</em><i aria-hidden="true">{Array.from({length:20}).map((_,bar)=><b key={bar}/>)}</i></span>
-                <span className="thi-papa-voice-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
-                {entry.audio&&<audio data-papa-audio={i} src={entry.audio.url} preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);duckSoundtrack()}} onPause={restoreSoundtrack} onEnded={restoreSoundtrack}/>}
-              </button>)}
+            {copy.voices.intro&&<p className="thi-papa-voice-intro">{token(copy.voices.intro)}</p>}
+            <div className="thi-papa-voice-list-v2">
+              {entries.map((entry,i)=>{
+                const completed=voicesPlayed.includes(i);
+                const active=papaVoiceIndex===i;
+                const playing=active&&papaVoicePlaying;
+                const rawProgress=papaVoiceProgress[i]||0;
+                const replaying=active&&(playing||(rawProgress>0&&rawProgress<1));
+                const progress=replaying?rawProgress:completed?1:rawProgress;
+                const duration=papaVoiceDuration[i]||estimateDuration(entry.message);
+                const current=replaying?(papaVoiceCurrent[i]||0):completed?duration:(papaVoiceCurrent[i]||0);
+                const paused=active&&!playing&&rawProgress>0&&rawProgress<1;
+                return <article className={`thi-papa-voice-card-v2 ${active?"is-active ":""}${playing?"is-playing ":""}${paused?"is-paused ":""}${completed?"is-complete":""}`} key={`${entry.name}-${i}`}>
+                  <div className="thi-papa-voice-card-visual" aria-hidden="true">{entry.photo?.url&&<img src={entry.photo.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}<i/></div>
+                  <span className="thi-papa-voice-index-v2">{String(i+1).padStart(2,"0")}</span>
+                  <div className="thi-papa-voice-card-copy">
+                    <small>UN MENSAJE PARA VOS</small>
+                    <strong>{entry.name}</strong>
+                    <span className="thi-papa-voice-card-intro">{entry.intro}</span>
+                    <blockquote>“{entry.message}”</blockquote>
+                    <div className="thi-papa-voice-wave-v2" aria-hidden="true">
+                      {Array.from({length:36}).map((_,bar)=><b key={bar} className={(bar+1)/36<=progress?"done":""}/>)}
+                      <i style={{left:`${Math.max(0,Math.min(100,progress*100))}%`}}/>
+                    </div>
+                    <span className="thi-papa-voice-time">{formatVoiceTime(current)} <i>/</i> {formatVoiceTime(duration)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    data-action="demo-voice"
+                    data-voice-index={i}
+                    data-voice-state={playing?"playing":paused?"paused":completed?"completed":"idle"}
+                    className="thi-papa-voice-control"
+                    onClick={()=>void togglePapaVoice(i)}
+                    aria-label={playing?`Pausar mensaje de ${entry.name}`:paused?`Continuar mensaje de ${entry.name}`:completed?`Volver a escuchar mensaje de ${entry.name}`:`Escuchar mensaje de ${entry.name}`}
+                  >
+                    {playing?"Ⅱ":completed?"✓":"▶"}
+                  </button>
+                  {entry.audio&&<audio
+                    data-papa-audio={i}
+                    src={entry.audio.url}
+                    preload="metadata"
+                    onLoadedMetadata={event=>{const el=event.currentTarget;setPapaVoiceDuration(values=>({...values,[i]:Number.isFinite(el.duration)?el.duration:0}))}}
+                    onPlay={()=>{papaVoiceActiveRef.current=i;setPapaVoiceIndex(i);setPapaVoicePlaying(true);setPapaVoiceProgress(values=>({...values,[i]:Math.max(values[i]||0,.001)}));duckSoundtrack()}}
+                    onPause={event=>{if(papaVoiceActiveRef.current===i&&!event.currentTarget.ended){setPapaVoicePlaying(false);restoreSoundtrack()}}}
+                    onTimeUpdate={event=>{const el=event.currentTarget;const duration=Number.isFinite(el.duration)&&el.duration>0?el.duration:(papaVoiceDuration[i]||0);const current=el.currentTime||0;setPapaVoiceCurrent(values=>({...values,[i]:current}));setPapaVoiceProgress(values=>({...values,[i]:duration?Math.min(1,current/duration):0}))}}
+                    onEnded={event=>{const el=event.currentTarget;const duration=Number.isFinite(el.duration)?el.duration:(papaVoiceDuration[i]||0);setPapaVoicePlaying(false);setPapaVoiceCurrent(values=>({...values,[i]:duration}));setPapaVoiceProgress(values=>({...values,[i]:1}));setVoicesPlayed(values=>values.includes(i)?values:[...values,i]);restoreSoundtrack();haptic([8,18,8])}}
+                  />}
+                </article>;
+              })}
             </div>
-            <button data-action="advance" className="thi-primary thi-papa-voice-continue" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button>
+            <p className="thi-papa-voice-patience">Podés escucharlas todas. No hay apuro.</p>
+            {allHeard&&<div className="thi-papa-voice-outro"><i aria-hidden="true"/><strong>{token(copy.voices.outroTitle)}</strong><p>{token(copy.voices.outroBody)}</p></div>}
+            <button data-action="advance" className="thi-papa-voice-final-cta" disabled={!allHeard} onClick={next}>{token(copy.voices.cta)}</button>
           </section>;
         }
         return <section className="thi-scene thi-scene-voices thi-scene-rich"><p className="thi-kicker">{token(copy.voices.kicker)}</p><h2>{titleLines(copy.voices.title)}</h2>{currentAudios.length?<div className="thi-voices">{currentAudios.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption||`Mensaje ${i+1}`}</strong><audio data-action="real-audio" src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}/></article>)}</div>:experience.slug==="pareja"?<div className="thi-romantic-audio">{voiceEntries.slice(0,1).map((voice,i)=><button data-action="demo-voice" key={voice.name} className={`${voicesPlayed.includes(i)?"played ":""}${demoVoiceStatus}`} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic([7,18,7]);toggleDemoVoice(token(voice.message))}} aria-label={demoVoiceStatus==="playing"?"Pausar audio":demoVoiceStatus==="paused"?"Continuar audio":token(copy.voices.playLabel)}><span className="thi-audio-avatar">{voice.name.slice(0,1)}</span><span className="thi-audio-copy"><small>{token(copy.voices.noteLabel.replace("{name}",voice.name))}</small><strong>{demoVoiceStatus==="playing"?token(copy.voices.playingLabel):demoVoiceStatus==="paused"?"Pausado · tocá para continuar":token(copy.voices.playLabel)}</strong><i className="thi-waveform" aria-hidden="true">{Array.from({length:24}).map((_,bar)=><b key={bar}/>)}</i></span><span className="thi-audio-play">{demoVoiceStatus==="playing"?"❚❚":"▶"}</span></button>)}{voicesPlayed.length>0&&<p>“{token(voiceEntries[0].message)}”</p>}</div>:<div className="thi-voices">{voiceEntries.map((voice,i)=><button data-action="demo-voice" key={voice.name} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{token(voice.name)}</strong><small>{voicesPlayed.includes(i)?`“${token(voice.message)}”`:token(copy.voices.playLabel)}</small></button>)}</div>}<button data-action="advance" className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button></section>;
