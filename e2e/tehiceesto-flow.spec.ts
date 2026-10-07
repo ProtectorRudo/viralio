@@ -96,6 +96,22 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
 
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
 
+test("every Te Hice Esto experience has a consistent back control after the cover",async({page})=>{
+  test.setTimeout(90_000);
+  await page.setViewportSize({width:390,height:844});
+  for(const slug of [...slugs,"papa"]){
+    await page.goto(`/tehiceesto/experiencias/${slug}`);
+    await expect(page.locator(".thi-global-back-nav")).toHaveCount(0);
+    await advanceOne(page);
+    await expect(page.locator("main.thi-experience")).not.toHaveAttribute("data-scene","intro");
+    const back=page.locator(".thi-global-back-nav");
+    await expect(back,`back control missing for ${slug}`).toBeVisible();
+    await back.click();
+    await waitForScene(page,"intro");
+    await expect(page.locator(".thi-global-back-nav")).toHaveCount(0);
+  }
+});
+
 test("Papa premium keeps the emotional journey clean, audible and reset at the top",async({page})=>{
   test.setTimeout(60_000);
   await page.addInitScript(()=>{
