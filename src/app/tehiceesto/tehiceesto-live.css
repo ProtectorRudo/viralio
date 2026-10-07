@@ -1864,7 +1864,7 @@
 }
 .thi-aff-settlement-form{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:.7fr 1fr 1fr;
   gap:10px;
 }
 .thi-aff-settlement-form label{
@@ -1899,6 +1899,31 @@
 .thi-aff-settle-button{
   grid-column:1/-1;
   min-height:46px;
+}
+.thi-aff-settlement-summary{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  min-height:54px;
+  padding:11px 13px;
+  border:1px solid rgba(173,99,79,.12);
+  border-radius:9px;
+  background:rgba(255,255,255,.72);
+}
+.thi-aff-settlement-summary strong{
+  color:#3e3236;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:15px;
+  font-weight:400;
+}
+.thi-aff-settlement-summary span{
+  max-width:360px;
+  color:#85787c;
+  text-align:right;
+  font-size:8px;
+  line-height:1.45;
 }
 .thi-aff-settlement-history{
   margin-top:24px;
@@ -2367,6 +2392,8 @@
   .thi-aff-manage{grid-template-columns:1fr}
   .thi-aff-settlement-box{grid-template-columns:1fr;padding:18px 15px}
   .thi-aff-settlement-form{grid-template-columns:1fr}
+  .thi-aff-settlement-summary{grid-column:auto;align-items:flex-start;flex-direction:column;gap:4px}
+  .thi-aff-settlement-summary span{text-align:left}
   .thi-aff-settle-button{grid-column:auto}
   .thi-aff-settlement-history .thi-aff-card-head{align-items:flex-start}
   .thi-aff-login-card{padding:30px 20px}
