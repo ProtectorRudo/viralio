@@ -137,7 +137,7 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
 
   await expect(page.getByText("Tus hijos hicieron esto para vos")).toBeVisible();
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
-  await expect(page.locator(".thi-papa-back-nav")).toHaveCount(0);
+  await expect(page.locator(".thi-global-back-nav")).toHaveCount(0);
 
   await advanceOne(page);
   await waitForScene(page,"memories");
@@ -192,17 +192,17 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await expect(voiceControls).toHaveCount(3);
   const voiceCta=page.locator(".thi-papa-voice-final-cta");
   await expect(voiceCta).toBeEnabled();
-  await expect(page.locator(".thi-papa-back-nav")).toBeVisible();
+  await expect(page.locator(".thi-global-back-nav")).toBeVisible();
 
   // Audio is optional: the recipient can continue without listening to all—or any—messages.
   await voiceCta.click();
   await waitForScene(page,"letter");
-  await page.locator(".thi-papa-back-nav").click();
+  await page.locator(".thi-global-back-nav").click();
   await waitForScene(page,"voices");
   await expect(voiceCta).toBeEnabled();
 
   // Going back preserves the already-completed previous chapter instead of resetting it.
-  await page.locator(".thi-papa-back-nav").click();
+  await page.locator(".thi-global-back-nav").click();
   await waitForScene(page,"inheritance");
   await expect(page.locator(".thi-papa-inheritance-card.open")).toHaveCount(4);
   await expect(page.getByText(/heredar de verdad/i)).toBeVisible();
