@@ -872,10 +872,17 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===2&&<div className="studio-panel">
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
-        <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0} onClick={()=>audioInputRef.current?.click()}>
-          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"Audio de WhatsApp, MP3, M4A, OGG u OPUS · hasta 6"}</small></div><b>→</b>
-        </button>
+        <div className="studio-audio-entry-options">
+          <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0||recording} onClick={()=>audioInputRef.current?.click()}>
+            <span>♪</span><div><strong>{audios.length?"Agregar un audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"WhatsApp, MP3, M4A, OGG u OPUS"}</small></div><b>→</b>
+          </button>
+          <button className={recording?"studio-record-voice recording":"studio-record-voice"} type="button" disabled={uploading.length>0} onClick={recording?stopVoiceRecording:startVoiceRecording}>
+            <span>{recording?"■":"●"}</span>
+            <div><strong>{recording?"Detener y usar audio":"Grabar ahora"}</strong><small>{recording?`Grabando · ${Math.floor(recordingSeconds/60)}:${String(recordingSeconds%60).padStart(2,"0")}`:"Usar el micrófono del celular"}</small></div>
+          </button>
+        </div>
         <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
+        {recording&&<div className="studio-recording-live"><i/><div><strong>Te estamos escuchando</strong><span>Cuando termines, tocá “Detener y usar audio”.</span></div></div>}
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
@@ -891,7 +898,7 @@ export default function CustomerStudio({code}:{code:string}){
               <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Mover después</button>
             </div>
           </details>}
-        </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>La experiencia funciona igual sin ellos. Si tenés uno, acá puede convertirse en uno de los momentos más fuertes.</p></div>}
+        </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>Si no agregás ninguno, la parte de audios no aparece en el regalo. No mostramos voces de ejemplo.</p></div>}
       </div>}
 
       {step===3&&<div className="studio-panel studio-words">
