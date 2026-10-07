@@ -1031,7 +1031,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <span className="thi-papa-lesson-line" aria-hidden="true"/>
                 {rows.map(({index,title,body})=>{
                   const isOpen=opened.has(index);
-                  const visual=visualSource[index]||visualSource[index%Math.max(visualSource.length,1)];
+                  const visual=visualSource[index+1]||visualSource[index%Math.max(visualSource.length,1)];
                   return <button
                     key={`${title}-${index}`}
                     type="button"
@@ -1167,9 +1167,15 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <section className="scene scene-inheritance thi-papa-inheritance">
               <div className="thi-papa-inheritance-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
               <header className="thi-papa-inheritance-head">
-                <p className="scene-kicker">{token(copy.inheritance.kicker)}</p>
-                <h2>{token(copy.inheritance.title)}</h2>
-                {copy.inheritance.subtitle&&<p>{token(copy.inheritance.subtitle)}</p>}
+                <div className="thi-papa-inheritance-hero-visual" aria-hidden="true">
+                  {visualSource[0]?.url&&<img src={visualSource[0].url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:visualSource[0].fit||"cover",objectPosition:visualSource[0].position||"center"}}/>}
+                  <i/>
+                </div>
+                <div className="thi-papa-inheritance-head-copy">
+                  <p className="scene-kicker">{token(copy.inheritance.kicker)}</p>
+                  <h2>{token(copy.inheritance.title)}</h2>
+                  {copy.inheritance.subtitle&&<p>{token(copy.inheritance.subtitle)}</p>}
+                </div>
               </header>
               <div className="thi-papa-inheritance-timeline" aria-label="Cosas tuyas que quedaron viviendo en mí">
                 <span className="thi-papa-inheritance-line" aria-hidden="true"/>
