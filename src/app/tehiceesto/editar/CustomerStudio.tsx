@@ -363,11 +363,17 @@ export default function CustomerStudio({code}:{code:string}){
   async function uploadFiles(files:FileList|null,kind:MediaKind){
     if(!files||!editorToken)return;
     const all=Array.from(files);
-    const limit=kind==="image"?20:6;
-    const selected=all.slice(0,limit);
+    const limit=kind==="image"?20:kind==="audio"?6:1;
+    const existing=payload?.media.filter(item=>item.kind===kind).length||0;
+    const remaining=Math.max(0,limit-existing);
+    if(!remaining){
+      setMessage(kind==="image"?"Ya tenés 20 fotos. Si querés otra, primero quitá o cambiá una.":kind==="audio"?"Ya tenés 6 audios. Si querés otro, primero quitá o cambiá uno.":"Ya tenés un video. Podés cambiarlo por otro.");
+      return;
+    }
+    const selected=all.slice(0,remaining);
     if(!selected.length)return;
-    const limitNotice=all.length>limit
-      ?`Podés usar hasta ${limit} archivos acá. Vamos a subir los primeros ${limit} que elegiste.`
+    const limitNotice=all.length>remaining
+      ?`Te quedan ${remaining} lugares disponibles. Vamos a subir ${remaining} de los archivos que elegiste.`
       :"";
     setUploading(selected.map(file=>file.name));setMessage("");
     try{
@@ -659,7 +665,7 @@ export default function CustomerStudio({code}:{code:string}){
       {step===1&&<div className="studio-panel">
         <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Las mejores casi siempre son las que significan algo.</p></header>
         <button className="studio-upload-hero" type="button" disabled={uploading.length>0} onClick={()=>fileInputRef.current?.click()}>
-          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>Podés elegir varias de una sola vez · hasta 20</small></div><b>→</b>
+          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{photos.length?`${photos.length} de 20 fotos cargadas`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
         </button>
         <input ref={fileInputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image")}/>
         {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Preparando y subiendo…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
@@ -700,7 +706,7 @@ export default function CustomerStudio({code}:{code:string}){
       {step===2&&<div className="studio-panel">
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
         <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0} onClick={()=>audioInputRef.current?.click()}>
-          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Elegir un audio"}</strong><small>Audio de WhatsApp, MP3, M4A, OGG u OPUS · hasta 6</small></div><b>→</b>
+          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"Audio de WhatsApp, MP3, M4A, OGG u OPUS · hasta 6"}</small></div><b>→</b>
         </button>
         <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
