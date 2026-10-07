@@ -575,8 +575,13 @@ export default function CustomerStudio({code}:{code:string}){
           <label><span>Esto es para…</span><input value={basics.recipientName} onChange={event=>updateBasic("recipientName",event.target.value)} placeholder="Ej. Ailín" autoFocus/><small>El nombre aparece dentro de la experiencia.</small></label>
           <label><span>Y lo hace…</span><input value={basics.giverName} onChange={event=>updateBasic("giverName",event.target.value)} placeholder="Ej. Mauro"/></label>
         </div>
-        <label className="studio-field"><span>¿Qué es esta persona para vos? <em>opcional</em></span><textarea rows={3} value={basics.relationship} onChange={event=>updateBasic("relationship",event.target.value)} placeholder="Mi pareja, mi compañera, la persona con la que quiero compartir todo…"/></label>
-        <div className="studio-feelings"><span>¿Qué querés que sienta?</span><div>{FEELINGS.map(feeling=><button type="button" key={feeling} className={basics.feeling===feeling?"selected":""} onClick={()=>updateBasic("feeling",feeling)}>{feeling}</button>)}</div></div>
+        <details className="studio-optional-details">
+          <summary><span>Agregar un poco más</span><small>opcional</small><b>＋</b></summary>
+          <div>
+            <label className="studio-field"><span>¿Qué es esta persona para vos?</span><textarea rows={3} value={basics.relationship} onChange={event=>updateBasic("relationship",event.target.value)} placeholder="Mi pareja, mi compañera, la persona con la que quiero compartir todo…"/></label>
+            <div className="studio-feelings"><span>¿Qué querés que sienta?</span><div>{FEELINGS.map(feeling=><button type="button" key={feeling} className={basics.feeling===feeling?"selected":""} onClick={()=>updateBasic("feeling",feeling)}>{feeling}</button>)}</div></div>
+          </div>
+        </details>
       </div>}
 
       {step===1&&<div className="studio-panel">
