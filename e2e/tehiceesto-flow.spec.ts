@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import { expect,test,type Page } from "playwright/test";
 const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","amistad"];
 async function sceneName(page:Page){return page.locator("main.thi-experience").getAttribute("data-scene")}
@@ -969,7 +970,7 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
 });
 
 
-test("customer studio is guided, mobile-safe and publishes without technical language",async({page})=>{
+test("customer studio is guided, mobile-safe and publishes without technical language",async({page},testInfo)=>{
   test.setTimeout(45_000);
   const code="1234567890abcdef12";
   const editorToken="b".repeat(64);
@@ -1034,6 +1035,9 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
   await expect(page.getByRole("button",{name:/Cambiar cualquier texto/i})).toBeVisible();
+  const previewShot="visual-qa-evidence/tehiceesto-studio-mobile-preview.png";
+  await page.screenshot({path:previewShot,fullPage:true});
+  await testInfo.attach("tehiceesto-studio-mobile-preview",{path:previewShot,contentType:"image/png"});
   await page.getByRole("button",{name:/Publicar mi regalo/i}).first().click();
 
   await expect(page.getByRole("heading",{name:/Tu regalo está listo para vivirlo/i})).toBeVisible();
