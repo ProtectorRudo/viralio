@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback,useEffect,useMemo,useRef,useState } from "react";
+import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
@@ -253,6 +253,8 @@ export default function CustomerStudio({code}:{code:string}){
   const audioInputRef=useRef<HTMLInputElement|null>(null);
   const videoInputRef=useRef<HTMLInputElement|null>(null);
   const replaceInputRef=useRef<HTMLInputElement|null>(null);
+  const recipientInputRef=useRef<HTMLInputElement|null>(null);
+  const giverInputRef=useRef<HTMLInputElement|null>(null);
   const [replaceTarget,setReplaceTarget]=useState<StudioMedia|null>(null);
 
   const loadStudio=useCallback(async(token:string)=>{
@@ -494,10 +496,28 @@ export default function CustomerStudio({code}:{code:string}){
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
 
-  const canContinue=useMemo(()=>{
-    if(step===0)return Boolean(basics?.giverName.trim()&&basics?.recipientName.trim());
-    return true;
-  },[step,basics]);
+  function goToStep(next:number){
+    if(uploading.length){
+      setMessage("Esperá un momento: todavía estamos subiendo tus archivos.");
+      return;
+    }
+    if(next>0&&basics){
+      if(!basics.recipientName.trim()){
+        setMessage("Primero escribí el nombre de quien recibe el regalo.");
+        recipientInputRef.current?.focus();
+        return;
+      }
+      if(!basics.giverName.trim()){
+        setMessage("Ahora escribí tu nombre para poder seguir.");
+        giverInputRef.current?.focus();
+        return;
+      }
+    }
+    const target=Math.max(0,Math.min(STEP_LABELS.length-1,next));
+    setMessage("");
+    setStep(target);
+    window.requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));
+  }
 
   if(loading&&accessState==="checking")return <main className="studio-gate"><div className="studio-loader"><span/><strong>Preparando tu estudio…</strong></div></main>;
 
@@ -559,12 +579,12 @@ export default function CustomerStudio({code}:{code:string}){
     </header>
 
     <div className="studio-progress-wrap">
-      <div className="studio-progress-meta"><span>PASO {step+1} DE {STEP_LABELS.length}</span><strong>{progress}%</strong></div>
+      <div className="studio-progress-meta"><span>PASO {step+1} DE {STEP_LABELS.length} · {STEP_LABELS[step].toUpperCase()}</span><strong>{progress}%</strong></div>
       <div className="studio-progress"><i style={{width:progress+"%"}}/></div>
     </div>
 
     <nav className="studio-stepper" aria-label="Pasos de personalización">
-      {STEP_LABELS.map((label,index)=><button key={label} type="button" className={index===step?"active":index<step?"done":""} onClick={()=>setStep(index)}>
+      {STEP_LABELS.map((label,index)=><button key={label} type="button" className={index===step?"active":index<step?"done":""} onClick={()=>goToStep(index)}>
         <span>{index<step?"✓":index+1}</span><strong>{label}</strong>
       </button>)}
     </nav>
@@ -573,8 +593,8 @@ export default function CustomerStudio({code}:{code:string}){
       {step===0&&<div className="studio-panel studio-people">
         <header><p className="studio-eyebrow">PRIMERO, LO ESENCIAL</p><h1>¿Quién va a recibir esto?</h1><p>Con dos nombres ya empezamos a convertir la experiencia en algo de ustedes.</p></header>
         <div className="studio-big-fields">
-          <label><span>Esto es para…</span><input value={basics.recipientName} onChange={event=>updateBasic("recipientName",event.target.value)} placeholder="Ej. Ailín" autoFocus/><small>El nombre aparece dentro de la experiencia.</small></label>
-          <label><span>Y lo hace…</span><input value={basics.giverName} onChange={event=>updateBasic("giverName",event.target.value)} placeholder="Ej. Mauro"/></label>
+          <label><span>Nombre de quien recibe el regalo</span><input ref={recipientInputRef} value={basics.recipientName} onChange={event=>updateBasic("recipientName",event.target.value)} placeholder="Ej. Ailín" autoFocus/><small>Este nombre va a aparecer dentro del regalo.</small></label>
+          <label><span>Tu nombre</span><input ref={giverInputRef} value={basics.giverName} onChange={event=>updateBasic("giverName",event.target.value)} placeholder="Ej. Mauro"/><small>Para que sepa quién se lo hizo.</small></label>
         </div>
         <details className="studio-optional-details">
           <summary><span>Agregar un poco más</span><small>opcional</small><b>＋</b></summary>
@@ -666,7 +686,7 @@ export default function CustomerStudio({code}:{code:string}){
             {locked
               ?<span className="studio-section-required">ESENCIAL</span>
               :missingMedia
-                ?<button type="button" className="studio-section-add" onClick={()=>setStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
+                ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
                 :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Está":"Oculta"}</span></button>}
           </article>;
         })}</div>
@@ -676,7 +696,7 @@ export default function CustomerStudio({code}:{code:string}){
       {step===5&&<div className="studio-preview-wrap">
         <div className="studio-preview-head">
           <div><p className="studio-eyebrow">ÚLTIMO PASO</p><h1>Vivilo antes de mandarlo.</h1><p>Esta es la experiencia real. Recorré cada parte como la va a ver {basics.recipientName||"esa persona"}.</p></div>
-          <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>setStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
+          <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>goToStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
         </div>
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
         <div className="studio-preview-stage"><Preview gift={{...gift,scene_recipe:effectiveRecipe}} media={media} sceneTextOverrides={sceneTextOverrides}/></div>
@@ -699,8 +719,8 @@ export default function CustomerStudio({code}:{code:string}){
     {message&&<div className="studio-toast" role="status">{message}<button onClick={()=>setMessage("")}>×</button></div>}
 
     {step<5&&<footer className="studio-bottom-nav">
-      <button type="button" className="studio-back-button" onClick={()=>setStep(value=>Math.max(0,value-1))} disabled={step===0}>← Atrás</button>
-      <div><small>{saveState==="saving"?"Guardando cambios…":"Se guarda automáticamente"}</small><button type="button" className="studio-main-button compact" disabled={!canContinue} onClick={()=>setStep(value=>Math.min(5,value+1))}>Continuar <b>→</b></button></div>
+      <button type="button" className="studio-back-button" onClick={()=>goToStep(step-1)} disabled={step===0}>← Atrás</button>
+      <div><small>{uploading.length?"Subiendo archivos…":saveState==="saving"?"Guardando cambios…":"Se guarda automáticamente"}</small><button type="button" className="studio-main-button compact" onClick={()=>goToStep(step+1)}>{step===4?"Ver mi regalo":"Continuar"} <b>→</b></button></div>
     </footer>}
   </main>;
 }
