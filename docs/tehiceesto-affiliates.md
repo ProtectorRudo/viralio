@@ -32,7 +32,8 @@ El panel del influencer se actualiza periódicamente mientras está visible y mu
 
 ## Transparencia de liquidaciones
 - El administrador ve pendiente, total liquidado e historial por influencer.
-- El botón “Pago liquidado” registra el saldo pendiente actual como abonado, con referencia y nota opcionales.
+- El botón “Pago liquidado” permite elegir cuántas de las ventas pendientes más antiguas incluir. Así se puede registrar una liquidación parcial (por ejemplo, ventas 1–50) y dejar las siguientes acumulándose como pendientes. La referencia y la nota son opcionales.
 - El influencer ve el mismo historial: fecha, cantidad de ventas incluidas, período, monto, referencia y estado.
 - El registro no expone datos personales de compradores.
 - Cada comisión liquidada queda asociada al `payout_id` correspondiente, evitando mezclar ventas ya pagadas con ventas nuevas.
+- Las liquidaciones parciales se toman siempre desde la comisión pendiente más antigua hacia adelante, para que el corte histórico sea determinista y auditable.
