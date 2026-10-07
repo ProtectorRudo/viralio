@@ -91,7 +91,7 @@ export default function StudioVisualTextEditor({
         code,editorToken,scene:selection.scene,source:selection.source,replacement:value.trim(),
       });
       const next=result.sceneContent||{};
-      setOverrides(next);onChange(next);setSelection(null);setMessage("Cambio guardado ✓");
+      setOverrides(next);onChange(next);setSelection(null);setEnabled(false);setMessage("Listo ✓ Ya podés seguir recorriendo.");
     }catch{
       setMessage("No se pudo guardar. Probá otra vez.");
     }finally{setSaving(false)}
@@ -105,7 +105,7 @@ export default function StudioVisualTextEditor({
         code,editorToken,scene:selection.scene,source:selection.source,
       });
       const next=result.sceneContent||{};
-      setOverrides(next);onChange(next);setSelection(null);setMessage("Volvió al texto original ✓");
+      setOverrides(next);onChange(next);setSelection(null);setEnabled(false);setMessage("Listo ✓ Volvimos al original y ya podés seguir.");
     }catch{
       setMessage("No se pudo restaurar.");
     }finally{setSaving(false)}
@@ -119,14 +119,15 @@ export default function StudioVisualTextEditor({
     >
       <span>{enabled?"✓":"Aa"}</span>
       <div>
-        <small>{enabled?"MODO EDICIÓN":count?count+" textos cambiados":"OPCIONAL"}</small>
-        <strong>{enabled?"Salir de editar textos":"Cambiar un texto tocándolo"}</strong>
+        <small>{enabled?"TOCÁ UNA FRASE":count?count+" textos cambiados":"OPCIONAL"}</small>
+        <strong>{enabled?"Editando textos":"Editar textos de esta parte"}</strong>
       </div>
     </button>
 
     {enabled&&!selection&&<div className="studio-copy-hint">
-      <strong>Tocá la frase que querés cambiar.</strong>
-      <p>Cuando termines, tocá “Salir de editar textos” para seguir recorriendo el regalo.</p>
+      <strong>Tocá el texto que querés cambiar.</strong>
+      <p>Cuando guardes el cambio, el recorrido se habilita solo.</p>
+      <button type="button" className="studio-copy-done" onClick={()=>{setEnabled(false);setMessage("Listo. Seguí recorriendo el regalo →")}}>Listo, seguir recorriendo →</button>
     </div>}
 
     {selection&&<div className="studio-copy-sheet">
@@ -139,7 +140,7 @@ export default function StudioVisualTextEditor({
       <div className="studio-copy-actions">
         <button type="button" onClick={restore} disabled={saving}>Usar la original</button>
         <button type="button" className="primary" onClick={save} disabled={saving||!value.trim()}>
-          {saving?"Guardando…":"Guardar frase"}
+          {saving?"Guardando…":"Guardar y seguir"}
         </button>
       </div>
     </div>}
