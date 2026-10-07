@@ -1496,7 +1496,7 @@ test("affiliate dashboard shows the same settlement ledger as the admin",async({
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
-test("admin affiliate panel registers a payout and preserves its settlement history",async({page})=>{
+test("admin affiliate panel can settle only the oldest pending sales and preserve history",async({page})=>{
   let settled=false;
   let payoutPayload:Record<string,unknown>|null=null;
   await page.addInitScript(()=>window.sessionStorage.setItem("thi_admin_session","admin-session-test-token-1234567890"));
@@ -1504,21 +1504,31 @@ test("admin affiliate panel registers a payout and preserves its settlement hist
     const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
     const affiliate={
       id:"11111111-1111-4111-8111-111111111111",slug:"sofia",name:"Sofía Test",email:"sofia@example.com",whatsapp:null,status:"active",
-      commission_bps:2000,primary_link_code:"sofia",clicks:20,unique_visitors:15,attributed_orders:4,approved_sales:3,revenue_minor:7500000,
-      commission_earned_minor:1500000,commission_pending_minor:settled?0:900000,commission_paid_minor:settled?1500000:600000,
-      clicks_30d:20,visitors_30d:15,sales_30d:3,revenue_30d_minor:7500000,
+      commission_bps:2000,primary_link_code:"sofia",clicks:20,unique_visitors:15,attributed_orders:5,approved_sales:5,revenue_minor:7500000,
+      commission_earned_minor:1500000,commission_pending_minor:settled?300000:900000,commission_paid_minor:settled?1200000:600000,
+      clicks_30d:20,visitors_30d:15,sales_30d:5,revenue_30d_minor:7500000,
     };
+    const baseCommission=(id:string,date:string,status:string,payoutId:string|null)=>({
+      id,order_id:`order-${id}`,gross_amount_minor:1500000,commission_amount_minor:300000,status,approved_at:date,created_at:date,payout_id:payoutId,paid_at:status==="paid"?"2026-10-07T20:00:00Z":null,reversed_at:null,
+    });
+    const commissions=settled?[
+      baseCommission("c1","2026-10-07T10:00:00Z","paid","pay-2"),
+      baseCommission("c2","2026-10-07T11:00:00Z","paid","pay-2"),
+      baseCommission("c3","2026-10-07T12:00:00Z","pending",null),
+    ]:[
+      baseCommission("c1","2026-10-07T10:00:00Z","pending",null),
+      baseCommission("c2","2026-10-07T11:00:00Z","pending",null),
+      baseCommission("c3","2026-10-07T12:00:00Z","pending",null),
+    ];
+    const payouts=[
+      {id:"pay-1",amount_minor:600000,status:"paid",paid_at:"2026-10-06T20:00:00Z",created_at:"2026-10-06T20:00:00Z",provider_reference:"TRX-001",notes:"Primera liquidación",period_from:"2026-10-01T12:00:00Z",period_to:"2026-10-05T18:00:00Z",sales_count:2},
+      ...(settled?[{id:"pay-2",amount_minor:600000,status:"paid",paid_at:"2026-10-07T20:00:00Z",created_at:"2026-10-07T20:00:00Z",provider_reference:"TRX-002",notes:"Pago hasta venta 2",period_from:"2026-10-07T10:00:00Z",period_to:"2026-10-07T11:00:00Z",sales_count:2}]:[]),
+    ];
     if(body.action==="list")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
-      affiliates:[affiliate],totals:{clicks:20,uniqueVisitors:15,orders:4,sales:3,revenueMinor:7500000,commissionMinor:1500000,pendingMinor:settled?0:900000,paidMinor:settled?1500000:600000},
+      affiliates:[affiliate],totals:{clicks:20,uniqueVisitors:15,orders:5,sales:5,revenueMinor:7500000,commissionMinor:1500000,pendingMinor:settled?300000:900000,paidMinor:settled?1200000:600000},
     })});
-    if(body.action==="detail")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
-      affiliate,
-      links:[{id:"link-1",code:"sofia",label:"Principal",status:"active"}],
-      commissions:[],
-      payouts:[{id:"pay-1",amount_minor:600000,status:"paid",paid_at:"2026-10-06T20:00:00Z",created_at:"2026-10-06T20:00:00Z",provider_reference:"TRX-001",notes:"Primera liquidación",period_from:"2026-10-01T12:00:00Z",period_to:"2026-10-05T18:00:00Z",sales_count:2}],
-      series:[],
-    })});
-    if(body.action==="payout"){payoutPayload=body;settled=true;return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,payoutId:"pay-2"})});}
+    if(body.action==="detail")return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({affiliate,links:[{id:"link-1",code:"sofia",label:"Principal",status:"active"}],commissions,payouts,series:[]})});
+    if(body.action==="payout"){payoutPayload=body;settled=true;return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,payout:{payoutId:"pay-2",amountMinor:600000,salesCount:2}})});}
     return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
   });
 
@@ -1527,17 +1537,22 @@ test("admin affiliate panel registers a payout and preserves its settlement hist
   await page.getByText("Sofía Test",{exact:true}).click();
   await expect(page.getByRole("heading",{name:/Marcar comisión como pagada/i})).toBeVisible();
   await expect(page.getByRole("heading",{name:/Liquidaciones registradas/i})).toBeVisible();
-  await expect(page.getByText("2 ventas",{exact:true})).toBeVisible();
+  const countInput=page.getByRole("spinbutton",{name:/Ventas a incluir/i});
+  await expect(countInput).toHaveValue("3");
+  await countInput.fill("2");
+  await expect(page.getByText(/Después quedarán 1 venta pendiente/i)).toBeVisible();
   await page.getByPlaceholder("Ej. transferencia 07/10").fill("TRX-002");
-  await page.getByPlaceholder("Ej. liquidación quincenal").fill("Pago hasta venta 3");
+  await page.getByPlaceholder("Ej. liquidación quincenal").fill("Pago hasta venta 2");
   page.once("dialog",dialog=>dialog.accept());
   await page.getByRole("button",{name:/Pago liquidado/i}).click();
   await expect.poll(()=>Boolean(payoutPayload)).toBe(true);
   const recordedPayout=payoutPayload as unknown as Record<string,unknown>;
+  expect(recordedPayout.commissionCount).toBe(2);
   expect(recordedPayout.providerReference).toBe("TRX-002");
-  expect(recordedPayout.notes).toBe("Pago hasta venta 3");
+  expect(recordedPayout.notes).toBe("Pago hasta venta 2");
   await expect(page.getByText(/Pago liquidado registrado/i)).toBeVisible();
-  await expect(page.getByRole("button",{name:/Sin saldo pendiente/i})).toBeDisabled();
+  await expect(countInput).toHaveValue("1");
+  await expect(page.getByText("TRX-002",{exact:true})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
