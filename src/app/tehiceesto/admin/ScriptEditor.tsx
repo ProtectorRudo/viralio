@@ -203,8 +203,11 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
   inheritance:[
     {path:"inheritance.kicker",label:"Frase superior",kind:"text"},
     {path:"inheritance.title",label:"Título",kind:"textarea"},
-    {path:"inheritance.items",label:"Cosas que quedaron",kind:"lines",hint:"Una por renglón: Título | Texto. Mantené al menos 3."},
+    {path:"inheritance.subtitle",label:"Bajada emocional",kind:"textarea"},
+    {path:"inheritance.items",label:"Huellas que quedaron",kind:"lines",hint:"Una por renglón: Título | Texto. Para Papá, mantené 4."},
     {path:"inheritance.closedLabel",label:"Texto antes de revelar",kind:"text"},
+    {path:"inheritance.outroTitle",label:"Frase de cierre",kind:"text"},
+    {path:"inheritance.outroBody",label:"Cierre emocional",kind:"textarea"},
     {path:"inheritance.cta",label:"Botón para continuar",kind:"text"},
   ],
   lookback:[
