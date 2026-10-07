@@ -135,7 +135,14 @@ export function proxy(request: NextRequest) {
     pathname === "/" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`;
 
   const response = NextResponse.rewrite(target);
-  if (pathname.startsWith("/r/") || pathname.startsWith("/editar/") || pathname === "/mis-regalos") {
+  const privatePath =
+    pathname.startsWith("/r/") ||
+    pathname.startsWith("/editar/") ||
+    pathname === "/mis-regalos" ||
+    pathname.startsWith("/afiliados/") ||
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/");
+  if (privatePath) {
     response.headers.set("Referrer-Policy","no-referrer");
     response.headers.set("X-Robots-Tag","noindex, nofollow, noarchive, noimageindex");
     response.headers.set("Cache-Control","private, no-store, max-age=0, must-revalidate");
