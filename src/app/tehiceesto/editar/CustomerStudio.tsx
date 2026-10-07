@@ -537,14 +537,14 @@ export default function CustomerStudio({code}:{code:string}){
     window.requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));
   }
 
-  if(loading&&accessState==="checking")return <main className="studio-gate"><div className="studio-loader"><span/><strong>Preparando tu estudio…</strong></div></main>;
+  if(loading&&accessState==="checking")return <main className="studio-gate"><div className="studio-loader"><span/><strong>Preparando tu regalo…</strong></div></main>;
 
   if(accessState==="payment")return <main className="studio-gate">
     <section className="studio-gate-card">
       <span className="studio-gate-mark">✓</span>
       <p className="studio-eyebrow">TU COMPRA ESTÁ GUARDADA</p>
       <h1>Falta que se confirme el pago.</h1>
-      <p>En cuanto Mercado Pago lo apruebe, este mismo acceso abre tu estudio automáticamente.</p>
+      <p>En cuanto Mercado Pago lo apruebe, este mismo acceso te deja empezar a personalizar automáticamente.</p>
       <Link className="studio-main-button" href={`/tehiceesto/pedido/${code}`}>Ver estado del pago <b>→</b></Link>
     </section>
   </main>;
