@@ -19,7 +19,9 @@ export default function FloatingWhatsApp() {
 
   const compact = pathname.includes("/experiencias/");
   const home = pathname === "/" || pathname === "/tehiceesto";
-  const createHref = pathname.startsWith("/tehiceesto") ? "/tehiceesto/crear" : "/crear";
+  const experienceSlug=compact?pathname.split("/experiencias/")[1]?.split("/")[0]||"":"";
+  const createBase=pathname.startsWith("/tehiceesto")?"/tehiceesto/crear":"/crear";
+  const createHref=experienceSlug?`${createBase}?experiencia=${encodeURIComponent(experienceSlug)}`:createBase;
 
   return (
     <a
@@ -33,7 +35,7 @@ export default function FloatingWhatsApp() {
         </svg>
       </span>
       <span className="floating-whatsapp-copy">
-        <small>Elegí la experiencia</small>
+        <small>{compact?"Esta experiencia":"Elegí la experiencia"}</small>
         <strong>Quiero el mío</strong>
       </span>
       <span className="floating-whatsapp-arrow" aria-hidden="true">→</span>
