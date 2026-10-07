@@ -6,6 +6,7 @@ import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
+import { getExperienceCopy } from "../experienceCopy";
 import { getExperience as getPremiumV1Experience,type SceneType as PremiumSceneType } from "../template-v1/data";
 import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
@@ -80,6 +81,13 @@ type Basics={
 
 const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Opcional","Revisar"];
 const FEELINGS=["Amor","Emoción","Sorpresa","Diversión","Nostalgia"];
+const SCRATCH_SUGGESTIONS=[
+  "una cita sorpresa sin celulares",
+  "una cena elegida por vos",
+  "un regalo sorpresa",
+  "un día entero para vos",
+  "una promesa que voy a cumplir",
+];
 
 const SCENE_LABELS:Record<string,{title:string;copy:string}>={
   intro:{title:"La entrada",copy:"La primera impresión cuando abre el regalo."},
