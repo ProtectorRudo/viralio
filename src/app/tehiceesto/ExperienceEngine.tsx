@@ -340,7 +340,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               if(!audio)return;
               pauseAllPapaRealAudio(audio);
               papaVoiceActiveRef.current=index;setPapaVoiceIndex(index);
-              try{if(audio.paused){await audio.play()}else audio.pause()}catch{}
+              try{if(audio.paused){if(audio.ended||(Number.isFinite(audio.duration)&&audio.duration>0&&audio.currentTime>=audio.duration-.05))audio.currentTime=0;await audio.play()}else audio.pause()}catch{}
               haptic(7);
               return;
             }
@@ -358,10 +358,12 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 const completed=voicesPlayed.includes(i);
                 const active=papaVoiceIndex===i;
                 const playing=active&&papaVoicePlaying;
-                const progress=completed?1:(papaVoiceProgress[i]||0);
+                const rawProgress=papaVoiceProgress[i]||0;
+                const replaying=active&&(playing||(rawProgress>0&&rawProgress<1));
+                const progress=replaying?rawProgress:completed?1:rawProgress;
                 const duration=papaVoiceDuration[i]||estimateDuration(entry.message);
-                const current=completed?duration:(papaVoiceCurrent[i]||0);
-                const paused=active&&!playing&&!completed&&progress>0;
+                const current=replaying?(papaVoiceCurrent[i]||0):completed?duration:(papaVoiceCurrent[i]||0);
+                const paused=active&&!playing&&rawProgress>0&&rawProgress<1;
                 return <article className={`thi-papa-voice-card-v2 ${active?"is-active ":""}${playing?"is-playing ":""}${paused?"is-paused ":""}${completed?"is-complete":""}`} key={`${entry.name}-${i}`}>
                   <div className="thi-papa-voice-card-visual" aria-hidden="true">{entry.photo?.url&&<img src={entry.photo.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}<i/></div>
                   <span className="thi-papa-voice-index-v2">{String(i+1).padStart(2,"0")}</span>
