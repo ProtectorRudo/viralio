@@ -5548,3 +5548,495 @@
   .thi-papa-inheritance-cta{transition:none}
   .thi-papa-inheritance-outro{animation:none}
 }
+
+
+/* PAPA VOICES · TRUE PLAYER V2 · OCT 2026
+   Real play/pause, real completion, cinematic voice messages.
+   ========================================================= */
+.thi-template-live.thi-theme-papa[data-scene="voices"]{
+  background:
+    radial-gradient(circle at 50% 18%,rgba(124,149,178,.13),transparent 28%),
+    radial-gradient(circle at 74% 78%,rgba(184,150,104,.07),transparent 24%),
+    linear-gradient(180deg,#05080c 0%,#030507 100%)!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-experience-orb.orb-a{
+  background:#7890aa!important;opacity:.05!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-experience-orb.orb-b{
+  background:#b89668!important;opacity:.04!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="voices"]:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:.34;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.011) 0 1px,transparent 1px 4px),
+    radial-gradient(circle at 50% 44%,transparent 31%,rgba(0,0,0,.45) 100%);
+}
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-scene-stage{position:relative;z-index:3}
+.thi-template-live.thi-theme-papa .thi-papa-voices-v2{
+  min-height:100svh;
+  justify-content:flex-start;
+  overflow:visible;
+  padding:112px 16px 138px!important;
+  background:transparent!important;
+}
+.thi-papa-voice-hero-photo{
+  position:absolute;
+  inset:0 0 auto;
+  height:420px;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:0;
+  opacity:.42;
+}
+.thi-papa-voice-hero-photo img{
+  width:100%;height:100%;display:block;
+  filter:saturate(.56) sepia(.14) brightness(.44) contrast(1.08);
+  transform:scale(1.04);
+}
+.thi-papa-voice-hero-photo i{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(3,6,9,.20),rgba(3,6,9,.64) 52%,#05080c 100%),
+    linear-gradient(90deg,rgba(3,6,9,.54),transparent 48%,rgba(3,6,9,.52));
+}
+.thi-papa-voices-v2>.thi-kicker,
+.thi-papa-voices-v2>h2,
+.thi-papa-voices-v2>.thi-papa-voice-intro,
+.thi-papa-voice-list-v2,
+.thi-papa-voice-patience,
+.thi-papa-voice-outro,
+.thi-papa-voice-final-cta{position:relative;z-index:3}
+.thi-papa-voices-v2>.thi-kicker{
+  max-width:760px;
+  margin:0 auto 17px;
+  color:#d0a069!important;
+  font-size:8px!important;
+  line-height:1.55!important;
+  letter-spacing:.25em!important;
+  text-align:center;
+}
+.thi-papa-voices-v2>h2{
+  max-width:920px!important;
+  margin:0 auto!important;
+  color:#f0ece5!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(50px,6.5vw,78px)!important;
+  font-weight:400!important;
+  line-height:.98!important;
+  letter-spacing:-.052em!important;
+  text-align:center;
+  text-wrap:balance;
+}
+.thi-papa-voice-intro{
+  max-width:650px!important;
+  margin:24px auto 35px!important;
+  color:#9aabba!important;
+  font:400 clamp(17px,1.9vw,22px)/1.48 Georgia,"Times New Roman",serif!important;
+  text-align:center;
+  text-wrap:balance;
+}
+.thi-papa-voice-intro:before{
+  content:"";
+  display:block;
+  width:52px;height:1px;
+  margin:0 auto 20px;
+  background:linear-gradient(90deg,transparent,#b89668,transparent);
+}
+
+.thi-papa-voice-list-v2{
+  width:min(920px,94vw);
+  display:grid;
+  gap:14px;
+  margin:0 auto;
+}
+.thi-papa-voice-card-v2{
+  min-height:178px;
+  position:relative;
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr) 68px;
+  align-items:center;
+  gap:16px;
+  padding:22px 22px;
+  overflow:hidden;
+  border:1px solid rgba(169,183,201,.13);
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),transparent 30%),
+    rgba(7,11,16,.90);
+  box-shadow:0 18px 48px rgba(0,0,0,.23);
+  transition:
+    min-height .38s cubic-bezier(.2,.8,.2,1),
+    transform .28s ease,
+    border-color .32s ease,
+    box-shadow .32s ease,
+    background .32s ease;
+}
+.thi-papa-voice-card-v2.is-active{
+  min-height:226px;
+  transform:translateY(-2px);
+  border-color:rgba(211,165,110,.68);
+  background:
+    linear-gradient(100deg,rgba(184,150,104,.065),transparent 42%),
+    rgba(8,12,17,.965);
+  box-shadow:
+    0 30px 78px rgba(0,0,0,.34),
+    0 0 36px rgba(184,150,104,.08),
+    inset 0 0 0 1px rgba(184,150,104,.04);
+}
+.thi-papa-voice-card-v2.is-playing{
+  border-color:rgba(226,177,117,.82);
+  box-shadow:
+    0 32px 84px rgba(0,0,0,.38),
+    0 0 42px rgba(211,165,110,.13),
+    inset 0 0 0 1px rgba(211,165,110,.055);
+}
+.thi-papa-voice-card-v2.is-complete:not(.is-active){
+  border-color:rgba(184,150,104,.22);
+}
+.thi-papa-voice-card-visual{
+  position:absolute;
+  z-index:1;
+  inset:0 0 0 auto;
+  width:48%;
+  overflow:hidden;
+  opacity:.35;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 42%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 42%,#000 100%);
+  transition:opacity .35s ease,transform .4s ease;
+}
+.thi-papa-voice-card-visual img{
+  width:100%;height:100%;display:block;
+  filter:saturate(.54) sepia(.18) brightness(.58) contrast(1.08);
+  transform:scale(1.04);
+}
+.thi-papa-voice-card-visual i{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(3,6,9,.05),rgba(3,6,9,.34)),
+    radial-gradient(circle at 72% 45%,transparent 18%,rgba(3,6,9,.26));
+}
+.thi-papa-voice-card-v2.is-active .thi-papa-voice-card-visual{opacity:.66;transform:scale(1.012)}
+.thi-papa-voice-card-v2.is-active .thi-papa-voice-card-visual img{
+  filter:saturate(.67) sepia(.20) brightness(.76) contrast(1.08);
+}
+.thi-papa-voice-index-v2{
+  position:relative;
+  z-index:4;
+  align-self:start;
+  padding-top:5px;
+  color:#d0a069;
+  font:400 20px/1 Georgia,"Times New Roman",serif;
+  letter-spacing:.08em;
+}
+.thi-papa-voice-index-v2:after{
+  content:"";display:block;width:20px;height:1px;margin-top:10px;background:#b89668;
+}
+.thi-papa-voice-card-copy{
+  position:relative;
+  z-index:4;
+  min-width:0;
+  max-width:68%;
+  align-self:center;
+}
+.thi-papa-voice-card-copy>small{
+  display:block;
+  margin:0 0 5px!important;
+  color:#7e8ea1!important;
+  font-size:7px!important;
+  letter-spacing:.20em!important;
+}
+.thi-papa-voice-card-copy>strong{
+  display:block;
+  color:#f0ece5;
+  font:400 clamp(25px,3vw,35px)/1.05 Georgia,"Times New Roman",serif;
+}
+.thi-papa-voice-card-intro{
+  display:block;
+  margin-top:6px;
+  color:#9aa8b6;
+  font:400 11px/1.45 Georgia,"Times New Roman",serif;
+}
+.thi-papa-voice-card-copy blockquote{
+  margin:7px 0 0;
+  color:#dfe4e8;
+  font:italic 400 15px/1.48 Georgia,"Times New Roman",serif;
+}
+.thi-papa-voice-wave-v2{
+  width:min(360px,100%);
+  height:34px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:2px;
+  margin-top:14px;
+  overflow:hidden;
+}
+.thi-papa-voice-wave-v2 b{
+  width:3px;
+  height:24%;
+  flex:0 0 auto;
+  border-radius:999px;
+  background:#435264;
+  transition:background .18s ease,box-shadow .18s ease;
+}
+.thi-papa-voice-wave-v2 b:nth-child(3n){height:62%}
+.thi-papa-voice-wave-v2 b:nth-child(4n){height:88%}
+.thi-papa-voice-wave-v2 b:nth-child(5n){height:45%}
+.thi-papa-voice-wave-v2 b:nth-child(7n){height:72%}
+.thi-papa-voice-wave-v2 b.done{
+  background:#d8a565;
+  box-shadow:0 0 8px rgba(216,165,101,.22);
+}
+.thi-papa-voice-wave-v2>i{
+  position:absolute;
+  top:2px;bottom:2px;
+  width:2px;
+  border-radius:999px;
+  background:#f0bd7f;
+  box-shadow:0 0 10px rgba(240,189,127,.48);
+  transform:translateX(-1px);
+}
+.thi-papa-voice-time{
+  display:block;
+  margin-top:4px;
+  color:#93a0ad;
+  font:500 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.05em;
+}
+.thi-papa-voice-time i{margin:0 4px;color:#5f6d7c;font-style:normal}
+.thi-papa-voice-control{
+  position:relative;
+  z-index:5;
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  justify-self:end;
+  border:1px solid rgba(184,150,104,.30);
+  border-radius:50%;
+  background:rgba(4,7,10,.65);
+  color:#d9aa70;
+  font:500 18px/1 system-ui,sans-serif;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,.22);
+  transition:transform .24s ease,border-color .24s ease,background .24s ease,box-shadow .24s ease;
+}
+.thi-papa-voice-control:hover,
+.thi-papa-voice-control:focus-visible{
+  transform:scale(1.04);
+  border-color:rgba(229,180,118,.68);
+  outline:none;
+}
+.thi-papa-voice-card-v2.is-playing .thi-papa-voice-control{
+  border-color:rgba(236,187,124,.86);
+  background:radial-gradient(circle at 50% 50%,rgba(184,150,104,.18),rgba(5,8,12,.82));
+  box-shadow:
+    0 0 0 7px rgba(184,150,104,.055),
+    0 0 32px rgba(211,165,110,.18);
+}
+.thi-papa-voice-card-v2.is-complete .thi-papa-voice-control{
+  color:#e7bd86;
+  border-color:rgba(184,150,104,.36);
+}
+.thi-papa-voice-card-v2 audio{display:none}
+
+.thi-papa-voice-patience{
+  margin:24px auto 0!important;
+  color:#8396aa!important;
+  font:400 14px/1.4 Georgia,"Times New Roman",serif!important;
+  text-align:center;
+}
+.thi-papa-voice-patience:before,
+.thi-papa-voice-patience:after{
+  content:"";
+  display:inline-block;
+  width:42px;height:1px;
+  margin:0 14px 4px;
+  background:linear-gradient(90deg,transparent,#b89668);
+}
+.thi-papa-voice-patience:after{transform:scaleX(-1)}
+
+.thi-papa-voice-outro{
+  width:min(700px,90vw);
+  margin:36px auto 0;
+  text-align:center;
+  animation:thiPapaVoiceOutro .7s cubic-bezier(.2,.8,.2,1) both;
+}
+.thi-papa-voice-outro>i{
+  display:block;
+  width:48px;height:1px;margin:0 auto 18px;
+  background:linear-gradient(90deg,transparent,#b89668,transparent);
+}
+.thi-papa-voice-outro>strong{
+  display:block;
+  color:#e9edf1;
+  font:400 clamp(22px,2.8vw,32px)/1.2 Georgia,"Times New Roman",serif;
+}
+.thi-papa-voice-outro>p{
+  width:min(620px,88vw);
+  margin:10px auto 0;
+  color:#d0a06d;
+  font:italic 400 clamp(19px,2.4vw,27px)/1.36 Georgia,"Times New Roman",serif;
+}
+.thi-papa-voice-final-cta{
+  min-width:330px;
+  min-height:58px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:28px;
+  padding:0 28px;
+  border:1px solid rgba(169,183,201,.12);
+  border-radius:999px;
+  background:rgba(255,255,255,.018);
+  color:#697787;
+  box-shadow:none;
+  font:400 16px/1 Georgia,"Times New Roman",serif;
+  transition:transform .24s ease,border-color .24s ease,background .24s ease,color .24s ease,box-shadow .24s ease;
+}
+.thi-papa-voice-final-cta:disabled{
+  opacity:.34;
+  cursor:not-allowed;
+}
+.thi-papa-voice-final-cta:not(:disabled){
+  cursor:pointer;
+  border-color:rgba(238,203,155,.58);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18),transparent 30%),
+    linear-gradient(135deg,#d2a46b,#a87a49);
+  color:#090b0e;
+  box-shadow:
+    0 20px 58px rgba(0,0,0,.34),
+    0 0 36px rgba(184,150,104,.11),
+    inset 0 1px 0 rgba(255,255,255,.28);
+}
+.thi-papa-voice-final-cta:not(:disabled):hover,
+.thi-papa-voice-final-cta:not(:disabled):focus-visible{
+  transform:translateY(-2px);
+  outline:none;
+}
+@keyframes thiPapaVoiceOutro{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* No stray controls or old purple glow inside the emotional audio chapter. */
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-scene-meta,
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-reset-journey,
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-progress-premium{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@media(max-width:650px){
+  .thi-template-live.thi-theme-papa .thi-papa-voices-v2{
+    padding:108px 12px 118px!important;
+  }
+  .thi-papa-voice-hero-photo{height:350px}
+  .thi-papa-voices-v2>.thi-kicker{
+    width:90vw;
+    font-size:6.8px!important;
+    line-height:1.55!important;
+    letter-spacing:.21em!important;
+  }
+  .thi-papa-voices-v2>h2{
+    width:94vw;
+    font-size:clamp(39px,10.4vw,47px)!important;
+    line-height:.97!important;
+  }
+  .thi-papa-voice-intro{
+    width:88vw;
+    margin:19px auto 28px!important;
+    font-size:16px!important;
+  }
+  .thi-papa-voice-list-v2{
+    width:94vw;
+    gap:10px;
+  }
+  .thi-papa-voice-card-v2{
+    min-height:146px;
+    grid-template-columns:38px minmax(0,1fr) 48px;
+    gap:10px;
+    padding:15px 10px 15px 12px;
+    border-radius:14px;
+  }
+  .thi-papa-voice-card-v2.is-active{min-height:205px}
+  .thi-papa-voice-index-v2{
+    font-size:17px;
+    padding-top:4px;
+  }
+  .thi-papa-voice-index-v2:after{width:17px;margin-top:8px}
+  .thi-papa-voice-card-copy{max-width:76%}
+  .thi-papa-voice-card-copy>small{font-size:6.4px!important}
+  .thi-papa-voice-card-copy>strong{font-size:clamp(24px,6.5vw,29px)}
+  .thi-papa-voice-card-intro{font-size:10px}
+  .thi-papa-voice-card-copy blockquote{
+    margin-top:6px;
+    font-size:12px;
+    line-height:1.45;
+  }
+  .thi-papa-voice-card-visual{
+    width:49%;
+    opacity:.30;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 50%,#000 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 50%,#000 100%);
+  }
+  .thi-papa-voice-card-v2.is-active .thi-papa-voice-card-visual{opacity:.62}
+  .thi-papa-voice-wave-v2{
+    height:27px;
+    margin-top:10px;
+    gap:1.5px;
+  }
+  .thi-papa-voice-wave-v2 b{width:2px}
+  .thi-papa-voice-control{
+    width:44px;height:44px;font-size:15px;
+  }
+  .thi-papa-voice-time{font-size:8px}
+  .thi-papa-voice-patience{
+    width:92vw;
+    margin-top:20px!important;
+    font-size:13px!important;
+  }
+  .thi-papa-voice-patience:before,
+  .thi-papa-voice-patience:after{
+    width:26px;margin-inline:9px;
+  }
+  .thi-papa-voice-outro{
+    width:91vw;
+    margin-top:30px;
+  }
+  .thi-papa-voice-outro>strong{font-size:23px}
+  .thi-papa-voice-outro>p{width:88vw;font-size:20px}
+  .thi-papa-voice-final-cta{
+    width:min(88vw,360px);
+    min-width:0;
+    min-height:54px;
+    margin-top:24px;
+    padding-inline:18px;
+    font-size:14px;
+  }
+}
+@media(max-width:390px){
+  .thi-papa-voices-v2>h2{font-size:39px!important}
+  .thi-papa-voice-card-v2{
+    grid-template-columns:34px minmax(0,1fr) 44px;
+    padding-inline:10px;
+  }
+  .thi-papa-voice-card-copy{max-width:78%}
+  .thi-papa-voice-card-v2.is-active{min-height:198px}
+  .thi-papa-voice-card-copy blockquote{font-size:11.5px}
+  .thi-papa-voice-control{width:42px;height:42px}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-papa-voice-card-v2,
+  .thi-papa-voice-control,
+  .thi-papa-voice-card-visual,
+  .thi-papa-voice-final-cta{transition:none}
+  .thi-papa-voice-outro{animation:none}
+}
