@@ -19,7 +19,7 @@ type Totals={clicks:number;uniqueVisitors:number;orders:number;sales:number;reve
 type Detail={
   affiliate:AffiliateRow;
   links:{id:string;code:string;label:string;status:string}[];
-  commissions:{id:string;gross_amount_minor:number;commission_amount_minor:number;status:string;approved_at:string|null}[];
+  commissions:{id:string;gross_amount_minor:number;commission_amount_minor:number;status:string;approved_at:string|null;created_at:string;payout_id:string|null;paid_at:string|null;reversed_at:string|null}[];
   payouts:{id:string;amount_minor:number;status:string;paid_at:string|null;created_at:string;provider_reference:string|null;notes:string|null;period_from:string|null;period_to:string|null;sales_count:number}[];
   series:{date:string;clicks:number;uniqueVisitors:number}[];
 };
@@ -38,6 +38,7 @@ export default function AffiliateAdminDashboard(){
   const [message,setMessage]=useState("");
   const [payoutReference,setPayoutReference]=useState("");
   const [payoutNotes,setPayoutNotes]=useState("");
+  const [payoutCount,setPayoutCount]=useState("");
   const [payoutBusy,setPayoutBusy]=useState(false);
 
   const hasSession=()=>typeof window!=="undefined"&&Boolean(window.sessionStorage.getItem(SESSION_KEY));
@@ -79,7 +80,12 @@ export default function AffiliateAdminDashboard(){
   }
 
   async function openDetail(id:string){
-    setLoading(true);try{setDetail(await affiliateAdminCall<Detail>("detail",{id}));}finally{setLoading(false);}
+    setLoading(true);
+    try{
+      const next=await affiliateAdminCall<Detail>("detail",{id});
+      setDetail(next);
+      setPayoutCount(String(next.commissions.filter(item=>item.status==="pending").length||""));
+    }finally{setLoading(false);}
   }
 
   async function updateAffiliate(patch:Record<string,unknown>){
@@ -100,25 +106,42 @@ export default function AffiliateAdminDashboard(){
   }
 
   async function payout(){
-    if(!detail||!detail.affiliate.commission_pending_minor||payoutBusy)return;
-    const amount=detail.affiliate.commission_pending_minor;
-    if(!window.confirm(`Vas a marcar como liquidado ${money(amount)} para ${detail.affiliate.name}. Esto no envía dinero: deja registrada la liquidación y separa estas ventas de las próximas. ¿Confirmar?`))return;
+    if(!detail||!selectedPayoutCount||!selectedPayoutAmount||payoutBusy)return;
+    const remaining=Math.max(0,pendingCommissions.length-selectedPayoutCount);
+    const confirmText=`Vas a marcar como liquidadas ${selectedPayoutCount} venta${selectedPayoutCount===1?"":"s"} por ${money(selectedPayoutAmount)} para ${detail.affiliate.name}. ${remaining?`Quedarán ${remaining} venta${remaining===1?"":"s"} pendientes.`:"No quedarán ventas pendientes."} Esto no envía dinero. ¿Confirmar?`;
+    if(!window.confirm(confirmText))return;
     setPayoutBusy(true);setMessage("");
     try{
       await affiliateAdminCall("payout",{
         affiliateId:detail.affiliate.id,
+        commissionCount:selectedPayoutCount,
         providerReference:payoutReference.trim(),
         notes:payoutNotes.trim()||"Liquidación manual registrada desde Te Hice Esto",
       });
       setPayoutReference("");setPayoutNotes("");
-      setMessage(`Pago liquidado registrado por ${money(amount)} ✓`);
+      setMessage(`Pago liquidado registrado por ${money(selectedPayoutAmount)} ✓`);
+      const next=await affiliateAdminCall<Detail>("detail",{id:detail.affiliate.id});
+      setDetail(next);
+      setPayoutCount(String(next.commissions.filter(item=>item.status==="pending").length||""));
       await load(true);
     }catch(error){
       setMessage(error instanceof Error&&error.message==="nothing_to_pay"
         ?"No hay comisiones pendientes para liquidar."
-        :"No se pudo registrar la liquidación.");
+        :error instanceof Error&&error.message==="invalid_commission_count"
+          ?"Revisá cuántas ventas querés incluir."
+          :"No se pudo registrar la liquidación.");
     }finally{setPayoutBusy(false);}
   }
+
+  const pendingCommissions=useMemo(()=>[...(detail?.commissions||[])]
+    .filter(item=>item.status==="pending")
+    .sort((a,b)=>new Date(a.approved_at||a.created_at).getTime()-new Date(b.approved_at||b.created_at).getTime()),[detail]);
+  const requestedPayoutCount=Number(payoutCount);
+  const selectedPayoutCount=pendingCommissions.length
+    ?Math.min(pendingCommissions.length,Math.max(1,Number.isFinite(requestedPayoutCount)&&requestedPayoutCount>0?Math.floor(requestedPayoutCount):pendingCommissions.length))
+    :0;
+  const selectedPayoutAmount=pendingCommissions.slice(0,selectedPayoutCount).reduce((sum,item)=>sum+Number(item.commission_amount_minor||0),0);
+  const remainingPayoutCount=Math.max(0,pendingCommissions.length-selectedPayoutCount);
   const conversion=useMemo(()=>totals.uniqueVisitors?totals.sales/totals.uniqueVisitors:0,[totals]);
 
   if(!ready)return <main className="thi-aff-admin-shell"><div className="thi-admin-loading">Cargando afiliados…</div></main>;
@@ -233,10 +256,15 @@ export default function AffiliateAdminDashboard(){
               <p>No mueve dinero. Cuando vos le pagues por transferencia u otro medio, registralo acá. Las ventas incluidas pasan a “liquidadas” y las nuevas vuelven a acumularse desde cero.</p>
             </div>
             <div className="thi-aff-settlement-form">
+              <label><span>Ventas a incluir</span><input type="number" min="1" max={pendingCommissions.length||1} step="1" value={payoutCount} onChange={event=>setPayoutCount(event.target.value)} placeholder={pendingCommissions.length?String(pendingCommissions.length):"0"}/></label>
               <label><span>Referencia <em>opcional</em></span><input value={payoutReference} onChange={event=>setPayoutReference(event.target.value)} placeholder="Ej. transferencia 07/10"/></label>
               <label><span>Nota <em>opcional</em></span><input value={payoutNotes} onChange={event=>setPayoutNotes(event.target.value)} placeholder="Ej. liquidación quincenal"/></label>
-              <button className="thi-primary thi-aff-settle-button" disabled={!detail.affiliate.commission_pending_minor||payoutBusy} onClick={payout}>
-                {payoutBusy?"Registrando…":detail.affiliate.commission_pending_minor?`Pago liquidado · ${money(detail.affiliate.commission_pending_minor)}`:"Sin saldo pendiente"}
+              <div className="thi-aff-settlement-summary" aria-live="polite">
+                <strong>{selectedPayoutCount?`${selectedPayoutCount} venta${selectedPayoutCount===1?"":"s"} · ${money(selectedPayoutAmount)}`:"Sin saldo pendiente"}</strong>
+                <span>{selectedPayoutCount?(remainingPayoutCount?`Después quedarán ${remainingPayoutCount} venta${remainingPayoutCount===1?"":"s"} pendientes.`:"Esta liquidación deja el saldo pendiente en cero."):"Las nuevas ventas volverán a acumularse acá."}</span>
+              </div>
+              <button className="thi-primary thi-aff-settle-button" disabled={!selectedPayoutCount||!selectedPayoutAmount||payoutBusy} onClick={payout}>
+                {payoutBusy?"Registrando…":selectedPayoutCount?`Pago liquidado · ${money(selectedPayoutAmount)}`:"Sin saldo pendiente"}
               </button>
             </div>
           </section>
