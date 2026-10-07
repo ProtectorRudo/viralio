@@ -61,7 +61,7 @@ jobs:
           declare -A checks=(
             ["/crear"]="Elegí la que más se parece a"
             ["/experiencias/mama"]="Todo lo que hiciste sin pedir aplausos"
-            ["/experiencias/papa"]="Las cosas tuyas que quedaron en mí"
+            ["/experiencias/papa"]="Todo eso tuyo que se nos quedó"
             ["/experiencias/amistad"]="Expediente: nuestra amistad"
           )
           for route in "${!checks[@]}"; do
