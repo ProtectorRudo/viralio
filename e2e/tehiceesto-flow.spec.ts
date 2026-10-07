@@ -917,9 +917,10 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 });
 
 
-test("assisted purchase chooses an experience, captures contact and opens checkout",async({page})=>{
+test("self-serve purchase chooses an experience, captures contact and opens checkout",async({page})=>{
   test.setTimeout(45_000);
-  const code="THI-ORDER-TEST";
+  const code="1234567890abcdef12";
+  const editorToken="a".repeat(64);
 
   await page.route("**/functions/v1/order-create",async route=>{
     const request=route.request();
@@ -940,6 +941,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
         currency:"ARS",
         checkoutUrl:"https://checkout.test/tehiceesto",
         checkoutReady:true,
+        editorToken,
       }),
     });
   });
@@ -959,9 +961,84 @@ test("assisted purchase chooses an experience, captures contact and opens checko
   await page.locator('.order-consent input[type="checkbox"]').check();
   await page.getByRole("button",{name:/Revisar y pagar/i}).click();
 
-  await expect(page.getByRole("heading",{name:/Tu experiencia empieza acá/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Pagás\. Y empezás a crear/i})).toBeVisible();
   await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
   await page.waitForURL(/checkout\.test/);
+  await page.goto("/tehiceesto/crear");
+  await expect.poll(()=>page.evaluate(key=>window.localStorage.getItem(key),`thi_editor_access:${code}`)).toBe(editorToken);
+});
+
+
+test("customer studio is guided, mobile-safe and publishes without technical language",async({page})=>{
+  test.setTimeout(45_000);
+  const code="1234567890abcdef12";
+  const editorToken="b".repeat(64);
+  let published=false;
+  let recipient="A definir";
+  let recipe=["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"];
+
+  await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{
+    key:`thi_editor_access:${code}`,token:editorToken,
+  });
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    expect(body.editorToken).toBe(editorToken);
+    if(body.action==="openStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:published?"published":"paid",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:recipient,occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:null,closing_text:null,music_url:null,scene_recipe:recipe,
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:published?new Date().toISOString():null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},
+        media:[],
+      })});
+    }
+    if(body.action==="saveStudioBasics"){
+      recipient=String(body.recipientName||recipient);
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+    }
+    if(body.action==="saveStudioRecipe"){
+      recipe=(body.sceneRecipe as string[])||recipe;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,sceneRecipe:recipe})});
+    }
+    if(body.action==="publishStudio"){
+      published=true;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,giftUrl:`https://tehiceesto.com/r/${code}`})});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,sceneContent:{}})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+
+  await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto\?/i})).toBeVisible();
+  await expect(page.getByText(/scene_recipe|metadata/i)).toHaveCount(0);
+  await page.getByPlaceholder("Ej. Ailín").fill("Ailín");
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  await expect(page.getByRole("heading",{name:/Elegí las fotos/i})).toBeVisible();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByRole("heading",{name:/Hay cosas que emocionan distinto/i})).toBeVisible();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByRole("heading",{name:/No hace falta escribir/i})).toBeVisible();
+  await page.locator(".studio-field.important textarea").fill("Gracias por caminar conmigo. Esto recién empieza.");
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  await expect(page.getByRole("heading",{name:/¿Querés sacar alguna parte\?/i})).toBeVisible();
+  const optional=page.locator(".studio-switch").first();
+  await optional.click();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Cambiar cualquier texto/i})).toBeVisible();
+  await page.getByRole("button",{name:/Publicar mi regalo/i}).first().click();
+
+  await expect(page.getByRole("heading",{name:/Tu regalo está listo para vivirlo/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Abrir regalo/i})).toHaveAttribute("href",`/tehiceesto/r/${code}`);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
 test("affiliate dashboards stay private and mobile-safe",async({page})=>{
