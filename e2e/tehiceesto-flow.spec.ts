@@ -1039,6 +1039,8 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
   await expect(page.getByRole("button",{name:/Cambiar cualquier texto/i})).toBeVisible();
+  await page.waitForTimeout(1100);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   const previewShot="visual-qa-evidence/tehiceesto-studio-mobile-preview.png";
   await page.screenshot({path:previewShot,fullPage:true});
   await testInfo.attach("tehiceesto-studio-mobile-preview",{path:previewShot,contentType:"image/png"});
