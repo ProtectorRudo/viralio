@@ -363,8 +363,8 @@ export default function CreatorWizard() {
               <span className="eyebrow">03 · Confirmar y pagar</span>
               <h1>Pagás. Y empezás a crear.</h1>
               <p>
-                Cuando Mercado Pago confirme la compra, entrás a un estudio guiado:
-                subís tus recuerdos, cambiás las palabras, ocultás lo que no quieras y
+                Cuando Mercado Pago confirme la compra, te guiamos paso a paso:
+                elegís tus fotos y audios, cambiás las palabras que quieras y
                 ves el resultado antes de compartirlo.
               </p>
             </header>
@@ -433,7 +433,7 @@ export default function CreatorWizard() {
 
               <div className="order-after-payment">
                 <article><span>01</span><p>Elegís y pagás.</p></article>
-                <article><span>02</span><p>Se habilita tu estudio privado.</p></article>
+                <article><span>02</span><p>Se habilita la personalización.</p></article>
                 <article><span>03</span><p>Subís fotos, audios y tus palabras.</p></article>
                 <article><span>04</span><p>Publicás y recibís tu link al instante.</p></article>
               </div>
