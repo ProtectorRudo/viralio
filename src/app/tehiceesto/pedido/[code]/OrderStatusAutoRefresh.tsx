@@ -10,7 +10,7 @@ export default function OrderStatusAutoRefresh({active=true}:{active?:boolean}){
     if(!active) return;
     const timer=window.setInterval(()=>{
       if(document.visibilityState==="visible") router.refresh();
-    },30_000);
+    },8_000);
     return ()=>window.clearInterval(timer);
   },[active,router]);
 
