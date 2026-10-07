@@ -6,6 +6,7 @@ import { getExperience as getPremiumV1Experience } from "../../template-v1/data"
 import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
 import AffiliateRedirect from "./AffiliateRedirect";
+import { effectiveRecipeForMedia } from "../../effectiveRecipe";
 
 const SUPABASE_URL="https://efvvadfxuyieswdqnsjg.supabase.co";
 const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
@@ -34,9 +35,18 @@ export default async function PublishedGiftPage({
   const response=await fetch(`${SUPABASE_URL}/functions/v1/gift-read?code=${encodeURIComponent(code)}`,{headers:{apikey:PUBLISHABLE_KEY,accept:"application/json"},cache:"no-store"});
   if(response.status===404)notFound();if(!response.ok)throw new Error("gift_read_failed");
   const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
-  const experience={...base,demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
-    recipe:Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?(payload.gift.scene_recipe as typeof base.recipe):base.recipe,accent:payload.gift.theme_data?.accent||base.accent};
   const ordered=[...(payload.media||[])].sort((a,b)=>a.sort_order-b.sort_order);
+  const hasPhoto=ordered.some(item=>item.kind==="image"&&item.url);
+  const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
+  const hasVoice=ordered.some(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack");
+  const storedRecipe=Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?payload.gift.scene_recipe:base.recipe;
+  const effectiveRecipe=effectiveRecipeForMedia(storedRecipe,{
+    hasPhoto,
+    hasVoice,
+    hasVideo,
+  }) as typeof base.recipe;
+  const experience={...base,demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
+    recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
   const Engine=frozenV1?PremiumV1Engine:ExperienceEngine;
   return <Engine experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}

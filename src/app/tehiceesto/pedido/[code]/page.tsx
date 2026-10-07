@@ -32,7 +32,7 @@ type StatusPayload={
 
 const stages=[
   {index:"01",title:"Elegiste tu experiencia",copy:"Tu pedido y tus datos quedaron guardados de forma privada."},
-  {index:"02",title:"Pago confirmado",copy:"Mercado Pago habilita tu estudio cuando acredita la compra."},
+  {index:"02",title:"Pago confirmado",copy:"Mercado Pago habilita la personalización cuando acredita la compra."},
   {index:"03",title:"La hacés tuya",copy:"Subís fotos y audios, cambiás palabras y elegís qué partes querés mostrar."},
   {index:"04",title:"Lista para compartir",copy:"Publicás y recibís el link privado en el momento."},
 ] as const;
@@ -89,7 +89,7 @@ export default async function OrderStatusPage({
       </p>
       <div className={`order-status-live ${ready?"ready":paid?"production":"payment"}`}>
         <i/>
-        <span>{ready?"LISTA PARA COMPARTIR":paid?"ESTUDIO HABILITADO":"ESPERANDO CONFIRMACIÓN DE PAGO"}</span>
+        <span>{ready?"LISTA PARA COMPARTIR":paid?"YA PODÉS PERSONALIZAR":"ESPERANDO CONFIRMACIÓN DE PAGO"}</span>
       </div>
     </section>
 
@@ -104,7 +104,7 @@ export default async function OrderStatusPage({
               :"El pago no se completó"}</strong>
           <p>{pago==="exitoso"
             ?paid
-              ?"Tu estudio privado ya está habilitado. Entrá y hacelo tuyo."
+              ?"El pago está confirmado. Ya podés empezar a personalizar tu regalo."
               :"Mercado Pago ya recibió la operación. La confirmación puede tardar unos segundos; esta pantalla se actualiza sola."
             :pago==="pendiente"
               ?"No hace falta empezar de nuevo. Podés volver al botón de pago cuando quieras."
@@ -112,6 +112,33 @@ export default async function OrderStatusPage({
         </div>
       </section>
     )}
+
+    {ready?(
+      <section className="order-status-ready">
+        <span>TU REGALO ESTÁ PUBLICADO</span>
+        <h2>Ya podés mandarlo.</h2>
+        <p>El link es privado. Podés abrirlo, compartirlo o volver a personalizarlo cuando quieras.</p>
+        <div className="order-status-actions">
+          <Link href={`/tehiceesto/r/${data.code}`} className="order-status-primary">Abrir mi regalo <b>↗</b></Link>
+          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-whatsapp">Cambiar algo</Link>
+        </div>
+        <small>No publiques capturas si querés conservar la sorpresa.</small>
+      </section>
+    ):paid?(
+      <section className="order-status-waiting">
+        <div>
+          <span>SIGUIENTE PASO</span>
+          <h2>Ahora hacelo tuyo.</h2>
+          <p>Te vamos guiando pantalla por pantalla. No necesitás saber editar ni diseñar nada. Todo se guarda automáticamente.</p>
+        </div>
+        <div className="order-status-actions">
+          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-pay">
+            Empezar a personalizar <b>→</b>
+          </Link>
+          <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Necesito ayuda</a>
+        </div>
+      </section>
+    ):null}
 
     <section className="order-status-timeline">
       {stages.map((item,index)=>{
@@ -129,37 +156,12 @@ export default async function OrderStatusPage({
       })}
     </section>
 
-    {ready?(
-      <section className="order-status-ready">
-        <span>TU REGALO ESTÁ PUBLICADO</span>
-        <h2>Ya podés mandarlo.</h2>
-        <p>El link es privado. Podés vivirlo una vez más, compartirlo o entrar al estudio si querés cambiar algo.</p>
-        <div className="order-status-actions">
-          <Link href={`/tehiceesto/r/${data.code}`} className="order-status-primary">Abrir experiencia <b>↗</b></Link>
-          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-whatsapp">Editar regalo</Link>
-        </div>
-        <small>No publiques capturas si querés conservar la sorpresa.</small>
-      </section>
-    ):paid?(
-      <section className="order-status-waiting">
-        <div>
-          <span>YA PODÉS EMPEZAR</span>
-          <h2>Tu estudio privado está listo.</h2>
-          <p>Te guiamos paso a paso. No tenés que diseñar nada: sólo cargar tus recuerdos y decidir qué querés decir. Todo se guarda solo.</p>
-        </div>
-        <div className="order-status-actions">
-          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-pay">
-            Personalizar mi regalo <b>→</b>
-          </Link>
-          <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Necesito ayuda ↗</a>
-        </div>
-      </section>
-    ):(
+    {!paid&&!ready&&(
       <section className="order-status-waiting">
         <div>
           <span>ESTADO ACTUAL</span>
           <h2>Falta confirmar el pago.</h2>
-          <p>Cuando Mercado Pago acredite la operación, este mismo lugar va a mostrarte el botón para entrar a tu estudio privado.</p>
+          <p>Cuando Mercado Pago lo acredite, acá mismo va a aparecer el botón para empezar a personalizar.</p>
         </div>
         <div className="order-status-actions">
           {data.order?.checkoutUrl&&(
@@ -167,7 +169,7 @@ export default async function OrderStatusPage({
               {amount?`Pagar ${amount}`:"Ir al pago"} <b>↗</b>
             </a>
           )}
-          <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Consultar por WhatsApp ↗</a>
+          <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Consultar por WhatsApp</a>
         </div>
       </section>
     )}

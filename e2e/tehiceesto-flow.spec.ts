@@ -630,7 +630,7 @@ test("pair finale is a clean premium epilogue with integrated conversion CTA",as
   await expect(reactions.first()).toHaveAttribute("aria-pressed","true");
 
   const create=page.locator('[data-action="create-story"]');
-  await expect(create).toHaveAttribute("href","/tehiceesto/crear");
+  await expect(create).toHaveAttribute("href","/tehiceesto/crear?experiencia=pareja");
   await page.waitForTimeout(3400);
   await expect(create).toBeVisible();
 
@@ -918,6 +918,15 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 });
 
 
+test("preselected experience skips the chooser and keeps the purchase obvious",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/crear?experiencia=pareja");
+  await expect(page.getByRole("heading",{name:/Tres datos y listo/i})).toBeVisible();
+  await expect(page.getByText("Nuestra historia",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Elegir para mi pareja/i})).toHaveCount(0);
+  await expect(page.getByRole("button",{name:/Revisar y pagar/i})).toBeEnabled();
+});
+
 test("self-serve purchase chooses an experience, captures contact and opens checkout",async({page})=>{
   test.setTimeout(45_000);
   const code="1234567890abcdef12";
@@ -957,7 +966,7 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
   await page.getByRole("button",{name:/Elegir para mi pareja/i}).click();
 
   await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
-  await page.getByPlaceholder("Ej. +54 9 221 ...").fill("+54 9 221 555 1234");
+  await page.getByPlaceholder("Ej. 2215653163").fill("5492215551234");
   await page.getByPlaceholder("tu@email.com").fill("mauro@example.com");
   await page.locator('.order-consent input[type="checkbox"]').check();
   await page.getByRole("button",{name:/Revisar y pagar/i}).click();
@@ -969,6 +978,65 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
   await expect.poll(()=>page.evaluate(key=>window.localStorage.getItem(key),`thi_editor_access:${code}`)).toBe(editorToken);
 });
 
+
+test("customer studio gives a zero-tech user one obvious action at a time",async({page})=>{
+  const code="fedcba0987654321ab";
+  const editorToken="d".repeat(64);
+
+  await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{
+    key:`thi_editor_access:${code}`,token:editorToken,
+  });
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="openStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:"paid",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:"A definir",occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:null,closing_text:null,music_url:null,
+          scene_recipe:["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"],
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},
+        media:[],
+      })});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+
+  await expect(page.getByText(/PASO 1 DE 6 · PERSONAS/i)).toBeVisible();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByText(/Primero escribí el nombre/i)).toBeVisible();
+  await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto/i})).toBeVisible();
+
+  await page.getByPlaceholder("Ej. Ailín").fill("Ailín");
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByText(/PASO 2 DE 6 · FOTOS/i)).toBeVisible();
+  await expect(page.getByRole("button",{name:/Elegir fotos/i})).toBeVisible();
+
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByText(/PASO 3 DE 6 · AUDIOS/i)).toBeVisible();
+  await expect(page.getByText(/Los audios son opcionales/i)).toBeVisible();
+
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByText(/PASO 4 DE 6 · PALABRAS/i)).toBeVisible();
+  await expect(page.locator(".studio-field.important textarea")).toBeVisible();
+  await expect(page.getByText("La primera frase",{exact:true})).toBeHidden();
+  await expect(page.getByRole("button",{name:/No sé qué escribir/i})).toBeVisible();
+
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByText(/PASO 5 DE 6 · OPCIONAL/i)).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Tu regalo ya viene armado/i})).toBeVisible();
+  await expect(page.locator(".studio-section-list")).toBeHidden();
+  await expect(page.getByRole("button",{name:/Ver mi regalo/i})).toBeVisible();
+
+  expect(await page.getByText(/metadata|scene_recipe|storage_path|template_version/i).count()).toBe(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
 
 test("customer studio is guided, mobile-safe and publishes without technical language",async({page},testInfo)=>{
   test.setTimeout(45_000);
@@ -1028,17 +1096,16 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByRole("heading",{name:/Hay cosas que emocionan distinto/i})).toBeVisible();
   await page.getByRole("button",{name:/Continuar/i}).click();
-  await expect(page.getByRole("heading",{name:/No hace falta escribir/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Decile lo importante/i})).toBeVisible();
   await page.locator(".studio-field.important textarea").fill("Gracias por caminar conmigo. Esto recién empieza.");
   await page.getByRole("button",{name:/Continuar/i}).click();
 
-  await expect(page.getByRole("heading",{name:/¿Querés sacar alguna parte\?/i})).toBeVisible();
-  const optional=page.locator(".studio-switch").first();
-  await optional.click();
-  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByRole("heading",{name:/Tu regalo ya viene armado/i})).toBeVisible();
+  await expect(page.locator(".studio-section-list")).toBeHidden();
+  await page.getByRole("button",{name:/Ver mi regalo/i}).click();
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
-  await expect(page.getByRole("button",{name:/Cambiar cualquier texto/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Cambiar un texto tocándolo/i})).toBeVisible();
   await page.waitForTimeout(1100);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   const previewShot="visual-qa-evidence/tehiceesto-studio-mobile-preview.png";
@@ -1047,7 +1114,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.getByRole("button",{name:/Publicar mi regalo/i}).first().click();
 
   await expect(page.getByRole("heading",{name:/Tu regalo está listo para vivirlo/i})).toBeVisible();
-  await expect(page.getByRole("link",{name:/Abrir regalo/i})).toHaveAttribute("href",`/tehiceesto/r/${code}`);
+  await expect(page.getByRole("link",{name:/Abrir antes de enviar/i})).toHaveAttribute("href",`/tehiceesto/r/${code}`);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
@@ -1108,12 +1175,12 @@ test("customer studio makes media replace and remove obvious",async({page})=>{
 
   const photo=page.locator(".studio-photo-grid article").first();
   await expect(photo).toBeVisible();
-  await expect(photo.getByRole("button",{name:"Cambiar"})).toBeVisible();
+  await expect(photo.getByRole("button",{name:"Cambiar foto"})).toBeVisible();
   await expect(photo.getByRole("button",{name:"Quitar"})).toBeVisible();
   await expect(page.locator(".studio-video-card")).toBeVisible();
 
   const chooserPromise=page.waitForEvent("filechooser");
-  await photo.getByRole("button",{name:"Cambiar"}).click();
+  await photo.getByRole("button",{name:"Cambiar foto"}).click();
   const chooser=await chooserPromise;
   await chooser.setFiles({name:"nueva.png",mimeType:"image/png",buffer:Buffer.from("89504e470d0a1a0a","hex")});
   await expect.poll(()=>replaced).toBe(true);
@@ -1126,7 +1193,7 @@ test("customer studio makes media replace and remove obvious",async({page})=>{
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.locator(".studio-audio-list article")).toHaveCount(1);
   const audio=page.locator(".studio-audio-list article").first();
-  await expect(audio.getByRole("button",{name:"Cambiar"})).toBeVisible();
+  await expect(audio.getByRole("button",{name:"Cambiar audio"})).toBeVisible();
   await expect(audio.getByRole("button",{name:"Quitar"})).toBeVisible();
 });
 

@@ -2,13 +2,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback,useEffect,useMemo,useRef,useState } from "react";
+import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
 import { getExperience as getPremiumV1Experience,type SceneType as PremiumSceneType } from "../template-v1/data";
 import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
+import { effectiveRecipeForMedia } from "../effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
 
@@ -77,7 +78,7 @@ type Basics={
   musicUrl:string;
 };
 
-const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Partes","Revisar"];
+const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Opcional","Revisar"];
 const FEELINGS=["Amor","Emoción","Sorpresa","Diversión","Nostalgia"];
 
 const SCENE_LABELS:Record<string,{title:string;copy:string}>={
@@ -123,11 +124,26 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
 
 function accessKey(code:string){return `thi_editor_access:${code}`}
 
+function inferredMimeType(file:File){
+  if(file.type)return file.type;
+  const ext=file.name.split(".").pop()?.toLowerCase()||"";
+  const byExtension:Record<string,string>={
+    jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",heic:"image/heic",heif:"image/heif",
+    mp3:"audio/mpeg",m4a:"audio/mp4",wav:"audio/wav",ogg:"audio/ogg",opus:"audio/opus",webm:"audio/webm",
+    mp4:"video/mp4",mov:"video/quicktime",
+  };
+  return byExtension[ext]||"";
+}
+
 async function optimizeStudioUpload(file:File,kind:MediaKind){
-  const heic=/^image\/(heic|heif)$/.test(file.type);
-  if(kind!=="image"||!/^image\/(jpeg|png|webp|heic|heif)$/.test(file.type)||(!heic&&file.size<1_800_000))return file;
+  const inferred=inferredMimeType(file);
+  const typedFile=inferred&&inferred!==file.type
+    ?new File([file],file.name,{type:inferred,lastModified:file.lastModified})
+    :file;
+  const heic=/^image\/(heic|heif)$/.test(typedFile.type);
+  if(kind!=="image"||!/^image\/(jpeg|png|webp|heic|heif)$/.test(typedFile.type)||(!heic&&typedFile.size<1_800_000))return typedFile;
   try{
-    const bitmap=await createImageBitmap(file,{imageOrientation:"from-image"});
+    const bitmap=await createImageBitmap(typedFile,{imageOrientation:"from-image"});
     const maxSide=1800;
     const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
     const width=Math.max(1,Math.round(bitmap.width*scale));
@@ -139,12 +155,20 @@ async function optimizeStudioUpload(file:File,kind:MediaKind){
     context.drawImage(bitmap,0,0,width,height);
     bitmap.close();
     const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/webp",.86));
-    if(!blob||blob.size>=file.size*.95)return file;
-    const base=file.name.replace(/\.[^.]+$/,"")||"foto";
-    return new File([blob],base+".webp",{type:"image/webp",lastModified:file.lastModified});
+    if(!blob||blob.size>=typedFile.size*.95)return typedFile;
+    const base=typedFile.name.replace(/\.[^.]+$/,"")||"foto";
+    return new File([blob],base+".webp",{type:"image/webp",lastModified:typedFile.lastModified});
   }catch{
-    return file;
+    return typedFile;
   }
+}
+
+function starterLetter(recipient:string,giver:string){
+  const to=recipient.trim()||"vos";
+  const from=giver.trim();
+  return `${to}, hice esto para vos porque hay cosas que a veces cuesta decir en una conversación normal.
+
+Gracias por los momentos, por lo compartido y por todo eso pequeño que termina siendo enorme. Ojalá cuando termines de recorrer este regalo te quede una sola certeza: sos muy importante para mí.${from?`\n\nCon todo mi cariño,\n${from}`:""}`;
 }
 
 function giftToBasics(gift:StudioGift):Basics{
@@ -243,6 +267,7 @@ export default function CustomerStudio({code}:{code:string}){
   const [loading,setLoading]=useState(true);
   const [accessState,setAccessState]=useState<"checking"|"missing"|"payment"|"ready"|"error">("checking");
   const [saveState,setSaveState]=useState<"saved"|"saving"|"error">("saved");
+  const [saveRetry,setSaveRetry]=useState(0);
   const [dirty,setDirty]=useState(false);
   const [uploading,setUploading]=useState<string[]>([]);
   const [message,setMessage]=useState("");
@@ -253,6 +278,8 @@ export default function CustomerStudio({code}:{code:string}){
   const audioInputRef=useRef<HTMLInputElement|null>(null);
   const videoInputRef=useRef<HTMLInputElement|null>(null);
   const replaceInputRef=useRef<HTMLInputElement|null>(null);
+  const recipientInputRef=useRef<HTMLInputElement|null>(null);
+  const giverInputRef=useRef<HTMLInputElement|null>(null);
   const [replaceTarget,setReplaceTarget]=useState<StudioMedia|null>(null);
 
   const loadStudio=useCallback(async(token:string)=>{
@@ -260,7 +287,7 @@ export default function CustomerStudio({code}:{code:string}){
     try{
       const data=await creatorCall<StudioPayload>("openStudio",{code,editorToken:token});
       setPayload(data);
-      setBasics(giftToBasics(data.gift));
+      setBasics(current=>current??giftToBasics(data.gift));
       setPublished(data.gift.status==="published");
       setAccessState("ready");
     }catch(error){
@@ -311,7 +338,7 @@ export default function CustomerStudio({code}:{code:string}){
       }
     },700);
     return()=>window.clearTimeout(timer);
-  },[dirty,basics,editorToken,accessState,code]);
+  },[dirty,basics,editorToken,accessState,code,saveRetry]);
 
   const updateBasic=<K extends keyof Basics>(key:K,value:Basics[K])=>{
     setBasics(current=>current?{...current,[key]:value}:current);
@@ -335,29 +362,72 @@ export default function CustomerStudio({code}:{code:string}){
 
   async function uploadFiles(files:FileList|null,kind:MediaKind){
     if(!files||!editorToken)return;
-    const selected=Array.from(files).slice(0,kind==="image"?20:6);
+    const all=Array.from(files);
+    const limit=kind==="image"?20:kind==="audio"?6:1;
+    const existing=payload?.media.filter(item=>item.kind===kind).length||0;
+    const remaining=Math.max(0,limit-existing);
+    if(!remaining){
+      setMessage(kind==="image"?"Ya tenés 20 fotos. Si querés otra, primero quitá o cambiá una.":kind==="audio"?"Ya tenés 6 audios. Si querés otro, primero quitá o cambiá uno.":"Ya tenés un video. Podés cambiarlo por otro.");
+      return;
+    }
+
+    const selected=all.slice(0,remaining);
     if(!selected.length)return;
-    setUploading(selected.map(file=>file.name));setMessage("");
+    const limitNotice=all.length>remaining
+      ?`Te quedan ${remaining} lugares disponibles. Elegimos los primeros ${remaining} archivos.`
+      :"";
+
+    setUploading(selected.map(file=>file.name));
+    setMessage("");
+
+    let uploaded=0;
+    const failed:string[]=[];
+    const tooLarge:string[]=[];
+
     try{
       for(const file of selected){
-        const uploadFile=await optimizeStudioUpload(file,kind);
-        const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
-          code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
-        });
-        await uploadCreatorFile(prepared.path,prepared.token,uploadFile);
-        await creatorCall("registerStudioMedia",{
-          code,editorToken,storagePath:prepared.path,kind:prepared.kind,
-          originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
-        });
+        try{
+          const uploadFile=await optimizeStudioUpload(file,kind);
+          if(uploadFile.size>50*1024*1024){
+            tooLarge.push(file.name);
+            continue;
+          }
+          const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
+            code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
+          });
+          await uploadCreatorFile(prepared.path,prepared.token,uploadFile);
+          await creatorCall("registerStudioMedia",{
+            code,editorToken,storagePath:prepared.path,kind:prepared.kind,
+            originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
+          });
+          uploaded+=1;
+        }catch{
+          failed.push(file.name);
+        }
       }
+
       await loadStudio(editorToken);
-      setMessage(selected.length===1?"Listo, ya está adentro ✓":`Listo, subimos ${selected.length} archivos ✓`);
-    }catch(error){
-      const reason=error instanceof Error?error.message:"";
-      setMessage(reason==="media_limit"
-        ?"Llegaste al máximo de archivos de esta experiencia."
-        :"Uno de los archivos no pudo subirse. Probá con otro.");
-    }finally{setUploading([])}
+
+      if(tooLarge.length||failed.length){
+        const problemCount=tooLarge.length+failed.length;
+        if(uploaded){
+          setMessage(`Subimos ${uploaded}. ${problemCount===1?"Hay 1 archivo que necesita otro intento.":`Hay ${problemCount} archivos que necesitan otro intento.`}`);
+        }else if(tooLarge.length){
+          setMessage(kind==="video"
+            ?"Ese video es demasiado pesado. Elegí uno más corto y probá de nuevo."
+            :"Ese archivo es demasiado pesado. Elegí uno más liviano y probá de nuevo.");
+        }else{
+          setMessage("No pudimos subir ese archivo. Podés elegirlo de nuevo y reintentar.");
+        }
+      }else{
+        setMessage(limitNotice||(uploaded===1?"Listo, ya está adentro ✓":`Listo, subimos ${uploaded} archivos ✓`));
+      }
+    }finally{
+      setUploading([]);
+      if(kind==="image"&&fileInputRef.current)fileInputRef.current.value="";
+      if(kind==="audio"&&audioInputRef.current)audioInputRef.current.value="";
+      if(kind==="video"&&videoInputRef.current)videoInputRef.current.value="";
+    }
   }
 
   async function replaceMediaFile(files:FileList|null){
@@ -367,6 +437,12 @@ export default function CustomerStudio({code}:{code:string}){
     setUploading([file.name]);setMessage("");
     try{
       const uploadFile=await optimizeStudioUpload(file,target.kind);
+      if(uploadFile.size>50*1024*1024){
+        setMessage(target.kind==="video"
+          ?"Ese video es demasiado pesado. Elegí uno más corto y probá de nuevo."
+          :"Ese archivo es demasiado pesado. Elegí uno más liviano y probá de nuevo.");
+        return;
+      }
       const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
         code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
       });
@@ -413,7 +489,8 @@ export default function CustomerStudio({code}:{code:string}){
 
   async function deleteMedia(item:StudioMedia){
     if(!editorToken)return;
-    if(!window.confirm(item.kind==="image"?"¿Sacamos esta foto del regalo?":"¿Sacamos este archivo del regalo?"))return;
+    const label=item.kind==="image"?"esta foto":item.kind==="audio"?"este audio":"este video";
+    if(!window.confirm(`¿Querés quitar ${label} del regalo? Podés volver a agregarlo después.`))return;
     try{
       await creatorCall("deleteStudioMedia",{code,editorToken,mediaId:item.id});
       await loadStudio(editorToken);
@@ -449,9 +526,18 @@ export default function CustomerStudio({code}:{code:string}){
   }
 
   async function publishGift(){
-    if(!editorToken||!payload)return;
-    if(!basics?.recipientName.trim()){
-      setStep(0);setMessage("Primero decinos quién recibe el regalo.");return;
+    if(!editorToken||!payload||!basics)return;
+    if(!basics.recipientName.trim()){
+      goToStep(0);
+      setMessage("Primero escribí el nombre de quien recibe el regalo.");
+      window.setTimeout(()=>recipientInputRef.current?.focus(),250);
+      return;
+    }
+    if(!basics.giverName.trim()){
+      goToStep(0);
+      setMessage("Ahora escribí tu nombre para poder publicar.");
+      window.setTimeout(()=>giverInputRef.current?.focus(),250);
+      return;
     }
     setSaveState("saving");setMessage("");
     try{
@@ -468,12 +554,19 @@ export default function CustomerStudio({code}:{code:string}){
     }
   }
 
-  async function shareGift(){
+  function shareGift(){
     const url=`https://tehiceesto.com/r/${code}`;
+    const text=encodeURIComponent(`Hice algo para vos ❤️\n${url}`);
+    window.open(`https://wa.me/?text=${text}`,"_blank","noopener,noreferrer");
+  }
+
+  async function copyGiftLink(){
     try{
-      if(navigator.share)await navigator.share({title:"Te hice esto",text:"Hice algo para vos ❤️",url});
-      else {await navigator.clipboard.writeText(url);setMessage("Link copiado ✓")}
-    }catch{}
+      await navigator.clipboard.writeText(`https://tehiceesto.com/r/${code}`);
+      setMessage("Link copiado ✓");
+    }catch{
+      setMessage("No pudimos copiarlo. Podés abrir el regalo y copiar la dirección.");
+    }
   }
 
   const gift=payload?.gift;
@@ -485,28 +578,45 @@ export default function CustomerStudio({code}:{code:string}){
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
-  const effectiveRecipe=(gift?.scene_recipe||[]).filter(scene=>{
-    if(scene==="memories")return photos.length>0;
-    if(scene==="voices")return voiceAudios.length>0;
-    if(scene==="video")return videos.length>0;
-    return true;
+  const effectiveRecipe=effectiveRecipeForMedia(gift?.scene_recipe||[],{
+    hasPhoto:photos.length>0,
+    hasVoice:voiceAudios.length>0,
+    hasVideo:videos.length>0,
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
 
-  const canContinue=useMemo(()=>{
-    if(step===0)return Boolean(basics?.giverName.trim()&&basics?.recipientName.trim());
-    return true;
-  },[step,basics]);
+  function goToStep(next:number){
+    if(uploading.length){
+      setMessage("Esperá un momento: todavía estamos subiendo tus archivos.");
+      return;
+    }
+    if(next>0&&basics){
+      if(!basics.recipientName.trim()){
+        setMessage("Primero escribí el nombre de quien recibe el regalo.");
+        recipientInputRef.current?.focus();
+        return;
+      }
+      if(!basics.giverName.trim()){
+        setMessage("Ahora escribí tu nombre para poder seguir.");
+        giverInputRef.current?.focus();
+        return;
+      }
+    }
+    const target=Math.max(0,Math.min(STEP_LABELS.length-1,next));
+    setMessage("");
+    setStep(target);
+    window.requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));
+  }
 
-  if(loading&&accessState==="checking")return <main className="studio-gate"><div className="studio-loader"><span/><strong>Preparando tu estudio…</strong></div></main>;
+  if(loading&&accessState==="checking")return <main className="studio-gate"><div className="studio-loader"><span/><strong>Preparando tu regalo…</strong></div></main>;
 
   if(accessState==="payment")return <main className="studio-gate">
     <section className="studio-gate-card">
       <span className="studio-gate-mark">✓</span>
       <p className="studio-eyebrow">TU COMPRA ESTÁ GUARDADA</p>
       <h1>Falta que se confirme el pago.</h1>
-      <p>En cuanto Mercado Pago lo apruebe, este mismo acceso abre tu estudio automáticamente.</p>
+      <p>En cuanto Mercado Pago lo apruebe, este mismo acceso te deja empezar a personalizar automáticamente.</p>
       <Link className="studio-main-button" href={`/tehiceesto/pedido/${code}`}>Ver estado del pago <b>→</b></Link>
     </section>
   </main>;
@@ -519,7 +629,7 @@ export default function CustomerStudio({code}:{code:string}){
       <p>Ingresá los mismos datos que usaste al comprar. No necesitás contraseña.</p>
       <form className="studio-recovery" onSubmit={recoverAccess}>
         <label><span>Email de la compra</span><input type="email" required value={recovery.email} onChange={event=>setRecovery(current=>({...current,email:event.target.value}))} placeholder="tu@email.com"/></label>
-        <label><span>WhatsApp de la compra</span><input inputMode="tel" required value={recovery.whatsapp} onChange={event=>setRecovery(current=>({...current,whatsapp:event.target.value}))} placeholder="+54 9 221 ..."/></label>
+        <label><span>WhatsApp de la compra</span><input autoComplete="tel" inputMode="tel" required value={recovery.whatsapp} onChange={event=>setRecovery(current=>({...current,whatsapp:event.target.value}))} placeholder="+54 9 221 ..."/></label>
         <button className="studio-main-button" disabled={recovering}>{recovering?"Buscando…":"Entrar a mi regalo"} <b>→</b></button>
       </form>
       {message&&<p className="studio-alert">{message}</p>}
@@ -540,10 +650,13 @@ export default function CustomerStudio({code}:{code:string}){
       <p>Este link es privado y ya tiene todo lo que acabás de crear. Podés abrirlo, compartirlo o volver a editarlo cuando quieras.</p>
       <div className="studio-success-link"><span>tehiceesto.com/r/</span><strong>{code}</strong></div>
       <div className="studio-success-actions">
-        <a className="studio-main-button" href={`/tehiceesto/r/${code}`} target="_blank" rel="noreferrer">Abrir regalo <b>↗</b></a>
-        <button className="studio-secondary-button" onClick={shareGift}>Compartir link</button>
+        <button className="studio-main-button" onClick={shareGift}>Enviar por WhatsApp <b>→</b></button>
+        <a className="studio-secondary-button" href={`/tehiceesto/r/${code}`} target="_blank" rel="noreferrer">Abrir antes de enviar ↗</a>
       </div>
-      <button className="studio-text-link" onClick={()=>setPublished(false)}>Quiero cambiar algo</button>
+      <div className="studio-success-links">
+        <button className="studio-text-link" onClick={copyGiftLink}>Copiar link</button>
+        <button className="studio-text-link" onClick={()=>setPublished(false)}>Quiero cambiar algo</button>
+      </div>
     </section>
   </main>;
 
@@ -553,18 +666,24 @@ export default function CustomerStudio({code}:{code:string}){
         <Link href="/tehiceesto" className="studio-brand">TE HICE ESTO</Link>
         <span className="studio-order-code">REGALO · {code.toUpperCase()}</span>
       </div>
-      <div className={`studio-save-state ${saveState}`}>
-        <i/>{saveState==="saving"?"Guardando…":saveState==="error"?"Revisar guardado":"Todo guardado"}
-      </div>
+      {saveState==="error"?(
+        <button type="button" className="studio-save-state error retry" onClick={()=>{setSaveState("saving");setSaveRetry(value=>value+1)}} aria-live="polite">
+          <i/>No se guardó · Reintentar
+        </button>
+      ):(
+        <div className={`studio-save-state ${saveState}`} aria-live="polite">
+          <i/>{saveState==="saving"?"Guardando…":"Todo guardado"}
+        </div>
+      )}
     </header>
 
     <div className="studio-progress-wrap">
-      <div className="studio-progress-meta"><span>PASO {step+1} DE {STEP_LABELS.length}</span><strong>{progress}%</strong></div>
+      <div className="studio-progress-meta"><span>PASO {step+1} DE {STEP_LABELS.length} · {STEP_LABELS[step].toUpperCase()}</span><strong>{progress}%</strong></div>
       <div className="studio-progress"><i style={{width:progress+"%"}}/></div>
     </div>
 
     <nav className="studio-stepper" aria-label="Pasos de personalización">
-      {STEP_LABELS.map((label,index)=><button key={label} type="button" className={index===step?"active":index<step?"done":""} onClick={()=>setStep(index)}>
+      {STEP_LABELS.map((label,index)=><button key={label} type="button" className={index===step?"active":index<step?"done":""} onClick={()=>goToStep(index)}>
         <span>{index<step?"✓":index+1}</span><strong>{label}</strong>
       </button>)}
     </nav>
@@ -573,8 +692,8 @@ export default function CustomerStudio({code}:{code:string}){
       {step===0&&<div className="studio-panel studio-people">
         <header><p className="studio-eyebrow">PRIMERO, LO ESENCIAL</p><h1>¿Quién va a recibir esto?</h1><p>Con dos nombres ya empezamos a convertir la experiencia en algo de ustedes.</p></header>
         <div className="studio-big-fields">
-          <label><span>Esto es para…</span><input value={basics.recipientName} onChange={event=>updateBasic("recipientName",event.target.value)} placeholder="Ej. Ailín" autoFocus/><small>El nombre aparece dentro de la experiencia.</small></label>
-          <label><span>Y lo hace…</span><input value={basics.giverName} onChange={event=>updateBasic("giverName",event.target.value)} placeholder="Ej. Mauro"/></label>
+          <label><span>Nombre de quien recibe el regalo</span><input ref={recipientInputRef} value={basics.recipientName} onChange={event=>updateBasic("recipientName",event.target.value)} placeholder="Ej. Ailín" autoFocus/><small>Este nombre va a aparecer dentro del regalo.</small></label>
+          <label><span>Tu nombre</span><input ref={giverInputRef} value={basics.giverName} onChange={event=>updateBasic("giverName",event.target.value)} placeholder="Ej. Mauro"/><small>Para que sepa quién se lo hizo.</small></label>
         </div>
         <details className="studio-optional-details">
           <summary><span>Agregar un poco más</span><small>opcional</small><b>＋</b></summary>
@@ -587,24 +706,29 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===1&&<div className="studio-panel">
         <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Las mejores casi siempre son las que significan algo.</p></header>
-        <button className="studio-upload-hero" type="button" onClick={()=>fileInputRef.current?.click()}>
-          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>Podés seleccionar varias de una sola vez</small></div><b>→</b>
+        <button className="studio-upload-hero" type="button" disabled={uploading.length>0} onClick={()=>fileInputRef.current?.click()}>
+          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{photos.length?`${photos.length} de 20 fotos cargadas`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
         </button>
         <input ref={fileInputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image")}/>
         {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Preparando y subiendo…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
         {photos.length>0?<div className="studio-photo-grid">{photos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
-          <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Una frase para esta foto · opcional"/>
-          <div className="studio-media-mini-actions">
-            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Antes</button>
-            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Después</button>
-            <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar":"Ver completa"}</button>
-            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
+          <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Podés escribir una frase acá · opcional"/>
+          <div className="studio-media-primary-actions">
+            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar foto</button>
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
+          <details className="studio-media-options">
+            <summary><span>Orden y encuadre</span><small>opcional</small><b>＋</b></summary>
+            <div className="studio-media-mini-actions">
+              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>}
+              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Mover después</button>}
+              <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar el marco":"Ver foto completa"}</button>
+            </div>
+          </details>
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
         {videos.length===0?(
-          <button className="studio-extra-upload" type="button" onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
+          <button className="studio-extra-upload" type="button" disabled={uploading.length>0} onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
         ):(
           <div className="studio-video-card">
             {videos[0].url&&<video src={videos[0].url} controls playsInline preload="metadata"/>}
@@ -623,60 +747,77 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===2&&<div className="studio-panel">
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
-        <button className="studio-upload-hero audio" type="button" onClick={()=>audioInputRef.current?.click()}>
-          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Subir un audio"}</strong><small>MP3, M4A, OGG, OPUS o audio de WhatsApp</small></div><b>→</b>
+        <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0} onClick={()=>audioInputRef.current?.click()}>
+          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"Audio de WhatsApp, MP3, M4A, OGG u OPUS · hasta 6"}</small></div><b>→</b>
         </button>
         <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
-          <label className="studio-audio-role"><span>Este audio es…</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Un mensaje de voz</option><option value="soundtrack">Música de fondo</option></select></label>
+          <label className="studio-audio-role"><span>¿Cómo querés usarlo?</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Como mensaje de voz</option><option value="soundtrack">Como música de fondo</option></select></label>
           <div className="studio-audio-actions">
-            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Antes</button>
-            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Después</button>
-            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
+            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar audio</button>
             <button type="button" className="studio-remove" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
+          {audios.length>1&&<details className="studio-media-options audio-order">
+            <summary><span>Cambiar el orden</span><small>opcional</small><b>＋</b></summary>
+            <div className="studio-media-mini-actions">
+              <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>
+              <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Mover después</button>
+            </div>
+          </details>}
         </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>La experiencia funciona igual sin ellos. Si tenés uno, acá puede convertirse en uno de los momentos más fuertes.</p></div>}
       </div>}
 
       {step===3&&<div className="studio-panel studio-words">
-        <header><p className="studio-eyebrow">TUS PALABRAS</p><h1>No hace falta escribir “lindo”. Hace falta que suene a vos.</h1><p>Podés cambiar sólo lo que quieras. Si dejás algo vacío, conservamos el texto premium de la experiencia.</p></header>
-        <label className="studio-field"><span>La primera frase <em>opcional</em></span><textarea rows={3} value={basics.openingText} onChange={event=>updateBasic("openingText",event.target.value)} placeholder={currentBase?.opening||frozenBase?.opening||"Una frase para empezar…"}/><small>Es lo primero que va a leer.</small></label>
-        <label className="studio-field"><span>Un recuerdo que sólo ustedes entienden <em>opcional</em></span><textarea rows={4} value={basics.anecdote} onChange={event=>updateBasic("anecdote",event.target.value)} placeholder="Ese viaje, esa frase, esa tarde, ese papelón…"/></label>
-        <label className="studio-field important"><span>Tu carta</span><textarea rows={9} value={basics.letterText} onChange={event=>updateBasic("letterText",event.target.value)} placeholder="Escribí como hablás. ¿Qué querés que recuerde después de cerrar la pantalla?"/></label>
-        <label className="studio-field"><span>La última frase <em>opcional</em></span><textarea rows={3} value={basics.closingText} onChange={event=>updateBasic("closingText",event.target.value)} placeholder={currentBase?.closing||frozenBase?.closing||"Una frase para cerrar…"}/></label>
-        <label className="studio-field compact"><span>Una fecha importante <em>opcional</em></span><input type="date" value={basics.keyDate} onChange={event=>updateBasic("keyDate",event.target.value)}/></label>
+        <header><p className="studio-eyebrow">TUS PALABRAS</p><h1>Decile lo importante. Lo demás ya está resuelto.</h1><p>No hace falta escribir “lindo”. Escribí como hablás. Y si preferís no tocar nada, el regalo ya tiene textos preparados.</p></header>
+        <label className="studio-field important"><span>Tu carta <em>opcional</em></span><textarea rows={9} value={basics.letterText} onChange={event=>updateBasic("letterText",event.target.value)} placeholder="¿Qué te gustaría que esta persona recuerde después de cerrar la pantalla?"/><small>Podés escribir dos líneas o mucho más. No hay una forma correcta.</small></label>
+        {!basics.letterText.trim()&&<button type="button" className="studio-writing-help" onClick={()=>updateBasic("letterText",starterLetter(basics.recipientName,basics.giverName))}><span>✦</span><div><strong>No sé qué escribir</strong><small>Poner un texto de ayuda que después puedo cambiar</small></div><b>→</b></button>}
+        <details className="studio-optional-details studio-more-words">
+          <summary><span>Personalizar más frases</span><small>opcional</small><b>＋</b></summary>
+          <div>
+            <label className="studio-field"><span>La primera frase</span><textarea rows={3} value={basics.openingText} onChange={event=>updateBasic("openingText",event.target.value)} placeholder={currentBase?.opening||frozenBase?.opening||"Una frase para empezar…"}/><small>Es lo primero que va a leer.</small></label>
+            <label className="studio-field"><span>Un recuerdo que sólo ustedes entienden</span><textarea rows={4} value={basics.anecdote} onChange={event=>updateBasic("anecdote",event.target.value)} placeholder="Ese viaje, esa frase, esa tarde, ese papelón…"/></label>
+            <label className="studio-field"><span>La última frase</span><textarea rows={3} value={basics.closingText} onChange={event=>updateBasic("closingText",event.target.value)} placeholder={currentBase?.closing||frozenBase?.closing||"Una frase para cerrar…"}/></label>
+            <label className="studio-field compact"><span>Una fecha importante</span><input type="date" value={basics.keyDate} onChange={event=>updateBasic("keyDate",event.target.value)}/></label>
+          </div>
+        </details>
       </div>}
 
       {step===4&&<div className="studio-panel">
-        <header><p className="studio-eyebrow">HACELA A TU MANERA</p><h1>¿Querés sacar alguna parte?</h1><p>El diseño no se rompe: simplemente ocultamos las partes que no encajan con tu historia. Podés volver a activarlas cuando quieras.</p></header>
-        <div className="studio-section-list">{canonical.map((scene,index)=>{
-          const terminal=scene==="finale"||scene==="proposal";
-          const locked=scene==="intro"||terminal;
-          const needsPhoto=scene==="memories"&&photos.length===0;
-          const needsVoice=scene==="voices"&&voiceAudios.length===0;
-          const needsVideo=scene==="video"&&videos.length===0;
-          const missingMedia=needsPhoto||needsVoice||needsVideo;
-          const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
-          const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
-          return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
-            <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
-            <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
-            {locked
-              ?<span className="studio-section-required">ESENCIAL</span>
-              :missingMedia
-                ?<button type="button" className="studio-section-add" onClick={()=>setStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
-                :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Está":"Oculta"}</span></button>}
-          </article>;
-        })}</div>
-        <div className="studio-tip"><span>✦</span><div><strong>Recomendación</strong><p>Si no sabés qué sacar, dejá todo. Las experiencias están pensadas para que el ritmo crezca de principio a fin.</p></div></div>
+        <header><p className="studio-eyebrow">OPCIONAL</p><h1>Tu regalo ya viene armado.</h1><p>Recomendamos dejarlo así. Sólo entrá acá si hay una parte que de verdad no querés mostrar.</p></header>
+        <div className="studio-ready-structure">
+          <span>✓</span>
+          <div><strong>La estructura ya está resuelta</strong><p>Las partes están ordenadas para que la emoción crezca de principio a fin.</p></div>
+        </div>
+        <details className="studio-parts-details">
+          <summary><span>Quiero quitar o recuperar una parte</span><small>opcional</small><b>＋</b></summary>
+          <div className="studio-section-list">{canonical.map((scene,index)=>{
+            const terminal=scene==="finale"||scene==="proposal";
+            const locked=scene==="intro"||terminal;
+            const needsPhoto=scene==="memories"&&photos.length===0;
+            const needsVoice=scene==="voices"&&voiceAudios.length===0;
+            const needsVideo=scene==="video"&&videos.length===0;
+            const missingMedia=needsPhoto||needsVoice||needsVideo;
+            const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
+            const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
+            return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
+              <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
+              <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
+              {locked
+                ?<span className="studio-section-required">ESENCIAL</span>
+                :missingMedia
+                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
+                  :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Visible":"Oculta"}</span></button>}
+            </article>;
+          })}</div>
+        </details>
       </div>}
 
       {step===5&&<div className="studio-preview-wrap">
         <div className="studio-preview-head">
           <div><p className="studio-eyebrow">ÚLTIMO PASO</p><h1>Vivilo antes de mandarlo.</h1><p>Esta es la experiencia real. Recorré cada parte como la va a ver {basics.recipientName||"esa persona"}.</p></div>
-          <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>setStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
+          <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>goToStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
         </div>
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
         <div className="studio-preview-stage"><Preview gift={{...gift,scene_recipe:effectiveRecipe}} media={media} sceneTextOverrides={sceneTextOverrides}/></div>
@@ -699,8 +840,8 @@ export default function CustomerStudio({code}:{code:string}){
     {message&&<div className="studio-toast" role="status">{message}<button onClick={()=>setMessage("")}>×</button></div>}
 
     {step<5&&<footer className="studio-bottom-nav">
-      <button type="button" className="studio-back-button" onClick={()=>setStep(value=>Math.max(0,value-1))} disabled={step===0}>← Atrás</button>
-      <div><small>{saveState==="saving"?"Guardando cambios…":"Se guarda automáticamente"}</small><button type="button" className="studio-main-button compact" disabled={!canContinue} onClick={()=>setStep(value=>Math.min(5,value+1))}>Continuar <b>→</b></button></div>
+      <button type="button" className="studio-back-button" onClick={()=>goToStep(step-1)} disabled={step===0}>← Atrás</button>
+      <div><small>{uploading.length?"Subiendo archivos…":saveState==="saving"?"Guardando cambios…":"Se guarda automáticamente"}</small><button type="button" className="studio-main-button compact" onClick={()=>goToStep(step+1)}>{step===4?"Ver mi regalo":"Continuar"} <b>→</b></button></div>
     </footer>}
   </main>;
 }

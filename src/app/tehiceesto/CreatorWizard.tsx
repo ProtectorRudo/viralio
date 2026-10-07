@@ -63,9 +63,10 @@ function readCookie(name:string){
   return item?decodeURIComponent(item.slice(prefix.length)):"";
 }
 
-export default function CreatorWizard() {
-  const [step, setStep] = useState<Step>(0);
-  const [selectedSlug, setSelectedSlug] = useState("");
+export default function CreatorWizard({initialExperience=""}:{initialExperience?:string}) {
+  const validInitial=experiences.some((experience)=>experience.slug===initialExperience)?initialExperience:"";
+  const [step, setStep] = useState<Step>(validInitial?1:0);
+  const [selectedSlug, setSelectedSlug] = useState(validInitial);
   const [contact, setContact] = useState(INITIAL_CONTACT);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -189,14 +190,14 @@ export default function CreatorWizard() {
               <span className="eyebrow">01 · Elegí la experiencia</span>
               <h1>Elegí la que más se parece a <em>esa persona.</em></h1>
               <p>
-                Elegís el mundo que más se parece a esa persona. Después del pago,
-                una guía simple te acompaña para cargar fotos, audios y palabras sin tocar
-                el diseño, los efectos ni las animaciones.
+                Elegí el regalo que más te guste. Después del pago te guiamos
+                pantalla por pantalla para agregar fotos, audios y tus palabras.
+                El diseño, los efectos y las animaciones ya vienen listos.
               </p>
               <div className="order-step-trust" aria-label="Cómo trabajamos">
-                <span><b>01</b> Elegís el mundo</span>
+                <span><b>01</b> Elegís el regalo</span>
                 <span><b>02</b> Pagás de forma segura</span>
-                <span><b>03</b> La hacés tuya, paso a paso</span>
+                <span><b>03</b> Lo personalizás con una guía</span>
               </div>
             </header>
 
@@ -261,7 +262,7 @@ export default function CreatorWizard() {
                           {occasion.cta} <span>→</span>
                         </button>
                         <Link href={`/tehiceesto/experiencias/${experience.slug}`} target="_blank">
-                          Ver demo ↗
+                          Ver cómo se ve
                         </Link>
                       </div>
                     </div>
@@ -277,10 +278,10 @@ export default function CreatorWizard() {
             <header className="order-step-head compact">
               <button className="order-back" type="button" onClick={() => setStep(0)}>← Cambiar experiencia</button>
               <span className="eyebrow">02 · Tus datos</span>
-              <h1>Dos datos y ya está.</h1>
+              <h1>Tres datos y listo.</h1>
               <p>
-                Los usamos para guardar tu compra y para que puedas recuperar la edición
-                desde otro dispositivo si alguna vez la necesitás.
+                Nada de crear una cuenta ni inventar contraseñas. Los usamos para guardar
+                tu compra y recuperar tu regalo si cambiás de celular.
               </p>
             </header>
 
@@ -290,7 +291,7 @@ export default function CreatorWizard() {
                 <small>ELEGISTE</small>
                 <strong>{selected.title}</strong>
               </div>
-              <Link href={`/tehiceesto/experiencias/${selected.slug}`} target="_blank">Ver demo ↗</Link>
+              <Link href={`/tehiceesto/experiencias/${selected.slug}`} target="_blank">Ver cómo se ve</Link>
             </div>
 
             <form className="order-contact-form" onSubmit={goToReview}>
@@ -301,6 +302,7 @@ export default function CreatorWizard() {
                   value={contact.name}
                   onChange={(event) => setContact((current) => ({ ...current, name: event.target.value }))}
                   placeholder="Ej. Mauro"
+                  minLength={2}
                   required
                 />
               </label>
@@ -311,11 +313,15 @@ export default function CreatorWizard() {
                   autoComplete="tel"
                   inputMode="tel"
                   value={contact.whatsapp}
-                  onChange={(event) => setContact((current) => ({ ...current, whatsapp: event.target.value }))}
-                  placeholder="Ej. +54 9 221 ..."
+                  onChange={(event) => setContact((current) => ({ ...current, whatsapp: normalizeWhatsApp(event.target.value) }))}
+                  placeholder="Ej. 2215653163"
+                  minLength={8}
+                  maxLength={16}
+                  pattern="\+?[0-9]{8,15}"
+                  title="Escribí tu número con al menos 8 dígitos."
                   required
                 />
-                <small>También sirve para recuperar tu acceso si cambiás de celular.</small>
+                <small>Escribilo con números. También sirve para recuperar tu acceso.</small>
               </label>
 
               <label>
@@ -336,14 +342,15 @@ export default function CreatorWizard() {
                   type="checkbox"
                   checked={contact.consent}
                   onChange={(event) => setContact((current) => ({ ...current, consent: event.target.checked }))}
+                  required
                 />
                 <span>
-                  Acepto que Te Hice Esto use estos datos para gestionar mi pedido y
-                  contactarme para producir la experiencia.
+                  Acepto que Te Hice Esto use estos datos para gestionar mi compra,
+                  habilitar mi edición y ayudarme a recuperar el acceso si lo necesito.
                 </span>
               </label>
 
-              <button className="order-primary" type="submit" disabled={!contactValid}>
+              <button className="order-primary" type="submit">
                 Revisar y pagar <span>→</span>
               </button>
             </form>
@@ -357,8 +364,8 @@ export default function CreatorWizard() {
               <span className="eyebrow">03 · Confirmar y pagar</span>
               <h1>Pagás. Y empezás a crear.</h1>
               <p>
-                Cuando Mercado Pago confirme la compra, entrás a un estudio guiado:
-                subís tus recuerdos, cambiás las palabras, ocultás lo que no quieras y
+                Cuando Mercado Pago confirme la compra, te guiamos paso a paso:
+                elegís tus fotos y audios, cambiás las palabras que quieras y
                 ves el resultado antes de compartirlo.
               </p>
             </header>
@@ -427,7 +434,7 @@ export default function CreatorWizard() {
 
               <div className="order-after-payment">
                 <article><span>01</span><p>Elegís y pagás.</p></article>
-                <article><span>02</span><p>Se habilita tu estudio privado.</p></article>
+                <article><span>02</span><p>Se habilita la personalización.</p></article>
                 <article><span>03</span><p>Subís fotos, audios y tus palabras.</p></article>
                 <article><span>04</span><p>Publicás y recibís tu link al instante.</p></article>
               </div>
