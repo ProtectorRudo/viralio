@@ -6,6 +6,7 @@ import { getExperience as getPremiumV1Experience } from "../../template-v1/data"
 import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
 import AffiliateRedirect from "./AffiliateRedirect";
+import { effectiveRecipeForMedia } from "../../effectiveRecipe";
 
 const SUPABASE_URL="https://efvvadfxuyieswdqnsjg.supabase.co";
 const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
@@ -39,11 +40,10 @@ export default async function PublishedGiftPage({
   const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
   const hasVoice=ordered.some(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack");
   const storedRecipe=Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?payload.gift.scene_recipe:base.recipe;
-  const effectiveRecipe=storedRecipe.filter(scene=>{
-    if(scene==="memories")return hasPhoto||hasVideo;
-    if(scene==="voices")return hasVoice;
-    if(scene==="video")return hasVideo;
-    return true;
+  const effectiveRecipe=effectiveRecipeForMedia(storedRecipe,{
+    hasPhoto,
+    hasVoice,
+    hasVideo,
   }) as typeof base.recipe;
   const experience={...base,demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
     recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
