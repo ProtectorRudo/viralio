@@ -49,8 +49,8 @@ export default async function TeHiceEstoHome() {
             </h1>
 
             <p className="thh-v2-lead">
-              Transformamos tus fotos, audios y mensajes en una experiencia digital privada,
-              creada para hacer feliz a esa persona y recordarle cuánto significa para vos.
+              Elegís una experiencia que ya fue diseñada y probada para emocionar. Después del pago
+              la personalizás con tus fotos, audios y palabras siguiendo una guía simple, sin tocar el diseño.
             </p>
 
             <div className="thh-v2-meta" aria-label="Detalles de compra">
@@ -64,7 +64,7 @@ export default async function TeHiceEstoHome() {
               </span>
               <span className="thh-v2-trust-chip">
                 <b aria-hidden="true">♡</b>
-                <span>Lo hacemos <strong>por vos</strong></span>
+                <span>Diseño <strong>ya resuelto</strong></span>
               </span>
               <span className="thh-v2-trust-chip">
                 <b aria-hidden="true">▢</b>
@@ -222,15 +222,15 @@ export default async function TeHiceEstoHome() {
             <article>
               <span>02</span>
               <div>
-                <h3>Nos pasás sus recuerdos</h3>
-                <p>Fotos, audios, nombres, mensajes y los detalles que hacen su historia única.</p>
+                <h3>La hacés de ustedes</h3>
+                <p>Subís fotos, audios, nombres y mensajes. Te guiamos paso a paso y el diseño se mantiene intacto.</p>
               </div>
             </article>
             <article>
               <span>03</span>
               <div>
-                <h3>Nosotros hacemos la magia</h3>
-                <p>Armamos todo y te entregamos un link privado listo para regalar.</p>
+                <h3>La revisás y la publicás</h3>
+                <p>Vivís la vista previa completa, ajustás lo que quieras y recibís tu link privado al instante.</p>
               </div>
             </article>
           </div>
@@ -241,9 +241,8 @@ export default async function TeHiceEstoHome() {
             <span className="thh-kicker">UNA EXPERIENCIA HECHA SÓLO PARA ESA PERSONA</span>
             <h2>No estás comprando una página.<em>Estás regalando un recuerdo que puede volver a sentir.</em></h2>
             <p className="thh-v2-price-story">
-              Nosotros transformamos su historia en una experiencia cuidada de principio a fin:
-              damos ritmo a los recuerdos, lugar a las fotos, a las voces y a las palabras para que
-              cada momento llegue cuando tiene que llegar.
+              Cada experiencia ya tiene el recorrido, los efectos y el ritmo resueltos de principio a fin.
+              Vos sólo reemplazás el contenido previsto con sus recuerdos para conservar toda la calidad del modelo.
             </p>
             <div className="thh-v2-price">
               <strong>{formatTeHiceEstoPrice()}</strong>
@@ -255,7 +254,7 @@ export default async function TeHiceEstoHome() {
             <p className="thh-v2-price-intro">Todo lo necesario para convertir sus recuerdos en un regalo realmente inolvidable.</p>
             <ul>
               <li><strong>Personalizada con su propia historia</strong><span>Fotos, audios, nombres y mensajes.</span></li>
-              <li><strong>Nosotros hacemos todo el armado</strong><span>No necesitás diseñar ni editar nada.</span></li>
+              <li><strong>El diseño ya viene resuelto</strong><span>No necesitás diseñar ni programar nada; sólo personalizás el contenido.</span></li>
               <li><strong>Lista para regalar</strong><span>Recibís un link privado y terminado.</span></li>
               <li><strong>Para volver a sentirlo</strong><span>Puede abrirla todas las veces que quiera.</span></li>
               <li><strong>Sin suscripciones</strong><span>Un único pago, sin cuotas mensuales del servicio.</span></li>
