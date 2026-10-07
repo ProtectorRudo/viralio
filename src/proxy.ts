@@ -17,6 +17,7 @@ function teHiceEstoRobots() {
       "Disallow: /afiliados/",
       "Disallow: /r/",
       "Disallow: /pedido/",
+      "Disallow: /editar/",
       "Disallow: /mercadopago/",
       "",
       "Sitemap: https://tehiceesto.com/sitemap.xml",
@@ -133,7 +134,7 @@ export function proxy(request: NextRequest) {
     pathname === "/" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`;
 
   const response = NextResponse.rewrite(target);
-  if (pathname.startsWith("/r/")) {
+  if (pathname.startsWith("/r/") || pathname.startsWith("/editar/")) {
     response.headers.set("Referrer-Policy","no-referrer");
     response.headers.set("X-Robots-Tag","noindex, nofollow, noarchive, noimageindex");
     response.headers.set("Cache-Control","private, no-store, max-age=0, must-revalidate");
