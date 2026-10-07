@@ -1494,8 +1494,9 @@ test("admin affiliate panel registers a payout and preserves its settlement hist
   page.once("dialog",dialog=>dialog.accept());
   await page.getByRole("button",{name:/Pago liquidado/i}).click();
   await expect.poll(()=>Boolean(payoutPayload)).toBe(true);
-  expect(payoutPayload?.providerReference).toBe("TRX-002");
-  expect(payoutPayload?.notes).toBe("Pago hasta venta 3");
+  const recordedPayout=payoutPayload as Record<string,unknown>;
+  expect(recordedPayout.providerReference).toBe("TRX-002");
+  expect(recordedPayout.notes).toBe("Pago hasta venta 3");
   await expect(page.getByText(/Pago liquidado registrado/i)).toBeVisible();
   await expect(page.getByRole("button",{name:/Sin saldo pendiente/i})).toBeDisabled();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
