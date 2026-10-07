@@ -459,7 +459,7 @@ export default function CustomerStudio({code}:{code:string}){
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
-  const effectiveRecipe=gift.scene_recipe.filter(scene=>{
+  const effectiveRecipe=(gift?.scene_recipe||[]).filter(scene=>{
     if(scene==="memories")return photos.length>0;
     if(scene==="voices")return voiceAudios.length>0;
     if(scene==="video")return videos.length>0;
