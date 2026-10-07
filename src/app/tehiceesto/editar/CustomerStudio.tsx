@@ -437,6 +437,12 @@ export default function CustomerStudio({code}:{code:string}){
     setUploading([file.name]);setMessage("");
     try{
       const uploadFile=await optimizeStudioUpload(file,target.kind);
+      if(uploadFile.size>50*1024*1024){
+        setMessage(target.kind==="video"
+          ?"Ese video es demasiado pesado. Elegí uno más corto y probá de nuevo."
+          :"Ese archivo es demasiado pesado. Elegí uno más liviano y probá de nuevo.");
+        return;
+      }
       const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
         code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
       });
