@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
 import CreatorWizard from "../CreatorWizard";
+import { getExperience } from "../data";
 
 export const metadata: Metadata = {
-  title: "Elegí tu experiencia",
+  title: "Creá tu regalo",
   description:
-    "Elegí la experiencia, dejá tus datos y pagá. Después nos ponemos en contacto para crearla con vos.",
+    "Elegí la experiencia, pagá y personalizá tu regalo paso a paso con fotos, audios y tus palabras.",
 };
 
-export default function CreatePage(){
+export default async function CreatePage({
+  searchParams,
+}:{
+  searchParams:Promise<{experiencia?:string|string[]}>;
+}){
+  const query=await searchParams;
+  const requested=Array.isArray(query.experiencia)?query.experiencia[0]||"":query.experiencia||"";
+  const initialExperience=getExperience(requested)?.slug||"";
+
   return <main className="creator-page">
     <div className="creator-backdrop" />
-    <CreatorWizard/>
+    <CreatorWizard initialExperience={initialExperience}/>
   </main>;
 }
