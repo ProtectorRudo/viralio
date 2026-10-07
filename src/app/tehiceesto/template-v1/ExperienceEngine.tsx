@@ -369,12 +369,12 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           const usingRealAudio=currentAudios.length>0;
           const count=Math.min(3,usingRealAudio?currentAudios.length:voiceEntries.length);
           const entries=Array.from({length:count},(_,i)=>{
-            const voice=voiceEntries[i]||voiceEntries[0];
+            const voice=customerGift?undefined:(voiceEntries[i]||voiceEntries[0]);
             const audio=currentAudios[i];
             const photo=scenePhotos[i%Math.max(1,scenePhotos.length)];
             return {
               name:token(audio?.caption||voice?.name||`Mensaje ${i+1}`),
-              message:token(voice?.message||"Hay algo que quería decirte hace tiempo."),
+              message:customerGift&&audio?"":token(voice?.message||"Hay algo que quería decirte hace tiempo."),
               audio,
               photo
             };
@@ -425,7 +425,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <figure>{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}<span aria-hidden="true"/></figure>
                 <small>Un mensaje para vos</small>
                 <h2>{entry.name}</h2>
-                <blockquote>“{entry.message}”</blockquote>
+                {entry.message&&<blockquote>“{entry.message}”</blockquote>}
                 <div className={`thi-mama-voice-wave ${isPlaying?"is-playing":""}`} style={{"--voice-progress":`${progress}%`} as CSSProperties} aria-hidden="true">{Array.from({length:34}).map((_,bar)=><i key={bar}/>)}</div>
                 {usingRealAudio&&<audio
                   ref={mamaVoiceAudioRef}
@@ -451,7 +451,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="thi-mama-voice-list">
               {entries.map((entry,i)=><button type="button" data-action="mama-voice-choice" key={i} className={voicesPlayed.includes(i)?"heard":""} onClick={()=>openVoice(i)}>
                 <span className="thi-mama-voice-thumb">{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}</span>
-                <span className="thi-mama-voice-list-copy"><small>{String(i+1).padStart(2,"0")} · UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>“{entry.message}”</em><i className="thi-mama-voice-mini-wave" aria-hidden="true">{Array.from({length:22}).map((_,bar)=><b key={bar}/>)}</i></span>
+                <span className="thi-mama-voice-list-copy"><small>{String(i+1).padStart(2,"0")} · UN MENSAJE PARA VOS</small><strong>{entry.name}</strong>{entry.message&&<em>“{entry.message}”</em>}<i className="thi-mama-voice-mini-wave" aria-hidden="true">{Array.from({length:22}).map((_,bar)=><b key={bar}/>)}</i></span>
                 <span className="thi-mama-voice-list-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
               </button>)}
             </div>
