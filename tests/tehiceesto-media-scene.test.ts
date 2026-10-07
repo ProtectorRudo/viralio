@@ -21,11 +21,11 @@ describe("Te Hice Esto scene-directed media",()=>{
   });
   it("keeps preview and published recipes aligned with real media",()=>{
     const base=["intro","memories","voices","light","video","letter","finale"] as const;
-    expect(effectiveRecipeForMedia(base,{hasPhoto:false,hasVoice:false,hasVideo:false}))
-      .toEqual(["intro","light","letter","finale"]);
-    expect(effectiveRecipeForMedia(base,{hasPhoto:true,hasVoice:false,hasVideo:false}))
-      .toEqual(["intro","memories","light","letter","finale"]);
-    expect(effectiveRecipeForMedia(base,{hasPhoto:false,hasVoice:true,hasVideo:true}))
+    expect(effectiveRecipeForMedia(base,{hasPhoto:false,hasVoice:false,hasVideo:false,hasLightPhoto:false}))
+      .toEqual(["intro","letter","finale"]);
+    expect(effectiveRecipeForMedia(base,{hasPhoto:true,hasVoice:false,hasVideo:false,hasLightPhoto:false}))
+      .toEqual(["intro","memories","letter","finale"]);
+    expect(effectiveRecipeForMedia(base,{hasPhoto:false,hasVoice:true,hasVideo:true,hasLightPhoto:true}))
       .toEqual(["intro","memories","voices","light","video","letter","finale"]);
   });
 
