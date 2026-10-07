@@ -1,6 +1,7 @@
 import { describe,expect,it } from "vitest";
 import { defaultSceneForMedia,mediaBelongsToScene,naturalSceneForMedia } from "../src/app/tehiceesto/mediaRouting";
 import type { SceneType } from "../src/app/tehiceesto/data";
+import { effectiveRecipeForMedia } from "../src/app/tehiceesto/effectiveRecipe";
 
 describe("Te Hice Esto scene-directed media",()=>{
   const recipe:SceneType[]=["intro","memories","light","voices","letter","video","finale"];
@@ -18,6 +19,16 @@ describe("Te Hice Esto scene-directed media",()=>{
     expect(mediaBelongsToScene("audio","letter","letter")).toBe(true);
     expect(mediaBelongsToScene("audio","letter","voices")).toBe(false);
   });
+  it("keeps preview and published recipes aligned with real media",()=>{
+    const base=["intro","memories","voices","light","video","letter","finale"] as const;
+    expect(effectiveRecipeForMedia(base,{hasPhoto:false,hasVoice:false,hasVideo:false}))
+      .toEqual(["intro","light","letter","finale"]);
+    expect(effectiveRecipeForMedia(base,{hasPhoto:true,hasVoice:false,hasVideo:false}))
+      .toEqual(["intro","memories","light","letter","finale"]);
+    expect(effectiveRecipeForMedia(base,{hasPhoto:false,hasVoice:true,hasVideo:true}))
+      .toEqual(["intro","memories","voices","light","video","letter","finale"]);
+  });
+
   it("keeps legacy unassigned media compatible",()=>{
     expect(naturalSceneForMedia("image")).toBe("memories");
     expect(mediaBelongsToScene("image",undefined,"memories")).toBe(true);
