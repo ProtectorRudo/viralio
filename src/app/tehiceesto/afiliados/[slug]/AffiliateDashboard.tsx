@@ -140,7 +140,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
           <span>COMISIONES</span>
           <div><small>Disponible para liquidar</small><strong>{money(Number(data.stats.commission_available_minor||0))}</strong></div>
           <div><small>Ya pagado</small><strong>{money(Number(data.stats.commission_paid_minor||0))}</strong></div>
-          <p>{Number(data.stats.commission_pending_minor||0)>Number(data.stats.commission_available_minor||0)?`Hay ${money(Number(data.stats.commission_pending_minor||0))} en ventas todavía pendientes, pero una parte está compensando devoluciones posteriores a pagos anteriores.`:"Cada venta aparece cuando Mercado Pago confirma el pago. Si hay una devolución, también se refleja."}</p>
+          <p>{Number(data.stats.commission_pending_minor||0)>Number(data.stats.commission_available_minor||0)||Number(data.stats.commission_paid_minor||0)>Number(data.stats.commission_earned_minor||0)?`Hubo devoluciones posteriores a una liquidación. El sistema las descuenta automáticamente antes del próximo pago para que el saldo sea correcto.`:"Cada venta aparece cuando Mercado Pago confirma el pago. Si hay una devolución, también se refleja."}</p>
         </article>
       </section>
 
