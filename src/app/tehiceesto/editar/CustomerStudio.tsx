@@ -502,15 +502,16 @@ export default function CustomerStudio({code}:{code:string}){
         const chunks=[...recorderChunksRef.current];
         recorderChunksRef.current=[];
         const finalType=recorder.mimeType||chunks[0]?.type||"audio/webm";
-        const blob=new Blob(chunks,{type:finalType});
+        const normalizedType=finalType.includes("ogg")?"audio/ogg":"audio/webm";
+        const blob=new Blob(chunks,{type:normalizedType});
         stopRecorderTracks();
         setRecording(false);
         if(blob.size<800){
           setMessage("La grabación quedó vacía. Probá de nuevo.");
           return;
         }
-        const extension=finalType.includes("ogg")?"ogg":"webm";
-        const file=new File([blob],`nota-de-voz-${Date.now()}.${extension}`,{type:finalType,lastModified:Date.now()});
+        const extension=normalizedType==="audio/ogg"?"ogg":"webm";
+        const file=new File([blob],`nota-de-voz-${Date.now()}.${extension}`,{type:normalizedType,lastModified:Date.now()});
         void uploadFiles([file],"audio");
       };
       recorder.start(250);
