@@ -189,9 +189,9 @@ export default function CreatorWizard() {
               <span className="eyebrow">01 · Elegí la experiencia</span>
               <h1>Elegí la que más se parece a <em>esa persona.</em></h1>
               <p>
-                Elegís el mundo que más se parece a esa persona. Después del pago,
-                una guía simple te acompaña para cargar fotos, audios y palabras sin tocar
-                el diseño, los efectos ni las animaciones.
+                Elegí el regalo que más te guste. Después del pago te guiamos
+                pantalla por pantalla para agregar fotos, audios y tus palabras.
+                El diseño, los efectos y las animaciones ya vienen listos.
               </p>
               <div className="order-step-trust" aria-label="Cómo trabajamos">
                 <span><b>01</b> Elegís el regalo</span>
@@ -261,7 +261,7 @@ export default function CreatorWizard() {
                           {occasion.cta} <span>→</span>
                         </button>
                         <Link href={`/tehiceesto/experiencias/${experience.slug}`} target="_blank">
-                          Ver demo ↗
+                          Ver cómo se ve
                         </Link>
                       </div>
                     </div>
@@ -290,7 +290,7 @@ export default function CreatorWizard() {
                 <small>ELEGISTE</small>
                 <strong>{selected.title}</strong>
               </div>
-              <Link href={`/tehiceesto/experiencias/${selected.slug}`} target="_blank">Ver demo ↗</Link>
+              <Link href={`/tehiceesto/experiencias/${selected.slug}`} target="_blank">Ver cómo se ve</Link>
             </div>
 
             <form className="order-contact-form" onSubmit={goToReview}>
