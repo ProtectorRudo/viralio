@@ -9,6 +9,7 @@ import { getExperience,type SceneType } from "../data";
 import { getExperience as getPremiumV1Experience,type SceneType as PremiumSceneType } from "../template-v1/data";
 import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
+import { effectiveRecipeForMedia } from "../effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
 
@@ -513,11 +514,10 @@ export default function CustomerStudio({code}:{code:string}){
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
-  const effectiveRecipe=(gift?.scene_recipe||[]).filter(scene=>{
-    if(scene==="memories")return photos.length>0||videos.length>0;
-    if(scene==="voices")return voiceAudios.length>0;
-    if(scene==="video")return videos.length>0;
-    return true;
+  const effectiveRecipe=effectiveRecipeForMedia(gift?.scene_recipe||[],{
+    hasPhoto:photos.length>0,
+    hasVoice:voiceAudios.length>0,
+    hasVideo:videos.length>0,
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
