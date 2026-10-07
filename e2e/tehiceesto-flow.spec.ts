@@ -1143,10 +1143,52 @@ test("customer studio gives a zero-tech user one obvious action at a time",async
   await expect(page.getByText(/PASO 5 DE 6 · OPCIONAL/i)).toBeVisible();
   await expect(page.getByRole("heading",{name:/Tu regalo ya viene armado/i})).toBeVisible();
   await expect(page.locator(".studio-section-list")).toBeHidden();
-  await expect(page.getByRole("button",{name:/Ver mi regalo/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Ver vista previa/i})).toBeVisible();
 
   expect(await page.getByText(/metadata|scene_recipe|storage_path|template_version/i).count()).toBe(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("published gifts still open the full preview before saving changes",async({page})=>{
+  const code="9999888877776666aa";
+  const editorToken="f".repeat(64);
+
+  await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{
+    key:`thi_editor_access:${code}`,token:editorToken,
+  });
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="openStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:"published",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:"Ailín",occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:"Una carta",closing_text:null,music_url:null,
+          scene_recipe:["intro","door","stars","scratch","hold","letter","finale"],
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:new Date().toISOString(),
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},media:[],
+      })});
+    }
+    if(body.action==="publishStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,giftUrl:`https://tehiceesto.com/r/${code}`})});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+
+  await page.getByRole("button",{name:/5/i}).click();
+  await expect(page.getByText(/PASO 5 DE 6 · OPCIONAL/i)).toBeVisible();
+  await page.getByRole("button",{name:/Ver vista previa/i}).click();
+
+  await expect(page.getByText(/PASO 6 DE 6 · VISTA PREVIA/i)).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
+  await expect(page.getByRole("navigation",{name:/Navegar por las partes del regalo/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Guardar y actualizar/i}).first()).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Tu regalo está listo para vivirlo/i})).toHaveCount(0);
 });
 
 test("customer studio is guided, mobile-safe and publishes without technical language",async({page},testInfo)=>{
@@ -1215,7 +1257,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
 
   await expect(page.getByRole("heading",{name:/Tu regalo ya viene armado/i})).toBeVisible();
   await expect(page.locator(".studio-section-list")).toBeHidden();
-  await page.getByRole("button",{name:/Ver mi regalo/i}).click();
+  await page.getByRole("button",{name:/Ver vista previa/i}).click();
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
   const copyTool=page.getByRole("button",{name:/Editar textos de esta parte/i});
