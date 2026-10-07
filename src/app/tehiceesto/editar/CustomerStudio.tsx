@@ -375,7 +375,7 @@ export default function CustomerStudio({code}:{code:string}){
     }finally{setRecovering(false)}
   }
 
-  async function uploadFiles(files:FileList|null,kind:MediaKind){
+  async function uploadFiles(files:FileList|File[]|null,kind:MediaKind,sceneOverride=""){
     if(!files||!editorToken)return;
     const all=Array.from(files);
     const limit=kind==="image"?20:kind==="audio"?6:1;
@@ -414,6 +414,7 @@ export default function CustomerStudio({code}:{code:string}){
           await creatorCall("registerStudioMedia",{
             code,editorToken,storagePath:prepared.path,kind:prepared.kind,
             originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
+            scene:sceneOverride||undefined,
           });
           uploaded+=1;
         }catch{
@@ -439,7 +440,8 @@ export default function CustomerStudio({code}:{code:string}){
       }
     }finally{
       setUploading([]);
-      if(kind==="image"&&fileInputRef.current)fileInputRef.current.value="";
+      if(kind==="image"&&sceneOverride==="light"&&lightInputRef.current)lightInputRef.current.value="";
+      if(kind==="image"&&!sceneOverride&&fileInputRef.current)fileInputRef.current.value="";
       if(kind==="audio"&&audioInputRef.current)audioInputRef.current.value="";
       if(kind==="video"&&videoInputRef.current)videoInputRef.current.value="";
     }
