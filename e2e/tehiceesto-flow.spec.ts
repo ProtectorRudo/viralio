@@ -135,7 +135,7 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/papa");
 
-  await expect(page.getByText("Tus hijos hicieron esto para vos")).toBeVisible();
+  await expect(page.getByText("Pa, te hicimos algo")).toBeVisible();
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-global-back-nav")).toHaveCount(0);
 
@@ -143,7 +143,7 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await waitForScene(page,"memories");
   await expect(page.locator(".thi-papa-memory-card")).toHaveCount(3);
   await expect(page.locator(".thi-papa-memory-copy small").first()).toContainText("01");
-  await expect(page.getByRole("button",{name:/Seguir con la historia/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Seguir\. Hay más/i})).toBeVisible();
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeVisible();
   const papaMemoriesBackground=await page.locator("main.thi-experience").evaluate(el=>getComputedStyle(el).backgroundImage);
@@ -151,43 +151,43 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
 
   await page.locator('[data-action="advance"]').click();
   await waitForScene(page,"lessons");
-  await expect(page.getByText(/No fueron solo consejos/i)).toBeVisible();
-  await expect(page.getByText(/Fueron formas de quererme/i)).toBeVisible();
+  await expect(page.getByText(/Resulta que sí te estábamos mirando/i)).toBeVisible();
+  await expect(page.getByText(/Aunque hiciéramos cara de que no/i)).toBeVisible();
   const lessonItems=page.locator(".thi-papa-lesson-card");
   await expect(lessonItems).toHaveCount(4);
   await expect(lessonItems.nth(0)).toHaveClass(/open/);
   for(const i of [1,2,3]) await lessonItems.nth(i).click();
-  await expect(page.getByText(/tienen tu forma de querer/i)).toBeVisible();
+  await expect(page.getByText(/te estábamos mirando todo el tiempo/i)).toBeVisible();
   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
   await page.locator(".thi-papa-lessons-cta").click();
   await waitForScene(page,"presence");
   await expect.poll(()=>page.evaluate(()=>window.scrollY),{timeout:1500}).toBeLessThan(12);
 
-  await expect(page.getByText(/Hay formas de estar que uno entiende recién después/i)).toBeVisible();
-  await expect(page.getByText(/Las tuyas fueron algunas de ellas/i)).toBeVisible();
+  await expect(page.getByText(/A veces no decías nada\. Pero estabas/i)).toBeVisible();
+  await expect(page.getByText(/de grandes, pesa distinto/i)).toBeVisible();
   const presence=page.locator(".thi-papa-presence-card");
   await expect(presence).toHaveCount(3);
   await expect(presence.nth(0)).toHaveClass(/open/);
   await expect(page.locator(".thi-papa-presence-cta")).toBeDisabled();
   await presence.nth(1).click();await presence.nth(2).click();
-  await expect(page.getByText(/no estabas diciendo/i)).toBeVisible();
+  await expect(page.getByText(/todas las otras formas en que lo decías/i)).toBeVisible();
   await expect(page.locator(".thi-papa-presence-cta")).toBeEnabled();
   await page.locator(".thi-papa-presence-cta").click();
   await waitForScene(page,"inheritance");
-  await expect(page.getByText(/Con los años empecé a encontrarte/i)).toBeVisible();
-  await expect(page.getByText(/Se quedaron conmigo/i)).toBeVisible();
+  await expect(page.getByText(/Empezamos a encontrarte en nosotros/i)).toBeVisible();
+  await expect(page.getByText(/juramos que nunca íbamos a repetir/i)).toBeVisible();
   const inheritance=page.locator(".thi-papa-inheritance-card");
   await expect(inheritance).toHaveCount(4);
   await expect(inheritance.nth(0)).toHaveClass(/open/);
   for(const i of [1,2,3]) await inheritance.nth(i).click();
-  await expect(page.getByText(/heredar de verdad/i)).toBeVisible();
-  await expect(page.getByText(/viviendo un poco en uno mismo/i)).toBeVisible();
+  await expect(page.getByText(/una parte de crecer es esta/i)).toBeVisible();
+  await expect(page.getByText(/un pedacito de la tuya/i)).toBeVisible();
   await page.locator(".thi-papa-inheritance-cta").click();
 
   await waitForScene(page,"voices");
-  await expect(page.getByText(/Queríamos que las escucharas/i)).toBeVisible();
-  await expect(page.getByText(/algunas palabras cambian/i)).toBeVisible();
-  await expect(page.getByText(/Escuchá las que quieras/i)).toBeVisible();
+  await expect(page.getByText(/mejor te las decimos/i)).toBeVisible();
+  await expect(page.getByText(/Sin discurso\. Sin frase perfecta/i)).toBeVisible();
+  await expect(page.getByText(/prometemos no hacer comentarios/i)).toBeVisible();
   const voiceControls=page.locator(".thi-papa-voice-control");
   await expect(voiceControls).toHaveCount(3);
   const voiceCta=page.locator(".thi-papa-voice-final-cta");
@@ -205,7 +205,7 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await page.locator(".thi-global-back-nav").click();
   await waitForScene(page,"inheritance");
   await expect(page.locator(".thi-papa-inheritance-card.open")).toHaveCount(4);
-  await expect(page.getByText(/heredar de verdad/i)).toBeVisible();
+  await expect(page.getByText(/una parte de crecer es esta/i)).toBeVisible();
   await page.locator(".thi-papa-inheritance-cta").click();
   await waitForScene(page,"voices");
 
@@ -233,8 +233,8 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
     await expect(control).toHaveAttribute("data-voice-state","completed");
   }
 
-  await expect(page.getByText(/Hay palabras que quizás ya sabías/i)).toBeVisible();
-  await expect(page.getByText(/necesitábamos que las escucharas/i)).toBeVisible();
+  await expect(page.getByText(/No hace falta que respondas nada ahora/i)).toBeVisible();
+  await expect(page.getByText(/aunque hayamos tardado bastante/i)).toBeVisible();
   await expect(voiceCta).toBeEnabled();
   await voiceCta.click();
 
@@ -243,15 +243,19 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await expect.poll(()=>paper.evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))).toBeLessThan(.05);
   await page.locator('[data-action="open-letter"]').click();
   await expect.poll(()=>paper.evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))).toBeGreaterThan(.9);
+  await expect(page.getByText(/Nosotros tampoco te lo hicimos fácil/i)).toBeVisible();
+  await expect(page.getByText(/Te queremos, Pa/i)).toBeVisible();
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await page.locator(".thi-papa-letter [data-action='advance']").click();
 
   await waitForScene(page,"lookback");
+  await expect(page.getByText(/dejás de mirar a tu papá sólo como/i)).toBeVisible();
   await page.locator(".lookback-button").click();
+  await expect(page.getByText(/también estaba aprendiendo/i)).toBeVisible();
   await page.locator(".scene-lookback .primary-action").click();
   await waitForScene(page,"finale");
   await expect(page.locator(".thi-papa-finale")).toBeVisible();
-  await expect(page.getByText(/forman parte de nosotros/i)).toBeVisible();
+  await expect(page.getByText(/aprendimos bastante más de vos/i)).toBeVisible();
   await expect.poll(()=>page.locator(".floating-whatsapp--experience").evaluate(el=>getComputedStyle(el).visibility)).toBe("visible");
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
