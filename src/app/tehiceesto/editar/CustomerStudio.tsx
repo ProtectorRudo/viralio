@@ -526,9 +526,18 @@ export default function CustomerStudio({code}:{code:string}){
   }
 
   async function publishGift(){
-    if(!editorToken||!payload)return;
-    if(!basics?.recipientName.trim()){
-      setStep(0);setMessage("Primero decinos quién recibe el regalo.");return;
+    if(!editorToken||!payload||!basics)return;
+    if(!basics.recipientName.trim()){
+      goToStep(0);
+      setMessage("Primero escribí el nombre de quien recibe el regalo.");
+      window.setTimeout(()=>recipientInputRef.current?.focus(),250);
+      return;
+    }
+    if(!basics.giverName.trim()){
+      goToStep(0);
+      setMessage("Ahora escribí tu nombre para poder publicar.");
+      window.setTimeout(()=>giverInputRef.current?.focus(),250);
+      return;
     }
     setSaveState("saving");setMessage("");
     try{
