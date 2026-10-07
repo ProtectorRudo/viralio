@@ -676,15 +676,24 @@ export default function CustomerStudio({code}:{code:string}){
   const canonical=(gift?.template_version==="premium-v1"?frozenBase?.recipe:currentBase?.recipe)||[];
   const media=payload?.media||[];
   const photos=media.filter(item=>item.kind==="image");
+  const lightPhotos=photos.filter(item=>item.metadata?.scene==="light");
+  const memoryPhotos=photos.filter(item=>item.metadata?.scene!=="light");
+  const lightPhoto=lightPhotos[0];
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
   const effectiveRecipe=effectiveRecipeForMedia(gift?.scene_recipe||[],{
-    hasPhoto:photos.length>0,
+    hasPhoto:memoryPhotos.length>0,
     hasVoice:voiceAudios.length>0,
     hasVideo:videos.length>0,
+    hasLightPhoto:lightPhotos.length>0,
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
+  const liveCopy=currentBase?getExperienceCopy(currentBase):null;
+  const scratchRewardSource=liveCopy?.scratch.reward||"";
+  const scratchNoteSource=liveCopy?.scratch.note||"";
+  const scratchRewardValue=(scratchRewardSource&&sceneTextOverrides.scratch?.[scratchRewardSource])||scratchRewardSource;
+  const scratchNoteValue=(scratchNoteSource&&sceneTextOverrides.scratch?.[scratchNoteSource])||scratchNoteSource;
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
 
   function goToStep(next:number){
