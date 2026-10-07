@@ -457,7 +457,14 @@ export default function CustomerStudio({code}:{code:string}){
   const media=payload?.media||[];
   const photos=media.filter(item=>item.kind==="image");
   const audios=media.filter(item=>item.kind==="audio");
+  const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
+  const effectiveRecipe=gift.scene_recipe.filter(scene=>{
+    if(scene==="memories")return photos.length>0;
+    if(scene==="voices")return voiceAudios.length>0;
+    if(scene==="video")return videos.length>0;
+    return true;
+  });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
 
@@ -616,12 +623,20 @@ export default function CustomerStudio({code}:{code:string}){
         <div className="studio-section-list">{canonical.map((scene,index)=>{
           const terminal=scene==="finale"||scene==="proposal";
           const locked=scene==="intro"||terminal;
-          const visible=gift.scene_recipe.includes(scene);
+          const needsPhoto=scene==="memories"&&photos.length===0;
+          const needsVoice=scene==="voices"&&voiceAudios.length===0;
+          const needsVideo=scene==="video"&&videos.length===0;
+          const missingMedia=needsPhoto||needsVoice||needsVideo;
+          const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
           const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
-          return <article key={scene} className={visible?"visible":""}>
+          return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
             <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
-            <div><strong>{meta.title}</strong><p>{meta.copy}</p></div>
-            {locked?<span className="studio-section-required">ESENCIAL</span>:<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Está":"Oculta"}</span></button>}
+            <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
+            {locked
+              ?<span className="studio-section-required">ESENCIAL</span>
+              :missingMedia
+                ?<button type="button" className="studio-section-add" onClick={()=>setStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
+                :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Está":"Oculta"}</span></button>}
           </article>;
         })}</div>
         <div className="studio-tip"><span>✦</span><div><strong>Recomendación</strong><p>Si no sabés qué sacar, dejá todo. Las experiencias están pensadas para que el ritmo crezca de principio a fin.</p></div></div>
@@ -633,7 +648,7 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>setStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
         </div>
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
-        <div className="studio-preview-stage"><Preview gift={gift} media={media} sceneTextOverrides={sceneTextOverrides}/></div>
+        <div className="studio-preview-stage"><Preview gift={{...gift,scene_recipe:effectiveRecipe}} media={media} sceneTextOverrides={sceneTextOverrides}/></div>
         <div className="studio-preview-bottom">
           <span>¿Todo se siente como ustedes?</span>
           <button className="studio-main-button" type="button" onClick={publishGift}>{published?"Guardar cambios":"Sí, publicar mi regalo"} <b>→</b></button>
