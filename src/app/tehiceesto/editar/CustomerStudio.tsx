@@ -805,19 +805,23 @@ export default function CustomerStudio({code}:{code:string}){
         <Link href="/tehiceesto" className="studio-brand">TE HICE ESTO</Link>
         <span className="studio-order-code">REGALO · {code.toUpperCase()}</span>
       </div>
-      <div className="studio-topbar-actions">
-        <Link href="/tehiceesto/mis-regalos" className="studio-my-gifts-link"><span>♥</span> Mis regalos</Link>
-        {saveState==="error"?(
-          <button type="button" className="studio-save-state error retry" onClick={()=>{setSaveState("saving");setSaveRetry(value=>value+1)}} aria-live="polite">
-            <i/>No se guardó · Reintentar
-          </button>
-        ):(
-          <div className={`studio-save-state ${saveState}`} aria-live="polite">
-            <i/>{saveState==="saving"?"Guardando…":"Todo guardado"}
-          </div>
-        )}
-      </div>
+      {saveState==="error"?(
+        <button type="button" className="studio-save-state error retry" onClick={()=>{setSaveState("saving");setSaveRetry(value=>value+1)}} aria-live="polite">
+          <i/>No se guardó · Reintentar
+        </button>
+      ):(
+        <div className={`studio-save-state ${saveState}`} aria-live="polite">
+          <i/>{saveState==="saving"?"Guardando…":"Todo guardado"}
+        </div>
+      )}
     </header>
+    <div className="studio-account-shortcut-wrap">
+      <Link href="/tehiceesto/mis-regalos" className="studio-account-shortcut">
+        <span>♥</span>
+        <div><strong>Mis regalos</strong><small>Ver y editar mis compras</small></div>
+        <b>→</b>
+      </Link>
+    </div>
 
     <div className="studio-progress-wrap">
       <div className="studio-progress-meta"><span>PASO {step+1} DE {STEP_LABELS.length} · {STEP_LABELS[step].toUpperCase()}</span><strong>{progress}%</strong></div>
