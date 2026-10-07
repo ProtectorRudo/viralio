@@ -12,6 +12,7 @@ import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
 import { effectiveRecipeForMedia } from "../effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
+import { requestGiftAccountLink } from "../giftAccountApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
 
 type MediaKind="image"|"audio"|"video";
@@ -281,8 +282,9 @@ export default function CustomerStudio({code}:{code:string}){
   const [dirty,setDirty]=useState(false);
   const [uploading,setUploading]=useState<string[]>([]);
   const [message,setMessage]=useState("");
-  const [recovery,setRecovery]=useState({email:"",whatsapp:""});
+  const [recovery,setRecovery]=useState({email:""});
   const [recovering,setRecovering]=useState(false);
+  const [recoverySent,setRecoverySent]=useState(false);
   const [published,setPublished]=useState(false);
   const fileInputRef=useRef<HTMLInputElement|null>(null);
   const lightInputRef=useRef<HTMLInputElement|null>(null);
@@ -388,15 +390,13 @@ export default function CustomerStudio({code}:{code:string}){
   async function recoverAccess(event:React.FormEvent){
     event.preventDefault();setRecovering(true);setMessage("");
     try{
-      const result=await creatorCall<{editorToken:string}>("recoverStudioAccess",{code,...recovery});
-      window.localStorage.setItem(accessKey(code),result.editorToken);
-      setEditorToken(result.editorToken);
-      await loadStudio(result.editorToken);
+      await requestGiftAccountLink(recovery.email,code);
+      setRecoverySent(true);
     }catch(error){
       const reason=error instanceof Error?error.message:"";
-      setMessage(reason==="payment_required"
-        ?"El pago todavía no figura aprobado. Volvé al seguimiento del pedido."
-        :"No coinciden con los datos usados en la compra.");
+      setMessage(reason==="email_rate_limited"
+        ?"Esperá un minuto antes de pedir otro enlace."
+        :"No pudimos enviar el acceso ahora. Probá otra vez en unos minutos.");
     }finally{setRecovering(false)}
   }
 
@@ -739,14 +739,21 @@ export default function CustomerStudio({code}:{code:string}){
     <section className="studio-gate-card">
       <span className="studio-gate-mark">✦</span>
       <p className="studio-eyebrow">RECUPERAR MI EDICIÓN</p>
-      <h1>Volvamos a abrir tu regalo.</h1>
-      <p>Ingresá los mismos datos que usaste al comprar. No necesitás contraseña.</p>
-      <form className="studio-recovery" onSubmit={recoverAccess}>
-        <label><span>Email de la compra</span><input type="email" required value={recovery.email} onChange={event=>setRecovery(current=>({...current,email:event.target.value}))} placeholder="tu@email.com"/></label>
-        <label><span>WhatsApp de la compra</span><input autoComplete="tel" inputMode="tel" required value={recovery.whatsapp} onChange={event=>setRecovery(current=>({...current,whatsapp:event.target.value}))} placeholder="+54 9 221 ..."/></label>
-        <button className="studio-main-button" disabled={recovering}>{recovering?"Buscando…":"Entrar a mi regalo"} <b>→</b></button>
-      </form>
+      {!recoverySent?<>
+        <h1>Volvamos a abrir tu regalo.</h1>
+        <p>Escribí solamente el email que usaste al comprar. Te mandamos un acceso seguro; no necesitás teléfono ni contraseña.</p>
+        <form className="studio-recovery" onSubmit={recoverAccess}>
+          <label><span>Email de la compra</span><input type="email" autoComplete="email" required value={recovery.email} onChange={event=>setRecovery({email:event.target.value})} placeholder="tu@email.com"/></label>
+          <button className="studio-main-button" disabled={recovering}>{recovering?"Enviando…":"Enviarme acceso"} <b>→</b></button>
+        </form>
+      </>:<>
+        <h1>Revisá tu email.</h1>
+        <p>Te mandamos un enlace. Cuando lo abras, volvés directo a este regalo. Si ese email tiene varias compras, también vas a poder verlas todas en “Mis regalos”.</p>
+        <div className="account-email-sent"><span>✓</span><strong>{recovery.email}</strong></div>
+        <button type="button" className="studio-text-link" onClick={()=>setRecoverySent(false)}>Usar otro email</button>
+      </>}
       {message&&<p className="studio-alert">{message}</p>}
+      <Link className="studio-text-link" href="/tehiceesto/mis-regalos">Ver todos mis regalos</Link>
       <Link className="studio-text-link" href={`/tehiceesto/pedido/${code}`}>Ver seguimiento del pedido</Link>
     </section>
   </main>;
