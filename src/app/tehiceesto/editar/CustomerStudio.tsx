@@ -271,7 +271,7 @@ export default function CustomerStudio({code}:{code:string}){
     try{
       const data=await creatorCall<StudioPayload>("openStudio",{code,editorToken:token});
       setPayload(data);
-      setBasics(giftToBasics(data.gift));
+      setBasics(current=>current??giftToBasics(data.gift));
       setPublished(data.gift.status==="published");
       setAccessState("ready");
     }catch(error){
@@ -489,12 +489,19 @@ export default function CustomerStudio({code}:{code:string}){
     }
   }
 
-  async function shareGift(){
+  function shareGift(){
     const url=`https://tehiceesto.com/r/${code}`;
+    const text=encodeURIComponent(`Hice algo para vos ❤️\n${url}`);
+    window.open(`https://wa.me/?text=${text}`,"_blank","noopener,noreferrer");
+  }
+
+  async function copyGiftLink(){
     try{
-      if(navigator.share)await navigator.share({title:"Te hice esto",text:"Hice algo para vos ❤️",url});
-      else {await navigator.clipboard.writeText(url);setMessage("Link copiado ✓")}
-    }catch{}
+      await navigator.clipboard.writeText(`https://tehiceesto.com/r/${code}`);
+      setMessage("Link copiado ✓");
+    }catch{
+      setMessage("No pudimos copiarlo. Podés abrir el regalo y copiar la dirección.");
+    }
   }
 
   const gift=payload?.gift;
@@ -558,7 +565,7 @@ export default function CustomerStudio({code}:{code:string}){
       <p>Ingresá los mismos datos que usaste al comprar. No necesitás contraseña.</p>
       <form className="studio-recovery" onSubmit={recoverAccess}>
         <label><span>Email de la compra</span><input type="email" required value={recovery.email} onChange={event=>setRecovery(current=>({...current,email:event.target.value}))} placeholder="tu@email.com"/></label>
-        <label><span>WhatsApp de la compra</span><input inputMode="tel" required value={recovery.whatsapp} onChange={event=>setRecovery(current=>({...current,whatsapp:event.target.value}))} placeholder="+54 9 221 ..."/></label>
+        <label><span>WhatsApp de la compra</span><input autoComplete="tel" inputMode="tel" required value={recovery.whatsapp} onChange={event=>setRecovery(current=>({...current,whatsapp:event.target.value}))} placeholder="+54 9 221 ..."/></label>
         <button className="studio-main-button" disabled={recovering}>{recovering?"Buscando…":"Entrar a mi regalo"} <b>→</b></button>
       </form>
       {message&&<p className="studio-alert">{message}</p>}
@@ -579,10 +586,13 @@ export default function CustomerStudio({code}:{code:string}){
       <p>Este link es privado y ya tiene todo lo que acabás de crear. Podés abrirlo, compartirlo o volver a editarlo cuando quieras.</p>
       <div className="studio-success-link"><span>tehiceesto.com/r/</span><strong>{code}</strong></div>
       <div className="studio-success-actions">
-        <a className="studio-main-button" href={`/tehiceesto/r/${code}`} target="_blank" rel="noreferrer">Abrir regalo <b>↗</b></a>
-        <button className="studio-secondary-button" onClick={shareGift}>Compartir link</button>
+        <button className="studio-main-button" onClick={shareGift}>Enviar por WhatsApp <b>→</b></button>
+        <a className="studio-secondary-button" href={`/tehiceesto/r/${code}`} target="_blank" rel="noreferrer">Abrir antes de enviar ↗</a>
       </div>
-      <button className="studio-text-link" onClick={()=>setPublished(false)}>Quiero cambiar algo</button>
+      <div className="studio-success-links">
+        <button className="studio-text-link" onClick={copyGiftLink}>Copiar link</button>
+        <button className="studio-text-link" onClick={()=>setPublished(false)}>Quiero cambiar algo</button>
+      </div>
     </section>
   </main>;
 
