@@ -124,11 +124,26 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
 
 function accessKey(code:string){return `thi_editor_access:${code}`}
 
+function inferredMimeType(file:File){
+  if(file.type)return file.type;
+  const ext=file.name.split(".").pop()?.toLowerCase()||"";
+  const byExtension:Record<string,string>={
+    jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",heic:"image/heic",heif:"image/heif",
+    mp3:"audio/mpeg",m4a:"audio/mp4",wav:"audio/wav",ogg:"audio/ogg",opus:"audio/opus",webm:"audio/webm",
+    mp4:"video/mp4",mov:"video/quicktime",
+  };
+  return byExtension[ext]||"";
+}
+
 async function optimizeStudioUpload(file:File,kind:MediaKind){
-  const heic=/^image\/(heic|heif)$/.test(file.type);
-  if(kind!=="image"||!/^image\/(jpeg|png|webp|heic|heif)$/.test(file.type)||(!heic&&file.size<1_800_000))return file;
+  const inferred=inferredMimeType(file);
+  const typedFile=inferred&&inferred!==file.type
+    ?new File([file],file.name,{type:inferred,lastModified:file.lastModified})
+    :file;
+  const heic=/^image\/(heic|heif)$/.test(typedFile.type);
+  if(kind!=="image"||!/^image\/(jpeg|png|webp|heic|heif)$/.test(typedFile.type)||(!heic&&typedFile.size<1_800_000))return typedFile;
   try{
-    const bitmap=await createImageBitmap(file,{imageOrientation:"from-image"});
+    const bitmap=await createImageBitmap(typedFile,{imageOrientation:"from-image"});
     const maxSide=1800;
     const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
     const width=Math.max(1,Math.round(bitmap.width*scale));
@@ -140,11 +155,11 @@ async function optimizeStudioUpload(file:File,kind:MediaKind){
     context.drawImage(bitmap,0,0,width,height);
     bitmap.close();
     const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/webp",.86));
-    if(!blob||blob.size>=file.size*.95)return file;
-    const base=file.name.replace(/\.[^.]+$/,"")||"foto";
-    return new File([blob],base+".webp",{type:"image/webp",lastModified:file.lastModified});
+    if(!blob||blob.size>=typedFile.size*.95)return typedFile;
+    const base=typedFile.name.replace(/\.[^.]+$/,"")||"foto";
+    return new File([blob],base+".webp",{type:"image/webp",lastModified:typedFile.lastModified});
   }catch{
-    return file;
+    return typedFile;
   }
 }
 
