@@ -328,6 +328,8 @@ export default function CustomerStudio({code}:{code:string}){
     return()=>window.clearTimeout(timer);
   },[code,loadStudio]);
 
+  useEffect(()=>()=>stopRecorderTracks(),[]);
+
   useEffect(()=>{
     if(!dirty||!basics||!editorToken||accessState!=="ready")return;
     const timer=window.setTimeout(async()=>{
@@ -361,6 +363,24 @@ export default function CustomerStudio({code}:{code:string}){
     setBasics(current=>current?{...current,[key]:value}:current);
     setDirty(true);setSaveState("saving");
   };
+
+  async function saveQuickSceneText(scene:string,source:string,replacement:string){
+    const nextValue=replacement.trim();
+    if(!editorToken||!source.trim()||!nextValue)return;
+    setSaveState("saving");setMessage("");
+    try{
+      const result=await creatorCall<{sceneContent:StudioSceneTextOverrides}>("saveStudioSceneText",{
+        code,editorToken,scene,source,replacement:nextValue,
+      });
+      const next=result.sceneContent||{};
+      setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current);
+      setSaveState("saved");
+      setMessage("Listo, ya quedó personalizado ✓");
+    }catch{
+      setSaveState("error");
+      setMessage("No pudimos guardar ese cambio. Probá de nuevo.");
+    }
+  }
 
   async function recoverAccess(event:React.FormEvent){
     event.preventDefault();setRecovering(true);setMessage("");
