@@ -40,6 +40,7 @@ export default function AffiliateAdminDashboard(){
   const [payoutNotes,setPayoutNotes]=useState("");
   const [payoutCount,setPayoutCount]=useState("");
   const [payoutBusy,setPayoutBusy]=useState(false);
+  const selectedAffiliateId=detail?.affiliate.id||"";
 
   const hasSession=()=>typeof window!=="undefined"&&Boolean(window.sessionStorage.getItem(SESSION_KEY));
 
@@ -61,6 +62,17 @@ export default function AffiliateAdminDashboard(){
     const timer=window.setInterval(()=>{if(document.visibilityState==="visible")void load(true)},10000);
     return()=>window.clearInterval(timer);
   },[]);
+
+  useEffect(()=>{
+    if(!selectedAffiliateId)return;
+    const timer=window.setInterval(()=>{
+      if(document.visibilityState!=="visible")return;
+      void affiliateAdminCall<Detail>("detail",{id:selectedAffiliateId})
+        .then(next=>setDetail(current=>current?.affiliate.id===selectedAffiliateId?next:current))
+        .catch(()=>{});
+    },10000);
+    return()=>window.clearInterval(timer);
+  },[selectedAffiliateId]);
 
   async function createAffiliate(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setLoading(true);setMessage("");
