@@ -6040,3 +6040,98 @@
   .thi-papa-voice-final-cta{transition:none}
   .thi-papa-voice-outro{animation:none}
 }
+
+
+/* PAPA · FREE JOURNEY NAVIGATION · OCT 2026
+   Recipient can move backward at any time and audio is never a hard gate.
+   ========================================================= */
+.thi-template-live.thi-theme-papa .thi-papa-back-nav{
+  position:fixed;
+  z-index:860;
+  left:max(14px,env(safe-area-inset-left));
+  top:max(82px,calc(env(safe-area-inset-top) + 76px));
+  min-height:38px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0 13px;
+  border:1px solid rgba(184,150,104,.20);
+  border-radius:999px;
+  background:rgba(5,8,12,.76);
+  color:#aeb9c4;
+  box-shadow:0 12px 34px rgba(0,0,0,.24);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  cursor:pointer;
+  transition:transform .22s ease,border-color .22s ease,background .22s ease,color .22s ease;
+}
+.thi-template-live.thi-theme-papa .thi-papa-back-nav span{
+  color:#c8a575;
+  font-size:16px;
+  line-height:1;
+}
+.thi-template-live.thi-theme-papa .thi-papa-back-nav small{
+  margin:0!important;
+  color:inherit!important;
+  font-size:8px!important;
+  font-weight:700;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.thi-template-live.thi-theme-papa .thi-papa-back-nav:hover,
+.thi-template-live.thi-theme-papa .thi-papa-back-nav:focus-visible{
+  transform:translateY(-1px);
+  border-color:rgba(211,165,110,.38);
+  background:rgba(9,13,18,.88);
+  color:#eef1f4;
+  outline:none;
+}
+.thi-template-live.thi-theme-papa .thi-papa-back-nav:disabled{
+  opacity:.35;
+  cursor:default;
+  transform:none;
+}
+
+/* Voices are optional: CTA remains clearly usable before all messages are heard. */
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-papa-voice-final-cta:not(.all-heard){
+  border-color:rgba(184,150,104,.30);
+  background:linear-gradient(180deg,rgba(184,150,104,.12),rgba(184,150,104,.055));
+  color:#e0e5ea;
+  box-shadow:0 16px 46px rgba(0,0,0,.25);
+}
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-papa-voice-final-cta:not(.all-heard):hover,
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-papa-voice-final-cta:not(.all-heard):focus-visible{
+  border-color:rgba(211,165,110,.50);
+  background:linear-gradient(180deg,rgba(184,150,104,.17),rgba(184,150,104,.08));
+}
+.thi-template-live.thi-theme-papa[data-scene="voices"] .thi-papa-voice-final-cta.all-heard{
+  border-color:rgba(238,203,155,.58);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18),transparent 30%),
+    linear-gradient(135deg,#d2a46b,#a87a49);
+  color:#090b0e;
+  box-shadow:
+    0 20px 58px rgba(0,0,0,.34),
+    0 0 36px rgba(184,150,104,.11),
+    inset 0 1px 0 rgba(255,255,255,.28);
+}
+
+@media(max-width:650px){
+  .thi-template-live.thi-theme-papa .thi-papa-back-nav{
+    left:10px;
+    top:max(78px,calc(env(safe-area-inset-top) + 72px));
+    min-height:36px;
+    padding:0 11px;
+  }
+  .thi-template-live.thi-theme-papa .thi-papa-back-nav small{
+    font-size:7px!important;
+  }
+}
+@media(max-width:390px){
+  .thi-template-live.thi-theme-papa .thi-papa-back-nav{
+    top:max(76px,calc(env(safe-area-inset-top) + 70px));
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-template-live.thi-theme-papa .thi-papa-back-nav{transition:none}
+}
