@@ -1057,8 +1057,11 @@ test("my gifts shows a chooser when this device has multiple purchases",async({p
   await expect(page.getByRole("heading",{name:/Acá están tus regalos/i})).toBeVisible();
   await expect(page.getByRole("heading",{name:"Para Ailín"})).toBeVisible();
   await expect(page.getByRole("heading",{name:"Para Mamá"})).toBeVisible();
-  await expect(page.getByRole("link",{name:/Editar/i}).first()).toHaveAttribute("href",`/tehiceesto/editar/${gifts[0].code}`);
-  await expect(page.getByRole("link",{name:/Ver regalo/i})).toHaveAttribute("href",`/tehiceesto/r/${gifts[0].code}`);
+  const ailinCard=page.locator(".account-gift-card").filter({hasText:"Para Ailín"});
+  const mamaCard=page.locator(".account-gift-card").filter({hasText:"Para Mamá"});
+  await expect(ailinCard.getByRole("link",{name:/Editar/i})).toHaveAttribute("href",`/tehiceesto/editar/${gifts[0].code}`);
+  await expect(ailinCard.getByRole("link",{name:/Ver regalo/i})).toHaveAttribute("href",`/tehiceesto/r/${gifts[0].code}`);
+  await expect(mamaCard.getByRole("link",{name:/Editar/i})).toHaveAttribute("href",`/tehiceesto/editar/${gifts[1].code}`);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
