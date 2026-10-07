@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { getExperience } from "../../data";
 import OrderStatusAutoRefresh from "./OrderStatusAutoRefresh";
 
@@ -55,6 +56,11 @@ export default async function OrderStatusPage({
   const {pago}=await searchParams;
   if(!/^[a-f0-9]{18}$/.test(code))notFound();
 
+  const host=(await headers()).get("host")?.split(":")[0].toLowerCase()||"";
+  const dedicated=host==="tehiceesto.com"||host==="www.tehiceesto.com";
+  const prefix=dedicated?"":"/tehiceesto";
+  const href=(value:string)=>`${prefix}${value}`;
+
   const response=await fetch(`${SUPABASE_URL}/functions/v1/order-status?code=${encodeURIComponent(code)}`,{
     headers:{apikey:PUBLISHABLE_KEY,accept:"application/json"},
     cache:"no-store",
@@ -77,7 +83,7 @@ export default async function OrderStatusPage({
     <div className="order-status-aura aura-b" aria-hidden="true"/>
 
     <header className="order-status-top">
-      <Link href="/tehiceesto" className="order-status-brand">TE HICE ESTO</Link>
+      <Link href={href("/")} className="order-status-brand">TE HICE ESTO</Link>
       <span>SEGUIMIENTO PRIVADO</span>
     </header>
 
@@ -119,8 +125,9 @@ export default async function OrderStatusPage({
         <h2>Ya podés mandarlo.</h2>
         <p>El link es privado. Podés abrirlo, compartirlo o volver a personalizarlo cuando quieras.</p>
         <div className="order-status-actions">
-          <Link href={`/tehiceesto/r/${data.code}`} className="order-status-primary">Abrir mi regalo <b>↗</b></Link>
-          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-whatsapp">Cambiar algo</Link>
+          <Link href={href(`/r/${data.code}`)} className="order-status-primary">Abrir mi regalo <b>↗</b></Link>
+          <Link href={href(`/editar/${data.code}`)} className="order-status-whatsapp">Cambiar algo</Link>
+          <Link href={href("/mis-regalos")} className="order-status-whatsapp">Mis regalos</Link>
         </div>
         <small>No publiques capturas si querés conservar la sorpresa.</small>
       </section>
@@ -132,7 +139,7 @@ export default async function OrderStatusPage({
           <p>Te vamos guiando pantalla por pantalla. No necesitás saber editar ni diseñar nada. Todo se guarda automáticamente.</p>
         </div>
         <div className="order-status-actions">
-          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-pay">
+          <Link href={href(`/editar/${data.code}`)} className="order-status-pay">
             Empezar a personalizar <b>→</b>
           </Link>
           <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Necesito ayuda</a>
@@ -176,7 +183,8 @@ export default async function OrderStatusPage({
 
     <footer className="order-status-footer">
       <div className="order-status-footer-left">
-        <Link href={`/tehiceesto/pedido/${data.code}`}>Actualizar ahora ↻</Link>
+        <Link href={href(`/pedido/${data.code}`)}>Actualizar ahora ↻</Link>
+        <Link href={href("/mis-regalos")}>Mis regalos</Link>
         <OrderStatusAutoRefresh active={!ready}/>
       </div>
       <span>Tu contenido no aparece en buscadores.</span>
