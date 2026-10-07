@@ -283,11 +283,18 @@ export default function CustomerStudio({code}:{code:string}){
   const [recovering,setRecovering]=useState(false);
   const [published,setPublished]=useState(false);
   const fileInputRef=useRef<HTMLInputElement|null>(null);
+  const lightInputRef=useRef<HTMLInputElement|null>(null);
   const audioInputRef=useRef<HTMLInputElement|null>(null);
   const videoInputRef=useRef<HTMLInputElement|null>(null);
   const replaceInputRef=useRef<HTMLInputElement|null>(null);
   const recipientInputRef=useRef<HTMLInputElement|null>(null);
   const giverInputRef=useRef<HTMLInputElement|null>(null);
+  const recorderRef=useRef<MediaRecorder|null>(null);
+  const recorderStreamRef=useRef<MediaStream|null>(null);
+  const recorderChunksRef=useRef<Blob[]>([]);
+  const recordingTimerRef=useRef<number|null>(null);
+  const [recording,setRecording]=useState(false);
+  const [recordingSeconds,setRecordingSeconds]=useState(0);
   const [replaceTarget,setReplaceTarget]=useState<StudioMedia|null>(null);
 
   const loadStudio=useCallback(async(token:string)=>{
