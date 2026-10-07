@@ -54,7 +54,7 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
   </aside>;
 }
 
-export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext,sceneTextOverrides}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides}){
+export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
@@ -69,7 +69,13 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);const demoVoiceMessageRef=useRef<string|null>(null);const demoVoiceRunRef=useRef(0);const mamaVoiceAudioRef=useRef<HTMLAudioElement|null>(null);
   const shellRef=useRef<HTMLElement|null>(null);const mamaMemorySwipeRef=useRef<{pointerId:number|null;x:number;y:number}>({pointerId:null,x:0,y:0});const mamaLetterSwipeRef=useRef<{pointerId:number|null;x:number;y:number;swiped:boolean}>({pointerId:null,x:0,y:0,swiped:false});
 
-  const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
+  const copy=getExperienceCopy(experience,copyOverride);
+  const scenes=customerGift?experience.recipe.filter(scene=>{
+    if(scene==="voices")return (audioMedia||[]).some(item=>mediaBelongsToScene("audio",item.scene,"voices"));
+    if(scene==="light")return (photoMedia||[]).some(item=>mediaBelongsToScene("image",item.scene,"light"));
+    return true;
+  }):experience.recipe;
+  const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/Math.max(total,1))*100;
   useEffect(()=>{
     const root=shellRef.current;if(!root||!sceneTextOverrides)return;
     let applying=false;
@@ -110,8 +116,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const currentAudios=(audioMedia||[]).filter(item=>mediaBelongsToScene("audio",item.scene,current));
   const currentVideos=(videoMedia||[]).filter(item=>mediaBelongsToScene("video",item.scene,current));
   const demoPhotos=(experience.demo.photos||[]).map((item,index)=>({url:item.url,caption:memoryLines[index]||undefined,fit:"cover" as const,position:item.position||"center" as const}));
-  const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):demoPhotos):[];
-  const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):demoPhotos;
+  const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos):[];
+  const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos;
   const hasAttachedMedia=(current!=="memories"&&currentPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
 
   const fadeSoundtrack=(target:number,duration=650)=>{
@@ -1173,7 +1179,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="thi-pair-finale-seal" aria-label={`Sello ${finalInitials}, ${finalYear}`}><strong>{finalInitials}</strong><small>{finalYear}</small><i aria-hidden="true"/></div>
             <div className="thi-pair-finale-reactions" aria-label="¿Qué te hizo sentir?">{reactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
-            <Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>
+            {!customerGift&&<Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>
             <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
           </section>;
         }
