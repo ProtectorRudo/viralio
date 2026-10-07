@@ -1,21 +1,27 @@
 "use client";
 
-import { FormEvent,useEffect,useState } from "react";
+import { useEffect,useState } from "react";
 import Link from "next/link";
 import { getExperience } from "../data";
-import { ACCOUNT_TOKEN_KEY,giftAccountCall,requestGiftAccountLink } from "../giftAccountApi";
+import { creatorCall } from "../creatorApi";
 
 type GiftRow={
   code:string;
   status:string;
   experienceSlug:string;
-  giverName:string;
   recipientName:string;
   publishedAt:string|null;
-  purchasedAt:string|null;
 };
 
-type GiftListPayload={email:string;gifts:GiftRow[]};
+type OpenPayload={
+  gift:{
+    public_code:string;
+    status:string;
+    experience_slug:string;
+    recipient_name:string;
+    published_at:string|null;
+  };
+};
 
 function publicEditorPath(code:string){
   if(typeof window!=="undefined"&&window.location.hostname.endsWith("tehiceesto.com"))return `/editar/${code}`;
@@ -27,142 +33,68 @@ function publicGiftPath(code:string){
   return `/tehiceesto/r/${code}`;
 }
 
+function editorAccessKey(code:string){return `thi_editor_access:${code}`}
+
 export default function MyGifts(){
-  const [accessToken,setAccessToken]=useState("");
-  const [email,setEmail]=useState("");
   const [gifts,setGifts]=useState<GiftRow[]>([]);
   const [loading,setLoading]=useState(true);
-  const [sending,setSending]=useState(false);
-  const [sent,setSent]=useState(false);
-  const [opening,setOpening]=useState("");
-  const [message,setMessage]=useState("");
-
-  async function openGift(code:string,token=accessToken){
-    if(!token||opening)return;
-    setOpening(code);setMessage("");
-    try{
-      const result=await giftAccountCall<{editorToken:string;code:string}>("open",{code},token);
-      window.localStorage.setItem(`thi_editor_access:${code}`,result.editorToken);
-      window.location.assign(publicEditorPath(code));
-    }catch(error){
-      const reason=error instanceof Error?error.message:"";
-      if(reason==="account_unauthorized"){
-        window.localStorage.removeItem(ACCOUNT_TOKEN_KEY);
-        setAccessToken("");
-        setGifts([]);
-        setMessage("El acceso venció. Pedí un nuevo enlace a tu email.");
-      }else{
-        setMessage("No pudimos abrir ese regalo. Probá otra vez.");
-      }
-      setOpening("");
-    }
-  }
 
   useEffect(()=>{
     let active=true;
     const run=async()=>{
-      const hash=new URLSearchParams(window.location.hash.replace(/^#/,""));
-      const hashToken=hash.get("access_token")||"";
-      if(hashToken){
-        window.localStorage.setItem(ACCOUNT_TOKEN_KEY,hashToken);
-        window.history.replaceState(null,"",window.location.pathname+window.location.search);
-      }
-      const token=hashToken||window.localStorage.getItem(ACCOUNT_TOKEN_KEY)||"";
-      if(!active)return;
-      setAccessToken(token);
-      if(!token){setLoading(false);return}
+      const entries=Object.keys(window.localStorage)
+        .filter(key=>key.startsWith("thi_editor_access:"))
+        .map(key=>({
+          code:key.slice("thi_editor_access:".length),
+          token:window.localStorage.getItem(key)||"",
+        }))
+        .filter(item=>/^[a-f0-9]{18}$/.test(item.code)&&item.token);
 
-      try{
-        const data=await giftAccountCall<GiftListPayload>("list",{},token);
-        if(!active)return;
-        setEmail(data.email||"");
-        setGifts(data.gifts||[]);
-
-        const requested=new URLSearchParams(window.location.search).get("regalo")||"";
-        const target=requested
-          ?data.gifts.find(gift=>gift.code===requested)
-          :data.gifts.length===1?data.gifts[0]:undefined;
-
-        if(target){
-          const result=await giftAccountCall<{editorToken:string;code:string}>("open",{code:target.code},token);
-          if(!active)return;
-          window.localStorage.setItem(`thi_editor_access:${target.code}`,result.editorToken);
-          window.location.assign(publicEditorPath(target.code));
-          return;
+      const rows:GiftRow[]=[];
+      for(const entry of entries){
+        try{
+          const data=await creatorCall<OpenPayload>("openStudio",{code:entry.code,editorToken:entry.token});
+          rows.push({
+            code:entry.code,
+            status:data.gift.status,
+            experienceSlug:data.gift.experience_slug,
+            recipientName:data.gift.recipient_name,
+            publishedAt:data.gift.published_at,
+          });
+        }catch{
+          window.localStorage.removeItem(editorAccessKey(entry.code));
         }
-      }catch{
-        window.localStorage.removeItem(ACCOUNT_TOKEN_KEY);
-        if(!active)return;
-        setAccessToken("");
-        setGifts([]);
-        setMessage("El enlace venció. Pedí uno nuevo y te lo enviamos enseguida.");
-      }finally{
-        if(active)setLoading(false);
       }
+
+      if(!active)return;
+      if(rows.length===1){
+        window.location.assign(publicEditorPath(rows[0].code));
+        return;
+      }
+      setGifts(rows);
+      setLoading(false);
     };
     void run();
     return()=>{active=false};
   },[]);
 
-  async function requestLink(event:FormEvent){
-    event.preventDefault();
-    const clean=email.trim().toLowerCase();
-    if(!clean)return;
-    setSending(true);setMessage("");
-    try{
-      await requestGiftAccountLink(clean);
-      setSent(true);
-    }catch(error){
-      const reason=error instanceof Error?error.message:"";
-      setMessage(reason==="email_rate_limited"
-        ?"Esperá un minuto antes de pedir otro enlace."
-        :"No pudimos enviar el email ahora. Probá otra vez en unos minutos.");
-    }finally{setSending(false)}
-  }
-
-  function signOut(){
-    window.localStorage.removeItem(ACCOUNT_TOKEN_KEY);
-    setAccessToken("");setGifts([]);setSent(false);setEmail("");setMessage("");
-  }
-
   if(loading)return <main className="studio-gate"><div className="studio-loader"><span/><strong>Buscando tus regalos…</strong></div></main>;
-
-  if(!accessToken)return <main className="studio-gate account-gate">
-    <section className="studio-gate-card">
-      <span className="studio-gate-mark">♥</span>
-      <p className="studio-eyebrow">MIS REGALOS</p>
-      {!sent?<>
-        <h1>Entrá solamente con tu email.</h1>
-        <p>Sin contraseña y sin teléfono. Te mandamos un enlace seguro para abrir todas tus compras.</p>
-        <form className="studio-recovery" onSubmit={requestLink}>
-          <label><span>Email de tus compras</span><input type="email" autoComplete="email" required value={email} onChange={event=>setEmail(event.target.value)} placeholder="tu@email.com"/></label>
-          <button className="studio-main-button" disabled={sending}>{sending?"Enviando…":"Enviarme acceso"} <b>→</b></button>
-        </form>
-        <small className="account-privacy-note">Por seguridad no mostramos compras hasta que abras el enlace que llega a ese email.</small>
-      </>:<>
-        <h1>Revisá tu email.</h1>
-        <p>Te enviamos un enlace de acceso. Tocándolo volvés acá y abrimos tus regalos sin pedirte ningún otro dato.</p>
-        <div className="account-email-sent"><span>✓</span><strong>{email}</strong></div>
-        <button type="button" className="studio-text-link" onClick={()=>setSent(false)}>Usar otro email</button>
-      </>}
-      {message&&<p className="studio-alert">{message}</p>}
-      <Link className="studio-text-link" href="/tehiceesto">Volver a Te Hice Esto</Link>
-    </section>
-  </main>;
 
   return <main className="account-shell">
     <header className="account-topbar">
       <Link href="/tehiceesto" className="studio-brand">TE HICE ESTO</Link>
-      <button type="button" onClick={signOut}>Salir</button>
+      <Link href="/tehiceesto/crear">Crear otro</Link>
     </header>
+
     <section className="account-hero">
       <p className="studio-eyebrow">MIS REGALOS</p>
-      <h1>{gifts.length>1?"Acá están tus regalos.":"Tu regalo está acá."}</h1>
-      <p>{gifts.length>1?"Elegí cuál querés editar, ver o volver a compartir.":"Podés volver a editarlo cuando quieras."}</p>
-      <small>{email}</small>
+      <h1>{gifts.length>1?"Acá están tus regalos.":"Tus regalos, en un solo lugar."}</h1>
+      <p>{gifts.length>1
+        ?"Elegí cuál querés editar, ver o volver a compartir."
+        :"En este dispositivo todavía no encontramos más de un regalo guardado."}</p>
     </section>
 
-    {gifts.length?(
+    {gifts.length>1?(
       <section className="account-gift-list">
         {gifts.map(gift=>{
           const experience=getExperience(gift.experienceSlug);
@@ -176,7 +108,7 @@ export default function MyGifts(){
               <p>{gift.status==="published"?"Publicado y listo para compartir":"En edición"}</p>
             </div>
             <div className="account-gift-actions">
-              <button type="button" className="studio-main-button compact" disabled={Boolean(opening)} onClick={()=>void openGift(gift.code)}>{opening===gift.code?"Abriendo…":"Editar"} <b>→</b></button>
+              <a className="studio-main-button compact" href={publicEditorPath(gift.code)}>Editar <b>→</b></a>
               {gift.publishedAt&&<a className="studio-secondary-button" href={publicGiftPath(gift.code)}>Ver regalo</a>}
             </div>
           </article>;
@@ -184,12 +116,13 @@ export default function MyGifts(){
       </section>
     ):(
       <section className="account-empty">
-        <span>✦</span><h2>No encontramos compras aprobadas con este email.</h2>
-        <p>Si pagaste hace muy poquito, Mercado Pago puede tardar unos minutos en confirmarlo.</p>
+        <span>✦</span>
+        <h2>¿Cambiaste de celular o borraste los datos del navegador?</h2>
+        <p>No te pedimos teléfono ni contraseña. Abrí el enlace de edición de cualquiera de tus pedidos y recuperalo usando solamente el email con el que compraste.</p>
+        <Link className="studio-main-button" href="/tehiceesto">Volver a Te Hice Esto <b>→</b></Link>
       </section>
     )}
 
-    {message&&<p className="studio-alert account-alert">{message}</p>}
     <section className="account-new-gift">
       <span>¿Querés hacer otro?</span>
       <Link href="/tehiceesto/crear">Crear un nuevo regalo →</Link>
