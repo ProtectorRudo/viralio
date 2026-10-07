@@ -155,7 +155,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
 
       <section className="thi-aff-public-table thi-aff-payout-history">
         <div className="thi-aff-card-head"><div><span>LIQUIDACIONES</span><h2>Pagos que ya te registramos</h2></div><small>Historial visible para las dos partes</small></div>
-        <p className="thi-aff-payout-intro">Cuando Mauro te paga por transferencia u otro medio, queda asentado acá. Ese pago cierra las comisiones incluidas y las ventas siguientes vuelven a sumar como pendiente.</p>
+        <p className="thi-aff-payout-intro">Cuando registramos un pago por transferencia u otro medio, queda asentado acá. Esa liquidación cierra las comisiones incluidas y las ventas siguientes vuelven a sumar como pendiente.</p>
         {data.payouts.length===0?<div className="thi-aff-empty"><strong>Todavía no hay liquidaciones registradas.</strong><p>Tu saldo pendiente seguirá acumulándose hasta el primer pago.</p></div>:(
           <div className="thi-aff-table-wrap"><table className="thi-aff-settlement-table">
             <thead><tr><th>Fecha</th><th>Ventas incluidas</th><th>Período</th><th>Monto</th><th>Referencia</th><th>Estado</th></tr></thead>
