@@ -243,7 +243,7 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await expect.poll(()=>paper.evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))).toBeLessThan(.05);
   await page.locator('[data-action="open-letter"]').click();
   await expect.poll(()=>paper.evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))).toBeGreaterThan(.9);
-  await expect(page.getByText(/tampoco veníamos con instrucciones/i)).toBeVisible();
+  await expect(page.getByText(/Nosotros tampoco te lo hicimos fácil/i)).toBeVisible();
   await expect(page.getByText(/Te queremos, Pa/i)).toBeVisible();
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await page.locator(".thi-papa-letter [data-action='advance']").click();
