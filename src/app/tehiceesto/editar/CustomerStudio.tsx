@@ -147,6 +147,14 @@ async function optimizeStudioUpload(file:File,kind:MediaKind){
   }
 }
 
+function starterLetter(recipient:string,giver:string){
+  const to=recipient.trim()||"vos";
+  const from=giver.trim();
+  return `${to}, hice esto para vos porque hay cosas que a veces cuesta decir en una conversación normal.
+
+Gracias por los momentos, por lo compartido y por todo eso pequeño que termina siendo enorme. Ojalá cuando termines de recorrer este regalo te quede una sola certeza: sos muy importante para mí.${from?`\n\nCon todo mi cariño,\n${from}`:""}`;
+}
+
 function giftToBasics(gift:StudioGift):Basics{
   return {
     giverName:gift.giver_name||"",
@@ -681,36 +689,48 @@ export default function CustomerStudio({code}:{code:string}){
       </div>}
 
       {step===3&&<div className="studio-panel studio-words">
-        <header><p className="studio-eyebrow">TUS PALABRAS</p><h1>No hace falta escribir “lindo”. Hace falta que suene a vos.</h1><p>Podés cambiar sólo lo que quieras. Si dejás algo vacío, conservamos el texto premium de la experiencia.</p></header>
-        <label className="studio-field"><span>La primera frase <em>opcional</em></span><textarea rows={3} value={basics.openingText} onChange={event=>updateBasic("openingText",event.target.value)} placeholder={currentBase?.opening||frozenBase?.opening||"Una frase para empezar…"}/><small>Es lo primero que va a leer.</small></label>
-        <label className="studio-field"><span>Un recuerdo que sólo ustedes entienden <em>opcional</em></span><textarea rows={4} value={basics.anecdote} onChange={event=>updateBasic("anecdote",event.target.value)} placeholder="Ese viaje, esa frase, esa tarde, ese papelón…"/></label>
-        <label className="studio-field important"><span>Tu carta</span><textarea rows={9} value={basics.letterText} onChange={event=>updateBasic("letterText",event.target.value)} placeholder="Escribí como hablás. ¿Qué querés que recuerde después de cerrar la pantalla?"/></label>
-        <label className="studio-field"><span>La última frase <em>opcional</em></span><textarea rows={3} value={basics.closingText} onChange={event=>updateBasic("closingText",event.target.value)} placeholder={currentBase?.closing||frozenBase?.closing||"Una frase para cerrar…"}/></label>
-        <label className="studio-field compact"><span>Una fecha importante <em>opcional</em></span><input type="date" value={basics.keyDate} onChange={event=>updateBasic("keyDate",event.target.value)}/></label>
+        <header><p className="studio-eyebrow">TUS PALABRAS</p><h1>Decile lo importante. Lo demás ya está resuelto.</h1><p>No hace falta escribir “lindo”. Escribí como hablás. Y si preferís no tocar nada, el regalo ya tiene textos preparados.</p></header>
+        <label className="studio-field important"><span>Tu carta <em>opcional</em></span><textarea rows={9} value={basics.letterText} onChange={event=>updateBasic("letterText",event.target.value)} placeholder="¿Qué te gustaría que esta persona recuerde después de cerrar la pantalla?"/><small>Podés escribir dos líneas o mucho más. No hay una forma correcta.</small></label>
+        {!basics.letterText.trim()&&<button type="button" className="studio-writing-help" onClick={()=>updateBasic("letterText",starterLetter(basics.recipientName,basics.giverName))}><span>✦</span><div><strong>No sé qué escribir</strong><small>Poner un texto de ayuda que después puedo cambiar</small></div><b>→</b></button>}
+        <details className="studio-optional-details studio-more-words">
+          <summary><span>Personalizar más frases</span><small>opcional</small><b>＋</b></summary>
+          <div>
+            <label className="studio-field"><span>La primera frase</span><textarea rows={3} value={basics.openingText} onChange={event=>updateBasic("openingText",event.target.value)} placeholder={currentBase?.opening||frozenBase?.opening||"Una frase para empezar…"}/><small>Es lo primero que va a leer.</small></label>
+            <label className="studio-field"><span>Un recuerdo que sólo ustedes entienden</span><textarea rows={4} value={basics.anecdote} onChange={event=>updateBasic("anecdote",event.target.value)} placeholder="Ese viaje, esa frase, esa tarde, ese papelón…"/></label>
+            <label className="studio-field"><span>La última frase</span><textarea rows={3} value={basics.closingText} onChange={event=>updateBasic("closingText",event.target.value)} placeholder={currentBase?.closing||frozenBase?.closing||"Una frase para cerrar…"}/></label>
+            <label className="studio-field compact"><span>Una fecha importante</span><input type="date" value={basics.keyDate} onChange={event=>updateBasic("keyDate",event.target.value)}/></label>
+          </div>
+        </details>
       </div>}
 
       {step===4&&<div className="studio-panel">
-        <header><p className="studio-eyebrow">HACELA A TU MANERA</p><h1>¿Querés sacar alguna parte?</h1><p>El diseño no se rompe: simplemente ocultamos las partes que no encajan con tu historia. Podés volver a activarlas cuando quieras.</p></header>
-        <div className="studio-section-list">{canonical.map((scene,index)=>{
-          const terminal=scene==="finale"||scene==="proposal";
-          const locked=scene==="intro"||terminal;
-          const needsPhoto=scene==="memories"&&photos.length===0;
-          const needsVoice=scene==="voices"&&voiceAudios.length===0;
-          const needsVideo=scene==="video"&&videos.length===0;
-          const missingMedia=needsPhoto||needsVoice||needsVideo;
-          const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
-          const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
-          return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
-            <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
-            <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
-            {locked
-              ?<span className="studio-section-required">ESENCIAL</span>
-              :missingMedia
-                ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
-                :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Está":"Oculta"}</span></button>}
-          </article>;
-        })}</div>
-        <div className="studio-tip"><span>✦</span><div><strong>Recomendación</strong><p>Si no sabés qué sacar, dejá todo. Las experiencias están pensadas para que el ritmo crezca de principio a fin.</p></div></div>
+        <header><p className="studio-eyebrow">OPCIONAL</p><h1>Tu regalo ya viene armado.</h1><p>Recomendamos dejarlo así. Sólo entrá acá si hay una parte que de verdad no querés mostrar.</p></header>
+        <div className="studio-ready-structure">
+          <span>✓</span>
+          <div><strong>La estructura ya está resuelta</strong><p>Las partes están ordenadas para que la emoción crezca de principio a fin.</p></div>
+        </div>
+        <details className="studio-parts-details">
+          <summary><span>Quiero quitar o recuperar una parte</span><small>opcional</small><b>＋</b></summary>
+          <div className="studio-section-list">{canonical.map((scene,index)=>{
+            const terminal=scene==="finale"||scene==="proposal";
+            const locked=scene==="intro"||terminal;
+            const needsPhoto=scene==="memories"&&photos.length===0;
+            const needsVoice=scene==="voices"&&voiceAudios.length===0;
+            const needsVideo=scene==="video"&&videos.length===0;
+            const missingMedia=needsPhoto||needsVoice||needsVideo;
+            const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
+            const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
+            return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
+              <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
+              <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
+              {locked
+                ?<span className="studio-section-required">ESENCIAL</span>
+                :missingMedia
+                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
+                  :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Visible":"Oculta"}</span></button>}
+            </article>;
+          })}</div>
+        </details>
       </div>}
 
       {step===5&&<div className="studio-preview-wrap">
