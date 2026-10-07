@@ -11,6 +11,7 @@ export default function FloatingWhatsApp() {
     pathname.includes("/r/") ||
     pathname.includes("/admin") ||
     pathname.includes("/pedido/") ||
+    pathname.includes("/editar/") ||
     pathname.endsWith("/crear")
   ) {
     return null;
