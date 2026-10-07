@@ -124,7 +124,8 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
 function accessKey(code:string){return `thi_editor_access:${code}`}
 
 async function optimizeStudioUpload(file:File,kind:MediaKind){
-  if(kind!=="image"||!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size<1_800_000)return file;
+  const heic=/^image\/(heic|heif)$/.test(file.type);
+  if(kind!=="image"||!/^image\/(jpeg|png|webp|heic|heif)$/.test(file.type)||(!heic&&file.size<1_800_000))return file;
   try{
     const bitmap=await createImageBitmap(file,{imageOrientation:"from-image"});
     const maxSide=1800;
