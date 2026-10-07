@@ -140,9 +140,12 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
   voices:[
     {path:"voices.kicker",label:"Frase superior",kind:"text"},
     {path:"voices.title",label:"Título",kind:"lines"},
+    {path:"voices.intro",label:"Bajada emocional",kind:"textarea"},
     {path:"voices.noteLabel",label:"Etiqueta de la nota",kind:"text",hint:"Podés usar {name}."},
     {path:"voices.playLabel",label:"Texto antes de reproducir",kind:"text"},
     {path:"voices.playingLabel",label:"Texto mientras reproduce",kind:"text"},
+    {path:"voices.outroTitle",label:"Frase de cierre",kind:"text"},
+    {path:"voices.outroBody",label:"Cierre emocional",kind:"textarea"},
     {path:"voices.cta",label:"Botón para continuar",kind:"text"},
   ],
   quiz:[
