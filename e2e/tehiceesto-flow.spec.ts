@@ -1125,6 +1125,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   const visited:string[]=[];
   for(let index=0;index<12;index++){
     const current=await sceneName(page);
+    if(!current)throw new Error("preview scene missing");
     visited.push(current);
     if(current==="finale")break;
     await advanceOne(page);
