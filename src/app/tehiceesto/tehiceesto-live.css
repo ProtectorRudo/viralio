@@ -6135,3 +6135,83 @@
 @media(prefers-reduced-motion:reduce){
   .thi-template-live.thi-theme-papa .thi-papa-back-nav{transition:none}
 }
+
+
+/* GLOBAL EXPERIENCE BACK NAV · OCT 2026
+   Product rule: every experience can return one scene from any screen after the cover.
+   Applies to live templates and frozen premium-v1 gifts without altering their scene art direction.
+   ========================================================= */
+.thi-experience .thi-global-back-nav{
+  position:fixed;
+  z-index:890;
+  left:max(14px,env(safe-area-inset-left));
+  top:max(16px,env(safe-area-inset-top));
+  min-height:38px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0 13px;
+  border:1px solid color-mix(in srgb,var(--accent) 24%,rgba(255,255,255,.12));
+  border-radius:999px;
+  background:rgba(7,8,11,.72);
+  color:#c4c8cf;
+  box-shadow:0 12px 36px rgba(0,0,0,.24);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  cursor:pointer;
+  transition:transform .22s ease,border-color .22s ease,background .22s ease,color .22s ease,opacity .22s ease;
+}
+.thi-experience .thi-global-back-nav>span{
+  color:var(--accent);
+  font-size:16px;
+  line-height:1;
+}
+.thi-experience .thi-global-back-nav>small{
+  margin:0!important;
+  color:inherit!important;
+  font-size:8px!important;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.thi-experience .thi-global-back-nav:hover,
+.thi-experience .thi-global-back-nav:focus-visible{
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb,var(--accent) 44%,rgba(255,255,255,.16));
+  background:rgba(10,11,15,.86);
+  color:#f4f2ef;
+  outline:none;
+}
+.thi-experience .thi-global-back-nav:disabled{
+  opacity:.36;
+  cursor:default;
+  transform:none;
+}
+
+/* Demos have a commercial ribbon at the top; keep navigation below it. */
+.thi-demo-page .thi-global-back-nav{
+  top:max(64px,calc(env(safe-area-inset-top) + 58px));
+}
+
+/* Creator preview also has its own toolbar. */
+.creator-preview-overlay .thi-global-back-nav{
+  top:max(70px,calc(env(safe-area-inset-top) + 64px));
+}
+
+@media(max-width:650px){
+  .thi-experience .thi-global-back-nav{
+    left:10px;
+    min-height:36px;
+    padding:0 11px;
+  }
+  .thi-experience .thi-global-back-nav>small{
+    font-size:7px!important;
+  }
+  .thi-demo-page .thi-global-back-nav{
+    top:max(62px,calc(env(safe-area-inset-top) + 56px));
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-experience .thi-global-back-nav{transition:none}
+}
