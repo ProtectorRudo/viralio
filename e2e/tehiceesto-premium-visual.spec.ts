@@ -162,7 +162,7 @@ test("Papa premium release visual contract",async({page},testInfo)=>{
 
   await page.waitForTimeout(850);
   await expectNoHorizontalOverflow(page);
-  await expect(page.locator(".thi-papa-back-nav")).toHaveCount(0);
+  await expect(page.locator(".thi-global-back-nav")).toHaveCount(0);
   await capture(page,testInfo,"tehiceesto-papa-release-01-intro-390");
 
   await page.locator('[data-action="advance"]').click();
@@ -199,7 +199,7 @@ test("Papa premium release visual contract",async({page},testInfo)=>{
 
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
   await expect(page.locator(".thi-papa-voice-card-v2")).toHaveCount(3);
-  await expect(page.locator(".thi-papa-back-nav")).toBeVisible();
+  await expect(page.locator(".thi-global-back-nav")).toBeVisible();
   await expect(page.locator(".thi-papa-voice-final-cta")).toBeEnabled();
   await capture(page,testInfo,"tehiceesto-papa-release-09-voices-idle-free-nav-390");
 
