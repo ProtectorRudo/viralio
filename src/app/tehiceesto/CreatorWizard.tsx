@@ -434,7 +434,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
               <div className="order-after-payment">
                 <article><span>01</span><p>Elegís y pagás.</p></article>
-                <article><span>02</span><p>Se habilita la personalización.</p></article>
+                <article><span>02</span><p>Se habilita y te mandamos acceso por email.</p></article>
                 <article><span>03</span><p>Subís fotos, audios y tus palabras.</p></article>
                 <article><span>04</span><p>Publicás y recibís tu link al instante.</p></article>
               </div>
