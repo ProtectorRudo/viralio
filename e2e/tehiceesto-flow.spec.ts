@@ -979,6 +979,112 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
 });
 
 
+test("studio recovery asks only for purchase email",async({page})=>{
+  const code="1111222233334444aa";
+  const recoveredToken="e".repeat(64);
+  let recovered=false;
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="recoverStudioAccess"){
+      expect(body.code).toBe(code);
+      expect(body.email).toBe("cliente@ejemplo.com");
+      expect(body.whatsapp).toBeUndefined();
+      recovered=true;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,editorToken:recoveredToken})});
+    }
+    if(body.action==="openStudio"){
+      expect(body.editorToken).toBe(recoveredToken);
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:"paid",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:"Ailín",occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:null,closing_text:null,music_url:null,
+          scene_recipe:["intro","door","stars","scratch","hold","letter","finale"],
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},media:[],
+      })});
+    }
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected"})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+
+  await expect(page.getByRole("heading",{name:/Volvamos a abrir tu regalo/i})).toBeVisible();
+  await expect(page.locator('input[type="email"]')).toHaveCount(1);
+  await expect(page.locator('input[type="tel"]')).toHaveCount(0);
+  await expect(page.getByText(/teléfono ni contraseña/i)).toBeVisible();
+
+  await page.locator('input[type="email"]').fill("cliente@ejemplo.com");
+  await page.getByRole("button",{name:/Entrar a mi regalo/i}).click();
+  await expect.poll(()=>recovered).toBe(true);
+  await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto/i})).toBeVisible();
+  expect(await page.evaluate(code=>localStorage.getItem(`thi_editor_access:${code}`),code)).toBe(recoveredToken);
+});
+
+test("my gifts shows a chooser when this device has multiple purchases",async({page})=>{
+  const gifts=[
+    {code:"aaaabbbbccccdddd11",token:"1".repeat(64),slug:"pareja",recipient:"Ailín",published:true},
+    {code:"aaaabbbbccccdddd22",token:"2".repeat(64),slug:"mama",recipient:"Mamá",published:false},
+  ];
+
+  await page.addInitScript((items)=>{
+    for(const item of items)localStorage.setItem(`thi_editor_access:${item.code}`,item.token);
+  },gifts);
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    expect(body.action).toBe("openStudio");
+    const item=gifts.find(gift=>gift.code===String(body.code));
+    if(!item)return route.fulfill({status:404,contentType:"application/json",body:JSON.stringify({error:"studio_not_found"})});
+    expect(body.editorToken).toBe(item.token);
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+      gift:{
+        public_code:item.code,status:item.published?"published":"paid",template_version:"live",experience_slug:item.slug,
+        giver_name:"Mauro",recipient_name:item.recipient,occasion:null,feeling:"Emoción",
+        opening_text:null,letter_text:null,closing_text:null,music_url:null,scene_recipe:["intro","letter","finale"],
+        story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:item.published?new Date().toISOString():null,
+      },
+      order:{status:"approved",amount_minor:2500000,currency:"ARS"},media:[],
+    })});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/mis-regalos");
+
+  await expect(page.getByRole("heading",{name:/Acá están tus regalos/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Para Ailín"})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Para Mamá"})).toBeVisible();
+  const ailinCard=page.locator(".account-gift-card").filter({hasText:"Para Ailín"});
+  const mamaCard=page.locator(".account-gift-card").filter({hasText:"Para Mamá"});
+  await expect(ailinCard.getByRole("link",{name:/Editar/i})).toHaveAttribute("href",`/tehiceesto/editar/${gifts[0].code}`);
+  await expect(ailinCard.getByRole("link",{name:/Ver regalo/i})).toHaveAttribute("href",`/tehiceesto/r/${gifts[0].code}`);
+  await expect(mamaCard.getByRole("link",{name:/Editar/i})).toHaveAttribute("href",`/tehiceesto/editar/${gifts[1].code}`);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("my gifts opens the editor directly when there is only one purchase",async({page})=>{
+  const code="bbbbccccddddeeee33";
+  const token="3".repeat(64);
+  await page.addInitScript(({code,token})=>localStorage.setItem(`thi_editor_access:${code}`,token),{code,token});
+  await page.route("**/functions/v1/creator-api",route=>route.fulfill({
+    status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},
+    body:JSON.stringify({
+      gift:{
+        public_code:code,status:"paid",template_version:"live",experience_slug:"pareja",
+        giver_name:"Mauro",recipient_name:"Ailín",occasion:null,feeling:"Emoción",
+        opening_text:null,letter_text:null,closing_text:null,music_url:null,scene_recipe:["intro","letter","finale"],
+        story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
+      },
+      order:{status:"approved",amount_minor:2500000,currency:"ARS"},media:[],
+    }),
+  }));
+  await page.goto("/tehiceesto/mis-regalos");
+  await page.waitForURL(new RegExp(`/tehiceesto/editar/${code}$`));
+});
+
 test("customer studio gives a zero-tech user one obvious action at a time",async({page})=>{
   const code="fedcba0987654321ab";
   const editorToken="d".repeat(64);
@@ -1017,16 +1123,21 @@ test("customer studio gives a zero-tech user one obvious action at a time",async
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 2 DE 6 · FOTOS/i)).toBeVisible();
   await expect(page.getByRole("button",{name:/Elegir fotos/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Elegir foto para la linterna/i})).toBeVisible();
 
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 3 DE 6 · AUDIOS/i)).toBeVisible();
   await expect(page.getByText(/Los audios son opcionales/i)).toBeVisible();
+  await expect(page.getByRole("button",{name:/Grabar ahora/i})).toBeVisible();
+  await expect(page.getByText(/No mostramos voces de ejemplo/i)).toBeVisible();
 
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 4 DE 6 · PALABRAS/i)).toBeVisible();
   await expect(page.locator(".studio-field.important textarea")).toBeVisible();
   await expect(page.getByText("La primera frase",{exact:true})).toBeHidden();
   await expect(page.getByRole("button",{name:/No sé qué escribir/i})).toBeVisible();
+  await expect(page.getByText("LA RASPADITA",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:/una cita sorpresa sin celulares/i})).toBeVisible();
 
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 5 DE 6 · OPCIONAL/i)).toBeVisible();
@@ -1105,8 +1216,31 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.getByRole("button",{name:/Ver mi regalo/i}).click();
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
-  await expect(page.getByRole("button",{name:/Cambiar un texto tocándolo/i})).toBeVisible();
-  await page.waitForTimeout(1100);
+  const copyTool=page.getByRole("button",{name:/Editar textos de esta parte/i});
+  await expect(copyTool).toBeVisible();
+  await copyTool.click();
+  await expect(page.getByText(/Cuando guardes el cambio, el recorrido se habilita solo/i)).toBeVisible();
+  await page.locator(".studio-preview-stage .thi-kicker").first().click();
+  const copySheet=page.locator(".studio-copy-sheet");
+  await expect(copySheet).toBeVisible();
+  await copySheet.locator("textarea").fill("Una frase personalizada");
+  await copySheet.getByRole("button",{name:/Guardar y seguir/i}).click();
+  await expect(page.getByRole("button",{name:/Editar textos de esta parte/i})).toBeVisible();
+  await expect(page.locator(".studio-copy-hint")).toHaveCount(0);
+
+  const visited:string[]=[];
+  for(let index=0;index<12;index++){
+    const current=await sceneName(page);
+    if(!current)throw new Error("preview scene missing");
+    visited.push(current);
+    if(current==="finale")break;
+    await advanceOne(page);
+  }
+  expect(visited).not.toContain("voices");
+  expect(visited).not.toContain("light");
+  await expect(page.locator('[data-action="create-story"]')).toHaveCount(0);
+
+  await page.waitForTimeout(300);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   const previewShot="visual-qa-evidence/tehiceesto-studio-mobile-preview.png";
   await page.screenshot({path:previewShot,fullPage:true});

@@ -6,6 +6,7 @@ import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
+import { getExperienceCopy } from "../experienceCopy";
 import { getExperience as getPremiumV1Experience,type SceneType as PremiumSceneType } from "../template-v1/data";
 import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
@@ -80,6 +81,13 @@ type Basics={
 
 const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Opcional","Revisar"];
 const FEELINGS=["Amor","Emoción","Sorpresa","Diversión","Nostalgia"];
+const SCRATCH_SUGGESTIONS=[
+  "una cita sorpresa sin celulares",
+  "una cena elegida por vos",
+  "un regalo sorpresa",
+  "un día entero para vos",
+  "una promesa que voy a cumplir",
+];
 
 const SCENE_LABELS:Record<string,{title:string;copy:string}>={
   intro:{title:"La entrada",copy:"La primera impresión cuando abre el regalo."},
@@ -223,6 +231,7 @@ function Preview({
       accent:gift.theme_data?.accent||base.accent,
     };
     return <PremiumV1Engine
+      customerGift
       experience={experience}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
@@ -247,6 +256,7 @@ function Preview({
     accent:gift.theme_data?.accent||base.accent,
   };
   return <ExperienceEngine
+    customerGift
     experience={experience}
     copyOverride={gift.story_data?.script as never}
     letterText={gift.letter_text||undefined}
@@ -271,15 +281,22 @@ export default function CustomerStudio({code}:{code:string}){
   const [dirty,setDirty]=useState(false);
   const [uploading,setUploading]=useState<string[]>([]);
   const [message,setMessage]=useState("");
-  const [recovery,setRecovery]=useState({email:"",whatsapp:""});
+  const [recovery,setRecovery]=useState({email:""});
   const [recovering,setRecovering]=useState(false);
   const [published,setPublished]=useState(false);
   const fileInputRef=useRef<HTMLInputElement|null>(null);
+  const lightInputRef=useRef<HTMLInputElement|null>(null);
   const audioInputRef=useRef<HTMLInputElement|null>(null);
   const videoInputRef=useRef<HTMLInputElement|null>(null);
   const replaceInputRef=useRef<HTMLInputElement|null>(null);
   const recipientInputRef=useRef<HTMLInputElement|null>(null);
   const giverInputRef=useRef<HTMLInputElement|null>(null);
+  const recorderRef=useRef<MediaRecorder|null>(null);
+  const recorderStreamRef=useRef<MediaStream|null>(null);
+  const recorderChunksRef=useRef<Blob[]>([]);
+  const recordingTimerRef=useRef<number|null>(null);
+  const [recording,setRecording]=useState(false);
+  const [recordingSeconds,setRecordingSeconds]=useState(0);
   const [replaceTarget,setReplaceTarget]=useState<StudioMedia|null>(null);
 
   const loadStudio=useCallback(async(token:string)=>{
@@ -310,6 +327,11 @@ export default function CustomerStudio({code}:{code:string}){
     },0);
     return()=>window.clearTimeout(timer);
   },[code,loadStudio]);
+
+  useEffect(()=>()=>{
+    recorderStreamRef.current?.getTracks().forEach(track=>{try{track.stop()}catch{}});
+    if(recordingTimerRef.current!==null)window.clearInterval(recordingTimerRef.current);
+  },[]);
 
   useEffect(()=>{
     if(!dirty||!basics||!editorToken||accessState!=="ready")return;
@@ -345,10 +367,28 @@ export default function CustomerStudio({code}:{code:string}){
     setDirty(true);setSaveState("saving");
   };
 
+  async function saveQuickSceneText(scene:string,source:string,replacement:string){
+    const nextValue=replacement.trim();
+    if(!editorToken||!source.trim()||!nextValue)return;
+    setSaveState("saving");setMessage("");
+    try{
+      const result=await creatorCall<{sceneContent:StudioSceneTextOverrides}>("saveStudioSceneText",{
+        code,editorToken,scene,source,replacement:nextValue,
+      });
+      const next=result.sceneContent||{};
+      setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current);
+      setSaveState("saved");
+      setMessage("Listo, ya quedó personalizado ✓");
+    }catch{
+      setSaveState("error");
+      setMessage("No pudimos guardar ese cambio. Probá de nuevo.");
+    }
+  }
+
   async function recoverAccess(event:React.FormEvent){
     event.preventDefault();setRecovering(true);setMessage("");
     try{
-      const result=await creatorCall<{editorToken:string}>("recoverStudioAccess",{code,...recovery});
+      const result=await creatorCall<{editorToken:string}>("recoverStudioAccess",{code,email:recovery.email});
       window.localStorage.setItem(accessKey(code),result.editorToken);
       setEditorToken(result.editorToken);
       await loadStudio(result.editorToken);
@@ -356,11 +396,11 @@ export default function CustomerStudio({code}:{code:string}){
       const reason=error instanceof Error?error.message:"";
       setMessage(reason==="payment_required"
         ?"El pago todavía no figura aprobado. Volvé al seguimiento del pedido."
-        :"No coinciden con los datos usados en la compra.");
+        :"Ese email no coincide con el usado en esta compra.");
     }finally{setRecovering(false)}
   }
 
-  async function uploadFiles(files:FileList|null,kind:MediaKind){
+  async function uploadFiles(files:FileList|File[]|null,kind:MediaKind,sceneOverride=""){
     if(!files||!editorToken)return;
     const all=Array.from(files);
     const limit=kind==="image"?20:kind==="audio"?6:1;
@@ -399,6 +439,7 @@ export default function CustomerStudio({code}:{code:string}){
           await creatorCall("registerStudioMedia",{
             code,editorToken,storagePath:prepared.path,kind:prepared.kind,
             originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
+            scene:sceneOverride||undefined,
           });
           uploaded+=1;
         }catch{
@@ -424,9 +465,73 @@ export default function CustomerStudio({code}:{code:string}){
       }
     }finally{
       setUploading([]);
-      if(kind==="image"&&fileInputRef.current)fileInputRef.current.value="";
+      if(kind==="image"&&sceneOverride==="light"&&lightInputRef.current)lightInputRef.current.value="";
+      if(kind==="image"&&!sceneOverride&&fileInputRef.current)fileInputRef.current.value="";
       if(kind==="audio"&&audioInputRef.current)audioInputRef.current.value="";
       if(kind==="video"&&videoInputRef.current)videoInputRef.current.value="";
+    }
+  }
+
+  function stopRecorderTracks(){
+    recorderStreamRef.current?.getTracks().forEach(track=>{try{track.stop()}catch{}});
+    recorderStreamRef.current=null;
+    if(recordingTimerRef.current!==null){
+      window.clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current=null;
+    }
+  }
+
+  async function startVoiceRecording(){
+    if(recording||uploading.length)return;
+    if(typeof navigator==="undefined"||!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==="undefined"){
+      setMessage("Este navegador no permite grabar audio acá. Podés subir una nota de voz de WhatsApp.");
+      return;
+    }
+    setMessage("");
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      const candidates=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg;codecs=opus"];
+      const mimeType=candidates.find(type=>MediaRecorder.isTypeSupported(type))||"";
+      const recorder=new MediaRecorder(stream,mimeType?{mimeType}:undefined);
+      recorderStreamRef.current=stream;
+      recorderRef.current=recorder;
+      recorderChunksRef.current=[];
+      recorder.ondataavailable=event=>{if(event.data.size)recorderChunksRef.current.push(event.data)};
+      recorder.onerror=()=>{setMessage("No pudimos grabar el audio. Probá otra vez o subí una nota de voz.");stopRecorderTracks();setRecording(false)};
+      recorder.onstop=()=>{
+        const chunks=[...recorderChunksRef.current];
+        recorderChunksRef.current=[];
+        const finalType=recorder.mimeType||chunks[0]?.type||"audio/webm";
+        const normalizedType=finalType.includes("mp4")?"audio/mp4":finalType.includes("ogg")?"audio/ogg":"audio/webm";
+        const blob=new Blob(chunks,{type:normalizedType});
+        stopRecorderTracks();
+        setRecording(false);
+        if(blob.size<800){
+          setMessage("La grabación quedó vacía. Probá de nuevo.");
+          return;
+        }
+        const extension=normalizedType==="audio/mp4"?"m4a":normalizedType==="audio/ogg"?"ogg":"webm";
+        const file=new File([blob],`nota-de-voz-${Date.now()}.${extension}`,{type:normalizedType,lastModified:Date.now()});
+        void uploadFiles([file],"audio");
+      };
+      recorder.start(250);
+      setRecordingSeconds(0);
+      setRecording(true);
+      recordingTimerRef.current=window.setInterval(()=>setRecordingSeconds(value=>value+1),1000);
+    }catch{
+      stopRecorderTracks();
+      setRecording(false);
+      setMessage("Necesitamos permiso para usar el micrófono. Permitilo o subí una nota de voz que ya tengas.");
+    }
+  }
+
+  function stopVoiceRecording(){
+    const recorder=recorderRef.current;
+    if(!recorder||recorder.state==="inactive")return;
+    try{recorder.stop()}catch{
+      stopRecorderTracks();
+      setRecording(false);
+      setMessage("No pudimos cerrar la grabación. Probá de nuevo.");
     }
   }
 
@@ -575,15 +680,24 @@ export default function CustomerStudio({code}:{code:string}){
   const canonical=(gift?.template_version==="premium-v1"?frozenBase?.recipe:currentBase?.recipe)||[];
   const media=payload?.media||[];
   const photos=media.filter(item=>item.kind==="image");
+  const lightPhotos=photos.filter(item=>item.metadata?.scene==="light");
+  const memoryPhotos=photos.filter(item=>item.metadata?.scene!=="light");
+  const lightPhoto=lightPhotos[0];
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
   const effectiveRecipe=effectiveRecipeForMedia(gift?.scene_recipe||[],{
-    hasPhoto:photos.length>0,
+    hasPhoto:memoryPhotos.length>0,
     hasVoice:voiceAudios.length>0,
     hasVideo:videos.length>0,
+    hasLightPhoto:lightPhotos.length>0,
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
+  const liveCopy=currentBase?getExperienceCopy(currentBase):null;
+  const scratchRewardSource=liveCopy?.scratch.reward||"";
+  const scratchNoteSource=liveCopy?.scratch.note||"";
+  const scratchRewardValue=(scratchRewardSource&&sceneTextOverrides.scratch?.[scratchRewardSource])||scratchRewardSource;
+  const scratchNoteValue=(scratchNoteSource&&sceneTextOverrides.scratch?.[scratchNoteSource])||scratchNoteSource;
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
 
   function goToStep(next:number){
@@ -626,13 +740,13 @@ export default function CustomerStudio({code}:{code:string}){
       <span className="studio-gate-mark">✦</span>
       <p className="studio-eyebrow">RECUPERAR MI EDICIÓN</p>
       <h1>Volvamos a abrir tu regalo.</h1>
-      <p>Ingresá los mismos datos que usaste al comprar. No necesitás contraseña.</p>
+      <p>Escribí solamente el email que usaste al comprar. No necesitás teléfono ni contraseña.</p>
       <form className="studio-recovery" onSubmit={recoverAccess}>
-        <label><span>Email de la compra</span><input type="email" required value={recovery.email} onChange={event=>setRecovery(current=>({...current,email:event.target.value}))} placeholder="tu@email.com"/></label>
-        <label><span>WhatsApp de la compra</span><input autoComplete="tel" inputMode="tel" required value={recovery.whatsapp} onChange={event=>setRecovery(current=>({...current,whatsapp:event.target.value}))} placeholder="+54 9 221 ..."/></label>
+        <label><span>Email de la compra</span><input type="email" autoComplete="email" required value={recovery.email} onChange={event=>setRecovery({email:event.target.value})} placeholder="tu@email.com"/></label>
         <button className="studio-main-button" disabled={recovering}>{recovering?"Buscando…":"Entrar a mi regalo"} <b>→</b></button>
       </form>
       {message&&<p className="studio-alert">{message}</p>}
+      <Link className="studio-text-link" href="/tehiceesto/mis-regalos">Ver mis regalos guardados</Link>
       <Link className="studio-text-link" href={`/tehiceesto/pedido/${code}`}>Ver seguimiento del pedido</Link>
     </section>
   </main>;
@@ -707,11 +821,11 @@ export default function CustomerStudio({code}:{code:string}){
       {step===1&&<div className="studio-panel">
         <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Las mejores casi siempre son las que significan algo.</p></header>
         <button className="studio-upload-hero" type="button" disabled={uploading.length>0} onClick={()=>fileInputRef.current?.click()}>
-          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{photos.length?`${photos.length} de 20 fotos cargadas`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
+          <span>＋</span><div><strong>{memoryPhotos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{memoryPhotos.length?`${memoryPhotos.length} fotos para tus recuerdos`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
         </button>
         <input ref={fileInputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image")}/>
         {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Preparando y subiendo…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
-        {photos.length>0?<div className="studio-photo-grid">{photos.map((item,index)=><article key={item.id}>
+        {memoryPhotos.length>0?<div className="studio-photo-grid">{memoryPhotos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
           <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Podés escribir una frase acá · opcional"/>
           <div className="studio-media-primary-actions">
@@ -721,12 +835,27 @@ export default function CustomerStudio({code}:{code:string}){
           <details className="studio-media-options">
             <summary><span>Orden y encuadre</span><small>opcional</small><b>＋</b></summary>
             <div className="studio-media-mini-actions">
-              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>}
-              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Mover después</button>}
+              {memoryPhotos.length>1&&<button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>}
+              {memoryPhotos.length>1&&<button type="button" onClick={()=>moveMedia(item,1)} disabled={index===memoryPhotos.length-1}>↓ Mover después</button>}
               <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar el marco":"Ver foto completa"}</button>
             </div>
           </details>
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
+        {canonical.includes("light")&&<section className="studio-light-photo-card">
+          <div className="studio-light-photo-copy">
+            <span className="studio-light-photo-icon">⌁</span>
+            <div><small>LA ESCENA DE LA LINTERNA</small><strong>Elegí qué foto querés descubrir con la luz.</strong><p>Usa una foto aparte. Si no elegís ninguna, esta escena no aparece en el regalo.</p></div>
+          </div>
+          {lightPhoto?.url?(
+            <div className="studio-light-photo-selected">
+              <img src={lightPhoto.url} alt="Foto elegida para la linterna"/>
+              <div><strong>Esta es la foto de la linterna</strong><span><button type="button" onClick={()=>chooseReplacement(lightPhoto)}>Cambiar foto</button><button type="button" className="danger" onClick={()=>deleteMedia(lightPhoto)}>Quitar</button></span></div>
+            </div>
+          ):(
+            <button className="studio-light-photo-pick" type="button" disabled={uploading.length>0} onClick={()=>lightInputRef.current?.click()}><span>＋</span><div><strong>Elegir foto para la linterna</strong><small>Una sola foto · la que querés revelar</small></div><b>→</b></button>
+          )}
+          <input ref={lightInputRef} hidden type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image","light")}/>
+        </section>}
         {videos.length===0?(
           <button className="studio-extra-upload" type="button" disabled={uploading.length>0} onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
         ):(
@@ -747,10 +876,17 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===2&&<div className="studio-panel">
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
-        <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0} onClick={()=>audioInputRef.current?.click()}>
-          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"Audio de WhatsApp, MP3, M4A, OGG u OPUS · hasta 6"}</small></div><b>→</b>
-        </button>
+        <div className="studio-audio-entry-options">
+          <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0||recording} onClick={()=>audioInputRef.current?.click()}>
+            <span>♪</span><div><strong>{audios.length?"Agregar un audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"WhatsApp, MP3, M4A, OGG u OPUS"}</small></div><b>→</b>
+          </button>
+          <button className={recording?"studio-record-voice recording":"studio-record-voice"} type="button" disabled={uploading.length>0} onClick={recording?stopVoiceRecording:startVoiceRecording}>
+            <span>{recording?"■":"●"}</span>
+            <div><strong>{recording?"Detener y usar audio":"Grabar ahora"}</strong><small>{recording?`Grabando · ${Math.floor(recordingSeconds/60)}:${String(recordingSeconds%60).padStart(2,"0")}`:"Usar el micrófono del celular"}</small></div>
+          </button>
+        </div>
         <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
+        {recording&&<div className="studio-recording-live"><i/><div><strong>Te estamos escuchando</strong><span>Cuando termines, tocá “Detener y usar audio”.</span></div></div>}
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
@@ -766,13 +902,28 @@ export default function CustomerStudio({code}:{code:string}){
               <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Mover después</button>
             </div>
           </details>}
-        </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>La experiencia funciona igual sin ellos. Si tenés uno, acá puede convertirse en uno de los momentos más fuertes.</p></div>}
+        </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>Si no agregás ninguno, la parte de audios no aparece en el regalo. No mostramos voces de ejemplo.</p></div>}
       </div>}
 
       {step===3&&<div className="studio-panel studio-words">
         <header><p className="studio-eyebrow">TUS PALABRAS</p><h1>Decile lo importante. Lo demás ya está resuelto.</h1><p>No hace falta escribir “lindo”. Escribí como hablás. Y si preferís no tocar nada, el regalo ya tiene textos preparados.</p></header>
         <label className="studio-field important"><span>Tu carta <em>opcional</em></span><textarea rows={9} value={basics.letterText} onChange={event=>updateBasic("letterText",event.target.value)} placeholder="¿Qué te gustaría que esta persona recuerde después de cerrar la pantalla?"/><small>Podés escribir dos líneas o mucho más. No hay una forma correcta.</small></label>
         {!basics.letterText.trim()&&<button type="button" className="studio-writing-help" onClick={()=>updateBasic("letterText",starterLetter(basics.recipientName,basics.giverName))}><span>✦</span><div><strong>No sé qué escribir</strong><small>Poner un texto de ayuda que después puedo cambiar</small></div><b>→</b></button>}
+        {canonical.includes("scratch")&&gift.template_version!=="premium-v1"&&scratchRewardSource&&<section className="studio-scratch-editor">
+          <div className="studio-scratch-editor-head">
+            <span>✦</span>
+            <div><small>LA RASPADITA</small><strong>¿Qué querés que descubra cuando raspe?</strong><p>Puede ser un plan, una promesa, un regalo o cualquier sorpresa que tenga sentido para ustedes.</p></div>
+          </div>
+          <label className="studio-field">
+            <span>La sorpresa</span>
+            <input key={scratchRewardValue} defaultValue={scratchRewardValue} onBlur={event=>void saveQuickSceneText("scratch",scratchRewardSource,event.target.value)} placeholder="Ej. una cita sorpresa sin celulares"/>
+          </label>
+          <div className="studio-scratch-suggestions"><span>Ideas rápidas</span><div>{SCRATCH_SUGGESTIONS.map(suggestion=><button type="button" key={suggestion} onClick={()=>void saveQuickSceneText("scratch",scratchRewardSource,suggestion)}>{suggestion}</button>)}</div></div>
+          {scratchNoteSource&&<label className="studio-field compact-note">
+            <span>Una aclaración chiquita <em>opcional</em></span>
+            <input key={scratchNoteValue} defaultValue={scratchNoteValue} onBlur={event=>void saveQuickSceneText("scratch",scratchNoteSource,event.target.value)} placeholder="Ej. fecha a elección · sin vencimiento"/>
+          </label>}
+        </section>}
         <details className="studio-optional-details studio-more-words">
           <summary><span>Personalizar más frases</span><small>opcional</small><b>＋</b></summary>
           <div>
@@ -795,19 +946,20 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-section-list">{canonical.map((scene,index)=>{
             const terminal=scene==="finale"||scene==="proposal";
             const locked=scene==="intro"||terminal;
-            const needsPhoto=scene==="memories"&&photos.length===0;
+            const needsPhoto=scene==="memories"&&memoryPhotos.length===0;
+            const needsLightPhoto=scene==="light"&&lightPhotos.length===0;
             const needsVoice=scene==="voices"&&voiceAudios.length===0;
             const needsVideo=scene==="video"&&videos.length===0;
-            const missingMedia=needsPhoto||needsVoice||needsVideo;
+            const missingMedia=needsPhoto||needsLightPhoto||needsVoice||needsVideo;
             const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
             const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
             return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
               <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
-              <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
+              <div><strong>{meta.title}</strong><p>{missingMedia?(needsLightPhoto?"Se activa cuando elegís la foto de la linterna.":needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
               {locked
                 ?<span className="studio-section-required">ESENCIAL</span>
                 :missingMedia
-                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
+                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":needsLightPhoto?"Foto de linterna":"Foto"}</button>
                   :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Visible":"Oculta"}</span></button>}
             </article>;
           })}</div>

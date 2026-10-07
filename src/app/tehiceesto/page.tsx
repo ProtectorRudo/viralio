@@ -34,6 +34,7 @@ export default async function TeHiceEstoHome() {
         <nav className="thh-nav thh-v2-nav" aria-label="Navegación principal">
           <a href="#recorrido">Qué recibe</a>
           <a href="#proceso">Cómo funciona</a>
+          <Link href={href("/mis-regalos")}>Mis regalos</Link>
           <a className="thh-nav-cta" href="#para-quien">Elegir para quién</a>
         </nav>
       </header>

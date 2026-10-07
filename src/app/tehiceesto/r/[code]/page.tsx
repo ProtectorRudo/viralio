@@ -39,17 +39,19 @@ export default async function PublishedGiftPage({
   const hasPhoto=ordered.some(item=>item.kind==="image"&&item.url);
   const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
   const hasVoice=ordered.some(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack");
+  const hasLightPhoto=ordered.some(item=>item.kind==="image"&&item.url&&item.metadata?.scene==="light");
   const storedRecipe=Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?payload.gift.scene_recipe:base.recipe;
   const effectiveRecipe=effectiveRecipeForMedia(storedRecipe,{
     hasPhoto,
     hasVoice,
     hasVideo,
+    hasLightPhoto,
   }) as typeof base.recipe;
   const experience={...base,demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
     recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
   const Engine=frozenV1?PremiumV1Engine:ExperienceEngine;
-  return <Engine experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
+  return <Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
     photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",scene:item.metadata?.scene}))}
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}

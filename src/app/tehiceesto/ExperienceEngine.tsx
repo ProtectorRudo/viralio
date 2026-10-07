@@ -54,7 +54,7 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
   </aside>;
 }
 
-export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext,sceneTextOverrides}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides}){
+export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
   const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
@@ -69,7 +69,13 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const soundtrackRef=useRef<HTMLAudioElement|null>(null);const soundtrackFadeRef=useRef<number|null>(null);const demoVoiceMessageRef=useRef<string|null>(null);const demoVoiceRunRef=useRef(0);const mamaVoiceAudioRef=useRef<HTMLAudioElement|null>(null);const papaVoiceRunRef=useRef(0);const papaVoiceActiveRef=useRef<number|null>(null);
   const shellRef=useRef<HTMLElement|null>(null);const papaVisitedRef=useRef<Set<number>>(new Set([initialSceneIndex]));const mamaMemorySwipeRef=useRef<{pointerId:number|null;x:number;y:number}>({pointerId:null,x:0,y:0});const mamaLetterSwipeRef=useRef<{pointerId:number|null;x:number;y:number;swiped:boolean}>({pointerId:null,x:0,y:0,swiped:false});
 
-  const copy=getExperienceCopy(experience,copyOverride);const scenes=experience.recipe;const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/total)*100;
+  const copy=getExperienceCopy(experience,copyOverride);
+  const scenes=customerGift?experience.recipe.filter(scene=>{
+    if(scene==="voices")return (audioMedia||[]).some(item=>mediaBelongsToScene("audio",item.scene,"voices"));
+    if(scene==="light")return (photoMedia||[]).some(item=>mediaBelongsToScene("image",item.scene,"light"));
+    return true;
+  }):experience.recipe;
+  const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/Math.max(total,1))*100;
   useEffect(()=>{
     const root=shellRef.current;if(!root||!sceneTextOverrides)return;
     let applying=false;
@@ -110,8 +116,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const currentAudios=(audioMedia||[]).filter(item=>mediaBelongsToScene("audio",item.scene,current));
   const currentVideos=(videoMedia||[]).filter(item=>mediaBelongsToScene("video",item.scene,current));
   const demoPhotos=(experience.demo.photos||[]).map((item,index)=>({url:item.url,caption:memoryLines[index]||undefined,fit:"cover" as const,position:item.position||"center" as const}));
-  const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):demoPhotos):[];
-  const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):demoPhotos;
+  const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos):[];
+  const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos;
   const hasAttachedMedia=(current!=="memories"&&currentPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
 
   const fadeSoundtrack=(target:number,duration=650)=>{
@@ -404,12 +410,12 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           const usingRealAudio=currentAudios.length>0;
           const count=Math.min(3,usingRealAudio?currentAudios.length:voiceEntries.length);
           const entries=Array.from({length:count},(_,i)=>{
-            const voice=voiceEntries[i]||voiceEntries[0];
+            const voice=customerGift?undefined:(voiceEntries[i]||voiceEntries[0]);
             const audio=currentAudios[i];
             const photo=scenePhotos[i%Math.max(1,scenePhotos.length)];
             return {
               name:token(audio?.caption||voice?.name||`Mensaje ${i+1}`),
-              message:token(voice?.message||"Hay algo que quería decirte hace tiempo."),
+              message:customerGift&&audio?"":token(voice?.message||"Hay algo que quería decirte hace tiempo."),
               audio,
               photo
             };
@@ -460,7 +466,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <figure>{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}<span aria-hidden="true"/></figure>
                 <small>Un mensaje para vos</small>
                 <h2>{entry.name}</h2>
-                <blockquote>“{entry.message}”</blockquote>
+                {entry.message&&<blockquote>“{entry.message}”</blockquote>}
                 <div className={`thi-mama-voice-wave ${isPlaying?"is-playing":""}`} style={{"--voice-progress":`${progress}%`} as CSSProperties} aria-hidden="true">{Array.from({length:34}).map((_,bar)=><i key={bar}/>)}</div>
                 {usingRealAudio&&<audio
                   ref={mamaVoiceAudioRef}
@@ -486,24 +492,24 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="thi-mama-voice-list">
               {entries.map((entry,i)=><button type="button" data-action="mama-voice-choice" key={i} className={voicesPlayed.includes(i)?"heard":""} onClick={()=>openVoice(i)}>
                 <span className="thi-mama-voice-thumb">{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}</span>
-                <span className="thi-mama-voice-list-copy"><small>{String(i+1).padStart(2,"0")} · UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>“{entry.message}”</em><i className="thi-mama-voice-mini-wave" aria-hidden="true">{Array.from({length:22}).map((_,bar)=><b key={bar}/>)}</i></span>
+                <span className="thi-mama-voice-list-copy"><small>{String(i+1).padStart(2,"0")} · UN MENSAJE PARA VOS</small><strong>{entry.name}</strong>{entry.message&&<em>“{entry.message}”</em>}<i className="thi-mama-voice-mini-wave" aria-hidden="true">{Array.from({length:22}).map((_,bar)=><b key={bar}/>)}</i></span>
                 <span className="thi-mama-voice-list-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
               </button>)}
             </div>
           </section>;
         }
         if(experience.slug==="papa"){
-          const count=Math.min(3,Math.max(currentAudios.length,voiceEntries.length));
+          const count=Math.min(3,customerGift?currentAudios.length:Math.max(currentAudios.length,voiceEntries.length));
           const estimateDuration=(message:string)=>Math.max(12,Math.ceil(message.trim().split(/\s+/).filter(Boolean).length/2.2));
           const formatVoiceTime=(seconds:number)=>{const safe=Math.max(0,Math.floor(Number.isFinite(seconds)?seconds:0));return `${Math.floor(safe/60)}:${String(safe%60).padStart(2,"0")}`};
           const entries=Array.from({length:count},(_,i)=>{
-            const voice=voiceEntries[i]||voiceEntries[0];
+            const voice=customerGift?undefined:(voiceEntries[i]||voiceEntries[0]);
             const audio=currentAudios[i];
             const photo=scenePhotos[i%Math.max(1,scenePhotos.length)];
             return {
               name:token(audio?.caption||voice?.name||`Mensaje ${i+1}`),
-              message:token(voice?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
-              intro:token(copy.voices.cardIntros[i]||copy.voices.cardIntros[0]||"Hay algo que quería decirte."),
+              message:customerGift&&audio?"":token(voice?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
+              intro:customerGift&&audio?"Grabado especialmente para vos.":token(copy.voices.cardIntros[i]||copy.voices.cardIntros[0]||"Hay algo que quería decirte."),
               audio,
               photo,
             };
@@ -596,7 +602,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                     <small>UN MENSAJE PARA VOS</small>
                     <strong>{entry.name}</strong>
                     <span className="thi-papa-voice-card-intro">{entry.intro}</span>
-                    <blockquote>“{entry.message}”</blockquote>
+                    {entry.message&&<blockquote>“{entry.message}”</blockquote>}
                     <div className="thi-papa-voice-wave-v2" aria-hidden="true">
                       {Array.from({length:36}).map((_,bar)=><b key={bar} className={(bar+1)/36<=progress?"done":""}/>)}
                       <i style={{left:`${Math.max(0,Math.min(100,progress*100))}%`}}/>
@@ -1508,7 +1514,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="thi-pair-finale-seal" aria-label={`Sello ${finalInitials}, ${finalYear}`}><strong>{finalInitials}</strong><small>{finalYear}</small><i aria-hidden="true"/></div>
             <div className="thi-pair-finale-reactions" aria-label="¿Qué te hizo sentir?">{reactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
-            <Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>
+            {!customerGift&&<Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>}
             <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
           </section>;
         }
