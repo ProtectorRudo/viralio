@@ -290,7 +290,7 @@ export default function AffiliateAdminDashboard(){
             <div className="thi-aff-settlement-form">
               <label><span>Ventas a incluir</span><input type="number" min="1" max={maxPayableCount||1} step="1" value={payoutCount} onChange={event=>setPayoutCount(event.target.value)} placeholder={maxPayableCount?String(maxPayableCount):"0"}/></label>
               <label><span>Referencia <em>opcional</em></span><input value={payoutReference} onChange={event=>setPayoutReference(event.target.value)} placeholder="Ej. transferencia 07/10"/></label>
-              <label><span>Nota <em>opcional</em></span><input value={payoutNotes} onChange={event=>setPayoutNotes(event.target.value)} placeholder="Ej. liquidación quincenal"/></label>
+              <label><span>Nota visible <em>opcional</em></span><input value={payoutNotes} onChange={event=>setPayoutNotes(event.target.value)} placeholder="Ej. liquidación quincenal"/></label>
               <div className="thi-aff-settlement-summary" aria-live="polite">
                 <strong>{selectedPayoutCount?`${selectedPayoutCount} venta${selectedPayoutCount===1?"":"s"} · ${money(selectedPayoutAmount)}`:hasRefundAdjustment?"Saldo retenido por ajuste":"Sin saldo pendiente"}</strong>
                 <span>{selectedPayoutCount?(remainingPayoutCount?`Después quedarán ${remainingPayoutCount} venta${remainingPayoutCount===1?"":"s"} pendientes.`:"Esta liquidación deja el saldo pendiente en cero."):hasRefundAdjustment?`Hay ${money(Number(detail?.affiliate.commission_pending_minor||0))} pendientes en ventas, pero ${money(Number(detail?.affiliate.commission_available_minor||0))} disponibles hoy por devoluciones ya descontadas.`:"Las nuevas ventas volverán a acumularse acá."}</span>
