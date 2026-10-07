@@ -1017,6 +1017,10 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
 
   await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto\?/i})).toBeVisible();
   await expect(page.getByText(/scene_recipe|metadata/i)).toHaveCount(0);
+  mkdirSync("visual-qa-evidence",{recursive:true});
+  const startShot="visual-qa-evidence/tehiceesto-studio-mobile-start.png";
+  await page.screenshot({path:startShot,fullPage:true});
+  await testInfo.attach("tehiceesto-studio-mobile-start",{path:startShot,contentType:"image/png"});
   await page.getByPlaceholder("Ej. Ailín").fill("Ailín");
   await page.getByRole("button",{name:/Continuar/i}).click();
 
