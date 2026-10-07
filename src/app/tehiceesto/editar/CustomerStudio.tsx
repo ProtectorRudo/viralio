@@ -255,10 +255,13 @@ export default function CustomerStudio({code}:{code:string}){
   },[code]);
 
   useEffect(()=>{
-    const token=window.localStorage.getItem(accessKey(code))||"";
-    setEditorToken(token);
-    if(token)void loadStudio(token);
-    else {setAccessState("missing");setLoading(false)}
+    const timer=window.setTimeout(()=>{
+      const token=window.localStorage.getItem(accessKey(code))||"";
+      setEditorToken(token);
+      if(token)void loadStudio(token);
+      else {setAccessState("missing");setLoading(false)}
+    },0);
+    return()=>window.clearTimeout(timer);
   },[code,loadStudio]);
 
   useEffect(()=>{
