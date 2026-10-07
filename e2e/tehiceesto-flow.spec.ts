@@ -1017,16 +1017,21 @@ test("customer studio gives a zero-tech user one obvious action at a time",async
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 2 DE 6 · FOTOS/i)).toBeVisible();
   await expect(page.getByRole("button",{name:/Elegir fotos/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Elegir foto para la linterna/i})).toBeVisible();
 
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 3 DE 6 · AUDIOS/i)).toBeVisible();
   await expect(page.getByText(/Los audios son opcionales/i)).toBeVisible();
+  await expect(page.getByRole("button",{name:/Grabar ahora/i})).toBeVisible();
+  await expect(page.getByText(/No mostramos voces de ejemplo/i)).toBeVisible();
 
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 4 DE 6 · PALABRAS/i)).toBeVisible();
   await expect(page.locator(".studio-field.important textarea")).toBeVisible();
   await expect(page.getByText("La primera frase",{exact:true})).toBeHidden();
   await expect(page.getByRole("button",{name:/No sé qué escribir/i})).toBeVisible();
+  await expect(page.getByText("LA RASPADITA",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:/una cita sorpresa sin celulares/i})).toBeVisible();
 
   await page.getByRole("button",{name:/Continuar/i}).click();
   await expect(page.getByText(/PASO 5 DE 6 · OPCIONAL/i)).toBeVisible();
@@ -1105,8 +1110,30 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.getByRole("button",{name:/Ver mi regalo/i}).click();
 
   await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
-  await expect(page.getByRole("button",{name:/Cambiar un texto tocándolo/i})).toBeVisible();
-  await page.waitForTimeout(1100);
+  const copyTool=page.getByRole("button",{name:/Editar textos de esta parte/i});
+  await expect(copyTool).toBeVisible();
+  await copyTool.click();
+  await expect(page.getByText(/Cuando guardes el cambio, el recorrido se habilita solo/i)).toBeVisible();
+  await page.locator(".studio-preview-stage .thi-kicker").first().click();
+  const copySheet=page.locator(".studio-copy-sheet");
+  await expect(copySheet).toBeVisible();
+  await copySheet.locator("textarea").fill("Una frase personalizada");
+  await copySheet.getByRole("button",{name:/Guardar y seguir/i}).click();
+  await expect(page.getByRole("button",{name:/Editar textos de esta parte/i})).toBeVisible();
+  await expect(page.locator(".studio-copy-hint")).toHaveCount(0);
+
+  const visited:string[]=[];
+  for(let index=0;index<12;index++){
+    const current=await sceneName(page);
+    visited.push(current);
+    if(current==="finale")break;
+    await advanceOne(page);
+  }
+  expect(visited).not.toContain("voices");
+  expect(visited).not.toContain("light");
+  await expect(page.locator('[data-action="create-story"]')).toHaveCount(0);
+
+  await page.waitForTimeout(300);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   const previewShot="visual-qa-evidence/tehiceesto-studio-mobile-preview.png";
   await page.screenshot({path:previewShot,fullPage:true});
