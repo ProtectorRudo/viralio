@@ -20,7 +20,7 @@ type Detail={
   affiliate:AffiliateRow;
   links:{id:string;code:string;label:string;status:string}[];
   commissions:{id:string;gross_amount_minor:number;commission_amount_minor:number;status:string;approved_at:string|null}[];
-  payouts:{id:string;amount_minor:number;status:string;paid_at:string|null;provider_reference:string|null;notes:string|null}[];
+  payouts:{id:string;amount_minor:number;status:string;paid_at:string|null;created_at:string;provider_reference:string|null;notes:string|null;period_from:string|null;period_to:string|null;sales_count:number}[];
   series:{date:string;clicks:number;uniqueVisitors:number}[];
 };
 
@@ -36,6 +36,9 @@ export default function AffiliateAdminDashboard(){
   const [detail,setDetail]=useState<Detail|null>(null);
   const [created,setCreated]=useState<{name:string;shareUrl:string;dashboardUrl:string;initialPassword:string}|null>(null);
   const [message,setMessage]=useState("");
+  const [payoutReference,setPayoutReference]=useState("");
+  const [payoutNotes,setPayoutNotes]=useState("");
+  const [payoutBusy,setPayoutBusy]=useState(false);
 
   const hasSession=()=>typeof window!=="undefined"&&Boolean(window.sessionStorage.getItem(SESSION_KEY));
 
@@ -97,14 +100,25 @@ export default function AffiliateAdminDashboard(){
   }
 
   async function payout(){
-    if(!detail||!detail.affiliate.commission_pending_minor)return;
-    if(!window.confirm(`Registrar como pagadas ${money(detail.affiliate.commission_pending_minor)} para ${detail.affiliate.name}?`))return;
+    if(!detail||!detail.affiliate.commission_pending_minor||payoutBusy)return;
+    const amount=detail.affiliate.commission_pending_minor;
+    if(!window.confirm(`Vas a marcar como liquidado ${money(amount)} para ${detail.affiliate.name}. Esto no envía dinero: deja registrada la liquidación y separa estas ventas de las próximas. ¿Confirmar?`))return;
+    setPayoutBusy(true);setMessage("");
     try{
-      await affiliateAdminCall("payout",{affiliateId:detail.affiliate.id,notes:"Liquidación registrada desde Te Hice Esto"});
-      setMessage("Liquidación registrada ✓");await load(true);
-    }catch{setMessage("No se pudo registrar la liquidación.");}
+      await affiliateAdminCall("payout",{
+        affiliateId:detail.affiliate.id,
+        providerReference:payoutReference.trim(),
+        notes:payoutNotes.trim()||"Liquidación manual registrada desde Te Hice Esto",
+      });
+      setPayoutReference("");setPayoutNotes("");
+      setMessage(`Pago liquidado registrado por ${money(amount)} ✓`);
+      await load(true);
+    }catch(error){
+      setMessage(error instanceof Error&&error.message==="nothing_to_pay"
+        ?"No hay comisiones pendientes para liquidar."
+        :"No se pudo registrar la liquidación.");
+    }finally{setPayoutBusy(false);}
   }
-
   const conversion=useMemo(()=>totals.uniqueVisitors?totals.sales/totals.uniqueVisitors:0,[totals]);
 
   if(!ready)return <main className="thi-aff-admin-shell"><div className="thi-admin-loading">Cargando afiliados…</div></main>;
@@ -138,7 +152,7 @@ export default function AffiliateAdminDashboard(){
         <article><span>VISITAS</span><strong>{totals.uniqueVisitors.toLocaleString("es-AR")}</strong><small>{totals.clicks.toLocaleString("es-AR")} clics</small></article>
         <article><span>VENTAS</span><strong>{totals.sales}</strong><small>{pct(conversion)} conversión</small></article>
         <article className="accent"><span>FACTURACIÓN</span><strong>{money(totals.revenueMinor)}</strong><small>atribuida a influencers</small></article>
-        <article><span>COMISIONES</span><strong>{money(totals.commissionMinor)}</strong><small>{money(totals.pendingMinor)} pendientes</small></article>
+        <article><span>COMISIONES</span><strong>{money(totals.commissionMinor)}</strong><small>{money(totals.pendingMinor)} pendientes · {money(totals.paidMinor)} liquidados</small></article>
       </section>
 
       {created&&(
@@ -173,7 +187,7 @@ export default function AffiliateAdminDashboard(){
         <div className="thi-aff-section-head"><div><p className="thi-kicker">Rendimiento</p><h2>Todos los influencers</h2></div><button className="thi-ghost" onClick={()=>load()}>{loading?"Actualizando…":"Actualizar"}</button></div>
         {rows.length===0?<div className="thi-admin-empty"><strong>Todavía no hay influencers.</strong><p>Creá el primero y su actividad aparecerá acá en vivo.</p></div>:(
           <div className="thi-aff-table-wrap"><table className="thi-aff-table">
-            <thead><tr><th>Influencer</th><th>Visitas</th><th>Ventas</th><th>Conv.</th><th>Facturación</th><th>Comisión</th><th>Pendiente</th><th>Estado</th></tr></thead>
+            <thead><tr><th>Influencer</th><th>Visitas</th><th>Ventas</th><th>Conv.</th><th>Facturación</th><th>Comisión</th><th>Pendiente</th><th>Liquidado</th><th>Estado</th></tr></thead>
             <tbody>{rows.map((row)=>(
               <tr key={row.id} onClick={()=>openDetail(row.id)}>
                 <td><strong>{row.name}</strong><small>/r/{row.primary_link_code||row.slug}</small></td>
@@ -183,6 +197,7 @@ export default function AffiliateAdminDashboard(){
                 <td>{money(Number(row.revenue_minor||0))}</td>
                 <td>{money(Number(row.commission_earned_minor||0))}</td>
                 <td>{money(Number(row.commission_pending_minor||0))}</td>
+                <td>{money(Number(row.commission_paid_minor||0))}</td>
                 <td><span className={`thi-aff-status ${row.status}`}>{row.status==="active"?"Activo":"Pausado"}</span></td>
               </tr>
             ))}</tbody>
@@ -209,8 +224,39 @@ export default function AffiliateAdminDashboard(){
             }}>Guardar</button></div></label>
             <div><span>Estado</span><button className="thi-ghost" onClick={()=>updateAffiliate({status:detail.affiliate.status==="active"?"paused":"active"})}>{detail.affiliate.status==="active"?"Pausar":"Activar"}</button></div>
             <div><span>Acceso</span><button className="thi-ghost" onClick={resetPassword}>Nueva contraseña</button></div>
-            <div><span>Liquidación</span><button className="thi-primary" disabled={!detail.affiliate.commission_pending_minor} onClick={payout}>Registrar pago {detail.affiliate.commission_pending_minor?money(detail.affiliate.commission_pending_minor):""}</button></div>
           </div>
+
+          <section className="thi-aff-settlement-box">
+            <div className="thi-aff-settlement-copy">
+              <p className="thi-kicker">Liquidación manual</p>
+              <h3>Marcar comisión como pagada</h3>
+              <p>No mueve dinero. Cuando vos le pagues por transferencia u otro medio, registralo acá. Las ventas incluidas pasan a “liquidadas” y las nuevas vuelven a acumularse desde cero.</p>
+            </div>
+            <div className="thi-aff-settlement-form">
+              <label><span>Referencia <em>opcional</em></span><input value={payoutReference} onChange={event=>setPayoutReference(event.target.value)} placeholder="Ej. transferencia 07/10"/></label>
+              <label><span>Nota <em>opcional</em></span><input value={payoutNotes} onChange={event=>setPayoutNotes(event.target.value)} placeholder="Ej. liquidación quincenal"/></label>
+              <button className="thi-primary thi-aff-settle-button" disabled={!detail.affiliate.commission_pending_minor||payoutBusy} onClick={payout}>
+                {payoutBusy?"Registrando…":detail.affiliate.commission_pending_minor?`Pago liquidado · ${money(detail.affiliate.commission_pending_minor)}`:"Sin saldo pendiente"}
+              </button>
+            </div>
+          </section>
+
+          <section className="thi-aff-settlement-history">
+            <div className="thi-aff-card-head"><div><span>HISTORIAL</span><h3>Liquidaciones registradas</h3></div><small>{detail.payouts.length} movimiento{detail.payouts.length===1?"":"s"}</small></div>
+            {detail.payouts.length===0?<div className="thi-aff-empty"><strong>Todavía no hay liquidaciones.</strong><p>Cuando registres la primera, queda guardada acá con fecha, período y monto.</p></div>:(
+              <div className="thi-aff-table-wrap"><table className="thi-aff-settlement-table">
+                <thead><tr><th>Fecha</th><th>Ventas incluidas</th><th>Período</th><th>Monto</th><th>Referencia / nota</th><th>Estado</th></tr></thead>
+                <tbody>{detail.payouts.map(payout=><tr key={payout.id}>
+                  <td>{new Date(payout.paid_at||payout.created_at).toLocaleDateString("es-AR")}</td>
+                  <td>{Number(payout.sales_count||0)} venta{Number(payout.sales_count||0)===1?"":"s"}</td>
+                  <td>{payout.period_from&&payout.period_to?`${new Date(payout.period_from).toLocaleDateString("es-AR")} → ${new Date(payout.period_to).toLocaleDateString("es-AR")}`:"—"}</td>
+                  <td><strong>{money(payout.amount_minor)}</strong></td>
+                  <td>{payout.provider_reference||payout.notes||"—"}</td>
+                  <td><span className={`thi-aff-sale-status ${payout.status}`}>{payout.status==="paid"?"Liquidado":"Cancelado"}</span></td>
+                </tr>)}</tbody>
+              </table></div>
+            )}
+          </section>
           <div className="thi-aff-links">
             <h3>Links activos</h3>
             {detail.links.map(link=><div key={link.id}><code>https://tehiceesto.com/r/{link.code}</code><button onClick={()=>navigator.clipboard.writeText(`https://tehiceesto.com/r/${link.code}`)}>Copiar</button></div>)}
