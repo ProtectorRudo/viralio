@@ -490,7 +490,7 @@ export default function CustomerStudio({code}:{code:string}){
     setMessage("");
     try{
       const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-      const candidates=["audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+      const candidates=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg;codecs=opus"];
       const mimeType=candidates.find(type=>MediaRecorder.isTypeSupported(type))||"";
       const recorder=new MediaRecorder(stream,mimeType?{mimeType}:undefined);
       recorderStreamRef.current=stream;
@@ -502,7 +502,7 @@ export default function CustomerStudio({code}:{code:string}){
         const chunks=[...recorderChunksRef.current];
         recorderChunksRef.current=[];
         const finalType=recorder.mimeType||chunks[0]?.type||"audio/webm";
-        const normalizedType=finalType.includes("ogg")?"audio/ogg":"audio/webm";
+        const normalizedType=finalType.includes("mp4")?"audio/mp4":finalType.includes("ogg")?"audio/ogg":"audio/webm";
         const blob=new Blob(chunks,{type:normalizedType});
         stopRecorderTracks();
         setRecording(false);
@@ -510,7 +510,7 @@ export default function CustomerStudio({code}:{code:string}){
           setMessage("La grabación quedó vacía. Probá de nuevo.");
           return;
         }
-        const extension=normalizedType==="audio/ogg"?"ogg":"webm";
+        const extension=normalizedType==="audio/mp4"?"m4a":normalizedType==="audio/ogg"?"ogg":"webm";
         const file=new File([blob],`nota-de-voz-${Date.now()}.${extension}`,{type:normalizedType,lastModified:Date.now()});
         void uploadFiles([file],"audio");
       };
