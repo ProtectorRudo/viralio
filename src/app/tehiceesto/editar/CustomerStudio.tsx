@@ -450,7 +450,8 @@ export default function CustomerStudio({code}:{code:string}){
 
   async function deleteMedia(item:StudioMedia){
     if(!editorToken)return;
-    if(!window.confirm(item.kind==="image"?"¿Sacamos esta foto del regalo?":"¿Sacamos este archivo del regalo?"))return;
+    const label=item.kind==="image"?"esta foto":item.kind==="audio"?"este audio":"este video";
+    if(!window.confirm(`¿Querés quitar ${label} del regalo? Podés volver a agregarlo después.`))return;
     try{
       await creatorCall("deleteStudioMedia",{code,editorToken,mediaId:item.id});
       await loadStudio(editorToken);
