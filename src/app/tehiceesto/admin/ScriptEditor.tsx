@@ -141,6 +141,7 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
     {path:"voices.kicker",label:"Frase superior",kind:"text"},
     {path:"voices.title",label:"Título",kind:"lines"},
     {path:"voices.intro",label:"Bajada emocional",kind:"textarea"},
+    {path:"voices.cardIntros",label:"Introducción de cada voz",kind:"lines",hint:"Una por voz. Se muestra antes de la transcripción."},
     {path:"voices.noteLabel",label:"Etiqueta de la nota",kind:"text",hint:"Podés usar {name}."},
     {path:"voices.playLabel",label:"Texto antes de reproducir",kind:"text"},
     {path:"voices.playingLabel",label:"Texto mientras reproduce",kind:"text"},
