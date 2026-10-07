@@ -43,7 +43,7 @@ async function advanceOne(page:Page){
   else if(current==="return"){await page.locator(".return-key").click();await page.locator(".scene .primary-action").click()}
   else if(current==="lessons"){const premium=page.locator(".thi-papa-lesson-card");if(await premium.count()){for(let i=1;i<await premium.count();i++)await premium.nth(i).click();await page.locator(".thi-papa-lessons-cta").click()}else{const items=page.locator(".lesson-ledger button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="presence"){const premium=page.locator(".thi-papa-presence-card");if(await premium.count()){for(let i=1;i<await premium.count();i++)await premium.nth(i).click();await page.locator(".thi-papa-presence-cta").click()}else{const items=page.locator(".presence-track button");await items.nth(0).click();await items.nth(1).click();await page.locator(".scene .primary-action").click()}}
-  else if(current==="inheritance"){const items=page.locator(".inheritance-board button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
+  else if(current==="inheritance"){const premium=page.locator(".thi-papa-inheritance-card");if(await premium.count()){for(let i=1;i<await premium.count();i++)await premium.nth(i).click();await page.locator(".thi-papa-inheritance-cta").click()}else{const items=page.locator(".inheritance-board button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}}
   else if(current==="lookback"){await page.locator(".lookback-button").click();await page.locator(".scene .primary-action").click()}
   else if(current==="casefile"){await page.locator(".casefile-folder").click();await page.locator(".scene .primary-action").click()}
   else if(current==="insidejokes"){const items=page.locator(".joke-decoder button");await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator(".scene .primary-action").click()}
@@ -139,8 +139,15 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
   await expect(page.locator(".thi-papa-presence-cta")).toBeEnabled();
   await page.locator(".thi-papa-presence-cta").click();
   await waitForScene(page,"inheritance");
-  const inheritance=page.locator(".inheritance-board button");await inheritance.nth(0).click();await inheritance.nth(1).click();await inheritance.nth(2).click();
-  await page.locator(".scene-inheritance .primary-action").click();
+  await expect(page.getByText(/Con los años empecé a encontrarte/i)).toBeVisible();
+  await expect(page.getByText(/Se quedaron conmigo/i)).toBeVisible();
+  const inheritance=page.locator(".thi-papa-inheritance-card");
+  await expect(inheritance).toHaveCount(4);
+  await expect(inheritance.nth(0)).toHaveClass(/open/);
+  for(const i of [1,2,3]) await inheritance.nth(i).click();
+  await expect(page.getByText(/heredar de verdad/i)).toBeVisible();
+  await expect(page.getByText(/viviendo un poco en uno mismo/i)).toBeVisible();
+  await page.locator(".thi-papa-inheritance-cta").click();
 
   await waitForScene(page,"voices");
   const demoVoice=page.locator(".thi-papa-voice-list [data-action='demo-voice']").first();
