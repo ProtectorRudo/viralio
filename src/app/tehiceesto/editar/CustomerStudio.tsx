@@ -572,9 +572,9 @@ export default function CustomerStudio({code}:{code:string}){
       {step===2&&<div className="studio-panel">
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
         <button className="studio-upload-hero audio" type="button" onClick={()=>audioInputRef.current?.click()}>
-          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Subir un audio"}</strong><small>MP3, M4A, WAV o audio de WhatsApp</small></div><b>→</b>
+          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Subir un audio"}</strong><small>MP3, M4A, OGG, OPUS o audio de WhatsApp</small></div><b>→</b>
         </button>
-        <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,.m4a,.mp3,.wav" onChange={event=>uploadFiles(event.target.files,"audio")}/>
+        <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
@@ -632,7 +632,7 @@ export default function CustomerStudio({code}:{code:string}){
       ref={replaceInputRef}
       hidden
       type="file"
-      accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,.m4a,.mp3,.wav":"video/mp4,video/webm,video/quicktime"}
+      accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus":"video/mp4,video/webm,video/quicktime"}
       onChange={event=>replaceMediaFile(event.target.files)}
     />
 
