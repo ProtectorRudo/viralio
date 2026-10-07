@@ -918,6 +918,16 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 });
 
 
+test("home explains the real self-service model without promising manual assembly",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto");
+  await expect(page.getByText(/Diseño ya resuelto/i).first()).toBeVisible();
+  await expect(page.getByText(/la personalizás con tus fotos, audios y palabras/i).first()).toBeVisible();
+  await expect(page.getByText(/Nosotros hacemos todo el armado/i)).toHaveCount(0);
+  await expect(page.getByText(/Nosotros hacemos la magia/i)).toHaveCount(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
 test("preselected experience skips the chooser and keeps the purchase obvious",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear?experiencia=pareja");
@@ -1065,7 +1075,7 @@ test("my gifts shows a chooser when this device has multiple purchases",async({p
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
-test("my gifts opens the editor directly when there is only one purchase",async({page})=>{
+test("my gifts keeps a single purchase visible instead of bouncing back to the editor",async({page})=>{
   const code="bbbbccccddddeeee33";
   const token="3".repeat(64);
   await page.addInitScript(({code,token})=>localStorage.setItem(`thi_editor_access:${code}`,token),{code,token});
@@ -1082,7 +1092,59 @@ test("my gifts opens the editor directly when there is only one purchase",async(
     }),
   }));
   await page.goto("/tehiceesto/mis-regalos");
-  await page.waitForURL(new RegExp(`/tehiceesto/editar/${code}$`));
+  await expect(page).toHaveURL(/\/tehiceesto\/mis-regalos$/);
+  await expect(page.getByRole("heading",{name:/Acá están tus regalos/i})).toBeVisible();
+  const card=page.locator(".account-gift-card").filter({hasText:"Para Ailín"});
+  await expect(card).toBeVisible();
+  await expect(card.getByRole("link",{name:/Editar/i})).toHaveAttribute("href",`/tehiceesto/editar/${code}`);
+  await expect(page.getByRole("heading",{name:/Traé también tus compras de otro dispositivo/i})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("my gifts can recover purchases by email magic link and refresh editor access",async({page})=>{
+  const code="ccccddddeeeeffff44";
+  const accountToken="account-access-token-test";
+  const editorToken="4".repeat(64);
+  let linkRequested=false;
+  let opened=false;
+
+  await page.route("**/functions/v1/gift-account",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="requestLink"){
+      expect(body.email).toBe("mauro@example.com");
+      linkRequested=true;
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true})});
+    }
+    const authorization=route.request().headers()["authorization"]||"";
+    expect(authorization).toBe(`Bearer ${accountToken}`);
+    if(body.action==="list"){
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+        email:"mauro@example.com",
+        gifts:[{code,status:"paid",experienceSlug:"pareja",giverName:"Mauro",recipientName:"Ailín",publishedAt:null,purchasedAt:"2026-10-07T20:00:00Z"}],
+      })});
+    }
+    if(body.action==="open"){
+      expect(body.code).toBe(code);
+      opened=true;
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({ok:true,code,editorToken})});
+    }
+    return route.fulfill({status:400,contentType:"application/json",body:JSON.stringify({error:"unexpected_action"})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/mis-regalos");
+  await expect(page.getByRole("heading",{name:/Recuperá tus regalos/i})).toBeVisible();
+  await page.getByPlaceholder("tu@email.com").fill("mauro@example.com");
+  await page.getByRole("button",{name:/Recuperar mis regalos/i}).click();
+  await expect.poll(()=>linkRequested).toBe(true);
+  await expect(page.getByText(/Revisá tu email/i)).toBeVisible();
+
+  await page.goto(`/tehiceesto/mis-regalos#access_token=${accountToken}&token_type=bearer`);
+  await expect.poll(()=>opened).toBe(true);
+  await expect(page.getByRole("heading",{name:/Acá están tus regalos/i})).toBeVisible();
+  await expect(page.getByText(/Acceso verificado con mauro@example.com/i)).toBeVisible();
+  expect(await page.evaluate(code=>localStorage.getItem(`thi_editor_access:${code}`),code)).toBe(editorToken);
+  expect(await page.evaluate(()=>localStorage.getItem("thi_account_access"))).toBe(accountToken);
 });
 
 test("customer studio gives a zero-tech user one obvious action at a time",async({page})=>{
@@ -1577,7 +1639,7 @@ test("affiliate panels show refund adjustments without allowing an overpayment",
   await expect(page.getByText(/devoluciones ya descontadas/i)).toBeVisible();
 });
 test("Mercado Pago checkout health endpoint is explicit",async({request})=>{
-  const response=await request.get("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1");
+  const response=await request.get("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1");
   expect(response.ok()).toBeTruthy();
   const data=await response.json() as {configured?:boolean;tokenValid?:boolean;webhookSecretPresent?:boolean;provider?:string};
   expect(data.provider).toBe("mercadopago");
