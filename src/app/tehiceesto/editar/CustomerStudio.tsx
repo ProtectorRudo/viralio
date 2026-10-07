@@ -942,19 +942,20 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-section-list">{canonical.map((scene,index)=>{
             const terminal=scene==="finale"||scene==="proposal";
             const locked=scene==="intro"||terminal;
-            const needsPhoto=scene==="memories"&&photos.length===0;
+            const needsPhoto=scene==="memories"&&memoryPhotos.length===0;
+            const needsLightPhoto=scene==="light"&&lightPhotos.length===0;
             const needsVoice=scene==="voices"&&voiceAudios.length===0;
             const needsVideo=scene==="video"&&videos.length===0;
-            const missingMedia=needsPhoto||needsVoice||needsVideo;
+            const missingMedia=needsPhoto||needsLightPhoto||needsVoice||needsVideo;
             const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
             const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
             return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
               <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
-              <div><strong>{meta.title}</strong><p>{missingMedia?(needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
+              <div><strong>{meta.title}</strong><p>{missingMedia?(needsLightPhoto?"Se activa cuando elegís la foto de la linterna.":needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
               {locked
                 ?<span className="studio-section-required">ESENCIAL</span>
                 :missingMedia
-                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":"Foto"}</button>
+                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":needsLightPhoto?"Foto de linterna":"Foto"}</button>
                   :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Visible":"Oculta"}</span></button>}
             </article>;
           })}</div>
