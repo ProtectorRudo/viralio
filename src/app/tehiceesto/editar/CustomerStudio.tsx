@@ -558,8 +558,8 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
           <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Una frase para esta foto · opcional"/>
           <div className="studio-media-mini-actions">
-            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>←</button>
-            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>→</button>
+            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Antes</button>
+            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Después</button>
             <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar":"Ver completa"}</button>
             <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
@@ -567,13 +567,6 @@ export default function CustomerStudio({code}:{code:string}){
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
         {videos.length===0&&<button className="studio-extra-upload" type="button" onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>}
         <input ref={videoInputRef} hidden type="file" accept="video/mp4,video/webm,video/quicktime" onChange={event=>uploadFiles(event.target.files,"video")}/>
-        <input
-          ref={replaceInputRef}
-          hidden
-          type="file"
-          accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,.m4a,.mp3,.wav":"video/mp4,video/webm,video/quicktime"}
-          onChange={event=>replaceMediaFile(event.target.files)}
-        />
       </div>}
 
       {step===2&&<div className="studio-panel">
@@ -587,6 +580,8 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
           <label className="studio-audio-role"><span>Este audio es…</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Un mensaje de voz</option><option value="soundtrack">Música de fondo</option></select></label>
           <div className="studio-audio-actions">
+            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Antes</button>
+            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Después</button>
             <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
             <button type="button" className="studio-remove" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
@@ -631,6 +626,15 @@ export default function CustomerStudio({code}:{code:string}){
         </div>
       </div>}
     </section>
+
+    <input
+      data-studio-replace-input
+      ref={replaceInputRef}
+      hidden
+      type="file"
+      accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,.m4a,.mp3,.wav":"video/mp4,video/webm,video/quicktime"}
+      onChange={event=>replaceMediaFile(event.target.files)}
+    />
 
     {message&&<div className="studio-toast" role="status">{message}<button onClick={()=>setMessage("")}>×</button></div>}
 
