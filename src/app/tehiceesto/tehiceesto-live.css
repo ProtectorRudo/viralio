@@ -5022,3 +5022,529 @@
   .thi-papa-presence-cta{transition:none}
   .thi-papa-presence-outro{animation:none}
 }
+
+
+/* PAPA · INHERITANCE THAT STAYS V2 · OCT 2026
+   Deep, intimate and cinematic. The inheritance is emotional, not material.
+   ========================================================= */
+.thi-template-live.thi-theme-papa[data-scene="inheritance"]{
+  background:
+    radial-gradient(circle at 50% 15%,rgba(116,145,178,.11),transparent 28%),
+    radial-gradient(circle at 72% 78%,rgba(184,150,104,.07),transparent 25%),
+    linear-gradient(180deg,#05080c 0%,#030507 100%)!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-experience-orb.orb-a{
+  background:#7890aa!important;
+  opacity:.055!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-experience-orb.orb-b{
+  background:#b89668!important;
+  opacity:.045!important;
+}
+.thi-template-live.thi-theme-papa[data-scene="inheritance"]:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:.35;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.011) 0 1px,transparent 1px 4px),
+    radial-gradient(circle at 50% 44%,transparent 30%,rgba(0,0,0,.46) 100%);
+}
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-scene-stage{
+  position:relative;
+  z-index:3;
+}
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-papa-inheritance{
+  min-height:100svh;
+  justify-content:flex-start;
+  overflow:visible;
+  padding:112px 16px 138px;
+  background:transparent!important;
+}
+.thi-papa-inheritance-atmosphere{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.thi-papa-inheritance-atmosphere:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:325px;
+  width:min(900px,90vw);
+  height:560px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(111,140,172,.10),rgba(111,140,172,.024) 45%,transparent 72%);
+  filter:blur(24px);
+}
+.thi-papa-inheritance-atmosphere i{
+  position:absolute;
+  width:1px;
+  top:115px;
+  bottom:100px;
+  background:linear-gradient(transparent,rgba(169,183,201,.07),transparent);
+}
+.thi-papa-inheritance-atmosphere i:first-child{left:12%}
+.thi-papa-inheritance-atmosphere i:nth-child(2){right:12%}
+.thi-papa-inheritance-atmosphere b{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  border:1px solid rgba(184,150,104,.04);
+  border-radius:50%;
+}
+.thi-papa-inheritance-atmosphere b:nth-of-type(1){width:590px;height:590px;top:290px}
+.thi-papa-inheritance-atmosphere b:nth-of-type(2){width:840px;height:840px;top:150px;opacity:.48}
+
+.thi-papa-inheritance-head{
+  position:relative;
+  z-index:3;
+  width:min(960px,94vw);
+  min-height:360px;
+  display:flex;
+  align-items:flex-end;
+  margin:0 auto 28px;
+  overflow:hidden;
+  border:1px solid rgba(169,183,201,.10);
+  border-radius:22px;
+  background:#070b10;
+  box-shadow:0 28px 70px rgba(0,0,0,.28);
+}
+.thi-papa-inheritance-hero-visual{
+  position:absolute;
+  inset:0;
+}
+.thi-papa-inheritance-hero-visual img{
+  width:100%;
+  height:100%;
+  display:block;
+  filter:saturate(.66) sepia(.15) brightness(.58) contrast(1.10);
+  transform:scale(1.02);
+}
+.thi-papa-inheritance-hero-visual i{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(3,6,9,.96) 0%,rgba(3,6,9,.84) 38%,rgba(3,6,9,.34) 72%,rgba(3,6,9,.18) 100%),
+    linear-gradient(180deg,rgba(2,4,7,.18),rgba(2,4,7,.72) 100%);
+}
+.thi-papa-inheritance-head-copy{
+  position:relative;
+  z-index:2;
+  width:min(700px,78%);
+  padding:42px 42px 38px;
+}
+.thi-papa-inheritance-head .scene-kicker{
+  margin:0 0 16px;
+  color:#d0a069!important;
+  font-size:8px;
+  line-height:1.5;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+}
+.thi-papa-inheritance-head h2{
+  margin:0!important;
+  color:#f0ece5;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(48px,6vw,72px)!important;
+  font-weight:400!important;
+  line-height:.98!important;
+  letter-spacing:-.048em!important;
+  text-wrap:balance;
+}
+.thi-papa-inheritance-head-copy>p:last-child{
+  max-width:580px;
+  margin:18px 0 0;
+  color:#a2b0bf;
+  font:400 clamp(17px,1.8vw,22px)/1.42 Georgia,"Times New Roman",serif;
+  text-wrap:balance;
+}
+
+.thi-papa-inheritance-timeline{
+  width:min(900px,94vw);
+  position:relative;
+  z-index:3;
+  display:grid;
+  gap:12px;
+  margin:0 auto;
+  padding-left:42px;
+}
+.thi-papa-inheritance-line{
+  position:absolute;
+  left:16px;
+  top:34px;
+  bottom:34px;
+  width:1px;
+  background:linear-gradient(180deg,#d0a064 0%,rgba(184,150,104,.55) 78%,rgba(184,150,104,.09) 100%);
+  box-shadow:0 0 18px rgba(184,150,104,.13);
+}
+.thi-papa-inheritance-card{
+  min-height:132px;
+  position:relative;
+  display:grid;
+  grid-template-columns:52px minmax(0,1fr) 34px;
+  align-items:center;
+  gap:14px;
+  padding:18px 16px 18px 18px;
+  overflow:hidden;
+  border:1px solid rgba(169,183,201,.13);
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),transparent 30%),
+    rgba(7,11,16,.90);
+  color:#edf1f4;
+  text-align:left;
+  box-shadow:0 18px 46px rgba(0,0,0,.20);
+  cursor:pointer;
+  transition:
+    min-height .38s cubic-bezier(.2,.8,.2,1),
+    transform .28s ease,
+    border-color .32s ease,
+    background .32s ease,
+    box-shadow .32s ease;
+}
+.thi-papa-inheritance-card:hover,
+.thi-papa-inheritance-card:focus-visible{
+  transform:translateY(-2px);
+  border-color:rgba(184,150,104,.28);
+  outline:none;
+}
+.thi-papa-inheritance-card.open{
+  min-height:228px;
+  border-color:rgba(211,165,110,.68);
+  background:
+    linear-gradient(95deg,rgba(184,150,104,.065),transparent 42%),
+    rgba(8,12,17,.965);
+  box-shadow:
+    0 30px 76px rgba(0,0,0,.31),
+    0 0 0 1px rgba(184,150,104,.045),
+    inset 0 0 0 1px rgba(184,150,104,.045);
+}
+.thi-papa-inheritance-node{
+  position:absolute;
+  left:-34px;
+  top:50%;
+  width:14px;
+  height:14px;
+  transform:translateY(-50%);
+  border:1px solid rgba(211,165,110,.94);
+  border-radius:50%;
+  background:#05080c;
+  box-shadow:0 0 0 5px rgba(184,150,104,.025);
+  transition:background .3s,box-shadow .3s;
+}
+.thi-papa-inheritance-card.open .thi-papa-inheritance-node{
+  background:#d3a56e;
+  box-shadow:
+    0 0 0 5px rgba(184,150,104,.10),
+    0 0 25px rgba(211,165,110,.36);
+}
+.thi-papa-inheritance-number{
+  position:relative;
+  z-index:4;
+  align-self:start;
+  padding-top:4px;
+  color:#88a0b8;
+  font:400 18px/1 Georgia,"Times New Roman",serif;
+  letter-spacing:.08em;
+}
+.thi-papa-inheritance-copy{
+  position:relative;
+  z-index:4;
+  min-width:0;
+  max-width:64%;
+  align-self:center;
+}
+.thi-papa-inheritance-copy strong{
+  display:block;
+  color:#f0ece5;
+  font:400 clamp(23px,2.8vw,34px)/1.07 Georgia,"Times New Roman",serif;
+  letter-spacing:-.022em;
+  text-wrap:balance;
+}
+.thi-papa-inheritance-copy p{
+  margin:9px 0 0;
+  color:#7b8b9e;
+  font-size:9px;
+  line-height:1.55;
+  letter-spacing:.03em;
+}
+.thi-papa-inheritance-card.open .thi-papa-inheritance-copy p{
+  color:#bec6ce;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  line-height:1.58;
+  letter-spacing:0;
+}
+.thi-papa-inheritance-visual{
+  position:absolute;
+  z-index:1;
+  top:0;
+  right:0;
+  bottom:0;
+  width:46%;
+  overflow:hidden;
+  opacity:.36;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 40%,#000 100%);
+  transition:opacity .38s ease,transform .45s cubic-bezier(.2,.8,.2,1);
+}
+.thi-papa-inheritance-visual img{
+  width:100%;
+  height:100%;
+  display:block;
+  filter:saturate(.58) sepia(.17) brightness(.60) contrast(1.10);
+  transform:scale(1.04);
+}
+.thi-papa-inheritance-visual i{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(4,7,10,.04),rgba(4,7,10,.34)),
+    radial-gradient(circle at 74% 46%,transparent 20%,rgba(4,7,10,.24));
+}
+.thi-papa-inheritance-card.open .thi-papa-inheritance-visual{
+  opacity:.70;
+  transform:scale(1.012);
+}
+.thi-papa-inheritance-card.open .thi-papa-inheritance-visual img{
+  filter:saturate(.68) sepia(.20) brightness(.77) contrast(1.08);
+}
+.thi-papa-inheritance-toggle{
+  position:relative;
+  z-index:5;
+  grid-column:3;
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  justify-self:end;
+  border:1px solid rgba(184,150,104,.25);
+  border-radius:50%;
+  background:rgba(4,7,10,.56);
+  color:#c9a271;
+  font-size:17px;
+  line-height:1;
+}
+.thi-papa-inheritance-card.open .thi-papa-inheritance-toggle{
+  border-color:rgba(211,165,110,.58);
+  background:rgba(184,150,104,.08);
+}
+
+.thi-papa-inheritance-hint{
+  position:relative;
+  z-index:3;
+  width:min(760px,88vw);
+  margin:23px auto 0!important;
+  color:#718296!important;
+  font-size:8px!important;
+  line-height:1.55;
+  letter-spacing:.13em;
+  text-align:center;
+  text-transform:uppercase;
+}
+.thi-papa-inheritance-outro{
+  position:relative;
+  z-index:3;
+  width:min(730px,90vw);
+  margin:44px auto 0;
+  text-align:center;
+  animation:thiPapaInheritanceOutro .72s cubic-bezier(.2,.8,.2,1) both;
+}
+.thi-papa-inheritance-outro>i{
+  display:block;
+  width:48px;
+  height:1px;
+  margin:0 auto 18px;
+  background:linear-gradient(90deg,transparent,#b89668,transparent);
+}
+.thi-papa-inheritance-outro>strong{
+  display:block;
+  color:#e9edf1;
+  font:400 clamp(22px,2.8vw,32px)/1.2 Georgia,"Times New Roman",serif;
+}
+.thi-papa-inheritance-outro>p{
+  width:min(660px,88vw);
+  margin:10px auto 0;
+  color:#d0a06d;
+  font:italic 400 clamp(20px,2.5vw,28px)/1.36 Georgia,"Times New Roman",serif;
+  text-wrap:balance;
+}
+.thi-papa-inheritance-cta{
+  min-width:340px;
+  min-height:58px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:30px;
+  padding:0 28px;
+  border:1px solid rgba(238,203,155,.56);
+  border-radius:999px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18),transparent 30%),
+    linear-gradient(135deg,#d2a46b,#a87a49);
+  color:#090b0e;
+  box-shadow:
+    0 20px 58px rgba(0,0,0,.34),
+    0 0 34px rgba(184,150,104,.11),
+    inset 0 1px 0 rgba(255,255,255,.28);
+  font:italic 400 16px/1 Georgia,"Times New Roman",serif;
+  cursor:pointer;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.thi-papa-inheritance-cta:hover,
+.thi-papa-inheritance-cta:focus-visible{
+  transform:translateY(-2px);
+  box-shadow:
+    0 24px 66px rgba(0,0,0,.38),
+    0 0 42px rgba(184,150,104,.14),
+    inset 0 1px 0 rgba(255,255,255,.30);
+  outline:none;
+}
+@keyframes thiPapaInheritanceOutro{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* This chapter should feel uninterrupted and intimate. */
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-scene-meta,
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-reset-journey,
+.thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-progress-premium{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@media(max-width:650px){
+  .thi-template-live.thi-theme-papa[data-scene="inheritance"] .thi-papa-inheritance{
+    padding:108px 12px 118px!important;
+  }
+  .thi-papa-inheritance-head{
+    width:94vw;
+    min-height:420px;
+    margin-bottom:24px;
+    align-items:flex-end;
+    border-radius:18px;
+  }
+  .thi-papa-inheritance-head-copy{
+    width:100%;
+    padding:26px 20px 25px;
+  }
+  .thi-papa-inheritance-hero-visual i{
+    background:
+      linear-gradient(180deg,rgba(3,6,9,.34) 0%,rgba(3,6,9,.52) 40%,rgba(3,6,9,.94) 83%,rgba(3,6,9,.99) 100%),
+      linear-gradient(90deg,rgba(3,6,9,.72),rgba(3,6,9,.22));
+  }
+  .thi-papa-inheritance-head .scene-kicker{
+    font-size:6.8px;
+    letter-spacing:.21em;
+  }
+  .thi-papa-inheritance-head h2{
+    font-size:clamp(38px,10.2vw,46px)!important;
+    line-height:.97!important;
+  }
+  .thi-papa-inheritance-head-copy>p:last-child{
+    margin-top:13px;
+    font-size:16px;
+    line-height:1.38;
+  }
+  .thi-papa-inheritance-timeline{
+    width:94vw;
+    gap:9px;
+    padding-left:33px;
+  }
+  .thi-papa-inheritance-line{
+    left:12px;
+    top:30px;
+    bottom:30px;
+  }
+  .thi-papa-inheritance-card{
+    min-height:112px;
+    grid-template-columns:36px minmax(0,1fr) 30px;
+    gap:9px;
+    padding:14px 10px 14px 12px;
+    border-radius:14px;
+  }
+  .thi-papa-inheritance-card.open{
+    min-height:205px;
+  }
+  .thi-papa-inheritance-node{
+    left:-28px;
+    width:12px;
+    height:12px;
+  }
+  .thi-papa-inheritance-number{
+    font-size:16px;
+    padding-top:3px;
+  }
+  .thi-papa-inheritance-copy{
+    max-width:72%;
+  }
+  .thi-papa-inheritance-copy strong{
+    font-size:clamp(21px,5.9vw,26px);
+    line-height:1.06;
+  }
+  .thi-papa-inheritance-copy p{
+    margin-top:7px;
+    font-size:7px;
+  }
+  .thi-papa-inheritance-card.open .thi-papa-inheritance-copy p{
+    font-size:11.8px;
+    line-height:1.54;
+  }
+  .thi-papa-inheritance-visual{
+    width:47%;
+    opacity:.34;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 48%,#000 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 48%,#000 100%);
+  }
+  .thi-papa-inheritance-card.open .thi-papa-inheritance-visual{opacity:.66}
+  .thi-papa-inheritance-toggle{
+    width:29px;
+    height:29px;
+    font-size:15px;
+  }
+  .thi-papa-inheritance-hint{
+    width:88vw;
+    margin-top:18px!important;
+    font-size:6.8px!important;
+  }
+  .thi-papa-inheritance-outro{
+    width:91vw;
+    margin-top:34px;
+  }
+  .thi-papa-inheritance-outro>strong{font-size:23px}
+  .thi-papa-inheritance-outro>p{
+    width:88vw;
+    font-size:20px;
+  }
+  .thi-papa-inheritance-cta{
+    width:min(88vw,360px);
+    min-width:0;
+    min-height:54px;
+    margin-top:24px;
+    padding-inline:20px;
+    font-size:14px;
+  }
+}
+@media(max-width:390px){
+  .thi-papa-inheritance-head{min-height:400px}
+  .thi-papa-inheritance-head h2{font-size:38px!important}
+  .thi-papa-inheritance-timeline{width:95vw;padding-left:31px}
+  .thi-papa-inheritance-card{grid-template-columns:34px minmax(0,1fr) 28px}
+  .thi-papa-inheritance-card.open{min-height:198px}
+  .thi-papa-inheritance-copy{max-width:74%}
+  .thi-papa-inheritance-copy strong{font-size:21px}
+  .thi-papa-inheritance-card.open .thi-papa-inheritance-copy p{font-size:11.4px}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-papa-inheritance-card,
+  .thi-papa-inheritance-node,
+  .thi-papa-inheritance-visual,
+  .thi-papa-inheritance-cta{transition:none}
+  .thi-papa-inheritance-outro{animation:none}
+}

@@ -39,7 +39,7 @@ export type ExperienceCopy = {
   video: { kicker:string; title:string[]; placeholder:string; cta:string };
   lessons: { kicker:string; title:string; accentTitle:string; titleTail:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   presence: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
-  inheritance: { kicker:string; title:string; items:string[]; closedLabel:string; cta:string };
+  inheritance: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   lookback: { kicker:string; closedTitle:string; openTitle:string; openLabel:string; cta:string };
   finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string };
   proposal: { kicker:string; title:string; lead:string; reactions:string[]; createdWith:string };
@@ -110,6 +110,7 @@ const BASE_COPY: ExperienceCopy = {
   inheritance:{
     kicker:"La herencia que no se firma",
     title:"Hay cosas tuyas que un día descubrí viviendo en mí.",
+    subtitle:"",
     items:[
       "LA FORMA DE MIRAR UN PROBLEMA | Antes de pedir ayuda, trato de entender cómo funciona.",
       "ALGUNAS FRASES | Juraba que nunca las iba a decir. Ahora salen solas.",
@@ -117,6 +118,8 @@ const BASE_COPY: ExperienceCopy = {
       "UNA PARTE DE TU CARÁCTER | No todo. Pero lo suficiente como para reconocerte en mí de vez en cuando."
     ],
     closedLabel:"Revelar",
+    outroTitle:"Capaz heredar de verdad sea esto.",
+    outroBody:"No quedarse con las cosas de alguien. Sino descubrirlo, años después, viviendo un poco en uno mismo.",
     cta:"Escuchar a la familia"
   },
   lookback:{
@@ -256,6 +259,21 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
       outroTitle:"Con los años entendimos algo:",
       outroBody:"Muchas veces no estabas diciendo ‘te quiero’. Lo estabas haciendo.",
       cta:"Ver todo lo que quedó de vos →"
+    },
+    inheritance:{
+      kicker:"La herencia que no se firma",
+      title:"Con los años empecé a encontrarte en lugares que no esperaba.",
+      subtitle:"Y ahí entendí que muchas cosas tuyas no se fueron. Se quedaron conmigo.",
+      items:[
+        "Hay cosas que hago y recién después me doy cuenta de que las aprendí mirándote. | Nunca me sentaste a explicármelas. Simplemente te veía hacerlas. Seguir cuando estabas cansado. Buscar una solución. Volver a intentar. En ese momento no entendía que también me estabas enseñando a vivir.",
+        "A veces digo algo y, por un segundo, siento que te escucho a vos. | Alguna frase que antes me causaba gracia. Algún consejo que no quería escuchar. Y ahora sale de mi boca casi igual. Ahí me doy cuenta de cuánto de vos fue quedando sin que ninguno de los dos lo notara.",
+        "Hay gestos tuyos que juré que nunca iba a repetir. | La forma de mirar ciertas cosas. De preocuparte sin decirlo. De hacerte cargo. De quedarte cerca aunque no supieras muy bien qué decir. Y un día me descubrí haciéndolos yo también.",
+        "Y hay días en los que no estás al lado mío, pero igual aparecés. | Cuando tengo que tomar una decisión. Cuando algo se pone difícil. Cuando me pregunto qué hacer. A veces pienso: “¿qué haría papá?”. Y aunque nunca te lo haya dicho, muchas veces eso todavía me ayuda a seguir."
+      ],
+      closedLabel:"Tocá para descubrir",
+      outroTitle:"Capaz heredar de verdad sea esto.",
+      outroBody:"No quedarse con las cosas de alguien. Sino descubrirlo, años después, viviendo un poco en uno mismo.",
+      cta:"Escuchar algo que todavía quiero decirte →"
     },
     voices:{
       kicker:"Hay cosas que se sienten distinto cuando las escuchás",
