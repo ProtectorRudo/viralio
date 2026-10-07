@@ -148,7 +148,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
 
   useEffect(()=>{
     let active=true;
-    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout?status=1",{cache:"no-store"})
+    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1",{cache:"no-store"})
       .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
       .then((data:{configured?:boolean})=>{if(active)setMpAutomaticReady(data.configured===true)})
       .catch(()=>{if(active)setMpAutomaticReady(false)});
