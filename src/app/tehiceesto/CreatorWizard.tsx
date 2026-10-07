@@ -63,9 +63,10 @@ function readCookie(name:string){
   return item?decodeURIComponent(item.slice(prefix.length)):"";
 }
 
-export default function CreatorWizard() {
-  const [step, setStep] = useState<Step>(0);
-  const [selectedSlug, setSelectedSlug] = useState("");
+export default function CreatorWizard({initialExperience=""}:{initialExperience?:string}) {
+  const validInitial=experiences.some((experience)=>experience.slug===initialExperience)?initialExperience:"";
+  const [step, setStep] = useState<Step>(validInitial?1:0);
+  const [selectedSlug, setSelectedSlug] = useState(validInitial);
   const [contact, setContact] = useState(INITIAL_CONTACT);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
