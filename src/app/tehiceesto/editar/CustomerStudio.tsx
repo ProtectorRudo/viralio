@@ -328,7 +328,10 @@ export default function CustomerStudio({code}:{code:string}){
     return()=>window.clearTimeout(timer);
   },[code,loadStudio]);
 
-  useEffect(()=>()=>stopRecorderTracks(),[]);
+  useEffect(()=>()=>{
+    recorderStreamRef.current?.getTracks().forEach(track=>{try{track.stop()}catch{}});
+    if(recordingTimerRef.current!==null)window.clearInterval(recordingTimerRef.current);
+  },[]);
 
   useEffect(()=>{
     if(!dirty||!basics||!editorToken||accessState!=="ready")return;
