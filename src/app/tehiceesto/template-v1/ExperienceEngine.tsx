@@ -1173,7 +1173,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <div className="thi-pair-finale-seal" aria-label={`Sello ${finalInitials}, ${finalYear}`}><strong>{finalInitials}</strong><small>{finalYear}</small><i aria-hidden="true"/></div>
             <div className="thi-pair-finale-reactions" aria-label="¿Qué te hizo sentir?">{reactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
-            <Link data-action="create-story" className="thi-pair-finale-create" href="/tehiceesto/crear"><span>Crear una historia así</span><b>→</b></Link>
+            <Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>
             <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
           </section>;
         }
