@@ -1456,7 +1456,7 @@ test("admin creates an influencer with a referral link and private dashboard acc
   await page.getByPlaceholder("+54 9 ...").fill("+5492215550000");
   await page.getByRole("button",{name:/Crear influencer/i}).click();
   await expect.poll(()=>Boolean(createPayload)).toBe(true);
-  const recordedCreate=createPayload as Record<string,unknown>;
+  const recordedCreate=createPayload as unknown as Record<string,unknown>;
   expect(recordedCreate.slug).toBe("sofia-test");
   expect(recordedCreate.commissionBps).toBe(2000);
   await expect(page.getByText("https://tehiceesto.com/r/sofia-test",{exact:true})).toBeVisible();
@@ -1533,7 +1533,7 @@ test("admin affiliate panel registers a payout and preserves its settlement hist
   page.once("dialog",dialog=>dialog.accept());
   await page.getByRole("button",{name:/Pago liquidado/i}).click();
   await expect.poll(()=>Boolean(payoutPayload)).toBe(true);
-  const recordedPayout=payoutPayload as Record<string,unknown>;
+  const recordedPayout=payoutPayload as unknown as Record<string,unknown>;
   expect(recordedPayout.providerReference).toBe("TRX-002");
   expect(recordedPayout.notes).toBe("Pago hasta venta 3");
   await expect(page.getByText(/Pago liquidado registrado/i)).toBeVisible();
