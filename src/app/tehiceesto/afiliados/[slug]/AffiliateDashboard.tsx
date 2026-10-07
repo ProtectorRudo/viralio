@@ -9,7 +9,8 @@ type DashboardData={
   affiliate:{slug:string;name:string;email:string;commissionBps:number;status:string};
   stats:{
     clicks?:number;unique_visitors?:number;attributed_orders?:number;approved_sales?:number;
-    revenue_minor?:number;commission_earned_minor?:number;commission_pending_minor?:number;commission_paid_minor?:number;
+    revenue_minor?:number;commission_earned_minor?:number;commission_pending_minor?:number;commission_available_minor?:number;commission_paid_minor?:number;
+    commission_reversed_after_payout_minor?:number;
     clicks_30d?:number;visitors_30d?:number;sales_30d?:number;revenue_30d_minor?:number;
   };
   links:{id:string;code:string;label:string;status:string}[];
@@ -124,7 +125,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
         <article><span>PERSONAS QUE LLEGARON</span><strong>{Number(data.stats.unique_visitors||0).toLocaleString("es-AR")}</strong><small>{Number(data.stats.clicks||0).toLocaleString("es-AR")} clics</small></article>
         <article><span>COMPRAS APROBADAS</span><strong>{Number(data.stats.approved_sales||0)}</strong><small>{pct(conversion)} conversión</small></article>
         <article><span>VENTAS GENERADAS</span><strong>{money(Number(data.stats.revenue_minor||0))}</strong><small>facturación atribuida</small></article>
-        <article className="accent"><span>TU COMISIÓN</span><strong>{money(Number(data.stats.commission_earned_minor||0))}</strong><small>{money(Number(data.stats.commission_pending_minor||0))} por liquidar · {money(Number(data.stats.commission_paid_minor||0))} ya liquidado</small></article>
+        <article className="accent"><span>TU COMISIÓN</span><strong>{money(Number(data.stats.commission_earned_minor||0))}</strong><small>{money(Number(data.stats.commission_available_minor||0))} disponible · {money(Number(data.stats.commission_paid_minor||0))} ya liquidado</small></article>
       </section>
 
       <section className="thi-aff-public-grid">
@@ -137,9 +138,9 @@ export default function AffiliateDashboard({slug}:{slug:string}){
 
         <article className="thi-aff-money-card">
           <span>COMISIONES</span>
-          <div><small>Pendiente</small><strong>{money(Number(data.stats.commission_pending_minor||0))}</strong></div>
+          <div><small>Disponible para liquidar</small><strong>{money(Number(data.stats.commission_available_minor||0))}</strong></div>
           <div><small>Ya pagado</small><strong>{money(Number(data.stats.commission_paid_minor||0))}</strong></div>
-          <p>Cada venta aparece cuando Mercado Pago confirma el pago. Si hay una devolución, también se refleja.</p>
+          <p>{Number(data.stats.commission_pending_minor||0)>Number(data.stats.commission_available_minor||0)?`Hay ${money(Number(data.stats.commission_pending_minor||0))} en ventas todavía pendientes, pero una parte está compensando devoluciones posteriores a pagos anteriores.`:"Cada venta aparece cuando Mercado Pago confirma el pago. Si hay una devolución, también se refleja."}</p>
         </article>
       </section>
 
