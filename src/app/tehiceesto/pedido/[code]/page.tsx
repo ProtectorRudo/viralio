@@ -31,15 +31,17 @@ type StatusPayload={
 };
 
 const stages=[
-  {key:"received",index:"01",title:"Pedido recibido",copy:"Elegiste la experiencia y tus datos quedaron guardados de forma privada."},
-  {key:"payment",index:"02",title:"Pago",copy:"Tu lugar queda confirmado cuando Mercado Pago acredita el pago."},
-  {key:"contact",index:"03",title:"Nos contactamos",copy:"Con el pago aprobado, te escribimos nosotros para pedirte todo lo necesario."},
-  {key:"production",index:"04",title:"Producción",copy:"Con tus recuerdos y detalles armamos la experiencia final."},
-  {key:"ready",index:"05",title:"Lista para entregar",copy:"La experiencia final ya está publicada en su link privado."},
+  {index:"01",title:"Elegiste tu experiencia",copy:"Tu pedido y tus datos quedaron guardados de forma privada."},
+  {index:"02",title:"Pago confirmado",copy:"Mercado Pago habilita tu estudio cuando acredita la compra."},
+  {index:"03",title:"La hacés tuya",copy:"Subís fotos y audios, cambiás palabras y elegís qué partes querés mostrar."},
+  {index:"04",title:"Lista para compartir",copy:"Publicás y recibís el link privado en el momento."},
 ] as const;
 
-function stageIndex(stage:StatusPayload["stage"]){
-  return Math.max(0,stages.findIndex(item=>item.key===stage));
+function journeyIndex(data:StatusPayload){
+  if(data.giftStatus==="published"||data.stage==="ready")return 3;
+  if(data.order?.status==="approved")return 2;
+  if(data.order)return 1;
+  return 0;
 }
 
 export default async function OrderStatusPage({
@@ -62,7 +64,9 @@ export default async function OrderStatusPage({
 
   const data=(await response.json()) as StatusPayload;
   const experience=getExperience(data.experienceSlug);
-  const current=stageIndex(data.stage);
+  const current=journeyIndex(data);
+  const paid=data.order?.status==="approved";
+  const ready=current===3;
   const amount=data.order?.amountMinor!=null&&data.order.amountMinor>0
     ?new Intl.NumberFormat("es-AR",{style:"currency",currency:data.order.currency||"ARS",maximumFractionDigits:0}).format(data.order.amountMinor/100)
     :null;
@@ -79,13 +83,13 @@ export default async function OrderStatusPage({
 
     <section className="order-status-hero">
       <span className="order-status-kicker">PEDIDO · {data.code.toUpperCase()}</span>
-      <h1>{data.stage==="ready"?"Ya está listo.":data.stage==="production"?"Ya lo estamos haciendo.":data.stage==="contact"?"Ahora te escribimos nosotros.":data.stage==="payment"?"Tu pedido ya quedó reservado.":"Recibimos tu pedido."}</h1>
+      <h1>{ready?"Ya está listo.":paid?"Ahora lo hacés tuyo.":"Tu pedido ya quedó reservado."}</h1>
       <p>
-        {experience?.icon||"✦"} {experience?.title||"Experiencia"} · de <strong>{data.giverName}</strong> para <strong>{data.recipientName}</strong>
+        {experience?.icon||"✦"} {experience?.title||"Experiencia"} · de <strong>{data.giverName}</strong>{data.recipientName&&data.recipientName!=="A definir"?<> para <strong>{data.recipientName}</strong></>:""}
       </p>
-      <div className={`order-status-live ${data.stage}`}>
+      <div className={`order-status-live ${ready?"ready":paid?"production":"payment"}`}>
         <i/>
-        <span>{data.stage==="ready"?"LISTA PARA ENTREGAR":data.stage==="production"?"EN PRODUCCIÓN":data.stage==="contact"?"PAGO CONFIRMADO · CONTACTO":data.stage==="payment"?"ESPERANDO CONFIRMACIÓN DE PAGO":"RECIBIDA"}</span>
+        <span>{ready?"LISTA PARA COMPARTIR":paid?"ESTUDIO HABILITADO":"ESPERANDO CONFIRMACIÓN DE PAGO"}</span>
       </div>
     </section>
 
@@ -94,60 +98,71 @@ export default async function OrderStatusPage({
         <span>{pago==="fallido"?"×":pago==="pendiente"?"…":"✓"}</span>
         <div>
           <strong>{pago==="exitoso"
-            ?data.stage==="payment"?"Pago enviado · verificando acreditación":"Pago confirmado"
+            ?paid?"Pago confirmado · ya podés personalizar":"Pago enviado · verificando acreditación"
             :pago==="pendiente"
               ?"El pago quedó pendiente"
               :"El pago no se completó"}</strong>
           <p>{pago==="exitoso"
-            ?data.stage==="payment"
-              ?"Mercado Pago ya recibió la operación. La confirmación puede tardar unos segundos; esta pantalla se actualiza sola."
-              :"La acreditación ya quedó registrada en tu pedido."
+            ?paid
+              ?"Tu estudio privado ya está habilitado. Entrá y hacelo tuyo."
+              :"Mercado Pago ya recibió la operación. La confirmación puede tardar unos segundos; esta pantalla se actualiza sola."
             :pago==="pendiente"
-              ?"No hace falta empezar de nuevo. Podés volver al botón de pago o consultarnos por WhatsApp."
-              :"Tu pedido sigue guardado. Podés intentar nuevamente cuando quieras sin perder nada."}</p>
+              ?"No hace falta empezar de nuevo. Podés volver al botón de pago cuando quieras."
+              :"Tu pedido sigue guardado. Podés intentar nuevamente sin perder nada."}</p>
         </div>
       </section>
     )}
 
     <section className="order-status-timeline">
       {stages.map((item,index)=>{
-        const done=index<current||data.stage==="ready";
-        const active=index===current&&data.stage!=="ready";
-        return <article key={item.key} className={done?"done":active?"active":""}>
+        const done=index<current||ready;
+        const active=index===current&&!ready;
+        return <article key={item.index} className={done?"done":active?"active":""}>
           <div className="order-status-index">{done?"✓":item.index}</div>
           <div>
             <strong>{item.title}</strong>
             <p>{item.copy}</p>
-            {item.key==="payment"&&active&&amount&&<small>Monto registrado: {amount}</small>}
+            {index===1&&active&&amount&&<small>Monto: {amount}</small>}
           </div>
           <span className="order-status-line"/>
         </article>;
       })}
     </section>
 
-    {data.stage==="ready"&&data.giftUrl?(
+    {ready?(
       <section className="order-status-ready">
-        <span>VERSIÓN FINAL</span>
-        <h2>Antes de mandarlo, vivilo vos.</h2>
-        <p>El link ya está activo y es privado. Revisalo una vez más y cuando quieras, compartilo con esa persona.</p>
-        <Link href={`/tehiceesto/r/${data.code}`} className="order-status-primary">Abrir experiencia <b>↗</b></Link>
+        <span>TU REGALO ESTÁ PUBLICADO</span>
+        <h2>Ya podés mandarlo.</h2>
+        <p>El link es privado. Podés vivirlo una vez más, compartirlo o entrar al estudio si querés cambiar algo.</p>
+        <div className="order-status-actions">
+          <Link href={`/tehiceesto/r/${data.code}`} className="order-status-primary">Abrir experiencia <b>↗</b></Link>
+          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-whatsapp">Editar regalo</Link>
+        </div>
         <small>No publiques capturas si querés conservar la sorpresa.</small>
+      </section>
+    ):paid?(
+      <section className="order-status-waiting">
+        <div>
+          <span>YA PODÉS EMPEZAR</span>
+          <h2>Tu estudio privado está listo.</h2>
+          <p>Te guiamos paso a paso. No tenés que diseñar nada: sólo cargar tus recuerdos y decidir qué querés decir. Todo se guarda solo.</p>
+        </div>
+        <div className="order-status-actions">
+          <Link href={`/tehiceesto/editar/${data.code}`} className="order-status-pay">
+            Personalizar mi regalo <b>→</b>
+          </Link>
+          <a href={`https://wa.me/5492215653163?text=${waText}`} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">Necesito ayuda ↗</a>
+        </div>
       </section>
     ):(
       <section className="order-status-waiting">
         <div>
           <span>ESTADO ACTUAL</span>
-          <h2>{data.stage==="production"?"Estamos trabajando en los detalles.":data.stage==="contact"?"No tenés que hacer nada ahora.":data.stage==="payment"?"Falta confirmar el pago.":"Ya tenemos el punto de partida."}</h2>
-          <p>{data.stage==="production"
-            ?"Cuando la versión final quede publicada, este mismo link va a mostrarte el botón para abrirla."
-            :data.stage==="contact"
-              ?"Con el pago confirmado, nos toca a nosotros: te vamos a escribir al WhatsApp o email que dejaste para pedirte fotos, audios y detalles."
-              :data.stage==="payment"
-                ?"Cuando Mercado Pago acredite la operación, pasamos al contacto y te escribimos nosotros."
-                :"Podés volver a este link cuando quieras para ver cómo avanza."}</p>
+          <h2>Falta confirmar el pago.</h2>
+          <p>Cuando Mercado Pago acredite la operación, este mismo lugar va a mostrarte el botón para entrar a tu estudio privado.</p>
         </div>
         <div className="order-status-actions">
-          {data.stage==="payment"&&data.order?.checkoutUrl&&(
+          {data.order?.checkoutUrl&&(
             <a href={data.order.checkoutUrl} target="_blank" rel="noreferrer noopener" className="order-status-pay">
               {amount?`Pagar ${amount}`:"Ir al pago"} <b>↗</b>
             </a>
@@ -160,7 +175,7 @@ export default async function OrderStatusPage({
     <footer className="order-status-footer">
       <div className="order-status-footer-left">
         <Link href={`/tehiceesto/pedido/${data.code}`}>Actualizar ahora ↻</Link>
-        <OrderStatusAutoRefresh active={data.stage!=="ready"}/>
+        <OrderStatusAutoRefresh active={!ready}/>
       </div>
       <span>Tu contenido no aparece en buscadores.</span>
     </footer>
