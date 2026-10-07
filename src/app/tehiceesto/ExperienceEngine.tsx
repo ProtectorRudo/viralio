@@ -268,270 +268,141 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </section>;
         }
         if(experience.slug==="papa"){
-          const items=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,3);
-          const labels=["LO COTIDIANO","LO QUE ESTUVO","LO QUE QUEDA"];
-          return <section className="thi-scene thi-scene-memories thi-papa-memories thi-scene-rich">
-            <div className="thi-papa-memories-atmosphere" aria-hidden="true"><i/><i/><b/></div>
-            <p className="thi-kicker">{token(copy.memories.kicker)}</p>
-            <h2>{titleLines(copy.memories.title)}</h2>
-            {storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}
-            <div className="thi-papa-memory-gallery" data-active={papaMemoryIndex} aria-label="Galería de recuerdos. Deslizá hacia los costados para recorrerla." onScroll={event=>{
-              const gallery=event.currentTarget;
-              const cards=Array.from(gallery.querySelectorAll<HTMLElement>(".thi-papa-memory-card"));
-              if(!cards.length)return;
-              const center=gallery.scrollLeft+gallery.clientWidth/2;
-              let closest=0;let distance=Number.POSITIVE_INFINITY;
-              cards.forEach((card,index)=>{const cardCenter=card.offsetLeft+card.offsetWidth/2;const nextDistance=Math.abs(cardCenter-center);if(nextDistance<distance){distance=nextDistance;closest=index}});
-              if(closest!==papaMemoryIndex)setPapaMemoryIndex(closest);
-            }}>
-              {items.map((item,i)=><article className={`thi-papa-memory-card ${i===papaMemoryIndex?"is-active":""}`} key={item.url||item.caption||i}>
-                <div className="thi-papa-memory-frame">
-                  <div className="thi-papa-memory-photo">
-                    {item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}
-                    <i aria-hidden="true"/>
-                    <span>{String(i+1).padStart(2,"0")}</span>
-                  </div>
-                  <div className="thi-papa-memory-copy">
-                    <small>{String(i+1).padStart(2,"0")} · {labels[i]||"RECUERDO"}</small>
-                    <p>{token(item.caption||memoryLines[i%memoryLines.length])}</p>
-                  </div>
-                </div>
-              </article>)}
-            </div>
-            <p className="thi-papa-memory-hint">Deslizá para recorrer los recuerdos <span>→</span></p>
-            <button data-action="advance" className="thi-papa-memory-continue" onClick={next}>Seguir con la historia <span>→</span></button>
-          </section>;
-        }
-        return <section className="thi-scene thi-scene-memories thi-scene-rich"><p className="thi-kicker">{token(copy.memories.kicker)}</p><h2>{titleLines(copy.memories.title)}</h2>{storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}<div className="thi-film">{(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url||item.caption||i}><div className="thi-memory-photo">{item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}<span>{String(i+1).padStart(2,"0")}</span><i className="thi-photo-sheen"/></div><p>{token(item.caption||memoryLines[i%memoryLines.length])}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.memories.cta)}</button></section>;
-      }
-      case"light":return <section className={`thi-scene thi-scene-light thi-scene-rich ${experience.slug==="pareja"?"thi-pair-light-scene":""}`}><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><LightReveal accent={experience.accent} kicker={token(copy.light.kicker)} title={token(copy.light.title)} secret={token(copy.light.secret)} hint={token(copy.light.hint)} revealedLabel={token(copy.light.revealedLabel)} ariaLabel={token(copy.light.ariaLabel)} revealed={lightRevealed} cinematic={experience.slug==="pareja"} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className={`thi-primary ${experience.slug==="pareja"?"thi-pair-light-continue":""}`} onClick={next}>{token(copy.light.cta)}</button>}</section>;
-      case"stars":return <section className={`thi-scene thi-scene-stars thi-scene-rich ${experience.slug==="pareja"?"thi-pair-stars-scene":""}`}><div className="thi-sky-dust" aria-hidden="true"/><p className="thi-kicker">{token(copy.stars.kicker)}</p><h2>{titleLines(copy.stars.title)}</h2>{experience.slug==="pareja"?<div className={`thi-pair-constellation ${stars.length===starLines.length?"is-complete":""}`}>
-        <svg className="thi-pair-constellation-lines" viewBox="0 0 760 390" aria-hidden="true">
-          <path className={stars.length>=2?"is-drawn":""} d="M105 292 L316 170"/>
-          <path className={stars.length>=3?"is-drawn":""} d="M316 170 L586 91"/>
-          <path className={stars.length>=4?"is-drawn":""} d="M586 91 L675 232"/>
-          <path className={stars.length>=5?"is-drawn":""} d="M675 232 L502 330"/>
-          <path className={stars.length>=5?"is-drawn":""} d="M502 330 L105 292"/>
-        </svg>
-        {starLines.map((line,i)=>{
-          const discovered=stars.includes(i);
-          const active=!discovered&&i===stars.length;
-          return <button
-            data-action="star"
-            aria-label={discovered?token(line):active?`Descubrir cosa ${i+1}`:`Primero descubrí la luz ${stars.length+1}`}
-            key={line}
-            disabled={!active}
-            className={`thi-pair-star-node n${i+1} ${discovered?"is-discovered":""} ${active?"is-active":""}`}
-            onClick={()=>{
-              if(!active)return;
-              setStars(v=>[...v,i]);
-              setLastStar(i);
-              haptic([7,18,9]);
-              playFx("chime");
-            }}
-          ><span aria-hidden="true"/><i aria-hidden="true"/></button>;
-        })}
-      </div>:<div className={`thi-stars ${stars.length>=3?"complete":""}`}><svg className="thi-constellation-lines" viewBox="0 0 700 350" aria-hidden="true"><path d="M105 66 L585 50 L350 175 L130 305 L570 300 L350 175 Z"/></svg>{starLines.map((line,i)=><button data-action="star" key={line} className={stars.includes(i)?"revealed":""} onClick={()=>{setStars(v=>v.includes(i)?v:[...v,i]);haptic(9);playFx("chime")}}><span>✦</span><em>{stars.includes(i)?token(line):token(copy.stars.hiddenLabel)}</em><i/></button>)}{stars.length>=3&&<div className="thi-constellation-complete"><span>✦</span><small>{token(copy.stars.completeLabel)}</small></div>}</div>}
-      {experience.slug==="pareja"?<div className={`thi-pair-stars-story ${lastStar!==null?"has-story":""} ${stars.length===starLines.length?"is-complete":""}`}>
-        <small>{lastStar===null?"01 — 05":`${String((lastStar||0)+1).padStart(2,"0")} — ${String(starLines.length).padStart(2,"0")}`}</small>
-        <blockquote>{lastStar===null?"Tocá la primera luz.":token(starLines[lastStar])}</blockquote>
-        {stars.length===starLines.length&&<div className="thi-pair-stars-finale"><i/><strong>Ya estaban todas ahí.</strong><span>{token("Cinco cosas tuyas que {giver} no quería dejar sin decir.")}</span></div>}
-      </div>:null}
-      {experience.slug==="pareja"?(stars.length===starLines.length&&<button data-action="advance" className="thi-pair-stars-cta" onClick={next}>{token(copy.stars.cta)}</button>):<button data-action="advance" className="thi-primary" disabled={stars.length<3} onClick={next}>{stars.length<3?countText(copy.stars.remainingOne,copy.stars.remainingMany,3-stars.length):token(copy.stars.cta)}</button>}</section>;
-      case"scratch":return <section className="thi-scene thi-scene-scratch thi-scene-rich"><p className="thi-kicker">{token(copy.scratch.kicker)}</p><h2>{titleLines(copy.scratch.title)}</h2><ScratchReveal accent={experience.accent} eyebrow={token(copy.scratch.eyebrow)} reward={token(copy.scratch.reward)} note={token(copy.scratch.note)} coverTitle={token(copy.scratch.coverTitle)} coverHint={token(copy.scratch.coverHint)} fallbackLabel={token(copy.scratch.fallbackLabel)} revealed={scratched} onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime")}}/><button data-action="advance" className="thi-primary" disabled={!scratched} onClick={next}>{token(copy.scratch.cta)}</button></section>;
-      case"hold":return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
-      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"?"thi-pair-letter":""} ${experience.slug==="mama"?"thi-mama-letter":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
-        <div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
-        <p className="thi-kicker">{token(copy.letter.kicker)}</p>
-        <h2>{titleLines(copy.letter.title)}</h2>
-        <div className="thi-letter-aura" aria-hidden="true"/>
-        <button
-          data-action="open-letter"
-          className={`thi-envelope ${letterOpen?"open":""}`}
-          onClick={()=>{
-            if(experience.slug==="mama"&&mamaLetterSwipeRef.current.swiped){
-              mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped:false};
-              return;
-            }
-            openLetter();
-          }}
-          onPointerDown={experience.slug==="mama"?(event)=>{
-            if(letterOpen||!event.isPrimary)return;
-            mamaLetterSwipeRef.current={pointerId:event.pointerId,x:event.clientX,y:event.clientY,swiped:false};
-            try{event.currentTarget.setPointerCapture(event.pointerId)}catch{}
-          }:undefined}
-          onPointerUp={experience.slug==="mama"?(event)=>{
-            const start=mamaLetterSwipeRef.current;
-            if(letterOpen||start.pointerId!==event.pointerId)return;
-            const dx=event.clientX-start.x;
-            const dy=event.clientY-start.y;
-            const swiped=Math.abs(dx)>=42&&Math.abs(dx)>Math.abs(dy)*1.1;
-            mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped};
-            try{if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
-            if(swiped)openLetter();
-          }:undefined}
-          onPointerCancel={experience.slug==="mama"?(event)=>{
-            if(mamaLetterSwipeRef.current.pointerId!==event.pointerId)return;
-            mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped:false};
-          }:undefined}
-          aria-label={letterOpen?"Carta abierta":experience.slug==="mama"?"Deslizá para abrir la carta":token(copy.letter.sealHint)}
-        >
-          <span className="back"/>
-          <span className="flap"/>
-          <span className="paper">
-            <small>{token(copy.letter.recipientLabel)}</small>
-            <strong>{copyOverride?.letter?.body?token(String(copyOverride.letter.body)):letterText||token(copy.letter.body)}</strong>
-            <em>{token(copy.letter.signature)}</em>
-          </span>
-          <span className="front"/>
-          <span className="wax"><i/><b>♥</b></span>
-        </button>
-        {!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":experience.slug==="mama"?"Deslizá para abrir":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}
-      </section>;
-      case"candles":return <section className="thi-scene thi-scene-candles thi-scene-rich"><p className="thi-kicker">{token(copy.candles.kicker)}</p><h2>{titleLines(copy.candles.title)}</h2>{experience.slug==="cumpleanos"?<div className={`thi-birthday-ritual ${candlesOut?"out":""}`}>
-        <div className="thi-birthday-candlelight" aria-hidden="true"/>
-        <div className="thi-birthday-table" aria-hidden="true"/>
-        <div className="thi-birthday-cake-premium" aria-label="Torta de cumpleaños con cinco velas">
-          <span className="thi-birthday-cake-edge"/><span className="thi-birthday-cake-top"/>
-          <div className="thi-birthday-candles">{[0,1,2,3,4].map(i=><span className={`c${i+1}`} key={i}><b/><i/><em/></span>)}</div>
-        </div>
-        <p>{candlesOut?"Tu deseo queda entre vos y las velas.":"Cerrá los ojos un segundo."}</p>
-      </div>:<div className={`thi-cake ${candlesOut?"out":""}`}><div className="thi-cake-shadow"/><div className="thi-cake-plate"/><div className="thi-cake-body"><span className="thi-cake-top"/><span className="thi-cake-icing"/><span className="thi-cake-sprinkles"/></div><div className="thi-candles">{[0,1,2,3,4].map(i=><span key={i}><i/><b/></span>)}</div></div>}<CandleBlow blown={candlesOut} labels={{idle:token(copy.candles.micIdle),active:token(copy.candles.micActive),fallback:token(copy.candles.tapFallback),unavailable:token(copy.candles.tapUnavailable)}} onBlow={()=>{setCandlesOut(true);haptic([10,20,10]);playFx("chime")}}/>{candlesOut&&<><p className="thi-wish-made">{token(copy.candles.wishLabel)}</p><button data-action="advance" className="thi-ghost" onClick={next}>{token(copy.candles.cta)}</button></>}</section>;
-      case"balloons":return <section className="thi-scene thi-scene-balloons thi-scene-rich"><p className="thi-kicker">{token(copy.balloons.kicker)}</p><h2>{titleLines(copy.balloons.title)}</h2><div className="thi-balloons">{balloonLines.map((line,i)=><button data-action="balloon" key={line} className={popped.includes(i)?"pop":""} onClick={()=>{setPopped(v=>v.includes(i)?v:[...v,i]);haptic(10);playFx("pop")}}><span>{popped.includes(i)?token(line):""}</span><i>{popped.includes(i)?"✦":token(copy.balloons.popLabel)}</i></button>)}</div><button data-action="advance" className="thi-primary" disabled={popped.length<3} onClick={next}>{popped.length<3?countText(copy.balloons.remainingOne,copy.balloons.remainingMany,3-popped.length):token(copy.balloons.cta)}</button></section>;
-      case"timeline":return <section className="thi-scene thi-scene-timeline thi-scene-rich"><p className="thi-kicker">{token(copy.timeline.kicker)}</p><h2>{titleLines(copy.timeline.title)}</h2><div className="thi-timeline"><div className="thi-timeline-line" aria-hidden="true"/>{timelineEntries.map((entry,index)=><article key={entry.title}><span>{String(index+1).padStart(2,"0")}</span><i/><strong>{token(entry.title)}</strong><p>{token(entry.body)}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.timeline.cta)}</button></section>;
-      case"voices":{
-        if(experience.slug==="mama"){
-          const usingRealAudio=currentAudios.length>0;
-          const count=Math.min(3,usingRealAudio?currentAudios.length:voiceEntries.length);
+          const count=Math.min(3,Math.max(currentAudios.length,voiceEntries.length));
+          const estimateDuration=(message:string)=>Math.max(12,Math.ceil(message.trim().split(/\s+/).filter(Boolean).length/2.2));
+          const formatVoiceTime=(seconds:number)=>{const safe=Math.max(0,Math.floor(Number.isFinite(seconds)?seconds:0));return `${Math.floor(safe/60)}:${String(safe%60).padStart(2,"0")}`};
           const entries=Array.from({length:count},(_,i)=>{
             const voice=voiceEntries[i]||voiceEntries[0];
             const audio=currentAudios[i];
             const photo=scenePhotos[i%Math.max(1,scenePhotos.length)];
             return {
               name:token(audio?.caption||voice?.name||`Mensaje ${i+1}`),
-              message:token(voice?.message||"Hay algo que quería decirte hace tiempo."),
+              message:token(voice?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
+              intro:token(copy.voices.cardIntros[i]||copy.voices.cardIntros[0]||"Hay algo que quería decirte."),
               audio,
-              photo
+              photo,
             };
           });
-          const active=mamaVoiceIndex===null?null:Math.min(mamaVoiceIndex,count-1);
-          const allHeard=voicesPlayed.length>=count;
-          const openVoice=(index:number)=>{
-            stopDemoVoice();
-            if(mamaVoiceAudioRef.current){try{mamaVoiceAudioRef.current.pause()}catch{}}
-            setMamaVoiceRealPlaying(false);setMamaVoiceProgress(0);setMamaVoiceIndex(index);haptic([7,18,7]);
+          const pauseAllPapaRealAudio=(except?:HTMLAudioElement)=>{
+            shellRef.current?.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(audio=>{if(audio!==except&&!audio.paused){try{audio.pause()}catch{}}});
           };
-          const backToVoices=()=>{
-            stopDemoVoice();
-            if(mamaVoiceAudioRef.current){try{mamaVoiceAudioRef.current.pause()}catch{}}
-            setMamaVoiceRealPlaying(false);setMamaVoiceProgress(0);setMamaVoiceIndex(null);haptic(6);
-          };
-          const toggleMamaVoice=async()=>{
-            if(active===null)return;
-            if(usingRealAudio){
-              const audio=mamaVoiceAudioRef.current;if(!audio)return;
-              try{if(audio.paused){await audio.play()}else audio.pause()}catch{}
-              return;
+          const togglePapaDemoSpeech=(index:number,message:string)=>{
+            if(typeof window==="undefined"||!("speechSynthesis" in window))return;
+            const synth=window.speechSynthesis;
+            const estimated=papaVoiceDuration[index]||estimateDuration(message);
+            setPapaVoiceDuration(values=>({...values,[index]:estimated}));
+            if(papaVoiceActiveRef.current===index){
+              if(papaVoicePlaying){
+                try{synth.pause()}catch{}
+                setPapaVoicePlaying(false);restoreSoundtrack();haptic(6);return;
+              }
+              if(!voicesPlayed.includes(index)&&(papaVoiceProgress[index]||0)>0){
+                try{synth.resume()}catch{}
+                setPapaVoicePlaying(true);duckSoundtrack();haptic(6);return;
+              }
             }
-            setVoicesPlayed(v=>v.includes(active)?v:[...v,active]);
-            toggleDemoVoice(entries[active].message);
-            haptic(7);
+            papaVoiceRunRef.current+=1;
+            const run=papaVoiceRunRef.current;
+            try{synth.cancel()}catch{}
+            pauseAllPapaRealAudio();
+            const utterance=new SpeechSynthesisUtterance(message);
+            utterance.lang="es-AR";utterance.rate=.92;utterance.pitch=.9;
+            const preferred=synth.getVoices().find(v=>v.lang.toLowerCase().startsWith("es-ar"))||synth.getVoices().find(v=>v.lang.toLowerCase().startsWith("es"));
+            if(preferred)utterance.voice=preferred;
+            papaVoiceActiveRef.current=index;setPapaVoiceIndex(index);setPapaVoicePlaying(true);
+            setPapaVoiceProgress(values=>({...values,[index]:0}));setPapaVoiceCurrent(values=>({...values,[index]:0}));
+            utterance.onboundary=event=>{
+              if(papaVoiceRunRef.current!==run)return;
+              const nextProgress=Math.max(0,Math.min(1,(event.charIndex||0)/Math.max(1,message.length)));
+              setPapaVoiceProgress(values=>({...values,[index]:nextProgress}));
+              setPapaVoiceCurrent(values=>({...values,[index]:estimated*nextProgress}));
+            };
+            const finish=(completed:boolean)=>{
+              if(papaVoiceRunRef.current!==run)return;
+              setPapaVoicePlaying(false);
+              if(completed){
+                setPapaVoiceProgress(values=>({...values,[index]:1}));
+                setPapaVoiceCurrent(values=>({...values,[index]:estimated}));
+                setVoicesPlayed(values=>values.includes(index)?values:[...values,index]);
+                haptic([8,18,8]);
+              }
+              restoreSoundtrack();
+            };
+            utterance.onend=()=>finish(true);utterance.onerror=()=>finish(false);
+            duckSoundtrack();haptic([7,18,7]);synth.speak(utterance);
           };
-          if(active===null&&allHeard)return <section className="thi-scene thi-mama-voices thi-mama-voices-complete">
-            <div className="thi-mama-voices-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
-            <p className="thi-kicker">Voz</p>
-            <div className="thi-mama-voice-checks" aria-label="Tres mensajes escuchados">{entries.map((_,i)=><i key={i}>✓</i>)}</div>
-            <div className="thi-mama-voice-photo-stack" aria-hidden="true">{entries.map((entry,i)=><figure key={i} className={`v${i+1}`}>{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}</figure>)}</div>
-            <h2>Tres voces.<br/>Una misma certeza.</h2>
-            <span className="thi-mama-voice-complete-rule" aria-hidden="true"/>
-            <p>Todo lo que diste sigue viviendo en nosotros.</p>
-            <button data-action="advance" className="thi-mama-voice-final-cta" onClick={next}>Seguir <span>→</span></button>
-          </section>;
-          if(active!==null){
-            const entry=entries[active];
-            const isPlaying=usingRealAudio?mamaVoiceRealPlaying:demoVoiceStatus==="playing";
-            const isPaused=usingRealAudio?!mamaVoiceRealPlaying&&mamaVoiceProgress>0:demoVoiceStatus==="paused";
-            const progress=usingRealAudio?mamaVoiceProgress:(isPlaying?38:isPaused?38:voicesPlayed.includes(active)?100:0);
-            return <section className="thi-scene thi-mama-voices thi-mama-voice-player">
-              <div className="thi-mama-voices-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
-              <p className="thi-kicker">Voz</p>
-              <div className="thi-mama-voice-top-progress"><small>{String(active+1).padStart(2,"0")} / {String(count).padStart(2,"0")}</small><div>{entries.map((_,i)=><i key={i} className={voicesPlayed.includes(i)?"heard":i===active?"active":""}/>)}</div></div>
-              <article className="thi-mama-voice-paper">
-                <figure>{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}<span aria-hidden="true"/></figure>
-                <small>Un mensaje para vos</small>
-                <h2>{entry.name}</h2>
-                <blockquote>“{entry.message}”</blockquote>
-                <div className={`thi-mama-voice-wave ${isPlaying?"is-playing":""}`} style={{"--voice-progress":`${progress}%`} as CSSProperties} aria-hidden="true">{Array.from({length:34}).map((_,bar)=><i key={bar}/>)}</div>
-                {usingRealAudio&&<audio
-                  ref={mamaVoiceAudioRef}
-                  data-action="mama-real-audio"
-                  src={entry.audio?.url}
-                  preload="metadata"
-                  onPlay={()=>{setMamaVoiceRealPlaying(true);setVoicesPlayed(v=>v.includes(active)?v:[...v,active]);duckSoundtrack();haptic(6)}}
-                  onPause={()=>{setMamaVoiceRealPlaying(false);restoreSoundtrack()}}
-                  onTimeUpdate={event=>{const el=event.currentTarget;setMamaVoiceProgress(el.duration?Math.min(100,(el.currentTime/el.duration)*100):0)}}
-                  onEnded={()=>{setMamaVoiceRealPlaying(false);setMamaVoiceProgress(100);setVoicesPlayed(v=>v.includes(active)?v:[...v,active]);restoreSoundtrack()}}
-                />}
-                <button data-action="mama-voice-toggle" data-voice-state={isPlaying?"playing":isPaused?"paused":voicesPlayed.includes(active)?"played":"idle"} className="thi-mama-voice-play" onClick={toggleMamaVoice} aria-label={isPlaying?"Pausar mensaje":isPaused?"Continuar mensaje":"Escuchar mensaje"}>{isPlaying?"Ⅱ":"▶"}</button>
-                <p className="thi-mama-voice-status">{isPlaying?"Escuchando…":isPaused?"Pausado":voicesPlayed.includes(active)?"Mensaje escuchado":"Tocá para escuchar"}</p>
-              </article>
-              <button data-action="mama-voice-back" className="thi-mama-voice-back" onClick={backToVoices}>{allHeard?"Ya escuché todas":"Escuchar otra voz"} <span>→</span></button>
-            </section>;
-          }
-          return <section className="thi-scene thi-mama-voices thi-mama-voice-picker">
-            <div className="thi-mama-voices-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
-            <p className="thi-kicker">Hay gente esperando decirte algo</p>
-            <h2>Hay cosas que<br/>se sienten distinto<br/>cuando las escuchás<br/>en su voz.</h2>
-            <p className="thi-mama-voice-prompt">Elegí a quién escuchar primero.</p>
-            <div className="thi-mama-voice-list">
-              {entries.map((entry,i)=><button type="button" data-action="mama-voice-choice" key={i} className={voicesPlayed.includes(i)?"heard":""} onClick={()=>openVoice(i)}>
-                <span className="thi-mama-voice-thumb">{entry.photo?.url&&<img src={entry.photo.url} alt="" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}</span>
-                <span className="thi-mama-voice-list-copy"><small>{String(i+1).padStart(2,"0")} · UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>“{entry.message}”</em><i className="thi-mama-voice-mini-wave" aria-hidden="true">{Array.from({length:22}).map((_,bar)=><b key={bar}/>)}</i></span>
-                <span className="thi-mama-voice-list-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
-              </button>)}
-            </div>
-          </section>;
-        }
-        if(experience.slug==="papa"){
-          const count=Math.max(currentAudios.length,voiceEntries.length);
-          const entries=Array.from({length:count},(_,i)=>({
-            name:token(currentAudios[i]?.caption||voiceEntries[i]?.name||`Mensaje ${i+1}`),
-            message:token(voiceEntries[i]?.message||"Hay algo que quería decirte y preferí que lo escucharas."),
-            audio:currentAudios[i],
-          }));
           const togglePapaVoice=async(index:number)=>{
-            const entry=entries[index];
-            setVoicesPlayed(v=>v.includes(index)?v:[...v,index]);haptic([7,18,7]);
+            const entry=entries[index];if(!entry)return;
             if(entry.audio){
-              stopDemoVoice();
+              if(typeof window!=="undefined"&&"speechSynthesis" in window){try{window.speechSynthesis.cancel()}catch{}}
+              papaVoiceRunRef.current+=1;
               const audio=shellRef.current?.querySelector<HTMLAudioElement>(`audio[data-papa-audio="${index}"]`);
               if(!audio)return;
-              shellRef.current?.querySelectorAll<HTMLAudioElement>("audio[data-papa-audio]").forEach(other=>{if(other!==audio&&!other.paused)other.pause()});
-              try{if(audio.paused)await audio.play();else audio.pause()}catch{}
+              pauseAllPapaRealAudio(audio);
+              papaVoiceActiveRef.current=index;setPapaVoiceIndex(index);
+              try{if(audio.paused){await audio.play()}else audio.pause()}catch{}
+              haptic(7);
               return;
             }
-            toggleDemoVoice(entry.message);
+            togglePapaDemoSpeech(index,entry.message);
           };
-          return <section className="thi-scene thi-scene-voices thi-papa-voices thi-scene-rich">
+          const allHeard=voicesPlayed.length>=count;
+          return <section className="thi-scene thi-scene-voices thi-papa-voices thi-papa-voices-v2 thi-scene-rich">
             <div className="thi-papa-voice-atmosphere" aria-hidden="true"><i/><i/><b/></div>
+            <div className="thi-papa-voice-hero-photo" aria-hidden="true">{scenePhotos[0]?.url&&<img src={scenePhotos[0].url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:scenePhotos[0].fit||"cover",objectPosition:scenePhotos[0].position||"center"}}/>}<i/></div>
             <p className="thi-kicker">{token(copy.voices.kicker)}</p>
             <h2>{titleLines(copy.voices.title)}</h2>
-            <p className="thi-papa-voice-intro">{currentAudios.length?"Elegí una voz. Cada mensaje conserva este mismo recorrido y diseño.":"Tocá una voz. Esta demo la reproduce para que puedas sentir cómo funciona la experiencia con audio."}</p>
-            <div className="thi-papa-voice-list">
-              {entries.slice(0,3).map((entry,i)=><button
-                type="button"
-                data-action="demo-voice"
-                key={`${entry.name}-${i}`}
-                className={voicesPlayed.includes(i)?"heard":""}
-                onClick={()=>void togglePapaVoice(i)}
-              >
-                <span className="thi-papa-voice-index">{String(i+1).padStart(2,"0")}</span>
-                <span className="thi-papa-voice-copy"><small>UN MENSAJE PARA VOS</small><strong>{entry.name}</strong><em>{voicesPlayed.includes(i)?`“${entry.message}”`:token(copy.voices.playLabel)}</em><i aria-hidden="true">{Array.from({length:20}).map((_,bar)=><b key={bar}/>)}</i></span>
-                <span className="thi-papa-voice-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
-                {entry.audio&&<audio data-papa-audio={i} src={entry.audio.url} preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);duckSoundtrack()}} onPause={restoreSoundtrack} onEnded={restoreSoundtrack}/>}
-              </button>)}
+            {copy.voices.intro&&<p className="thi-papa-voice-intro">{token(copy.voices.intro)}</p>}
+            <div className="thi-papa-voice-list-v2">
+              {entries.map((entry,i)=>{
+                const completed=voicesPlayed.includes(i);
+                const active=papaVoiceIndex===i;
+                const playing=active&&papaVoicePlaying;
+                const progress=completed?1:(papaVoiceProgress[i]||0);
+                const duration=papaVoiceDuration[i]||estimateDuration(entry.message);
+                const current=completed?duration:(papaVoiceCurrent[i]||0);
+                const paused=active&&!playing&&!completed&&progress>0;
+                return <article className={`thi-papa-voice-card-v2 ${active?"is-active ":""}${playing?"is-playing ":""}${paused?"is-paused ":""}${completed?"is-complete":""}`} key={`${entry.name}-${i}`}>
+                  <div className="thi-papa-voice-card-visual" aria-hidden="true">{entry.photo?.url&&<img src={entry.photo.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:entry.photo.fit||"cover",objectPosition:entry.photo.position||"center"}}/>}<i/></div>
+                  <span className="thi-papa-voice-index-v2">{String(i+1).padStart(2,"0")}</span>
+                  <div className="thi-papa-voice-card-copy">
+                    <small>UN MENSAJE PARA VOS</small>
+                    <strong>{entry.name}</strong>
+                    <span className="thi-papa-voice-card-intro">{entry.intro}</span>
+                    <blockquote>“{entry.message}”</blockquote>
+                    <div className="thi-papa-voice-wave-v2" aria-hidden="true">
+                      {Array.from({length:36}).map((_,bar)=><b key={bar} className={(bar+1)/36<=progress?"done":""}/>)}
+                      <i style={{left:`${Math.max(0,Math.min(100,progress*100))}%`}}/>
+                    </div>
+                    <span className="thi-papa-voice-time">{formatVoiceTime(current)} <i>/</i> {formatVoiceTime(duration)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    data-action="demo-voice"
+                    data-voice-index={i}
+                    data-voice-state={playing?"playing":paused?"paused":completed?"completed":"idle"}
+                    className="thi-papa-voice-control"
+                    onClick={()=>void togglePapaVoice(i)}
+                    aria-label={playing?`Pausar mensaje de ${entry.name}`:paused?`Continuar mensaje de ${entry.name}`:completed?`Volver a escuchar mensaje de ${entry.name}`:`Escuchar mensaje de ${entry.name}`}
+                  >
+                    {playing?"Ⅱ":completed?"✓":"▶"}
+                  </button>
+                  {entry.audio&&<audio
+                    data-papa-audio={i}
+                    src={entry.audio.url}
+                    preload="metadata"
+                    onLoadedMetadata={event=>{const el=event.currentTarget;setPapaVoiceDuration(values=>({...values,[i]:Number.isFinite(el.duration)?el.duration:0}))}}
+                    onPlay={()=>{papaVoiceActiveRef.current=i;setPapaVoiceIndex(i);setPapaVoicePlaying(true);duckSoundtrack()}}
+                    onPause={event=>{if(papaVoiceActiveRef.current===i&&!event.currentTarget.ended){setPapaVoicePlaying(false);restoreSoundtrack()}}}
+                    onTimeUpdate={event=>{const el=event.currentTarget;const duration=Number.isFinite(el.duration)&&el.duration>0?el.duration:(papaVoiceDuration[i]||0);const current=el.currentTime||0;setPapaVoiceCurrent(values=>({...values,[i]:current}));setPapaVoiceProgress(values=>({...values,[i]:duration?Math.min(1,current/duration):0}))}}
+                    onEnded={event=>{const el=event.currentTarget;const duration=Number.isFinite(el.duration)?el.duration:(papaVoiceDuration[i]||0);setPapaVoicePlaying(false);setPapaVoiceCurrent(values=>({...values,[i]:duration}));setPapaVoiceProgress(values=>({...values,[i]:1}));setVoicesPlayed(values=>values.includes(i)?values:[...values,i]);restoreSoundtrack();haptic([8,18,8])}}
+                  />}
+                </article>;
+              })}
             </div>
-            <button data-action="advance" className="thi-primary thi-papa-voice-continue" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button>
+            <p className="thi-papa-voice-patience">Podés escucharlas todas. No hay apuro.</p>
+            {allHeard&&<div className="thi-papa-voice-outro"><i aria-hidden="true"/><strong>{token(copy.voices.outroTitle)}</strong><p>{token(copy.voices.outroBody)}</p></div>}
+            <button data-action="advance" className="thi-papa-voice-final-cta" disabled={!allHeard} onClick={next}>{token(copy.voices.cta)}</button>
           </section>;
         }
         return <section className="thi-scene thi-scene-voices thi-scene-rich"><p className="thi-kicker">{token(copy.voices.kicker)}</p><h2>{titleLines(copy.voices.title)}</h2>{currentAudios.length?<div className="thi-voices">{currentAudios.map((a,i)=><article key={a.url} className={voicesPlayed.includes(i)?"thi-voice-audio played":"thi-voice-audio"}><span>♪</span><strong>{a.caption||`Mensaje ${i+1}`}</strong><audio data-action="real-audio" src={a.url} controls preload="metadata" onPlay={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}/></article>)}</div>:experience.slug==="pareja"?<div className="thi-romantic-audio">{voiceEntries.slice(0,1).map((voice,i)=><button data-action="demo-voice" key={voice.name} className={`${voicesPlayed.includes(i)?"played ":""}${demoVoiceStatus}`} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic([7,18,7]);toggleDemoVoice(token(voice.message))}} aria-label={demoVoiceStatus==="playing"?"Pausar audio":demoVoiceStatus==="paused"?"Continuar audio":token(copy.voices.playLabel)}><span className="thi-audio-avatar">{voice.name.slice(0,1)}</span><span className="thi-audio-copy"><small>{token(copy.voices.noteLabel.replace("{name}",voice.name))}</small><strong>{demoVoiceStatus==="playing"?token(copy.voices.playingLabel):demoVoiceStatus==="paused"?"Pausado · tocá para continuar":token(copy.voices.playLabel)}</strong><i className="thi-waveform" aria-hidden="true">{Array.from({length:24}).map((_,bar)=><b key={bar}/>)}</i></span><span className="thi-audio-play">{demoVoiceStatus==="playing"?"❚❚":"▶"}</span></button>)}{voicesPlayed.length>0&&<p>“{token(voiceEntries[0].message)}”</p>}</div>:<div className="thi-voices">{voiceEntries.map((voice,i)=><button data-action="demo-voice" key={voice.name} className={voicesPlayed.includes(i)?"played":""} onClick={()=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}><span>{voicesPlayed.includes(i)?"▶":"●"}</span><strong>{token(voice.name)}</strong><small>{voicesPlayed.includes(i)?`“${token(voice.message)}”`:token(copy.voices.playLabel)}</small></button>)}</div>}<button data-action="advance" className="thi-primary" disabled={!voicesPlayed.length} onClick={next}>{token(copy.voices.cta)}</button></section>;
