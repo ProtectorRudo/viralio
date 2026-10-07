@@ -269,7 +269,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         }
         if(experience.slug==="papa"){
           const items=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,3);
-          const labels=["LO COTIDIANO","LO QUE ESTUVO","LO QUE QUEDA"];
+          const labels=["SIN DARNOS CUENTA","ESTABAS AHÍ","Y SÍ, TENÍAS RAZÓN"];
           return <section className="thi-scene thi-scene-memories thi-papa-memories thi-scene-rich">
             <div className="thi-papa-memories-atmosphere" aria-hidden="true"><i/><i/><b/></div>
             <p className="thi-kicker">{token(copy.memories.kicker)}</p>
@@ -627,7 +627,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 </article>;
               })}
             </div>
-            <p className="thi-papa-voice-patience">Escuchá las que quieras. Podés seguir cuando quieras.</p>
+            <p className="thi-papa-voice-patience">Escuchá las que quieras. Y si alguna te emociona, prometemos no hacer comentarios.</p>
             {allHeard&&<div className="thi-papa-voice-outro"><i aria-hidden="true"/><strong>{token(copy.voices.outroTitle)}</strong><p>{token(copy.voices.outroBody)}</p></div>}
             <button data-action="advance" className={`thi-papa-voice-final-cta ${allHeard?"all-heard":""}`} onClick={next}>{token(copy.voices.cta)}</button>
           </section>;
@@ -1160,7 +1160,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                   <button data-action="advance" className="thi-papa-lessons-cta" onClick={next}>{token(copy.lessons.cta)}</button>
                 </div>
               ):(
-                <p className="thi-papa-lessons-hint">Tocá cada recuerdo para descubrir lo que dejó en vos.</p>
+                <p className="thi-papa-lessons-hint">Abrilas. Hay cosas que recién de grandes nos animamos a decirte.</p>
               )}
             </section>
           );
@@ -1226,7 +1226,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                   </button>;
                 })}
               </div>
-              {!allOpen&&<p className="thi-papa-presence-hint">Todavía queda algo por recordar.</p>}
+              {!allOpen&&<p className="thi-papa-presence-hint">Quedan formas tuyas de estar que recién ahora sabemos nombrar.</p>}
               {allOpen&&<div className="thi-papa-presence-outro">
                 <i aria-hidden="true"/>
                 <strong>{token(copy.presence.outroTitle)}</strong>
@@ -1302,7 +1302,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                   </button>;
                 })}
               </div>
-              {!allOpen&&<p className="thi-papa-inheritance-hint">Tocá cada recuerdo para descubrir dónde quedó en vos.</p>}
+              {!allOpen&&<p className="thi-papa-inheritance-hint">Tocá cada una. Algunas te van a resultar sospechosamente familiares.</p>}
               {allOpen&&<div className="thi-papa-inheritance-outro">
                 <i aria-hidden="true"/>
                 <strong>{token(copy.inheritance.outroTitle)}</strong>
