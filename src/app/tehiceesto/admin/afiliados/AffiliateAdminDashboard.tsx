@@ -173,7 +173,7 @@ export default function AffiliateAdminDashboard(){
     :0;
   const selectedPayoutAmount=pendingCommissions.slice(0,selectedPayoutCount).reduce((sum,item)=>sum+Number(item.commission_amount_minor||0),0);
   const remainingPayoutCount=Math.max(0,pendingCommissions.length-selectedPayoutCount);
-  const hasRefundAdjustment=Boolean(detail&&Number(detail.affiliate.commission_pending_minor||0)>Number(detail.affiliate.commission_available_minor||0));
+  const hasRefundAdjustment=Boolean(detail&&(Number(detail.affiliate.commission_pending_minor||0)>Number(detail.affiliate.commission_available_minor||0)||Number(detail.affiliate.commission_paid_minor||0)>Number(detail.affiliate.commission_earned_minor||0)));
   const conversion=useMemo(()=>totals.uniqueVisitors?totals.sales/totals.uniqueVisitors:0,[totals]);
 
   if(!ready)return <main className="thi-aff-admin-shell"><div className="thi-admin-loading">Cargando afiliados…</div></main>;
