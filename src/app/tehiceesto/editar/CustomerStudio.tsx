@@ -565,7 +565,21 @@ export default function CustomerStudio({code}:{code:string}){
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
-        {videos.length===0&&<button className="studio-extra-upload" type="button" onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>}
+        {videos.length===0?(
+          <button className="studio-extra-upload" type="button" onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
+        ):(
+          <div className="studio-video-card">
+            {videos[0].url&&<video src={videos[0].url} controls playsInline preload="metadata"/>}
+            <div>
+              <strong>Tu video especial</strong>
+              <small>También podés cambiarlo o quitarlo cuando quieras.</small>
+              <span>
+                <button type="button" onClick={()=>chooseReplacement(videos[0])}>Cambiar video</button>
+                <button type="button" className="danger" onClick={()=>deleteMedia(videos[0])}>Quitar</button>
+              </span>
+            </div>
+          </div>
+        )}
         <input ref={videoInputRef} hidden type="file" accept="video/mp4,video/webm,video/quicktime" onChange={event=>uploadFiles(event.target.files,"video")}/>
       </div>}
 
