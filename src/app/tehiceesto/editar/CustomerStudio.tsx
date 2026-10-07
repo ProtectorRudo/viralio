@@ -12,6 +12,7 @@ import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
 import { effectiveRecipeForMedia } from "../effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
+import { requestGiftAccountLink } from "../giftAccountApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
 
 type MediaKind="image"|"audio"|"video";
@@ -289,6 +290,7 @@ export default function CustomerStudio({code}:{code:string}){
   const [message,setMessage]=useState("");
   const [recovery,setRecovery]=useState({email:""});
   const [recovering,setRecovering]=useState(false);
+  const [recoverySent,setRecoverySent]=useState(false);
   const [published,setPublished]=useState(false);
   const [showSuccess,setShowSuccess]=useState(false);
   const fileInputRef=useRef<HTMLInputElement|null>(null);
@@ -395,17 +397,16 @@ export default function CustomerStudio({code}:{code:string}){
   }
 
   async function recoverAccess(event:React.FormEvent){
-    event.preventDefault();setRecovering(true);setMessage("");
+    event.preventDefault();setRecovering(true);setMessage("");setRecoverySent(false);
     try{
-      const result=await creatorCall<{editorToken:string}>("recoverStudioAccess",{code,email:recovery.email});
-      window.localStorage.setItem(accessKey(code),result.editorToken);
-      setEditorToken(result.editorToken);
-      await loadStudio(result.editorToken);
+      await requestGiftAccountLink(recovery.email,code);
+      setRecoverySent(true);
+      setMessage("Revisá tu email. Te mandamos un acceso privado para volver a este regalo.");
     }catch(error){
       const reason=error instanceof Error?error.message:"";
-      setMessage(reason==="payment_required"
-        ?"El pago todavía no figura aprobado. Volvé al seguimiento del pedido."
-        :"Ese email no coincide con el usado en esta compra.");
+      setMessage(reason==="email_rate_limited"
+        ?"Pediste varios accesos seguidos. Esperá unos minutos y volvé a intentar."
+        :"No pudimos enviar el acceso ahora. Probá nuevamente en unos minutos.");
     }finally{setRecovering(false)}
   }
 
@@ -766,12 +767,13 @@ export default function CustomerStudio({code}:{code:string}){
       <span className="studio-gate-mark">✦</span>
       <p className="studio-eyebrow">RECUPERAR MI EDICIÓN</p>
       <h1>Volvamos a abrir tu regalo.</h1>
-      <p>Escribí solamente el email que usaste al comprar. No necesitás teléfono ni contraseña.</p>
+      <p>Escribí solamente el email que usaste al comprar. Te mandamos un enlace privado para volver a entrar; no necesitás teléfono ni contraseña.</p>
       <form className="studio-recovery" onSubmit={recoverAccess}>
-        <label><span>Email de la compra</span><input type="email" autoComplete="email" required value={recovery.email} onChange={event=>setRecovery({email:event.target.value})} placeholder="tu@email.com"/></label>
-        <button className="studio-main-button" disabled={recovering}>{recovering?"Buscando…":"Entrar a mi regalo"} <b>→</b></button>
+        <label><span>Email de la compra</span><input type="email" autoComplete="email" required value={recovery.email} onChange={event=>{setRecovery({email:event.target.value});setRecoverySent(false)}} placeholder="tu@email.com"/></label>
+        <button className="studio-main-button" disabled={recovering}>{recovering?"Enviando…":recoverySent?"Reenviar acceso":"Mandarme el acceso"} <b>→</b></button>
       </form>
       {message&&<p className="studio-alert">{message}</p>}
+      <small className="account-privacy-note">Por seguridad no damos acceso sólo con conocer el email: el enlace llega a la casilla usada en la compra.</small>
       <Link className="studio-text-link" href="/tehiceesto/mis-regalos">Ver mis regalos guardados</Link>
       <Link className="studio-text-link" href={`/tehiceesto/pedido/${code}`}>Ver seguimiento del pedido</Link>
     </section>
