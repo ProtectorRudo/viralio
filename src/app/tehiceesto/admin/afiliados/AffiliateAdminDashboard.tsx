@@ -133,9 +133,9 @@ export default function AffiliateAdminDashboard(){
     }finally{setPayoutBusy(false);}
   }
 
-  const pendingCommissions=useMemo(()=>[...(detail?.commissions||[])]
+  const pendingCommissions=[...(detail?.commissions||[])]
     .filter(item=>item.status==="pending")
-    .sort((a,b)=>new Date(a.approved_at||a.created_at).getTime()-new Date(b.approved_at||b.created_at).getTime()),[detail]);
+    .sort((a,b)=>new Date(a.approved_at||a.created_at).getTime()-new Date(b.approved_at||b.created_at).getTime());
   const requestedPayoutCount=Number(payoutCount);
   const selectedPayoutCount=pendingCommissions.length
     ?Math.min(pendingCommissions.length,Math.max(1,Number.isFinite(requestedPayoutCount)&&requestedPayoutCount>0?Math.floor(requestedPayoutCount):pendingCommissions.length))
