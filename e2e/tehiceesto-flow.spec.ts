@@ -1049,6 +1049,85 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
+
+test("customer studio makes media replace and remove obvious",async({page})=>{
+  test.setTimeout(45_000);
+  const code="abcdef1234567890ab";
+  const editorToken="c".repeat(64);
+  let replaced=false;
+  let media=[
+    {id:"photo-1",kind:"image",storage_path:"x/photo.jpg",caption:"Nuestro día",sort_order:0,metadata:{fit:"cover",position:"center",scene:"memories"},url:"data:image/gif;base64,R0lGODlhAQABAAAAACw="},
+    {id:"audio-1",kind:"audio",storage_path:"x/voice.ogg",caption:"Mensaje",sort_order:1,metadata:{scene:"voices",role:"voice"},url:null},
+    {id:"video-1",kind:"video",storage_path:"x/video.mp4",caption:null,sort_order:2,metadata:{scene:"memories"},url:null},
+  ];
+
+  await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{
+    key:`thi_editor_access:${code}`,token:editorToken,
+  });
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="openStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:"paid",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:"Ailín",occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:null,closing_text:null,music_url:null,
+          scene_recipe:["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"],
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},
+        media,
+      })});
+    }
+    if(body.action==="prepareStudioUpload"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        path:`${code}/studio-new-photo.png`,token:"signed-test-token",kind:"image",
+      })});
+    }
+    if(body.action==="replaceStudioMedia"){
+      replaced=true;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+    }
+    if(body.action==="deleteStudioMedia"){
+      media=media.filter(item=>item.id!==String(body.mediaId));
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+  });
+
+  await page.route("**/storage/v1/object/upload/sign/gift-media/**",route=>
+    route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({Key:"ok"})})
+  );
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  const photo=page.locator(".studio-photo-grid article").first();
+  await expect(photo).toBeVisible();
+  await expect(photo.getByRole("button",{name:"Cambiar"})).toBeVisible();
+  await expect(photo.getByRole("button",{name:"Quitar"})).toBeVisible();
+  await expect(page.locator(".studio-video-card")).toBeVisible();
+
+  const chooserPromise=page.waitForEvent("filechooser");
+  await photo.getByRole("button",{name:"Cambiar"}).click();
+  const chooser=await chooserPromise;
+  await chooser.setFiles({name:"nueva.png",mimeType:"image/png",buffer:Buffer.from("89504e470d0a1a0a","hex")});
+  await expect.poll(()=>replaced).toBe(true);
+  await expect(page.getByText(/lo cambiamos sin mover nada/i)).toBeVisible();
+
+  await photo.getByRole("button",{name:"Quitar"}).click();
+  await page.getByRole("button",{name:"Aceptar"}).click().catch(()=>{});
+  await expect(page.locator(".studio-photo-grid article")).toHaveCount(0);
+
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.locator(".studio-audio-list article")).toHaveCount(1);
+  const audio=page.locator(".studio-audio-list article").first();
+  await expect(audio.getByRole("button",{name:"Cambiar"})).toBeVisible();
+  await expect(audio.getByRole("button",{name:"Quitar"})).toBeVisible();
+});
+
 test("affiliate dashboards stay private and mobile-safe",async({page})=>{
   await page.setViewportSize({width:390,height:844});
 
