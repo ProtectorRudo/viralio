@@ -1538,7 +1538,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     <div className="thi-pointer-light" aria-hidden="true"/><div className="thi-experience-noise" aria-hidden="true"/><div className="thi-experience-vignette" aria-hidden="true"/><div className="thi-experience-orb orb-a" aria-hidden="true"/><div className="thi-experience-orb orb-b" aria-hidden="true"/><div className="thi-theme-signature" aria-hidden="true"><i/><i/><i/></div>
     <div className="thi-scene-meta"><span>{token(copy.ui.sceneLabels[current])}</span><i/><small>{String(sceneIndex+1).padStart(2,"0")} / {String(total).padStart(2,"0")}</small></div>
     <button data-action="restart" className="thi-reset-journey" type="button" onClick={restart} aria-label={token(copy.ui.resetAria)}><span>↻</span><small>{token(copy.ui.resetLabel)}</small></button>
-    {sceneIndex>0&&<button data-action="previous" className="thi-global-back-nav" type="button" onClick={prev} disabled={transitioning} aria-label="Volver a la pantalla anterior"><span>←</span><small>Atrás</small></button>}
+    {sceneIndex>0&&<button data-action="back" className="thi-global-back-nav" type="button" onClick={prev} disabled={transitioning} aria-label="Volver a la pantalla anterior"><span>←</span><small>Atrás</small></button>}
     <div className={`thi-scene-stage ${transitioning?"leaving":""} ${direction} ${hasAttachedMedia?"has-attached-media":""}`} key={`${runId}-${sceneIndex}-${current}`}>
       {scene(current)}
       <AttachedSceneMedia scene={current} photos={currentPhotos} audios={currentAudios} videos={currentVideos}/>
