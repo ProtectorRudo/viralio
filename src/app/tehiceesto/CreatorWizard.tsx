@@ -194,9 +194,9 @@ export default function CreatorWizard() {
                 el diseño, los efectos ni las animaciones.
               </p>
               <div className="order-step-trust" aria-label="Cómo trabajamos">
-                <span><b>01</b> Elegís el mundo</span>
+                <span><b>01</b> Elegís el regalo</span>
                 <span><b>02</b> Pagás de forma segura</span>
-                <span><b>03</b> La hacés tuya, paso a paso</span>
+                <span><b>03</b> Lo personalizás con una guía</span>
               </div>
             </header>
 
@@ -277,10 +277,10 @@ export default function CreatorWizard() {
             <header className="order-step-head compact">
               <button className="order-back" type="button" onClick={() => setStep(0)}>← Cambiar experiencia</button>
               <span className="eyebrow">02 · Tus datos</span>
-              <h1>Dos datos y ya está.</h1>
+              <h1>Tres datos y listo.</h1>
               <p>
-                Los usamos para guardar tu compra y para que puedas recuperar la edición
-                desde otro dispositivo si alguna vez la necesitás.
+                Nada de crear una cuenta ni inventar contraseñas. Los usamos para guardar
+                tu compra y recuperar tu regalo si cambiás de celular.
               </p>
             </header>
 
@@ -301,6 +301,7 @@ export default function CreatorWizard() {
                   value={contact.name}
                   onChange={(event) => setContact((current) => ({ ...current, name: event.target.value }))}
                   placeholder="Ej. Mauro"
+                  minLength={2}
                   required
                 />
               </label>
@@ -311,11 +312,15 @@ export default function CreatorWizard() {
                   autoComplete="tel"
                   inputMode="tel"
                   value={contact.whatsapp}
-                  onChange={(event) => setContact((current) => ({ ...current, whatsapp: event.target.value }))}
-                  placeholder="Ej. +54 9 221 ..."
+                  onChange={(event) => setContact((current) => ({ ...current, whatsapp: normalizeWhatsApp(event.target.value) }))}
+                  placeholder="Ej. 2215653163"
+                  minLength={8}
+                  maxLength={16}
+                  pattern="\+?[0-9]{8,15}"
+                  title="Escribí tu número con al menos 8 dígitos."
                   required
                 />
-                <small>También sirve para recuperar tu acceso si cambiás de celular.</small>
+                <small>Escribilo con números. También sirve para recuperar tu acceso.</small>
               </label>
 
               <label>
@@ -336,14 +341,15 @@ export default function CreatorWizard() {
                   type="checkbox"
                   checked={contact.consent}
                   onChange={(event) => setContact((current) => ({ ...current, consent: event.target.checked }))}
+                  required
                 />
                 <span>
-                  Acepto que Te Hice Esto use estos datos para gestionar mi pedido y
-                  contactarme para producir la experiencia.
+                  Acepto que Te Hice Esto use estos datos para gestionar mi compra,
+                  habilitar mi edición y ayudarme a recuperar el acceso si lo necesito.
                 </span>
               </label>
 
-              <button className="order-primary" type="submit" disabled={!contactValid}>
+              <button className="order-primary" type="submit">
                 Revisar y pagar <span>→</span>
               </button>
             </form>
