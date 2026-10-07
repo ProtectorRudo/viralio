@@ -535,7 +535,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             const preferred=synth.getVoices().find(v=>v.lang.toLowerCase().startsWith("es-ar"))||synth.getVoices().find(v=>v.lang.toLowerCase().startsWith("es"));
             if(preferred)utterance.voice=preferred;
             papaVoiceActiveRef.current=index;setPapaVoiceIndex(index);setPapaVoicePlaying(true);
-            setPapaVoiceProgress(values=>({...values,[index]:0}));setPapaVoiceCurrent(values=>({...values,[index]:0}));
+            setPapaVoiceProgress(values=>({...values,[index]:.001}));setPapaVoiceCurrent(values=>({...values,[index]:0}));
             utterance.onboundary=event=>{
               if(papaVoiceRunRef.current!==run)return;
               const nextProgress=Math.max(0,Math.min(1,(event.charIndex||0)/Math.max(1,message.length)));
@@ -619,7 +619,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                     src={entry.audio.url}
                     preload="metadata"
                     onLoadedMetadata={event=>{const el=event.currentTarget;setPapaVoiceDuration(values=>({...values,[i]:Number.isFinite(el.duration)?el.duration:0}))}}
-                    onPlay={()=>{papaVoiceActiveRef.current=i;setPapaVoiceIndex(i);setPapaVoicePlaying(true);duckSoundtrack()}}
+                    onPlay={()=>{papaVoiceActiveRef.current=i;setPapaVoiceIndex(i);setPapaVoicePlaying(true);setPapaVoiceProgress(values=>({...values,[i]:Math.max(values[i]||0,.001)}));duckSoundtrack()}}
                     onPause={event=>{if(papaVoiceActiveRef.current===i&&!event.currentTarget.ended){setPapaVoicePlaying(false);restoreSoundtrack()}}}
                     onTimeUpdate={event=>{const el=event.currentTarget;const duration=Number.isFinite(el.duration)&&el.duration>0?el.duration:(papaVoiceDuration[i]||0);const current=el.currentTime||0;setPapaVoiceCurrent(values=>({...values,[i]:current}));setPapaVoiceProgress(values=>({...values,[i]:duration?Math.min(1,current/duration):0}))}}
                     onEnded={event=>{const el=event.currentTarget;const duration=Number.isFinite(el.duration)?el.duration:(papaVoiceDuration[i]||0);setPapaVoicePlaying(false);setPapaVoiceCurrent(values=>({...values,[i]:duration}));setPapaVoiceProgress(values=>({...values,[i]:1}));setVoicesPlayed(values=>values.includes(i)?values:[...values,i]);restoreSoundtrack();haptic([8,18,8])}}
