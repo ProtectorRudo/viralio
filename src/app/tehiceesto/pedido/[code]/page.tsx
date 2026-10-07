@@ -136,7 +136,7 @@ export default async function OrderStatusPage({
         <div>
           <span>SIGUIENTE PASO</span>
           <h2>Ahora hacelo tuyo.</h2>
-          <p>Te vamos guiando pantalla por pantalla. No necesitás saber editar ni diseñar nada. Todo se guarda automáticamente.</p>
+          <p>Te vamos guiando pantalla por pantalla. No necesitás saber editar ni diseñar nada. Todo se guarda automáticamente y también te mandamos un acceso privado por email.</p>
         </div>
         <div className="order-status-actions">
           <Link href={href(`/editar/${data.code}`)} className="order-status-pay">
