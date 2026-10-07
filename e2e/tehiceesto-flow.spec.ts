@@ -1269,7 +1269,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await expect(copySheet).toBeVisible();
   await copySheet.locator("textarea").fill("Una frase personalizada");
   await copySheet.getByRole("button",{name:/Guardar y seguir/i}).click();
-  await expect(page.getByRole("button",{name:/Editar textos de esta parte/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Editar textos/i})).toBeVisible();
   await expect(page.locator(".studio-copy-hint")).toHaveCount(0);
 
   const previewNav=page.getByRole("navigation",{name:/Navegar por las partes del regalo/i});
