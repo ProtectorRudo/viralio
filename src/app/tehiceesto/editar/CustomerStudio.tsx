@@ -447,6 +447,68 @@ export default function CustomerStudio({code}:{code:string}){
     }
   }
 
+  function stopRecorderTracks(){
+    recorderStreamRef.current?.getTracks().forEach(track=>{try{track.stop()}catch{}});
+    recorderStreamRef.current=null;
+    if(recordingTimerRef.current!==null){
+      window.clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current=null;
+    }
+  }
+
+  async function startVoiceRecording(){
+    if(recording||uploading.length)return;
+    if(typeof navigator==="undefined"||!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==="undefined"){
+      setMessage("Este navegador no permite grabar audio acá. Podés subir una nota de voz de WhatsApp.");
+      return;
+    }
+    setMessage("");
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      const candidates=["audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+      const mimeType=candidates.find(type=>MediaRecorder.isTypeSupported(type))||"";
+      const recorder=new MediaRecorder(stream,mimeType?{mimeType}:undefined);
+      recorderStreamRef.current=stream;
+      recorderRef.current=recorder;
+      recorderChunksRef.current=[];
+      recorder.ondataavailable=event=>{if(event.data.size)recorderChunksRef.current.push(event.data)};
+      recorder.onerror=()=>{setMessage("No pudimos grabar el audio. Probá otra vez o subí una nota de voz.");stopRecorderTracks();setRecording(false)};
+      recorder.onstop=()=>{
+        const chunks=[...recorderChunksRef.current];
+        recorderChunksRef.current=[];
+        const finalType=recorder.mimeType||chunks[0]?.type||"audio/webm";
+        const blob=new Blob(chunks,{type:finalType});
+        stopRecorderTracks();
+        setRecording(false);
+        if(blob.size<800){
+          setMessage("La grabación quedó vacía. Probá de nuevo.");
+          return;
+        }
+        const extension=finalType.includes("ogg")?"ogg":"webm";
+        const file=new File([blob],`nota-de-voz-${Date.now()}.${extension}`,{type:finalType,lastModified:Date.now()});
+        void uploadFiles([file],"audio");
+      };
+      recorder.start(250);
+      setRecordingSeconds(0);
+      setRecording(true);
+      recordingTimerRef.current=window.setInterval(()=>setRecordingSeconds(value=>value+1),1000);
+    }catch{
+      stopRecorderTracks();
+      setRecording(false);
+      setMessage("Necesitamos permiso para usar el micrófono. Permitilo o subí una nota de voz que ya tengas.");
+    }
+  }
+
+  function stopVoiceRecording(){
+    const recorder=recorderRef.current;
+    if(!recorder||recorder.state==="inactive")return;
+    try{recorder.stop()}catch{
+      stopRecorderTracks();
+      setRecording(false);
+      setMessage("No pudimos cerrar la grabación. Probá de nuevo.");
+    }
+  }
+
   async function replaceMediaFile(files:FileList|null){
     const file=files?.[0];
     const target=replaceTarget;
