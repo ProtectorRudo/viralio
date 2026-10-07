@@ -79,7 +79,7 @@ type Basics={
   musicUrl:string;
 };
 
-const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Opcional","Revisar"];
+const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Opcional","Vista previa"];
 const FEELINGS=["Amor","Emoción","Sorpresa","Diversión","Nostalgia"];
 const SCRATCH_SUGGESTIONS=[
   "una cita sorpresa sin celulares",
@@ -290,6 +290,7 @@ export default function CustomerStudio({code}:{code:string}){
   const [recovery,setRecovery]=useState({email:""});
   const [recovering,setRecovering]=useState(false);
   const [published,setPublished]=useState(false);
+  const [showSuccess,setShowSuccess]=useState(false);
   const fileInputRef=useRef<HTMLInputElement|null>(null);
   const lightInputRef=useRef<HTMLInputElement|null>(null);
   const audioInputRef=useRef<HTMLInputElement|null>(null);
@@ -313,6 +314,7 @@ export default function CustomerStudio({code}:{code:string}){
       setPayload(data);
       setBasics(current=>current??giftToBasics(data.gift));
       setPublished(data.gift.status==="published");
+      setShowSuccess(false);
       setAccessState("ready");
     }catch(error){
       const reason=error instanceof Error?error.message:"studio_failed";
@@ -658,7 +660,7 @@ export default function CustomerStudio({code}:{code:string}){
         setDirty(false);
       }
       await creatorCall("publishStudio",{code,editorToken});
-      setPublished(true);setSaveState("saved");
+      setPublished(true);setShowSuccess(true);setSaveState("saved");
       setPayload(value=>value?{...value,gift:{...value.gift,status:"published"}}:value);
       window.scrollTo({top:0,behavior:"smooth"});
     }catch{
@@ -779,7 +781,7 @@ export default function CustomerStudio({code}:{code:string}){
     <section className="studio-gate-card"><span className="studio-gate-mark">!</span><h1>No pudimos abrir el estudio.</h1><p>Tu pedido sigue guardado. Probá actualizar o entrá desde el seguimiento.</p><Link className="studio-main-button" href={`/tehiceesto/pedido/${code}`}>Ir al pedido <b>→</b></Link></section>
   </main>;
 
-  if(published&&step===5)return <main className="studio-success">
+  if(showSuccess&&step===5)return <main className="studio-success">
     <section>
       <div className="studio-success-orbit" aria-hidden="true"/>
       <span className="studio-success-mark">♥</span>
@@ -794,7 +796,7 @@ export default function CustomerStudio({code}:{code:string}){
       <div className="studio-success-links">
         <Link className="studio-text-link" href="/tehiceesto/mis-regalos">♥ Mis regalos</Link>
         <button className="studio-text-link" onClick={copyGiftLink}>Copiar link</button>
-        <button className="studio-text-link" onClick={()=>setPublished(false)}>Quiero cambiar algo</button>
+        <button className="studio-text-link" onClick={()=>setShowSuccess(false)}>Quiero cambiar algo</button>
       </div>
     </section>
   </main>;
@@ -1000,7 +1002,7 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===5&&<div className="studio-preview-wrap">
         <div className="studio-preview-head">
-          <div><p className="studio-eyebrow">ÚLTIMO PASO</p><h1>Vivilo antes de mandarlo.</h1><p>Esta es la experiencia real. Recorré cada parte como la va a ver {basics.recipientName||"esa persona"}.</p></div>
+          <div><p className="studio-eyebrow">VISTA PREVIA · ÚLTIMO PASO</p><h1>Vivilo antes de mandarlo.</h1><p>Esta es la experiencia real. Recorré cada parte como la va a ver {basics.recipientName||"esa persona"} y cambiá lo que quieras antes de publicar.</p></div>
           <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>goToStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
         </div>
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
@@ -1033,7 +1035,7 @@ export default function CustomerStudio({code}:{code:string}){
 
     {step<5&&<footer className="studio-bottom-nav">
       <button type="button" className="studio-back-button" onClick={()=>goToStep(step-1)} disabled={step===0}>← Atrás</button>
-      <div><small>{uploading.length?"Subiendo archivos…":saveState==="saving"?"Guardando cambios…":"Se guarda automáticamente"}</small><button type="button" className="studio-main-button compact" onClick={()=>goToStep(step+1)}>{step===4?"Ver mi regalo":"Continuar"} <b>→</b></button></div>
+      <div><small>{uploading.length?"Subiendo archivos…":saveState==="saving"?"Guardando cambios…":"Se guarda automáticamente"}</small><button type="button" className="studio-main-button compact" onClick={()=>goToStep(step+1)}>{step===4?"Ver vista previa":"Continuar"} <b>→</b></button></div>
     </footer>}
   </main>;
 }
