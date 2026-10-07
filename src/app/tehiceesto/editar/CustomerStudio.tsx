@@ -370,31 +370,58 @@ export default function CustomerStudio({code}:{code:string}){
       setMessage(kind==="image"?"Ya tenés 20 fotos. Si querés otra, primero quitá o cambiá una.":kind==="audio"?"Ya tenés 6 audios. Si querés otro, primero quitá o cambiá uno.":"Ya tenés un video. Podés cambiarlo por otro.");
       return;
     }
+
     const selected=all.slice(0,remaining);
     if(!selected.length)return;
     const limitNotice=all.length>remaining
-      ?`Te quedan ${remaining} lugares disponibles. Vamos a subir ${remaining} de los archivos que elegiste.`
+      ?`Te quedan ${remaining} lugares disponibles. Elegimos los primeros ${remaining} archivos.`
       :"";
-    setUploading(selected.map(file=>file.name));setMessage("");
+
+    setUploading(selected.map(file=>file.name));
+    setMessage("");
+
+    let uploaded=0;
+    const failed:string[]=[];
+    const tooLarge:string[]=[];
+
     try{
       for(const file of selected){
-        const uploadFile=await optimizeStudioUpload(file,kind);
-        const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
-          code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
-        });
-        await uploadCreatorFile(prepared.path,prepared.token,uploadFile);
-        await creatorCall("registerStudioMedia",{
-          code,editorToken,storagePath:prepared.path,kind:prepared.kind,
-          originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
-        });
+        try{
+          const uploadFile=await optimizeStudioUpload(file,kind);
+          if(uploadFile.size>50*1024*1024){
+            tooLarge.push(file.name);
+            continue;
+          }
+          const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
+            code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
+          });
+          await uploadCreatorFile(prepared.path,prepared.token,uploadFile);
+          await creatorCall("registerStudioMedia",{
+            code,editorToken,storagePath:prepared.path,kind:prepared.kind,
+            originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
+          });
+          uploaded+=1;
+        }catch{
+          failed.push(file.name);
+        }
       }
+
       await loadStudio(editorToken);
-      setMessage(limitNotice||(selected.length===1?"Listo, ya está adentro ✓":`Listo, subimos ${selected.length} archivos ✓`));
-    }catch(error){
-      const reason=error instanceof Error?error.message:"";
-      setMessage(reason==="media_limit"
-        ?"Llegaste al máximo de archivos de esta experiencia."
-        :"Uno de los archivos no pudo subirse. Probá con otro.");
+
+      if(tooLarge.length||failed.length){
+        const problemCount=tooLarge.length+failed.length;
+        if(uploaded){
+          setMessage(`Subimos ${uploaded}. ${problemCount===1?"Hay 1 archivo que necesita otro intento.":`Hay ${problemCount} archivos que necesitan otro intento.`}`);
+        }else if(tooLarge.length){
+          setMessage(kind==="video"
+            ?"Ese video es demasiado pesado. Elegí uno más corto y probá de nuevo."
+            :"Ese archivo es demasiado pesado. Elegí uno más liviano y probá de nuevo.");
+        }else{
+          setMessage("No pudimos subir ese archivo. Podés elegirlo de nuevo y reintentar.");
+        }
+      }else{
+        setMessage(limitNotice||(uploaded===1?"Listo, ya está adentro ✓":`Listo, subimos ${uploaded} archivos ✓`));
+      }
     }finally{
       setUploading([]);
       if(kind==="image"&&fileInputRef.current)fileInputRef.current.value="";
