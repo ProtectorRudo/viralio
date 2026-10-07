@@ -43,8 +43,6 @@ export default function StudioVisualTextEditor({
   const [overrides,setOverrides]=useState(initialOverrides);
   const [message,setMessage]=useState("");
 
-  useEffect(()=>setOverrides(initialOverrides),[initialOverrides]);
-
   const count=useMemo(
     ()=>Object.values(overrides).reduce((sum,scene)=>sum+Object.keys(scene).length,0),
     [overrides],
@@ -148,3 +146,4 @@ export default function StudioVisualTextEditor({
 
     {message&&<span className="studio-copy-message">{message}</span>}
   </div>;
+}
