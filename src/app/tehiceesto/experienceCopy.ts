@@ -221,83 +221,90 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
   },
   papa:{
     intro:{
-      kicker:"Tus hijos hicieron esto para vos",
+      kicker:"Pa, te hicimos algo",
       cta:"Entrar",
-      footnote:"Ponete auriculares si podés · son unos minutos sólo para vos"
+      footnote:"Ponete auriculares si podés · y bancanos unos minutos, que hoy nos pusimos un poco sentimentales"
     },
     memories:{
-      kicker:"Cosas que quedaron",
-      title:["Hay recuerdos que parecían pequeños.","Hasta que pasó el tiempo."],
-      cta:"Seguir →"
+      kicker:"Tres cosas que antes dábamos por hechas",
+      title:["En ese momento eran cosas normales.","Ahora no tanto."],
+      cta:"Seguir. Hay más →"
     },
     lessons:{
-      kicker:"Hay cosas que un padre deja sin darse cuenta",
-      title:"No fueron solo consejos.",
-      accentTitle:"Fueron formas de quererme",
-      titleTail:"que recién con el tiempo entendí.",
+      kicker:"Cosas que aprendimos sin sentarnos a aprenderlas",
+      title:"Resulta que sí te estábamos mirando.",
+      accentTitle:"Aunque hiciéramos cara de que no.",
+      titleTail:"",
       items:[
-        "Tu manera de estar | A veces no hacían falta grandes palabras. Estabas ahí, y eso me hacía sentir cuidado, seguro y querido.",
-        "Todo lo que hiciste por mí | Ir, volver, esperar, ocuparte, resolver en silencio. Con el tiempo entendí cuánto amor había en todo eso.",
-        "Eso tuyo que se quedó en mí | Hay gestos, frases y maneras de mirar la vida en las que, sin querer, todavía te encuentro.",
-        "Lo que todavía me acompaña | Incluso hoy, en los días difíciles, aparece algo tuyo empujándome a seguir."
+        "Cuando algo no salía | Mirabas, probabas, refunfuñabas un poco y volvías a intentar. No era una charla motivacional. Era verte no rendirte. Y algo de eso se nos quedó.",
+        "Cuando había que estar | Ir a buscar. Esperar. Llegar aunque estuvieras cansado. Preguntar si habíamos llegado bien. En ese momento parecía normal. Hoy sabemos que no lo era.",
+        "Cuando no sabías qué decir | No siempre había palabras. A veces había una mano, una pregunta medio torpe o simplemente quedarte cerca. Y, aunque no lo supiéramos decir, alcanzaba.",
+        "Cuando tocaba seguir | Te vimos cansado más de una vez. También te vimos levantarte al día siguiente y hacer lo que había que hacer. Nunca dijiste que eso fuera una lección. Igual la aprendimos."
       ],
-      closedLabel:"Tocá para recordar",
-      outroTitle:"Y un día entendí algo más:",
-      outroBody:"Muchas de las cosas que hoy más me sostienen tienen tu forma de querer.",
-      cta:"Ver lo que dejaste en mí →"
+      closedLabel:"Abrir esto",
+      outroTitle:"Qué raro admitirlo ahora:",
+      outroBody:"Mientras nosotros creíamos que no estábamos prestando atención, te estábamos mirando todo el tiempo.",
+      cta:"Seguir. Falta bastante por admitir →"
     },
     presence:{
-      kicker:"Las formas de estar",
-      title:"Hay formas de estar que uno entiende recién después.",
-      subtitle:"Las tuyas fueron algunas de ellas.",
+      kicker:"Esas veces en las que estabas",
+      title:"A veces no decías nada. Pero estabas.",
+      subtitle:"Y eso, de grandes, pesa distinto.",
       items:[
-        "LA MANO | La que sostenía la bici, señalaba cómo hacerlo o aparecía en un hombro cuando hacía falta.",
-        "LA ESPERA | Quedarte hasta que terminara. Ir a buscarme. Esperar despierto. Estar cuando volvía.",
-        "LA MIRADA | Ese gesto que podía decir “bien”, “ojo”, “seguí” o “estoy acá” sin una sola palabra."
+        "ESPERAR | Afuera de algún lugar, en el auto o despierto hasta que volviéramos. En ese momento era simplemente “papá está ahí”. Hoy entendemos todo lo que había en eso.",
+        "APARECER | A veces con una solución. A veces sin ninguna. Pero aparecías. Y uno tarda bastante en entender lo importante que es tener a alguien que hace eso.",
+        "ESA MIRADA | La que podía decir “bien”, “ojo”, “ni se te ocurra” y, de alguna manera, también “confío en vos”. Bastante eficiente, la verdad."
       ],
-      closedLabel:"Tocá para recordar",
-      outroTitle:"Con los años entendimos algo:",
-      outroBody:"Muchas veces no estabas diciendo ‘te quiero’. Lo estabas haciendo.",
-      cta:"Ver todo lo que quedó de vos →"
+      closedLabel:"Tocá para abrir",
+      outroTitle:"Ahora sabemos algo que antes no.",
+      outroBody:"No siempre dijiste “te quiero” con palabras. Pero ya aprendimos todas las otras formas en que lo decías.",
+      cta:"Seguir →"
     },
     inheritance:{
-      kicker:"La herencia que no se firma",
-      title:"Con los años empecé a encontrarte en lugares que no esperaba.",
-      subtitle:"Y ahí entendí que muchas cosas tuyas no se fueron. Se quedaron conmigo.",
+      kicker:"Lo más raro de crecer",
+      title:"Empezamos a encontrarte en nosotros.",
+      subtitle:"Y no, no hablamos sólo de esas frases que juramos que nunca íbamos a repetir.",
       items:[
-        "Hay cosas que hago y recién después me doy cuenta de que las aprendí mirándote. | Nunca me sentaste a explicármelas. Simplemente te veía hacerlas. Seguir cuando estabas cansado. Buscar una solución. Volver a intentar. En ese momento no entendía que también me estabas enseñando a vivir.",
-        "A veces digo algo y, por un segundo, siento que te escucho a vos. | Alguna frase que antes me causaba gracia. Algún consejo que no quería escuchar. Y ahora sale de mi boca casi igual. Ahí me doy cuenta de cuánto de vos fue quedando sin que ninguno de los dos lo notara.",
-        "Hay gestos tuyos que juré que nunca iba a repetir. | La forma de mirar ciertas cosas. De preocuparte sin decirlo. De hacerte cargo. De quedarte cerca aunque no supieras muy bien qué decir. Y un día me descubrí haciéndolos yo también.",
-        "Y hay días en los que no estás al lado mío, pero igual aparecés. | Cuando tengo que tomar una decisión. Cuando algo se pone difícil. Cuando me pregunto qué hacer. A veces pienso: “¿qué haría papá?”. Y aunque nunca te lo haya dicho, muchas veces eso todavía me ayuda a seguir."
+        "Un día reaccioné como vos y me quedé pensando. | La forma de frenar, mirar el problema y no salir corriendo. Antes la veía en vos. Ahora, a veces, me sale sola.",
+        "Sí. Ya estamos diciendo algunas de tus frases. | Las mismas que escuchábamos con cara de “bueno, papá”. No vamos a nombrarlas todas porque tampoco queremos darte tanta satisfacción.",
+        "También heredamos cosas que nunca nos enseñaste en voz alta. | La forma de preocuparte sin hacer demasiado ruido. De ayudar sin anunciarlo. De hacerte cargo. Resulta que uno aprende mucho simplemente mirando.",
+        "Y en los días difíciles todavía aparecés. | A veces en una pregunta muy simple: “¿qué haría papá?”. No siempre hacemos exactamente eso —tampoco exageremos—, pero más de una vez nos ordena la cabeza."
       ],
       closedLabel:"Tocá para descubrir",
-      outroTitle:"Capaz heredar de verdad sea esto.",
-      outroBody:"No quedarse con las cosas de alguien. Sino descubrirlo, años después, viviendo un poco en uno mismo.",
-      cta:"Escuchar algo que todavía quiero decirte →"
+      outroTitle:"Supongo que una parte de crecer es esta:",
+      outroBody:"Pasar años queriendo hacer todo a nuestra manera y descubrir que, sin darnos cuenta, llevamos un pedacito de la tuya. Y nos gusta que sea así.",
+      cta:"Ahora queremos que nos escuches →"
     },
     voices:{
-      kicker:"Hay cosas que no queríamos dejar solamente escritas",
-      title:["Queríamos que las escucharas","con nuestra voz."],
-      intro:"Porque algunas palabras cambian cuando las dice alguien que te quiere.",
-      cardIntros:["Hay algo que quería decirte hace tiempo.","Hay gestos tuyos que me descubro haciendo.","Esto queríamos decírtelo juntos."],
+      kicker:"Hay cosas que por escrito quedan demasiado prolijas",
+      title:["Así que mejor te las decimos","como salen."],
+      intro:"Sin discurso. Sin frase perfecta. Como cuando hablamos de verdad.",
+      cardIntros:["Pa, esta te la debía.","Esto me da un poco de risa admitirlo.","Esta la queríamos decir entre todos."],
       playLabel:"Tocá para escuchar",
       playingLabel:"Escuchando…",
-      outroTitle:"Hay palabras que quizás ya sabías.",
-      outroBody:"Pero necesitábamos que las escucharas de nosotros.",
-      cta:"Guardar estas voces y seguir →"
+      outroTitle:"No hace falta que respondas nada ahora.",
+      outroBody:"Con que sepas que lo vimos —aunque hayamos tardado bastante en demostrarlo— alcanza.",
+      cta:"Seguir. Falta una cosa →"
     },
     letter:{
-      kicker:"La parte que no entraba en una foto",
-      title:["Hay palabras que merecen","abrirse despacio."],
-      sealHint:"Rompé el sello",
-      cta:"Guardar estas palabras →"
+      kicker:"Ahora sí. Sin vueltas.",
+      title:["Pa, hay algo que queremos","dejarte por escrito."],
+      sealHint:"Abrila cuando quieras",
+      cta:"Guardar esto →"
+    },
+    lookback:{
+      kicker:"Hay algo que cambia cuando uno crece",
+      closedTitle:"Un día dejás de mirar a tu papá sólo como “papá”.",
+      openTitle:"Y empezás a ver al tipo que también estaba aprendiendo, preocupándose, cansándose, equivocándose y volviendo a intentar. Entender eso no te hace más chico. Al contrario: te hace todavía más grande en nuestra historia.",
+      openLabel:"Mirarte de nuevo",
+      cta:"Y ahí entendimos esto →"
     },
     finale:{
-      kicker:"Lo que queda",
-      lead:"No era sólo todo lo que hiciste. Era la forma en que estuviste. Y muchas de esas cosas siguen viviendo en nosotros.",
-      reactions:["Me llegó","Gracias","Me emocionó","Hermoso"],
+      kicker:"Pa, por si no lo decimos seguido",
+      lead:"Gracias por estar. Por insistir. Por hacernos reír. Por hacernos renegar también. Por todas esas cosas que en su momento parecían normales y hoy sabemos que eran amor.",
+      reactions:["Me llegó","Me hicieron reír","Me emocionó","Los quiero"],
       restartLabel:"Volver al comienzo",
-      createdWith:"hecho con gratitud en Te Hice Esto"
+      createdWith:"hecho con amor en Te Hice Esto"
     }
   },
   amistad:{
