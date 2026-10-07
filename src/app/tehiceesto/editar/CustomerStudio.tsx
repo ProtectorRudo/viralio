@@ -817,11 +817,11 @@ export default function CustomerStudio({code}:{code:string}){
       {step===1&&<div className="studio-panel">
         <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Las mejores casi siempre son las que significan algo.</p></header>
         <button className="studio-upload-hero" type="button" disabled={uploading.length>0} onClick={()=>fileInputRef.current?.click()}>
-          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{photos.length?`${photos.length} de 20 fotos cargadas`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
+          <span>＋</span><div><strong>{memoryPhotos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{memoryPhotos.length?`${memoryPhotos.length} fotos para tus recuerdos`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
         </button>
         <input ref={fileInputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image")}/>
         {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Preparando y subiendo…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
-        {photos.length>0?<div className="studio-photo-grid">{photos.map((item,index)=><article key={item.id}>
+        {memoryPhotos.length>0?<div className="studio-photo-grid">{memoryPhotos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
           <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Podés escribir una frase acá · opcional"/>
           <div className="studio-media-primary-actions">
@@ -831,12 +831,27 @@ export default function CustomerStudio({code}:{code:string}){
           <details className="studio-media-options">
             <summary><span>Orden y encuadre</span><small>opcional</small><b>＋</b></summary>
             <div className="studio-media-mini-actions">
-              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>}
-              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Mover después</button>}
+              {memoryPhotos.length>1&&<button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>}
+              {memoryPhotos.length>1&&<button type="button" onClick={()=>moveMedia(item,1)} disabled={index===memoryPhotos.length-1}>↓ Mover después</button>}
               <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar el marco":"Ver foto completa"}</button>
             </div>
           </details>
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
+        {canonical.includes("light")&&<section className="studio-light-photo-card">
+          <div className="studio-light-photo-copy">
+            <span className="studio-light-photo-icon">⌁</span>
+            <div><small>LA ESCENA DE LA LINTERNA</small><strong>Elegí qué foto querés descubrir con la luz.</strong><p>Usa una foto aparte. Si no elegís ninguna, esta escena no aparece en el regalo.</p></div>
+          </div>
+          {lightPhoto?.url?(
+            <div className="studio-light-photo-selected">
+              <img src={lightPhoto.url} alt="Foto elegida para la linterna"/>
+              <div><strong>Esta es la foto de la linterna</strong><span><button type="button" onClick={()=>chooseReplacement(lightPhoto)}>Cambiar foto</button><button type="button" className="danger" onClick={()=>deleteMedia(lightPhoto)}>Quitar</button></span></div>
+            </div>
+          ):(
+            <button className="studio-light-photo-pick" type="button" disabled={uploading.length>0} onClick={()=>lightInputRef.current?.click()}><span>＋</span><div><strong>Elegir foto para la linterna</strong><small>Una sola foto · la que querés revelar</small></div><b>→</b></button>
+          )}
+          <input ref={lightInputRef} hidden type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image","light")}/>
+        </section>}
         {videos.length===0?(
           <button className="studio-extra-upload" type="button" disabled={uploading.length>0} onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
         ):(
