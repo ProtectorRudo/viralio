@@ -905,6 +905,21 @@ export default function CustomerStudio({code}:{code:string}){
         <header><p className="studio-eyebrow">TUS PALABRAS</p><h1>Decile lo importante. Lo demás ya está resuelto.</h1><p>No hace falta escribir “lindo”. Escribí como hablás. Y si preferís no tocar nada, el regalo ya tiene textos preparados.</p></header>
         <label className="studio-field important"><span>Tu carta <em>opcional</em></span><textarea rows={9} value={basics.letterText} onChange={event=>updateBasic("letterText",event.target.value)} placeholder="¿Qué te gustaría que esta persona recuerde después de cerrar la pantalla?"/><small>Podés escribir dos líneas o mucho más. No hay una forma correcta.</small></label>
         {!basics.letterText.trim()&&<button type="button" className="studio-writing-help" onClick={()=>updateBasic("letterText",starterLetter(basics.recipientName,basics.giverName))}><span>✦</span><div><strong>No sé qué escribir</strong><small>Poner un texto de ayuda que después puedo cambiar</small></div><b>→</b></button>}
+        {canonical.includes("scratch")&&gift.template_version!=="premium-v1"&&scratchRewardSource&&<section className="studio-scratch-editor">
+          <div className="studio-scratch-editor-head">
+            <span>✦</span>
+            <div><small>LA RASPADITA</small><strong>¿Qué querés que descubra cuando raspe?</strong><p>Puede ser un plan, una promesa, un regalo o cualquier sorpresa que tenga sentido para ustedes.</p></div>
+          </div>
+          <label className="studio-field">
+            <span>La sorpresa</span>
+            <input key={scratchRewardValue} defaultValue={scratchRewardValue} onBlur={event=>void saveQuickSceneText("scratch",scratchRewardSource,event.target.value)} placeholder="Ej. una cita sorpresa sin celulares"/>
+          </label>
+          <div className="studio-scratch-suggestions"><span>Ideas rápidas</span><div>{SCRATCH_SUGGESTIONS.map(suggestion=><button type="button" key={suggestion} onClick={()=>void saveQuickSceneText("scratch",scratchRewardSource,suggestion)}>{suggestion}</button>)}</div></div>
+          {scratchNoteSource&&<label className="studio-field compact-note">
+            <span>Una aclaración chiquita <em>opcional</em></span>
+            <input key={scratchNoteValue} defaultValue={scratchNoteValue} onBlur={event=>void saveQuickSceneText("scratch",scratchNoteSource,event.target.value)} placeholder="Ej. fecha a elección · sin vencimiento"/>
+          </label>}
+        </section>}
         <details className="studio-optional-details studio-more-words">
           <summary><span>Personalizar más frases</span><small>opcional</small><b>＋</b></summary>
           <div>
