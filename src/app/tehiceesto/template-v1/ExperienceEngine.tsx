@@ -54,8 +54,9 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
   </aside>;
 }
 
-export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
-  const initialSceneIndex=initialScene?Math.max(0,experience.recipe.indexOf(initialScene)):0;
+export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,previewScene,onSceneChange,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;previewScene?:SceneType;onSceneChange?:(scene:SceneType,index:number,total:number)=>void;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
+  const requestedInitialScene=previewScene||initialScene;
+  const initialSceneIndex=requestedInitialScene?Math.max(0,experience.recipe.indexOf(requestedInitialScene)):0;
   const [sceneIndex,setSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
   const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
   const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);
@@ -76,6 +77,19 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     return true;
   }):experience.recipe;
   const current=scenes[sceneIndex];const total=scenes.length;const progress=((sceneIndex+1)/Math.max(total,1))*100;
+  useEffect(()=>{
+    if(!previewScene)return;
+    const target=scenes.indexOf(previewScene);
+    if(target<0||target===sceneIndex)return;
+    setDirection(target>sceneIndex?"forward":"back");
+    setTransitioning(false);
+    setSceneIndex(target);
+    setRunId(value=>value+1);
+  },[previewScene,sceneIndex,scenes]);
+  useEffect(()=>{
+    if(current)onSceneChange?.(current,sceneIndex,total);
+  },[current,sceneIndex,total,onSceneChange]);
+
   useEffect(()=>{
     const root=shellRef.current;if(!root||!sceneTextOverrides)return;
     let applying=false;
