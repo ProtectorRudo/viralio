@@ -251,6 +251,7 @@ export default function CustomerStudio({code}:{code:string}){
   const [loading,setLoading]=useState(true);
   const [accessState,setAccessState]=useState<"checking"|"missing"|"payment"|"ready"|"error">("checking");
   const [saveState,setSaveState]=useState<"saved"|"saving"|"error">("saved");
+  const [saveRetry,setSaveRetry]=useState(0);
   const [dirty,setDirty]=useState(false);
   const [uploading,setUploading]=useState<string[]>([]);
   const [message,setMessage]=useState("");
@@ -321,7 +322,7 @@ export default function CustomerStudio({code}:{code:string}){
       }
     },700);
     return()=>window.clearTimeout(timer);
-  },[dirty,basics,editorToken,accessState,code]);
+  },[dirty,basics,editorToken,accessState,code,saveRetry]);
 
   const updateBasic=<K extends keyof Basics>(key:K,value:Basics[K])=>{
     setBasics(current=>current?{...current,[key]:value}:current);
@@ -591,9 +592,15 @@ export default function CustomerStudio({code}:{code:string}){
         <Link href="/tehiceesto" className="studio-brand">TE HICE ESTO</Link>
         <span className="studio-order-code">REGALO · {code.toUpperCase()}</span>
       </div>
-      <div className={`studio-save-state ${saveState}`}>
-        <i/>{saveState==="saving"?"Guardando…":saveState==="error"?"Revisar guardado":"Todo guardado"}
-      </div>
+      {saveState==="error"?(
+        <button type="button" className="studio-save-state error retry" onClick={()=>{setSaveState("saving");setSaveRetry(value=>value+1)}} aria-live="polite">
+          <i/>No se guardó · Reintentar
+        </button>
+      ):(
+        <div className={`studio-save-state ${saveState}`} aria-live="polite">
+          <i/>{saveState==="saving"?"Guardando…":"Todo guardado"}
+        </div>
+      )}
     </header>
 
     <div className="studio-progress-wrap">
