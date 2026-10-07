@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import { expect,test,type Page } from "playwright/test";
 const slugs=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","amistad"];
 async function sceneName(page:Page){return page.locator("main.thi-experience").getAttribute("data-scene")}
@@ -917,9 +918,10 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 });
 
 
-test("assisted purchase chooses an experience, captures contact and opens checkout",async({page})=>{
+test("self-serve purchase chooses an experience, captures contact and opens checkout",async({page})=>{
   test.setTimeout(45_000);
-  const code="THI-ORDER-TEST";
+  const code="1234567890abcdef12";
+  const editorToken="a".repeat(64);
 
   await page.route("**/functions/v1/order-create",async route=>{
     const request=route.request();
@@ -940,6 +942,7 @@ test("assisted purchase chooses an experience, captures contact and opens checko
         currency:"ARS",
         checkoutUrl:"https://checkout.test/tehiceesto",
         checkoutReady:true,
+        editorToken,
       }),
     });
   });
@@ -959,9 +962,172 @@ test("assisted purchase chooses an experience, captures contact and opens checko
   await page.locator('.order-consent input[type="checkbox"]').check();
   await page.getByRole("button",{name:/Revisar y pagar/i}).click();
 
-  await expect(page.getByRole("heading",{name:/Tu experiencia empieza acá/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Pagás\. Y empezás a crear/i})).toBeVisible();
   await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
   await page.waitForURL(/checkout\.test/);
+  await page.goto("/tehiceesto/crear");
+  await expect.poll(()=>page.evaluate(key=>window.localStorage.getItem(key),`thi_editor_access:${code}`)).toBe(editorToken);
+});
+
+
+test("customer studio is guided, mobile-safe and publishes without technical language",async({page},testInfo)=>{
+  test.setTimeout(45_000);
+  const code="1234567890abcdef12";
+  const editorToken="b".repeat(64);
+  let published=false;
+  let recipient="A definir";
+  let recipe=["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"];
+
+  await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{
+    key:`thi_editor_access:${code}`,token:editorToken,
+  });
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    expect(body.editorToken).toBe(editorToken);
+    if(body.action==="openStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:published?"published":"paid",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:recipient,occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:null,closing_text:null,music_url:null,scene_recipe:recipe,
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:published?new Date().toISOString():null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},
+        media:[],
+      })});
+    }
+    if(body.action==="saveStudioBasics"){
+      recipient=String(body.recipientName||recipient);
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+    }
+    if(body.action==="saveStudioRecipe"){
+      recipe=(body.sceneRecipe as string[])||recipe;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,sceneRecipe:recipe})});
+    }
+    if(body.action==="publishStudio"){
+      published=true;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,giftUrl:`https://tehiceesto.com/r/${code}`})});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,sceneContent:{}})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+
+  await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto\?/i})).toBeVisible();
+  await expect(page.getByText(/scene_recipe|metadata/i)).toHaveCount(0);
+  mkdirSync("visual-qa-evidence",{recursive:true});
+  const startShot="visual-qa-evidence/tehiceesto-studio-mobile-start.png";
+  await page.screenshot({path:startShot,fullPage:true});
+  await testInfo.attach("tehiceesto-studio-mobile-start",{path:startShot,contentType:"image/png"});
+  await page.getByPlaceholder("Ej. Ailín").fill("Ailín");
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  await expect(page.getByRole("heading",{name:/Elegí las fotos/i})).toBeVisible();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByRole("heading",{name:/Hay cosas que emocionan distinto/i})).toBeVisible();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.getByRole("heading",{name:/No hace falta escribir/i})).toBeVisible();
+  await page.locator(".studio-field.important textarea").fill("Gracias por caminar conmigo. Esto recién empieza.");
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  await expect(page.getByRole("heading",{name:/¿Querés sacar alguna parte\?/i})).toBeVisible();
+  const optional=page.locator(".studio-switch").first();
+  await optional.click();
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
+  await expect(page.getByRole("button",{name:/Cambiar cualquier texto/i})).toBeVisible();
+  await page.waitForTimeout(1100);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  const previewShot="visual-qa-evidence/tehiceesto-studio-mobile-preview.png";
+  await page.screenshot({path:previewShot,fullPage:true});
+  await testInfo.attach("tehiceesto-studio-mobile-preview",{path:previewShot,contentType:"image/png"});
+  await page.getByRole("button",{name:/Publicar mi regalo/i}).first().click();
+
+  await expect(page.getByRole("heading",{name:/Tu regalo está listo para vivirlo/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:/Abrir regalo/i})).toHaveAttribute("href",`/tehiceesto/r/${code}`);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+
+test("customer studio makes media replace and remove obvious",async({page})=>{
+  test.setTimeout(45_000);
+  const code="abcdef1234567890ab";
+  const editorToken="c".repeat(64);
+  let replaced=false;
+  let media=[
+    {id:"photo-1",kind:"image",storage_path:"x/photo.jpg",caption:"Nuestro día",sort_order:0,metadata:{fit:"cover",position:"center",scene:"memories"},url:"data:image/gif;base64,R0lGODlhAQABAAAAACw="},
+    {id:"audio-1",kind:"audio",storage_path:"x/voice.ogg",caption:"Mensaje",sort_order:1,metadata:{scene:"voices",role:"voice"},url:null},
+    {id:"video-1",kind:"video",storage_path:"x/video.mp4",caption:null,sort_order:2,metadata:{scene:"memories"},url:null},
+  ];
+
+  await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{
+    key:`thi_editor_access:${code}`,token:editorToken,
+  });
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    if(body.action==="openStudio"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:code,status:"paid",template_version:"live",experience_slug:"pareja",
+          giver_name:"Mauro",recipient_name:"Ailín",occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:null,closing_text:null,music_url:null,
+          scene_recipe:["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"],
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},
+        media,
+      })});
+    }
+    if(body.action==="prepareStudioUpload"){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        path:`${code}/studio-new-photo.png`,token:"signed-test-token",kind:"image",
+      })});
+    }
+    if(body.action==="replaceStudioMedia"){
+      replaced=true;
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+    }
+    if(body.action==="deleteStudioMedia"){
+      media=media.filter(item=>item.id!==String(body.mediaId));
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true})});
+  });
+
+  await page.route("**/storage/v1/object/upload/sign/gift-media/**",route=>
+    route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({Key:"ok"})})
+  );
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(`/tehiceesto/editar/${code}`);
+  await page.getByRole("button",{name:/Continuar/i}).click();
+
+  const photo=page.locator(".studio-photo-grid article").first();
+  await expect(photo).toBeVisible();
+  await expect(photo.getByRole("button",{name:"Cambiar"})).toBeVisible();
+  await expect(photo.getByRole("button",{name:"Quitar"})).toBeVisible();
+  await expect(page.locator(".studio-video-card")).toBeVisible();
+
+  const chooserPromise=page.waitForEvent("filechooser");
+  await photo.getByRole("button",{name:"Cambiar"}).click();
+  const chooser=await chooserPromise;
+  await chooser.setFiles({name:"nueva.png",mimeType:"image/png",buffer:Buffer.from("89504e470d0a1a0a","hex")});
+  await expect.poll(()=>replaced).toBe(true);
+  await expect(page.getByText(/lo cambiamos sin mover nada/i)).toBeVisible();
+
+  page.once("dialog",dialog=>dialog.accept());
+  await photo.getByRole("button",{name:"Quitar"}).click();
+  await expect(page.locator(".studio-photo-grid article")).toHaveCount(0);
+
+  await page.getByRole("button",{name:/Continuar/i}).click();
+  await expect(page.locator(".studio-audio-list article")).toHaveCount(1);
+  const audio=page.locator(".studio-audio-list article").first();
+  await expect(audio.getByRole("button",{name:"Cambiar"})).toBeVisible();
+  await expect(audio.getByRole("button",{name:"Quitar"})).toBeVisible();
 });
 
 test("affiliate dashboards stay private and mobile-safe",async({page})=>{
