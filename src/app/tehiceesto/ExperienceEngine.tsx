@@ -196,7 +196,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
   const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
 
-  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return experience.slug==="papa"?new Set([0,...presenceOpen]).size>=copy.presence.items.length:presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
+  const canAdvance=()=>{switch(current){case"intro":case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"?stars.length>=starLines.length:stars.length>=3;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?voicesPlayed.length>=Math.min(3,currentAudios.length||voiceEntries.length):voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return experience.slug==="papa"?new Set([0,...presenceOpen]).size>=copy.presence.items.length:presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return experience.slug==="papa"?new Set([0,...inheritanceOpen]).size>=copy.inheritance.items.length:inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
     switch(type){
@@ -1159,6 +1159,55 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
       case "inheritance":{
         const rows=copy.inheritance.items.map((item,index)=>{const [title,...body]=item.split("|");return {index,title:token(title.trim()||`Herencia ${index+1}`),body:token(body.join("|").trim())}}).filter(item=>item.title);
+        if(experience.slug==="papa"){
+          const opened=new Set([0,...inheritanceOpen]);
+          const allOpen=opened.size>=rows.length;
+          const visualSource=((photoMedia?.length?photoMedia:demoPhotos)||[]).slice(0,Math.max(4,rows.length));
+          return (
+            <section className="scene scene-inheritance thi-papa-inheritance">
+              <div className="thi-papa-inheritance-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
+              <header className="thi-papa-inheritance-head">
+                <p className="scene-kicker">{token(copy.inheritance.kicker)}</p>
+                <h2>{token(copy.inheritance.title)}</h2>
+                {copy.inheritance.subtitle&&<p>{token(copy.inheritance.subtitle)}</p>}
+              </header>
+              <div className="thi-papa-inheritance-timeline" aria-label="Cosas tuyas que quedaron viviendo en mí">
+                <span className="thi-papa-inheritance-line" aria-hidden="true"/>
+                {rows.map(({index,title,body})=>{
+                  const isOpen=opened.has(index);
+                  const visual=visualSource[index]||visualSource[index%Math.max(visualSource.length,1)];
+                  return <button
+                    type="button"
+                    key={`${title}-${index}`}
+                    data-action="inheritance-open"
+                    className={`thi-papa-inheritance-card ${isOpen?"open":""}`}
+                    aria-expanded={isOpen}
+                    onClick={()=>setInheritanceOpen(items=>items.includes(index)?items:[...items,index])}
+                  >
+                    <span className="thi-papa-inheritance-node" aria-hidden="true"/>
+                    <span className="thi-papa-inheritance-number">{String(index+1).padStart(2,"0")}</span>
+                    <span className="thi-papa-inheritance-copy">
+                      <strong>{title}</strong>
+                      <p>{isOpen?body:token(copy.inheritance.closedLabel)}</p>
+                    </span>
+                    <span className="thi-papa-inheritance-visual" aria-hidden="true">
+                      {visual?.url&&<img src={visual.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:visual.fit||"cover",objectPosition:visual.position||"center"}}/>}
+                      <i/>
+                    </span>
+                    <span className="thi-papa-inheritance-toggle" aria-hidden="true">{isOpen?"⌃":"⌄"}</span>
+                  </button>;
+                })}
+              </div>
+              {!allOpen&&<p className="thi-papa-inheritance-hint">Tocá cada recuerdo para descubrir dónde quedó en vos.</p>}
+              {allOpen&&<div className="thi-papa-inheritance-outro">
+                <i aria-hidden="true"/>
+                <strong>{token(copy.inheritance.outroTitle)}</strong>
+                <p>{token(copy.inheritance.outroBody)}</p>
+                <button data-action="advance" className="thi-papa-inheritance-cta" onClick={next}>{token(copy.inheritance.cta)}</button>
+              </div>}
+            </section>
+          );
+        }
         const required=Math.min(3,rows.length);
         return (
           <section className="scene scene-inheritance">
