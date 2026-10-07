@@ -298,8 +298,8 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 </div>
               </article>)}
             </div>
-            <p className="thi-papa-memory-hint">Deslizá para recorrer los recuerdos <span>→</span></p>
-            <button data-action="advance" className="thi-papa-memory-continue" onClick={next}>Seguir con la historia <span>→</span></button>
+            <p className="thi-papa-memory-hint">Deslizá. Capaz alguno te haga sonreír <span>→</span></p>
+            <button data-action="advance" className="thi-papa-memory-continue" onClick={next}>{token(copy.memories.cta)}</button>
           </section>;
         }
         return <section className="thi-scene thi-scene-memories thi-scene-rich"><p className="thi-kicker">{token(copy.memories.kicker)}</p><h2>{titleLines(copy.memories.title)}</h2>{storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}<div className="thi-film">{(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url||item.caption||i}><div className="thi-memory-photo">{item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}<span>{String(i+1).padStart(2,"0")}</span><i className="thi-photo-sheen"/></div><p>{token(item.caption||memoryLines[i%memoryLines.length])}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.memories.cta)}</button></section>;
