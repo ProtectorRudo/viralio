@@ -77,7 +77,7 @@ type Basics={
   musicUrl:string;
 };
 
-const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Partes","Revisar"];
+const STEP_LABELS=["Personas","Fotos","Audios","Palabras","Opcional","Revisar"];
 const FEELINGS=["Amor","Emoción","Sorpresa","Diversión","Nostalgia"];
 
 const SCENE_LABELS:Record<string,{title:string;copy:string}>={
@@ -337,8 +337,13 @@ export default function CustomerStudio({code}:{code:string}){
 
   async function uploadFiles(files:FileList|null,kind:MediaKind){
     if(!files||!editorToken)return;
-    const selected=Array.from(files).slice(0,kind==="image"?20:6);
+    const all=Array.from(files);
+    const limit=kind==="image"?20:6;
+    const selected=all.slice(0,limit);
     if(!selected.length)return;
+    const limitNotice=all.length>limit
+      ?`Podés usar hasta ${limit} archivos acá. Vamos a subir los primeros ${limit} que elegiste.`
+      :"";
     setUploading(selected.map(file=>file.name));setMessage("");
     try{
       for(const file of selected){
@@ -353,13 +358,18 @@ export default function CustomerStudio({code}:{code:string}){
         });
       }
       await loadStudio(editorToken);
-      setMessage(selected.length===1?"Listo, ya está adentro ✓":`Listo, subimos ${selected.length} archivos ✓`);
+      setMessage(limitNotice||(selected.length===1?"Listo, ya está adentro ✓":`Listo, subimos ${selected.length} archivos ✓`));
     }catch(error){
       const reason=error instanceof Error?error.message:"";
       setMessage(reason==="media_limit"
         ?"Llegaste al máximo de archivos de esta experiencia."
         :"Uno de los archivos no pudo subirse. Probá con otro.");
-    }finally{setUploading([])}
+    }finally{
+      setUploading([]);
+      if(kind==="image"&&fileInputRef.current)fileInputRef.current.value="";
+      if(kind==="audio"&&audioInputRef.current)audioInputRef.current.value="";
+      if(kind==="video"&&videoInputRef.current)videoInputRef.current.value="";
+    }
   }
 
   async function replaceMediaFile(files:FileList|null){
@@ -607,24 +617,29 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===1&&<div className="studio-panel">
         <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Las mejores casi siempre son las que significan algo.</p></header>
-        <button className="studio-upload-hero" type="button" onClick={()=>fileInputRef.current?.click()}>
-          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>Podés seleccionar varias de una sola vez</small></div><b>→</b>
+        <button className="studio-upload-hero" type="button" disabled={uploading.length>0} onClick={()=>fileInputRef.current?.click()}>
+          <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>Podés elegir varias de una sola vez · hasta 20</small></div><b>→</b>
         </button>
         <input ref={fileInputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image")}/>
         {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Preparando y subiendo…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
         {photos.length>0?<div className="studio-photo-grid">{photos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
-          <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Una frase para esta foto · opcional"/>
-          <div className="studio-media-mini-actions">
-            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Antes</button>
-            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Después</button>
-            <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar":"Ver completa"}</button>
-            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
+          <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Podés escribir una frase acá · opcional"/>
+          <div className="studio-media-primary-actions">
+            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar foto</button>
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
+          <details className="studio-media-options">
+            <summary><span>Orden y encuadre</span><small>opcional</small><b>＋</b></summary>
+            <div className="studio-media-mini-actions">
+              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>}
+              {photos.length>1&&<button type="button" onClick={()=>moveMedia(item,1)} disabled={index===photos.length-1}>↓ Mover después</button>}
+              <button type="button" onClick={()=>updateMedia(item,{fit:item.metadata?.fit==="contain"?"cover":"contain"})}>{item.metadata?.fit==="contain"?"Llenar el marco":"Ver foto completa"}</button>
+            </div>
+          </details>
         </article>)}</div>:<div className="studio-empty-soft"><span>▧</span><strong>Todavía no elegiste fotos.</strong><p>Podés seguir y volver después. Nada se pierde.</p></div>}
         {videos.length===0?(
-          <button className="studio-extra-upload" type="button" onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
+          <button className="studio-extra-upload" type="button" disabled={uploading.length>0} onClick={()=>videoInputRef.current?.click()}><span>▶</span><div><strong>¿Tenés un video especial?</strong><small>Es opcional. Podés agregar uno acá.</small></div></button>
         ):(
           <div className="studio-video-card">
             {videos[0].url&&<video src={videos[0].url} controls playsInline preload="metadata"/>}
@@ -643,20 +658,25 @@ export default function CustomerStudio({code}:{code:string}){
 
       {step===2&&<div className="studio-panel">
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
-        <button className="studio-upload-hero audio" type="button" onClick={()=>audioInputRef.current?.click()}>
-          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Subir un audio"}</strong><small>MP3, M4A, OGG, OPUS o audio de WhatsApp</small></div><b>→</b>
+        <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0} onClick={()=>audioInputRef.current?.click()}>
+          <span>♪</span><div><strong>{audios.length?"Agregar otro audio":"Elegir un audio"}</strong><small>Audio de WhatsApp, MP3, M4A, OGG u OPUS · hasta 6</small></div><b>→</b>
         </button>
         <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
           <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
-          <label className="studio-audio-role"><span>Este audio es…</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Un mensaje de voz</option><option value="soundtrack">Música de fondo</option></select></label>
+          <label className="studio-audio-role"><span>¿Cómo querés usarlo?</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Como mensaje de voz</option><option value="soundtrack">Como música de fondo</option></select></label>
           <div className="studio-audio-actions">
-            <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Antes</button>
-            <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Después</button>
-            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar</button>
+            <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar audio</button>
             <button type="button" className="studio-remove" onClick={()=>deleteMedia(item)}>Quitar</button>
           </div>
+          {audios.length>1&&<details className="studio-media-options audio-order">
+            <summary><span>Cambiar el orden</span><small>opcional</small><b>＋</b></summary>
+            <div className="studio-media-mini-actions">
+              <button type="button" onClick={()=>moveMedia(item,-1)} disabled={index===0}>↑ Mover antes</button>
+              <button type="button" onClick={()=>moveMedia(item,1)} disabled={index===audios.length-1}>↓ Mover después</button>
+            </div>
+          </details>}
         </article>)}</div>:<div className="studio-empty-soft"><span>♪</span><strong>Los audios son opcionales.</strong><p>La experiencia funciona igual sin ellos. Si tenés uno, acá puede convertirse en uno de los momentos más fuertes.</p></div>}
       </div>}
 
