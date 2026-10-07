@@ -231,6 +231,7 @@ function Preview({
       accent:gift.theme_data?.accent||base.accent,
     };
     return <PremiumV1Engine
+      customerGift
       experience={experience}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
@@ -255,6 +256,7 @@ function Preview({
     accent:gift.theme_data?.accent||base.accent,
   };
   return <ExperienceEngine
+    customerGift
     experience={experience}
     copyOverride={gift.story_data?.script as never}
     letterText={gift.letter_text||undefined}
