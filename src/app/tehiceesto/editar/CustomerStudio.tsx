@@ -123,6 +123,29 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
 
 function accessKey(code:string){return `thi_editor_access:${code}`}
 
+async function optimizeStudioUpload(file:File,kind:MediaKind){
+  if(kind!=="image"||!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size<1_800_000)return file;
+  try{
+    const bitmap=await createImageBitmap(file,{imageOrientation:"from-image"});
+    const maxSide=1800;
+    const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+    const width=Math.max(1,Math.round(bitmap.width*scale));
+    const height=Math.max(1,Math.round(bitmap.height*scale));
+    const canvas=document.createElement("canvas");
+    canvas.width=width;canvas.height=height;
+    const context=canvas.getContext("2d");
+    if(!context){bitmap.close();return file}
+    context.drawImage(bitmap,0,0,width,height);
+    bitmap.close();
+    const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/webp",.86));
+    if(!blob||blob.size>=file.size*.95)return file;
+    const base=file.name.replace(/\.[^.]+$/,"")||"foto";
+    return new File([blob],base+".webp",{type:"image/webp",lastModified:file.lastModified});
+  }catch{
+    return file;
+  }
+}
+
 function giftToBasics(gift:StudioGift):Basics{
   return {
     giverName:gift.giver_name||"",
@@ -316,13 +339,14 @@ export default function CustomerStudio({code}:{code:string}){
     setUploading(selected.map(file=>file.name));setMessage("");
     try{
       for(const file of selected){
+        const uploadFile=await optimizeStudioUpload(file,kind);
         const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
-          code,editorToken,fileName:file.name,mimeType:file.type,size:file.size,
+          code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
         });
-        await uploadCreatorFile(prepared.path,prepared.token,file);
+        await uploadCreatorFile(prepared.path,prepared.token,uploadFile);
         await creatorCall("registerStudioMedia",{
           code,editorToken,storagePath:prepared.path,kind:prepared.kind,
-          originalName:file.name,mimeType:file.type,size:file.size,
+          originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
         });
       }
       await loadStudio(editorToken);
@@ -341,17 +365,18 @@ export default function CustomerStudio({code}:{code:string}){
     if(!file||!target||!editorToken)return;
     setUploading([file.name]);setMessage("");
     try{
+      const uploadFile=await optimizeStudioUpload(file,target.kind);
       const prepared=await creatorCall<{path:string;token:string;kind:MediaKind}>("prepareStudioUpload",{
-        code,editorToken,fileName:file.name,mimeType:file.type,size:file.size,
+        code,editorToken,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size,
       });
       if(prepared.kind!==target.kind){
         setMessage(target.kind==="image"?"Elegí una imagen.":target.kind==="audio"?"Elegí un audio.":"Elegí un video.");
         return;
       }
-      await uploadCreatorFile(prepared.path,prepared.token,file);
+      await uploadCreatorFile(prepared.path,prepared.token,uploadFile);
       await creatorCall("replaceStudioMedia",{
         code,editorToken,mediaId:target.id,storagePath:prepared.path,kind:prepared.kind,
-        originalName:file.name,mimeType:file.type,size:file.size,
+        originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size,
       });
       await loadStudio(editorToken);
       setMessage("Listo, lo cambiamos sin mover nada ✓");
@@ -560,7 +585,7 @@ export default function CustomerStudio({code}:{code:string}){
           <span>＋</span><div><strong>{photos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>Podés seleccionar varias de una sola vez</small></div><b>→</b>
         </button>
         <input ref={fileInputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>uploadFiles(event.target.files,"image")}/>
-        {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Subiendo tus recuerdos…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
+        {uploading.length>0&&<div className="studio-uploading"><span/><div><strong>Preparando y subiendo…</strong><small>{uploading[0]}{uploading.length>1?` y ${uploading.length-1} más`:""}</small></div></div>}
         {photos.length>0?<div className="studio-photo-grid">{photos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
           <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Una frase para esta foto · opcional"/>
