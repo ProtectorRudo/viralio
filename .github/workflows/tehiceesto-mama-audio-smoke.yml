@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           FN='https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1'
-          JS='/_next/static/immutable/chunks/2ub9wnrqd274z.js'
+          JS='/_next/static/immutable/chunks/0azfo2qceywqk.js'
           echo 'Supabase audio: full response'
           curl -fsSL --max-time 35 -D /tmp/audio-headers -o /tmp/voice.opus "$FN/mama-demo-hotfix?audio=1"
           head -n 18 /tmp/audio-headers
