@@ -15,6 +15,8 @@ import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
 import { effectiveRecipeForMedia } from "../effectiveRecipe";
+import { effectiveRecipeForMedia as effectivePremiumV1RecipeForMedia } from "../template-v1/effectiveRecipe";
+import { effectiveRecipeForMedia as effectivePremiumV2RecipeForMedia } from "../template-v2/effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
 import { requestGiftAccountLink } from "../giftAccountApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
@@ -744,7 +746,12 @@ export default function CustomerStudio({code}:{code:string}){
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
   const videos=media.filter(item=>item.kind==="video");
-  const effectiveRecipe=effectiveRecipeForMedia(gift?.scene_recipe||[],{
+  const recipeResolver=gift?.template_version==="premium-v1"
+    ?effectivePremiumV1RecipeForMedia
+    :gift?.template_version==="premium-v2"
+      ?effectivePremiumV2RecipeForMedia
+      :effectiveRecipeForMedia;
+  const effectiveRecipe=recipeResolver(gift?.scene_recipe||[],{
     hasPhoto:memoryPhotos.length>0,
     hasVoice:voiceAudios.length>0,
     hasVideo:videos.length>0,
