@@ -24,7 +24,7 @@ export type ExperienceCopy = {
   intro: { kicker:string; title:string; lead:string; cta:string; footnote:string };
   door: { kicker:string; title:string[]; closedHint:string; openCta:string };
   memories: { kicker:string; title:string[]; items:string[]; cta:string };
-  light: { kicker:string; title:string; secret:string; hint:string; revealedLabel:string; cta:string; ariaLabel:string };
+  light: { kicker:string; title:string; secret:string; hint:string; revealedLabel:string; cta:string; ariaLabel:string; clues?:string[] };
   stars: { kicker:string; title:string[]; items:string[]; hiddenLabel:string; completeLabel:string; remainingOne:string; remainingMany:string; cta:string };
   everyday: { kicker:string; title:string; hint:string; moments:string[]; closing:string; cta:string };
   scratch: { kicker:string; title:string[]; eyebrow:string; reward:string; note:string; coverTitle:string; coverHint:string; fallbackLabel:string; cta:string };
@@ -42,7 +42,7 @@ export type ExperienceCopy = {
   presence: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   inheritance: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   lookback: { kicker:string; closedTitle:string; openTitle:string; openLabel:string; cta:string };
-  finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string };
+  finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string; fromLabel?:string };
   proposal: { kicker:string; title:string; lead:string; reactions:string[]; createdWith:string };
 };
 
@@ -164,12 +164,12 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     intro:{kicker:"Hoy hubo gente que quiso hacer algo más que saludarte",cta:"Empezar mi cumpleaños",footnote:"Prometemos no cantar todos al mismo tiempo"},
     candles:{kicker:"Primero, lo obvio",title:["Pedí un deseo.","Pero uno bueno."],wishLabel:"✦ listo, no lo cuentes",cta:"Ahora sí →"},
     balloons:{kicker:"Algunos globos vienen con condiciones",title:["Reventá tres.","Después no digas que no avisamos."],popLabel:"TOCÁ",remainingOne:"Queda 1",remainingMany:"Quedan {count}",cta:"Seguir festejando →"},
-    memories:{kicker:"Pruebas de que ya vivimos bastante",title:["Fotos que explican","por qué te queremos."],cta:"Escuchá esto →"},
-    light:{kicker:"Otra vuelta al sol",title:"Mirá todo lo que iluminaste.",revealedLabel:"esto también es tuyo ✦",cta:"Seguir →"},
+    memories:{kicker:"Pruebas de que ya vivimos bastante",title:["Fotos que explican","por qué te queremos."],cta:"Guardar estos recuerdos →"},
+    light:{kicker:"Otra vuelta al sol",title:"Hay recuerdos que se descubren despacio.",secret:"No son solamente los años. Es todo lo lindo que vivimos con vos.",clues:["Esa vez que terminamos riéndonos hasta que nos dolía la panza.","Los días comunes que se convirtieron en nuestros mejores recuerdos.","Y todo eso que hacés por los demás sin darte cuenta."],hint:"Deslizá para buscar tres recuerdos",revealedLabel:"los tres recuerdos son tuyos ✦",cta:"Llevarme estos recuerdos →"},
     voices:{kicker:"Tu gente tenía cosas para decir",title:["Elegí una voz.","Después otra."],playLabel:"Escuchar mensaje",playingLabel:"mensaje abierto",cta:"Guardar estos mensajes →"},
-    hold:{kicker:"Un deseo que no entra en una vela",title:["Este no lo pedís vos.","Lo pedimos nosotros."],instruction:"mantené la estrella",cta:"Recibirlo →"},
-    letter:{kicker:"La parte sin chistes",title:["Porque también queríamos","decirte esto en serio."],sealHint:"Abrir",cta:"Guardar →"},
-    finale:{kicker:"Feliz vuelta al sol",lead:"Que el próximo año traiga historias que todavía no sabemos contar.",restartLabel:"Volver a festejar"},
+    hold:{kicker:"Un deseo que no entra en una vela",title:["Ahora nos toca a nosotros.","Pedimos algo para vos."],prompt:"Mantené esta luz",reveal:"Que siempre tengas motivos para reírte así. Y que podamos estar cerca para verlo.",instruction:"mantené apretado hasta iluminarlo",cta:"Me lo guardo →"},
+    letter:{kicker:"La parte sin chistes",title:["Hay cosas que merecen","escribirse con calma."],sealHint:"Tocá el sello",cta:"Me llevo esta carta →"},
+    finale:{kicker:"Feliz vuelta al sol",lead:"Que el próximo año traiga historias que todavía no sabemos contar.",restartLabel:"Volver a festejar",fromLabel:"Con cariño, mamá, Nati, Fran y todos los que te queremos."},
   },
   hijos:{
     intro:{kicker:"Lo guardamos antes de que puedas acordarte",cta:"Abrir mis recuerdos",footnote:"Hecho por quienes te miraron crecer desde el primer día"},
