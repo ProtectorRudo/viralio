@@ -203,7 +203,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     proposal:{kicker:"Ahora sí",lead:"No hace falta tocar nada más. Mirá a la persona que tenés enfrente.",createdWith:"este momento empezó en Te Hice Esto"},
   },
   mama:{
-    intro:{kicker:"Tus hijos hicieron algo para vos",cta:"Abrir esto",footnote:""},
+    intro:{kicker:"Tus hijos hicieron algo para vos",cta:"Abrir regalo",footnote:""},
     memories:{kicker:"Recuerdos",title:["Algunos momentos terminan.","Otros se quedan."],cta:"Seguir con la historia →"},
     letter:{kicker:"Hay palabras que merecían llegar hasta acá",title:["Después de entender tantas cosas,","quedaba decirte esto."],sealHint:"Deslizá para abrir",cta:"Guardar estas palabras →"},
     finale:{kicker:"Por si alguna vez dudás",title:"{closing}",lead:"Mirá todo lo que construiste. Mucho de lo bueno que hay en nosotros empezó con vos, y todavía sigue creciendo.",restartLabel:"Volver a sentirlo",createdWith:"hecho con amor en Te Hice Esto"},
