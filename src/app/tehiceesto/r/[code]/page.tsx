@@ -74,7 +74,8 @@ export default async function PublishedGiftPage({
     })),
   );
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
-  const Engine=frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:ExperienceEngine;
+  // Frozen engines are selected at runtime with their own stored recipe. The live-only everyday scene cannot belong to those recipes.
+  const Engine=(frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:ExperienceEngine) as typeof ExperienceEngine;
   const sceneTextOverrides=frozenV1
     ?normalizePremiumV1SceneTextOverrides(payload.gift.story_data?.sceneContent)
     :frozenV2
