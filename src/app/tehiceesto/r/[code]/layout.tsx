@@ -1,4 +1,5 @@
 import "../../tehiceesto-premium-v2.css";
+import "./purchased-experience.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
