@@ -34,6 +34,7 @@ function privateTeHiceEstoPath(pathname: string) {
     normalized.startsWith("/editar/") ||
     normalized === "/mis-regalos" ||
     normalized.startsWith("/mercadopago/") ||
+    normalized === "/afiliados" ||
     normalized.startsWith("/afiliados/") ||
     normalized === "/admin" ||
     normalized.startsWith("/admin/");
@@ -45,7 +46,7 @@ function teHiceEstoRobots() {
       "User-agent: *",
       "Allow: /",
       "Disallow: /admin",
-      "Disallow: /afiliados/",
+      "Disallow: /afiliados",
       "Disallow: /r/",
       "Disallow: /pedido/",
       "Disallow: /editar/",
