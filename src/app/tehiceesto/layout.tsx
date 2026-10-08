@@ -10,6 +10,7 @@ import "./tehiceesto-purchase-art.css";
 import "./tehiceesto-demo-cta.css";
 import "./tehiceesto-demo-viewport.css";
 import "./tehiceesto-birthday.css";
+import "./tehiceesto-hijos-live.css";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export const metadata: Metadata = {
