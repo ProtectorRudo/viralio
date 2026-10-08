@@ -168,7 +168,7 @@ async function sendCustomAccessEmail(email:string,redirect:string,code:string,or
         from:sender,to:[email],
         ...(code?{
           template:{id:"tehiceesto-bienvenida-compra",variables:{
-            CUSTOMER_NAME:String(gift?.giver_name||"").trim().split(/\\s+/)[0]||"Hola",
+            CUSTOMER_NAME:String(gift?.giver_name||"").trim().split(/\s+/)[0]||"Hola",
             EXPERIENCE_NAME:EXPERIENCE_NAMES[String(gift?.experience_slug||"")]||"personalizada",
             ACCESS_LINK:String(link.properties.action_link),
           }},
