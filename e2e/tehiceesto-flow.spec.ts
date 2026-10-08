@@ -1284,7 +1284,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
 
   await expect(page.getByRole("heading",{name:/¿Quién va a recibir esto\?/i})).toBeVisible();
   await expect(page.getByRole("link",{name:/Mis regalos/i})).toBeVisible();
-  await expect(page.getByRole("link",{name:/Mis regalos/i})).toHaveAttribute("href","/tehiceesto/mis-regalos");
+  await expect(page.getByRole("link",{name:/Mis regalos/i})).toHaveAttribute("href","https://tehiceesto.com/mis-regalos");
   await expect(page.getByText(/scene_recipe|metadata/i)).toHaveCount(0);
   mkdirSync("visual-qa-evidence",{recursive:true});
   const startShot="visual-qa-evidence/tehiceesto-studio-mobile-start.png";
