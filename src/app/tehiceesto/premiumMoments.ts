@@ -24,7 +24,7 @@ export const premiumMoments: Record<string, PremiumMoment> = {
     hold: {
       kicker: "Antes de la última parte",
       prompt: "Mantené el corazón",
-      reveal: "Entre todas las versiones de mi vida, quiero que estés en las que todavía no llegaron.",
+      reveal: "Todavía nos quedan un montón de cosas por vivir. Me encanta pensar que van a ser con vos.",
       symbol: "♥",
     },
   },
