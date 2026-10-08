@@ -1,13 +1,14 @@
 "use client";
 
 import {useEffect,useRef,useState,type PointerEvent as ReactPointerEvent} from "react";
+import { getScratchCoverPalette } from "./scratchCoverThemes";
 
 type Point={x:number;y:number};
 
 export default function ScratchReveal({
-  accent,eyebrow,reward,note,revealed,onReveal,coverTitle,coverHint,fallbackLabel,
+  accent,themeSlug,eyebrow,reward,note,revealed,onReveal,coverTitle,coverHint,fallbackLabel,
 }:{
-  accent:string; eyebrow:string; reward:string; note:string; revealed:boolean; onReveal:()=>void;
+  accent:string; themeSlug:string; eyebrow:string; reward:string; note:string; revealed:boolean; onReveal:()=>void;
   coverTitle:string; coverHint:string; fallbackLabel:string;
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
@@ -43,19 +44,18 @@ export default function ScratchReveal({
       ctx.setTransform(ratio,0,0,ratio,0,0);
       ctx.clearRect(0,0,rect.width,rect.height);
 
+      // Theme-driven premium foil, painted directly onto the scratch canvas.
+      // No change to pointer capture, coverage, erasing or reveal thresholds.
+      const palette=getScratchCoverPalette(themeSlug);
       const gradient=ctx.createLinearGradient(0,0,rect.width,rect.height);
-      gradient.addColorStop(0,"#f8e3a6");
-      gradient.addColorStop(.20,"#b77b1f");
-      gradient.addColorStop(.45,"#f1c45e");
-      gradient.addColorStop(.70,"#8f5c16");
-      gradient.addColorStop(1,"#d9a53a");
+      palette.stops.forEach((color,index)=>gradient.addColorStop([0,.20,.45,.70,1][index],color));
       ctx.fillStyle=gradient;
       ctx.fillRect(0,0,rect.width,rect.height);
 
       ctx.save();
       ctx.globalAlpha=.14;
       for(let x=-rect.height;x<rect.width+rect.height;x+=16){
-        ctx.strokeStyle=x%32===0?"#fff4cf":"#6d430e";
+        ctx.strokeStyle=x%32===0?palette.lineLight:palette.lineDark;
         ctx.lineWidth=1;
         ctx.beginPath();
         ctx.moveTo(x,0);
@@ -67,7 +67,7 @@ export default function ScratchReveal({
       ctx.save();
       ctx.globalAlpha=.075;
       for(let y=9;y<rect.height;y+=13){
-        ctx.strokeStyle="#fff1bf";
+        ctx.strokeStyle=palette.lineLight;
         ctx.lineWidth=.55;
         ctx.beginPath();
         ctx.moveTo(0,y);
@@ -76,11 +76,11 @@ export default function ScratchReveal({
       }
       ctx.restore();
 
-      ctx.fillStyle="rgba(255,255,255,.95)";
+      ctx.fillStyle=palette.textPrimary;
       ctx.textAlign="center";
       ctx.font="700 11px Inter, Arial, sans-serif";
       ctx.fillText(coverTitle.toUpperCase(),rect.width/2,rect.height/2-3);
-      ctx.fillStyle="rgba(255,255,255,.58)";
+      ctx.fillStyle=palette.textSecondary;
       ctx.font="500 9px Inter, Arial, sans-serif";
       ctx.fillText(coverHint,rect.width/2,rect.height/2+18);
     };
@@ -89,7 +89,7 @@ export default function ScratchReveal({
     const observer=new ResizeObserver(paintCover);
     observer.observe(parent);
     return()=>observer.disconnect();
-  },[revealed,coverTitle,coverHint]);
+  },[revealed,coverTitle,coverHint,themeSlug]);
 
   const toPoint=(clientX:number,clientY:number):Point|null=>{
     const canvas=canvasRef.current;
@@ -219,6 +219,7 @@ export default function ScratchReveal({
 
   return <div
     className={`thi-scratch thi-scratch-real ${revealed?"done":""}`}
+    data-scratch-cover-theme={themeSlug}
     style={{"--scratch-accent":accent} as React.CSSProperties}
   >
     <div className="thi-scratch-prize">
