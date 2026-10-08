@@ -71,7 +71,7 @@ jobs:
           const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
           const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
           const scripts=[];
-          page.on('response',r=>{if(r.url().includes('/_next/static/')&&r.url().includes('.js'))scripts.push({status:r.status(),url:r.url().split('/').at(-1)});});
+          page.on('response',r=>{if(r.url().includes('/_next/static/')&&r.url().includes('.js'))scripts.push({status:r.status(),url:r.url()});});
           page.on('pageerror',e=>console.log('PAGE_ERROR:',e.message));
           await page.goto('https://tehiceesto.com/experiencias/mama',{waitUntil:'domcontentloaded',timeout:45000});
           await page.waitForTimeout(3500);
@@ -83,6 +83,14 @@ jobs:
           }));
           console.log('BROWSER:',JSON.stringify(state));
           console.log('CHUNKS:',JSON.stringify(scripts));
+          for (const script of [...new Set(scripts.map(s=>s.url))]) {
+            const response=await page.request.get(script,{timeout:30000});
+            const body=await response.text();
+            if(body.includes('mama-voice-toggle')||body.includes('thi-mama-voice-player')) {
+              console.log('MAMA_ENGINE_CHUNK:',script,'BYTES:',body.length);
+            }
+          }
+          console.log('DOM_SCRIPT_URLS:',JSON.stringify(await page.evaluate(()=>[...document.scripts].map(x=>x.src).filter(Boolean))));
           await browser.close();
           if(!state.bridge) { console.error('Mamá patch not loaded by browser!'); process.exit(1); }
           console.log('PASS: Mamá route executes real audio patch on mobile browser.');
