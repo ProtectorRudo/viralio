@@ -8,6 +8,37 @@ function hostWithoutPort(request: NextRequest) {
   return (request.headers.get("host") || "").split(":")[0].toLowerCase();
 }
 
+function applyPrivateHeaders(response: NextResponse, pathname: string) {
+  response.headers.set("Referrer-Policy","no-referrer");
+  response.headers.set("X-Robots-Tag","noindex, nofollow, noarchive, noimageindex");
+  response.headers.set("Cache-Control","private, no-store, max-age=0, must-revalidate");
+  response.headers.set("X-Content-Type-Options","nosniff");
+  response.headers.set(
+    "Permissions-Policy",
+    pathname.startsWith("/editar/")
+      ? "camera=(), microphone=(self), geolocation=()"
+      : "camera=(), microphone=(), geolocation=()",
+  );
+  return response;
+}
+
+function privateTeHiceEstoPath(pathname: string) {
+  const normalized = pathname === LEGACY_PREFIX
+    ? "/"
+    : pathname.startsWith(`${LEGACY_PREFIX}/`)
+      ? pathname.slice(LEGACY_PREFIX.length)
+      : pathname;
+
+  return normalized.startsWith("/r/") ||
+    normalized.startsWith("/pedido/") ||
+    normalized.startsWith("/editar/") ||
+    normalized === "/mis-regalos" ||
+    normalized.startsWith("/mercadopago/") ||
+    normalized.startsWith("/afiliados/") ||
+    normalized === "/admin" ||
+    normalized.startsWith("/admin/");
+}
+
 function teHiceEstoRobots() {
   return new NextResponse(
     [
@@ -70,9 +101,13 @@ export function proxy(request: NextRequest) {
   const host = hostWithoutPort(request);
   const { pathname, search } = request.nextUrl;
 
-  // Viralio and every other host keep their current routing untouched.
+  // Viralio and every other host keep their routing untouched, while
+  // private Te Hice Esto routes still receive the same privacy headers.
   if (host !== PRIMARY_HOST && host !== WWW_HOST) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    return privateTeHiceEstoPath(pathname)
+      ? applyPrivateHeaders(response, pathname.startsWith(LEGACY_PREFIX) ? pathname.slice(LEGACY_PREFIX.length) || "/" : pathname)
+      : response;
   }
 
   // Te Hice Esto has one canonical host.
@@ -135,28 +170,9 @@ export function proxy(request: NextRequest) {
     pathname === "/" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`;
 
   const response = NextResponse.rewrite(target);
-  const privatePath =
-    pathname.startsWith("/r/") ||
-    pathname.startsWith("/pedido/") ||
-    pathname.startsWith("/editar/") ||
-    pathname === "/mis-regalos" ||
-    pathname.startsWith("/mercadopago/") ||
-    pathname.startsWith("/afiliados/") ||
-    pathname === "/admin" ||
-    pathname.startsWith("/admin/");
-  if (privatePath) {
-    response.headers.set("Referrer-Policy","no-referrer");
-    response.headers.set("X-Robots-Tag","noindex, nofollow, noarchive, noimageindex");
-    response.headers.set("Cache-Control","private, no-store, max-age=0, must-revalidate");
-    response.headers.set("X-Content-Type-Options","nosniff");
-    response.headers.set(
-      "Permissions-Policy",
-      pathname.startsWith("/editar/")
-        ? "camera=(), microphone=(self), geolocation=()"
-        : "camera=(), microphone=(), geolocation=()",
-    );
-  }
-  return response;
+  return privateTeHiceEstoPath(pathname)
+    ? applyPrivateHeaders(response, pathname)
+    : response;
 }
 
 export const config = {

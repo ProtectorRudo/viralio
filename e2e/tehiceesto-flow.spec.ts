@@ -1445,7 +1445,7 @@ test("customer studio is guided, mobile-safe and publishes without technical lan
   await page.getByRole("button",{name:/Publicar mi regalo/i}).first().click();
 
   await expect(page.getByRole("heading",{name:/Tu regalo está listo para vivirlo/i})).toBeVisible();
-  await expect(page.getByRole("link",{name:/Abrir antes de enviar/i})).toHaveAttribute("href",`/tehiceesto/r/${code}`);
+  await expect(page.getByRole("link",{name:/Abrir antes de enviar/i})).toHaveAttribute("href",`https://tehiceesto.com/r/${code}`);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
