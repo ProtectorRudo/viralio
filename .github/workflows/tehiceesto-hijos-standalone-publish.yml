@@ -25,6 +25,7 @@ jobs:
       - name: Install locked dependencies and Chromium
         run: |
           npm ci
+          npm install --no-save --no-package-lock esbuild@0.25.12
           npx playwright install --with-deps chromium
       - name: Bundle existing live Hijos model
         run: node scripts/build-hijos-standalone.mjs
