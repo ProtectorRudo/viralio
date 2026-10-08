@@ -685,7 +685,7 @@ test("birthday premium scenes work on 390px mobile and preserve the three-balloo
  await expect(page.locator('[data-action="blow-fallback"]')).toContainText("Ya soplé");
  await expect(page.getByText(/APAGAR TOCANDO/i)).toHaveCount(0);
  await page.locator('[data-action="blow-fallback"]').click();
- await advanceOne(page);
+ await page.locator('[data-action="advance"]').click();
  await waitForScene(page,"balloons");
  const balloons=page.locator('[data-action="balloon"]');
  await expect(balloons).toHaveCount(6);
