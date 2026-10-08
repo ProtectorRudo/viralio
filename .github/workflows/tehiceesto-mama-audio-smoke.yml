@@ -91,7 +91,36 @@ jobs:
             }
           }
           console.log('DOM_SCRIPT_URLS:',JSON.stringify(await page.evaluate(()=>[...document.scripts].map(x=>x.src).filter(Boolean))));
-          await browser.close();
-          if(!state.bridge) { console.error('Mamá patch not loaded by browser!'); process.exit(1); }
+          if(!state.bridge) { await browser.close(); console.error('Mamá patch not loaded by browser!'); process.exit(1); }
           console.log('PASS: Mamá route executes real audio patch on mobile browser.');
+          const audioRequests=[];
+          page.on('response',r=>{if(r.url().includes('mama-demo-hotfix?audio=1'))audioRequests.push({status:r.status(),url:r.url()});});
+          for(let i=0;i<5;i++){
+            await page.evaluate(()=>{
+              const b=document.querySelector('[data-action="next"]');
+              if(!b) throw new Error("Missing navigation button");
+              b.removeAttribute('disabled');
+              b.click();
+            });
+            await page.waitForTimeout(550);
+          }
+          const reached=await page.locator('[data-action="mama-voice-choice"]').count();
+          console.log('VOICE_PICKER_CARDS:',reached);
+          if(reached!==3)throw new Error('Cannot reach three voices in mobile demo');
+          await page.locator('[data-action="mama-voice-choice"]').first().click();
+          await page.waitForTimeout(450);
+          await page.locator('[data-action="mama-voice-toggle"]').click();
+          await page.waitForTimeout(2000);
+          const playing=await page.evaluate(()=>({
+            status:document.querySelector('.thi-mama-voice-status')?.textContent,
+            buttonState:document.querySelector('[data-action="mama-voice-toggle"]')?.getAttribute('data-voice-state'),
+            speechSynthSpeaking:window.speechSynthesis?.speaking,
+            wave:document.querySelector('.thi-mama-voice-wave')?.classList.contains('is-playing'),
+          }));
+          console.log('REAL_VOICE_PLAYER:',JSON.stringify(playing),'AUDIO_REQUESTS:',JSON.stringify(audioRequests));
+          if(!audioRequests.some(r=>[200,206].includes(r.status)))throw new Error('Real recording was not requested by browser');
+          if(playing.buttonState!=='playing')throw new Error('Real recording did not start playing');
+          if(playing.speechSynthSpeaking)throw new Error('Synthetic TTS is still talking over real recording');
+          await browser.close();
+          console.log('SUCCESS: First Mamá voice plays original audio, not TTS, in actual mobile scene.');
           NODE
