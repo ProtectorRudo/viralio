@@ -2,7 +2,7 @@
 
 // Occasion-first assisted purchase flow. Keep deploy-trigger edits batched.\n
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./creatorApi";
@@ -72,6 +72,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
   const [errorMessage, setErrorMessage] = useState("");
   const [orderCode, setOrderCode] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
+  const orderRequestId = useRef("");
 
   const selected = useMemo(
     () => experiences.find((experience) => experience.slug === selectedSlug),
@@ -95,6 +96,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
     contact.consent;
 
   function chooseTemplate(slug: string) {
+    orderRequestId.current="";
     setSelectedSlug(slug);
     setStep(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -112,6 +114,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
     setSubmitState("submitting");
     setErrorMessage("");
+    if(!orderRequestId.current)orderRequestId.current=window.crypto.randomUUID();
 
     try {
       const response = await fetch(`${SUPABASE_URL}/functions/v1/order-create`, {
@@ -128,6 +131,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
           consent: contact.consent,
           website: "",
           affiliateToken: readCookie("thi_affiliate_token"),
+          clientRequestId: orderRequestId.current,
         }),
       });
 
@@ -321,7 +325,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                   title="Escribí tu número con al menos 8 dígitos."
                   required
                 />
-                <small>Escribilo con números. También sirve para recuperar tu acceso.</small>
+                <small>Escribilo con números. Lo usamos sólo para acompañar tu compra si necesitás ayuda.</small>
               </label>
 
               <label>
@@ -335,6 +339,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                   placeholder="tu@email.com"
                   required
                 />
+                <small>Usá un email al que tengas acceso: ahí te mandamos el enlace privado de tu regalo.</small>
               </label>
 
               <label className="order-consent">
