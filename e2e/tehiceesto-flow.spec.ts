@@ -264,6 +264,34 @@ test("Papa premium keeps the emotional journey clean, audible and reset at the t
 });
 test("scene state resets when revisiting and restart always starts clean",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/cumpleanos");await advanceOne(page);await waitForScene(page,"candles");await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");const balloons=page.locator('[data-action="balloon"]');await balloons.nth(0).click();await expect(balloons.nth(0)).toHaveClass(/pop/);await page.locator('.thi-progress-premium [data-action="previous"]').click();await waitForScene(page,"candles");await expect(page.locator(".thi-birthday-ritual")).not.toHaveClass(/out/);await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click();await waitForScene(page,"balloons");await expect(page.locator(".thi-balloons button.pop")).toHaveCount(0);await balloons.nth(0).click();await balloons.nth(1).click();await page.locator('.thi-reset-journey[data-action="restart"]').click();await waitForScene(page,"intro")});
 test("all visible scene copy can be overridden without changing the engine",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await expect(page.getByText(/armó esto pensando en vos/i)).toBeVisible();await page.locator('[data-action="advance"]').click();await expect(page.getByText(/No todo empieza con una fecha/i)).toBeVisible()});
+test("pair stars reveal five natural compliments in their real interaction order",async({page})=>{
+  test.setTimeout(60_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  await expect(page.getByText("Lo nuestro merece estar en un lugar así.")).toBeVisible();
+  for(let step=0;step<10 && await sceneName(page)!=="stars";step++){
+    const previous=await sceneName(page);
+    await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:5000}).not.toBe(previous);
+  }
+  await waitForScene(page,"stars");
+  const compliments=[
+    "Me encanta cómo se te ilumina la cara cuando algo te hace feliz.",
+    "Tenés una risa que siempre me termina contagiando.",
+    "Admiro cómo cuidás a la gente que querés, hasta en los detalles chiquitos.",
+    "Me gusta que con vos puedo ser yo, incluso en mis días más raros.",
+    "Y por si no te lo digo seguido: me seguís gustando muchísimo.",
+  ];
+  const nodes=page.locator(".thi-pair-star-node");
+  await expect(nodes).toHaveCount(5);
+  for(let index=0;index<compliments.length;index++){
+    await nodes.nth(index).click();
+    await expect(page.locator(".thi-pair-stars-story blockquote")).toHaveText(compliments[index]);
+  }
+  await expect(page.locator(".thi-pair-stars-cta")).toBeVisible();
+});
+
 test("pareja includes an intimate voice-note scene before the light reveal",async({page})=>{await page.setViewportSize({width:390,height:844});await page.goto("/tehiceesto/experiencias/pareja");await waitForScene(page,"intro");await advanceOne(page);await waitForScene(page,"door");await advanceOne(page);await waitForScene(page,"memories");await advanceOne(page);await waitForScene(page,"voices");await page.locator('[data-action="demo-voice"]').click();await expect(page.getByText(/desde que estás vos/i)).toBeVisible();await expect(page.locator('[data-action="advance"]')).toBeEnabled()});
 
 
@@ -715,6 +743,8 @@ test("pair hold scene is cinematic, distraction-free and responds while holding"
   await page.keyboard.press("Enter");
   await expect(ritual).toHaveClass(/revealed/);
   await expect(ritual).toHaveAttribute("data-hold-phase","complete");
+  await expect(ritual.getByText("Todavía nos quedan un montón de cosas por vivir. Me encanta pensar que van a ser con vos.")).toBeVisible();
+  await expect(page.getByText(/Entre todas las versiones de mi vida/)).toHaveCount(0);
   await expect(page.locator('[data-action="advance"]')).toBeVisible();
 });
 
