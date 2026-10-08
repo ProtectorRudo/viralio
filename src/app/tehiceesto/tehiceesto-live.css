@@ -6408,3 +6408,47 @@
 @media(prefers-reduced-motion:reduce){
   .thi-experience .thi-global-back-nav{transition:none}
 }
+
+/* AFILIADOS · formularios legibles y accesibles · Oct 2026 */
+.thi-aff-login-card input,
+.thi-aff-login-card input:focus,
+.thi-aff-login-card input:active,
+.thi-aff-login-card input[readonly]{
+  color:#30272b !important;
+  -webkit-text-fill-color:#30272b !important;
+  caret-color:#ab6655;
+  background-color:#fffdf9 !important;
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:.01em;
+  border:1px solid rgba(74,54,56,.17);
+  box-shadow:inset 0 1px 3px rgba(55,39,38,.025);
+}
+.thi-aff-login-card input[readonly]{
+  color:#605255 !important;
+  -webkit-text-fill-color:#605255 !important;
+  background-color:#f6f0eb !important;
+}
+.thi-aff-login-card input::placeholder{
+  color:#83787b;
+  opacity:1;
+}
+.thi-aff-login-card input:focus-visible{
+  outline:3px solid rgba(177,96,85,.17);
+  outline-offset:2px;
+  border-color:#ac685b;
+}
+.thi-aff-login-card input::selection{
+  color:#fffaf5;
+  background:#9c5b50;
+}
+.thi-aff-login-card label span{
+  font-size:11px;
+  font-weight:650;
+  letter-spacing:.055em;
+  color:#6b555c;
+}
+@media(max-width:540px){
+  .thi-aff-login-card{padding:30px 22px;}
+  .thi-aff-login-card input{font-size:16px;}
+}
