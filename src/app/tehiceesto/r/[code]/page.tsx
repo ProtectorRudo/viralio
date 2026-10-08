@@ -7,8 +7,12 @@ import { getExperience as getPremiumV1Experience } from "../../template-v1/data"
 import { getExperience as getPremiumV2Experience } from "../../template-v2/data";
 import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV1SceneTextOverrides } from "../../template-v1/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../../template-v2/sceneText";
 import AffiliateRedirect from "./AffiliateRedirect";
 import { effectiveRecipeForMedia } from "../../effectiveRecipe";
+import { effectiveRecipeForMedia as effectivePremiumV1RecipeForMedia } from "../../template-v1/effectiveRecipe";
+import { effectiveRecipeForMedia as effectivePremiumV2RecipeForMedia } from "../../template-v2/effectiveRecipe";
 
 const SUPABASE_URL="https://efvvadfxuyieswdqnsjg.supabase.co";
 const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
@@ -43,7 +47,12 @@ export default async function PublishedGiftPage({
   const hasVoice=ordered.some(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack");
   const hasLightPhoto=ordered.some(item=>item.kind==="image"&&item.url&&item.metadata?.scene==="light");
   const storedRecipe=Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?payload.gift.scene_recipe:base.recipe;
-  const effectiveRecipe=effectiveRecipeForMedia(storedRecipe,{
+  const recipeResolver=frozenV1
+    ?effectivePremiumV1RecipeForMedia
+    :frozenV2
+      ?effectivePremiumV2RecipeForMedia
+      :effectiveRecipeForMedia;
+  const effectiveRecipe=recipeResolver(storedRecipe,{
     hasPhoto,
     hasVoice,
     hasVideo,
@@ -53,11 +62,16 @@ export default async function PublishedGiftPage({
     recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
   const Engine=frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:ExperienceEngine;
+  const sceneTextOverrides=frozenV1
+    ?normalizePremiumV1SceneTextOverrides(payload.gift.story_data?.sceneContent)
+    :frozenV2
+      ?normalizePremiumV2SceneTextOverrides(payload.gift.story_data?.sceneContent)
+      :normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent);
   return <Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
     photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",scene:item.metadata?.scene}))}
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     storyContext={{keyDate:payload.gift.story_data?.keyDate,anecdote:payload.gift.story_data?.anecdote}}
-    sceneTextOverrides={normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent)}
+    sceneTextOverrides={sceneTextOverrides}
     videoMedia={ordered.filter(item=>item.kind==="video"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}/>;
 }
