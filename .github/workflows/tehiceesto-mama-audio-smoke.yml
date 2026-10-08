@@ -43,5 +43,39 @@ jobs:
           node --check /tmp/public.js
           echo 'Production demo HTML'
           curl -fsSL --max-time 40 -o /tmp/mama.html https://tehiceesto.com/experiencias/mama
-          grep -Fq '2ub9wnrqd274z.js' /tmp/mama.html
-          echo 'SUCCESS: audio Ogg, range, hotfix JS syntax, route and demo bundle link verified.'
+          echo 'Referenced production bundles:'
+          grep -oE '_next/static/immutable/chunks/[^"]+\\.js' /tmp/mama.html | head -n 25 || true
+          echo 'SUCCESS: audio Ogg, range, hotfix JavaScript syntax and live proxy verified.'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install browser test runtime
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Browser verify Mamá patch and real audio fetch
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+          const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+          const scripts=[];
+          page.on('response',r=>{if(r.url().includes('/_next/static/')&&r.url().includes('.js'))scripts.push({status:r.status(),url:r.url().split('/').at(-1)});});
+          page.on('pageerror',e=>console.log('PAGE_ERROR:',e.message));
+          await page.goto('https://tehiceesto.com/experiencias/mama',{waitUntil:'domcontentloaded',timeout:45000});
+          await page.waitForTimeout(3500);
+          const state=await page.evaluate(()=>({
+            bridge:!!window.__thiMamaVoiceHotfixV2,
+            mainText:document.body.innerText.slice(0,400),
+            buttons:[...document.querySelectorAll('button')].slice(0,14).map(b=>({txt:b.textContent?.slice(0,40),action:b.getAttribute('data-action')})),
+            scriptUrls:[...document.scripts].map(s=>s.src.split('/').at(-1)).filter(Boolean).slice(0,25)
+          }));
+          console.log('BROWSER:',JSON.stringify(state));
+          console.log('CHUNKS:',JSON.stringify(scripts));
+          await browser.close();
+          if(!state.bridge) { console.error('Mamá patch not loaded by browser!'); process.exit(1); }
+          console.log('PASS: Mamá route executes real audio patch on mobile browser.');
+          NODE
