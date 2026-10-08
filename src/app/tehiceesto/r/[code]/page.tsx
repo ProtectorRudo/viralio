@@ -9,6 +9,7 @@ import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV1SceneTextOverrides } from "../../template-v1/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../../template-v2/sceneText";
+import { fillPrivateGiftPhotos } from "../../privateGiftVisuals";
 import AffiliateRedirect from "./AffiliateRedirect";
 import { effectiveRecipeForMedia } from "../../effectiveRecipe";
 import { effectiveRecipeForMedia as effectivePremiumV1RecipeForMedia } from "../../template-v1/effectiveRecipe";
@@ -53,13 +54,25 @@ export default async function PublishedGiftPage({
       ?effectivePremiumV2RecipeForMedia
       :effectiveRecipeForMedia;
   const effectiveRecipe=recipeResolver(storedRecipe,{
-    hasPhoto,
+    // Missing photos get anonymous artwork rather than deleting visual scenes.
+    hasPhoto:hasPhoto||storedRecipe.includes("memories"),
     hasVoice,
     hasVideo,
-    hasLightPhoto,
+    hasLightPhoto:hasLightPhoto||storedRecipe.includes("light"),
   }) as typeof base.recipe;
-  const experience={...base,demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
+  const experience={...base,
+    // Private gifts never receive the demo's stock photographs, even in older engines.
+    demo:{...base.demo,photos:[]},
+    demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
     recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
+  const personalizedPhotos=fillPrivateGiftPhotos(
+    payload.gift.experience_slug,effectiveRecipe,
+    ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({
+      url:item.url as string,caption:item.caption||undefined,
+      fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",
+      scene:item.metadata?.scene,
+    })),
+  );
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
   const Engine=frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:ExperienceEngine;
   const sceneTextOverrides=frozenV1
@@ -69,7 +82,7 @@ export default async function PublishedGiftPage({
       :normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent);
   // Gift pages have no sales UI. Keep a route-level guard independent of the template version.
   return <div className="thi-purchased-experience" data-purchased-gift="true" style={{display:"contents"}}><Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
-    photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",scene:item.metadata?.scene}))}
+    photoMedia={personalizedPhotos}
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     storyContext={{keyDate:payload.gift.story_data?.keyDate,anecdote:payload.gift.story_data?.anecdote}}
