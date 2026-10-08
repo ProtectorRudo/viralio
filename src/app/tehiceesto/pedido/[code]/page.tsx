@@ -19,7 +19,7 @@ const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
 
 type StatusPayload={
   code:string;
-  stage:"received"|"payment"|"contact"|"production"|"ready";
+  stage:"received"|"payment"|"personalize"|"ready";
   giftStatus:string;
   experienceSlug:string;
   giverName:string;
