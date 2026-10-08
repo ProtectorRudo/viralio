@@ -4,7 +4,7 @@ import missing2 from "./missing2";
 import chunk2 from "./chunk2";
 
 export const runtime = "nodejs";
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 const audioBase64 =
   chunk1.slice(0, 6988) +
