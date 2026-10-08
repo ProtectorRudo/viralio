@@ -1,0 +1,76 @@
+/* TeHiceEsto — public demo conversion control (2026).
+   The demo is the only place where this rule applies. Frozen/private gift pages
+   are not touched. Imported last to supersede legacy scene-specific CTA hiding.
+   The one-tap link itself is supplied by FloatingWhatsApp and includes the slug.
+*/
+
+/* This specificity is deliberately higher than previous scene-by-scene
+   visibility:hidden!important rules for Pareja, Mamá, and Papá. */
+.thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  transform: none !important;
+  animation: none !important;
+  z-index: 5000 !important;
+  right: max(16px, env(safe-area-inset-right)) !important;
+  bottom: calc(78px + env(safe-area-inset-bottom)) !important;
+  width: auto;
+  max-width: min(190px, calc(100vw - 28px));
+  min-height: 50px;
+  border-radius: 999px;
+  border: 1px solid rgba(229,166,158,.33);
+  background: rgba(27,19,27,.93);
+  box-shadow: 0 12px 36px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience:focus-visible {
+  outline: 2px solid #f4d3bc !important;
+  outline-offset: 3px;
+}
+.thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-copy strong {
+  color: #fff7f2;
+  font-size: 14px;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: .01em;
+}
+.thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-icon svg {
+  fill: #e4a78f;
+}
+.thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-arrow {
+  color: #e4a78f;
+}
+@media (max-width: 600px) {
+  .thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience {
+    right: max(9px, env(safe-area-inset-right)) !important;
+    bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+    width: auto;
+    min-width: 0;
+    max-width: min(160px, calc(100vw - 18px));
+    min-height: 46px;
+    padding: 6px 10px 6px 7px;
+    grid-template-columns: 31px auto;
+    gap: 7px;
+  }
+  .thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-icon {
+    width: 31px;
+    height: 31px;
+  }
+  .thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-copy small,
+  .thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-arrow {
+    display: none;
+  }
+  .thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-copy strong {
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thi-root:has(.thi-demo-page .thi-template-live[data-scene]) > a.floating-create-cta.floating-whatsapp--experience {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
