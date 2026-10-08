@@ -475,8 +475,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </section>;
         }
         if(experience.slug==="mama"){
-          const usingRealAudio=currentAudios.length>0;
-          const count=Math.min(3,usingRealAudio?currentAudios.length:voiceEntries.length);
+          const count=Math.min(3,customerGift?currentAudios.length:Math.max(currentAudios.length,voiceEntries.length));
           const entries=Array.from({length:count},(_,i)=>{
             const voice=customerGift?undefined:(voiceEntries[i]||voiceEntries[0]);
             const audio=currentAudios[i];
@@ -502,13 +501,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           };
           const toggleMamaVoice=async()=>{
             if(active===null)return;
-            if(usingRealAudio){
+            const entry=entries[active];
+            if(entry.audio?.url){
               const audio=mamaVoiceAudioRef.current;if(!audio)return;
               try{if(audio.paused){await audio.play()}else audio.pause()}catch{}
               return;
             }
             setVoicesPlayed(v=>v.includes(active)?v:[...v,active]);
-            toggleDemoVoice(entries[active].message);
+            toggleDemoVoice(entry.message);
             haptic(7);
           };
           if(active===null&&allHeard)return <section className="thi-scene thi-mama-voices thi-mama-voices-complete">
@@ -523,9 +523,10 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </section>;
           if(active!==null){
             const entry=entries[active];
-            const isPlaying=usingRealAudio?mamaVoiceRealPlaying:demoVoiceStatus==="playing";
-            const isPaused=usingRealAudio?!mamaVoiceRealPlaying&&mamaVoiceProgress>0:demoVoiceStatus==="paused";
-            const progress=usingRealAudio?mamaVoiceProgress:(isPlaying?38:isPaused?38:voicesPlayed.includes(active)?100:0);
+            const hasRealAudio=Boolean(entry.audio?.url);
+            const isPlaying=hasRealAudio?mamaVoiceRealPlaying:demoVoiceStatus==="playing";
+            const isPaused=hasRealAudio?!mamaVoiceRealPlaying&&mamaVoiceProgress>0:demoVoiceStatus==="paused";
+            const progress=hasRealAudio?mamaVoiceProgress:(isPlaying?38:isPaused?38:voicesPlayed.includes(active)?100:0);
             return <section className="thi-scene thi-mama-voices thi-mama-voice-player">
               <div className="thi-mama-voices-atmosphere" aria-hidden="true"><i/><i/><b/><b/></div>
               <p className="thi-kicker">Voz</p>
@@ -536,7 +537,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <h2>{entry.name}</h2>
                 {entry.message&&<blockquote>“{entry.message}”</blockquote>}
                 <div className={`thi-mama-voice-wave ${isPlaying?"is-playing":""}`} style={{"--voice-progress":`${progress}%`} as CSSProperties} aria-hidden="true">{Array.from({length:34}).map((_,bar)=><i key={bar}/>)}</div>
-                {usingRealAudio&&<audio
+                {hasRealAudio&&<audio
                   ref={mamaVoiceAudioRef}
                   data-action="mama-real-audio"
                   src={entry.audio?.url}
