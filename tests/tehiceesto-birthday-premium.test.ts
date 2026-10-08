@@ -51,6 +51,28 @@ describe("Cumpleaños premium quality and safe reuse",()=>{
   expect(editor).toContain('path:"finale.fromLabel"');
   expect(editor).toContain('path:"light.clues"');
  });
+ it("shows photos of real people in the public demo, not random strangers in customer gifts",()=>{
+   const engine=file("ExperienceEngine.tsx");
+   const lantern=file("BirthdayLantern.tsx");
+   const scene=engine.slice(engine.indexOf('case"light":return experience.slug==="cumpleanos"'),engine.indexOf('case"stars":return'));
+   expect(scene).toContain('photos={customerGift');
+   expect(scene).toContain('currentPhotos.filter');
+   expect(scene).toContain('photo-1758275557513-241a2a229936');
+   expect(scene).toContain('photo-1755705153160-67b29c7718ee');
+   expect(scene).toContain('photo-1772724317388-4d1d1cc45c09');
+   expect(lantern).toContain('photos[i]?.url?');
+   expect(lantern).toContain('thi-bday-lantern-photo');
+ });
+ it("raises the opened paper over the envelope flap and preserves readable long text",()=>{
+   const css=file("tehiceesto-birthday.css");
+   const fix=css.slice(css.indexOf("LETTER OPEN — actually pull"));
+   expect(fix).toContain(".thi-envelope.open .paper");
+   expect(fix).toContain("z-index:20!important");
+   expect(fix).toContain("overflow-y:auto!important");
+   expect(fix).toContain(".thi-envelope.open .paper strong");
+   expect(fix).toContain("overflow:visible!important");
+   expect(fix).toContain(".thi-envelope.open .front");
+ });
  it("limits new CSS to live version and does not modify frozen templates",()=>{
   const css=file("tehiceesto-birthday.css");
   expect(css).toContain("thi-template-live.thi-theme-cumpleanos");
