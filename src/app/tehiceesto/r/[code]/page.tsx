@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import ExperienceEngine from "../../ExperienceEngine";
 import PremiumV1Engine from "../../template-v1/ExperienceEngine";
+import PremiumV2Engine from "../../template-v2/ExperienceEngine";
 import { getExperience } from "../../data";
 import { getExperience as getPremiumV1Experience } from "../../template-v1/data";
+import { getExperience as getPremiumV2Experience } from "../../template-v2/data";
 import type { DeepPartial,ExperienceCopy } from "../../experienceCopy";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../../sceneText";
 import AffiliateRedirect from "./AffiliateRedirect";
@@ -34,7 +36,7 @@ export default async function PublishedGiftPage({
   }
   const response=await fetch(`${SUPABASE_URL}/functions/v1/gift-read?code=${encodeURIComponent(code)}`,{headers:{apikey:PUBLISHABLE_KEY,accept:"application/json"},cache:"no-store"});
   if(response.status===404)notFound();if(!response.ok)throw new Error("gift_read_failed");
-  const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
+  const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const frozenV2=templateVersion==="premium-v2";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):frozenV2?getPremiumV2Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
   const ordered=[...(payload.media||[])].sort((a,b)=>a.sort_order-b.sort_order);
   const hasPhoto=ordered.some(item=>item.kind==="image"&&item.url);
   const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
@@ -50,7 +52,7 @@ export default async function PublishedGiftPage({
   const experience={...base,demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
     recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
-  const Engine=frozenV1?PremiumV1Engine:ExperienceEngine;
+  const Engine=frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:ExperienceEngine;
   return <Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
     photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",scene:item.metadata?.scene}))}
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
