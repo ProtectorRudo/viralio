@@ -96,7 +96,7 @@ Deno.serve(async(req:Request)=>{
   const action=String(body.action||"");
 
   if(action==="config"){
-    if(order.status==="approved"||order.status==="refunded"){
+    if((order.status==="approved"||order.status==="refunded")&&body.syncStatusOnly!==true){
       return reply({error:"checkout_locked",status:order.status},409);
     }
     if(!Number.isInteger(order.amount_minor)||Number(order.amount_minor)<=0){
