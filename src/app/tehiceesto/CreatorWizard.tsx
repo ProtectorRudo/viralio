@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useRef, useState } from "react";
 import { experiences } from "./data";
+import GiftPicker from "./GiftPicker";
 import { formatTeHiceEstoPrice } from "./pricing";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./creatorApi";
 
@@ -120,8 +121,12 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
     orderRequestId.current="";
     clearStoredOrderRequest();
     setSelectedSlug(slug);
+  }
+
+  function continueToContact(){
+    if (!selectedSlug) return;
     setStep(1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({top:0,behavior:"smooth"});
   }
 
   function goToReview(event: FormEvent) {
@@ -189,127 +194,29 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
   }
 
   return (
-    <div className="order-flow">
-      <aside className="order-flow-rail">
-        <Link href="/tehiceesto" className="order-flow-brand">TE HICE ESTO</Link>
-        <div className="order-flow-progress" aria-label="Progreso">
-          {[
-            ["01", "Elegir"],
-            ["02", "Tus datos"],
-            ["03", "Pagar"],
-          ].map(([index, label], itemIndex) => (
-            <div
-              key={index}
-              className={itemIndex < step ? "done" : itemIndex === step ? "active" : ""}
-            >
-              <span>{itemIndex < step ? "✓" : index}</span>
+    <div className="order-flow thi-purchase-page" data-active-step={step}>
+      <header className="thi-buy-topbar">
+        <div className="thi-buy-topline">
+          <Link href="/tehiceesto" className="thi-buy-brand"><span aria-hidden="true">♡</span> TeHiceEsto<span className="thi-buy-brand-domain">.com</span></Link>
+          <span className="thi-buy-trust"><i aria-hidden="true">♧</i> Pago seguro</span>
+        </div>
+        <nav className="thi-buy-progress" aria-label="Pasos de compra">
+          {["Elegí el regalo","Tus datos","Pagar"].map((label,index)=>(
+            <div key={label} className={index===step?"active":index<step?"done":""} aria-current={index===step?"step":undefined}>
+              <span>{index<step?"✓":String(index+1).padStart(2,"0")}</span>
               <strong>{label}</strong>
             </div>
           ))}
-        </div>
-        <div className="order-flow-price">
-          <small>PRECIO FINAL</small>
-          <strong>{formatTeHiceEstoPrice()}</strong>
-          <span>Pago único</span>
-        </div>
-      </aside>
-
-      <section className="order-flow-main">
-        {step === 0 && (
-          <div className="order-step order-template-step">
-            <header className="order-step-head">
-              <span className="eyebrow">01 · Elegí la experiencia</span>
-              <h1>Elegí la que más se parece a <em>esa persona.</em></h1>
-              <p>
-                Elegí el regalo que más te guste. Después del pago te guiamos
-                pantalla por pantalla para agregar fotos, audios y tus palabras.
-                El diseño, los efectos y las animaciones ya vienen listos.
-              </p>
-              <div className="order-step-trust" aria-label="Cómo trabajamos">
-                <span><b>01</b> Elegís el regalo</span>
-                <span><b>02</b> Pagás de forma segura</span>
-                <span><b>03</b> Lo personalizás con una guía</span>
-              </div>
-            </header>
-
-            <div className="order-occasion-picker">
-              <div className="order-occasion-picker-head">
-                <strong>¿PARA QUIÉN O PARA QUÉ OCASIÓN?</strong>
-                <span>Filtrá para encontrarla más rápido</span>
-              </div>
-              <div className="order-occasion-filters" role="group" aria-label="Filtrar experiencias por ocasión">
-                {EXPERIENCE_FILTERS.map((filter) => (
-                  <button
-                    key={filter}
-                    type="button"
-                    className={activeFilter === filter ? "active" : ""}
-                    aria-pressed={activeFilter === filter}
-                    onClick={() => setActiveFilter(filter)}
-                  >
-                    {filter}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="order-template-grid">
-              {visibleExperiences.map((experience) => {
-                const index = experiences.findIndex((item) => item.slug === experience.slug);
-                const number = String(index + 1).padStart(2, "0");
-                const occasion = OCCASION_META[experience.slug] ?? {
-                  label: experience.tags[0].toUpperCase(),
-                  filter: experience.tags[0],
-                  cta: "Elegir experiencia",
-                };
-                return (
-                  <article
-                    className={`order-template-card order-template-${experience.slug}`}
-                    key={experience.slug}
-                    style={{ "--template-accent": experience.accent } as React.CSSProperties}
-                  >
-                    <div
-                      className={`order-template-art ${experience.demo.photos?.[0]?.url ? "has-photo" : ""}`}
-                      aria-hidden="true"
-                      style={experience.demo.photos?.[0]?.url ? {
-                        backgroundImage: `linear-gradient(180deg,rgba(24,19,21,.10),rgba(24,19,21,.50)), url("${experience.demo.photos[0].url}")`,
-                        backgroundSize: "cover",
-                        backgroundPosition: experience.demo.photos[0].position || "center",
-                      } : undefined}
-                    >
-                      <span>TH / {number}</span>
-                      <b>{experience.icon}</b>
-                      <em>{occasion.label.replace("PARA ", "")}</em>
-                    </div>
-                    <div className="order-template-copy">
-                      <div className="order-template-overline">
-                        <span>{number}</span>
-                        <small>{experience.eyebrow}</small>
-                      </div>
-                      <strong className="order-template-occasion">{occasion.label}</strong>
-                      <h2>{experience.title}</h2>
-                      <p>{experience.short}</p>
-                      <div className="order-template-actions">
-                        <button type="button" onClick={() => chooseTemplate(experience.slug)}>
-                          {occasion.cta} <span>→</span>
-                        </button>
-                        <Link href={`/tehiceesto/experiencias/${experience.slug}`} target="_blank">
-                          Ver cómo se ve
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        </nav>
+      </header>      <section className="order-flow-main">
+        {step === 0 && <GiftPicker selectedSlug={selectedSlug} onSelect={chooseTemplate} onContinue={continueToContact}/>}
 
         {step === 1 && selected && (
           <div className="order-step order-contact-step">
             <header className="order-step-head compact">
               <button className="order-back" type="button" onClick={() => setStep(0)}>← Cambiar experiencia</button>
               <span className="eyebrow">02 · Tus datos</span>
-              <h1>Tres datos y listo.</h1>
+              <h1>Ya falta muy poquito.</h1>
               <p>
                 Nada de crear una cuenta ni inventar contraseñas. Los usamos para guardar
                 tu compra y recuperar tu regalo si cambiás de celular.
@@ -366,7 +273,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                   placeholder="tu@email.com"
                   required
                 />
-                <small>Usá un email al que tengas acceso: ahí te mandamos el enlace privado de tu regalo.</small>
+                <small>Usá un email al que tengas acceso para identificar tu pedido y recuperar el regalo.</small>
               </label>
 
               <label className="order-consent">
@@ -383,7 +290,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
               </label>
 
               <button className="order-primary" type="submit">
-                Revisar y pagar <span>→</span>
+                Continuar al pago <span>→</span>
               </button>
             </form>
           </div>
@@ -466,7 +373,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
               <div className="order-after-payment">
                 <article><span>01</span><p>Elegís y pagás.</p></article>
-                <article><span>02</span><p>Se habilita y te mandamos acceso por email.</p></article>
+                <article><span>02</span><p>Se habilita tu acceso al confirmar el pago.</p></article>
                 <article><span>03</span><p>Subís fotos, audios y tus palabras.</p></article>
                 <article><span>04</span><p>Publicás y recibís tu link al instante.</p></article>
               </div>
