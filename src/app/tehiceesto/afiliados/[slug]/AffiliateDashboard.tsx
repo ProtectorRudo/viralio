@@ -183,7 +183,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
               ?"¡Tu recomendación generó una venta!"
               :`¡Tus recomendaciones generaron ${saleAlert.count} ventas!`}</h2>
             <p>{saleAlert.commissionMinor>0
-              <>Sumaste <strong>{money(saleAlert.commissionMinor)}</strong> de comisión. ¡Gracias por compartir experiencias que emocionan!</>
+              ?<>Sumaste <strong>{money(saleAlert.commissionMinor)}</strong> de comisión. ¡Gracias por compartir experiencias que emocionan!</>
               :"La venta ya está registrada en tu tablero. ¡Gracias por recomendar Te Hice Esto!"}</p>
             <small>Pago confirmado · El detalle figura en «Últimas ventas».</small>
           </div>
