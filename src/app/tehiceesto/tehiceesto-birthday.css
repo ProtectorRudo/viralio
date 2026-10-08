@@ -103,3 +103,31 @@
 .thi-bday-lantern-story{min-height:110px}
 .thi-bday-lantern-story p{font-size:clamp(19px,4.9vw,24px)}
 }
+
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"]{background:radial-gradient(ellipse at 50% 28%,#412936 0,#140f1a 56%,#08090e 100%)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene{min-height:100svh;width:min(780px,100%);margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:92px 17px 102px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene>.thi-kicker{color:#e8b994;font-size:10px;letter-spacing:.23em;margin:0 0 10px;text-align:center}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene>h2{color:#fff1e9;text-align:center;font:400 clamp(33px,5.4vw,52px)/1.08 var(--thi-serif,Georgia,serif);letter-spacing:-.035em;margin:0 0 18px}
+.thi-bday-voices{width:min(590px,100%);display:flex;flex-direction:column;align-items:center;gap:13px}
+.thi-bday-voices-intro{font:italic 17px/1.35 var(--thi-serif,Georgia,serif);color:#d7c3bd;text-align:center;margin:0 auto 14px;max-width:370px}
+.thi-bday-voices-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}
+.thi-bday-voice-tile{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid #e3baab43;border-radius:13px;background:linear-gradient(135deg,#6c47504d,#16121dba);box-shadow:0 15px 25px #06040f55,inset 0 1px #f3e3dc13;padding:15px 11px;min-height:91px;cursor:pointer;overflow:hidden;color:#f8e7d8;transition:border .35s,background .35s,transform .35s;touch-action:manipulation}
+.thi-bday-voice-tile.active,.thi-bday-voice-tile:hover{border-color:#f0c6a9ad;background:linear-gradient(135deg,#9f706167,#29202acb);transform:translateY(-2px)}
+.thi-bday-voice-icon{display:flex;align-items:center;justify-content:center;border-radius:50%;width:44px;height:44px;flex:none;background:radial-gradient(circle at 30% 20%,#ebc5ab,#8e5565);color:#371c28;font-size:24px;box-shadow:0 4px 17px #0005}
+.thi-bday-voice-person{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.thi-bday-voice-person small{color:#d2a6a5;font-size:8px;font-weight:700;letter-spacing:.13em}
+.thi-bday-voice-person strong{color:#fae6dc;font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thi-bday-voice-person>i{display:flex;align-items:center;gap:2px;height:15px;opacity:.62}
+.thi-bday-voice-person>i b{display:block;width:2px;max-height:13px;background:#e9b997;border-radius:2px}
+.thi-bday-voice-tile.active .thi-bday-voice-person>i b{animation:thiBdayWave .9s ease-in-out infinite alternate}
+.thi-bday-voice-tile.active .thi-bday-voice-person>i b:nth-child(3n){animation-delay:-.35s}
+.thi-bday-voice-action{flex:none;color:#ebc49b;font-size:16px;width:19px}
+.thi-bday-voice-player{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;border:1px solid #e0ab8e45;border-radius:10px;background:#0f0d18cb;padding:14px 17px;animation:thiBdayVoiceEnter .5s ease both}
+.thi-bday-voice-player>span{color:#e7b58e;font-size:9px;letter-spacing:.18em}
+.thi-bday-voice-player p{margin:0 auto;color:#f6dfd0;font:italic clamp(17px,3vw,24px)/1.3 var(--thi-serif,Georgia,serif);text-align:center;max-width:460px}
+.thi-bday-voice-player audio{width:100%;height:39px;max-width:450px;accent-color:#e2ad86}
+.thi-bday-voice-player button{color:#f8e4d0;border:1px solid #ebc19c86;background:#b47c5c24;border-radius:24px;padding:11px 24px;cursor:pointer;font-size:12px}
+.thi-bday-voice-next{background:linear-gradient(120deg,#eac498,#b98875);color:#28151e;border:1px solid #efd7b7;border-radius:28px;margin:5px auto 0;min-height:47px;padding:12px 24px;font-weight:650;cursor:pointer}
+@keyframes thiBdayVoiceEnter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes thiBdayWave{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+@media(max-width:600px){.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene{padding:95px 15px 96px}.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene>h2{font-size:clamp(31px,8vw,39px)}.thi-bday-voices-intro{font-size:15px}.thi-bday-voices-grid{gap:9px}.thi-bday-voice-tile{gap:8px;padding:12px 8px;min-height:84px}.thi-bday-voice-icon{width:35px;height:35px;font-size:20px}.thi-bday-voice-person strong{font-size:14px}.thi-bday-voice-person small{font-size:7px}.thi-bday-voice-action{width:14px}}
