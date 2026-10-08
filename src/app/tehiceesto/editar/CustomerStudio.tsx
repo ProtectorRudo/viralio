@@ -758,7 +758,7 @@ export default function CustomerStudio({code}:{code:string}){
       <p className="studio-eyebrow">TU COMPRA ESTÁ GUARDADA</p>
       <h1>Falta que se confirme el pago.</h1>
       <p>En cuanto Mercado Pago lo apruebe, este mismo acceso te deja empezar a personalizar automáticamente.</p>
-      <Link className="studio-main-button" href={`/tehiceesto/pedido/${code}`}>Ver estado del pago <b>→</b></Link>
+      <Link className="studio-main-button" href={`https://tehiceesto.com/pedido/${code}`}>Ver estado del pago <b>→</b></Link>
     </section>
   </main>;
 
@@ -774,13 +774,13 @@ export default function CustomerStudio({code}:{code:string}){
       </form>
       {message&&<p className="studio-alert">{message}</p>}
       <small className="account-privacy-note">Por seguridad no damos acceso sólo con conocer el email: el enlace llega a la casilla usada en la compra.</small>
-      <Link className="studio-text-link" href="/tehiceesto/mis-regalos">Ver mis regalos guardados</Link>
-      <Link className="studio-text-link" href={`/tehiceesto/pedido/${code}`}>Ver seguimiento del pedido</Link>
+      <Link className="studio-text-link" href="https://tehiceesto.com/mis-regalos">Ver mis regalos guardados</Link>
+      <Link className="studio-text-link" href={`https://tehiceesto.com/pedido/${code}`}>Ver seguimiento del pedido</Link>
     </section>
   </main>;
 
   if(accessState==="error"||!gift||!basics)return <main className="studio-gate">
-    <section className="studio-gate-card"><span className="studio-gate-mark">!</span><h1>No pudimos abrir el estudio.</h1><p>Tu pedido sigue guardado. Probá actualizar o entrá desde el seguimiento.</p><Link className="studio-main-button" href={`/tehiceesto/pedido/${code}`}>Ir al pedido <b>→</b></Link></section>
+    <section className="studio-gate-card"><span className="studio-gate-mark">!</span><h1>No pudimos abrir el estudio.</h1><p>Tu pedido sigue guardado. Probá actualizar o entrá desde el seguimiento.</p><Link className="studio-main-button" href={`https://tehiceesto.com/pedido/${code}`}>Ir al pedido <b>→</b></Link></section>
   </main>;
 
   if(showSuccess&&step===5)return <main className="studio-success">
@@ -793,10 +793,10 @@ export default function CustomerStudio({code}:{code:string}){
       <div className="studio-success-link"><span>tehiceesto.com/r/</span><strong>{code}</strong></div>
       <div className="studio-success-actions">
         <button className="studio-main-button" onClick={shareGift}>Enviar por WhatsApp <b>→</b></button>
-        <a className="studio-secondary-button" href={`/tehiceesto/r/${code}`} target="_blank" rel="noreferrer">Abrir antes de enviar ↗</a>
+        <a className="studio-secondary-button" href={`https://tehiceesto.com/r/${code}`} target="_blank" rel="noreferrer">Abrir antes de enviar ↗</a>
       </div>
       <div className="studio-success-links">
-        <Link className="studio-text-link" href="/tehiceesto/mis-regalos">♥ Mis regalos</Link>
+        <Link className="studio-text-link" href="https://tehiceesto.com/mis-regalos">♥ Mis regalos</Link>
         <button className="studio-text-link" onClick={copyGiftLink}>Copiar link</button>
         <button className="studio-text-link" onClick={()=>setShowSuccess(false)}>Quiero cambiar algo</button>
       </div>
@@ -806,7 +806,7 @@ export default function CustomerStudio({code}:{code:string}){
   return <main className="studio-shell">
     <header className="studio-topbar">
       <div>
-        <Link href="/tehiceesto" className="studio-brand">TE HICE ESTO</Link>
+        <Link href="https://tehiceesto.com" className="studio-brand">TE HICE ESTO</Link>
         <span className="studio-order-code">REGALO · {code.toUpperCase()}</span>
       </div>
       {saveState==="error"?(
@@ -820,7 +820,7 @@ export default function CustomerStudio({code}:{code:string}){
       )}
     </header>
     <div className="studio-account-shortcut-wrap">
-      <Link href="/tehiceesto/mis-regalos" className="studio-account-shortcut">
+      <Link href="https://tehiceesto.com/mis-regalos" className="studio-account-shortcut">
         <span>♥</span>
         <div><strong>Mis regalos</strong><small>Ver y editar mis compras</small></div>
         <b>→</b>
