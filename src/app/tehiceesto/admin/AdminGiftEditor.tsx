@@ -5,17 +5,28 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from "../ExperienceEngine";
+import PremiumV1Engine from "../template-v1/ExperienceEngine";
+import PremiumV2Engine from "../template-v2/ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
+import { getExperience as getPremiumV1Experience } from "../template-v1/data";
+import { getExperience as getPremiumV2Experience } from "../template-v2/data";
 import { getExperienceCopy, type DeepPartial, type ExperienceCopy } from "../experienceCopy";
+import { getExperienceCopy as getPremiumV1ExperienceCopy } from "../template-v1/experienceCopy";
+import { getExperienceCopy as getPremiumV2ExperienceCopy } from "../template-v2/experienceCopy";
 import { defaultSceneForMedia } from "../mediaRouting";
+import { defaultSceneForMedia as defaultPremiumV1SceneForMedia } from "../template-v1/mediaRouting";
+import { defaultSceneForMedia as defaultPremiumV2SceneForMedia } from "../template-v2/mediaRouting";
 import ScriptEditor from "./ScriptEditor";
 import AdminCopyEditor from "./AdminCopyEditor";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV1SceneTextOverrides } from "../template-v1/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
 
 type Gift = {
   public_code: string;
   status: string;
+  template_version: string | null;
   experience_slug: string;
   giver_name: string;
   recipient_name: string;
@@ -161,7 +172,24 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     return()=>window.clearInterval(timer);
   },[order?.status,code]);
 
-  const base=gift?getExperience(gift.experience_slug):undefined;
+  const liveBase=gift?getExperience(gift.experience_slug):undefined;
+  const frozenV1Base=gift?getPremiumV1Experience(gift.experience_slug):undefined;
+  const frozenV2Base=gift?getPremiumV2Experience(gift.experience_slug):undefined;
+  const base=gift?.template_version==="premium-v1"
+    ?frozenV1Base
+    :gift?.template_version==="premium-v2"
+      ?frozenV2Base
+      :liveBase;
+  const PreviewEngine=(gift?.template_version==="premium-v1"
+    ?PremiumV1Engine
+    :gift?.template_version==="premium-v2"
+      ?PremiumV2Engine
+      :ExperienceEngine) as typeof ExperienceEngine;
+  const normalizePreviewSceneText=gift?.template_version==="premium-v1"
+    ?normalizePremiumV1SceneTextOverrides
+    :gift?.template_version==="premium-v2"
+      ?normalizePremiumV2SceneTextOverrides
+      :normalizeSceneTextOverrides;
   const creatorContact=gift?.story_data?.creator?.contact;
   const creatorWhatsApp=String(creatorContact?.whatsapp||"").replace(/\D/g,"");
   const creatorMessage=gift
@@ -183,7 +211,12 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     };
   },[gift,base]);
 
-  const resolvedCopy=useMemo(()=>previewExperience&&gift?getExperienceCopy(previewExperience,gift.story_data?.script):null,[previewExperience,gift]);
+  const resolvedCopy=useMemo(()=>{
+    if(!previewExperience||!gift)return null;
+    if(gift.template_version==="premium-v1")return getPremiumV1ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
+    if(gift.template_version==="premium-v2")return getPremiumV2ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
+    return getExperienceCopy(previewExperience,gift.story_data?.script);
+  },[previewExperience,gift]);
 
   const photoMedia:ThiPhoto[]=media.filter(x=>x.kind==="image"&&x.url).map(x=>({
     url:x.url!,
@@ -270,7 +303,12 @@ export default function AdminGiftEditor({ code }: { code: string }) {
 
   async function updateMedia(item:Media,patch:Partial<Media> & {fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType;role?:"voice"|"soundtrack"}){
     if(!gift) return;
-    const fallbackScene=defaultSceneForMedia(item.kind,gift.scene_recipe);
+    const sceneResolver=gift.template_version==="premium-v1"
+      ?defaultPremiumV1SceneForMedia
+      :gift.template_version==="premium-v2"
+        ?defaultPremiumV2SceneForMedia
+        :defaultSceneForMedia;
+    const fallbackScene=sceneResolver(item.kind,gift.scene_recipe);
     const metadata={
       ...(item.metadata||{}),
       fit:patch.fit??item.metadata?.fit??"cover",
@@ -414,8 +452,8 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <button onClick={()=>setPreview(false)}>← Volver al editor</button>
         <span>PREVIEW PRIVADO · {gift.recipient_name}</span>
       </div>
-      <ExperienceEngine key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} soundtrackMedia={soundtrackMedia} videoMedia={videoMedia} storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}} sceneTextOverrides={normalizeSceneTextOverrides(gift.story_data?.sceneContent)}/>
-      <AdminCopyEditor code={gift.public_code} initialOverrides={normalizeSceneTextOverrides(gift.story_data?.sceneContent)} onChange={sceneContent=>patchGift("story_data",{...(gift.story_data||{}),sceneContent})}/>
+      <PreviewEngine key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} soundtrackMedia={soundtrackMedia} videoMedia={videoMedia} storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}} sceneTextOverrides={normalizePreviewSceneText(gift.story_data?.sceneContent)}/>
+      <AdminCopyEditor code={gift.public_code} initialOverrides={normalizePreviewSceneText(gift.story_data?.sceneContent)} onChange={sceneContent=>patchGift("story_data",{...(gift.story_data||{}),sceneContent})}/>
     </div>;
   }
 
