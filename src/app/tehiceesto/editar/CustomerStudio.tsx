@@ -102,6 +102,7 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
   door:{title:"La puerta",copy:"Una entrada interactiva a la historia."},
   memories:{title:"Los recuerdos",copy:"Fotos y momentos que cuentan lo vivido."},
   stars:{title:"Las pequeñas cosas",copy:"Frases que se van descubriendo una por una."},
+  everyday:{title:"Un día cualquiera",copy:"Tres detalles interactivos de una habitación: tazas, lluvia y portarretrato."},
   scratch:{title:"La sorpresa para raspar",copy:"Una recompensa escondida para descubrir."},
   letter:{title:"La carta",copy:"Tus palabras más importantes."},
   finale:{title:"El final",copy:"El cierre emocional del recorrido."},
