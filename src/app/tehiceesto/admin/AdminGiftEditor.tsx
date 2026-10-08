@@ -166,7 +166,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const creatorWhatsApp=String(creatorContact?.whatsapp||"").replace(/\D/g,"");
   const creatorMessage=gift
     ? order?.status==="approved"
-      ? `Hola ${creatorContact?.name||gift.giver_name}, ya recibimos tu pago de Te Hice Esto ✨. Ahora seguimos con el armado de tu experiencia y te contactamos por acá.`
+      ? `Hola ${creatorContact?.name||gift.giver_name}, ya recibimos tu pago de Te Hice Esto ✨. Tu regalo ya está habilitado para personalizar. Si necesitás ayuda con algo, seguimos por acá.`
       : `Hola ${creatorContact?.name||gift.giver_name}, recibimos tu pedido de Te Hice Esto ✨. Si necesitás algo, seguimos por acá.`
     : "";
 
