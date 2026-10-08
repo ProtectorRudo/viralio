@@ -54,7 +54,8 @@ describe("Cumpleaños premium quality and safe reuse",()=>{
  it("shows photos of real people in the public demo, not random strangers in customer gifts",()=>{
    const engine=file("ExperienceEngine.tsx");
    const lantern=file("BirthdayLantern.tsx");
-   const scene=engine.slice(engine.indexOf('case"light":return experience.slug==="cumpleanos"'),engine.indexOf('case"stars":return'));
+   const begin=engine.indexOf('case"light":return experience.slug==="cumpleanos"');
+   const scene=engine.slice(begin,engine.indexOf('case"stars":return',begin));
    expect(scene).toContain('photos={customerGift');
    expect(scene).toContain('currentPhotos.filter');
    expect(scene).toContain('photo-1758275557513-241a2a229936');
