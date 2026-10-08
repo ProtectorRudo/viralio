@@ -324,7 +324,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         <svg className="thi-pair-constellation-lines" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <ellipse className="thi-pair-heart-orbit" cx="200" cy="188" rx="190" ry="115" transform="rotate(-12 200 188)"/>
           <path className="thi-pair-heart-guide" d="M200 305 C146 268 81 210 71 149 C63 98 89 65 132 65 C162 65 184 80 200 107 C216 80 238 65 268 65 C311 65 337 98 329 149 C319 210 254 268 200 305 Z"/>
-          <path className="thi-pair-heart-drawn" pathLength={100} strokeDasharray={100} strokeDashoffset={100-Math.min(stars.length,4)*25} d="M200 305 C146 268 81 210 71 149 C63 98 89 65 132 65 C162 65 184 80 200 107 C216 80 238 65 268 65 C311 65 337 98 329 149 C319 210 254 268 200 305 Z"/>
+          <path className="thi-pair-heart-drawn" pathLength={100} style={{strokeDashoffset:100-Math.min(stars.length,4)*25}} d="M200 305 C146 268 81 210 71 149 C63 98 89 65 132 65 C162 65 184 80 200 107 C216 80 238 65 268 65 C311 65 337 98 329 149 C319 210 254 268 200 305 Z"/>
           {stars.length===starLines.length&&<path className="thi-pair-heart-shimmer" d="M200 305 C146 268 81 210 71 149 C63 98 89 65 132 65 C162 65 184 80 200 107 C216 80 238 65 268 65 C311 65 337 98 329 149 C319 210 254 268 200 305 Z"/>}
         </svg>
         <div className="thi-pair-starfall" aria-hidden="true">
