@@ -84,6 +84,48 @@
 }
 
 /* =========================================================
+   REAL-GIFT MEDIA SAFETY · OCT 2026
+   Never show demo stock photography inside a customer gift.
+   ========================================================= */
+.thi-template-live .origin-photo.is-empty{
+  filter:none;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(232,201,131,.10),transparent 24%),
+    linear-gradient(145deg,#12100d,#070706);
+}
+.thi-template-live .thi-personal-photo-empty{
+  display:grid;
+  place-items:center;
+  gap:9px;
+  color:rgba(236,220,185,.55);
+  text-align:center;
+}
+.thi-template-live .thi-personal-photo-empty i{
+  font-style:normal;
+  font-size:28px;
+  line-height:1;
+  opacity:.8;
+}
+.thi-template-live .thi-personal-photo-empty small{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:13px;
+  letter-spacing:.05em;
+}
+.thi-template-live .childhood-photo.is-empty{
+  filter:none;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 48% 36%,rgba(132,94,74,.10),transparent 26%),
+    linear-gradient(145deg,#e7d7c6,#d7c3ad);
+}
+.thi-template-live .childhood-photo.is-empty .thi-personal-photo-empty{
+  color:rgba(74,52,45,.52);
+}
+
+/* =========================================================
    HOME V2 · PREMIUM CLARITY & CONVERSION · OCT 2026
    Home-only redesign. Sold experience snapshots remain frozen.
    ========================================================= */
