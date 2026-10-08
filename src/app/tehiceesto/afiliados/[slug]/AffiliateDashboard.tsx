@@ -102,6 +102,17 @@ export default function AffiliateDashboard({slug}:{slug:string}){
     return visitors?sales/visitors:0;
   },[data]);
 
+  // Esta hora proviene de la última respuesta exitosa del backend, no del reloj
+  // de un temporizador. El panel consulta novedades cada 8 segundos.
+  const lastUpdated=useMemo(()=>{
+    const date=data?.updatedAt?new Date(data.updatedAt):null;
+    if(!date||Number.isNaN(date.getTime()))return "Sin sincronizar";
+    const tz="America/Argentina/Buenos_Aires";
+    const day=new Intl.DateTimeFormat("es-AR",{timeZone:tz,day:"2-digit",month:"2-digit",year:"numeric"}).format(date);
+    const time=new Intl.DateTimeFormat("es-AR",{timeZone:tz,hour:"2-digit",minute:"2-digit",hour12:false}).format(date);
+    return `${day} · ${time} hs (Argentina)`;
+  },[data?.updatedAt]);
+
   const maxClicks=Math.max(1,...(data?.series||[]).map(d=>d.clicks||0));
 
   if(!ready)return <main className="thi-aff-public-shell"><div className="thi-admin-loading">Cargando…</div></main>;
@@ -155,7 +166,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
           <h1>Hola, {data.affiliate.name}.</h1>
           <p>Esto es lo que está generando tu recomendación.</p>
         </div>
-        <div className="thi-aff-public-actions"><span className="thi-aff-live"><i/> EN VIVO</span><button className="thi-ghost" onClick={logout}>Salir</button></div>
+        <div className="thi-aff-public-actions"><div className="thi-aff-update-status"><span className="thi-aff-live"><i/> EN VIVO</span><div className="thi-aff-last-update"><span>Última actualización</span><strong title="Fecha y hora de la última consulta completada correctamente">{lastUpdated}</strong></div></div><button className="thi-ghost" onClick={logout}>Salir</button></div>
       </header>
 
       <section className="thi-aff-share-card">
@@ -172,7 +183,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
 
       <section className="thi-aff-public-grid">
         <article className="thi-aff-chart-card">
-          <div className="thi-aff-card-head"><div><span>ÚLTIMOS 30 DÍAS</span><h2>Personas que llegaron</h2></div><small>Actualizado {new Date(data.updatedAt).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}</small></div>
+          <div className="thi-aff-card-head"><div><span>ÚLTIMOS 30 DÍAS</span><h2>Personas que llegaron</h2></div><small>Datos sincronizados con el panel</small></div>
           <div className="thi-aff-bars" aria-label="Visitas de los últimos 30 días">
             {data.series.map(day=><div key={day.date} title={`${day.date}: ${day.clicks} clics`}><i style={{height:`${Math.max(4,(day.clicks/maxClicks)*100)}%`}}/><span>{day.date.slice(8)}</span></div>)}
           </div>
