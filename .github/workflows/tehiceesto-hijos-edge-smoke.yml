@@ -1,0 +1,43 @@
+name: TeHiceEsto Hijos Supabase edge publication smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tehiceesto-hijos-edge-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Check remote asset integrity
+        run: |
+          set -eu
+          url='https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/hijos-cinematic-bridge'
+          curl -fsSL --max-time 40 -o /tmp/hijos.html "$url"
+          curl -fsSL --max-time 60 -D /tmp/js-header -o /tmp/hijos.js "$url?asset=js"
+          curl -fsSL --max-time 60 -D /tmp/css-header -o /tmp/hijos.css "$url?asset=css"
+          test "$(wc -c </tmp/hijos.js)" -gt 150000
+          test "$(wc -c </tmp/hijos.css)" -gt 200000
+          grep -q 'application/javascript' /tmp/js-header
+          grep -q 'text/css' /tmp/css-header
+          grep -q 'hijos-root' /tmp/hijos.html
+          grep -q 'thi-child-treasure' /tmp/hijos.js
+          grep -q 'thiChildFallingStar' /tmp/hijos.css
+          node --check /tmp/hijos.js
+          echo 'EDGE_ASSETS_OK: JS and CSS served from Supabase and passed syntax check.'
+      - name: Install browser test runtime
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Verify live independent mobile demo
+        env:
+          HIJOS_URL: https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/hijos-cinematic-bridge
+        run: node scripts/tehiceesto-hijos-mobile-smoke.mjs
