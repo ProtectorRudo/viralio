@@ -219,3 +219,71 @@
 .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-letter-aura,
 .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-pair-letter-atmosphere{pointer-events:none!important}
 .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-primary{position:relative;z-index:20;pointer-events:auto}
+
+/* CUMPLEAÑOS · REAL-PHOTO MEMORIES (demo or customer's own media only) */
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-lantern-card{
+  padding:0!important;display:block;overflow:hidden!important;
+  border:clamp(5px,1.1vw,8px) solid #e6d1b9!important;
+  border-bottom-width:clamp(20px,4vw,29px)!important;
+  background:#4e3840;filter:saturate(.85);
+  box-shadow:0 12px 26px #000b,0 0 0 1px #fff9e655 inset;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-lantern-card.found{
+  filter:saturate(.98) brightness(1.13);
+  box-shadow:0 8px 29px #000b,0 0 24px #f6c18a6c;
+}
+.thi-bday-lantern-photo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thi-bday-lantern-photo img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;filter:sepia(.13) saturate(.82) contrast(1.06);transform:scale(1.025);transition:transform .8s,filter .8s}
+.thi-bday-lantern-card.found .thi-bday-lantern-photo img{transform:scale(1);filter:sepia(.05) saturate(1.04) contrast(1.02)}
+.thi-bday-lantern-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#38272160,transparent 42%);pointer-events:none}
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-lantern-card small{
+  position:absolute!important;bottom:-18px!important;left:0;right:0;text-align:center;
+  color:#60463f!important;font-size:7px!important;letter-spacing:.09em;
+}
+/* LETTER OPEN — actually pull the entire page over the envelope front.
+   The old page stayed on z-index:4 while the front sat on 5, masking the message. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open{
+  overflow:visible!important;isolation:isolate;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper{
+  z-index:20!important;
+  top:0!important;right:7%!important;left:7%!important;
+  width:86%!important;height:auto!important;min-height:300px!important;
+  max-height:min(56svh,480px)!important;
+  padding:27px clamp(20px,5vw,30px) 27px!important;
+  opacity:1!important;visibility:visible!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  transform:translateY(-47%) scale(1)!important;
+  border:1px solid #e8cdb0!important;
+  box-shadow:0 22px 53px #0805099e,0 0 0 1px #fff8ed9b inset!important;
+  -webkit-overflow-scrolling:touch;touch-action:pan-y;
+  transition:transform .9s cubic-bezier(.17,.74,.16,1),opacity .42s ease!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper strong{
+  display:block;max-height:none!important;height:auto!important;
+  flex:0 0 auto!important;overflow:visible!important;
+  font-size:clamp(16px,3.9vw,19px)!important;line-height:1.43!important;
+  letter-spacing:-.012em!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper small,
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper em{
+  display:block;flex:0 0 auto;white-space:normal!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .front{z-index:5!important;pointer-events:none}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .flap{z-index:1!important;pointer-events:none}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter.is-open>h2{
+  opacity:0!important;visibility:hidden;pointer-events:none;
+}
+@media(max-width:600px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper{
+   min-height:300px!important;max-height:min(57svh,465px)!important;
+   transform:translateY(-46%) scale(1)!important;
+   padding:23px 20px 24px!important;gap:13px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper strong{
+   font-size:clamp(16px,4.25vw,18px)!important;line-height:1.4!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper{transition:none!important}
+}
