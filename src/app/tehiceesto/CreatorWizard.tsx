@@ -8,7 +8,7 @@ import GiftPicker from "./GiftPicker";
 import { formatTeHiceEstoPrice } from "./pricing";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./creatorApi";
 
-type Step = 0 | 1 | 2;
+type Step = 0 | 1;
 type SubmitState = "idle" | "submitting" | "unavailable" | "error";
 
 type OrderResult = {
@@ -26,32 +26,6 @@ const INITIAL_CONTACT = {
   whatsapp: "",
   consent: false,
 };
-
-const OCCASION_META: Record<string, { label: string; filter: string; cta: string }> = {
-  pareja: { label: "PARA TU PAREJA", filter: "Pareja", cta: "Elegir para mi pareja" },
-  cumpleanos: { label: "CUMPLEAÑOS", filter: "Cumpleaños", cta: "Elegir cumpleaños" },
-  mama: { label: "PARA MAMÁ", filter: "Mamá", cta: "Elegir para mamá" },
-  papa: { label: "PARA PAPÁ", filter: "Papá", cta: "Elegir para papá" },
-  hijos: { label: "PARA TU HIJO/A", filter: "Hijo/a", cta: "Elegir para hijo/a" },
-  abuelos: { label: "PARA ABUELOS", filter: "Abuelos", cta: "Elegir para abuelos" },
-  amistad: { label: "PARA UN/A AMIGO/A", filter: "Amistad", cta: "Elegir amistad" },
-  aniversario: { label: "ANIVERSARIO", filter: "Pareja", cta: "Elegir aniversario" },
-  propuesta: { label: "PROPUESTA", filter: "Pareja", cta: "Elegir propuesta" },
-};
-
-const EXPERIENCE_FILTERS = ["Todas", "Pareja", "Cumpleaños", "Mamá", "Papá", "Hijo/a", "Abuelos", "Amistad"];
-
-const EXPERIENCE_ORDER = [
-  "pareja",
-  "cumpleanos",
-  "mama",
-  "papa",
-  "hijos",
-  "abuelos",
-  "amistad",
-  "aniversario",
-  "propuesta",
-];
 
 function normalizeWhatsApp(value: string) {
   return value.replace(/[^0-9+]/g, "").slice(0, 16);
@@ -93,23 +67,12 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [orderCode, setOrderCode] = useState("");
-  const [activeFilter, setActiveFilter] = useState("Todas");
   const orderRequestId = useRef("");
 
   const selected = useMemo(
     () => experiences.find((experience) => experience.slug === selectedSlug),
     [selectedSlug],
   );
-
-  const visibleExperiences = useMemo(() => {
-    const rank = new Map(EXPERIENCE_ORDER.map((slug, index) => [slug, index]));
-    return experiences
-      .filter((experience) => {
-        if (activeFilter === "Todas") return true;
-        return OCCASION_META[experience.slug]?.filter === activeFilter;
-      })
-      .sort((a, b) => (rank.get(a.slug) ?? 99) - (rank.get(b.slug) ?? 99));
-  }, [activeFilter]);
 
   const contactValid =
     contact.name.trim().length >= 2 &&
@@ -121,19 +84,16 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
     orderRequestId.current="";
     clearStoredOrderRequest();
     setSelectedSlug(slug);
-  }
-
-  function continueToContact(){
-    if (!selectedSlug) return;
+    setSubmitState("idle");
+    setErrorMessage("");
+    setOrderCode("");
     setStep(1);
-    window.scrollTo({top:0,behavior:"smooth"});
+    window.scrollTo({top:0,behavior:"auto"});
   }
 
-  function goToReview(event: FormEvent) {
+  function submitPayment(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
-    if (!contactValid) return;
-    setStep(2);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    void createOrder();
   }
 
   async function createOrder() {
@@ -201,26 +161,24 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
           <span className="thi-buy-trust"><i aria-hidden="true">♧</i> Pago seguro</span>
         </div>
         <nav className="thi-buy-progress" aria-label="Pasos de compra">
-          {["Elegí el regalo","Tus datos","Pagar"].map((label,index)=>(
+          {["Elegir regalo","Datos y pago"].map((label,index)=>(
             <div key={label} className={index===step?"active":index<step?"done":""} aria-current={index===step?"step":undefined}>
               <span>{index<step?"✓":String(index+1).padStart(2,"0")}</span>
               <strong>{label}</strong>
             </div>
           ))}
         </nav>
-      </header>      <section className="order-flow-main">
-        {step === 0 && <GiftPicker selectedSlug={selectedSlug} onSelect={chooseTemplate} onContinue={continueToContact}/>}
+      </header>
+      <section className="order-flow-main">
+        {step === 0 && <GiftPicker onSelect={chooseTemplate}/>}
 
         {step === 1 && selected && (
           <div className="order-step order-contact-step">
             <header className="order-step-head compact">
               <button className="order-back" type="button" onClick={() => setStep(0)}>← Cambiar experiencia</button>
-              <span className="eyebrow">02 · Tus datos</span>
-              <h1>Ya falta muy poquito.</h1>
-              <p>
-                Nada de crear una cuenta ni inventar contraseñas. Los usamos para guardar
-                tu compra y recuperar tu regalo si cambiás de celular.
-              </p>
+              <span className="eyebrow">02 · TUS DATOS Y PAGO</span>
+              <h1>Último paso. <em>Ya casi es suyo.</em></h1>
+              <p>Dejá tus datos y pagá de forma segura con Mercado Pago. Personalizás el regalo después del pago, sin crear una cuenta.</p>
             </header>
 
             <div className="order-selected-template">
@@ -232,7 +190,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
               <Link href={`/tehiceesto/experiencias/${selected.slug}`} target="_blank">Ver cómo se ve</Link>
             </div>
 
-            <form className="order-contact-form" onSubmit={goToReview}>
+            <form className="order-contact-form" onSubmit={submitPayment}>
               <label>
                 <span>Tu nombre</span>
                 <input
@@ -289,97 +247,32 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                 </span>
               </label>
 
-              <button className="order-primary" type="submit">
-                Continuar al pago <span>→</span>
-              </button>
+              {submitState==="unavailable" ? (
+                <div className="order-payment-unavailable" role="status">
+                  <span>○</span>
+                  <div>
+                    <strong>Tu pedido quedó registrado.</strong>
+                    <p>El pago online está temporalmente fuera de servicio. La personalización se habilita cuando el pago figure acreditado.</p>
+                    {orderCode&&<Link href={`/tehiceesto/pedido/${orderCode}`}>Ver seguimiento privado ↗</Link>}
+                  </div>
+                </div>
+              ) : (
+                <button className="order-primary thi-simple-pay" type="submit" disabled={submitState==="submitting"}>
+                  <span>{submitState==="submitting"?"Preparando pago…":"Ir a Mercado Pago"}</span>
+                  <strong>{submitState==="submitting"?"":formatTeHiceEstoPrice()}</strong>
+                  <span aria-hidden="true">{submitState==="submitting"?"…":"→"}</span>
+                </button>
+              )}
+              {submitState==="error"&&<div className="order-submit-error" role="alert">
+                <strong>No pudimos iniciar el pago.</strong>
+                <p>Todavía no se realizó ningún cobro. Revisá los datos e intentá nuevamente.</p>
+                <small>{errorMessage}</small>
+              </div>}
+              <p className="thi-simple-pay-note">Pago único · sin suscripción · Personalizás después de pagar.</p>
             </form>
           </div>
         )}
 
-        {step === 2 && selected && (
-          <div className="order-step order-review-step">
-            <header className="order-step-head compact">
-              <button className="order-back" type="button" onClick={() => setStep(1)}>← Editar datos</button>
-              <span className="eyebrow">03 · Confirmar y pagar</span>
-              <h1>Pagás. Y empezás a crear.</h1>
-              <p>
-                Cuando Mercado Pago confirme la compra, te guiamos paso a paso:
-                elegís tus fotos y audios, cambiás las palabras que quieras y
-                ves el resultado antes de compartirlo.
-              </p>
-            </header>
-
-            <div className="order-review-card">
-              <div className="order-review-template">
-                <span>{selected.icon}</span>
-                <div>
-                  <small>EXPERIENCIA</small>
-                  <strong>{selected.title}</strong>
-                </div>
-              </div>
-
-              <dl>
-                <div><dt>Nombre</dt><dd>{contact.name}</dd></div>
-                <div><dt>WhatsApp</dt><dd>{contact.whatsapp}</dd></div>
-                <div><dt>Email</dt><dd>{contact.email}</dd></div>
-              </dl>
-
-              <div className="order-review-price">
-                <div>
-                  <small>TOTAL</small>
-                  <strong>{formatTeHiceEstoPrice()}</strong>
-                </div>
-                <span>Pago único · sin suscripción</span>
-              </div>
-
-              {submitState === "unavailable" ? (
-                <div className="order-payment-unavailable">
-                  <span>○</span>
-                  <div>
-                    <strong>Tu pedido quedó reservado.</strong>
-                    <p>
-                      El cobro online está temporalmente fuera de servicio. Tu pedido queda
-                      guardado, pero la personalización se habilita recién cuando el pago
-                      pueda completarse y figure acreditado.
-                    </p>
-                    {orderCode && (
-                      <Link href={`/tehiceesto/pedido/${orderCode}`}>
-                        Ver seguimiento privado ↗
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <button
-                  className="order-pay-button"
-                  type="button"
-                  onClick={createOrder}
-                  disabled={submitState === "submitting"}
-                >
-                  <span>{submitState === "submitting" ? "PREPARANDO PAGO" : "PAGAR CON MERCADO PAGO"}</span>
-                  <strong>{submitState === "submitting" ? "Un momento…" : formatTeHiceEstoPrice()}</strong>
-                  <b>{submitState === "submitting" ? "…" : "↗"}</b>
-                </button>
-              )}
-
-              {submitState === "error" && (
-                <div className="order-submit-error">
-                  <strong>No pudimos iniciar el pago.</strong>
-                  <p>Tu información todavía no fue cobrada. Probá nuevamente en unos segundos.</p>
-                  <button type="button" onClick={createOrder}>Reintentar</button>
-                  <small>{errorMessage}</small>
-                </div>
-              )}
-
-              <div className="order-after-payment">
-                <article><span>01</span><p>Elegís y pagás.</p></article>
-                <article><span>02</span><p>Se habilita tu acceso al confirmar el pago.</p></article>
-                <article><span>03</span><p>Subís fotos, audios y tus palabras.</p></article>
-                <article><span>04</span><p>Publicás y recibís tu link al instante.</p></article>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );
