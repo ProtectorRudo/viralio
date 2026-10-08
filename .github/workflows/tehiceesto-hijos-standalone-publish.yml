@@ -1,0 +1,48 @@
+name: TeHiceEsto Hijos independent premium delivery
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tehiceesto-hijos-standalone-publish.yml'
+      - 'scripts/build-hijos-standalone.mjs'
+      - 'scripts/hijos-standalone-link.tsx'
+      - 'src/app/tehiceesto/hijos-standalone-entry.tsx'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-test-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Bundle existing live Hijos model
+        run: node scripts/build-hijos-standalone.mjs
+      - name: Verify standalone mobile gestures and scenes
+        run: |
+          (python3 -m http.server 4111 --bind 127.0.0.1 --directory dist/hijos-standalone >/tmp/hijos-standalone.log 2>&1 &)
+          for i in $(seq 1 30); do if curl -fsS http://127.0.0.1:4111/index.html >/dev/null; then break; fi; sleep 1; done
+          HIJOS_URL=http://127.0.0.1:4111/index.html node scripts/tehiceesto-hijos-mobile-smoke.mjs
+      - name: Publish standalone assets to dedicated repository branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -R dist/hijos-standalone /tmp/hijos-deploy
+          git config user.name "tehiceesto-release-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan hijos-standalone-publish
+          git rm -rf . > /dev/null 2>&1 || true
+          cp /tmp/hijos-deploy/index.html /tmp/hijos-deploy/app.js /tmp/hijos-deploy/app.css .
+          git add index.html app.js app.css
+          git commit -m "publish: Hijos premium model standalone ${GITHUB_SHA:0:7}"
+          git push --force origin HEAD:refs/heads/hijos-standalone-publish
