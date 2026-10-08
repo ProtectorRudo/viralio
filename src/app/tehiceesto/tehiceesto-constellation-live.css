@@ -1,148 +1,207 @@
-/* TeHiceEsto · Pareja · constellation-to-heart sequence
-   LIVE template only. Frozen customer versions remain unchanged. */
+/* TeHiceEsto · Pareja · live constellation, October 2026
+   Only the reusable LIVE model is restyled. Frozen customer templates stay intact.
+   Four contour stars + one center star: all five personalized phrases remain. */
+
 .thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-pair-constellation{
+  position:relative;
   isolation:isolate;
+  width:min(440px,88vw);
+  height:auto;
+  aspect-ratio:20 / 17;
+  margin:15px auto 0;
+  flex-shrink:0;
 }
-.thi-template-live .thi-pair-constellation::before{
-  inset:10% 5% 9%;
-  border:1px solid rgba(239,167,181,.085);
+.thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-pair-constellation::before{
+  content:"";
+  inset:8% 0 10%;
+  border:1px solid rgba(226,151,176,.055);
   transform:rotate(-13deg);
-  box-shadow:0 0 38px rgba(202,110,158,.035);
+  box-shadow:none;
 }
-.thi-template-live .thi-pair-constellation::after{
-  inset:17% 12% 14%;
-  width:auto;height:auto;
-  border:1px dashed rgba(236,179,192,.07);
-  transform:rotate(20deg);
+.thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-pair-constellation::after{
+  content:"";
+  left:12%;
+  top:13%;
+  width:76%;
+  height:74%;
+  border:1px dashed rgba(234,156,180,.065);
+  transform:rotate(14deg);
 }
 .thi-template-live .thi-pair-heart-haze{
-  position:absolute;inset:5% 12% 3%;z-index:-1;
-  pointer-events:none;border-radius:50%;
-  opacity:.65;
-  background:radial-gradient(ellipse at 50% 47%,rgba(177,71,120,.075),transparent 60%);
-  transition:opacity 1.2s ease,filter 1.2s ease;
+  position:absolute;
+  inset:9% 9% 7%;
+  z-index:-1;
+  pointer-events:none;
+  border-radius:50%;
+  opacity:.55;
+  background:radial-gradient(ellipse at 50% 48%,rgba(166,66,121,.09),transparent 70%);
+  transition:opacity 1s ease,filter 1s ease;
 }
 .thi-template-live .thi-pair-constellation.is-complete .thi-pair-heart-haze{
-  opacity:1;filter:drop-shadow(0 0 22px rgba(230,113,161,.23));
+  opacity:1;
+  filter:drop-shadow(0 0 16px rgba(227,121,168,.16));
 }
 .thi-template-live .thi-pair-constellation-lines{
-  z-index:1;overflow:hidden;
+  position:absolute;
+  z-index:1;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  pointer-events:none;
 }
 .thi-template-live .thi-pair-constellation-lines .thi-pair-heart-orbit{
-  fill:none;stroke:rgba(219,150,180,.13);
-  stroke-width:.8;stroke-dasharray:none;stroke-dashoffset:0;
+  fill:none;
+  stroke:rgba(217,155,178,.105);
+  stroke-width:.65;
+  stroke-dasharray:none;
+  stroke-dashoffset:0;
   filter:none;
 }
-.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-orbit:nth-child(2){
-  stroke:rgba(188,145,236,.10);
-  stroke-dasharray:3 8;
-}
-.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-outline{
+.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-guide{
   fill:none;
-  stroke:rgba(249,183,195,.11);
-  stroke-width:1.15;stroke-dasharray:2 9;
-  stroke-dashoffset:0;filter:none;
-  transition:stroke 1.4s ease;
+  stroke:rgba(253,194,203,.115);
+  stroke-width:1.15;
+  stroke-dasharray:2 7;
+  stroke-dashoffset:0;
+  vector-effect:non-scaling-stroke;
+  filter:none;
 }
-.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-segment{
-  fill:none;stroke:#f4b8c4;stroke-width:2.1;
-  stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:650;stroke-dashoffset:650;
-  opacity:0;
-  filter:drop-shadow(0 0 4px rgba(255,186,205,.6));
+.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-drawn{
+  fill:none;
+  stroke:#f3b7c9;
+  stroke-width:2.15;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 3px rgba(255,197,218,.65)) drop-shadow(0 0 8px rgba(235,143,174,.24));
+  transition:stroke-dashoffset 1.05s cubic-bezier(.2,.7,.22,1),stroke .5s ease;
 }
-.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-segment.is-drawn{
-  opacity:1;animation:thiLiveHeartDraw 1.25s cubic-bezier(.16,.67,.25,1) both;
-}
-.thi-template-live .thi-pair-constellation-lines .thi-pair-heart-segment.heart-close.is-drawn{
-  animation-delay:.37s;
-}
-@keyframes thiLiveHeartDraw{
-  from{stroke-dashoffset:650;opacity:.2}
-  to{stroke-dashoffset:0;opacity:.92}
-}
-.thi-template-live .thi-pair-constellation.is-complete .thi-pair-heart-outline{
-  stroke:rgba(255,204,217,.23);
+.thi-template-live .thi-pair-constellation.is-complete .thi-pair-heart-drawn{
+  stroke:#ffcbdb;
 }
 .thi-template-live .thi-pair-constellation-lines .thi-pair-heart-shimmer{
-  fill:none;stroke:rgba(255,204,214,.36);stroke-width:.7;
-  stroke-dasharray:3 12;stroke-dashoffset:0;opacity:0;
-  filter:drop-shadow(0 0 4px rgba(253,191,217,.35));
+  fill:none;
+  stroke:rgba(255,227,234,.35);
+  stroke-width:1;
+  stroke-dasharray:1 17;
+  stroke-dashoffset:0;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 4px rgba(255,179,201,.45));
+  animation:thiLoveShimmer 14s linear infinite;
 }
-.thi-template-live .thi-pair-constellation.is-complete .thi-pair-heart-shimmer{
-  opacity:1;animation:thiLiveHeartOrbit 11s linear infinite;
+@keyframes thiLoveShimmer{to{stroke-dashoffset:-180}}
+
+/* Exact positions use the same 400 × 340 coordinate plane as the SVG. */
+.thi-template-live .thi-pair-star-node{
+  z-index:4;
+  width:50px;
+  height:50px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
-@keyframes thiLiveHeartOrbit{to{stroke-dashoffset:-180}}
-.thi-template-live .thi-pair-star-node{z-index:4;touch-action:manipulation;}
-.thi-template-live .thi-pair-star-node.n1{left:27%;top:30.8%}
-.thi-template-live .thi-pair-star-node.n2{left:50%;top:37.2%}
-.thi-template-live .thi-pair-star-node.n3{left:73%;top:30.8%}
-.thi-template-live .thi-pair-star-node.n4{left:77.4%;top:64.1%}
-.thi-template-live .thi-pair-star-node.n5{left:50%;top:87.2%}
+.thi-template-live .thi-pair-star-node.n1{left:33%;top:19.1%}
+.thi-template-live .thi-pair-star-node.n2{left:67%;top:19.1%}
+.thi-template-live .thi-pair-star-node.n3{left:82.25%;top:43.8%}
+.thi-template-live .thi-pair-star-node.n4{left:50%;top:89.7%}
+.thi-template-live .thi-pair-star-node.n5{left:50%;top:56%;}
+
+/* Unavailable lights are intentionally quiet, not disconnected dots. */
+.thi-template-live .thi-pair-star-node:disabled{opacity:.075;}
+.thi-template-live .thi-pair-star-node.is-active{
+  opacity:1;
+  filter:drop-shadow(0 0 9px rgba(255,204,224,.38));
+}
 .thi-template-live .thi-pair-star-node.is-active>span{
-  background:#ffede8;
-  box-shadow:0 0 9px #ffece4,0 0 22px rgba(255,176,196,.6),0 0 48px rgba(228,112,164,.33);
+  width:9px;
+  height:9px;
+  background:#fff2ed;
+  box-shadow:0 0 9px rgba(255,247,239,.9),0 0 21px rgba(255,181,204,.58),0 0 42px rgba(245,136,181,.25);
 }
 .thi-template-live .thi-pair-star-node.is-active>i{
-  border-color:rgba(255,210,220,.27);
+  border-color:rgba(255,212,230,.25);
 }
+.thi-template-live .thi-pair-star-node.is-discovered{opacity:.92;}
 .thi-template-live .thi-pair-star-node.is-discovered>span{
-  background:#ffe1dd;
-  box-shadow:0 0 9px rgba(255,223,212,.95),0 0 22px rgba(252,159,194,.55),0 0 38px rgba(216,119,179,.22);
+  width:6px;
+  height:6px;
+  background:#ffe7e1;
+  box-shadow:0 0 8px rgba(255,241,232,.9),0 0 21px rgba(253,166,194,.44);
 }
+.thi-template-live .thi-pair-star-node.n5.is-active>span{
+  width:12px;height:12px;
+  box-shadow:0 0 9px #fff5f0,0 0 31px rgba(255,174,204,.68),0 0 70px rgba(230,103,157,.32);
+}
+.thi-template-live .thi-pair-constellation.is-complete .thi-pair-star-node.n5>span{
+  width:12px;height:12px;
+  animation:thiLoveHeartPulse 3.2s ease-in-out infinite;
+}
+@keyframes thiLoveHeartPulse{
+  0%,100%{transform:scale(.85);box-shadow:0 0 12px rgba(255,233,225,.8),0 0 26px rgba(244,164,198,.38)}
+  50%{transform:scale(1.2);box-shadow:0 0 14px rgba(255,246,239,.95),0 0 44px rgba(255,167,202,.58)}
+}
+
+/* Restrained diagonal shooting stars, not a curtain of vertical rain. */
 .thi-template-live .thi-pair-starfall{
-  position:absolute;inset:3% 8% 0;
-  z-index:2;pointer-events:none;overflow:hidden;
-  opacity:0;transition:opacity .7s ease;
+  position:absolute;
+  z-index:2;
+  inset:0;
+  opacity:0;
+  pointer-events:none;
+  overflow:hidden;
+  transition:opacity 1.15s ease;
 }
 .thi-template-live .thi-pair-constellation.is-complete .thi-pair-starfall{opacity:1}
 .thi-template-live .thi-pair-starfall>i{
-  position:absolute;left:var(--meteor-x);
-  top:-24%;width:2px;height:44px;
-  opacity:0;border-radius:50%;
-  background:linear-gradient(180deg,transparent,rgba(245,183,221,.12) 8%,rgba(255,212,224,.75) 76%,#fff4f3);
-  box-shadow:0 0 10px rgba(255,195,227,.26);
-  transform:translate3d(0,-15px,0) rotate(5deg);
-  animation:thiLiveStarfall var(--meteor-speed) linear var(--meteor-delay) infinite;
+  position:absolute;
+  left:var(--meteor-x);
+  top:-18%;
+  width:1px;
+  height:22px;
+  border-radius:10px;
+  background:linear-gradient(180deg,transparent,rgba(255,195,216,.08) 20%,rgba(255,222,233,.68) 94%,#fff1ec);
+  box-shadow:0 0 5px rgba(243,178,213,.14);
+  opacity:0;
+  transform:translate3d(0,-20px,0) rotate(23deg);
+  animation:thiLoveMeteor var(--meteor-speed) ease-in var(--meteor-delay) infinite;
 }
 .thi-template-live .thi-pair-starfall>i::after{
-  content:"";position:absolute;bottom:-2px;left:-2px;
-  width:6px;height:6px;border-radius:50%;
-  background:#ffebe8;box-shadow:0 0 12px 3px rgba(255,173,215,.45);
+  content:"";
+  position:absolute;
+  bottom:-1px;left:-1px;
+  width:3px;height:3px;
+  border-radius:50%;
+  background:#fff0eb;
+  box-shadow:0 0 6px rgba(255,201,220,.42);
 }
-.thi-template-live .thi-pair-starfall>i:nth-child(3n){
-  height:31px;width:1px;filter:hue-rotate(26deg);
+.thi-template-live .thi-pair-starfall>i:nth-child(3n){height:15px;opacity:.6}
+.thi-template-live .thi-pair-starfall>i:nth-child(4n){height:31px;filter:hue-rotate(25deg)}
+@keyframes thiLoveMeteor{
+  0%{opacity:0;transform:translate3d(32px,-27px,0) rotate(23deg)}
+  18%{opacity:.46}
+  56%{opacity:.6}
+  100%{opacity:0;transform:translate3d(-46px,390px,0) rotate(23deg)}
 }
-.thi-template-live .thi-pair-starfall>i:nth-child(4n){
-  height:61px;filter:hue-rotate(-25deg);
-}
-@keyframes thiLiveStarfall{
-  0%{opacity:0;transform:translate3d(0,-35px,0) rotate(5deg)}
-  12%{opacity:.85}
-  67%{opacity:.85}
-  100%{opacity:0;transform:translate3d(-25px,390px,0) rotate(5deg)}
-}
+
 @media(max-width:650px){
   .thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-pair-constellation{
-    width:100%;height:350px;margin-top:12px;
+    width:min(390px,92vw);
+    height:auto;
+    aspect-ratio:20 / 17;
+    margin:15px auto 5px;
   }
-  .thi-template-live .thi-pair-star-node{width:52px;height:52px}
-  .thi-template-live .thi-pair-constellation::before{inset:10% 3% 9%}
-  .thi-template-live .thi-pair-constellation::after{inset:17% 9% 13%}
-  .thi-template-live .thi-pair-starfall{inset:3% 4% 0}
+  .thi-template-live .thi-pair-star-node{width:49px;height:49px}
 }
 @media(max-width:365px){
-  .thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-pair-constellation{
-    height:310px;
-  }
+  .thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-pair-constellation{width:93vw}
 }
 @media(prefers-reduced-motion:reduce){
-  .thi-template-live .thi-pair-constellation-lines .thi-pair-heart-segment.is-drawn{
-    animation:none!important;stroke-dashoffset:0;opacity:1;
-  }
-  .thi-template-live .thi-pair-constellation .thi-pair-heart-shimmer{
+  .thi-template-live .thi-pair-heart-drawn,
+  .thi-template-live .thi-pair-constellation .thi-pair-heart-shimmer,
+  .thi-template-live .thi-pair-constellation.is-complete .thi-pair-star-node.n5>span,
+  .thi-template-live .thi-pair-starfall>i{
     animation:none!important;
+    transition:none!important;
   }
-  .thi-template-live .thi-pair-starfall>i{animation:none!important;opacity:0!important}
-  .thi-template-live .thi-pair-constellation.is-complete .thi-pair-heart-haze{filter:none}
+  .thi-template-live .thi-pair-starfall>i{opacity:0!important}
 }
