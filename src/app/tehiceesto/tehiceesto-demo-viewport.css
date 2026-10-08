@@ -1,0 +1,73 @@
+/* Te Hice Esto — public demo viewport continuity.
+   Mobile browser chrome can expose a 100svh vs 100dvh difference during
+   vertical scrolling. Keep the theme background behind every demo scene,
+   rather than leaking the neutral Viralio document canvas.
+   No modifications to frozen templates or private customer gifts. */
+
+html:has(.thi-root .thi-demo-page) {
+  background-color: #08070a;
+  overscroll-behavior-y: none;
+}
+
+body:has(.thi-root .thi-demo-page) {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #08070a;
+  overscroll-behavior-y: none;
+}
+
+.thi-root:has(> .thi-demo-page) {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #08070a;
+  overscroll-behavior-y: none;
+}
+
+/* All live demos, independent of the experience and its current scene. */
+.thi-root .thi-demo-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #08070a;
+}
+
+.thi-root .thi-demo-page > .thi-experience.thi-template-live {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Never force a fixed height: long scenes must still scroll naturally. */
+.thi-root .thi-demo-page .thi-template-live > .thi-scene-stage,
+.thi-root .thi-demo-page .thi-template-live > .thi-scene-stage > .thi-scene {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Use each theme's base tone during browser elastic scrolling or a changing
+   address bar. This keeps the end of the scene cinematic, never light gray. */
+.thi-root .thi-demo-page-pareja { background-color: #070508; }
+.thi-root .thi-demo-page-mama { background-color: #120b0c; }
+.thi-root .thi-demo-page-papa { background-color: #070a0e; }
+.thi-root .thi-demo-page-cumpleanos { background-color: #0d0906; }
+.thi-root .thi-demo-page-hijos { background-color: #06100e; }
+.thi-root .thi-demo-page-abuelos { background-color: #0b0907; }
+.thi-root .thi-demo-page-amistad { background-color: #0a0d14; }
+.thi-root .thi-demo-page-aniversario { background-color: #0d070c; }
+.thi-root .thi-demo-page-propuesta { background-color: #0b080c; }
+
+/* The final scene's atmosphere already fills its parent. Allow it to extend
+   across the dynamic viewport without adding any artificial footer. */
+@supports (min-height: 100dvh) {
+  .thi-root .thi-demo-page .thi-template-live {
+    min-height: 100dvh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.thi-root .thi-demo-page),
+  body:has(.thi-root .thi-demo-page) {
+    scroll-behavior: auto;
+  }
+}
