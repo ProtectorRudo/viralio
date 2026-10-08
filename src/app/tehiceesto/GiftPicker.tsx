@@ -25,7 +25,7 @@ const GIFT_STYLE:Record<string,{recipient:string;badge:string;symbol:string;tint
 
 function GiftImage({gift,recipient,symbol}:{gift:Experience;recipient:string;symbol:string}){
   // Catalog-only marketing portrait; the original couple demo remains untouched.
-  // Free Unsplash photograph: https://unsplash.com/photos/beautiful-couple
+  // Free Unsplash photograph: https://unsplash.com/photos/beautiful-couple-pictures (source: photo-1592065148456-98a6d7827bed)
   const coupleCover={
     url:"https://images.unsplash.com/photo-1592065148456-98a6d7827bed?auto=format&fit=crop&fm=jpg&q=82&w=1100",
     position:"center" as const,
@@ -52,7 +52,7 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
         <h1>¿A quién querés <em>sorprender?</em></h1>
         <p>Elegí la experiencia que más te guste. La personalizás después de pagar.</p>
       </div>
-      <div className="thi-simple-price" aria-label="Cada experiencia cuesta ${formatTeHiceEstoPrice()} en un único pago">
+      <div className="thi-simple-price" aria-label={`Cada experiencia cuesta ${formatTeHiceEstoPrice()} en un único pago`}>
         <span className="thi-simple-price-gift" aria-hidden="true">♡</span>
         <div className="thi-simple-price-main">
           <small>PRECIO POR EXPERIENCIA</small>
