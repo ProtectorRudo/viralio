@@ -19,6 +19,12 @@ Fuente de verdad de las Edge Functions que están en producción de Supabase **T
 - Plantilla Resend publicada con alias `tehiceesto-bienvenida-compra`, variables `CUSTOMER_NAME`, `EXPERIENCE_NAME`, `ACCESS_LINK`. Se envía como template de Resend, no HTML duplicado en el backend.
 - Desactivar tracking de enlaces en Resend: los enlaces de Supabase Auth son temporales y de un solo uso.
 
+## Retry automático y seguridad del checkout
+- La sincronización de una orden ya aprobada utiliza `syncStatusOnly:true` en `checkout-v2 → payment-bridge`. El modo `create` sigue bloqueado en una compra pagada; no se genera un nuevo cobro.
+- `retry_tehiceesto_purchase_emails()` se ejecuta por `pg_cron` cada 30 minutos, solo para pagos nuevos aprobados después del corte de despliegue que no tengan confirmación de envío. Reconsulta el estado real de Mercado Pago.
+- Los usuarios anónimos y autenticados no pueden ejecutar la función de cron directamente.
+- El buzón `hola@tehiceesto.com` no tiene registro MX en el dominio raíz; es un remitente saliente, no un inbox funcional. Hasta crear un buzón real debe usarse WhatsApp como soporte.
+
 ## Auditoría y recuperación
 - `orders.access_email_sent_at`: proveedor aceptó el intento (no significa lectura ni llegada a bandeja).
 - `orders.access_email_last_attempt_at`: intento más reciente; evita bucles/dobles envíos.

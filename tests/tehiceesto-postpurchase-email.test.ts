@@ -26,6 +26,21 @@ describe("Te Hice Esto post-purchase onboarding wiring",()=>{
     expect(src).toContain("access_email_sent_at:new Date().toISOString()");
     expect(src).toContain("retryWindowMs=20*60*1000");
   });
+  it("allows status reconciliation of approved orders without unlocking repeat checkout",()=>{
+    const gateway=file("tehiceesto-checkout-v2");
+    const bridge=file("payment-bridge");
+    expect(gateway).toContain('syncStatusOnly:action==="sync-status"');
+    expect(bridge).toContain('&&body.syncStatusOnly!==true');
+    expect(gateway).toContain('if(action==="sync-status")');
+  });
+  it("automatically retries unsent approved purchase messages with safeguards",()=>{
+    const sql=readFileSync(join(root,"supabase","migrations","20261008_tehiceesto_auto_retry_purchased_access_email.sql"),"utf8");
+    expect(sql).toContain("status = 'approved'");
+    expect(sql).toContain("access_email_sent_at is null");
+    expect(sql).toContain("interval '30 minutes'");
+    expect(sql).toContain("tehiceesto-access-email-retry");
+    expect(sql).toContain("sync-status");
+  });
   it("offers recovery after a failed post-purchase send",()=>{
     const src=file("order-status");
     expect(src).toContain("emailRetryDue");
