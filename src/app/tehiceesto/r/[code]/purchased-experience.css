@@ -24,3 +24,21 @@ body:has([data-purchased-gift="true"]) .thi-demo-ribbon {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+
+/* Anonymous illustrations fill missing slots inside their original photo frames.
+   The engine also renders a generic "attached media" strip for photos on
+   non-gallery scenes; do not duplicate decorative fallbacks in that strip. */
+[data-purchased-gift="true"] .thi-attached-photo:has(> img[src^="data:image/svg+xml"]) {
+  display:none !important;
+}
+[data-purchased-gift="true"] .thi-attached-media:not(:has(img:not([src^="data:image/svg+xml"]),audio,video)) {
+  display:none !important;
+}
+
+/* Keep the album/photo slot proportions and existing gestures/transitions.
+   This private-only rule never affects public demo assets or real uploads. */
+[data-purchased-gift="true"] img[src^="data:image/svg+xml"] {
+  object-fit:cover;
+  object-position:center;
+}
