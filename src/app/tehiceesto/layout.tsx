@@ -4,6 +4,7 @@ import "./tehiceesto-live.css";
 import "./tehiceesto-studio.css";
 import "./tehiceesto-constellation-live.css";
 import "./tehiceesto-purchase.css";
+import "./tehiceesto-purchase-art.css";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export const metadata: Metadata = {
