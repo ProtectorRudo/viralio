@@ -479,11 +479,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           const count=Math.min(3,customerGift?currentAudios.length:Math.max(currentAudios.length,voiceEntries.length));
           const entries=Array.from({length:count},(_,i)=>{
             const voice=customerGift?undefined:(voiceEntries[i]||voiceEntries[0]);
-            const audio=currentAudios[i]||(!customerGift&&i===0?{url:"/mama-voz-web.opus",caption:voice?.name||"Tu hijo mayor"}:undefined);
+            const audio=currentAudios[i]||(!customerGift&&i===0?{url:"/mama-voz-web.opus",caption:"Tu hija Alina"}:undefined);
             const photo=scenePhotos[i%Math.max(1,scenePhotos.length)];
             return {
               name:token(audio?.caption||voice?.name||`Mensaje ${i+1}`),
-              message:customerGift&&audio?"":token(voice?.message||"Hay algo que quería decirte hace tiempo."),
+              message:(!customerGift&&i===0)||(customerGift&&audio)?"":token(voice?.message||"Hay algo que quería decirte hace tiempo."),
               audio,
               photo
             };
