@@ -41,3 +41,7 @@ jobs:
         env:
           HIJOS_URL: https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/hijos-cinematic-bridge
         run: node scripts/tehiceesto-hijos-mobile-smoke.mjs
+      - name: Verify actual TeHiceEsto.com Hijos demo on mobile
+        env:
+          HIJOS_URL: https://tehiceesto.com/experiencias/hijos
+        run: node scripts/tehiceesto-hijos-mobile-smoke.mjs
