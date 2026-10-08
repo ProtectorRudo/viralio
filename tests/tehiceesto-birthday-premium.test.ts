@@ -60,7 +60,7 @@ describe("Cumpleaños premium quality and safe reuse",()=>{
    expect(scene).toContain('photo-1758275557513-241a2a229936');
    expect(scene).toContain('photo-1755705153160-67b29c7718ee');
    expect(scene).toContain('photo-1772724317388-4d1d1cc45c09');
-   expect(lantern).toContain('photos[i]?.url?');
+   expect(lantern).toContain('photos[i]?.url&&!imageUnavailable.includes(i)?');
    expect(lantern).toContain('thi-bday-lantern-photo');
  });
  it("raises the opened paper over the envelope flap and preserves readable long text",()=>{
