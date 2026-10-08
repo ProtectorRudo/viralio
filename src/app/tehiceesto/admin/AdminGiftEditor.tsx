@@ -87,7 +87,7 @@ type Media = {
 const scenes: { type: SceneType; label: string }[] = [
   {type:"intro",label:"Entrada"},{type:"door",label:"Puerta"},{type:"memories",label:"Recuerdos"},
   {type:"light",label:"Luz"},{type:"hold",label:"Mantener"},{type:"timeline",label:"Línea de tiempo"},
-  {type:"stars",label:"Estrellas"},{type:"quiz",label:"Pregunta"},{type:"scratch",label:"Raspadita"},
+  {type:"stars",label:"Estrellas"},{type:"everyday",label:"Un día cualquiera"},{type:"quiz",label:"Pregunta"},{type:"scratch",label:"Raspadita"},
   {type:"voices",label:"Voces"},{type:"video",label:"Video"},{type:"candles",label:"Velitas"},
   {type:"balloons",label:"Globos"},{type:"vault",label:"Bóveda"},{type:"capsule",label:"Cápsula"},
   {type:"letter",label:"Carta"},{type:"proposal",label:"Propuesta"},{type:"finale",label:"Final"},
@@ -310,7 +310,8 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       :gift.template_version==="premium-v2"
         ?defaultPremiumV2SceneForMedia
         :defaultSceneForMedia;
-    const fallbackScene=sceneResolver(item.kind,gift.scene_recipe);
+    // The chosen resolver is always tied to the gift template version. Frozen recipes cannot contain live-only scenes.
+    const fallbackScene=sceneResolver(item.kind,gift.scene_recipe as never);
     const metadata={
       ...(item.metadata||{}),
       fit:patch.fit??item.metadata?.fit??"cover",
