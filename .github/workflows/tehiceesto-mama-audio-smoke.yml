@@ -45,6 +45,14 @@ jobs:
           curl -fsSL --max-time 40 -o /tmp/mama.html https://tehiceesto.com/experiencias/mama
           echo 'Referenced production bundles:'
           grep -oE '_next/static/immutable/chunks/[^"]+\\.js' /tmp/mama.html | head -n 25 || true
+          echo 'Search live chunks for Mamá voice engine:'
+          for script in $(grep -oE '_next/static/immutable/chunks/[^"]+\\.js' /tmp/mama.html | sort -u); do
+            curl -fsSL --max-time 15 "https://tehiceesto.com/$script" -o /tmp/chunk-check.js || continue
+            if grep -Fq 'mama-voice-toggle' /tmp/chunk-check.js; then
+              echo "MAMA_ENGINE_CHUNK=$script"
+              echo "BYTE_SIZE=$(wc -c < /tmp/chunk-check.js)"
+            fi
+          done
           echo 'SUCCESS: audio Ogg, range, hotfix JavaScript syntax and live proxy verified.'
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
