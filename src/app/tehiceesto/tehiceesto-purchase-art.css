@@ -419,3 +419,162 @@
   .thi-purchase-page .thi-simple-card,.thi-purchase-page .thi-simple-image,
   .thi-purchase-page .thi-simple-choose{transition:none!important}
 }
+
+
+/* OCT 2026 · final conversion polish: compact price and emotional couple cover.
+   Scope strictly to the gift selection screen; checkout behavior is untouched. */
+
+.thi-purchase-page .thi-simple-price{
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  width:min(365px,100%);
+  max-width:365px;
+  min-width:0;
+  min-height:78px;
+  padding:11px 15px;
+  margin:0;
+  text-align:left;
+  background:linear-gradient(115deg,rgba(255,252,249,.95),rgba(251,238,229,.93));
+  border:1px solid #e9d3c7;
+  border-radius:16px;
+  box-shadow:0 10px 26px rgba(96,59,53,.065),inset 0 1px 0 rgba(255,255,255,.80);
+}
+.thi-purchase-page .thi-simple-price-gift{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  margin:0;
+  font-size:28px;
+  color:#a86053;
+  background:#f4e4db;
+  border:1px solid rgba(171,99,84,.11);
+}
+.thi-simple-price-main{
+  display:flex;
+  min-width:0;
+  align-items:flex-start;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+}
+.thi-purchase-page .thi-simple-price-main>small{
+  width:auto;
+  max-width:none;
+  display:block;
+  margin:0;
+  color:#97675f;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:8px;
+  font-weight:750;
+  letter-spacing:.105em;
+  white-space:nowrap;
+}
+.thi-purchase-page .thi-simple-price-main>strong{
+  margin:0;
+  font:400 31px/1.12 Georgia,"Times New Roman",serif;
+  letter-spacing:-.05em;
+  color:#33242a;
+  white-space:nowrap;
+}
+.thi-simple-price-assurance{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  align-items:center;
+  justify-content:center;
+  min-width:69px;
+  margin:0;
+  padding-left:12px;
+  border-left:1px solid rgba(143,104,101,.16);
+}
+.thi-simple-price-check{
+  width:19px;
+  height:19px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  color:#fff9f5;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:12px;
+  line-height:1;
+  font-weight:700;
+  background:#ae6a5b;
+}
+.thi-purchase-page .thi-simple-price-assurance>small{
+  width:auto;
+  max-width:none;
+  margin:0;
+  text-align:center;
+  color:#716266;
+  font-size:9px;
+  line-height:1.22;
+  font-weight:600;
+  white-space:nowrap;
+}
+.thi-purchase-page .thi-simple-card-pareja .thi-simple-image{
+  background-image:
+    linear-gradient(180deg,rgba(38,20,30,.05) 0%,transparent 30%,rgba(54,22,33,.02) 47%,rgba(35,14,27,.51) 100%),
+    var(--simple-image);
+  background-size:cover;
+  background-position:50% 43%;
+  filter:saturate(1.13) contrast(1.04) sepia(.06);
+}
+.thi-purchase-page .thi-simple-card-pareja .thi-simple-image::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 68% 35%,rgba(255,192,117,.14),transparent 50%);
+  mix-blend-mode:screen;
+}
+.thi-purchase-page .thi-simple-card-pareja .thi-simple-category-badge{
+  box-shadow:0 9px 27px rgba(39,18,27,.30);
+}
+
+@media(max-width:760px){
+  .thi-purchase-page .thi-simple-intro{
+    display:block;
+  }
+  .thi-purchase-page .thi-simple-price{
+    width:min(360px,100%);
+    max-width:100%;
+    margin:12px 0 0;
+    min-height:74px;
+    padding:10px 12px;
+    grid-template-columns:38px minmax(0,1fr) auto;
+    gap:10px;
+  }
+  .thi-purchase-page .thi-simple-price-gift{width:38px;height:38px;font-size:26px}
+  .thi-purchase-page .thi-simple-price-main>strong{font-size:29px}
+  .thi-simple-price-assurance{min-width:70px;padding-left:10px}
+}
+@media(max-width:470px){
+  .thi-purchase-page .thi-simple-price{
+    width:100%;
+    display:grid;
+    grid-template-columns:38px minmax(0,1fr) 73px;
+    min-height:72px;
+    margin-top:12px;
+    padding:9px 10px;
+    gap:9px;
+    justify-content:normal;
+    flex-wrap:nowrap;
+  }
+  .thi-purchase-page .thi-simple-price-gift{width:38px;height:38px;font-size:25px}
+  .thi-purchase-page .thi-simple-price-main>small{font-size:8px;letter-spacing:.07em}
+  .thi-purchase-page .thi-simple-price-main>strong{font-size:28px}
+  .thi-simple-price-assurance{min-width:0;width:73px;padding-left:8px;gap:5px}
+  .thi-purchase-page .thi-simple-price-assurance>small{font-size:9px;white-space:nowrap}
+}
+@media(max-width:355px){
+  .thi-purchase-page .thi-simple-price{grid-template-columns:33px minmax(0,1fr) 64px;gap:7px}
+  .thi-purchase-page .thi-simple-price-gift{width:33px;height:33px;font-size:23px}
+  .thi-purchase-page .thi-simple-price-main>small{font-size:7px;letter-spacing:0}
+  .thi-purchase-page .thi-simple-price-main>strong{font-size:25px}
+  .thi-simple-price-assurance{width:64px;padding-left:6px}
+  .thi-purchase-page .thi-simple-price-assurance>small{font-size:8px}
+}
