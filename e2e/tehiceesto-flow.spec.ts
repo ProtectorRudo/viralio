@@ -76,7 +76,7 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   expect(overflow).toBeLessThanOrEqual(1);
 
   await expect(page.getByRole("heading",{name:/No recibe solo un regalo/i})).toBeAttached();
-  await expect(page.getByText("Nosotros hacemos la magia")).toBeAttached();
+  await expect(page.getByText("La revisás y la publicás")).toBeAttached();
   await expect(page.locator(".thh-v2-price strong")).toContainText("$");
   await expect(page.getByRole("heading",{name:/No estás comprando una página/i})).toBeAttached();
   await expect(page.getByLabel("Pago seguro con Mercado Pago")).toContainText("Mercado Pago");
