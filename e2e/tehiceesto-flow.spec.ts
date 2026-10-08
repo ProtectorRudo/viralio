@@ -677,6 +677,18 @@ test("Pareja everyday room reveals three genuine moments and unlocks the next su
 test("birthday premium scenes work on 390px mobile and preserve the three-balloon limit",async({page})=>{
  test.setTimeout(110_000);
  await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+   class TestingUtterance {
+     text:string;lang="";rate=1;pitch=1;voice:null=null;
+     onend:(()=>void)|null=null;onerror:(()=>void)|null=null;
+     constructor(text:string){this.text=text}
+   }
+   Object.defineProperty(window,"SpeechSynthesisUtterance",{configurable:true,value:TestingUtterance});
+   Object.defineProperty(window,"speechSynthesis",{configurable:true,value:{
+     getVoices:()=>[],speak:()=>{},pause:()=>{},resume:()=>{},cancel:()=>{},
+   }});
+ });
+
  await page.goto("/tehiceesto/experiencias/cumpleanos");
  await waitForScene(page,"intro");
  await advanceOne(page);
