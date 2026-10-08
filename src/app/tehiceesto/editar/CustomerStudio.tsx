@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
+import { fillPrivateGiftPhotos } from "../privateGiftVisuals";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import PremiumV2Engine from "../template-v2/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
@@ -232,6 +233,7 @@ function Preview({
     if(!base)return null;
     const experience={
       ...base,
+      demo:{...base.demo,photos:[]},
       demoGiver:gift.giver_name,
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
@@ -246,7 +248,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={photoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))}
+      photoMedia={fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined})))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))}
@@ -260,6 +262,7 @@ function Preview({
     if(!base)return null;
     const experience={
       ...base,
+      demo:{...base.demo,photos:[]},
       demoGiver:gift.giver_name,
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
@@ -274,7 +277,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={photoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
+      photoMedia={fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined})))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
@@ -287,6 +290,7 @@ function Preview({
   if(!base)return null;
   const experience={
     ...base,
+    demo:{...base.demo,photos:[]},
     demoGiver:gift.giver_name,
     demoRecipient:gift.recipient_name,
     opening:gift.opening_text||base.opening,
@@ -301,7 +305,7 @@ function Preview({
     onSceneChange={scene=>onSceneChange(scene)}
     copyOverride={gift.story_data?.script as never}
     letterText={gift.letter_text||undefined}
-    photoMedia={photoMedia.map(item=>({...item,scene:item.scene as SceneType|undefined}))}
+    photoMedia={fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as SceneType|undefined})))}
     audioMedia={audioMedia.map(item=>({...item,scene:item.scene as SceneType|undefined}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     videoMedia={videoMedia.map(item=>({...item,scene:item.scene as SceneType|undefined}))}
@@ -752,10 +756,10 @@ export default function CustomerStudio({code}:{code:string}){
       ?effectivePremiumV2RecipeForMedia
       :effectiveRecipeForMedia;
   const effectiveRecipe=recipeResolver(gift?.scene_recipe||[],{
-    hasPhoto:memoryPhotos.length>0,
+    hasPhoto:memoryPhotos.length>0||canonical.includes("memories"),
     hasVoice:voiceAudios.length>0,
     hasVideo:videos.length>0,
-    hasLightPhoto:lightPhotos.length>0,
+    hasLightPhoto:lightPhotos.length>0||canonical.includes("light"),
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
   const selectedCopy=gift?.template_version==="premium-v2"&&frozenV2Base
