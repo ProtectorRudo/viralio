@@ -49,3 +49,57 @@
 .thi-template-live.thi-theme-cumpleanos .thi-birthday-balloons button:after{height:23px}
 }
 @media(prefers-reduced-motion:reduce){.thi-template-live.thi-theme-cumpleanos .thi-birthday-balloons button{animation:none!important}}
+
+/* The flashlight only reveals what the finger illuminates. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"]{background:radial-gradient(ellipse at 50% 11%,#37241b 0,#09080b 60%,#030409 100%)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-light-scene{position:relative;width:min(790px,100%);margin:auto;min-height:100svh;padding:85px 15px 90px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-light-scene>h2{width:min(630px,100%);font:400 clamp(33px,5.5vw,52px)/1.08 var(--thi-serif,Georgia,serif);letter-spacing:-.04em;color:#f9ebd9;text-align:center;text-wrap:balance;margin:12px auto 21px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-light-scene>.thi-kicker{color:#dfb58d;letter-spacing:.22em;font-size:10px}
+.thi-bday-lantern{width:min(700px,100%);color:#f5e4d5;position:relative;isolation:isolate}
+.thi-bday-lantern-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 6px 10px;color:#ceae9e;font-size:9px;letter-spacing:.17em}
+.thi-bday-lantern-status b{font-size:12px;color:#efc99a;white-space:nowrap}
+.thi-bday-lantern-surface{--fx:50%;--fy:50%;position:relative;isolation:isolate;overflow:hidden;height:clamp(330px,47svh,440px);border:1px solid #c1957244;border-radius:12px;box-shadow:0 25px 76px #000b,0 0 0 1px #fff4db0b inset;touch-action:none;cursor:crosshair;background:radial-gradient(circle at 50% 48%,#332229,#0a0a10 70%)}
+.thi-bday-lantern-dusk{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 40%,#625046 0,#201b21 50%,#090c16 100%);opacity:1}
+.thi-bday-lantern-dusk:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(95deg,#e2b7970a 0 2px,transparent 2px 67px)}
+.thi-bday-lantern-dusk i{position:absolute;display:block;border-radius:50%;background:#f5b57e2d;filter:blur(15px)}
+.thi-bday-lantern-dusk i:nth-child(1){width:40%;height:42%;top:2%;left:-8%}
+.thi-bday-lantern-dusk i:nth-child(2){width:42%;height:46%;bottom:-11%;right:4%}
+.thi-bday-lantern-dusk i:nth-child(3){width:44%;height:22%;top:42%;right:9%;background:#b4a6be27}
+.thi-bday-lantern-card{
+ position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;
+ width:clamp(102px,25%,155px);height:clamp(117px,35%,176px);padding:8px;
+ border:7px solid #d7b7a1;border-bottom-width:20px;border-radius:3px;
+ background:linear-gradient(148deg,#9a6f6e,#4c455d 55%,#292937 100%);
+ box-shadow:0 8px 26px #000b,0 0 25px #d5b19228 inset;cursor:pointer;touch-action:none;
+ transform:translate(-50%,-50%) rotate(-8deg);transition:filter .6s,box-shadow .6s,opacity .6s;
+ color:#fff2d3
+}
+.thi-bday-lantern-card.n2{transform:translate(-50%,-50%) rotate(8deg);background:linear-gradient(125deg,#a18a77,#66575c 55%,#2c2833)}
+.thi-bday-lantern-card.n3{transform:translate(-50%,-50%) rotate(-4deg);background:linear-gradient(155deg,#716d8c,#74545d,#322e36)}
+.thi-bday-lantern-glyph{font:400 clamp(37px,9vw,62px)/1 var(--thi-serif,Georgia,serif);text-shadow:0 0 30px #ffb67a9c}
+.thi-bday-lantern-card small{position:absolute;bottom:-15px;color:#523b3b;letter-spacing:.08em;font-size:8px;font-weight:700;white-space:nowrap}
+.thi-bday-lantern-card.found{box-shadow:0 5px 26px #ffd3984e,0 0 15px #ffe2b448 inset;filter:brightness(1.24)}
+.thi-bday-lantern-darkness{position:absolute;z-index:3;inset:0;pointer-events:none;background:radial-gradient(circle 120px at var(--fx) var(--fy),transparent 3%,#080a10a9 73%,#020308f7 100%);transition:opacity .9s}
+.thi-bday-lantern-surface:not(.active) .thi-bday-lantern-darkness{background:#030409f2}
+.thi-bday-lantern-surface.complete .thi-bday-lantern-darkness{opacity:.19}
+.thi-bday-lantern-beam{position:absolute;z-index:4;pointer-events:none;left:var(--fx);top:var(--fy);width:210px;height:210px;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 40px #f8d5a01c inset;opacity:0}
+.thi-bday-lantern-surface.active .thi-bday-lantern-beam{opacity:1}
+.thi-bday-lantern-instruction{position:absolute;z-index:5;pointer-events:none;bottom:13px;left:15px;right:15px;text-align:center;color:#f6d2ae!important;letter-spacing:.04em;font-size:12px!important;text-shadow:0 2px 7px #000;margin:0!important}
+.thi-bday-lantern-story{display:flex;align-items:center;justify-content:center;min-height:104px;text-align:center;padding:14px 10px 3px;color:#f4e2d6}
+.thi-bday-lantern-story small{display:block;color:#e2aa83;font-size:9px;letter-spacing:.2em;margin-bottom:7px}
+.thi-bday-lantern-story p{font:400 clamp(19px,3.25vw,26px)/1.22 var(--thi-serif,Georgia,serif);text-wrap:balance;margin:0 auto;max-width:620px}
+.thi-bday-lantern-story>p{color:#b6a29f;font:400 12px/1.4 Arial,sans-serif}
+.thi-bday-lantern-marks{display:flex;justify-content:center;gap:10px;margin:0 auto 12px}
+.thi-bday-lantern-marks i{width:34px;height:2px;background:#947b8059;display:block;transition:background .5s,box-shadow .5s}
+.thi-bday-lantern-marks i.seen{background:#efbc7a;box-shadow:0 0 12px #ffb37c6e}
+.thi-bday-light-next{display:inline-flex;align-items:center;justify-content:center;min-height:47px;padding:12px 24px;margin:6px auto 0;background:#e2b57d;border:1px solid #f4dcbd;color:#241714;border-radius:28px;cursor:pointer;font-weight:650;letter-spacing:.015em}
+@media(max-width:600px){
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-light-scene{padding:92px 14px 96px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-light-scene>h2{font-size:clamp(31px,8vw,39px)}
+.thi-bday-lantern-surface{height:clamp(310px,43svh,390px)}
+.thi-bday-lantern-card{border-width:6px;border-bottom-width:18px;min-width:0;width:30%;height:33%;padding:4px}
+.thi-bday-lantern-card small{font-size:7px}
+.thi-bday-lantern-glyph{font-size:40px}
+.thi-bday-lantern-story{min-height:110px}
+.thi-bday-lantern-story p{font-size:clamp(19px,4.9vw,24px)}
+}
