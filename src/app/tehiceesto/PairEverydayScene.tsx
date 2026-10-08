@@ -1,3 +1,5 @@
+/* Customer-uploaded and Unsplash demo photos already have trusted URLs; keep their original crop without Next image optimization. */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect,useRef,useState,type CSSProperties,type ReactNode } from "react";
