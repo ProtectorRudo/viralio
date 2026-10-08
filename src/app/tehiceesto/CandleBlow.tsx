@@ -1,6 +1,6 @@
 "use client";
 import { useEffect,useRef,useState } from "react";
-export default function CandleBlow({blown,onBlow,labels}:{blown:boolean;onBlow:()=>void;labels:{idle:string;active:string;fallback:string;unavailable:string}}){
+export default function CandleBlow({blown,onBlow,labels,birthdayMode=false}:{blown:boolean;onBlow:()=>void;labels:{idle:string;active:string;fallback:string;unavailable:string};birthdayMode?:boolean}){
   const [listening,setListening]=useState(false);const [unavailable,setUnavailable]=useState(false);const cleanupRef=useRef<(()=>void)|null>(null);
   useEffect(()=>()=>cleanupRef.current?.(),[]);
   async function listenForBlow(){
@@ -15,6 +15,11 @@ export default function CandleBlow({blown,onBlow,labels}:{blown:boolean;onBlow:(
       const tick=()=>{analyser.getByteTimeDomainData(values);let sum=0;for(const value of values){const normalized=(value-128)/128;sum+=normalized*normalized}const rms=Math.sqrt(sum/values.length);if(rms>.12)sustained+=1;else sustained=Math.max(0,sustained-1);if(sustained>=4){cleanup();cleanupRef.current=null;onBlow();return}frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick);
     }catch{setUnavailable(true);setListening(false)}
   }
+  const confirmBlow=()=>{cleanupRef.current?.();cleanupRef.current=null;onBlow()};
+  if(birthdayMode)return <div className="thi-blow-controls thi-blow-controls-birthday">
+    {!blown&&<button data-action={listening||unavailable?"blow-fallback":"blow-mic"} type="button" className="thi-primary thi-blow-mic" onClick={listening||unavailable?confirmBlow:listenForBlow}><span>{listening||unavailable?"Ya soplé":labels.idle}</span><i aria-hidden="true">{listening||unavailable?"✦":"♩"}</i></button>}
+    {unavailable&&!blown&&<small className="thi-bday-blow-help">Micrófono no disponible: tocá «Ya soplé» para apagar las velas.</small>}
+  </div>;
   return <div className="thi-blow-controls">
     {!blown&&<button data-action="blow-mic" type="button" className={`thi-primary thi-blow-mic ${listening?"listening":""}`} onClick={listenForBlow}><span>{listening?labels.active:labels.idle}</span><i>{listening?"◉":"♩"}</i></button>}
     {!blown&&<button data-action="blow-fallback" type="button" className="thi-blow-fallback" onClick={onBlow}>{unavailable?labels.unavailable:labels.fallback}</button>}
