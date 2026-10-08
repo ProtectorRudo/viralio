@@ -63,6 +63,27 @@ function readCookie(name:string){
   return item?decodeURIComponent(item.slice(prefix.length)):"";
 }
 
+const ORDER_REQUEST_KEY="thi_order_request";
+
+function storedOrderRequest(scope:string){
+  if(typeof window==="undefined")return "";
+  try{
+    const raw=window.sessionStorage.getItem(ORDER_REQUEST_KEY);
+    const parsed=raw?JSON.parse(raw) as {id?:string;scope?:string}:null;
+    return parsed?.scope===scope&&typeof parsed.id==="string"?parsed.id:"";
+  }catch{return ""}
+}
+
+function persistOrderRequest(id:string,scope:string){
+  if(typeof window==="undefined")return;
+  window.sessionStorage.setItem(ORDER_REQUEST_KEY,JSON.stringify({id,scope}));
+}
+
+function clearStoredOrderRequest(){
+  if(typeof window==="undefined")return;
+  window.sessionStorage.removeItem(ORDER_REQUEST_KEY);
+}
+
 export default function CreatorWizard({initialExperience=""}:{initialExperience?:string}) {
   const validInitial=experiences.some((experience)=>experience.slug===initialExperience)?initialExperience:"";
   const [step, setStep] = useState<Step>(validInitial?1:0);
@@ -97,6 +118,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
   function chooseTemplate(slug: string) {
     orderRequestId.current="";
+    clearStoredOrderRequest();
     setSelectedSlug(slug);
     setStep(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -114,7 +136,11 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
     setSubmitState("submitting");
     setErrorMessage("");
-    if(!orderRequestId.current)orderRequestId.current=window.crypto.randomUUID();
+    const requestScope=`${selected.slug}|${contact.email.trim().toLowerCase()}`;
+    if(!orderRequestId.current){
+      orderRequestId.current=storedOrderRequest(requestScope)||window.crypto.randomUUID();
+      persistOrderRequest(orderRequestId.current,requestScope);
+    }
 
     try {
       const response = await fetch(`${SUPABASE_URL}/functions/v1/order-create`, {
@@ -149,6 +175,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
       }
 
       if (data.checkoutUrl) {
+        clearStoredOrderRequest();
         window.location.href = data.checkoutUrl;
         return;
       }
