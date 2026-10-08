@@ -399,9 +399,9 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                   <div>
                     <strong>Tu pedido quedó reservado.</strong>
                     <p>
-                      El cobro online está temporalmente fuera de servicio. No vamos a
-                      iniciar la producción ni contactarte como pedido pago hasta que el
-                      pago quede habilitado.
+                      El cobro online está temporalmente fuera de servicio. Tu pedido queda
+                      guardado, pero la personalización se habilita recién cuando el pago
+                      pueda completarse y figure acreditado.
                     </p>
                     {orderCode && (
                       <Link href={`/tehiceesto/pedido/${orderCode}`}>
