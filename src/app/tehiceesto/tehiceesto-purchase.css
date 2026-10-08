@@ -1,0 +1,596 @@
+/* Te Hice Esto · Premium gift selection + checkout, 2026.
+   Dedicated conversion surface; does not affect any experience template. */
+.creator-page:has(.thi-purchase-page){
+  display:block!important;
+  width:100%;
+  min-height:100svh;
+  max-width:none!important;
+  padding:0 24px 110px!important;
+  margin:0;
+  overflow-x:clip;
+  background:
+    radial-gradient(circle at 90% 9%,rgba(218,167,143,.16),transparent 31rem),
+    radial-gradient(circle at 3% 36%,rgba(236,195,174,.11),transparent 33rem),
+    #f8f4ef;
+  color:#292023;
+  font-family:Arial,Helvetica,sans-serif;
+}
+.creator-page:has(.thi-purchase-page) .creator-backdrop{display:none!important}
+.creator-page .thi-purchase-page.order-flow{
+  --buy-ink:#282023;
+  --buy-rose:#aa6358;
+  --buy-muted:#74686c;
+  --buy-paper:#fffdf9;
+  --buy-line:#e7ddd6;
+  width:min(1180px,100%)!important;
+  max-width:1180px;
+  display:flex!important;
+  flex-direction:column;
+  gap:0!important;
+  margin:auto;
+  position:relative;
+  color:var(--buy-ink);
+}
+.thi-purchase-page *{box-sizing:border-box}
+.thi-purchase-page button{cursor:pointer}
+.thi-purchase-page button:focus-visible,
+.thi-purchase-page a:focus-visible{
+  outline:3px solid rgba(172,102,88,.58);
+  outline-offset:3px;
+}
+.thi-purchase-page .order-flow-main{width:100%;min-width:0}
+.thi-purchase-page .thi-buy-topbar{
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  z-index:5;
+  padding:20px 2px 14px;
+  border-bottom:1px solid rgba(64,45,46,.10);
+}
+.thi-buy-topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.thi-purchase-page .thi-buy-brand{
+  color:#262024!important;
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:-.065em;
+  font-size:25px;
+  font-weight:700;
+  text-decoration:none;
+  line-height:1;
+}
+.thi-buy-brand>span:first-child{
+  font-family:Georgia,serif;
+  font-weight:400;
+  margin-right:7px;
+  font-size:28px;
+  color:var(--buy-rose);
+  vertical-align:-1px;
+}
+.thi-buy-brand-domain{font-weight:400}
+.thi-buy-trust{font-size:11px;color:#73696a;display:flex;align-items:center;gap:7px}
+.thi-buy-trust i{font-style:normal;color:var(--buy-rose);font-size:15px}
+.thi-buy-progress{
+  margin:25px auto 5px;
+  width:min(520px,100%);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0;
+}
+.thi-buy-progress>div{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  color:#a79a9a;
+}
+.thi-buy-progress>div:not(:last-child):after{
+  content:"";
+  height:1px;
+  position:absolute;
+  top:18px;
+  left:calc(50% + 23px);
+  right:calc(-50% + 23px);
+  background:#d6c9c5;
+}
+.thi-buy-progress>div.done:not(:last-child):after{background:var(--buy-rose)}
+.thi-buy-progress span{
+  width:37px;height:37px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.72);
+  border:1px solid #d2c5c0;
+  font-size:12px;
+  color:#938687;
+}
+.thi-buy-progress strong{font-size:11px;font-weight:500;letter-spacing:.01em}
+.thi-buy-progress .active span{background:#ad6658;color:#fff;border-color:#ad6658;box-shadow:0 3px 13px rgba(150,79,75,.14)}
+.thi-buy-progress .active strong{color:#914f45;font-weight:700}
+.thi-buy-progress .done span{background:#ede1dc;color:#9b564b;border-color:#ca9f91}
+.thi-buy-progress .done strong{color:#8e6661}
+
+/* First impression */
+.thi-buy-picker{width:100%;padding-bottom:12px}
+.thi-buy-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+  grid-template-rows:auto auto;
+  column-gap:34px;
+  align-items:center;
+  min-height:475px;
+  padding:43px 20px 24px;
+  position:relative;
+  isolation:isolate;
+}
+.thi-buy-eyebrow{
+  display:block;
+  color:#ac746b;
+  font-size:10px;
+  font-weight:750;
+  line-height:1.5;
+  letter-spacing:.185em;
+}
+.thi-buy-hero-copy{position:relative;z-index:2;padding-bottom:12px}
+.thi-buy-hero-copy h1{
+  font-family:var(--thi-serif,Georgia),Georgia,serif;
+  color:#241b1f;
+  margin:18px 0 21px;
+  font-size:clamp(49px,5.35vw,75px);
+  line-height:.98;
+  letter-spacing:-.046em;
+  font-weight:400;
+  text-wrap:balance;
+}
+.thi-buy-hero-copy h1 em,
+.thi-buy-section-head h2 em,
+.thi-buy-reassurance h2 em{
+  font-weight:400;
+  color:#af6657;
+}
+.thi-buy-hero-copy>p{
+  color:#72666a;
+  font-size:clamp(14px,1.3vw,17px);
+  line-height:1.73;
+  max-width:520px;
+  margin:0 0 21px;
+}
+.thi-purchase-page a.thi-buy-discover{
+  display:inline-flex;align-items:center;gap:18px;
+  min-height:47px;padding:0 20px;
+  color:#fff9f4!important;
+  border-radius:999px;
+  font-size:13px;font-weight:700;
+  background:#34282d;
+  box-shadow:0 14px 26px rgba(50,35,42,.14);
+  text-decoration:none;
+  transition:transform .2s,box-shadow .2s;
+}
+.thi-buy-discover:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(50,35,42,.2)}
+.thi-buy-discover span{font-size:20px;line-height:0}
+.thi-buy-hero-qualities{
+  display:flex;flex-wrap:wrap;gap:17px;
+  margin-top:26px;color:#62565a;font-size:11px;
+}
+.thi-buy-hero-qualities>span{display:flex;align-items:center;gap:6px}
+.thi-buy-symbol{font-size:19px;color:var(--buy-rose);line-height:1}
+.thi-buy-hero-visual{height:382px;position:relative;align-self:stretch;isolation:isolate}
+.thi-buy-photo-stack{position:absolute;padding:9px;background:#fffaf4;border-radius:8px;box-shadow:0 22px 43px rgba(80,44,39,.18)}
+.thi-buy-photo-stack.photo-front{width:56%;height:69%;left:15%;top:11%;transform:rotate(7deg);z-index:2}
+.thi-buy-photo-stack.photo-back{width:48%;height:62%;right:7%;top:4%;transform:rotate(-7deg);z-index:1;opacity:.77}
+.thi-buy-photo-stack .thi-buy-photo{width:100%;height:100%;border-radius:3px}
+.thi-buy-hero-paper{
+  position:absolute;z-index:3;bottom:10%;right:0;
+  background:#fffbf4;color:#5c3e3c;
+  box-shadow:0 13px 28px rgba(73,42,42,.14);
+  transform:rotate(-6deg);
+  padding:17px 21px;
+  font-family:Georgia,serif;
+  font-size:17px;
+  line-height:1.12;
+}
+.thi-buy-hero-paper i{font-weight:400;color:#a26c61}
+.thi-buy-hero-paper b{color:#b7756a;margin-left:6px}
+.thi-buy-hero-spark{position:absolute;color:#c99d86;font-style:normal;font-size:28px}
+.thi-buy-hero-spark.spark-one{left:6%;top:15%}
+.thi-buy-hero-spark.spark-two{right:2%;top:43%;font-size:14px}
+.thi-buy-price-card{
+  position:absolute;
+  z-index:4;
+  right:4%;
+  bottom:4%;
+  width:217px;
+  padding:15px 16px 13px;
+  border:1px solid rgba(178,119,106,.2);
+  border-radius:17px;
+  background:rgba(255,252,247,.94);
+  box-shadow:0 14px 32px rgba(90,53,49,.1);
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+.thi-buy-price-card small{display:block;color:#9a746e;font-size:8px;letter-spacing:.14em}
+.thi-buy-price-card strong{display:block;font-family:Georgia,serif;font-size:32px;font-weight:400;margin-top:7px;color:#2d2528}
+.thi-buy-price-card>span{font-size:11px;color:#817276}
+.thi-buy-how{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:23px 28px;margin:0 0 65px;
+  background:linear-gradient(100deg,#fffaf6,#f3e7df);
+  border:1px solid rgba(155,102,88,.12);
+  border-radius:20px;
+  box-shadow:0 8px 28px rgba(112,68,57,.045);
+}
+.thi-buy-how-intro{display:flex;flex-direction:column;gap:6px}
+.thi-buy-how-intro>span{font-size:9px;letter-spacing:.18em;color:#ac766b}
+.thi-buy-how-intro>strong{font-family:Georgia,serif;font-size:20px;font-weight:400;color:#34282e}
+.thi-buy-how-steps{display:flex;align-items:center;gap:15px}
+.thi-buy-how-steps>span{display:flex;align-items:center;gap:7px;font-size:12px;color:#4b4145;white-space:nowrap}
+.thi-buy-how-steps b{color:#b87c6f;font-family:Georgia,serif;font-size:17px;font-weight:400}
+.thi-buy-how-steps>i{font-size:15px;color:#c8aaa0;font-style:normal}
+
+/* Gift recipient: visible, deliberately non-scrolling options */
+.thi-buy-occasion{scroll-margin-top:24px}
+.thi-buy-section-head{text-align:center;max-width:640px;margin:0 auto 25px}
+.thi-buy-section-head h2,.thi-buy-reassurance h2{
+  font-family:var(--thi-serif,Georgia),Georgia,serif;
+  color:#291f22;
+  font-size:clamp(37px,4.6vw,57px);
+  font-weight:400;line-height:1.05;letter-spacing:-.04em;
+  margin:9px 0 12px;
+}
+.thi-buy-section-head p{font-size:14px;color:#7a6e73;line-height:1.6;margin:0}
+.thi-buy-recipient-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px;margin:0 0 65px}
+.thi-purchase-page .thi-buy-recipient-grid button{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  min-width:0;min-height:108px;padding:12px 7px;
+  border:1px solid rgba(106,76,75,.12);
+  border-radius:17px;
+  color:#44373b;
+  background:#fffcf8;
+  box-shadow:0 5px 17px rgba(85,57,57,.035);
+  transition:background .22s,border .22s,box-shadow .22s,transform .22s;
+}
+.thi-buy-recipient-grid button>span{font-family:Georgia,serif;font-size:27px;line-height:1;color:#ae6c62}
+.thi-buy-recipient-grid button>strong{font-size:11px;font-weight:600;line-height:1.2}
+.thi-buy-recipient-grid button:hover{transform:translateY(-2px);border-color:#cba89d}
+.thi-purchase-page .thi-buy-recipient-grid button.is-active{
+  background:#f2dfd7;
+  border-color:#b47465;
+  box-shadow:0 0 0 2px rgba(189,119,99,.1),0 8px 22px rgba(161,104,88,.09);
+  color:#884e46;
+}
+
+/* Editorial catalog */
+.thi-buy-collection{scroll-margin-top:20px}
+.thi-buy-collection-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:18px;
+  margin-bottom:22px;
+  padding-top:13px;
+  border-top:1px solid rgba(86,58,58,.12);
+}
+.thi-buy-collection-heading h2{
+  font-family:var(--thi-serif,Georgia),Georgia,serif;
+  font-size:clamp(33px,3.7vw,46px);
+  font-weight:400;
+  color:#2d2327;
+  line-height:1.08;
+  letter-spacing:-.035em;
+  margin:7px 0 0;
+}
+.thi-buy-collection-heading>button{
+  border:0;background:none;padding:8px 0;
+  color:#9f5b50;text-decoration:underline;text-underline-offset:4px;
+  font-size:12px;font-weight:700;
+}
+.thi-buy-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.thi-buy-gift-card{
+  min-width:0;min-height:264px;
+  display:grid;grid-template-columns:42% minmax(0,1fr);
+  overflow:hidden;
+  border:1px solid #eadfd8;
+  border-radius:20px;
+  background:rgba(255,253,249,.92);
+  box-shadow:0 8px 24px rgba(79,54,45,.05);
+  transition:transform .23s,box-shadow .23s,border-color .23s;
+}
+.thi-buy-gift-card:hover{transform:translateY(-3px);box-shadow:0 17px 35px rgba(79,54,45,.1)}
+.thi-buy-gift-card.is-selected{border-color:#b16f62;box-shadow:0 0 0 2px rgba(177,111,98,.10),0 13px 30px rgba(79,54,45,.07)}
+.thi-purchase-page .thi-buy-gift-art-link{
+  display:block;position:relative;min-width:0;overflow:hidden;
+  text-decoration:none!important;color:#fff!important;
+}
+.thi-buy-photo{
+  position:relative;
+  overflow:hidden;
+  height:100%;min-height:100%;
+  background-color:#a38b84;
+  background-image:linear-gradient(180deg,rgba(32,19,23,.03),rgba(28,16,20,.42)),var(--gift-photo);
+  background-size:cover;
+  background-position:var(--gift-position,center);
+  transition:transform .75s ease;
+}
+.thi-buy-gift-art-link:hover .thi-buy-photo{transform:scale(1.06)}
+.thi-buy-photo-glaze{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(25,19,22,.03),transparent 42%,rgba(24,13,15,.29));
+  pointer-events:none;
+}
+.thi-buy-photo-monogram{position:absolute;left:20px;top:17px;color:#fff;font-size:31px;text-shadow:0 3px 17px #35212c}
+.thi-buy-photo-note{
+  position:absolute;bottom:21px;left:16px;right:13px;
+  font-family:var(--thi-serif,Georgia),Georgia,serif;
+  font-size:clamp(18px,2vw,25px);
+  line-height:1.03;font-style:italic;color:#fff;
+  text-shadow:0 3px 17px rgba(24,15,22,.57);
+}
+.thi-buy-art-number{
+  position:absolute;right:13px;top:14px;
+  font-size:9px;letter-spacing:.13em;color:rgba(255,249,242,.9);
+  text-shadow:0 1px 8px #211a1b;
+}
+.thi-buy-gift-info{min-width:0;display:flex;flex-direction:column;padding:22px 20px 19px}
+.thi-buy-gift-topline{display:flex;justify-content:space-between;gap:6px;align-items:center}
+.thi-buy-gift-topline>span{
+  font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;
+  font-weight:700;color:#ac685e;
+}
+.thi-buy-gift-topline>b{
+  font-size:8px;letter-spacing:.09em;white-space:nowrap;
+  color:#8d564c;background:#f2dfd7;border-radius:99px;padding:5px 6px;
+}
+.thi-buy-gift-info h3{
+  font-family:var(--thi-serif,Georgia),Georgia,serif;
+  color:#2e2427;font-size:clamp(24px,2.65vw,34px);line-height:1.04;
+  font-weight:400;letter-spacing:-.04em;margin:11px 0 8px;
+}
+.thi-buy-gift-info>p{font-size:12px;line-height:1.55;color:#71666a;margin:0}
+.thi-buy-gift-benefits{display:flex;gap:13px;flex-wrap:wrap;margin-top:15px;color:#947c78;font-size:10px}
+.thi-buy-gift-actions{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:17px}
+.thi-purchase-page .thi-buy-select{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  min-height:43px;width:100%;
+  padding:0 16px;
+  border:1px solid #35292d;
+  background:#35292d;color:#fff9f5;
+  border-radius:11px;
+  font-size:12px;font-weight:700;
+  letter-spacing:.01em;
+  transition:background .2s,border-color .2s;
+}
+.thi-buy-select>span{font-size:19px;font-weight:400}
+.thi-buy-select:hover{background:#51373c;border-color:#51373c}
+.thi-purchase-page .thi-buy-gift-card.is-selected .thi-buy-select{
+  background:#f0dfd8;color:#78493f;border-color:#d4b1a5;
+}
+.thi-purchase-page a.thi-buy-preview{
+  align-self:center;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  min-height:28px;color:#8d5049!important;
+  font-size:11px;font-weight:650;text-decoration:underline;text-underline-offset:3px;
+}
+.thi-buy-preview span{
+  display:inline-grid;place-items:center;width:22px;height:22px;
+  border:1px solid rgba(144,94,86,.25);border-radius:50%;font-size:13px;
+}
+.thi-buy-view-all{
+  display:flex;align-items:center;justify-content:center;gap:18px;
+  margin:27px auto 0;padding:14px 22px;
+  border:1px solid #d2b5a8;border-radius:999px;
+  background:transparent;color:#935b51;font-size:12px;font-weight:700;
+}
+.thi-buy-reassurance{padding:78px 0 45px;text-align:center}
+.thi-buy-reassurance>div{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:24px;text-align:left}
+.thi-buy-reassurance article{padding:24px 22px;background:rgba(255,255,255,.53);border:1px solid #ede2da;border-radius:19px}
+.thi-buy-reassurance article>span{font-size:28px;color:#b97868}
+.thi-buy-reassurance article strong{display:block;font-family:Georgia,serif;font-weight:400;font-size:18px;margin:8px 0}
+.thi-buy-reassurance article p{color:#796c70;font-size:12px;line-height:1.65;margin:0}
+
+/* Persistent checkout bar only after an explicit choice */
+.thi-buy-selection-dock{
+  position:fixed;
+  z-index:160;
+  bottom:max(13px,env(safe-area-inset-bottom));
+  left:50%;transform:translateX(-50%);
+  width:min(885px,calc(100vw - 30px));
+  padding:10px 12px 10px 11px;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  background:rgba(255,251,247,.97);
+  backdrop-filter:blur(20px);
+  border:1px solid #e3d4cb;
+  border-radius:19px;
+  box-shadow:0 20px 65px rgba(40,25,28,.22);
+  animation:thiBuyDockIn .33s cubic-bezier(.2,.75,.2,1) both;
+}
+@keyframes thiBuyDockIn{from{opacity:0;transform:translate(-50%,15px)}to{opacity:1;transform:translate(-50%,0)}}
+.thi-buy-dock-gift{display:flex;gap:11px;align-items:center;min-width:0}
+.thi-buy-dock-thumb{width:58px;height:56px;border-radius:10px;overflow:hidden;flex:0 0 auto}
+.thi-buy-dock-gift>div:last-child{min-width:0;display:flex;flex-direction:column;gap:2px}
+.thi-buy-dock-gift small{color:#9a8984;font-size:8px;letter-spacing:.14em}
+.thi-buy-dock-gift strong{font-family:Georgia,serif;color:#35282c;font-weight:400;font-size:17px;line-height:1.12;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:270px}
+.thi-buy-dock-gift button{
+  text-align:left;border:0;background:none;color:#9e5f53;
+  text-decoration:underline;text-underline-offset:3px;font-size:11px;padding:2px 0;
+}
+.thi-buy-dock-checkout{display:flex;align-items:center;gap:16px}
+.thi-buy-dock-checkout>span{font-size:10px;color:#827275;white-space:nowrap}
+.thi-buy-dock-checkout>span b{color:#2f282b;font-size:17px;font-family:Georgia,serif;font-weight:400;margin-left:6px}
+.thi-purchase-page .thi-buy-dock-checkout>button{
+  display:flex;align-items:center;justify-content:center;gap:18px;
+  min-height:51px;padding:0 25px;
+  border:0;border-radius:11px;background:#38282f;color:#fff9f6;
+  font-weight:750;font-size:13px;
+  box-shadow:0 10px 25px rgba(44,29,36,.16);
+}
+.thi-buy-dock-checkout>button i{font-style:normal;font-size:20px;font-weight:400}
+.thi-buy-dock-checkout>button:hover{background:#5a3c43}
+
+/* Contact and payment steps: same boutique visual language */
+.thi-purchase-page .order-contact-step,.thi-purchase-page .order-review-step{
+  max-width:740px;margin:35px auto 0;min-height:68vh;
+}
+.thi-purchase-page .order-step-head h1{
+  font-family:var(--thi-serif,Georgia),Georgia,serif;
+  color:#2b2225;font-weight:400;
+  font-size:clamp(43px,5.3vw,63px);line-height:1.04;letter-spacing:-.04em;
+}
+.thi-purchase-page .order-step-head>p{color:#71676b;font-size:14px;line-height:1.65;max-width:620px}
+.thi-purchase-page .order-step-head .eyebrow{font-size:10px;color:#aa665a;letter-spacing:.18em}
+.thi-purchase-page .order-back{
+  color:#9e6459;font-size:12px;font-weight:700;margin:0 0 24px;padding:8px 0;
+}
+.thi-purchase-page .order-selected-template,
+.thi-purchase-page .order-review-card{
+  background:#fffcf9;border:1px solid #e8d9d0;border-radius:20px;
+  box-shadow:0 10px 25px rgba(72,48,42,.05);
+}
+.thi-purchase-page .order-selected-template{max-width:none;min-height:88px;padding:17px 18px}
+.thi-purchase-page .order-selected-template>span{font-size:29px}
+.thi-purchase-page .order-selected-template small,
+.thi-purchase-page .order-review-template small{color:#a0786f;font-size:10px;letter-spacing:.15em}
+.thi-purchase-page .order-selected-template strong,
+.thi-purchase-page .order-review-template strong{color:#302629;font-size:23px}
+.thi-purchase-page .order-selected-template a{color:#9d5d54!important;font-size:12px}
+.thi-purchase-page .order-contact-form{max-width:none;gap:14px}
+.thi-purchase-page .order-contact-form>label:not(.order-consent){
+  background:#fffcf9;border:1px solid #e8dcd5;border-radius:13px;padding:17px 19px;
+}
+.thi-purchase-page .order-contact-form label>span{color:#75676b;font-size:11px;letter-spacing:.07em}
+.thi-purchase-page .order-contact-form label>input:not([type="checkbox"]){
+  color:#32282b;min-height:40px;
+  border-bottom:1px solid #e6dad3;
+  font-size:16px;outline:none;
+}
+.thi-purchase-page .order-contact-form label>input:not([type="checkbox"]):focus{border-color:#bb806e}
+.thi-purchase-page .order-contact-form label>small{color:#7d7073;font-size:11px;line-height:1.45}
+.thi-purchase-page .order-consent span{color:#63585c!important;font-size:12px!important;line-height:1.55}
+.thi-purchase-page .order-consent input{accent-color:#aa685c;width:17px;height:17px}
+.thi-purchase-page .order-primary{
+  min-height:57px;border-radius:11px;background:#38282f;color:#fff9f7;
+  font-size:14px;letter-spacing:0;font-weight:700;padding:0 22px;
+  box-shadow:0 12px 25px rgba(52,34,40,.11);
+}
+.thi-purchase-page .order-review-card{max-width:none;padding:23px}
+.thi-purchase-page .order-review-card dl{border-color:#e9ded7}
+.thi-purchase-page .order-review-card dt{font-size:10px;color:#8e7974}
+.thi-purchase-page .order-review-card dd{font-size:13px;color:#4c4245}
+.thi-purchase-page .order-review-price{border-top:0}
+.thi-purchase-page .order-review-price strong{color:#322629;font-size:43px}
+.thi-purchase-page .order-review-price small{color:#9b726a;font-size:10px}
+.thi-purchase-page .order-review-price>span{color:#70656a;font-size:11px}
+.thi-purchase-page .order-pay-button{
+  border:0;border-radius:13px;
+  color:#fff9f7;background:#372930;min-height:72px;
+  padding:14px 20px;
+}
+.thi-purchase-page .order-pay-button>span{color:#f1d6cb;font-size:11px}
+.thi-purchase-page .order-pay-button>strong{font-size:27px;color:#fffaf5}
+.thi-purchase-page .order-pay-button>b{color:#fff5ef}
+.thi-purchase-page .order-payment-unavailable,
+.thi-purchase-page .order-submit-error{
+  border-radius:13px;background:#fcf4ed;border-color:#ead1bd;
+}
+.thi-purchase-page .order-payment-unavailable strong,
+.thi-purchase-page .order-submit-error strong{color:#463734}
+.thi-purchase-page .order-payment-unavailable p,
+.thi-purchase-page .order-submit-error p{font-size:12px;color:#6b5b56}
+.thi-purchase-page .order-payment-unavailable a,
+.thi-purchase-page .order-submit-error button{font-size:12px;color:#9b5248!important}
+.thi-purchase-page .order-after-payment article{border-top:1px solid #e2d7ce}
+.thi-purchase-page .order-after-payment span{font-size:11px;color:#ae796b}
+.thi-purchase-page .order-after-payment p{color:#655b5e;font-size:11px}
+
+/* Layout tablets */
+@media(max-width:1050px){
+  .thi-buy-hero{grid-template-columns:minmax(0,1fr) minmax(0,.85fr);padding-inline:3px}
+  .thi-buy-how{flex-direction:column;align-items:stretch;gap:17px}
+  .thi-buy-how-steps{justify-content:space-between}
+  .thi-buy-recipient-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .thi-buy-card-grid{grid-template-columns:1fr 1fr}
+  .thi-buy-gift-card{grid-template-columns:38% minmax(0,1fr)}
+  .thi-buy-gift-info{padding:18px 15px}
+  .thi-buy-gift-info h3{font-size:26px}
+  .thi-buy-gift-benefits{gap:7px}
+}
+@media(max-width:760px){
+  .creator-page:has(.thi-purchase-page){padding:0 16px 90px!important}
+  .thi-purchase-page .thi-buy-topbar{padding:18px 0 13px}
+  .thi-buy-hero{
+    display:flex;flex-direction:column;
+    align-items:stretch;min-height:0;
+    padding:28px 0 0;
+  }
+  .thi-buy-hero-copy h1{font-size:clamp(42px,9.2vw,61px);max-width:580px;margin:13px 0 14px}
+  .thi-buy-hero-copy>p{font-size:14px;line-height:1.63;max-width:540px}
+  .thi-buy-hero-qualities{margin-top:20px;gap:12px;font-size:10px}
+  .thi-buy-hero-visual{height:232px;max-height:232px;align-self:center;width:min(450px,100%);margin:8px auto 0}
+  .thi-buy-photo-stack.photo-front{height:83%;width:48%;left:20%;top:5%;transform:rotate(6deg)}
+  .thi-buy-photo-stack.photo-back{height:81%;width:44%;right:12%;top:0}
+  .thi-buy-hero-paper{bottom:7%;right:3%;font-size:13px;padding:12px 15px}
+  .thi-buy-price-card{position:relative;right:auto;bottom:auto;margin:-8px auto 24px;width:fit-content;min-width:250px;padding:13px 20px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 15px}
+  .thi-buy-price-card small{text-align:left}
+  .thi-buy-price-card strong{grid-row:1/3;grid-column:2;margin:0;font-size:27px}
+  .thi-buy-price-card>span{text-align:left;font-size:10px}
+  .thi-buy-how{padding:20px 18px;margin-bottom:48px}
+  .thi-buy-section-head{text-align:left;margin-bottom:17px}
+  .thi-buy-section-head h2{font-size:clamp(35px,8vw,47px)}
+  .thi-buy-recipient-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:46px}
+  .thi-purchase-page .thi-buy-recipient-grid button{min-height:80px;padding:9px 3px;border-radius:12px;gap:7px}
+  .thi-buy-recipient-grid button>span{font-size:23px}
+  .thi-buy-recipient-grid button>strong{font-size:10px}
+  .thi-buy-card-grid{grid-template-columns:1fr;gap:13px}
+  .thi-buy-gift-card{min-height:230px;grid-template-columns:39% minmax(0,1fr)}
+  .thi-buy-gift-info{padding:15px 14px}
+  .thi-buy-gift-info h3{font-size:clamp(24px,6.4vw,34px)}
+  .thi-buy-gift-actions{padding-top:13px}
+  .thi-buy-gift-benefits{margin-top:9px}
+  .thi-buy-reassurance{padding-top:62px}
+  .thi-buy-reassurance>div{grid-template-columns:1fr;gap:10px}
+  .thi-buy-reassurance article{padding:18px}
+  .thi-buy-selection-dock{bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 18px)}
+}
+@media(max-width:470px){
+  .thi-purchase-page .thi-buy-brand{font-size:22px}
+  .thi-buy-brand>span:first-child{font-size:24px}
+  .thi-buy-trust{font-size:10px}
+  .thi-buy-progress{margin-top:20px}
+  .thi-buy-progress span{width:30px;height:30px;font-size:10px}
+  .thi-buy-progress>div:not(:last-child):after{top:15px;left:calc(50% + 19px);right:calc(-50% + 19px)}
+  .thi-buy-progress strong{font-size:10px}
+  .thi-buy-hero-copy h1{font-size:clamp(42px,10vw,52px)}
+  .thi-buy-hero-qualities{justify-content:space-between;gap:5px;font-size:9px}
+  .thi-buy-hero-qualities>span{gap:4px}
+  .thi-buy-symbol{font-size:16px}
+  .thi-buy-hero-visual{height:195px;max-height:195px}
+  .thi-buy-hero-paper{right:0;font-size:12px}
+  .thi-buy-how{padding:16px 13px}
+  .thi-buy-how-intro>strong{font-size:19px}
+  .thi-buy-how-steps{gap:4px}
+  .thi-buy-how-steps>span{flex-direction:column;align-items:center;gap:5px;font-size:10px}
+  .thi-buy-how-steps>i{font-size:12px}
+  .thi-buy-gift-card{grid-template-columns:38% minmax(0,1fr);min-height:230px}
+  .thi-buy-gift-info{padding:14px 12px}
+  .thi-buy-photo-note{left:10px;right:7px;font-size:18px;bottom:16px}
+  .thi-buy-photo-monogram{left:12px;top:14px;font-size:25px}
+  .thi-buy-gift-info h3{margin:8px 0 5px;font-size:25px}
+  .thi-buy-gift-info>p{font-size:11px;line-height:1.44}
+  .thi-buy-gift-topline>span{font-size:8px}
+  .thi-buy-gift-benefits{font-size:9px;gap:8px}
+  .thi-buy-gift-actions{gap:4px;padding-top:9px}
+  .thi-purchase-page .thi-buy-select{min-height:40px;font-size:11px;padding:0 11px;border-radius:9px}
+  .thi-purchase-page a.thi-buy-preview{font-size:10px;min-height:26px}
+  .thi-buy-selection-dock{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;padding:9px 11px}
+  .thi-buy-dock-thumb{width:44px;height:44px}
+  .thi-buy-dock-gift strong{max-width:calc(100vw - 100px);font-size:15px}
+  .thi-buy-dock-gift small{font-size:8px}
+  .thi-buy-dock-checkout{gap:8px}
+  .thi-buy-dock-checkout>span{display:none}
+  .thi-purchase-page .thi-buy-dock-checkout>button{width:100%;min-height:46px;border-radius:9px;font-size:12px}
+  .thi-purchase-page .order-contact-step,.thi-purchase-page .order-review-step{margin-top:24px}
+  .thi-purchase-page .order-review-card{padding:16px}
+  .thi-purchase-page .order-pay-button{grid-template-columns:1fr auto 18px;gap:6px}
+  .thi-purchase-page .order-pay-button>span{font-size:9px}
+  .thi-purchase-page .order-pay-button>strong{font-size:23px}
+  .thi-purchase-page .order-after-payment{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-buy-photo,.thi-buy-gift-card,.thi-buy-recipient-grid button,
+  .thi-buy-selection-dock{animation:none!important;transition:none!important}
+}
