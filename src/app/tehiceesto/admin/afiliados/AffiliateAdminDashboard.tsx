@@ -125,7 +125,7 @@ export default function AffiliateAdminDashboard(){
     const data=await affiliateAdminCall<{password:string}>("resetPassword",{id:detail.affiliate.id});
     setCreated({
       name:detail.affiliate.name,
-      shareUrl:`https://tehiceesto.com/r/${detail.affiliate.primary_link_code||detail.affiliate.slug}`,
+      shareUrl:`https://tehiceesto.com/${detail.affiliate.primary_link_code||detail.affiliate.slug}`,
       dashboardUrl:`https://tehiceesto.com/afiliados/${detail.affiliate.slug}`,
       initialPassword:data.password,
     });
@@ -218,7 +218,7 @@ export default function AffiliateAdminDashboard(){
           <div><span>Link para compartir</span><code>{created.shareUrl}</code><button onClick={()=>navigator.clipboard.writeText(created.shareUrl)}>Copiar</button></div>
           <div><span>Dashboard</span><code>{created.dashboardUrl}</code><button onClick={()=>navigator.clipboard.writeText(created.dashboardUrl)}>Copiar</button></div>
           <div><span>Contraseña inicial</span><code>{created.initialPassword}</code><button onClick={()=>navigator.clipboard.writeText(created.initialPassword)}>Copiar</button></div>
-          <small>La contraseña se muestra sólo ahora. Si se pierde, podés generar otra.</small>
+          <small>Esta contraseña es inicial. Al entrar por primera vez, cada influencer deberá elegir una contraseña personal.</small>
         </section>
       )}
 
@@ -245,7 +245,7 @@ export default function AffiliateAdminDashboard(){
             <thead><tr><th>Influencer</th><th>Visitas</th><th>Ventas</th><th>Conv.</th><th>Facturación</th><th>Comisión</th><th>A liquidar</th><th>Liquidado</th><th>Estado</th></tr></thead>
             <tbody>{rows.map((row)=>(
               <tr key={row.id} onClick={()=>openDetail(row.id)}>
-                <td><strong>{row.name}</strong><small>/r/{row.primary_link_code||row.slug}</small></td>
+                <td><strong>{row.name}</strong><small>/{row.primary_link_code||row.slug}</small></td>
                 <td>{Number(row.unique_visitors||0).toLocaleString("es-AR")}</td>
                 <td>{Number(row.approved_sales||0)}</td>
                 <td>{pct(Number(row.unique_visitors)?Number(row.approved_sales)/Number(row.unique_visitors):0)}</td>
@@ -278,7 +278,7 @@ export default function AffiliateAdminDashboard(){
               if(el)void updateAffiliate({commissionBps:Math.round(Number(el.value)*100)});
             }}>Guardar</button></div></label>
             <div><span>Estado</span><button className="thi-ghost" onClick={()=>updateAffiliate({status:detail.affiliate.status==="active"?"paused":"active"})}>{detail.affiliate.status==="active"?"Pausar":"Activar"}</button></div>
-            <div><span>Acceso</span><button className="thi-ghost" onClick={resetPassword}>Nueva contraseña</button></div>
+            <div><span>Acceso</span><button className="thi-ghost" onClick={resetPassword}>Restablecer acceso</button></div>
           </div>
 
           <section className="thi-aff-settlement-box">
@@ -319,7 +319,7 @@ export default function AffiliateAdminDashboard(){
           </section>
           <div className="thi-aff-links">
             <h3>Links activos</h3>
-            {detail.links.map(link=><div key={link.id}><code>https://tehiceesto.com/r/{link.code}</code><button onClick={()=>navigator.clipboard.writeText(`https://tehiceesto.com/r/${link.code}`)}>Copiar</button></div>)}
+            {detail.links.map(link=><div key={link.id}><code>https://tehiceesto.com/{link.code}</code><button onClick={()=>navigator.clipboard.writeText(`https://tehiceesto.com/${link.code}`)}>Copiar</button></div>)}
           </div>
         </section>
       )}
