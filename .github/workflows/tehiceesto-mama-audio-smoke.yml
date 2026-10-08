@@ -109,7 +109,7 @@ jobs:
             }
             const nextButton=page.locator('[data-action="next"]');
             if(await nextButton.isDisabled())throw new Error('Cannot advance legitimately from '+before.scene);
-            await nextButton.click({force:true});
+            await nextButton.evaluate(b=>b.click());
             await page.waitForTimeout(1100);
           }
           const reached=await page.locator('[data-action="mama-voice-choice"]').count();
