@@ -1253,7 +1253,7 @@ test("real gifts never fall back to demo stock photos when a personal image is m
     if(body.action==="openStudio"&&match){
       return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
         gift:{
-          public_code:match.code,status:"paid",template_version:"live",experience_slug:match.slug,
+          public_code:match.code,status:"paid",template_version:"premium-v2",experience_slug:match.slug,
           giver_name:"Mauro",recipient_name:match.slug==="mama"?"Mamá":"Ailín",occasion:null,feeling:"Emoción",
           opening_text:null,letter_text:"Una carta",closing_text:null,music_url:null,scene_recipe:match.recipe,
           story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
@@ -1270,6 +1270,7 @@ test("real gifts never fall back to demo stock photos when a personal image is m
     await page.goto(`/tehiceesto/editar/${item.code}`);
     await page.locator(".studio-stepper button").nth(5).click();
     await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
+    await expect(page.locator(".studio-preview-stage .thi-template-v2")).toBeVisible();
     const previewNav=page.getByRole("navigation",{name:/Navegar por las partes del regalo/i});
     await previewNav.getByRole("button",{name:/Siguiente/i}).click();
     await expect.poll(()=>sceneName(page)).toBe(item.scene);
