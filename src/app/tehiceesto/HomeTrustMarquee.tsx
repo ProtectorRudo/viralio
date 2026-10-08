@@ -6,9 +6,9 @@ const TRUST_ITEMS=[
   {eyebrow:"PAGO SEGURO",title:"Mercado Pago",copy:"Tu pago se procesa a través de Mercado Pago.",mark:"⌁"},
   {eyebrow:"UNA SOLA VEZ",title:"Sin suscripciones",copy:"Un único pago. Sin abonos mensuales.",mark:"01"},
   {eyebrow:"HECHO PARA ESA PERSONA",title:"Historia personalizada",copy:"Fotos, audios, nombres y mensajes propios.",mark:"♡"},
-  {eyebrow:"NOSOTROS LO ARMAMOS",title:"Diseño y dirección",copy:"No necesitás editar ni diseñar nada.",mark:"✦"},
-  {eyebrow:"LISTO PARA REGALAR",title:"Link privado",copy:"Recibís la experiencia terminada para compartir.",mark:"→"},
-  {eyebrow:"HECHO EN ARGENTINA",title:"Te Hice Esto",copy:"Diseñado y armado con cuidado, de principio a fin.",mark:"AR"},
+  {eyebrow:"DISEÑO YA RESUELTO",title:"Vos personalizás",copy:"No diseñás desde cero: cambiás fotos, audios y palabras dentro de una experiencia ya creada.",mark:"✦"},
+  {eyebrow:"LISTO PARA REGALAR",title:"Link privado",copy:"La revisás, la publicás y recibís el link para compartir al instante.",mark:"→"},
+  {eyebrow:"HECHO EN ARGENTINA",title:"Te Hice Esto",copy:"Experiencias diseñadas, probadas y cuidadas de principio a fin.",mark:"AR"},
 ];
 
 export default function HomeTrustMarquee(){
