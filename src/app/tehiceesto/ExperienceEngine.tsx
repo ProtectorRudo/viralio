@@ -795,13 +795,19 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <h2>Hubo un momento en que todavía no sabía todo lo que ibas a significar.</h2>
             <div className="origin-frame">
               <div
-                className="origin-photo"
+                className={`origin-photo ${customerGift&&!scenePhotos[0]?.url?"is-empty":""}`}
                 style={{
-                  backgroundImage: `url("${scenePhotos[0]?.url || premiumFallbackPhotos[0]}")`,
+                  backgroundImage: scenePhotos[0]?.url
+                    ? `url("${scenePhotos[0].url}")`
+                    : customerGift
+                      ? "none"
+                      : `url("${premiumFallbackPhotos[0]}")`,
                   backgroundSize: scenePhotos[0]?.fit || "cover",
                   backgroundPosition: scenePhotos[0]?.position || "center",
                 }}
-              />
+              >
+                {customerGift&&!scenePhotos[0]?.url&&<span className="thi-personal-photo-empty"><i>✦</i><small>Un recuerdo de ustedes</small></span>}
+              </div>
               <div className="origin-caption">
                 <small>CAPÍTULO 01</small>
                 <strong>Acá todavía no sabía.</strong>
@@ -914,15 +920,21 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <h2>Hubo un tiempo en que el mundo era enorme y mamá era el lugar conocido.</h2>
             <div className="childhood-memory">
               <div
-                className="childhood-photo"
+                className={`childhood-photo ${customerGift&&!scenePhotos[0]?.url?"is-empty":""}`}
                 role="img"
-                aria-label="Recuerdo de mamá con su hijo"
+                aria-label={customerGift&&!scenePhotos[0]?.url?"Espacio para un recuerdo personal":"Recuerdo de mamá con su hijo"}
                 style={{
-                  backgroundImage: `url("${scenePhotos[0]?.url || premiumFallbackPhotos[0]}")`,
+                  backgroundImage: scenePhotos[0]?.url
+                    ? `url("${scenePhotos[0].url}")`
+                    : customerGift
+                      ? "none"
+                      : `url("${premiumFallbackPhotos[0]}")`,
                   backgroundSize: scenePhotos[0]?.fit || "cover",
                   backgroundPosition: scenePhotos[0]?.position || "center",
                 }}
-              />
+              >
+                {customerGift&&!scenePhotos[0]?.url&&<span className="thi-personal-photo-empty"><i>♡</i><small>Un recuerdo de ustedes</small></span>}
+              </div>
               <div className="childhood-note">
                 <small>RECUERDO · 01</small>
                 <span className="childhood-note-rule" aria-hidden="true" />
