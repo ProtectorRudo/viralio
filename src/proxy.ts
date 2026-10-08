@@ -137,8 +137,10 @@ export function proxy(request: NextRequest) {
   const response = NextResponse.rewrite(target);
   const privatePath =
     pathname.startsWith("/r/") ||
+    pathname.startsWith("/pedido/") ||
     pathname.startsWith("/editar/") ||
     pathname === "/mis-regalos" ||
+    pathname.startsWith("/mercadopago/") ||
     pathname.startsWith("/afiliados/") ||
     pathname === "/admin" ||
     pathname.startsWith("/admin/");
