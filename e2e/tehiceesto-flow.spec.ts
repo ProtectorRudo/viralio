@@ -1195,6 +1195,47 @@ test("customer studio gives a zero-tech user one obvious action at a time",async
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
+test("real gifts never fall back to demo stock photos when a personal image is missing",async({page})=>{
+  const editorToken="9".repeat(64);
+  const cases=[
+    {code:"aaaabbbbccccdddd11",slug:"mama",recipe:["intro","childhood","memories","care","sacrifices","letter","finale"],selector:".childhood-photo.is-empty",scene:"childhood"},
+    {code:"aaaabbbbccccdddd22",slug:"propuesta",recipe:["intro","origin","memories","reasons","certainty","threshold","proposal"],selector:".origin-photo.is-empty",scene:"origin"},
+  ];
+
+  await page.route("**/functions/v1/creator-api",async route=>{
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    const match=cases.find(item=>item.code===body.code);
+    if(body.action==="openStudio"&&match){
+      return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({
+        gift:{
+          public_code:match.code,status:"paid",template_version:"live",experience_slug:match.slug,
+          giver_name:"Mauro",recipient_name:match.slug==="mama"?"Mamá":"Ailín",occasion:null,feeling:"Emoción",
+          opening_text:null,letter_text:"Una carta",closing_text:null,music_url:null,scene_recipe:match.recipe,
+          story_data:{relationship:"",keyDate:"",anecdote:"",sceneContent:{}},theme_data:{},published_at:null,
+        },
+        order:{status:"approved",amount_minor:2500000,currency:"ARS"},media:[],
+      })});
+    }
+    return route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:JSON.stringify({ok:true,sceneContent:{}})});
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  for(const item of cases){
+    await page.addInitScript(({key,token})=>localStorage.setItem(key,token),{key:`thi_editor_access:${item.code}`,token:editorToken});
+    await page.goto(`/tehiceesto/editar/${item.code}`);
+    await page.locator(".studio-stepper button").nth(5).click();
+    await expect(page.getByRole("heading",{name:/Vivilo antes de mandarlo/i})).toBeVisible();
+    const previewNav=page.getByRole("navigation",{name:/Navegar por las partes del regalo/i});
+    await previewNav.getByRole("button",{name:/Siguiente/i}).click();
+    await expect.poll(()=>sceneName(page)).toBe(item.scene);
+    const empty=page.locator(item.selector);
+    await expect(empty).toBeVisible();
+    await expect(empty.getByText(/Un recuerdo de ustedes/i)).toBeVisible();
+    const background=await empty.evaluate(el=>(el as HTMLElement).style.backgroundImage);
+    expect(background).toBe("none");
+    expect(await page.locator('[style*="images.unsplash.com"]').count()).toBe(0);
+  }
+});
 test("published gifts still open the full preview before saving changes",async({page})=>{
   const code="9999888877776666aa";
   const editorToken="f".repeat(64);
