@@ -363,7 +363,7 @@
   background-size:109px 133px,71px 97px;background-position:9px 21px,45px 68px;
   opacity:.4;mask-image:linear-gradient(to bottom,transparent,#000 19%,#000 85%,transparent);
 }
-.thi-template-live.thi-theme-hijos .thi-scene> :not(.thi-child-meteor-shower):not(.thi-child-sky-dust):not(.thi-child-treasure-pollen):not(.thi-child-story-mist):not(.thi-child-light-atmosphere){
+.thi-template-live.thi-theme-hijos .thi-scene> :is(.thi-kicker,h1,h2,.thi-lead,.thi-primary,.thi-child-cta,.thi-child-section-lead,.thi-timeline,.thi-film,.thi-child-lantern,.thi-child-heart-sky,.thi-child-treasure,.thi-envelope,.thi-voices){
   position:relative;z-index:1;
 }
 .thi-template-live.thi-theme-hijos .thi-scene h2{
