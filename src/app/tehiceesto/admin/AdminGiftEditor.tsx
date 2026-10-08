@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from "../ExperienceEngine";
+import { fillPrivateGiftPhotos } from "../privateGiftVisuals";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import PremiumV2Engine from "../template-v2/ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
@@ -202,6 +203,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     if(!gift||!base) return null;
     return {
       ...base,
+      demo:{...base.demo,photos:[]},
       demoGiver:gift.giver_name,
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
@@ -452,7 +454,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         <button onClick={()=>setPreview(false)}>← Volver al editor</button>
         <span>PREVIEW PRIVADO · {gift.recipient_name}</span>
       </div>
-      <PreviewEngine key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={photoMedia} audioMedia={audioMedia} soundtrackMedia={soundtrackMedia} videoMedia={videoMedia} storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}} sceneTextOverrides={normalizePreviewSceneText(gift.story_data?.sceneContent)}/>
+      <PreviewEngine customerGift key={previewScene||"start"} experience={previewExperience} initialScene={previewScene||undefined} copyOverride={gift.story_data?.script} letterText={gift.letter_text||undefined} photoMedia={fillPrivateGiftPhotos(gift.experience_slug,previewExperience.recipe,photoMedia)} audioMedia={audioMedia} soundtrackMedia={soundtrackMedia} videoMedia={videoMedia} storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}} sceneTextOverrides={normalizePreviewSceneText(gift.story_data?.sceneContent)}/>
       <AdminCopyEditor code={gift.public_code} initialOverrides={normalizePreviewSceneText(gift.story_data?.sceneContent)} onChange={sceneContent=>patchGift("story_data",{...(gift.story_data||{}),sceneContent})}/>
     </div>;
   }
