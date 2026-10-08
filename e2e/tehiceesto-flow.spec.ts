@@ -271,7 +271,7 @@ test("mama childhood is a premium editorial album without sales interruption",as
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await page.getByRole("button",{name:/Abrir regalo/i}).click();
   await waitForScene(page,"childhood");
 
   await expect(page.getByText("Volver un segundo atrás",{exact:false})).toBeVisible();
@@ -299,7 +299,7 @@ test("mama memories use a focused editorial photo deck and reveal CTA at the end
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await page.getByRole("button",{name:/Abrir regalo/i}).click();
   await waitForScene(page,"childhood");
   await page.getByRole("button",{name:/Seguir recordando/i}).click();
   await waitForScene(page,"memories");
@@ -344,7 +344,7 @@ test("mama care reveals a premium invisible-care archive before continuing",asyn
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await page.getByRole("button",{name:/Abrir regalo/i}).click();
   await waitForScene(page,"childhood");
   await page.getByRole("button",{name:/Seguir recordando/i}).click();
   await waitForScene(page,"memories");
@@ -385,7 +385,7 @@ test("mama sacrifices reveal all four invisible costs before the final resolutio
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await page.getByRole("button",{name:/Abrir regalo/i}).click();
   await waitForScene(page,"childhood");
   await page.getByRole("button",{name:/Seguir recordando/i}).click();
   await waitForScene(page,"memories");
@@ -456,7 +456,7 @@ test("mama voices are a premium listening room with resilient playback and three
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-  await page.getByRole("button",{name:/Abrir esto/i}).click();
+  await page.getByRole("button",{name:/Abrir regalo/i}).click();
   await waitForScene(page,"childhood");
   await page.getByRole("button",{name:/Seguir recordando/i}).click();
   await waitForScene(page,"memories");
@@ -540,8 +540,19 @@ test("mama voices are a premium listening room with resilient playback and three
 
   await expect(page.locator(".thi-mama-finale")).toBeVisible();
   await expect(page.getByText("Por si alguna vez dudás")).toBeVisible();
-  await expect(page.getByRole("heading",{name:/Gracias por ser hogar mucho antes/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Hay algo más para vos."})).toBeVisible();
   await expect(page.getByText(/Mirá todo lo que construiste/)).toBeVisible();
+  await expect(page.getByText("Raspá para descubrir lo último")).toBeVisible();
+  await expect(page.locator(".thi-mama-final-scratch canvas[data-action='scratch-canvas']")).toBeVisible();
+  await expect(page.locator(".thi-mama-final-scratch")).toHaveAttribute("data-revealed","false");
+  await expect(page.locator(".thi-mama-finale-reactions")).toHaveCount(0);
+  await expect(page.locator(".thi-mama-finale-restart")).toHaveCount(0);
+
+  await page.locator(".thi-mama-final-scratch [data-action='scratch-fallback']").click();
+  await expect(page.locator(".thi-mama-final-scratch")).toHaveAttribute("data-revealed","true");
+  await expect(page.locator(".thi-mama-final-scratch .thi-scratch-prize strong")).toContainText("Gracias por ser hogar");
+  await expect(page.locator(".thi-mama-finale-reactions")).toBeVisible();
+  await expect(page.locator(".thi-mama-finale-restart")).toBeVisible();
 });
 
 
@@ -561,7 +572,7 @@ test("mama intro is premium, story-first and has no headphone prompt",async({pag
   await expect(page.locator(".thi-reset-journey")).toBeHidden();
   await expect(page.locator(".thi-scene-meta")).toBeHidden();
 
-  const open=page.getByRole("button",{name:/Abrir esto/i});
+  const open=page.getByRole("button",{name:/Abrir regalo/i});
   await expect(open).toBeVisible();
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
