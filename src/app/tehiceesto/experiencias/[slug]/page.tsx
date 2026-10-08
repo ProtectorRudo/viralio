@@ -11,9 +11,13 @@ export default async function ExperiencePage({params}:{params:Promise<{slug:stri
   const host=(await headers()).get("host")?.split(":")[0].toLowerCase()||"";
   const dedicated=host==="tehiceesto.com"||host==="www.tehiceesto.com";
   const createHref=`${dedicated?"":"/tehiceesto"}/crear?experiencia=${experience.slug}`;
+  const mamaVoiceUrl=`${dedicated?"":"/tehiceesto"}/demo-assets/mama-voice`;
+  const demoAudio=experience.slug==="mama"
+    ?[{url:mamaVoiceUrl,caption:"Tu hijo mayor",scene:"voices" as const}]
+    :undefined;
 
   return <div className={`thi-demo-page thi-demo-page-${experience.slug}`}>
     <div className="thi-demo-ribbon"><span>EJEMPLO · {experience.title}</span><Link href={createHref}>Quiero esta →</Link></div>
-    <ExperienceEngine experience={experience}/>
+    <ExperienceEngine experience={experience} audioMedia={demoAudio}/>
   </div>;
 }
