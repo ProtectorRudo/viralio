@@ -1,0 +1,421 @@
+/* Te Hice Esto — October 2026 gifting boutique art direction.
+   Styling only for the quick-purchase catalogue on /crear.
+   No experience templates, form validation or payment logic are modified. */
+
+.thi-purchase-page .thi-simple-picker-premium{
+  --thi-gift-paper:#f8f2ed;
+  position:relative;
+  padding-top:22px;
+}
+.creator-page:has(.thi-simple-picker-premium){
+  background:
+    radial-gradient(ellipse 650px 500px at 97% 3%,rgba(235,183,155,.16),transparent 78%),
+    radial-gradient(ellipse 700px 520px at -22% 37%,rgba(247,212,207,.14),transparent 78%),
+    linear-gradient(145deg,#fcf7f1 0%,#f8f1eb 49%,#faf6f0 100%)!important;
+}
+.thi-purchase-page .thi-buy-topbar{
+  padding:17px 0 11px;
+  border-color:rgba(140,91,86,.13);
+}
+.thi-purchase-page .thi-buy-brand{
+  letter-spacing:-.052em;
+  color:#241b20!important;
+  font-size:26px;
+}
+.thi-purchase-page .thi-buy-brand>span:first-child{
+  color:#a9544c;
+  font-size:30px;
+}
+.thi-purchase-page .thi-buy-trust{
+  color:#6b5a5e;
+  font-size:11px;
+  font-weight:500;
+}
+.thi-purchase-page .thi-buy-trust i{color:#a85c50}
+.thi-purchase-page .thi-buy-progress{margin:12px auto 1px}
+.thi-purchase-page .thi-buy-progress .active span{
+  background:linear-gradient(150deg,#b36758,#954d4e);
+  border-color:#a65951;
+  box-shadow:0 4px 18px rgba(169,90,73,.17);
+}
+.thi-purchase-page .thi-buy-progress .active strong{color:#965248}
+.thi-purchase-page .thi-buy-progress .done strong{color:#975c56}
+
+.thi-purchase-page .thi-simple-intro{
+  gap:15px;
+  padding:2px 0 17px;
+  border-bottom-color:rgba(173,115,102,.18);
+}
+.thi-purchase-page .thi-simple-intro .thi-buy-eyebrow{
+  font-size:10px;
+  letter-spacing:.18em;
+  color:#a26059;
+}
+.thi-purchase-page .thi-simple-intro h1{
+  font-size:clamp(37px,4.65vw,61px);
+  letter-spacing:-.047em;
+  line-height:1.05;
+  margin:8px 0 9px;
+  color:#291b20;
+}
+.thi-purchase-page .thi-simple-intro h1 em{
+  color:#ad6559;
+  font-weight:400;
+}
+.thi-purchase-page .thi-simple-intro p{
+  max-width:650px;
+  font-size:13.5px;
+  line-height:1.48;
+  color:#776a6b;
+}
+.thi-purchase-page .thi-simple-price{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  min-width:275px;
+  max-width:360px;
+  padding:13px 16px;
+  border-radius:16px;
+  background:linear-gradient(130deg,rgba(255,250,245,.95),rgba(251,237,228,.92));
+  border:1px solid rgba(181,124,107,.18);
+  box-shadow:0 10px 29px rgba(103,55,52,.07),inset 0 1px 0 rgba(255,255,255,.8);
+  text-align:left;
+}
+.thi-purchase-page .thi-simple-price-gift{
+  display:grid;
+  place-items:center;
+  width:34px;height:34px;
+  flex:0 0 auto;
+  font-size:30px;font-family:Georgia,serif;
+  color:#ac6557;
+  line-height:1;
+}
+.thi-purchase-page .thi-simple-price strong{
+  display:block;
+  font-family:Georgia,serif;
+  font-weight:400;
+  font-size:29px;
+  letter-spacing:-.045em;
+  color:#302027;
+}
+.thi-purchase-page .thi-simple-price small{
+  display:block;
+  width:100%;
+  max-width:115px;
+  color:#77686b;
+  font-size:10px;
+  line-height:1.34;
+  margin:0;
+  text-align:left;
+}
+.thi-purchase-page .thi-simple-catalog{
+  gap:14px;
+  padding-top:18px;
+}
+.thi-purchase-page .thi-simple-card{
+  position:relative;
+  min-height:235px;
+  grid-template-columns:39% minmax(0,1fr);
+  background:linear-gradient(114deg,#fffdf9 52%,var(--gift-tint,#f9f1e8));
+  border:1px solid rgba(175,127,115,.20);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 10px 26px rgba(92,52,50,.07),0 2px 4px rgba(65,39,38,.02);
+  isolation:isolate;
+  transition:transform .26s ease,box-shadow .26s ease,border-color .26s ease;
+}
+.thi-purchase-page .thi-simple-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--gift-line,#d4b0ad);
+  box-shadow:0 17px 34px rgba(96,53,51,.12);
+}
+.thi-purchase-page .thi-simple-card:focus-within{
+  border-color:var(--gift-accent,#a86c63);
+}
+.thi-purchase-page .thi-simple-photo-link{
+  overflow:hidden;
+  display:block;
+  position:relative;
+  min-height:100%;
+  isolation:isolate;
+}
+.thi-purchase-page .thi-simple-image{
+  position:relative;
+  min-height:100%;
+  height:100%;
+  width:100%;
+  background-image:
+    linear-gradient(180deg,rgba(31,19,24,.06) 0%,transparent 25%,rgba(27,14,19,.10) 53%,rgba(27,14,19,.39) 100%),
+    var(--simple-image);
+  background-size:cover;
+  background-position:var(--simple-position,center);
+  filter:saturate(1.03) contrast(1.025);
+  transition:transform .7s cubic-bezier(.19,.75,.24,1),filter .7s ease;
+}
+.thi-purchase-page .thi-simple-card-pareja .thi-simple-image{
+  filter:sepia(.12) saturate(.84) contrast(1.055);
+}
+.thi-purchase-page .thi-simple-photo-link:hover .thi-simple-image{
+  transform:scale(1.035);
+}
+.thi-simple-image-number{
+  position:absolute;
+  top:12px;left:13px;
+  color:rgba(255,251,247,.84);
+  font-size:9px;letter-spacing:.16em;
+  font-weight:650;
+  text-shadow:0 1px 12px rgba(25,12,17,.45);
+}
+.thi-purchase-page .thi-simple-category-badge{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  position:absolute;
+  bottom:15px;left:13px;
+  max-width:calc(100% - 26px);
+  min-height:51px;
+  padding:5px 15px 5px 5px;
+  border-radius:999px;
+  background:var(--gift-accent,#9f5c63);
+  color:var(--gift-ink,#fff);
+  box-shadow:0 5px 22px rgba(37,18,28,.27),inset 0 1px 0 rgba(255,255,255,.12);
+  font-size:11px;
+  font-weight:750;
+  line-height:1.12;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+  text-wrap:balance;
+}
+.thi-simple-category-symbol{
+  display:grid;
+  place-items:center;
+  flex:0 0 39px;
+  height:39px;width:39px;
+  border-radius:50%;
+  font-family:Georgia,serif;
+  font-weight:400;
+  font-size:24px;
+  color:var(--gift-accent,#965254);
+  background:#fffaf5;
+  box-shadow:0 1px 6px rgba(0,0,0,.12);
+}
+.thi-purchase-page .thi-simple-card-content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  padding:21px 21px 16px;
+}
+.thi-purchase-page .thi-simple-card-content::after{
+  content:"♡";
+  position:absolute;
+  top:6px;right:9px;
+  pointer-events:none;
+  z-index:-1;
+  color:var(--gift-accent,#a46969);
+  opacity:.19;
+  font-family:Georgia,serif;
+  font-size:55px;
+  font-weight:400;
+  transform:rotate(-13deg);
+}
+.thi-purchase-page .thi-simple-card-mama .thi-simple-card-content::after{content:"✿"}
+.thi-purchase-page .thi-simple-card-cumpleanos .thi-simple-card-content::after{content:"✧"}
+.thi-purchase-page .thi-simple-card-papa .thi-simple-card-content::after{content:"☆"}
+.thi-purchase-page .thi-simple-card-hijos .thi-simple-card-content::after{content:"♡"}
+.thi-purchase-page .thi-simple-card-abuelos .thi-simple-card-content::after{content:"✾"}
+.thi-purchase-page .thi-simple-card-amistad .thi-simple-card-content::after{content:"✈"}
+.thi-purchase-page .thi-simple-card-aniversario .thi-simple-card-content::after{content:"∞"}
+.thi-purchase-page .thi-simple-card-propuesta .thi-simple-card-content::after{content:"◇"}
+
+.thi-purchase-page .thi-simple-card-label{
+  position:relative;
+  width:max-content;
+  max-width:calc(100% - 17px);
+  display:inline-flex;
+  align-items:center;
+  padding:5px 10px;
+  border-radius:99px;
+  background:var(--gift-tint,#f4e5e1);
+  border:1px solid var(--gift-line,#dbc4bf);
+  color:var(--gift-accent,#9d615c);
+  text-transform:uppercase;
+  font-weight:750;
+  font-size:10px;
+  letter-spacing:.06em;
+  line-height:1.1;
+}
+.thi-purchase-page .thi-simple-card h2{
+  margin:10px 0 7px;
+  max-width:100%;
+  color:#292025;
+  font:400 clamp(24px,2.35vw,33px)/1.045 var(--thi-serif,Georgia),Georgia,serif;
+  letter-spacing:-.035em;
+  overflow-wrap:normal;
+  text-wrap:balance;
+}
+.thi-purchase-page .thi-simple-card p{
+  margin:0;
+  color:#796b6b;
+  font-size:12px;
+  line-height:1.47;
+  max-width:410px;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  overflow:hidden;
+}
+.thi-purchase-page .thi-simple-actions{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:13px;
+  margin-top:auto;
+  padding-top:18px;
+}
+.thi-purchase-page .thi-simple-choose{
+  color:#fff9f5;
+  background:linear-gradient(120deg,var(--gift-accent,#753f4c),#32242c);
+  border-radius:12px;
+  box-shadow:0 9px 18px rgba(48,26,34,.17);
+  padding:0 14px;
+  min-height:49px;
+  font-size:12px;
+  font-weight:750;
+  white-space:nowrap;
+  gap:7px;
+  transition:filter .2s ease,transform .18s ease,box-shadow .2s ease;
+}
+.thi-purchase-page .thi-simple-choose:hover{
+  filter:brightness(1.13);
+  transform:translateY(-1px);
+  box-shadow:0 13px 24px rgba(48,26,34,.19);
+}
+.thi-purchase-page .thi-simple-choose:active{transform:scale(.985)}
+.thi-purchase-page .thi-simple-preview{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--gift-accent,#99645b)!important;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  text-decoration:underline;
+  text-underline-offset:5px;
+  text-decoration-thickness:1px;
+}
+.thi-purchase-page .thi-simple-preview-icon{
+  font-size:17px;
+  font-weight:400;
+  text-decoration:none;
+}
+.thi-purchase-page .thi-simple-footer-note{font-size:11px;color:#786a70;margin-top:24px}
+
+/* Single-column layout with cards legible on a real mobile viewport. */
+@media(max-width:1050px){
+  .thi-purchase-page .thi-simple-card{grid-template-columns:34% minmax(0,1fr)}
+  .thi-purchase-page .thi-simple-card h2{font-size:clamp(24px,3vw,32px)}
+}
+@media(max-width:760px){
+  .thi-purchase-page .thi-simple-picker-premium{padding-top:16px}
+  .thi-purchase-page .thi-simple-card{
+    grid-template-columns:34% minmax(0,1fr);
+    min-height:220px;
+    border-radius:17px;
+  }
+  .thi-purchase-page .thi-simple-card-content{padding:17px 14px 14px}
+  .thi-purchase-page .thi-simple-card h2{font-size:clamp(22px,4.4vw,29px)}
+  .thi-purchase-page .thi-simple-category-badge{
+    bottom:12px;left:8px;
+    max-width:calc(100% - 16px);
+    min-height:43px;
+    padding:4px 9px 4px 4px;
+    gap:6px;
+    font-size:10px;
+  }
+  .thi-simple-category-symbol{flex-basis:33px;width:33px;height:33px;font-size:22px}
+  .thi-purchase-page .thi-simple-price{
+    width:max-content;
+    max-width:100%;
+    min-width:0;
+    padding:10px 15px;
+    gap:12px;
+  }
+  .thi-purchase-page .thi-simple-intro{display:block;padding-bottom:16px}
+  .thi-purchase-page .thi-simple-price{margin-top:13px;justify-content:flex-start}
+  .thi-purchase-page .thi-simple-price-gift{width:27px;height:27px;font-size:25px}
+  .thi-purchase-page .thi-simple-price strong{font-size:27px}
+  .thi-purchase-page .thi-simple-price small{font-size:10px;max-width:none}
+  .thi-purchase-page .thi-simple-intro h1{font-size:clamp(38px,7.1vw,49px);margin:6px 0 8px}
+  .thi-purchase-page .thi-simple-intro p{font-size:13px;line-height:1.45}
+  .thi-purchase-page .thi-simple-catalog{gap:12px;padding-top:15px}
+}
+@media(max-width:470px){
+  .thi-purchase-page .thi-buy-topbar{padding-bottom:9px}
+  .thi-purchase-page .thi-simple-card{
+    grid-template-columns:34% minmax(0,1fr);
+    min-height:232px;
+    border-radius:15px;
+  }
+  .thi-purchase-page .thi-simple-card-content{padding:13px 12px 12px}
+  .thi-purchase-page .thi-simple-card-label{font-size:9px;letter-spacing:.03em;padding:4px 7px}
+  .thi-purchase-page .thi-simple-card h2{font-size:clamp(21px,5.2vw,26px);margin:7px 0 5px;line-height:1.04}
+  .thi-purchase-page .thi-simple-card p{font-size:11px;line-height:1.35;-webkit-line-clamp:3}
+  .thi-purchase-page .thi-simple-card-content::after{font-size:38px;opacity:.13}
+  .thi-purchase-page .thi-simple-actions{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:7px;
+    padding-top:11px;
+  }
+  .thi-purchase-page .thi-simple-choose{
+    min-height:45px;
+    width:100%;
+    padding:0 12px;
+    flex:none;
+    font-size:11px;
+    border-radius:10px;
+    white-space:nowrap;
+  }
+  .thi-purchase-page .thi-simple-preview{
+    width:max-content;
+    min-height:25px;
+    align-self:center;
+    padding:0 6px;
+    font-size:11px;
+    white-space:nowrap;
+  }
+  .thi-purchase-page .thi-simple-category-badge{
+    width:calc(100% - 13px);
+    max-width:none;
+    min-height:44px;
+    left:6px;bottom:11px;
+    padding:4px 5px 4px 4px;
+    gap:5px;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .thi-simple-category-symbol{width:27px;height:27px;flex-basis:27px;font-size:18px}
+  .thi-simple-image-number{left:9px;top:9px;font-size:8px}
+  .thi-purchase-page .thi-simple-intro h1{font-size:clamp(36px,9vw,43px)}
+  .thi-purchase-page .thi-simple-price{min-height:54px;width:100%}
+  .thi-purchase-page .thi-simple-price small{margin-left:auto}
+  .thi-purchase-page .thi-simple-price strong{font-size:25px}
+}
+@media(max-width:355px){
+  .thi-purchase-page .thi-simple-card{grid-template-columns:35% minmax(0,1fr);min-height:244px}
+  .thi-purchase-page .thi-simple-card-content{padding:12px 9px 11px}
+  .thi-purchase-page .thi-simple-card h2{font-size:20px}
+  .thi-purchase-page .thi-simple-category-badge{font-size:8px}
+  .thi-purchase-page .thi-simple-choose{font-size:10px;padding:0 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-purchase-page .thi-simple-card,.thi-purchase-page .thi-simple-image,
+  .thi-purchase-page .thi-simple-choose{transition:none!important}
+}
