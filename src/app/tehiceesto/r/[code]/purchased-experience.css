@@ -1,0 +1,26 @@
+/* TeHiceEsto — gifts already purchased and delivered.
+   A gift is not a sales demo. Keep all purchase CTAs out of the experience.
+   Applied only when the published gift's server-rendered marker is present.
+   The wrapper has display:contents so the frozen visual layout is unchanged. */
+
+/* Fallback against an accidentally mounted global CTA, including
+   future template versions. Purchase links must never float over a gift. */
+body:has([data-purchased-gift="true"]) .floating-whatsapp,
+body:has([data-purchased-gift="true"]) .floating-create-cta,
+body:has([data-purchased-gift="true"]) .thi-demo-ribbon {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* A frozen or future template must never show the promotional final button.
+   Restart, personal interactions, sharing and reactions remain unaffected. */
+[data-purchased-gift="true"] .thi-pair-finale-create,
+[data-purchased-gift="true"] [data-action="create-story"],
+[data-purchased-gift="true"] a[href*="/crear"],
+[data-purchased-gift="true"] a[href*="/tehiceesto/crear"],
+[data-purchased-gift="true"] a[href*="/experiencias/"][class*="cta"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
