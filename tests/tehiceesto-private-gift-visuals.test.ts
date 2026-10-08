@@ -29,7 +29,7 @@ describe("private customer gifts use anonymous artwork for missing photos",()=>{
         expect(url).toMatch(/^data:image\/svg\+xml;charset=UTF-8,/);
         const svg=decodeURIComponent(url.slice(url.indexOf(",")+1));
         expect(svg).toMatch(/^<svg /);
-        expect(svg).not.toMatch(/<image|https?:\/\/|unsplash|<foreignObject|<script/);
+        expect(svg.replace('xmlns="http://www.w3.org/2000/svg"',"" )).not.toMatch(/<image|https?:\/\/|unsplash|<foreignObject|<script/);
         expect(svg).toContain("viewBox");
       }
     }
