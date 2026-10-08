@@ -8,7 +8,7 @@ type FieldKind="text"|"textarea"|"lines"|"number";
 type FieldDef={path:string;label:string;kind:FieldKind;hint?:string};
 
 const sceneNames:Record<SceneType,string>={
-  intro:"Entrada",door:"Puerta",memories:"Recuerdos",light:"Luz",stars:"Estrellas",
+  intro:"Entrada",door:"Puerta",memories:"Recuerdos",light:"Luz",stars:"Estrellas",everyday:"Un día cualquiera",
   scratch:"Raspadita",hold:"Mantener",letter:"Carta",candles:"Velitas",balloons:"Globos",
   timeline:"Línea de tiempo",voices:"Audio / voces",quiz:"Pregunta",vault:"Bóveda",
   capsule:"Cápsula",video:"Video",proposal:"Propuesta",finale:"Final",
@@ -26,6 +26,7 @@ const sceneDescriptions:Partial<Record<SceneType,string>>={
   memories:"El bloque más autobiográfico: fotos, momentos y frases que sólo ellos reconocen.",
   light:"Una frase escondida que aparece al explorar la oscuridad.",
   stars:"Razones, cualidades o pequeñas cosas que la otra persona reconoce como propias.",
+  everyday:"Una habitación íntima: las tres frases aparecen al tocar las tazas, la ventana y el portarretrato.",
   scratch:"Una sorpresa concreta: plan, promesa, cupón o próximo recuerdo.",
   hold:"El segundo de pausa antes de una revelación emocional.",
   letter:"La parte más íntima del recorrido.",
@@ -83,6 +84,14 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
     {path:"stars.remainingOne",label:"Cuando falta una",kind:"text"},
     {path:"stars.remainingMany",label:"Cuando faltan varias",kind:"text",hint:"Usá {count} para mostrar el número."},
     {path:"stars.cta",label:"Botón para continuar",kind:"text"},
+  ],
+  everyday:[
+    {path:"everyday.kicker",label:"Frase superior",kind:"text"},
+    {path:"everyday.title",label:"Pregunta de entrada",kind:"text"},
+    {path:"everyday.hint",label:"Instrucción al explorar la habitación",kind:"text"},
+    {path:"everyday.moments",label:"Las 3 frases: tazas, ventana y portarretrato",kind:"lines",hint:"Exactamente 3 renglones, uno por objeto. Se conservan el orden, los efectos y las interacciones."},
+    {path:"everyday.closing",label:"Frase final de la habitación",kind:"textarea"},
+    {path:"everyday.cta",label:"Botón de continuación",kind:"text"},
   ],
   scratch:[
     {path:"scratch.kicker",label:"Frase superior",kind:"text"},
