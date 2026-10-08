@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect,useRef,useState } from "react";
+import { useEffect,useRef,useState,type CSSProperties,type ReactNode } from "react";
 
 /**
  * Pareja / Un día cualquiera con vos
@@ -75,7 +75,7 @@ export default function PairEverydayScene({
     onTouch?.();
   };
 
-  const renderSpot=(index:Spot,content:React.ReactNode)=>(
+  const renderSpot=(index:Spot,content:ReactNode)=>(
     <button
       type="button"
       data-action={`everyday-${SPOTS[index].key}`}
@@ -103,13 +103,13 @@ export default function PairEverydayScene({
       <div className="thi-everyday-baseboard" aria-hidden="true"/>
       <div className="thi-everyday-lamp" aria-hidden="true"><i/><b/><span/></div>
       <div className="thi-everyday-table" aria-hidden="true"><i/><b/></div>
-      <div className="thi-everyday-dust" aria-hidden="true">{Array.from({length:13},(_,i)=><i key={i} style={{"--j":i} as React.CSSProperties}/>)}</div>
+      <div className="thi-everyday-dust" aria-hidden="true">{Array.from({length:13},(_,i)=><i key={i} style={{"--j":i} as CSSProperties}/>)}</div>
 
       {renderSpot(1,
         <span className="thi-everyday-window" aria-hidden="true">
           <span className="thi-everyday-sky"><i/><i/><i/><i/><b/></span>
           <span className="thi-everyday-rain">
-            {Array.from({length:19},(_,i)=><i key={i} style={{"--drop":i} as React.CSSProperties}/>)}
+            {Array.from({length:19},(_,i)=><i key={i} style={{"--drop-x":`${7+(i*37+13)%87}%`,"--drop-delay":`${(i*-.21).toFixed(2)}s`,"--drop-speed":`${(1.05+(i%5)*.26).toFixed(2)}s`} as CSSProperties}/>)}
           </span>
           <span className="thi-everyday-window-cross"/>
           <span className="thi-everyday-curtain left"/>
