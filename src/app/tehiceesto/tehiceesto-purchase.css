@@ -790,3 +790,14 @@
 @media(prefers-reduced-motion:reduce){
   .thi-simple-card,.thi-simple-image,.thi-purchase-page .thi-simple-choose{transition:none!important}
 }
+
+/* Final small-screen correction: readable full-width headline; price as one concise line. */
+@media(max-width:620px){
+  .thi-simple-intro{display:block}
+  .thi-simple-price{
+    display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+    margin-top:10px;gap:8px;text-align:left;
+  }
+  .thi-simple-price small{max-width:none;font-size:10px;text-align:right}
+  .thi-purchase-page .thi-simple-choose{min-height:46px}
+}
