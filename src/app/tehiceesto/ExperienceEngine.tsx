@@ -320,13 +320,21 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       }
       case"light":return <section className={`thi-scene thi-scene-light thi-scene-rich ${experience.slug==="pareja"?"thi-pair-light-scene":""}`}><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><LightReveal accent={experience.accent} kicker={token(copy.light.kicker)} title={token(copy.light.title)} secret={token(copy.light.secret)} hint={token(copy.light.hint)} revealedLabel={token(copy.light.revealedLabel)} ariaLabel={token(copy.light.ariaLabel)} revealed={lightRevealed} cinematic={experience.slug==="pareja"} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className={`thi-primary ${experience.slug==="pareja"?"thi-pair-light-continue":""}`} onClick={next}>{token(copy.light.cta)}</button>}</section>;
       case"stars":return <section className={`thi-scene thi-scene-stars thi-scene-rich ${experience.slug==="pareja"?"thi-pair-stars-scene":""}`}><div className="thi-sky-dust" aria-hidden="true"/><p className="thi-kicker">{token(copy.stars.kicker)}</p><h2>{titleLines(copy.stars.title)}</h2>{experience.slug==="pareja"?<div className={`thi-pair-constellation ${stars.length===starLines.length?"is-complete":""}`}>
-        <svg className="thi-pair-constellation-lines" viewBox="0 0 760 390" aria-hidden="true">
-          <path className={stars.length>=2?"is-drawn":""} d="M105 292 L316 170"/>
-          <path className={stars.length>=3?"is-drawn":""} d="M316 170 L586 91"/>
-          <path className={stars.length>=4?"is-drawn":""} d="M586 91 L675 232"/>
-          <path className={stars.length>=5?"is-drawn":""} d="M675 232 L502 330"/>
-          <path className={stars.length>=5?"is-drawn":""} d="M502 330 L105 292"/>
+        <div className="thi-pair-heart-haze" aria-hidden="true"/>
+        <svg className="thi-pair-constellation-lines" viewBox="0 0 760 390" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse className="thi-pair-heart-orbit" cx="380" cy="200" rx="347" ry="166" transform="rotate(-16 380 200)"/>
+          <ellipse className="thi-pair-heart-orbit" cx="380" cy="200" rx="300" ry="147" transform="rotate(19 380 200)"/>
+          <path className="thi-pair-heart-outline" d="M205 120 C215 50 324 68 380 145 C436 68 545 50 555 120 C602 162 602 212 588 250 C506 304 442 330 380 340 C288 306 148 218 205 120 Z"/>
+          <path className={stars.length>=2?"thi-pair-heart-segment is-drawn":"thi-pair-heart-segment"} d="M205 120 C215 50 324 68 380 145"/>
+          <path className={stars.length>=3?"thi-pair-heart-segment is-drawn":"thi-pair-heart-segment"} d="M380 145 C436 68 545 50 555 120"/>
+          <path className={stars.length>=4?"thi-pair-heart-segment is-drawn":"thi-pair-heart-segment"} d="M555 120 C602 162 602 212 588 250"/>
+          <path className={stars.length>=5?"thi-pair-heart-segment is-drawn":"thi-pair-heart-segment"} d="M588 250 C506 304 442 330 380 340"/>
+          <path className={stars.length>=5?"thi-pair-heart-segment heart-close is-drawn":"thi-pair-heart-segment heart-close"} d="M380 340 C288 306 148 218 205 120"/>
+          <path className="thi-pair-heart-shimmer" d="M205 120 C215 50 324 68 380 145 C436 68 545 50 555 120 C602 162 602 212 588 250 C506 304 442 330 380 340 C288 306 148 218 205 120 Z"/>
         </svg>
+        <div className="thi-pair-starfall" aria-hidden="true">
+          {Array.from({length:22},(_,i)=><i key={i} style={{"--meteor-x":`${4+(i*37+11)%91}%`,"--meteor-delay":`${(i*.18).toFixed(2)}s`,"--meteor-speed":`${(2.7+(i%5)*.28).toFixed(2)}s`} as CSSProperties}/>)}
+        </div>
         {starLines.map((line,i)=>{
           const discovered=stars.includes(i);
           const active=!discovered&&i===stars.length;
