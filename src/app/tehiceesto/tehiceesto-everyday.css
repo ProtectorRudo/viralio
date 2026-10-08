@@ -165,19 +165,19 @@
 }
 .thi-everyday-rain{position:absolute;inset:0;display:block;overflow:hidden;opacity:.8}
 .thi-everyday-rain>i{
-  position:absolute;display:block;left:calc(6% + mod(var(--drop) * 41, 92) * 1%);top:-30%;
+  position:absolute;display:block;left:var(--drop-x);top:-30%;
   width:1px;height:20%;border-radius:100%;
   background:linear-gradient(180deg,transparent,#e4e8fff0 60%,transparent);
   opacity:.45;transform:rotate(14deg);
-  animation:thiEverydayRain calc(1s + mod(var(--drop), 5) * .28s) linear infinite;
-  animation-delay:calc(var(--drop) * -.19s);
+  animation:thiEverydayRain var(--drop-speed) linear infinite;
+  animation-delay:var(--drop-delay);
 }
 /* Deterministic positions for browsers without CSS mod() support. */
 .thi-everyday-rain>i:nth-child(3n){left:17%;animation-duration:1.55s}
 .thi-everyday-rain>i:nth-child(4n){left:39%;animation-duration:1.18s}
 .thi-everyday-rain>i:nth-child(5n){left:64%;animation-duration:1.35s}
 .thi-everyday-rain>i:nth-child(7n){left:83%;animation-duration:1.8s}
-.thi-everyday-rain>i:nth-child(2n){left:calc(8% + var(--drop) * 4%);opacity:.23}
+.thi-everyday-rain>i:nth-child(2n){opacity:.23}
 .thi-everyday-window-cross{
   position:absolute;inset:0;z-index:2;display:block;
   background:linear-gradient(90deg,transparent 47%,#c8a69b 48%,#b99288 52%,transparent 53%),
