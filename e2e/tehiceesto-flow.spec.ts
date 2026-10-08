@@ -18,15 +18,15 @@ async function advanceOne(page:Page){
     }else await page.locator('[data-action="advance"]').click();
   }
   else if(current==="timeline"||current==="video")await page.locator('[data-action="advance"]').click();
-  else if(current==="light"){await page.locator('[data-action="light-reveal"]').click();await page.locator('[data-action="advance"]').click()}
+  else if(current==="light"){if(await page.locator(".thi-bday-lantern").count()){for(let i=1;i<=3;i++)await page.locator(`[data-action="birthday-light-${i}"]`).click()}else await page.locator('[data-action="light-reveal"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="hold"){await page.locator('[data-action="hold"]').press("Enter");await page.locator('[data-action="advance"]').click()}
   else if(current==="stars"){const items=page.locator('[data-action="star"]');const count=await items.count();for(let i=0;i<count;i++)await items.nth(i).click();await page.locator('[data-action="advance"]').click()}
   else if(current==="everyday"){for(const spot of ["cups","window","frame"])await page.locator(`[data-action="everyday-${spot}"]`).click();await page.locator(".thi-everyday-continue").click()}
   else if(current==="scratch"){await page.locator('[data-action="scratch-fallback"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="letter"){await page.locator('[data-action="open-letter"]').click();await page.locator('[data-action="advance"]').click()}
-  else if(current==="candles"){await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click()}
+  else if(current==="candles"){if(await page.locator(".thi-blow-controls-birthday").count()){await page.locator('[data-action="blow-mic"]').click();await page.locator('[data-action="blow-fallback"]').click()}else await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="balloons"){const items=page.locator('[data-action="balloon"]');await items.nth(0).click();await items.nth(1).click();await items.nth(2).click();await page.locator('[data-action="advance"]').click()}
-  else if(current==="voices"){const mamaChoices=page.locator('[data-action="mama-voice-choice"]');if(await mamaChoices.count()){for(let i=0;i<3;i++){await page.locator('[data-action="mama-voice-choice"]').nth(i).click();await page.locator('[data-action="mama-voice-toggle"]').click();await page.locator('[data-action="mama-voice-back"]').click()}await page.locator('[data-action="advance"]').click()}else{const demo=page.locator('[data-action="demo-voice"]').first();if(await demo.count())await demo.click();else await page.locator('[data-action="real-audio"]').first().evaluate((el:HTMLAudioElement)=>el.dispatchEvent(new Event("play",{bubbles:true})));await page.locator('[data-action="advance"]').click()}}
+  else if(current==="voices"){if(await page.locator(".thi-bday-voices").count()){await page.locator('[data-action="birthday-voice"]').first().click();await page.locator('[data-action="advance"]').click();return}const mamaChoices=page.locator('[data-action="mama-voice-choice"]');if(await mamaChoices.count()){for(let i=0;i<3;i++){await page.locator('[data-action="mama-voice-choice"]').nth(i).click();await page.locator('[data-action="mama-voice-toggle"]').click();await page.locator('[data-action="mama-voice-back"]').click()}await page.locator('[data-action="advance"]').click()}else{const demo=page.locator('[data-action="demo-voice"]').first();if(await demo.count())await demo.click();else await page.locator('[data-action="real-audio"]').first().evaluate((el:HTMLAudioElement)=>el.dispatchEvent(new Event("play",{bubbles:true})));await page.locator('[data-action="advance"]').click()}}
   else if(current==="quiz"){await page.locator('[data-action="quiz-answer"]').nth(1).click();await page.locator('[data-action="advance"]').click()}
   else if(current==="vault"){await page.locator('[data-action="open-vault"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="capsule"){await page.locator('[data-action="open-capsule"]').click();await page.locator('[data-action="advance"]').click()}
@@ -674,6 +674,57 @@ test("Pareja everyday room reveals three genuine moments and unlocks the next su
   await waitForScene(page,"scratch");
 });
 
+test("birthday premium scenes work on 390px mobile and preserve the three-balloon limit",async({page})=>{
+ test.setTimeout(110_000);
+ await page.setViewportSize({width:390,height:844});
+ await page.goto("/tehiceesto/experiencias/cumpleanos");
+ await waitForScene(page,"intro");
+ await advanceOne(page);
+ await waitForScene(page,"candles");
+ await page.locator('[data-action="blow-mic"]').click();
+ await expect(page.locator('[data-action="blow-fallback"]')).toContainText("Ya soplé");
+ await expect(page.getByText(/APAGAR TOCANDO/i)).toHaveCount(0);
+ await page.locator('[data-action="blow-fallback"]').click();
+ await advanceOne(page);
+ await waitForScene(page,"balloons");
+ const balloons=page.locator('[data-action="balloon"]');
+ await expect(balloons).toHaveCount(6);
+ for(let i=0;i<3;i++)await balloons.nth(i).click();
+ await expect(balloons.filter({has:page.locator("span")})).toHaveCount(6);
+ await expect(balloons.nth(3)).toBeDisabled();
+ await expect(balloons.nth(4)).toBeDisabled();
+ await expect(balloons.nth(5)).toBeDisabled();
+ await balloons.nth(0).click();
+ await expect(page.locator('.thi-birthday-balloons button.pop')).toHaveCount(3);
+ await advanceOne(page);
+ await waitForScene(page,"memories");
+ await expect(page.locator('[data-action="advance"]')).not.toContainText("Escuchá esto");
+ await advanceOne(page);
+ await waitForScene(page,"light");
+ for(let i=1;i<=3;i++)await page.locator(`[data-action="birthday-light-${i}"]`).click();
+ await expect(page.locator('.thi-bday-lantern-story')).toContainText("No son solamente los años");
+ await advanceOne(page);
+ await waitForScene(page,"voices");
+ await page.locator('[data-action="birthday-voice"]').first().click();
+ await expect(page.locator('[data-action="birthday-voice-toggle"]')).toContainText("Pausar");
+ await page.locator('[data-action="birthday-voice-toggle"]').click();
+ await expect(page.locator('[data-action="birthday-voice-toggle"]')).toContainText("Escuchar");
+ await advanceOne(page);
+ await waitForScene(page,"hold");
+ await page.locator('[data-action="hold"]').press("Enter");
+ await expect(page.locator(".thi-hold-reveal")).toHaveClass(/revealed/);
+ await advanceOne(page);
+ await waitForScene(page,"letter");
+ await expect(page.locator(".thi-envelope")).not.toHaveClass(/open/);
+ await page.locator('[data-action="open-letter"]').click();
+ await expect(page.locator(".thi-envelope")).toHaveClass(/open/);
+ await advanceOne(page);
+ await waitForScene(page,"finale");
+ await expect(page.locator(".thi-bday-finale-scratch")).toBeVisible();
+ await page.locator('[data-action="scratch-fallback"]').click();
+ await expect(page.locator(".thi-bday-finale-signature")).toContainText("mamá, Nati, Fran");
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
 test("pair finale is a clean premium epilogue with integrated conversion CTA",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/pareja");
