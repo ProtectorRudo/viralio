@@ -319,7 +319,7 @@ export const experiences: Experience[] = [
         {url:"https://images.unsplash.com/photo-1501886564641-e55a61b1f5da?auto=format&fit=crop&fm=jpg&q=76&w=1400",position:"center"},
       ],
       voices:[
-        {name:"Tu hijo mayor",message:"Ahora que crecí entiendo muchas cosas que antes simplemente daba por hechas."},
+        {name:"Tu hija Alina",message:""},
         {name:"Tu hija",message:"Gracias por seguir siendo la primera persona a la que quiero contarle algo bueno."},
         {name:"Todos",message:"Si alguna vez dudás de todo lo que hiciste bien, miranos: hay muchísimas cosas tuyas viviendo en nosotros."},
       ],
