@@ -58,7 +58,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const requestedInitialScene=previewScene||initialScene;
   const initialSceneIndex=requestedInitialScene?Math.max(0,experience.recipe.indexOf(requestedInitialScene)):0;
   const [internalSceneIndex,setInternalSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
-  const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
+  const [stars,setStars]=useState<number[]>([]);const [letterOpen,setLetterOpen]=useState(false);const [scratched,setScratched]=useState(false);const [mamaFinalScratched,setMamaFinalScratched]=useState(false);const [candlesOut,setCandlesOut]=useState(false);const [popped,setPopped]=useState<number[]>([]);
   const [quizChoice,setQuizChoice]=useState<number|null>(null);const [vaultOpen,setVaultOpen]=useState(false);const [capsuleOpen,setCapsuleOpen]=useState(false);const [voicesPlayed,setVoicesPlayed]=useState<number[]>([]);const [demoVoiceStatus,setDemoVoiceStatus]=useState<"idle"|"playing"|"paused">("idle");const [mamaVoiceIndex,setMamaVoiceIndex]=useState<number|null>(null);const [mamaVoiceProgress,setMamaVoiceProgress]=useState(0);const [mamaVoiceRealPlaying,setMamaVoiceRealPlaying]=useState(false);const [papaVoiceIndex,setPapaVoiceIndex]=useState<number|null>(null);const [papaVoicePlaying,setPapaVoicePlaying]=useState(false);const [papaVoiceProgress,setPapaVoiceProgress]=useState<Record<number,number>>({});const [papaVoiceCurrent,setPapaVoiceCurrent]=useState<Record<number,number>>({});const [papaVoiceDuration,setPapaVoiceDuration]=useState<Record<number,number>>({});const [finalReaction,setFinalReaction]=useState<number|null>(null);const [mamaMemoryIndex,setMamaMemoryIndex]=useState(0);const [papaMemoryIndex,setPapaMemoryIndex]=useState(0);
   const [doorOpen,setDoorOpen]=useState(false);const [lightRevealed,setLightRevealed]=useState(false);const [holdRevealed,setHoldRevealed]=useState(false);const [lastStar,setLastStar]=useState<number|null>(null);
   const [archiveOpen,setArchiveOpen]=useState(false);const [homeOpen,setHomeOpen]=useState<number[]>([]);const [legacyOpen,setLegacyOpen]=useState(false);
@@ -144,7 +144,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const handleMediaPlay=(event:React.SyntheticEvent<HTMLElement>)=>{if((event.target as HTMLElement)===soundtrackRef.current)return;duckSoundtrack()};
   const handleMediaRest=()=>restoreSoundtrack();
 
-  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setPapaVoiceIndex(null);setPapaVoicePlaying(false);setPapaVoiceProgress({});setPapaVoiceCurrent({});setPapaVoiceDuration({});papaVoiceActiveRef.current=null;setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null);setMamaMemoryIndex(0);setPapaMemoryIndex(0);papaVisitedRef.current=new Set([0])};
+  const resetAllInteractions=()=>{setStars([]);setLastStar(null);setLetterOpen(false);setScratched(false);setMamaFinalScratched(false);setCandlesOut(false);setPopped([]);setQuizChoice(null);setVaultOpen(false);setCapsuleOpen(false);setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setPapaVoiceIndex(null);setPapaVoicePlaying(false);setPapaVoiceProgress({});setPapaVoiceCurrent({});setPapaVoiceDuration({});papaVoiceActiveRef.current=null;setDoorOpen(false);setLightRevealed(false);setHoldRevealed(false);setArchiveOpen(false);setHomeOpen([]);setLegacyOpen(false);setRitualsOpen([]);setChapterOpen([]);setFutureOpen(false);setReasonsOpen([]);setCertaintyOpen([]);setThresholdHolding(false);setThresholdOpen(false);setCareOpen([]);setSacrificesOpen([]);setLessonsOpen([]);setPresenceOpen([]);setInheritanceOpen([]);setReturnOpen(false);setLookbackOpen(false);setCasefileOpen(false);setInsideJokesOpen([]);setIncidentsOpen([]);setProofOpen([]);setPactOpen([]);setFinalReaction(null);setMamaMemoryIndex(0);setPapaMemoryIndex(0);papaVisitedRef.current=new Set([0])};
   const resetSceneState=(type:SceneType)=>{if(type==="stars"){setStars([]);setLastStar(null)};if(type==="letter")setLetterOpen(false);if(type==="scratch")setScratched(false);if(type==="candles")setCandlesOut(false);if(type==="balloons")setPopped([]);if(type==="quiz")setQuizChoice(null);if(type==="vault")setVaultOpen(false);if(type==="capsule")setCapsuleOpen(false);if(type==="voices"){setVoicesPlayed([]);setDemoVoiceStatus("idle");setMamaVoiceIndex(null);setMamaVoiceProgress(0);setMamaVoiceRealPlaying(false);setPapaVoiceIndex(null);setPapaVoicePlaying(false);setPapaVoiceProgress({});setPapaVoiceCurrent({});setPapaVoiceDuration({});papaVoiceActiveRef.current=null};if(type==="door")setDoorOpen(false);if(type==="light")setLightRevealed(false);if(type==="hold")setHoldRevealed(false);if(type==="archive")setArchiveOpen(false);if(type==="home")setHomeOpen([]);if(type==="legacy")setLegacyOpen(false);if(type==="rituals")setRitualsOpen([]);if(type==="chapters")setChapterOpen([]);if(type==="future")setFutureOpen(false);if(type==="reasons")setReasonsOpen([]);if(type==="certainty")setCertaintyOpen([]);if(type==="threshold"){setThresholdHolding(false);setThresholdOpen(false)};if(type==="care")setCareOpen([]);if(type==="sacrifices")setSacrificesOpen([]);if(type==="lessons")setLessonsOpen([]);if(type==="presence")setPresenceOpen([]);if(type==="inheritance")setInheritanceOpen([]);if(type==="return")setReturnOpen(false);if(type==="lookback")setLookbackOpen(false);if(type==="casefile")setCasefileOpen(false);if(type==="insidejokes")setInsideJokesOpen([]);if(type==="incidents")setIncidentsOpen([]);if(type==="proof")setProofOpen([]);if(type==="pact")setPactOpen([]);if(type==="finale")setFinalReaction(null);if(type==="memories"){setMamaMemoryIndex(0);setPapaMemoryIndex(0)}};
   const haptic=(pattern:number|number[]=10)=>{if(typeof navigator!=="undefined"&&"vibrate" in navigator){try{navigator.vibrate(pattern)}catch{}}};
   const passiveHapticPatterns:Record<string,number|number[]>={
@@ -1511,12 +1511,29 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           return <section className="thi-scene thi-final thi-mama-finale thi-scene-rich">
             <div className="thi-mama-finale-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/><span/></div>
             <p className="thi-kicker">{token(copy.finale.kicker)}</p>
-            <h2>{token(copy.finale.title)}</h2>
+            <h2>Hay algo más para vos.</h2>
             <div className="thi-mama-finale-divider" aria-hidden="true"><i/><b>✦</b><i/></div>
             <p className="thi-lead">{token(copy.finale.lead)}</p>
-            <div className="thi-mama-finale-reactions" aria-label="¿Qué te hizo sentir?">{mamaFinalReactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
-            <button data-action="restart" className="thi-mama-finale-restart" onClick={restart}><span>↺</span>{token(copy.finale.restartLabel)}</button>
-            <small className="thi-mama-finale-signature">{token(copy.finale.createdWith)}</small>
+            <div className="thi-mama-final-scratch" data-revealed={mamaFinalScratched?"true":"false"}>
+              <p className="thi-mama-final-scratch-prompt">Raspá para descubrir lo último</p>
+              <ScratchReveal
+                accent={experience.accent}
+                themeSlug="mama"
+                eyebrow="UNA ÚLTIMA COSA"
+                reward={token(copy.finale.title)}
+                note=""
+                coverTitle="HAY ALGO MÁS PARA VOS"
+                coverHint="DESLIZÁ PARA DESCUBRIR"
+                fallbackLabel="Revelar mensaje"
+                revealed={mamaFinalScratched}
+                onReveal={()=>{setMamaFinalScratched(true);haptic([8,24,8]);playFx("chime")}}
+              />
+            </div>
+            {mamaFinalScratched&&<div className="thi-mama-finale-after-reveal">
+              <div className="thi-mama-finale-reactions" aria-label="¿Qué te hizo sentir?">{mamaFinalReactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
+              <button data-action="restart" className="thi-mama-finale-restart" onClick={restart}><span>↺</span>{token(copy.finale.restartLabel)}</button>
+              <small className="thi-mama-finale-signature">{token(copy.finale.createdWith)}</small>
+            </div>}
           </section>;
         }
         if(experience.slug==="pareja"){
