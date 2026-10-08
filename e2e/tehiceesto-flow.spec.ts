@@ -713,6 +713,10 @@ test("birthday premium scenes work on 390px mobile and preserve the three-balloo
  await expect(page.locator('[data-action="advance"]')).not.toContainText("Escuchá esto");
  await advanceOne(page);
  await waitForScene(page,"light");
+ // The public demo uses real photographs; only recipient-uploaded pictures appear in private gifts.
+ const demoPictures=page.locator(".thi-bday-lantern-photo img");
+ await expect(demoPictures).toHaveCount(3);
+ await expect.poll(async()=>demoPictures.evaluateAll(images=>images.every(el=>(el as HTMLImageElement).complete&&(el as HTMLImageElement).naturalWidth>0)),{timeout:15000}).toBe(true);
  for(let i=1;i<=3;i++)await page.locator(`[data-action="birthday-light-${i}"]`).click();
  await expect(page.locator('.thi-bday-lantern-story')).toContainText("No son solamente los años");
  await advanceOne(page);
@@ -730,6 +734,29 @@ test("birthday premium scenes work on 390px mobile and preserve the three-balloo
  await expect(page.locator(".thi-envelope")).not.toHaveClass(/open/);
  await page.locator('[data-action="open-letter"]').click();
  await expect(page.locator(".thi-envelope")).toHaveClass(/open/);
+ const paper=page.locator(".thi-envelope.open .paper");
+ await expect(paper).toBeVisible();
+ await expect(paper).toContainText("Cumplir años también es mirar alrededor");
+ const sheet=await paper.evaluate(el=>{
+   const front=el.parentElement?.querySelector(".front");
+   const t=el.getBoundingClientRect();
+   const text=el.querySelector("strong")?.getBoundingClientRect();
+   return {
+     pageTop:t.top,pageBottom:t.bottom,pageWidth:t.width,
+     letterBottom:text?.bottom??-1,
+     paperZ:Number.parseInt(getComputedStyle(el).zIndex,10),
+     frontZ:front?Number.parseInt(getComputedStyle(front).zIndex,10):-1,
+     scrollWidth:el.scrollWidth,clientWidth:el.clientWidth,
+     bodyWidth:document.documentElement.scrollWidth,
+     viewportWidth:document.documentElement.clientWidth,
+   };
+ });
+ expect(sheet.paperZ).toBeGreaterThan(sheet.frontZ);
+ expect(sheet.pageTop).toBeGreaterThan(0);
+ expect(sheet.pageBottom).toBeLessThan(844);
+ expect(sheet.letterBottom).toBeLessThan(sheet.pageBottom-3);
+ expect(sheet.scrollWidth).toBeLessThanOrEqual(sheet.clientWidth+1);
+ expect(sheet.bodyWidth).toBeLessThanOrEqual(sheet.viewportWidth+1);
  await advanceOne(page);
  await waitForScene(page,"finale");
  await expect(page.locator(".thi-bday-finale-scratch")).toBeVisible();
