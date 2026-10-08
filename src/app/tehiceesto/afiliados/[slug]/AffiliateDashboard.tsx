@@ -174,6 +174,23 @@ export default function AffiliateDashboard({slug}:{slug:string}){
         <div className="thi-aff-public-actions"><div className="thi-aff-update-status"><span className="thi-aff-live"><i/> EN VIVO</span><div className="thi-aff-last-update"><span>Última actualización</span><strong title="Fecha y hora de la última consulta completada correctamente">{lastUpdated}</strong></div></div><button className="thi-ghost" onClick={logout}>Salir</button></div>
       </header>
 
+      {saleAlert&&(
+        <section className="thi-aff-sale-notice" role="status" aria-live="polite" aria-atomic="true">
+          <div className="thi-aff-sale-notice-spark" aria-hidden="true">✦</div>
+          <div className="thi-aff-sale-notice-copy">
+            <span>UNA RECOMENDACIÓN QUE EMOCIONA</span>
+            <h2>{saleAlert.count===1
+              ?"¡Tu recomendación generó una venta!"
+              :`¡Tus recomendaciones generaron ${saleAlert.count} ventas!`}</h2>
+            <p>{saleAlert.commissionMinor>0
+              <>Sumaste <strong>{money(saleAlert.commissionMinor)}</strong> de comisión. ¡Gracias por compartir experiencias que emocionan!</>
+              :"La venta ya está registrada en tu tablero. ¡Gracias por recomendar Te Hice Esto!"}</p>
+            <small>Pago confirmado · El detalle figura en «Últimas ventas».</small>
+          </div>
+          <button type="button" className="thi-aff-sale-notice-close" onClick={()=>setSaleAlert(null)} aria-label="Cerrar aviso de nueva venta">×</button>
+        </section>
+      )}
+
       <section className="thi-aff-share-card">
         <div><span>TU LINK PERSONAL</span><strong>{shareUrl||"Sin link activo"}</strong><small>Compartilo en historias, bio, WhatsApp o donde quieras.</small></div>
         <button disabled={!shareUrl} onClick={()=>shareUrl&&navigator.clipboard.writeText(shareUrl)}>Copiar link</button>
