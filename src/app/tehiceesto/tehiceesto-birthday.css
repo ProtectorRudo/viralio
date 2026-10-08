@@ -131,3 +131,47 @@
 @keyframes thiBdayVoiceEnter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes thiBdayWave{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
 @media(max-width:600px){.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene{padding:95px 15px 96px}.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene>h2{font-size:clamp(31px,8vw,39px)}.thi-bday-voices-intro{font-size:15px}.thi-bday-voices-grid{gap:9px}.thi-bday-voice-tile{gap:8px;padding:12px 8px;min-height:84px}.thi-bday-voice-icon{width:35px;height:35px;font-size:20px}.thi-bday-voice-person strong{font-size:14px}.thi-bday-voice-person small{font-size:7px}.thi-bday-voice-action{width:14px}}
+
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"]{background:radial-gradient(circle at 50% 52%,#563a375e,transparent 35%),linear-gradient(155deg,#140c13,#06060a 82%)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-scene-hold{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:100svh;padding:90px 14px 95px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-scene-hold>h2{max-width:650px;font:400 clamp(34px,6vw,57px)/1.05 var(--thi-serif,Georgia,serif);letter-spacing:-.04em;margin:12px auto 16px;text-wrap:balance}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-hold-reveal{width:min(420px,100%);min-height:340px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-hold-reveal .thi-hold-copy{position:relative;margin-top:11px;text-align:center;z-index:4}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-hold-reveal .thi-hold-copy strong{display:block;font-size:16px;line-height:1.4;color:#fff1dd}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-hold-reveal .thi-hold-copy small{display:block;color:#deb9a0;font-size:12px;margin-top:7px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-hold-reveal.revealed>p{color:#f8dec8;font:italic clamp(22px,4.5vw,32px)/1.2 var(--thi-serif,Georgia,serif);max-width:540px;text-align:center;margin:12px auto 0}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-hold-reveal.cinematic .thi-hold-heart{color:#f1bc77;text-shadow:0 0 25px #ebaf7c}
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-scene-hold>.thi-primary{margin:8px auto 0}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"]{background:radial-gradient(circle at 52% 38%,#59403468,transparent 43%),linear-gradient(145deg,#160f13,#09080d 80%)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter{min-height:100svh;display:flex;justify-content:center;align-items:center;flex-direction:column;padding:100px 18px 115px;overflow:hidden}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter>.thi-kicker{color:#d6b095;font-size:10px;letter-spacing:.24em;margin-bottom:13px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter>h2{font:400 clamp(34px,6vw,57px)/1.06 var(--thi-serif,Georgia,serif);color:#fff0e3;letter-spacing:-.04em;text-align:center;max-width:630px;margin:0 auto 31px;text-wrap:balance}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope{position:relative;width:min(510px,90vw);height:clamp(264px,53vw,323px);flex:none;margin:8px auto 0;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;cursor:pointer;perspective:1000px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .back{position:absolute;inset:0;background:linear-gradient(138deg,#ead1ae,#a57d65);border-radius:6px;box-shadow:0 25px 65px #020207b0}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .front{position:absolute;inset:0;z-index:5;background:linear-gradient(156deg,#bb9279,#9f785f 65%,#86614d);clip-path:polygon(0 25%,50% 75%,100% 25%,100% 100%,0 100%);filter:drop-shadow(0 2px 5px #20121953)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .flap{position:absolute;inset:0;z-index:7;transform-origin:top center;background:linear-gradient(160deg,#f0dbbd,#b48c72 80%);clip-path:polygon(0 0,100% 0,50% 63%);backface-visibility:hidden;transition:transform .85s cubic-bezier(.2,.7,.2,1),z-index .1s .3s}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper{
+ position:absolute;z-index:3;inset:5% 7% auto!important;width:86%!important;height:92%!important;padding:26px 20px 28px!important;
+ display:flex!important;flex-direction:column;align-items:flex-start;gap:16px;
+ background:linear-gradient(155deg,#fff4e7,#e8d7c3);border-radius:3px;color:#312622!important;
+ transform:translateY(24%) scale(.94)!important;opacity:0!important;
+ box-shadow:0 4px 18px #23110f63;transition:transform 1s .25s,opacity .35s .2s;overflow:hidden!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper small{font-size:12px;color:#80675a}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper strong{font:400 clamp(15px,2.5vw,18px)/1.38 var(--thi-serif,Georgia,serif);text-align:left;color:#3c2d2b!important;overflow:auto}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper em{font:italic 16px/1.3 var(--thi-serif,Georgia,serif);color:#7f5e54;margin-top:auto}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .wax{z-index:8;transition:opacity .2s,transform .4s}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .flap{transform:rotateX(170deg);z-index:1}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper{transform:translateY(-32%) scale(1)!important;opacity:1!important;z-index:4}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .wax{opacity:0;transform:scale(.65)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope:not(.open) .paper>*{visibility:hidden}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope.open .paper>*{visibility:visible}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-hint{margin-top:20px;font-size:12px;color:#dab898}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-primary{margin-top:21px}
+@media(max-width:600px){
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter{padding:116px 14px 115px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter>h2{font-size:clamp(31px,8.4vw,40px);margin-bottom:22px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope{height:clamp(234px,64vw,300px);margin-top:21px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper{padding:20px 16px!important;height:105%!important}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper strong{font-size:15px}
+}
