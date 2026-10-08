@@ -941,10 +941,10 @@ test("home explains the real self-service model without promising manual assembl
 test("preselected experience skips the chooser and keeps the purchase obvious",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear?experiencia=pareja");
-  await expect(page.getByRole("heading",{name:/Tres datos y listo/i})).toBeVisible();
+  await expect(page.getByRole("heading",{name:/Último paso/i})).toBeVisible();
   await expect(page.getByText("Nuestra historia",{exact:true})).toBeVisible();
-  await expect(page.getByRole("button",{name:/Elegir para mi pareja/i})).toHaveCount(0);
-  await expect(page.getByRole("button",{name:/Revisar y pagar/i})).toBeEnabled();
+  await expect(page.locator(".thi-simple-card")).toHaveCount(0);
+  await expect(page.getByRole("button",{name:/Ir a Mercado Pago/i})).toBeEnabled();
 });
 
 test("self-serve purchase chooses an experience, captures contact and opens checkout",async({page})=>{
@@ -984,16 +984,16 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/crear");
   await page.evaluate(()=>{document.cookie="thi_affiliate_token=affiliate-token-test-12345678901234567890; path=/; SameSite=Lax"});
-  await page.getByRole("button",{name:/Elegir para mi pareja/i}).click();
+  await expect(page.locator(".thi-simple-card")).toHaveCount(9);
+  await page.locator(".thi-simple-card").first().getByRole("button",{name:/Elegir y continuar/i}).click();
+  await expect(page.locator(".thi-purchase-page")).toHaveAttribute("data-active-step","1");
 
   await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
   await page.getByPlaceholder("Ej. 2215653163").fill("5492215551234");
   await page.getByPlaceholder("tu@email.com").fill("mauro@example.com");
   await page.locator('.order-consent input[type="checkbox"]').check();
-  await page.getByRole("button",{name:/Revisar y pagar/i}).click();
 
-  await expect(page.getByRole("heading",{name:/Pagás\. Y empezás a crear/i})).toBeVisible();
-  await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
+  await page.getByRole("button",{name:/Ir a Mercado Pago/i}).click();
   await page.waitForURL(/checkout\.test/);
   await page.goto("/tehiceesto/crear");
   await expect.poll(()=>page.evaluate(key=>window.localStorage.getItem(key),`thi_editor_access:${code}`)).toBe(editorToken);
@@ -1032,12 +1032,11 @@ test("purchase retry reuses the same client request id and does not create a sec
   await page.getByPlaceholder("Ej. 2215653163").fill("5492215551234");
   await page.getByPlaceholder("tu@email.com").fill("mauro@example.com");
   await page.locator('.order-consent input[type="checkbox"]').check();
-  await page.getByRole("button",{name:/Revisar y pagar/i}).click();
 
-  await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
+  await page.getByRole("button",{name:/Ir a Mercado Pago/i}).click();
   await expect(page.getByText(/No pudimos iniciar el pago/i)).toBeVisible();
-  await page.getByRole("button",{name:/Reintentar/i}).click();
-  await expect(page.getByText(/Tu pedido quedó reservado/i)).toBeVisible();
+  await page.getByRole("button",{name:/Ir a Mercado Pago/i}).click();
+  await expect(page.getByText(/Tu pedido quedó registrado/i)).toBeVisible();
 
   expect(requestIds).toHaveLength(2);
   expect(requestIds[0]).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
