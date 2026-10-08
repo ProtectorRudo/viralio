@@ -26,10 +26,19 @@ await page.mouse.click(box.x+box.width*.5,box.y+box.height*.5);
 await page.waitForTimeout(100);
 assert(await page.locator('[data-action="child-light-quest"].is-revealed').count()===0,'light reveals on a single tap');
 const spots=[[.21,.28],[.78,.43],[.5,.78],[.24,.28],[.74,.43],[.52,.78]];
-await page.mouse.move(box.x+box.width*.16,box.y+box.height*.21);
-await page.mouse.down();
-for(const [x,y] of spots)await page.mouse.move(box.x+box.width*x,box.y+box.height*y,{steps:14});
-await page.mouse.up();
+const cdp=await page.context().newCDPSession(page);
+const point=(x,y)=>({x:Math.round(box.x+box.width*x),y:Math.round(box.y+box.height*y),id:1,force:1});
+const stops=[[.16,.21],...spots];
+await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point(...stops[0])]});
+for(let k=1;k<stops.length;k++){
+  const [x0,y0]=stops[k-1], [x1,y1]=stops[k];
+  for(let step=1;step<=17;step++){
+    const ratio=step/17;
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[point(x0+(x1-x0)*ratio,y0+(y1-y0)*ratio)]});
+    await page.waitForTimeout(7);
+  }
+}
+await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
 await page.waitForTimeout(450);
 const light=await page.locator('[data-action="child-light-quest"]').evaluate(el=>({found:el.getAttribute('data-found'),revealed:el.classList.contains('is-revealed')}));
 console.log('HIJOS LIGHT:',JSON.stringify(light));
