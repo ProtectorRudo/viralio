@@ -99,12 +99,17 @@ jobs:
             const before=await page.evaluate(()=>({scene:document.querySelector('[data-scene]')?.getAttribute('data-scene'),sceneText:document.querySelector('.thi-scene')?.textContent?.slice(0,120),picker:document.querySelectorAll('[data-action="mama-voice-choice"]').length,buttons:[...document.querySelectorAll('button[data-action]')].map(b=>({action:b.getAttribute('data-action'),disabled:b.disabled})).slice(0,10)}));
             console.log('NAV_BEFORE_'+i+':',JSON.stringify(before));
             if(before.picker===3)break;
-            await page.evaluate(()=>{
-              const b=document.querySelector('[data-action="next"]');
-              if(!b) throw new Error("Missing navigation button");
-              b.removeAttribute('disabled');
-              b.click();
-            });
+            if(before.scene==='care'){
+              await page.locator('[data-action="care-open"]').evaluateAll(buttons=>buttons.forEach(b=>b.click()));
+              await page.waitForTimeout(350);
+            }
+            if(before.scene==='sacrifices'){
+              await page.locator('[data-action="sacrifice-open"]').evaluateAll(buttons=>buttons.forEach(b=>b.click()));
+              await page.waitForTimeout(350);
+            }
+            const nextButton=page.locator('[data-action="next"]');
+            if(await nextButton.isDisabled())throw new Error('Cannot advance legitimately from '+before.scene);
+            await nextButton.click({force:true});
             await page.waitForTimeout(1100);
           }
           const reached=await page.locator('[data-action="mama-voice-choice"]').count();
