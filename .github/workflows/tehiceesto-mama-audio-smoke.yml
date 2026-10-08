@@ -1,0 +1,47 @@
+name: TeHiceEsto Mamá audio live smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tehiceesto-mama-audio-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check audio and production JavaScript hotfix
+        shell: bash
+        run: |
+          set -euo pipefail
+          FN='https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1'
+          JS='/_next/static/immutable/chunks/2ub9wnrqd274z.js'
+          echo 'Supabase audio: full response'
+          curl -fsSL --max-time 35 -D /tmp/audio-headers -o /tmp/voice.opus "$FN/mama-demo-hotfix?audio=1"
+          head -n 18 /tmp/audio-headers
+          test "$(wc -c < /tmp/voice.opus)" -gt 20000
+          head -c 4 /tmp/voice.opus | grep -q OggS
+          echo 'Supabase audio: partial response'
+          curl -fsSL --max-time 35 -D /tmp/range-headers -H 'Range: bytes=0-1023' -o /tmp/voice-part.opus "$FN/mama-demo-hotfix?audio=1"
+          head -n 18 /tmp/range-headers
+          grep -q '^HTTP/.*206' /tmp/range-headers
+          test "$(wc -c < /tmp/voice-part.opus)" -eq 1024
+          echo 'Supabase dynamic JavaScript'
+          curl -fsSL --max-time 40 -D /tmp/js-headers -o /tmp/voice.js "$FN/mama-demo-js-patch"
+          head -n 18 /tmp/js-headers
+          grep -Fq '__thiMamaVoiceHotfixV2' /tmp/voice.js
+          node --check /tmp/voice.js
+          echo 'Public JavaScript through tehiceesto.com'
+          curl -fsSL --max-time 40 -D /tmp/public-headers -o /tmp/public.js "https://tehiceesto.com$JS"
+          head -n 18 /tmp/public-headers
+          grep -Fq '__thiMamaVoiceHotfixV2' /tmp/public.js
+          node --check /tmp/public.js
+          echo 'Production demo HTML'
+          curl -fsSL --max-time 40 -o /tmp/mama.html https://tehiceesto.com/experiencias/mama
+          grep -Fq '2ub9wnrqd274z.js' /tmp/mama.html
+          echo 'SUCCESS: audio Ogg, range, hotfix JS syntax, route and demo bundle link verified.'
