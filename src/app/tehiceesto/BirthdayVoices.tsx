@@ -18,8 +18,8 @@ export default function BirthdayVoices({voices,heard,status,onHeard,onToggle,onS
  const item=selected===null?undefined:voices[selected];
  const livePlaying=item?.url?realPlaying:selected!==null&&status==="playing";
  return <div className="thi-bday-voices">
-  <p className="thi-bday-voices-intro">Un regalo también puede tener la voz de quienes te quieren.</p>
-  <div className="thi-bday-voices-grid">{voices.map((v,i)=><button type="button" key={i} data-action="birthday-voice" className={`thi-bday-voice-tile ${i===selected?"active":""}`} onClick={()=>toggle(i)}>
+  <p className="thi-bday-voices-intro">Un regalo también puede tener la voz de quienes te quieren. Podés pausar y volver a escuchar cada mensaje.</p>
+  <div className="thi-bday-voices-grid">{voices.map((v,i)=><button type="button" key={i} data-action="birthday-voice" aria-pressed={i===selected} aria-label={i===selected&&livePlaying?`Pausar mensaje de ${v.name}`:`Escuchar mensaje de ${v.name}`} className={`thi-bday-voice-tile ${i===selected?"active":""}`} onClick={()=>toggle(i)}>
     <span className="thi-bday-voice-icon">♪</span>
     <span className="thi-bday-voice-person"><small>MENSAJE {String(i+1).padStart(2,"0")}</small><strong>{v.name}</strong><i aria-hidden="true">{Array.from({length:14},(_,k)=><b key={k} style={{height:6+(k*7)%14}}/>)}</i></span>
     <span className="thi-bday-voice-action">{i===selected&&livePlaying?"Ⅱ":heard.includes(i)?"↻":"▶"}</span>
