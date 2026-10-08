@@ -3057,6 +3057,32 @@ body:has(.experience-entered) .demo-ribbon{
   filter:saturate(.68) contrast(1.03) brightness(.82);
   position:relative;
 }
+.origin-photo.is-empty{
+  filter:none;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(232,201,131,.10),transparent 24%),
+    linear-gradient(145deg,#12100d,#070706);
+}
+.thi-personal-photo-empty{
+  display:grid;
+  place-items:center;
+  gap:9px;
+  color:rgba(236,220,185,.55);
+  text-align:center;
+}
+.thi-personal-photo-empty i{
+  font-style:normal;
+  font-size:28px;
+  line-height:1;
+  opacity:.8;
+}
+.thi-personal-photo-empty small{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:13px;
+  letter-spacing:.05em;
+}
 .origin-caption{
   display:flex;
   flex-direction:column;
@@ -3655,6 +3681,17 @@ body:has(.experience-entered) .demo-ribbon{
   min-height:430px;
   background-repeat:no-repeat;
   filter:saturate(.72) contrast(1.02) sepia(.08);
+}
+.childhood-photo.is-empty{
+  filter:none;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 48% 36%,rgba(132,94,74,.10),transparent 26%),
+    linear-gradient(145deg,#e7d7c6,#d7c3ad);
+}
+.childhood-photo.is-empty .thi-personal-photo-empty{
+  color:rgba(74,52,45,.52);
 }
 .childhood-note{
   padding:42px;
