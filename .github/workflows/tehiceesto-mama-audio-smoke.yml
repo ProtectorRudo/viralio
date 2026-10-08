@@ -95,14 +95,17 @@ jobs:
           console.log('PASS: Mamá route executes real audio patch on mobile browser.');
           const audioRequests=[];
           page.on('response',r=>{if(r.url().includes('mama-demo-hotfix?audio=1'))audioRequests.push({status:r.status(),url:r.url()});});
-          for(let i=0;i<5;i++){
+          for(let i=0;i<10;i++){
+            const before=await page.evaluate(()=>({scene:document.querySelector('[data-scene]')?.getAttribute('data-scene'),sceneText:document.querySelector('.thi-scene')?.textContent?.slice(0,120),picker:document.querySelectorAll('[data-action="mama-voice-choice"]').length,buttons:[...document.querySelectorAll('button[data-action]')].map(b=>({action:b.getAttribute('data-action'),disabled:b.disabled})).slice(0,10)}));
+            console.log('NAV_BEFORE_'+i+':',JSON.stringify(before));
+            if(before.picker===3)break;
             await page.evaluate(()=>{
               const b=document.querySelector('[data-action="next"]');
               if(!b) throw new Error("Missing navigation button");
               b.removeAttribute('disabled');
               b.click();
             });
-            await page.waitForTimeout(550);
+            await page.waitForTimeout(1100);
           }
           const reached=await page.locator('[data-action="mama-voice-choice"]').count();
           console.log('VOICE_PICKER_CARDS:',reached);
