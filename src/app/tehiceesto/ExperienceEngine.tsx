@@ -1539,6 +1539,26 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
 
       case"proposal":return <section className="thi-scene thi-final thi-proposal thi-scene-rich"><div className="thi-proposal-rings" aria-hidden="true"><i/><i/><i/></div><p className="thi-kicker">{token(copy.proposal.kicker)}</p><span className="thi-ring">◇</span><h2>{token(copy.proposal.title)}</h2><p className="thi-lead">{token(copy.proposal.lead)}</p><div className="thi-reactions">{copy.proposal.reactions.map(x=><button key={x} onClick={()=>haptic([10,20,10])}>{token(x)}</button>)}</div><small>{token(copy.proposal.createdWith)}</small></section>;
       case"finale":default:
+        if(experience.slug==="cumpleanos"){
+          const fromText=copyOverride?.finale?.fromLabel?token(String(copyOverride.finale.fromLabel)):customerGift?`Con cariño, ${experience.demoGiver}`:token(copy.finale.fromLabel||`Con cariño, ${experience.demoGiver}`);
+          return <section className="thi-scene thi-final thi-bday-finale">
+            <div className="thi-bday-finale-aura" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
+            <p className="thi-kicker">{token(copy.finale.kicker)}</p>
+            <h2>Guardamos un último deseo para vos.</h2>
+            <p className="thi-bday-finale-intro">{birthdayFinalScratched?"Hay palabras que vale la pena guardar.":"Esta última sorpresa se descubre con el dedo."}</p>
+            <div className="thi-bday-finale-scratch" data-revealed={birthdayFinalScratched?"true":"false"}>
+              <ScratchReveal accent={experience.accent} themeSlug="cumpleanos" eyebrow="EL DESEO DE TODOS"
+                reward={token(copy.finale.title)} note="" coverTitle="UNA ÚLTIMA SORPRESA"
+                coverHint="DESLIZÁ PARA REVELARLA" fallbackLabel="Abrir deseo"
+                revealed={birthdayFinalScratched} onReveal={()=>{setBirthdayFinalScratched(true);haptic([7,26,7]);playFx("chime")}}/>
+            </div>
+            {birthdayFinalScratched&&<div className="thi-bday-finale-after">
+              <p className="thi-bday-finale-wish">{token(copy.finale.lead)}</p>
+              <div className="thi-bday-finale-signature"><span>HECHO CON MUCHO CARIÑO</span><strong>{fromText}</strong></div>
+              <button data-action="restart" className="thi-bday-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
+            </div>}
+          </section>;
+        }
         if(experience.slug==="mama"){
           const mamaFinalReactionIcons=[
             {label:"Me llegó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="14.5" cy="14.5" r="9.2"/><path d="M10.9 12.4h.1M18.1 12.4h.1M11.2 18.4c1.1-1 2.2-1.4 3.4-1.4 1.3 0 2.4.5 3.3 1.4M25.9 22.7c0 2-1.3 3.3-2.9 3.3s-2.9-1.3-2.9-3.3c0-1.6 1.5-3.7 2.9-5.5 1.5 1.8 2.9 3.9 2.9 5.5Z"/></svg>},
