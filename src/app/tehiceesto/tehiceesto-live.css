@@ -6507,3 +6507,152 @@
   .thi-aff-login-card{padding:30px 22px;}
   .thi-aff-login-card input{font-size:16px;}
 }
+
+
+/* =========================================================
+   MAMÁ · LAST WORDS UNDER A TACTILE ROSE FOIL · OCT 2026
+   Live model only. Frozen premium-v1/v2 remain untouched.
+   The real final message stays on the editable finale title
+   and is revealed using the shared pointer-aware ScratchReveal.
+   ========================================================= */
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale{
+  padding-top:clamp(100px,12svh,132px);
+  padding-bottom:clamp(105px,15svh,148px);
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale>h2{
+  max-width:560px;
+  font-size:clamp(36px,7.8vw,61px);
+  line-height:1.04;
+  letter-spacing:-.035em;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch{
+  position:relative;
+  z-index:3;
+  width:min(550px,90vw);
+  max-width:100%;
+  margin:29px 0 10px;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch-prompt{
+  margin:0 0 15px;
+  color:#edc3ad;
+  font-family:var(--thi-serif);
+  font-size:clamp(17px,3.9vw,22px);
+  font-weight:400;
+  letter-spacing:.015em;
+  text-align:center;
+  text-wrap:balance;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-real{
+  width:100%;
+  aspect-ratio:auto;
+  height:auto;
+  min-height:clamp(280px,54vw,350px);
+  margin:0;
+  border:1px solid rgba(232,178,165,.42);
+  border-radius:25px;
+  background:linear-gradient(149deg,#f9ede5,#edd7d3 60%,#e6cfcd);
+  box-shadow:0 26px 75px rgba(0,0,0,.31),0 0 0 1px rgba(255,245,240,.14) inset;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-real:not(.done){
+  filter:drop-shadow(0 0 22px rgba(188,111,107,.09));
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize{
+  padding:28px clamp(20px,5vw,38px);
+  gap:7px;
+  color:#38232b;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize span{
+  color:#8d5c6a;
+  font-size:10px;
+  letter-spacing:.21em;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize strong{
+  display:block;
+  width:100%;
+  max-width:480px;
+  margin:7px 0;
+  color:#462934;
+  font-family:var(--thi-serif);
+  font-size:clamp(22px,4.8vw,34px);
+  font-weight:400;
+  line-height:1.17;
+  letter-spacing:-.021em;
+  text-wrap:balance;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize small:empty{
+  display:none;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize i{
+  margin-top:6px;
+  color:#9b6577;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-fallback{
+  padding:8px 12px;
+  color:#fff6f8;
+  font-size:10px;
+  letter-spacing:.06em;
+  opacity:.76;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-fallback:focus-visible{
+  opacity:1;
+  outline:2px solid #fff0e5;
+  outline-offset:3px;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale-after-reveal{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  animation:mfReveal .8s .26s ease both;
+}
+.thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale-after-reveal .thi-mama-finale-reactions{
+  margin-top:27px;
+}
+@media(max-width:650px){
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale{
+    padding:100px 18px 130px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale>.thi-kicker{
+    margin-bottom:15px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale>h2{
+    font-size:clamp(34px,8.7vw,45px);
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale-divider{
+    margin:15px 0 14px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale>.thi-lead{
+    font-size:clamp(16px,4.3vw,19px);
+    line-height:1.38;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch{
+    width:100%;
+    margin-top:21px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-real{
+    min-height:290px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize strong{
+    font-size:clamp(21px,5.65vw,27px);
+    line-height:1.17;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale-after-reveal .thi-mama-finale-reactions{
+    gap:10px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale-after-reveal .thi-mama-finale-reactions button{
+    width:58px;
+    height:58px;
+  }
+}
+@media(max-width:365px){
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-real{
+    min-height:320px;
+  }
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-final-scratch .thi-scratch-prize strong{
+    font-size:21px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-template-live.thi-theme-mama[data-scene="finale"] .thi-mama-finale-after-reveal{
+    animation:none;
+  }
+}
