@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./tehiceesto-premium-v1.css";
 import "./tehiceesto-live.css";
+import "./tehiceesto-everyday.css";
 import "./affiliate-sale-notice.css";
 import "./tehiceesto-studio.css";
 import "./tehiceesto-constellation-live.css";
