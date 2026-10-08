@@ -1,4 +1,4 @@
-name: TeHiceEsto Hijos Supabase edge publication smoke
+name: TeHiceEsto Hijos production mobile smoke
 on:
   push:
     branches: [main]
@@ -37,10 +37,6 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npx playwright install --with-deps chromium
-      - name: Verify live independent mobile demo
-        env:
-          HIJOS_URL: https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/hijos-cinematic-bridge
-        run: node scripts/tehiceesto-hijos-mobile-smoke.mjs
       - name: Verify actual TeHiceEsto.com Hijos demo on mobile
         env:
           HIJOS_URL: https://tehiceesto.com/experiencias/hijos
