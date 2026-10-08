@@ -443,6 +443,18 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       case"balloons":return <section className="thi-scene thi-scene-balloons thi-scene-rich"><p className="thi-kicker">{token(copy.balloons.kicker)}</p><h2>{titleLines(copy.balloons.title)}</h2><div className={experience.slug==="cumpleanos"?"thi-balloons thi-birthday-balloons":"thi-balloons"}>{balloonLines.map((line,i)=><button data-action="balloon" key={line} className={popped.includes(i)?"pop":""} disabled={experience.slug==="cumpleanos"&&!popped.includes(i)&&popped.length>=3} onClick={()=>{if(experience.slug==="cumpleanos"&&(popped.includes(i)||popped.length>=3))return;setPopped(v=>v.includes(i)?v:experience.slug==="cumpleanos"&&v.length>=3?v:[...v,i]);haptic(10);playFx("pop")}}><span>{popped.includes(i)?token(line):""}</span><i>{popped.includes(i)?"✦":token(copy.balloons.popLabel)}</i></button>)}</div>{experience.slug==="cumpleanos"&&<p className="thi-birthday-balloons-count">{popped.length>=3?"Tres sorpresas elegidas. Las otras quedan guardadas.":`Elegí tres globos · ${3-popped.length} por descubrir`}</p>}<button data-action="advance" className="thi-primary" disabled={popped.length<3} onClick={next}>{popped.length<3?countText(copy.balloons.remainingOne,copy.balloons.remainingMany,3-popped.length):token(copy.balloons.cta)}</button></section>;
       case"timeline":return <section className="thi-scene thi-scene-timeline thi-scene-rich"><p className="thi-kicker">{token(copy.timeline.kicker)}</p><h2>{titleLines(copy.timeline.title)}</h2><div className="thi-timeline"><div className="thi-timeline-line" aria-hidden="true"/>{timelineEntries.map((entry,index)=><article key={entry.title}><span>{String(index+1).padStart(2,"0")}</span><i/><strong>{token(entry.title)}</strong><p>{token(entry.body)}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.timeline.cta)}</button></section>;
       case"voices":{
+        if(experience.slug==="cumpleanos"){
+          const birthdayVoices=currentAudios.length
+            ?currentAudios.map((entry,i)=>({name:token(entry.caption||`Mensaje ${i+1}`),message:"",url:entry.url}))
+            :customerGift?[]:voiceEntries.map(v=>({name:token(v.name),message:token(v.message)}));
+          return <section className="thi-scene thi-bday-voice-scene thi-scene-rich">
+            <p className="thi-kicker">{token(copy.voices.kicker)}</p>
+            <h2>{titleLines(copy.voices.title)}</h2>
+            <BirthdayVoices voices={birthdayVoices} heard={voicesPlayed} status={demoVoiceStatus}
+              onHeard={i=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(7)}}
+              onToggle={toggleDemoVoice} onStop={stopDemoVoice} onNext={next} cta={token(copy.voices.cta)}/>
+          </section>;
+        }
         if(experience.slug==="mama"){
           const usingRealAudio=currentAudios.length>0;
           const count=Math.min(3,usingRealAudio?currentAudios.length:voiceEntries.length);
