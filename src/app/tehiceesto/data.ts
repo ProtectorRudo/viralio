@@ -1,7 +1,7 @@
 export type SceneType =
   | "intro" | "door" | "memories" | "stars" | "scratch" | "letter"
   | "finale" | "candles" | "balloons" | "timeline" | "voices" | "quiz"
-  | "vault" | "capsule" | "proposal" | "video" | "light" | "hold"
+  | "vault" | "capsule" | "proposal" | "video" | "light" | "hold" | "everyday"
   | "archive" | "home" | "legacy" | "rituals" | "chapters" | "future"
   | "origin" | "reasons" | "certainty" | "threshold"
   | "childhood" | "care" | "sacrifices" | "return"
@@ -61,7 +61,7 @@ export const experiences: Experience[] = [
     opening:"Hay miles de lugares en Internet. Este existe solamente para vos.",
     closing:"Y si pudiera elegir de nuevo, volvería a encontrarte.",
     tags:["Pareja","Amor","Sorpresa"],
-    recipe:["intro","door","memories","voices","light","stars","scratch","hold","letter","finale"],
+    recipe:["intro","door","memories","voices","light","stars","everyday","scratch","hold","letter","finale"],
     demo:{
       memories:[
         "El café que iba a durar media hora y terminó ocupando toda la tarde.",
