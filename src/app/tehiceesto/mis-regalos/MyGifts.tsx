@@ -109,13 +109,16 @@ export default function MyGifts(){
 
           for(const gift of account.gifts||[]){
             if(!/^[a-f0-9]{18}$/.test(gift.code))continue;
-            try{
-              const opened=await giftAccountCall<AccountOpenPayload>("open",{code:gift.code},accountToken);
-              if(opened.editorToken){
-                window.localStorage.setItem(editorAccessKey(gift.code),opened.editorToken);
+            const localEditorToken=window.localStorage.getItem(editorAccessKey(gift.code))||"";
+            if(!localEditorToken){
+              try{
+                const opened=await giftAccountCall<AccountOpenPayload>("open",{code:gift.code},accountToken);
+                if(opened.editorToken){
+                  window.localStorage.setItem(editorAccessKey(gift.code),opened.editorToken);
+                }
+              }catch{
+                // The list still renders even if editor access cannot be refreshed.
               }
-            }catch{
-              // The list still renders even if one editor token cannot be refreshed.
             }
             merged.set(gift.code,{
               code:gift.code,
