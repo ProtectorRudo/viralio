@@ -918,6 +918,16 @@ test("premium haptics fire on tactile interactions",async({page})=>{
 });
 
 
+test("private purchase routes send noindex and no-referrer headers",async({request})=>{
+  for(const path of ["/tehiceesto/pedido/aaaaaaaaaaaaaaaaaa","/tehiceesto/editar/aaaaaaaaaaaaaaaaaa","/tehiceesto/r/aaaaaaaaaaaaaaaaaa","/tehiceesto/mis-regalos"]){
+    const response=await request.get(path,{maxRedirects:0});
+    const headers=response.headers();
+    expect(headers["x-robots-tag"]||"").toContain("noindex");
+    expect(headers["referrer-policy"]).toBe("no-referrer");
+    expect(headers["cache-control"]||"").toContain("no-store");
+  }
+});
+
 test("home explains the real self-service model without promising manual assembly",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto");
