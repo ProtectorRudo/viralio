@@ -21,6 +21,7 @@ async function advanceOne(page:Page){
   else if(current==="light"){await page.locator('[data-action="light-reveal"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="hold"){await page.locator('[data-action="hold"]').press("Enter");await page.locator('[data-action="advance"]').click()}
   else if(current==="stars"){const items=page.locator('[data-action="star"]');const count=await items.count();for(let i=0;i<count;i++)await items.nth(i).click();await page.locator('[data-action="advance"]').click()}
+  else if(current==="everyday"){for(const spot of ["cups","window","frame"])await page.locator(`[data-action="everyday-${spot}"]`).click();await page.locator(".thi-everyday-continue").click()}
   else if(current==="scratch"){await page.locator('[data-action="scratch-fallback"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="letter"){await page.locator('[data-action="open-letter"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="candles"){await page.locator('[data-action="blow-fallback"]').click();await page.locator('[data-action="advance"]').click()}
@@ -643,6 +644,35 @@ test("pair threshold door swings inward behind the jamb",async({page})=>{
   expect(depth.jambZ).toBe("6");
 });
 
+
+test("Pareja everyday room reveals three genuine moments and unlocks the next surprise on mobile",async({page})=>{
+  test.setTimeout(75_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  for(let step=0;step<12&&await sceneName(page)!=="everyday";step++){
+    const previous=await sceneName(page);
+    await advanceOne(page);
+    await expect.poll(()=>sceneName(page),{timeout:7000}).not.toBe(previous);
+  }
+  await waitForScene(page,"everyday");
+  await expect(page.getByText("¿Sabés qué es lo que más me gusta de nosotros?")).toBeVisible();
+  await expect(page.locator(".thi-everyday-room")).toBeVisible();
+  await expect(page.locator(".thi-everyday-continue")).toHaveCount(0);
+  await page.locator('[data-action="everyday-cups"]').click();
+  await expect(page.locator(".thi-everyday-story")).toContainText("hablando de cualquier pavada");
+  await expect(page.locator(".thi-everyday-continue")).toHaveCount(0);
+  await page.locator('[data-action="everyday-window"]').click();
+  await expect(page.locator(".thi-everyday-story")).toContainText("estar con vos me hace bien");
+  await page.locator('[data-action="everyday-frame"]').click();
+  await expect(page.locator(".thi-pair-everyday")).toHaveAttribute("data-everyday-complete","true");
+  await expect(page.locator(".thi-everyday-story")).toContainText("No necesito que todos nuestros días sean especiales");
+  await expect(page.locator(".thi-everyday-continue")).toBeVisible();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+  await page.locator(".thi-everyday-continue").click();
+  await waitForScene(page,"scratch");
+});
 
 test("pair finale is a clean premium epilogue with integrated conversion CTA",async({page})=>{
   await page.setViewportSize({width:390,height:844});
