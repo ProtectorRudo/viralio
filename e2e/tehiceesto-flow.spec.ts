@@ -59,7 +59,7 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
 
   await expect(page.locator(".thh-home-v2")).toBeVisible();
   await expect(page.getByRole("heading",{name:/Un regalo que la emociona/i})).toBeVisible();
-  await expect(page.getByText(/Transformamos tus fotos, audios y mensajes/i)).toBeVisible();
+  await expect(page.getByText(/Elegís una experiencia que ya fue diseñada y probada para emocionar/i)).toBeVisible();
   await expect(page.locator(".thh-v2-meta")).toContainText("Desde");
   await expect(page.locator(".thh-v2-trust-price strong")).toContainText("$");
   await expect(page.locator(".thh-v2-trust-chip")).toHaveCount(4);
@@ -1123,7 +1123,7 @@ test("my gifts can recover purchases by email magic link and refresh editor acce
   await expect.poll(()=>linkRequested).toBe(true);
   await expect(page.getByText(/Revisá tu email/i)).toBeVisible();
 
-  await page.goto(`/tehiceesto/mis-regalos#access_token=${accountToken}&token_type=bearer`);
+  await page.goto(`/tehiceesto/mis-regalos?access_token=${accountToken}&token_type=bearer`);
   await expect.poll(()=>opened).toBe(true);
   await expect(page.getByRole("heading",{name:/Acá están tus regalos/i})).toBeVisible();
   await expect(page.getByText(/Acceso verificado con mauro@example.com/i)).toBeVisible();
