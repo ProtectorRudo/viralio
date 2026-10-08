@@ -2,7 +2,8 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { detectNewAffiliateSales,type AffiliateSaleAlert } from "../../affiliateSaleAlerts";
 import { AFFILIATE_SESSION_KEY, affiliatePublicCall } from "../../affiliateApi";
 
 type DashboardData={
@@ -31,12 +32,16 @@ export default function AffiliateDashboard({slug}:{slug:string}){
   const [error,setError]=useState("");
   const [loading,setLoading]=useState(false);
   const [mustChangePassword,setMustChangePassword]=useState(false);
+  const [saleAlert,setSaleAlert]=useState<AffiliateSaleAlert|null>(null);
+  const seenSales=useRef(new Map<string,Set<string>>());
 
   async function load(token:string,silent=false){
     if(!token)return;
     if(!silent)setLoading(true);
     try{
       const payload=await affiliatePublicCall<DashboardData>("dashboard",{},token);
+      const fresh=detectNewAffiliateSales(payload.affiliate.slug,payload.recentSales,seenSales.current);
+      if(fresh)setSaleAlert(fresh);
       setData(payload);setError("");setMustChangePassword(false);
     }catch(caught){
       if(caught instanceof Error&&caught.message==="password_change_required"){
@@ -94,7 +99,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
 
   async function logout(){
     if(session)try{await affiliatePublicCall("logout",{},session);}catch{}
-    window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);setSession("");setData(null);setMustChangePassword(false);
+    window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);setSession("");setData(null);setMustChangePassword(false);setSaleAlert(null);
   }
 
   const conversion=useMemo(()=>{
