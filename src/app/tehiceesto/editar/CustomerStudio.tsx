@@ -5,11 +5,15 @@ import Link from "next/link";
 import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
+import PremiumV2Engine from "../template-v2/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
 import { getExperienceCopy } from "../experienceCopy";
+import { getExperienceCopy as getPremiumV2ExperienceCopy } from "../template-v2/experienceCopy";
 import { getExperience as getPremiumV1Experience,type SceneType as PremiumSceneType } from "../template-v1/data";
+import { getExperience as getPremiumV2Experience,type SceneType as PremiumV2SceneType } from "../template-v2/data";
 import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
 import { effectiveRecipeForMedia } from "../effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
 import { requestGiftAccountLink } from "../giftAccountApi";
@@ -246,6 +250,34 @@ function Preview({
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))}
       storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}}
       sceneTextOverrides={normalizePremiumSceneTextOverrides(sceneTextOverrides)}
+    />;
+  }
+
+  if(gift.template_version==="premium-v2"){
+    const base=getPremiumV2Experience(gift.experience_slug);
+    if(!base)return null;
+    const experience={
+      ...base,
+      demoGiver:gift.giver_name,
+      demoRecipient:gift.recipient_name,
+      opening:gift.opening_text||base.opening,
+      closing:gift.closing_text||base.closing,
+      recipe:(gift.scene_recipe.length?gift.scene_recipe:base.recipe) as PremiumV2SceneType[],
+      accent:gift.theme_data?.accent||base.accent,
+    };
+    return <PremiumV2Engine
+      customerGift
+      experience={experience}
+      previewScene={previewScene as PremiumV2SceneType}
+      onSceneChange={scene=>onSceneChange(scene)}
+      copyOverride={gift.story_data?.script as never}
+      letterText={gift.letter_text||undefined}
+      photoMedia={photoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
+      audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
+      soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
+      videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
+      storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}}
+      sceneTextOverrides={normalizePremiumV2SceneTextOverrides(sceneTextOverrides)}
     />;
   }
 
@@ -696,8 +728,14 @@ export default function CustomerStudio({code}:{code:string}){
 
   const gift=payload?.gift;
   const currentBase=gift?getExperience(gift.experience_slug):undefined;
-  const frozenBase=gift?getPremiumV1Experience(gift.experience_slug):undefined;
-  const canonical=(gift?.template_version==="premium-v1"?frozenBase?.recipe:currentBase?.recipe)||[];
+  const frozenV1Base=gift?getPremiumV1Experience(gift.experience_slug):undefined;
+  const frozenV2Base=gift?getPremiumV2Experience(gift.experience_slug):undefined;
+  const selectedBase=gift?.template_version==="premium-v1"
+    ?frozenV1Base
+    :gift?.template_version==="premium-v2"
+      ?frozenV2Base
+      :currentBase;
+  const canonical=selectedBase?.recipe||[];
   const media=payload?.media||[];
   const photos=media.filter(item=>item.kind==="image");
   const lightPhotos=photos.filter(item=>item.metadata?.scene==="light");
@@ -713,9 +751,13 @@ export default function CustomerStudio({code}:{code:string}){
     hasLightPhoto:lightPhotos.length>0,
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
-  const liveCopy=currentBase?getExperienceCopy(currentBase):null;
-  const scratchRewardSource=liveCopy?.scratch.reward||"";
-  const scratchNoteSource=liveCopy?.scratch.note||"";
+  const selectedCopy=gift?.template_version==="premium-v2"&&frozenV2Base
+    ?getPremiumV2ExperienceCopy(frozenV2Base)
+    :currentBase
+      ?getExperienceCopy(currentBase)
+      :null;
+  const scratchRewardSource=selectedCopy?.scratch.reward||"";
+  const scratchNoteSource=selectedCopy?.scratch.note||"";
   const scratchRewardValue=(scratchRewardSource&&sceneTextOverrides.scratch?.[scratchRewardSource])||scratchRewardSource;
   const scratchNoteValue=(scratchNoteSource&&sceneTextOverrides.scratch?.[scratchNoteSource])||scratchNoteSource;
   const progress=Math.round(((step+1)/STEP_LABELS.length)*100);
@@ -973,9 +1015,9 @@ export default function CustomerStudio({code}:{code:string}){
         <details className="studio-optional-details studio-more-words">
           <summary><span>Personalizar más frases</span><small>opcional</small><b>＋</b></summary>
           <div>
-            <label className="studio-field"><span>La primera frase</span><textarea rows={3} value={basics.openingText} onChange={event=>updateBasic("openingText",event.target.value)} placeholder={currentBase?.opening||frozenBase?.opening||"Una frase para empezar…"}/><small>Es lo primero que va a leer.</small></label>
+            <label className="studio-field"><span>La primera frase</span><textarea rows={3} value={basics.openingText} onChange={event=>updateBasic("openingText",event.target.value)} placeholder={selectedBase?.opening||"Una frase para empezar…"}/><small>Es lo primero que va a leer.</small></label>
             <label className="studio-field"><span>Un recuerdo que sólo ustedes entienden</span><textarea rows={4} value={basics.anecdote} onChange={event=>updateBasic("anecdote",event.target.value)} placeholder="Ese viaje, esa frase, esa tarde, ese papelón…"/></label>
-            <label className="studio-field"><span>La última frase</span><textarea rows={3} value={basics.closingText} onChange={event=>updateBasic("closingText",event.target.value)} placeholder={currentBase?.closing||frozenBase?.closing||"Una frase para cerrar…"}/></label>
+            <label className="studio-field"><span>La última frase</span><textarea rows={3} value={basics.closingText} onChange={event=>updateBasic("closingText",event.target.value)} placeholder={selectedBase?.closing||"Una frase para cerrar…"}/></label>
             <label className="studio-field compact"><span>Una fecha importante</span><input type="date" value={basics.keyDate} onChange={event=>updateBasic("keyDate",event.target.value)}/></label>
           </div>
         </details>
