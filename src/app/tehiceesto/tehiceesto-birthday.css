@@ -175,3 +175,37 @@
 .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper{padding:20px 16px!important;height:105%!important}
 .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-envelope .paper strong{font-size:15px}
 }
+
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"]{background:radial-gradient(ellipse at 50% 27%,#7b513d63,transparent 51%),radial-gradient(ellipse at 72% 93%,#6e45544e,transparent 36%),linear-gradient(#170e10,#09080f)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"] .thi-bday-finale{width:min(760px,100%);margin:auto;min-height:100svh;padding:103px 16px 110px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;isolation:isolate;overflow:hidden}
+.thi-bday-finale-aura{position:absolute;z-index:-1;inset:0;pointer-events:none}
+.thi-bday-finale-aura>i{position:absolute;top:19%;left:50%;width:3px;height:3px;border-radius:50%;background:#f7ce9c;box-shadow:0 0 27px #f9b86e;animation:thiBdaySpark 5s ease-in-out infinite alternate}
+.thi-bday-finale-aura>i:nth-child(2){top:33%;left:11%;animation-delay:-1s}
+.thi-bday-finale-aura>i:nth-child(3){top:64%;left:90%;animation-delay:-3s}
+.thi-bday-finale-aura>i:nth-child(4){top:87%;left:31%;animation-delay:-2s}
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"] .thi-bday-finale>.thi-kicker{color:#ddaf85;letter-spacing:.25em;font-size:10px;margin:0 auto 14px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"] .thi-bday-finale>h2{font:400 clamp(36px,6vw,60px)/1.05 var(--thi-serif,Georgia,serif);letter-spacing:-.042em;color:#fff1e1;max-width:650px;text-wrap:balance;margin:0 auto 15px}
+.thi-bday-finale-intro{color:#ddc4b6;font:italic clamp(16px,2.8vw,21px)/1.3 var(--thi-serif,Georgia,serif);max-width:420px;margin:0 auto 21px}
+.thi-bday-finale-scratch{width:min(545px,100%);margin:0 auto;position:relative;filter:drop-shadow(0 16px 42px #0009)}
+.thi-bday-finale-scratch .thi-scratch-real{min-height:250px;border-radius:14px;overflow:hidden}
+.thi-bday-finale-scratch .thi-scratch-prize{background:linear-gradient(145deg,#efd7b7,#d6b995)}
+.thi-bday-finale-scratch .thi-scratch-prize strong{font:400 clamp(20px,3.9vw,32px)/1.16 var(--thi-serif,Georgia,serif);color:#352327;text-wrap:balance}
+.thi-bday-finale-scratch .thi-scratch-prize small{color:#735343}
+.thi-bday-finale-after{display:flex;align-items:center;flex-direction:column;width:100%;animation:thiBdayVoiceEnter .8s ease both;margin-top:16px}
+.thi-bday-finale-wish{font:italic clamp(18px,3.5vw,26px)/1.2 var(--thi-serif,Georgia,serif);color:#f4dec7;max-width:540px;margin:0 auto 16px}
+.thi-bday-finale-signature{display:flex;align-items:center;flex-direction:column;gap:10px;margin:5px auto 15px;padding:17px 24px;border-top:1px solid #d4a88165;border-bottom:1px solid #d4a88165;max-width:520px}
+.thi-bday-finale-signature span{letter-spacing:.25em;font-size:9px;font-weight:700;color:#bd8e77}
+.thi-bday-finale-signature strong{font:italic 25px/1.2 var(--thi-serif,Georgia,serif);color:#ffead5}
+.thi-bday-finale-restart{border:1px solid #edc6a16b;background:#5038374b;color:#ffdab4;border-radius:28px;min-height:45px;padding:12px 28px;cursor:pointer}
+.thi-bday-finale-restart>span{font-size:20px;margin-left:12px}
+@keyframes thiBdaySpark{from{opacity:.13;transform:translateY(9px)}to{opacity:.85;transform:translateY(-10px)}}
+@media(max-width:600px){
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"] .thi-bday-finale{padding:100px 14px 115px}
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"] .thi-bday-finale>h2{font-size:clamp(32px,8.6vw,43px)}
+.thi-bday-finale-scratch .thi-scratch-real{min-height:260px}
+.thi-bday-finale-wish{font-size:19px}
+.thi-bday-finale-signature strong{font-size:21px}
+}
+/* Preserve the gift experience instead of obscuring it with a commercial overlay. */
+@media(max-width:650px){.thi-root:has(.thi-template-live.thi-theme-cumpleanos[data-scene]:not([data-scene="finale"])) .floating-create-cta.floating-whatsapp--experience{opacity:0;pointer-events:none;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){.thi-template-live.thi-theme-cumpleanos .thi-bday-finale-aura>i,.thi-template-live.thi-theme-cumpleanos .thi-bday-voice-person>i b{animation:none!important}}
