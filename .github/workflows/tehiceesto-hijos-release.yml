@@ -1,0 +1,37 @@
+name: TeHiceEsto Hijos release verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tehiceesto-hijos-release.yml'
+      - 'src/app/tehiceesto/ExperienceEngine.tsx'
+      - 'src/app/tehiceesto/experienceCopy.ts'
+      - 'src/app/tehiceesto/data.ts'
+      - 'src/app/tehiceesto/layout.tsx'
+      - 'src/app/tehiceesto/tehiceesto-hijos-live.css'
+      - 'tests/tehiceesto-hijos-premium.test.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout released source
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Validate Hijos model invariants
+        run: npx vitest run tests/tehiceesto-hijos-premium.test.ts
+      - name: Check TypeScript
+        run: npm run typecheck
+      - name: Compile full Next.js production application
+        run: npm run build
