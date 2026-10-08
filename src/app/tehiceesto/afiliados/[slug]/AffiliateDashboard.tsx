@@ -30,16 +30,21 @@ export default function AffiliateDashboard({slug}:{slug:string}){
   const [data,setData]=useState<DashboardData|null>(null);
   const [error,setError]=useState("");
   const [loading,setLoading]=useState(false);
+  const [mustChangePassword,setMustChangePassword]=useState(false);
 
   async function load(token:string,silent=false){
     if(!token)return;
     if(!silent)setLoading(true);
     try{
       const payload=await affiliatePublicCall<DashboardData>("dashboard",{},token);
-      setData(payload);setError("");
-    }catch{
+      setData(payload);setError("");setMustChangePassword(false);
+    }catch(caught){
+      if(caught instanceof Error&&caught.message==="password_change_required"){
+        setMustChangePassword(true);setData(null);setError("");
+        return;
+      }
       window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);
-      setSession("");setData(null);
+      setSession("");setData(null);setMustChangePassword(false);
       if(!silent)setError("Tu sesión venció. Volvé a ingresar.");
     }finally{setReady(true);if(!silent)setLoading(false);}
   }
@@ -60,17 +65,36 @@ export default function AffiliateDashboard({slug}:{slug:string}){
     event.preventDefault();setLoading(true);setError("");
     const form=new FormData(event.currentTarget);
     try{
-      const result=await affiliatePublicCall<{token:string}>("login",{identifier:slug,password:String(form.get("password")||"")});
+      const result=await affiliatePublicCall<{token:string;mustChangePassword:boolean}>("login",{identifier:slug,password:String(form.get("password")||"")});
       window.sessionStorage.setItem(AFFILIATE_SESSION_KEY,result.token);
       setSession(result.token);
-      await load(result.token);
+      setMustChangePassword(Boolean(result.mustChangePassword));
+      if(!result.mustChangePassword)await load(result.token);
     }catch{setError("La contraseña no es correcta o el acceso está pausado.");}
     finally{setLoading(false);}
   }
 
+  async function changePassword(event:FormEvent<HTMLFormElement>){
+    event.preventDefault();if(!session)return;
+    const form=new FormData(event.currentTarget);
+    const password=String(form.get("newPassword")||"");
+    const confirmation=String(form.get("confirmPassword")||"");
+    if(password!==confirmation){setError("Las contraseñas no coinciden.");return;}
+    setLoading(true);setError("");
+    try{
+      await affiliatePublicCall("changePassword",{password},session);
+      setMustChangePassword(false);
+      await load(session);
+    }catch(caught){
+      setError(caught instanceof Error&&caught.message==="weak_password"
+        ?"Elegí una contraseña personal de al menos 12 caracteres y distinta de la inicial."
+        :"No se pudo cambiar la contraseña. Probá otra vez.");
+    }finally{setLoading(false);}
+  }
+
   async function logout(){
     if(session)try{await affiliatePublicCall("logout",{},session);}catch{}
-    window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);setSession("");setData(null);
+    window.sessionStorage.removeItem(AFFILIATE_SESSION_KEY);setSession("");setData(null);setMustChangePassword(false);
   }
 
   const conversion=useMemo(()=>{
@@ -81,6 +105,24 @@ export default function AffiliateDashboard({slug}:{slug:string}){
   const maxClicks=Math.max(1,...(data?.series||[]).map(d=>d.clicks||0));
 
   if(!ready)return <main className="thi-aff-public-shell"><div className="thi-admin-loading">Cargando…</div></main>;
+
+  if(mustChangePassword&&session)return(
+    <main className="thi-aff-public-shell thi-aff-login-shell">
+      <section className="thi-aff-login-card">
+        <span className="thi-aff-brand">TE HICE ESTO</span>
+        <p className="thi-kicker">Primer ingreso</p>
+        <h1>Tu espacio.<br/><em>Tu contraseña.</em></h1>
+        <p>Para proteger tus ventas y comisiones, reemplazá la contraseña inicial compartida por una personal.</p>
+        <form onSubmit={changePassword}>
+          <label><span>Nueva contraseña</span><input name="newPassword" type="password" autoComplete="new-password" minLength={12} required/></label>
+          <label><span>Confirmar contraseña</span><input name="confirmPassword" type="password" autoComplete="new-password" minLength={12} required/></label>
+          {error&&<small className="thi-aff-login-error">{error}</small>}
+          <button className="thi-primary" disabled={loading}>{loading?"Guardando…":"Proteger mi cuenta →"}</button>
+        </form>
+        <button className="thi-ghost" onClick={logout}>Salir</button>
+      </section>
+    </main>
+  );
 
   if(!session||!data)return(
     <main className="thi-aff-public-shell thi-aff-login-shell">
@@ -102,7 +144,7 @@ export default function AffiliateDashboard({slug}:{slug:string}){
   );
 
   const primary=data.links.find(link=>link.status==="active")||data.links[0];
-  const shareUrl=primary?`https://tehiceesto.com/r/${primary.code}`:"";
+  const shareUrl=primary?`https://tehiceesto.com/${primary.code}`:"";
 
   return(
     <main className="thi-aff-public-shell">
