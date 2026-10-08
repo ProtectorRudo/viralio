@@ -229,6 +229,15 @@ Deno.serve(async(req:Request)=>{
           failure_url:`https://tehiceesto.com/pedido/${code}?pago=fallido`,
           auto_return:"approved",
         },
+        // Financiación a cargo del vendedor: permite pagar en 1, 2 o 3 cuotas
+        // sin interés, sin restringir débito, crédito, saldo ni otros medios.
+        payment_method:{
+          max_installments:3,
+          installments_cost:"seller",
+          installments:{
+            interest_free:{type:"range",values:[1,3]},
+          },
+        },
       },
     }),
     signal:AbortSignal.timeout(10000),
