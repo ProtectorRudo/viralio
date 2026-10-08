@@ -26,6 +26,7 @@ export type ExperienceCopy = {
   memories: { kicker:string; title:string[]; items:string[]; cta:string };
   light: { kicker:string; title:string; secret:string; hint:string; revealedLabel:string; cta:string; ariaLabel:string };
   stars: { kicker:string; title:string[]; items:string[]; hiddenLabel:string; completeLabel:string; remainingOne:string; remainingMany:string; cta:string };
+  everyday: { kicker:string; title:string; hint:string; moments:string[]; closing:string; cta:string };
   scratch: { kicker:string; title:string[]; eyebrow:string; reward:string; note:string; coverTitle:string; coverHint:string; fallbackLabel:string; cta:string };
   hold: { kicker:string; title:string[]; prompt:string; reveal:string; instruction:string; cta:string; symbol:string };
   letter: { kicker:string; title:string[]; body:string; recipientLabel:string; signature:string; sealHint:string; cta:string };
@@ -48,7 +49,7 @@ export type ExperienceCopy = {
 const BASE_COPY: ExperienceCopy = {
   ui:{
     sceneLabels:{
-      intro:"Comienzo",door:"Puerta",memories:"Recuerdos",stars:"Estrellas",scratch:"Sorpresa",
+      intro:"Comienzo",door:"Puerta",memories:"Recuerdos",stars:"Estrellas",everyday:"Un día cualquiera",scratch:"Sorpresa",
       letter:"Carta",finale:"Final",candles:"Deseo",balloons:"Mensajes",timeline:"Historia",
       voices:"Voz",quiz:"Pregunta",vault:"Bóveda",capsule:"Futuro",proposal:"La pregunta",
       video:"Video",light:"Instante",hold:"Promesa",
@@ -66,6 +67,18 @@ const BASE_COPY: ExperienceCopy = {
   memories:{kicker:"Los recuerdos",title:["Hay días que terminan.","Y otros que se quedan."],items:[],cta:"Seguir →"},
   light:{kicker:"Un instante",title:"Encontrá lo que quedó acá.",secret:"Hay recuerdos que vuelven con otra luz.",hint:"Mové la luz y tocá para revelar",revealedLabel:"recuerdo revelado ✦",cta:"Seguir con este recuerdo →",ariaLabel:"Revelar recuerdo con luz"},
   stars:{kicker:"Cosas que no quiero que olvides",title:["Tocá las estrellas."],items:[],hiddenLabel:"Tocame",completeLabel:"constelación descubierta",remainingOne:"Descubrí 1 más",remainingMany:"Descubrí {count} más",cta:"Continuar →"},
+  everyday:{
+    kicker:"UN DÍA CUALQUIERA",
+    title:"¿Sabés qué es lo que más me gusta de nosotros?",
+    hint:"Hay tres pequeños momentos escondidos acá. Tocá lo que te llame.",
+    moments:[
+      "Que podemos pasar horas hablando de cualquier pavada y nunca me aburro de vos.",
+      "Que incluso en esos días en los que todo sale mal, estar con vos me hace bien.",
+      "Y que a veces te miro haciendo cualquier cosa y pienso: qué suerte tengo.",
+    ],
+    closing:"No necesito que todos nuestros días sean especiales. Me alcanza con que sean con vos.",
+    cta:"Sigamos haciendo recuerdos",
+  },
   scratch:{kicker:"Hay algo escondido",title:["Esto sí tenés que descubrirlo."],eyebrow:"Vale por",reward:"un recuerdo nuevo juntos",note:"sin vencimiento",coverTitle:"RASPÁ PARA DESCUBRIR",coverHint:"con el dedo o el mouse",fallbackLabel:"revelar sin raspar",cta:"Ya lo descubrí →"},
   hold:{kicker:"Antes de seguir",title:["Hay cosas que merecen","un segundo más."],prompt:"Mantené el símbolo",reveal:"Esto también quería decírtelo.",instruction:"mantené apretado",cta:"Seguir →",symbol:"♥"},
   letter:{kicker:"La parte que no podía entrar en una foto",title:["Hay palabras que merecen","abrirse despacio."],body:"Gracias por convertir tantos días comunes en recuerdos extraordinarios.",recipientLabel:"Para {recipient}",signature:"— {giver}",sealHint:"Rompé el sello",cta:"Guardar estas palabras →"},
@@ -135,7 +148,7 @@ const BASE_COPY: ExperienceCopy = {
 
 const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
   pareja:{
-    ui:{sceneLabels:{intro:"Para vos",door:"Umbral",memories:"Nosotros",voices:"Tu voz",light:"Ese instante",stars:"Lo que elijo",scratch:"Pendiente",hold:"Quedate",letter:"Lo que faltaba",finale:"Nosotros"} as Record<SceneType,string>},
+    ui:{sceneLabels:{intro:"Para vos",door:"Umbral",memories:"Nosotros",voices:"Tu voz",light:"Ese instante",stars:"Lo que elijo",everyday:"Un día cualquiera",scratch:"Pendiente",hold:"Quedate",letter:"Lo que faltaba",finale:"Nosotros"} as Record<SceneType,string>},
     intro:{kicker:"{giver} armó esto pensando en vos",cta:"Entrá despacio",footnote:"Lo nuestro merece estar en un lugar así."},
     door:{kicker:"No todo empieza con una fecha",title:["A veces empieza","con animarse a entrar."],closedHint:"Abrila cuando quieras",openCta:"Seguir entrando →"},
     memories:{kicker:"Tres momentos que todavía me acuerdo perfecto",title:["Pasaron hace tiempo.","Pero siguen siendo nuestros."],cta:"Hay algo más →"},
