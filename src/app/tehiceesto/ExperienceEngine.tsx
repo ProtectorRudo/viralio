@@ -332,8 +332,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           {lightRevealed&&<button data-action="advance" className="thi-bday-light-next" onClick={next}>{token(copy.light.cta)} →</button>}
         </section>
         :<section className={`thi-scene thi-scene-light thi-scene-rich ${experience.slug==="pareja"?"thi-pair-light-scene":""}`}><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><LightReveal accent={experience.accent} kicker={token(copy.light.kicker)} title={token(copy.light.title)} secret={token(copy.light.secret)} hint={token(copy.light.hint)} revealedLabel={token(copy.light.revealedLabel)} ariaLabel={token(copy.light.ariaLabel)} revealed={lightRevealed} cinematic={experience.slug==="pareja"} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className={`thi-primary ${experience.slug==="pareja"?"thi-pair-light-continue":""}`} onClick={next}>{token(copy.light.cta)}</button>}</section>;
-      case"stars":
-        if(experience.slug==="hijos")return <section className="thi-scene thi-child-stars thi-scene-rich">
+      case"stars":return experience.slug==="hijos" ? <section className="thi-scene thi-child-stars thi-scene-rich">
           <div className="thi-child-sky-dust" aria-hidden="true"/>
           <p className="thi-kicker">{token(copy.stars.kicker)}</p>
           <h2>{titleLines(copy.stars.title)}</h2>
@@ -347,8 +346,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </div>
           {stars.length===starLines.length&&<p className="thi-child-stars-finale">{token(copy.stars.completeLabel)}</p>}
           <button data-action="advance" className="thi-child-cta" disabled={stars.length<starLines.length} onClick={next}><span>{stars.length<starLines.length?`Descubrí ${starLines.length-stars.length} más`:token(copy.stars.cta)}</span><b>→</b></button>
-        </section>;
-        return <section className={`thi-scene thi-scene-stars thi-scene-rich ${experience.slug==="pareja"?"thi-pair-stars-scene":""}`}><div className="thi-sky-dust" aria-hidden="true"/><p className="thi-kicker">{token(copy.stars.kicker)}</p><h2>{titleLines(copy.stars.title)}</h2>{experience.slug==="pareja"?<div className={`thi-pair-constellation ${stars.length===starLines.length?"is-complete":""}`}>
+        </section> : <section className={`thi-scene thi-scene-stars thi-scene-rich ${experience.slug==="pareja"?"thi-pair-stars-scene":""}`}><div className="thi-sky-dust" aria-hidden="true"/><p className="thi-kicker">{token(copy.stars.kicker)}</p><h2>{titleLines(copy.stars.title)}</h2>{experience.slug==="pareja"?<div className={`thi-pair-constellation ${stars.length===starLines.length?"is-complete":""}`}>
         <div className="thi-pair-heart-haze" aria-hidden="true"/>
         <svg className="thi-pair-constellation-lines" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <ellipse className="thi-pair-heart-orbit" cx="200" cy="188" rx="190" ry="115" transform="rotate(-12 200 188)"/>
