@@ -951,6 +951,7 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
     expect(String(body.whatsapp)).toContain("549221");
     expect(body.consent).toBe(true);
     expect(body.affiliateToken).toBe("affiliate-token-test-12345678901234567890");
+    expect(String(body.clientRequestId)).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
     return route.fulfill({
       status:200,
       contentType:"application/json",
@@ -988,6 +989,50 @@ test("self-serve purchase chooses an experience, captures contact and opens chec
   await expect.poll(()=>page.evaluate(key=>window.localStorage.getItem(key),`thi_editor_access:${code}`)).toBe(editorToken);
 });
 
+
+test("purchase retry reuses the same client request id and does not create a second order",async({page})=>{
+  const requestIds:string[]=[];
+  let attempt=0;
+
+  await page.route("**/functions/v1/order-create",async route=>{
+    attempt++;
+    const body=JSON.parse(route.request().postData()||"{}") as Record<string,unknown>;
+    requestIds.push(String(body.clientRequestId||""));
+    if(attempt===1){
+      return route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"temporary_failure"})});
+    }
+    return route.fulfill({
+      status:200,
+      contentType:"application/json",
+      body:JSON.stringify({
+        code:"999988887777666655",
+        priceMinor:2500000,
+        currency:"ARS",
+        checkoutUrl:null,
+        checkoutReady:false,
+        editorToken:"9".repeat(64),
+        reused:true,
+      }),
+    });
+  });
+
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/crear?experiencia=pareja");
+  await page.getByPlaceholder("Ej. Mauro").fill("Mauro");
+  await page.getByPlaceholder("Ej. 2215653163").fill("5492215551234");
+  await page.getByPlaceholder("tu@email.com").fill("mauro@example.com");
+  await page.locator('.order-consent input[type="checkbox"]').check();
+  await page.getByRole("button",{name:/Revisar y pagar/i}).click();
+
+  await page.getByRole("button",{name:/Pagar con Mercado Pago/i}).click();
+  await expect(page.getByText(/No pudimos iniciar el pago/i)).toBeVisible();
+  await page.getByRole("button",{name:/Reintentar/i}).click();
+  await expect(page.getByText(/Tu pedido quedó reservado/i)).toBeVisible();
+
+  expect(requestIds).toHaveLength(2);
+  expect(requestIds[0]).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  expect(requestIds[1]).toBe(requestIds[0]);
+});
 
 test("studio recovery sends a private email link instead of granting access from a known email",async({page})=>{
   const code="1111222233334444aa";
