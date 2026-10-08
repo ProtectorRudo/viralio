@@ -323,7 +323,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       }
       case"light":return experience.slug==="cumpleanos"
         ?<section className="thi-scene thi-bday-light-scene"><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2>
-          <BirthdayLantern clues={(copy.light.clues||[]).map(token)} closing={token(copy.light.secret)} completed={lightRevealed} onComplete={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>
+          <BirthdayLantern clues={(copy.light.clues||[]).map(token)} closing={token(copy.light.secret)}
+            photos={customerGift
+              ?currentPhotos.filter(item=>Boolean(item.url)).slice(0,3).map(item=>({url:item.url,position:item.position}))
+              :[{url:"https://images.unsplash.com/photo-1758275557513-241a2a229936?auto=format&fit=crop&fm=jpg&q=79&w=780",position:"center"},{url:"https://images.unsplash.com/photo-1755705153160-67b29c7718ee?auto=format&fit=crop&fm=jpg&q=79&w=780",position:"center"},{url:"https://images.unsplash.com/photo-1772724317388-4d1d1cc45c09?auto=format&fit=crop&fm=jpg&q=79&w=780",position:"center"}]}
+            completed={lightRevealed} onComplete={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>
           {lightRevealed&&<button data-action="advance" className="thi-bday-light-next" onClick={next}>{token(copy.light.cta)} →</button>}
         </section>
         :<section className={`thi-scene thi-scene-light thi-scene-rich ${experience.slug==="pareja"?"thi-pair-light-scene":""}`}><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><LightReveal accent={experience.accent} kicker={token(copy.light.kicker)} title={token(copy.light.title)} secret={token(copy.light.secret)} hint={token(copy.light.hint)} revealedLabel={token(copy.light.revealedLabel)} ariaLabel={token(copy.light.ariaLabel)} revealed={lightRevealed} cinematic={experience.slug==="pareja"} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className={`thi-primary ${experience.slug==="pareja"?"thi-pair-light-continue":""}`} onClick={next}>{token(copy.light.cta)}</button>}</section>;
