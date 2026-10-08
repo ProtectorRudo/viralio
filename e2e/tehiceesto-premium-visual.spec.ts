@@ -21,7 +21,7 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
   await expect(page.getByRole("link",{name:"Ver experiencia para Papá"})).toBeVisible();
   await expect(page.getByRole("link",{name:"Ver experiencia para Amistad"})).toBeVisible();
   await expect(page.getByRole("heading",{name:/No recibe solo un regalo/i})).toBeVisible();
-  await expect(page.getByText("Nosotros hacemos la magia")).toBeVisible();
+  await expect(page.getByText("La revisás y la publicás")).toBeVisible();
   await expect(page.locator(".floating-whatsapp--home")).toBeHidden();
   await expectNoHorizontalOverflow(page);
   await capture(page,testInfo,"tehiceesto-premium-home-1440");
