@@ -67,11 +67,12 @@ export default async function PublishedGiftPage({
     :frozenV2
       ?normalizePremiumV2SceneTextOverrides(payload.gift.story_data?.sceneContent)
       :normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent);
-  return <Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
+  // Gift pages have no sales UI. Keep a route-level guard independent of the template version.
+  return <div className="thi-purchased-experience" data-purchased-gift="true" style={{display:"contents"}}><Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
     photoMedia={ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center",scene:item.metadata?.scene}))}
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     storyContext={{keyDate:payload.gift.story_data?.keyDate,anecdote:payload.gift.story_data?.anecdote}}
     sceneTextOverrides={sceneTextOverrides}
-    videoMedia={ordered.filter(item=>item.kind==="video"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}/>;
+    videoMedia={ordered.filter(item=>item.kind==="video"&&item.url).map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}/></div>;
 }
