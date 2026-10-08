@@ -122,9 +122,17 @@ function premiumMail(name:string,experience:string,actionLink:string,isPurchase:
   return {html,text,subject:isPurchase?"Gracias por elegir Te Hice Esto ♥ Tu regalo te espera":"Tu acceso privado a Te Hice Esto ♥"};
 }
 async function sendCustomAccessEmail(email:string,redirect:string,code:string,orderGiftId:string){
-  const apiKey=(Deno.env.get("RESEND_API_KEY")||"").trim();
-  if(!apiKey)return null; // Legacy Supabase Auth transport remains available until Resend is configured.
+  let apiKey=(Deno.env.get("RESEND_API_KEY")||"").trim();
   const db=adminClient();
+  if(!apiKey){
+    const {data,error}=await db.rpc("tehiceesto_private_resend_key");
+    if(error){
+      console.error("thi_email_secret_lookup_failed",error.code||"rpc_error");
+      return {ok:false,status:503};
+    }
+    apiKey=String(data||"").trim();
+  }
+  if(!apiKey)return null; // Legacy transport only while no provider has been configured.
   let gift:any=null;
   if(code){
     const {data}=await db.from("gifts").select("id,public_code,giver_name,experience_slug")
@@ -157,8 +165,15 @@ async function sendCustomAccessEmail(email:string,redirect:string,code:string,or
       method:"POST",
       headers:{"authorization":"Bearer "+apiKey,"content-type":"application/json"},
       body:JSON.stringify({
-        from:sender,to:[email],subject:mail.subject,html:mail.html,text:mail.text,
-        reply_to:"Te Hice Esto <hola@tehiceesto.com>",
+        from:sender,to:[email],
+        ...(code?{
+          template:{id:"tehiceesto-bienvenida-compra",variables:{
+            CUSTOMER_NAME:String(gift?.giver_name||"").trim().split(/\\s+/)[0]||"Hola",
+            EXPERIENCE_NAME:EXPERIENCE_NAMES[String(gift?.experience_slug||"")]||"personalizada",
+            ACCESS_LINK:String(link.properties.action_link),
+          }},
+        }:{subject:mail.subject,html:mail.html,text:mail.text}),
+        reply_to:"hola@tehiceesto.com",
         tags:[{name:"product",value:"tehiceesto"},{name:"flow",value:code?"purchase":"account_recovery"}],
       }),
       signal:AbortSignal.timeout(12000),
