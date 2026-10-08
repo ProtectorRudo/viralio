@@ -69,7 +69,8 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
   light:[
     {path:"light.kicker",label:"Frase superior",kind:"text"},
     {path:"light.title",label:"Título",kind:"text"},
-    {path:"light.secret",label:"Frase escondida",kind:"textarea"},
+    {path:"light.secret",label:"Frase final de la linterna",kind:"textarea"},
+    {path:"light.clues",label:"Tres recuerdos para encontrar con la linterna (Cumpleaños)",kind:"lines",hint:"Escribí tres frases, una para cada recuerdo. Se descubren moviendo la linterna."},
     {path:"light.hint",label:"Instrucción antes de revelar",kind:"text"},
     {path:"light.revealedLabel",label:"Texto después de revelar",kind:"text"},
     {path:"light.cta",label:"Botón para continuar",kind:"text"},
@@ -237,6 +238,7 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
     {path:"finale.reactions",label:"Reacciones",kind:"lines",hint:"Una por renglón."},
     {path:"finale.restartLabel",label:"Botón para volver a empezar",kind:"text"},
     {path:"finale.createdWith",label:"Firma de Te Hice Esto",kind:"text"},
+    {path:"finale.fromLabel",label:"De quiénes es el regalo (Cumpleaños)",kind:"text",hint:"Ejemplo: Con cariño, Lautaro, papá y Carlos."},
   ],
   proposal:[
     {path:"proposal.kicker",label:"Frase superior",kind:"text"},
