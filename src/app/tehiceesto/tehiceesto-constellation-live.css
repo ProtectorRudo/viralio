@@ -71,6 +71,7 @@
   fill:none;
   stroke:#f3b7c9;
   stroke-width:2.15;
+  stroke-dasharray:100;
   stroke-linejoin:round;
   stroke-linecap:round;
   vector-effect:non-scaling-stroke;
