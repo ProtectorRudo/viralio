@@ -345,6 +345,16 @@ export default function CustomerStudio({code}:{code:string}){
   },[]);
 
   useEffect(()=>{
+    const protect=(event:BeforeUnloadEvent)=>{
+      if(!dirty&&!uploading.length&&saveState!=="saving")return;
+      event.preventDefault();
+      event.returnValue="";
+    };
+    window.addEventListener("beforeunload",protect);
+    return()=>window.removeEventListener("beforeunload",protect);
+  },[dirty,uploading.length,saveState]);
+
+  useEffect(()=>{
     if(!dirty||!basics||!editorToken||accessState!=="ready")return;
     const timer=window.setTimeout(async()=>{
       setSaveState("saving");
