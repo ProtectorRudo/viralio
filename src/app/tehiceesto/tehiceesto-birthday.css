@@ -209,3 +209,8 @@
 /* Preserve the gift experience instead of obscuring it with a commercial overlay. */
 @media(max-width:650px){.thi-root:has(.thi-template-live.thi-theme-cumpleanos[data-scene]:not([data-scene="finale"])) .floating-create-cta.floating-whatsapp--experience{opacity:0;pointer-events:none;visibility:hidden}}
 @media(prefers-reduced-motion:reduce){.thi-template-live.thi-theme-cumpleanos .thi-bday-finale-aura>i,.thi-template-live.thi-theme-cumpleanos .thi-bday-voice-person>i b{animation:none!important}}
+
+.thi-bday-hidden-audio{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.thi-bday-audio-progress{width:min(380px,100%);height:3px;border-radius:7px;background:#85635d85;overflow:hidden}
+.thi-bday-audio-progress i{display:block;height:100%;background:#f5c68d;border-radius:7px;transition:width .2s}
+@media(max-width:600px){.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-scene-candles>h2{max-width:370px;font-size:clamp(36px,10vw,44px);line-height:1.08}.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-blow-mic{font-size:15px;min-width:190px}.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-scene-hold>h2{font-size:clamp(31px,8.7vw,40px);max-width:365px}}
