@@ -75,6 +75,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.locator('[data-focus-object="lock"]')).toBeVisible();
     await visualAudit(page,"umbral-cerradura-en-escena-desktop.png");
     await page.screenshot({path:"visual-qa-evidence/umbral-candado-desktop.png",fullPage:true,animations:"disabled"});
+    await page.getByText(/USAR TECLADO NUMÉRICO/).click();
     for(const digit of [4,2,7]) await page.getByRole("button",{name:"Ingresar "+digit}).click();
     await page.getByRole("button", { name: "Confirmar código" }).click();
     await expect(page.getByRole("heading", { name: "El despacho", exact: true })).toBeVisible({ timeout: 5000 });
@@ -193,7 +194,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     for(const [index,digit] of [4,2,7].entries()){
       for(let t=0;t<digit;t++) await page.getByRole("button",{name:"Girar dial "+(index+1)+" hacia adelante"}).click();
     }
-    await expect(page.getByRole("textbox",{name:"Código de tres cifras"})).toHaveValue("427");
+    await expect(page.locator('input[aria-label="Código de tres cifras"]')).toHaveValue("427");
     await visualAudit(page,"umbral-candado-mecanico-movil.png");
     await page.getByRole("button",{name:/GIRAR LA LLAVE/}).click();
     await expect(page.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:7000});
@@ -203,6 +204,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
+    await page.getByText(/USAR TECLADO NUMÉRICO/).click();
     await page.getByRole("textbox", { name: "Código de tres cifras" }).fill("123");
     await page.getByRole("button", { name: /DESBLOQUEAR/ }).click();
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
@@ -241,6 +243,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toHaveAttribute("aria-pressed","true");
     await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
     await page.getByRole("button",{name:"Abrir cerradura"}).first().click();
+    await page.getByText(/USAR TECLADO NUMÉRICO/).click();
     await page.getByRole("textbox",{name:"Código de tres cifras"}).fill("427");
     await page.getByRole("button",{name:/DESBLOQUEAR/}).click();
     await expect(page.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:5000});
