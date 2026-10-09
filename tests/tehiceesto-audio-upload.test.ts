@@ -30,6 +30,15 @@ describe("Customer audio compatibility",()=>{
     const base64="T2dnUwACAAAAAAAAAADuSu0oAAAAAD4R8Z0BE09wdXNIZWFkAQE4AYA+AAAAAABPZ2dTAAAAAAAAAAAAAO5K7SgBAAAAtj5YhAE9T3B1c1RhZ3MMAAAATGF2ZjYxLjcuMTAzAQAAAB0AAABlbmNvZGVyPUxhdmM2MS4xOS4xMDEgbGlib3B1c09nZ1MABDgfAAAAAAAA7krtKAIAAACdyyljCRgYFRUQFg8SDwiC4jRFRViX9UFWDFbbe5bAZyYxz2LmjAijQOf/L/yPMySS7/si2mMe5di8DLGYsAidSG6ze/qKV4f8EMBO8PWmKbWg8AickCvjTlp4HoAbTE00pCUK7ocfgAickCvjTlp6/Kr2ykeqwFwInJd44IdWfRmcmKDZ4jwo38mV6p1gCJyQK+NOWnsDEhAsNgaACJyQK+NOWnsEhjDmAf16i9egCAZhasEuUBDrOpYwYojA";
     const data=Uint8Array.from(atob(base64),letter=>letter.charCodeAt(0));
     const voice=new File([data],"PTT-2026-10-09-WA0001.opus",{type:"application/octet-stream"});
+    // Check the underlying bundled decoder independently for diagnostic errors.
+    const {OggOpusDecoder}=await import("../src/app/tehiceesto/vendor/oggOpusDecoder");
+    const decoder=new OggOpusDecoder();
+    try{
+      await decoder.ready;
+      const decoded=await decoder.decodeFile(data);
+      expect(decoded.errors).toEqual([]);
+      expect(decoded.samplesDecoded).toBeGreaterThan(0);
+    }finally{decoder.free();}
     const normalized=await prepareCompatibleAudio(voice);
     expect(normalized.name).toBe("PTT-2026-10-09-WA0001.wav");
     expect(normalized.type).toBe("audio/wav");
