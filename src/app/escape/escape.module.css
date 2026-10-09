@@ -188,3 +188,15 @@
 .keypad button:disabled{opacity:.4}
 .keypad button:last-child{background:linear-gradient(120deg,#b5996c,#6a5338);color:#221e19}
 @media(prefers-reduced-motion:reduce){.keypad button{transition:none}}
+
+/* Lock encounter: artwork and keypad side-by-side, no hidden digits below viewport. */
+.pinDialog{width:min(100%,820px)!important;max-height:calc(100dvh - 32px);padding:30px 37px!important}
+.pinLayout{display:grid;grid-template-columns:minmax(0,1.5fr) 235px;gap:23px;align-items:center}
+.pinDescription{min-width:0}.pinDescription>div:first-child{height:180px;margin:0 0 10px}
+.pinDescription h2{font-size:clamp(1.9rem,3vw,2.6rem);margin:11px 0}
+.pinDescription p{font-size:.95rem;line-height:1.6;margin:8px 0}
+.pinLayout .code{margin-top:20px}
+.pinLayout .code button{padding:9px;min-width:119px}
+.pinLayout .keypad{width:235px;max-width:100%;margin:0}
+.pinLayout .keypad button{min-height:44px}
+@media(max-width:650px){.pinDialog{padding:25px 20px!important;max-height:calc(100dvh - 24px)}.pinLayout{grid-template-columns:minmax(0,1fr);gap:14px}.pinDescription>div:first-child{display:none}.pinDescription h2{padding-right:16px;margin:22px 0 7px;font-size:1.8rem}.pinDescription p{font-size:.85rem;line-height:1.5}.pinLayout .code{margin-top:14px}.pinLayout .code button{min-height:49px}.pinLayout .keypad{max-width:250px;width:100%;margin:0 auto;padding:8px;gap:5px}.pinLayout .keypad button{min-height:37px}}
