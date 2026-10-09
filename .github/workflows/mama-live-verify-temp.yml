@@ -82,6 +82,68 @@ jobs:
           const path='https://tehiceesto.com/experiencias/mama';
           async function toVoices(){
             await page.goto(path,{waitUntil:'domcontentloaded',timeout:45000});
+            const hydrationStarted=Date.now();
+            await page.waitForFunction(()=>{
+              const advance=document.querySelector('[data-action="advance"]');
+              return Boolean(advance&&Object.keys(advance).some(k=>k.startsWith('__reactProps
+            await page.getByRole('button',{name:/Seguir recordando/i}).click();
+            const memoryNext=page.locator('.thi-mama-memory-local-nav>button').last();
+            await memoryNext.click();await memoryNext.click();
+            await page.getByRole('button',{name:/Seguir con la historia/i}).click();
+            for(const i of [0,1,2])await page.locator('.mama-care-file').nth(i).click();
+            await page.locator('.mama-care-continue').click();
+            for(const i of [0,1,2,3])await page.locator('.mama-sacrifice-trigger').nth(i).click();
+            await page.locator('.mama-sacrifice-continue').click();
+          await page.locator('main.thi-experience[data-scene="voices"]').waitFor({timeout:12000});
+            const diagnosis=await page.evaluate(()=>({scene:document.querySelector('main.thi-experience')?.getAttribute('data-scene'),patch:!!window.__thiMamaVoice20261009,sceneText:document.querySelector('section.thi-scene')?.innerText?.slice(0,300),buttons:[...document.querySelectorAll('button[data-action]')].map(b=>({a:b.getAttribute('data-action'),disabled:b.disabled,text:b.textContent?.slice(0,40)})).slice(0,12)}));
+            console.log('VOICE_NAV_DIAGNOSIS',JSON.stringify(diagnosis));
+            if(diagnosis.scene!=='voices')throw Error('Not in voice room');
+            await page.waitForTimeout(500);
+          }
+          await toVoices();
+          console.log('BRIDGE_DIAGNOSTIC',JSON.stringify(await page.evaluate(()=>({hotfix:!!window.__thiMamaVoice20261009,skip:!!window.__thiMamaVoice20261009,scene:document.querySelector('main.thi-experience')?.getAttribute('data-scene'),scriptUrls:[...document.scripts].filter(x=>x.src).map(x=>x.src.split('/').at(-1)).slice(0,40)}))));
+          const skip=page.locator('.thi-mama-voice-skip-live');
+          await skip.waitFor({timeout:10000});
+          const visual=await page.evaluate(()=>{
+            const list=document.querySelector('.thi-mama-voice-list')?.getBoundingClientRect();
+            const btn=document.querySelector('.thi-mama-voice-skip-live')?.getBoundingClientRect();
+            const float=document.querySelector('a.floating-create-cta.floating-whatsapp--experience');
+            const c=float?getComputedStyle(float):null;
+            const nav=performance.getEntriesByType('navigation')[0];
+            const proxy=performance.getEntriesByType('resource').filter(r=>r.name.includes('0gradzqca-5xg.js'));
+            return {label:document.querySelector('.thi-mama-voice-skip-live')?.textContent,
+              listBottom:list?.bottom,btnTop:btn?.top,btnHeight:btn?.height,
+              floatingVisible:c?.display!=='none'&&c?.visibility!=='hidden'&&c?.opacity!=='0',
+              cardBlur:getComputedStyle(document.querySelector('.thi-mama-voice-list>button')).backdropFilter,
+              navDuration:nav?.duration,proxyResource:proxy.map(r=>({duration:r.duration,responseStart:r.responseStart}))};
+          });
+          console.log('LIVE_VISUAL_CHECK',JSON.stringify(visual));
+          if(!visual.label?.startsWith('Continuar'))throw Error('Continue label wrong');
+          if(visual.btnTop<visual.listBottom-3)throw Error('Continue overlaps or precedes the voice cards');
+          if(visual.floatingVisible)throw Error('Purchase CTA overlays voice cards');
+          if(visual.cardBlur!=='none')throw Error('Audio cards still consume mobile GPU blur');
+          await page.locator('[data-action="mama-voice-choice"]').last().click();
+          await page.locator('.thi-mama-voice-player').waitFor();
+          await page.locator('[data-action="mama-voice-back"]').click();
+          await skip.waitFor({timeout:10000});
+          console.log('PASS: Third audio is accessible, and continue is after all 3 cards');
+          await skip.click();
+          await page.waitForTimeout(600);
+          if(await page.locator('main.thi-experience').getAttribute('data-scene')!=='letter')throw Error('Skip CTA did not advance');
+          console.log('PASS: Mobile voice skip moves into letter with zero audios heard');
+          await toVoices();
+          await page.locator('[data-action="mama-voice-choice"]').first().click();
+          await page.locator('[data-action="mama-voice-toggle"]').click();
+          await page.waitForTimeout(1600);
+          const state=await page.locator('[data-action="mama-voice-toggle"]').getAttribute('data-voice-state');
+          console.log('STATE',state,'AUDIO_RESPONSE',audioResponses);
+          if(state!=='playing'||!audioResponses.some(x=>x===200||x===206))throw Error('Alina MP3 not playing in real mobile browser');
+          await browser.close();
+          console.log('SUCCESS: live Mamá mobile demo works');
+          NODE
+)&&typeof advance[k]?.onClick==='function'));
+            },null,{timeout:30000});
+            console.log('HYDRATION_READY_MS',Date.now()-hydrationStarted);
             await page.locator('[data-action="advance"]').first().click();
             await page.getByRole('button',{name:/Seguir recordando/i}).click();
             const memoryNext=page.locator('.thi-mama-memory-local-nav>button').last();
