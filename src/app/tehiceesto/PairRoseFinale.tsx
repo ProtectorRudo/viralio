@@ -118,21 +118,36 @@ function Fireworks({active}:{active:boolean}) {
 
 export default function PairRoseFinale({message,subtitle}:PairRoseFinaleProps){
   const [opened,setOpened]=useState(false);
-  const timeout=useRef<number|null>(null);
+  const [noteUnfolded,setNoteUnfolded]=useState(false);
+  const [noteRevealed,setNoteRevealed]=useState(false);
+  const [celebrating,setCelebrating]=useState(false);
+  const timers=useRef<number[]>([]);
 
-  useEffect(()=>()=>{if(timeout.current!==null)window.clearTimeout(timeout.current)},[]);
+  useEffect(()=>()=>{for(const timer of timers.current)window.clearTimeout(timer)},[]);
 
   const open=()=>{
     if(opened)return;
     setOpened(true);
-    if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      vibrate(13);
-      timeout.current=window.setTimeout(()=>vibrate([10,28,13]),1020);
+    const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(reduced){
+      setNoteUnfolded(true);
+      setNoteRevealed(true);
+      return;
     }
+    vibrate(13);
+    // Rose blooms first, a folded note rises from the bud, THEN its folds open.
+    timers.current.push(window.setTimeout(()=>setNoteUnfolded(true),1540));
+    timers.current.push(window.setTimeout(()=>setNoteRevealed(true),2210));
+    timers.current.push(window.setTimeout(()=>{
+      setCelebrating(true);
+      vibrate([11,34,13]);
+    },2520));
   };
 
-  return <div className={`thi-rose-finale${opened?" is-open":""}`} data-rose-open={opened?"true":"false"}>
-    <Fireworks active={opened}/>
+  return <div className={`thi-rose-finale${opened?" is-open":""}${noteUnfolded?" is-unfolded":""}${noteRevealed?" is-revealed":""}`}
+    data-rose-open={opened?"true":"false"}
+    data-note-phase={!opened?"closed":!noteUnfolded?"emerging":!noteRevealed?"unfolding":"revealed"}>
+    <Fireworks active={celebrating}/>
     <div className="thi-rose-aura" aria-hidden="true"/>
     <button
       type="button"
@@ -179,13 +194,21 @@ export default function PairRoseFinale({message,subtitle}:PairRoseFinaleProps){
       </svg>
       <span className="thi-rose-touch-glimmer" aria-hidden="true">✧</span>
     </button>
-    <p className="thi-rose-instruction" aria-hidden={opened}>{opened?"":"TOCÁ LA ROSA · HAY ALGO MÁS PARA VOS"}</p>
-    <div className="thi-rose-reveal" aria-live="polite">
-      {opened&&<>
-        <span className="thi-rose-reveal-kicker">LO QUE MÁS IMPORTA</span>
-        <strong className="thi-rose-love">{message}</strong>
-        <span className="thi-rose-afterword">{subtitle}</span>
-      </>}
+    <div className="thi-rose-note" aria-hidden={!noteRevealed} data-action="rose-paper-note">
+      <div className="thi-rose-note-paper">
+        <div className="thi-rose-note-grain" aria-hidden="true"/>
+        <div className="thi-rose-note-edge thi-rose-note-edge-left" aria-hidden="true"/>
+        <div className="thi-rose-note-edge thi-rose-note-edge-right" aria-hidden="true"/>
+        <div className="thi-rose-note-seal" aria-hidden="true">✦</div>
+        <div className="thi-rose-reveal thi-rose-paper-ink" aria-live="polite">
+          {noteRevealed&&<>
+            <span className="thi-rose-reveal-kicker">UN SECRETITO PARA VOS</span>
+            <strong className="thi-rose-love">{message}</strong>
+            <span className="thi-rose-afterword">{subtitle}</span>
+          </>}
+        </div>
+      </div>
     </div>
+    <p className="thi-rose-instruction" aria-hidden={opened}>{opened?"":"TOCÁ LA ROSA · HAY ALGO MÁS PARA VOS"}</p>
   </div>;
 }
