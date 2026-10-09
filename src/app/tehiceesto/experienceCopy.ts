@@ -42,7 +42,7 @@ export type ExperienceCopy = {
   presence: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   inheritance: { kicker:string; title:string; subtitle:string; items:string[]; closedLabel:string; outroTitle:string; outroBody:string; cta:string };
   lookback: { kicker:string; closedTitle:string; openTitle:string; openLabel:string; cta:string };
-  finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string; fromLabel?:string };
+  finale: { kicker:string; title:string; lead:string; reactions:string[]; restartLabel:string; createdWith:string; fromLabel?:string; roseMessage?:string; roseSubtitle?:string };
   proposal: { kicker:string; title:string; lead:string; reactions:string[]; createdWith:string };
 };
 
@@ -158,7 +158,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     scratch:{kicker:"Una deuda pendiente, oficialmente",title:["Esto no podía quedar","solamente en palabras."],coverTitle:"RASPÁ DESPACIO",coverHint:"hay un plan abajo",fallbackLabel:"abrir igual",cta:"Acepto el trato →"},
     hold:{kicker:"Quedate un segundo acá",title:["Antes de la sorpresa,","quiero que sientas esto."],instruction:"no lo sueltes todavía",cta:"Ahora sí →"},
     letter:{kicker:"Esto sí necesitaba palabras",title:["No quería mandártelo","en un mensaje cualquiera."],sealHint:"Abrí la carta",cta:"Quiero seguir →"},
-    finale:{kicker:"Por si alguna vez dudás",lead:"Lo demás lo seguimos haciendo afuera de esta pantalla.",restartLabel:"Volver a nosotros"},
+    finale:{kicker:"Por si alguna vez dudás",lead:"Lo demás lo seguimos haciendo afuera de esta pantalla.",roseMessage:"Te amo",roseSubtitle:"Y te volvería a elegir.",restartLabel:"Volver a nosotros"},
   },
   cumpleanos:{
     intro:{kicker:"Hoy hubo gente que quiso hacer algo más que saludarte",cta:"Empezar mi cumpleaños",footnote:"Prometemos no cantar todos al mismo tiempo"},
