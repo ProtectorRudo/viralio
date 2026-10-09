@@ -29,6 +29,19 @@ jobs:
           const page=await browser.newPage({viewport:{width:390,height:844},locale:"es-AR"});
           const errors=[];
           page.on("pageerror",err=>errors.push(err.message));
+          for(const name of ["mansion","room-0","room-1","room-2","room-3"]){
+            const path=BASE+"/images/retina/"+name+".webp";
+            const asset=await page.request.get(path);
+            expect(asset.status(),path).toBe(200);
+            expect((await asset.body()).byteLength,path).toBeGreaterThan(130000);
+          }
+          for(const name of ["clock","lock","doll","music","portrait"]){
+            const path=BASE+"/images/retina/objects/"+name+".webp";
+            const asset=await page.request.get(path);
+            expect(asset.status(),path).toBe(200);
+            expect((await asset.body()).byteLength,path).toBeGreaterThan(130000);
+          }
+          console.log("PASS: high definition Retina photographs published for all rooms and close-up evidence");
           for (const file of ["images/mansion.webp","images/room-2.webp","images/objects/doll.webp","images/objects/lock.webp","images/eva-tape-013.mp4","audio/footsteps-wood.ogg","audio/wood-creak.ogg","audio/heavy-door.ogg"]) {
             const response=await page.request.get(BASE+"/"+file);
             expect(response.status(),file).toBe(200);
