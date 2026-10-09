@@ -56,3 +56,23 @@ jobs:
           console.log('SECOND',JSON.stringify(await page.evaluate(()=>({flag:window.__thiRoseFinale20261009||false, scriptCount:[...document.scripts].filter(x=>x.src.includes('1lv4ms03n-3m3')).length,scrollY:scrollY}))));
           await b.close();
           NODE
+
+      - name: Verify first-visit automatic refresh is single-use
+        run: |
+          node --input-type=module <<'NODE'
+          import {chromium} from '@playwright/test';
+          const b=await chromium.launch({args:['--no-sandbox']});
+          const context=await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+          const page=await context.newPage();
+          let documents=0;
+          page.on('request',r=>{if(r.isNavigationRequest()&&r.url().includes('/experiencias/pareja'))documents++});
+          page.on('console',m=>{if(m.type()==='error')console.log('CONSOLE_ERROR',m.text().slice(0,240))});
+          await page.goto('https://tehiceesto.com/experiencias/pareja',{waitUntil:'domcontentloaded'});
+          await page.waitForTimeout(3500);
+          const cookies=await context.cookies();
+          const gate=cookies.find(x=>x.name==='thi_rose_refresh');
+          const patch=await page.evaluate(()=>!!window.__thiRoseFinale20261009);
+          console.log('AUTO_REFRESH_DIAGNOSTIC',JSON.stringify({documents,gate:!!gate,patch,url:page.url()}));
+          if(!gate||!patch||documents<2||documents>3)throw Error('Single-use Android browser cache reset failed');
+          await b.close();
+          NODE
