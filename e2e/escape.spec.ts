@@ -41,6 +41,20 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "El retrato de Nora" })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-expediente-recuperado-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
+    await page.getByRole("button", { name: "Examinar reloj" }).first().click();
+    await expect(page.getByRole("heading",{name:"El reloj detenido"})).toBeVisible();
+    const clock=page.locator('[data-clock-solved]');
+    await expect(clock).toHaveAttribute("data-clock-solved","false");
+    await expect(page.getByRole("slider",{name:"Manivela del reloj"})).toHaveAttribute("aria-valuenow","0");
+    await page.screenshot({path:"visual-qa-evidence/umbral-reloj-mecanismo-desktop.png",fullPage:true,animations:"disabled"});
+    for(let t=0;t<8;t++) await page.getByRole("button",{name:"Girar manivela un cuarto de vuelta"}).click();
+    await expect(clock).toHaveAttribute("data-clock-solved","true");
+    await expect(page.getByText(/La edad sí importa/)).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-reloj-restaurado-desktop.png",fullPage:true,animations:"disabled"});
+    await page.getByRole("button", { name: "Cerrar" }).click();
+    await page.getByRole("button", { name: "Examinar reloj" }).first().click();
+    await expect(page.locator('[data-clock-solved]')).toHaveAttribute("data-clock-solved","true");
+    await page.getByRole("button", { name: "Cerrar" }).click();
     for (const person of ["Elías","Mara"]) {
       await page.getByRole("button", { name: "Retrato de "+person }).first().click();
       await page.getByRole("button", { name: "Cerrar" }).click();
@@ -55,6 +69,11 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: "Leer nota" }).first().click();
     await expect(page.getByText(/Primero mirá el cielo/)).toBeVisible();
+    await expect(page.getByRole("button",{name:"Dar vuelta la carta"})).toHaveAttribute("aria-pressed","false");
+    await page.getByRole("button",{name:"Dar vuelta la carta"}).click();
+    await expect(page.getByRole("button",{name:"Volver al frente de la carta"})).toHaveAttribute("aria-pressed","true");
+    await page.screenshot({path:"visual-qa-evidence/umbral-carta-reverso.png",fullPage:true,animations:"disabled"});
+    await page.getByRole("button",{name:"Volver al frente de la carta"}).click();
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: "Vela con la luna" }).first().click();
     await expect(page.locator('svg g[data-candle="luna"]')).toHaveAttribute("data-active","true");
@@ -67,6 +86,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: "Leer carta" }).first().click();
     await expect(page.getByText(/Seguía con MI, con LA/)).toBeVisible();
+    await page.getByRole("button",{name:"Dar vuelta la carta"}).click();
+    await expect(page.getByRole("button",{name:"Volver al frente de la carta"})).toHaveAttribute("aria-pressed","true");
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Examinar muñeca" }).first().click();
@@ -115,6 +136,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText(/NUEVO RÉCORD PERSONAL/)).toBeVisible();
     await expect(page.getByText(/ARCHIVO COMPLETO/)).toBeVisible();
     await expect(page.getByText(/Gracias por volver/)).toBeVisible();
+    await expect(page.getByText(/MECANISMO RESTAURADO/)).toBeVisible();
     await expect(page.getByRole("button",{name:/Escuchar el agradecimiento/})).toBeVisible();
   });
 
