@@ -34,7 +34,7 @@ export default function Artefact({kind,mark,speaking=false}:{kind:Kind;mark?:str
   }
   return (
     <div className={styles.stage+" "+styles[kind]+" "+(speaking?styles.speaking:"")} aria-hidden="true" onPointerMove={moveLens} onPointerLeave={e=>{e.currentTarget.style.setProperty("--tilt-x","0deg");e.currentTarget.style.setProperty("--tilt-y","0deg");e.currentTarget.style.setProperty("--shift-x","0px");e.currentTarget.style.setProperty("--shift-y","0px");}}>
-      <div className={styles.photograph} style={{backgroundImage:`url("/escape/images/objects/${kind}.webp")`}}/>
+      <div className={styles.photograph} style={{backgroundImage:`image-set(url("/escape/images/objects/${kind}.webp") 1x,url("/escape/images/retina/objects/${kind}.webp") 2x)`}}/>
       <div className={styles.lens}/>
       <div className={styles.glassReflection}/>
       <div className={styles.depthShadow}/>

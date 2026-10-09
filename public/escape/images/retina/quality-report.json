@@ -1,0 +1,124 @@
+{
+  "assets": [
+    {
+      "asset": "mansion",
+      "source": "1440x694",
+      "retina": "2880x1388",
+      "original_bytes": 112562,
+      "retina_bytes": 256752,
+      "retina_sharpness_reference": 763.342,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-0",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 81470,
+      "retina_bytes": 188020,
+      "retina_sharpness_reference": 108.271,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-1",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 74726,
+      "retina_bytes": 177114,
+      "retina_sharpness_reference": 193.294,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-2",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 78052,
+      "retina_bytes": 183970,
+      "retina_sharpness_reference": 100.201,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-3",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 72318,
+      "retina_bytes": 171018,
+      "retina_sharpness_reference": 117.711,
+      "method": "FSRCNN x2"
+    }
+  ],
+  "objects": [
+    {
+      "asset": "portrait",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 76960,
+      "retina_bytes": 210226,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "clock",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 74532,
+      "retina_bytes": 205564,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "lock",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 90342,
+      "retina_bytes": 250200,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "letter",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 66026,
+      "retina_bytes": 173678,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "music",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 93842,
+      "retina_bytes": 251960,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "doll",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 65276,
+      "retina_bytes": 175732,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "circuit",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 31264,
+      "retina_bytes": 87788,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "door",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 40826,
+      "retina_bytes": 119482,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "signal",
+      "source": "750x750",
+      "retina": "1500x1500",
+      "original_bytes": 52542,
+      "retina_bytes": 160788,
+      "method": "FSRCNN x2"
+    }
+  ],
+  "limitations": "2x copies reduce browser interpolation; cannot restore lost source detail."
+}

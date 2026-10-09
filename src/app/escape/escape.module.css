@@ -517,3 +517,56 @@
  .keypadAlternative .code button{font-size:.61rem}
  .keypadAlternative .keypad{margin:9px auto!important}
 }
+
+/* === OCT 2026 / RETINA CINEMATOGRAPHY AUDIT ==============================
+   Original scene masters were only 1440×745, ~75KB WebP each. Previously the
+   browser magnified those photographs 1.10× (scene) and ~1.38× (focus), then
+   rasterized them on 2×/3× phone panels. High-DPI image-set reduces visible
+   pixel edges; smaller camera drift preserves detail rather than stretching.
+   The art itself is still based on the original photos and not true 4K source. */
+.intro{
+  background-image:
+    linear-gradient(90deg,rgba(1,4,8,.83) 0%,rgba(1,4,8,.43) 41%,rgba(1,4,8,.02) 78%),
+    image-set(url("/escape/images/mansion.webp") 1x,url("/escape/images/retina/mansion.webp") 2x)!important;
+}
+.cinematicRoom{
+  animation:retinaCinematicFloat 28s ease-in-out infinite alternate!important;
+  transform:scale(1.012)!important;
+  filter:contrast(1.08) saturate(.94) brightness(1.05)!important;
+  backface-visibility:hidden;
+}
+.roomArt .cinematicRoom[data-room="0"]{background-position:50% 48%}
+.roomArt .cinematicRoom[data-room="1"]{background-position:49% 49%}
+.roomArt .cinematicRoom[data-room="2"]{background-position:56% 50%}
+.roomArt .cinematicRoom[data-room="3"]{background-position:52% 50%}
+@keyframes retinaCinematicFloat{
+  from{transform:translate3d(-.15%,0,0) scale(1.008)}
+  to{transform:translate3d(.2%,-.23%,0) scale(1.025)}
+}
+@media(max-width:800px){
+ .roomArt .cinematicRoom{
+   filter:contrast(1.04) saturate(.97) brightness(1.18)!important;
+   animation:retinaMobileFloat 30s ease-in-out infinite alternate!important;
+ }
+ .roomArt .cinematicRoom[data-room="0"]{background-position:49% center}
+ .roomArt .cinematicRoom[data-room="1"]{background-position:43% center}
+ .roomArt .cinematicRoom[data-room="2"]{background-position:60% center}
+ .roomArt .cinematicRoom[data-room="3"]{background-position:55% center}
+}
+@media(max-width:570px){
+ .intro{
+   background-image:
+     linear-gradient(180deg,rgba(1,4,8,.29) 0%,rgba(0,3,8,.75) 32%,rgba(2,3,5,.91) 62%,#050608 100%),
+     image-set(url("/escape/images/mansion.webp") 1x,url("/escape/images/retina/mansion.webp") 2x)!important;
+   background-size:auto 57%,auto 57%;
+   background-position:39% top!important;
+ }
+}
+@keyframes retinaMobileFloat{
+ from{transform:translate3d(-.1%,0,0) scale(1.008)}
+ to{transform:translate3d(.11%,-.18%,0) scale(1.016)}
+}
+/* A customer who enabled Reduce Motion gets static full-resolution artwork. */
+@media(prefers-reduced-motion:reduce){
+ .cinematicRoom,.roomArt .cinematicRoom{animation:none!important;transform:none!important;will-change:auto!important}
+}
