@@ -7,7 +7,8 @@ export type SceneType =
   | "childhood" | "care" | "sacrifices" | "return"
   | "lessons" | "presence" | "inheritance" | "lookback"
   | "casefile" | "insidejokes" | "incidents" | "proof" | "pact"
-;
+  | "invitation" | "portal" | "gallery" | "timepiece" | "recording"
+  | "clues" | "confession" | "passage" | "reveal" | "keepsake";
 
 export type DemoContent = {
   memories?: string[];
