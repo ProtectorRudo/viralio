@@ -40,3 +40,19 @@
  .brightDust{animation:none}
 }
 @keyframes objectEmergesMobile{from{transform:translate(-50%,-45%) scale(.64);opacity:0;filter:blur(6px)}to{transform:translate(-50%,-50%) scale(1);opacity:1;filter:blur(0)}}
+
+/* 1440px source backgrounds previously expanded 1.38× on inspection:
+   this milder push-in keeps the photographic evidence crisp on mobile. */
+.camera{animation:retinaDolly .95s cubic-bezier(.13,.86,.22,1) both!important}
+@keyframes retinaDolly{
+  from{transform:scale(1.025);filter:brightness(.92) contrast(1.05)}
+  to{transform:scale(1.16) translate3d(-.9%,.12%,0);filter:brightness(.76) contrast(1.13)}
+}
+@media(max-width:800px){
+ .camera{background-position:50% center;animation:retinaDollyMobile 1s cubic-bezier(.14,.84,.2,1) both!important}
+ @keyframes retinaDollyMobile{
+  from{transform:scale(1.02);filter:brightness(.92) contrast(1.07)}
+  to{transform:scale(1.09) translate3d(-.2%,0,0);filter:brightness(.81) contrast(1.12)}
+ }
+}
+@media(prefers-reduced-motion:reduce){.camera{animation:none!important;transform:scale(1.025)!important}}
