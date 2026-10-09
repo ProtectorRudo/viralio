@@ -29,6 +29,7 @@ import { getExperienceCopy,type DeepPartial,type ExperienceCopy } from "./experi
 import { mediaBelongsToScene } from "./mediaRouting";
 import type { SceneTextOverrides } from "./sceneText";
 import FriendshipScenes from "./FriendshipScenes";
+import PairRoseFinale from "./PairRoseFinale";
 
 export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType};
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
@@ -1635,22 +1636,16 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           </section>;
         }
         if(experience.slug==="pareja"){
-          const finalInitials=`${(experience.demoRecipient||"E").trim().charAt(0).toUpperCase()} + ${(experience.demoGiver||"J").trim().charAt(0).toUpperCase()}`;
-          const finalYear="2026";
-          const reactionIcons=[
-            {label:"Me llegó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27 6.8 18.2C3.1 14.7 3.5 9.1 7.5 6.6c3-1.9 6.6-1.2 8.5 1.4 1.9-2.6 5.5-3.3 8.5-1.4 4 2.5 4.4 8.1.7 11.6L16 27Z"/></svg>},
-            {label:"Me hizo sonreír",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10.5"/><path d="M11.5 18.2c1.1 2.2 2.7 3.3 4.5 3.3s3.4-1.1 4.5-3.3M12.2 13h.1M19.7 13h.1"/></svg>},
-            {label:"Me emocionó",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="15.5" cy="15.5" r="10"/><path d="M11.5 18.7c1.3-1.2 2.7-1.8 4.1-1.8 1.5 0 2.8.6 4 1.8M11.7 12.9h.1M19.2 12.9h.1M24.9 22.8c0 2-1.3 3.2-2.8 3.2s-2.8-1.2-2.8-3.2c0-1.6 1.4-3.6 2.8-5.3 1.4 1.7 2.8 3.7 2.8 5.3Z"/></svg>},
-            {label:"Hermoso",icon:<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m16 4 1.7 6.3L24 12l-6.3 1.7L16 20l-1.7-6.3L8 12l6.3-1.7L16 4ZM24.5 19l.9 3.6 3.6.9-3.6.9-.9 3.6-.9-3.6-3.6-.9 3.6-.9.9-3.6Z"/></svg>},
-          ];
           return <section className="thi-scene thi-final thi-pair-finale thi-scene-rich">
             <div className="thi-pair-finale-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><span/><span/></div>
             <p className="thi-kicker">{token(copy.finale.kicker)}</p>
             <h2>{token(copy.finale.title)}</h2>
             <p className="thi-lead">{token(copy.finale.lead)}</p>
             <div className="thi-pair-finale-divider" aria-hidden="true"><i/><b>✦</b><i/></div>
-            <div className="thi-pair-finale-seal" aria-label={`Sello ${finalInitials}, ${finalYear}`}><strong>{finalInitials}</strong><small>{finalYear}</small><i aria-hidden="true"/></div>
-            <div className="thi-pair-finale-reactions" aria-label="¿Qué te hizo sentir?">{reactionIcons.map((item,index)=><button key={item.label} type="button" className={finalReaction===index?"is-selected":""} aria-label={item.label} aria-pressed={finalReaction===index} onClick={()=>{setFinalReaction(index);haptic([6,18,6])}}>{item.icon}</button>)}</div>
+            <PairRoseFinale
+              message={token(copy.finale.roseMessage||"Te amo")}
+              subtitle={token(copy.finale.roseSubtitle||"Y te volvería a elegir.")}
+            />
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
             {!customerGift&&<Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>}
             <small className="thi-pair-finale-signature">{token(copy.finale.createdWith)}</small>
