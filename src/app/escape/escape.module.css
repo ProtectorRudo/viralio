@@ -129,3 +129,17 @@
 .apparition i+i{left:61%;transform:rotate(8deg)}
 @keyframes ghostGlance{0%,100%{opacity:0;transform:translateY(5px) scale(.88)}15%,65%{opacity:.72;transform:translateY(0) scale(.94)}75%{opacity:.12}}
 @media(max-width:800px){.apparition{left:25%}}
+
+/* Secondary lighting system: opt-in tactile torch, moving fog, distant lightning. */
+.torch{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .5s ease;background:radial-gradient(circle 165px at var(--torch-x,50%) var(--torch-y,53%),transparent 0%,rgba(5,9,10,.18) 37%,rgba(2,5,8,.82) 82%,rgba(1,3,6,.96) 100%);}
+.torchOn .torch{opacity:1}
+.torchOn .hotspot{z-index:4;box-shadow:0 0 0 8px rgba(233,188,116,.035),0 0 14px rgba(226,163,105,.12)}
+.fog{position:absolute;pointer-events:none;inset:-20% -30%;opacity:.26;filter:blur(24px);background:radial-gradient(ellipse at 30% 72%,rgba(172,175,150,.18),transparent 31%),radial-gradient(ellipse at 74% 55%,rgba(115,143,151,.16),transparent 29%);animation:umbralFog 20s ease-in-out infinite alternate}
+.lightning{position:absolute;pointer-events:none;inset:0;opacity:0;mix-blend-mode:screen;background:radial-gradient(circle at 32% -10%,rgba(228,239,252,.68),rgba(139,169,188,.2) 43%,transparent 75%);transition:opacity .05s ease}
+.stormOn{opacity:.48;animation:umbralStorm .46s ease-out both}
+.jolt{animation:umbralJolt .35s ease both}
+@keyframes umbralJolt{0%,100%{transform:translateX(0)}18%{transform:translateX(-3px)}37%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(1px)}}
+@keyframes umbralStorm{0%{opacity:0}8%{opacity:.6}14%{opacity:.09}24%{opacity:.75}33%{opacity:.08}100%{opacity:0}}
+@keyframes umbralFog{0%{transform:translateX(-6%) translateY(2%) rotate(-1deg)}100%{transform:translateX(9%) translateY(-3%) rotate(2deg)}}
+@media(max-width:800px){.torch{background:radial-gradient(circle 125px at var(--torch-x,50%) var(--torch-y,53%),transparent 0,rgba(6,8,10,.15) 42%,rgba(1,3,6,.83) 82%,rgba(0,2,4,.95) 100%)}.bottomActions{grid-template-columns:1.15fr .8fr .9fr .7fr}.bottomActions button{letter-spacing:0;font-size:.51rem}}
+@media(prefers-reduced-motion:reduce){.fog,.lightning,.jolt{animation:none!important}.torch{transition:none}}
