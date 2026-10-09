@@ -40,6 +40,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Retrato de Nora" }).first().click();
+    await expect(page.locator('[data-focus-object="portrait"][data-focus-room="0"]')).toBeVisible();
     await expect(page.getByText("1918").last()).toBeVisible();
     await expect.poll(async()=>page.evaluate(async()=>{const image=new Image();image.src="/escape/images/objects/portrait.webp";await image.decode();return image.naturalWidth;})).toBeGreaterThan(300);
     await page.screenshot({path:"visual-qa-evidence/umbral-artefacto-desktop.png",fullPage:true,animations:"disabled"});
@@ -50,6 +51,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.screenshot({path:"visual-qa-evidence/umbral-expediente-recuperado-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: "Examinar reloj" }).first().click();
+    await expect(page.locator('[data-focus-object="clock"]')).toBeVisible();
+    await visualAudit(page,"umbral-reloj-camara-integrada-desktop.png");
     await expect(page.getByRole("heading",{name:"El reloj detenido"})).toBeVisible();
     const clock=page.locator('[data-clock-solved]');
     await expect(clock).toHaveAttribute("data-clock-solved","false");
@@ -69,6 +72,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     }
 
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
+    await expect(page.locator('[data-focus-object="lock"]')).toBeVisible();
+    await visualAudit(page,"umbral-cerradura-en-escena-desktop.png");
     await page.screenshot({path:"visual-qa-evidence/umbral-candado-desktop.png",fullPage:true,animations:"disabled"});
     for(const digit of [4,2,7]) await page.getByRole("button",{name:"Ingresar "+digit}).click();
     await page.getByRole("button", { name: "Confirmar código" }).click();
@@ -99,6 +104,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Examinar muñeca" }).first().click();
+    await expect(page.locator('[data-focus-object="doll"][data-focus-room="2"]')).toBeVisible();
+    await visualAudit(page,"umbral-muneca-en-escena-desktop.png");
     await expect(page.getByText(/RECUERDO OPCIONAL RECUPERADO/)).toBeVisible();
     await expect(page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/})).toBeVisible();
     await page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/}).click();
@@ -109,6 +116,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Tocar caja musical" }).first().click();
+    await expect(page.locator('[data-focus-object="music"]')).toBeVisible();
     for (const note of ["SOL", "MI", "LA", "SOL"]) {
       await page.getByRole("button", { name: note, exact: true }).click();
     }
@@ -163,6 +171,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await visualAudit(page,"umbral-vestibulo-mobile.png");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
     await page.getByRole("navigation", { name: "Objetos para investigar" }).getByRole("button", { name: "Abrir cerradura" }).click();
+    await expect(page.locator('[data-focus-object="lock"]')).toBeVisible();
+    await visualAudit(page,"umbral-cerradura-en-escena-mobile.png");
     await expect(page.getByRole("heading", { name: "Una cerradura sin llave" })).toBeVisible();
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: /PAUSAR/ }).last().click();
