@@ -44,6 +44,11 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     }
 
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
+    await page.evaluate(async ()=>{
+      const img=new Image();
+      img.src="/escape/objects/lock.webp";
+      await img.decode();
+    });
     await page.screenshot({path:"visual-qa-evidence/umbral-candado-desktop.png",fullPage:true,animations:"disabled"});
     for(const digit of [4,2,7]) await page.getByRole("button",{name:"Ingresar "+digit}).click();
     await page.getByRole("button", { name: "Confirmar código" }).click();
@@ -105,6 +110,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-mobile.png",fullPage:true,animations:"disabled"});
     await page.getByRole("navigation", { name: "Objetos para investigar" }).getByRole("button", { name: "Abrir cerradura" }).click();
     await expect(page.getByRole("heading", { name: "Una cerradura sin llave" })).toBeVisible();
+    await page.evaluate(async ()=>{const img=new Image();img.src="/escape/objects/lock.webp";await img.decode();});
+    await page.screenshot({path:"visual-qa-evidence/umbral-candado-mobile.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: /PAUSAR/ }).last().click();
     await expect(page.getByRole("heading", { name: /Hasta la casa guarda silencio/ })).toBeVisible();
