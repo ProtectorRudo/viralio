@@ -11,6 +11,7 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
 
   await scene("intro");
   await expect(page.locator(".friend-door-name")).toContainText("Vale");
+  await expect(page.locator(".friend-door-nameplate")).toContainText("UN RECUERDO PARA");
   await expect(page.getByRole("heading",{name:/Algunas amistades no se explican/i})).toBeVisible();
   await noOverflow();
   await capture("amistad-01-puerta-mobile");
@@ -37,6 +38,13 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
   await expect.poll(()=>page.locator(".friend-incidents h2").evaluate(e=>e.getBoundingClientRect().top)).toBeGreaterThan(120);
   for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();
   await expect(page.locator(".friend-evidence-note.open")).toHaveCount(3);
+  await expect(page.locator(".friend-evidence-note.flipped")).toHaveCount(3);
+  await expect(page.locator(".friend-evidence-note").nth(2).locator(".friend-note-reverse")).toBeVisible();
+  await expect(page.locator(".friend-evidence-note").nth(2).locator(".friend-note-reverse")).toHaveCSS("transform",/matrix3d|matrix/);
+  await page.locator("[data-action=incident-open]").nth(2).click();
+  await expect(page.locator(".friend-evidence-note").nth(2)).not.toHaveClass(/flipped/);
+  await page.locator("[data-action=incident-open]").nth(2).click();
+  await expect(page.locator(".friend-evidence-note").nth(2)).toHaveClass(/flipped/);
   await expect(page.locator(".friend-case-insight.active")).toContainText("El plan sin plan");
   await noOverflow();
   await capture("amistad-05-tablero-mobile");
