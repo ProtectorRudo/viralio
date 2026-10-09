@@ -1,5 +1,5 @@
 import {describe,it,expect} from "vitest";
-import {AudioUploadError,encodeVoiceWav,recognizeAudioHeader} from "../src/app/tehiceesto/audioUpload";
+import {AudioUploadError,encodeVoiceWav,prepareCompatibleAudio,recognizeAudioHeader} from "../src/app/tehiceesto/audioUpload";
 
 describe("Customer audio compatibility",()=>{
   it("recognizes real media signatures, not unreliable WhatsApp MIME labels",()=>{
@@ -24,6 +24,18 @@ describe("Customer audio compatibility",()=>{
     expect(view.getUint32(40,true)).toBe(48000);
     expect(bytes.byteLength).toBe(48044);
     expect(view.getInt16(44,true)).toBeGreaterThan(16000);
+  });
+  it("decodes a real Ogg Opus WhatsApp-style voice note with a generic MIME label",async()=>{
+    // 160 ms synthetic 440 Hz voice fixture (FFmpeg/libopus; no customer data).
+    const base64="T2dnUwACAAAAAAAAAADuSu0oAAAAAD4R8Z0BE09wdXNIZWFkAQE4AYA+AAAAAABPZ2dTAAAAAAAAAAAAAO5K7SgBAAAAtj5YhAE9T3B1c1RhZ3MMAAAATGF2ZjYxLjcuMTAzAQAAAB0AAABlbmNvZGVyPUxhdmM2MS4xOS4xMDEgbGlib3B1c09nZ1MABDgfAAAAAAAA7krtKAIAAACdyyljCRgYFRUQFg8SDwiC4jRFRViX9UFWDFbbe5bAZyYxz2LmjAijQOf/L/yPMySS7/si2mMe5di8DLGYsAidSG6ze/qKV4f8EMBO8PWmKbWg8AickCvjTlp4HoAbTE00pCUK7ocfgAickCvjTlp6/Kr2ykeqwFwInJd44IdWfRmcmKDZ4jwo38mV6p1gCJyQK+NOWnsDEhAsNgaACJyQK+NOWnsEhjDmAf16i9egCAZhasEuUBDrOpYwYojA";
+    const data=Uint8Array.from(atob(base64),letter=>letter.charCodeAt(0));
+    const voice=new File([data],"PTT-2026-10-09-WA0001.opus",{type:"application/octet-stream"});
+    const normalized=await prepareCompatibleAudio(voice);
+    expect(normalized.name).toBe("PTT-2026-10-09-WA0001.wav");
+    expect(normalized.type).toBe("audio/wav");
+    const header=new Uint8Array(await normalized.slice(0,12).arrayBuffer());
+    expect(recognizeAudioHeader(header)).toBe("wav");
+    expect(normalized.size).toBeGreaterThan(1000);
   });
   it("rejects empty and inconsistent audio rather than storing a broken gift",()=>{
     expect(()=>encodeVoiceWav([],48000)).toThrow(AudioUploadError);
