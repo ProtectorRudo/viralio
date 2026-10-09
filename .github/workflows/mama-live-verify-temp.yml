@@ -91,6 +91,7 @@ jobs:
             await page.locator('.mama-care-continue').click();
             for(const i of [0,1,2,3])await page.locator('.mama-sacrifice-trigger').nth(i).click();
             await page.locator('.mama-sacrifice-continue').click();
+          await page.locator('main.thi-experience[data-scene="voices"]').waitFor({timeout:12000});
             const diagnosis=await page.evaluate(()=>({scene:document.querySelector('main.thi-experience')?.getAttribute('data-scene'),patch:!!window.__thiMamaVoice20261009,sceneText:document.querySelector('section.thi-scene')?.innerText?.slice(0,300),buttons:[...document.querySelectorAll('button[data-action]')].map(b=>({a:b.getAttribute('data-action'),disabled:b.disabled,text:b.textContent?.slice(0,40)})).slice(0,12)}));
             console.log('VOICE_NAV_DIAGNOSIS',JSON.stringify(diagnosis));
             if(diagnosis.scene!=='voices')throw Error('Not in voice room');
