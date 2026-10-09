@@ -62,4 +62,20 @@ describe("Te Hice Esto post-purchase onboarding wiring",()=>{
     expect(src).toContain("emailRetryDue");
     expect(src).toContain("sync-status");
   });
+  it("shows inbox and spam guidance only after confirmed payment without removing direct editing",()=>{
+    const statusPage=readFileSync(join(root,"src","app","tehiceesto","pedido","[code]","page.tsx"),"utf8");
+    const styles=readFileSync(join(root,"src","app","tehiceesto","tehiceesto-postpayment-email.css"),"utf8");
+    const layout=readFileSync(join(root,"src","app","tehiceesto","layout.tsx"),"utf8");
+    expect(statusPage).toContain("paid&&!ready");
+    expect(statusPage).toContain('aria-labelledby="order-status-mail-heading"');
+    expect(statusPage).toContain("Revisá tu email. Tu regalo te espera.");
+    expect(statusPage).toContain("Correo no deseado o Spam");
+    expect(statusPage).toContain('href={href("/mis-regalos")} className="order-status-mail-recovery"');
+    expect(statusPage).toContain("Empezar a personalizar");
+    expect(statusPage).toContain('href={href(`/editar/${data.code}`)}');
+    expect(layout).toContain('import "./tehiceesto-postpayment-email.css";');
+    expect(styles).toContain("@media(max-width:600px)");
+    expect(styles).toContain(".order-status-mail-recovery:focus-visible");
+  });
+
 });

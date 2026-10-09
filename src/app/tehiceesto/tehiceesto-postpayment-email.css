@@ -1,0 +1,125 @@
+/* Post-payment messaging · isolated from all frozen experience templates.
+   Only visible after server-confirmed payment, on the private order page. */
+.order-status-mail-confirmation{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  align-items:start;
+  gap:20px;
+  width:100%;
+  max-width:760px;
+  margin:14px 0 2px;
+  padding:30px 32px;
+  border:1px solid rgba(217,162,156,.25);
+  border-radius:25px;
+  background:
+    radial-gradient(ellipse at 96% 0%,rgba(178,104,121,.16),transparent 60%),
+    linear-gradient(145deg,rgba(34,25,32,.97),rgba(19,16,23,.96));
+  box-shadow:0 20px 65px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.045);
+  color:#f2e9e7;
+}
+.order-status-mail-symbol{
+  display:grid;
+  place-items:center;
+  width:52px;
+  height:52px;
+  border:1px solid rgba(218,166,159,.28);
+  border-radius:17px;
+  color:#e7b3aa;
+  background:rgba(192,119,130,.085);
+}
+.order-status-mail-symbol svg{display:block}
+.order-status-mail-content{min-width:0}
+.order-status-mail-eyebrow{
+  display:block;
+  margin:1px 0 11px;
+  color:#d8a9a0;
+  font-size:10px;
+  letter-spacing:.18em;
+  font-weight:700;
+}
+.order-status-mail-content h2{
+  margin:0 0 13px;
+  color:#fff5f0;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:400;
+  font-size:clamp(26px,3.4vw,35px);
+  line-height:1.18;
+  letter-spacing:-.035em;
+}
+.order-status-mail-content>p{
+  margin:0;
+  color:#b7a7ad;
+  font-size:13px;
+  line-height:1.8;
+}
+.order-status-mail-tip{
+  display:grid;
+  gap:7px;
+  margin:19px 0 17px;
+  padding:16px 17px;
+  border-left:2px solid #d39d94;
+  border-radius:0 12px 12px 0;
+  background:rgba(255,255,255,.045);
+}
+.order-status-mail-tip strong{
+  font-size:13px;
+  color:#f9e7e1;
+  line-height:1.45;
+}
+.order-status-mail-tip span{
+  color:#cec1c1;
+  font-size:13px;
+  line-height:1.75;
+}
+.order-status-mail-tip b{
+  color:#fff4ef;
+  font-weight:700;
+}
+.order-status-mail-content .order-status-mail-help{
+  font-size:12px;
+  color:#a89ca2;
+}
+.order-status-mail-help strong{color:#e1c6c1;font-weight:600}
+.order-status-mail-recovery{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:17px;
+  color:#eabcb1;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.5;
+  text-decoration:underline;
+  text-decoration-color:rgba(234,188,177,.38);
+  text-underline-offset:4px;
+}
+.order-status-mail-recovery:hover{color:#fff1e9}
+.order-status-mail-recovery:focus-visible{
+  outline:2px solid #e9b0a5;
+  outline-offset:5px;
+  border-radius:3px;
+}
+@media(max-width:600px){
+  .order-status-mail-confirmation{
+    grid-template-columns:1fr;
+    gap:16px;
+    margin:9px 0 0;
+    padding:23px 20px 24px;
+    border-radius:20px;
+  }
+  .order-status-mail-symbol{
+    width:43px;
+    height:43px;
+    border-radius:13px;
+  }
+  .order-status-mail-symbol svg{width:25px;height:25px}
+  .order-status-mail-content h2{font-size:28px}
+  .order-status-mail-tip{margin:17px 0 15px;padding:13px 14px}
+  .order-status-mail-tip span,
+  .order-status-mail-content>p{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  .order-status-mail-recovery{transition:none}
+}

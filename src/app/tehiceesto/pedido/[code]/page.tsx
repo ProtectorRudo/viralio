@@ -119,6 +119,29 @@ export default async function OrderStatusPage({
       </section>
     )}
 
+    {paid&&!ready&&(
+      <section className="order-status-mail-confirmation" aria-labelledby="order-status-mail-heading">
+        <div className="order-status-mail-symbol" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="4" y="7" width="24" height="18" rx="3"/>
+            <path d="m5.5 10 10.5 8 10.5-8"/>
+            <path d="m20 22 2.5 2.5 5-5"/>
+          </svg>
+        </div>
+        <div className="order-status-mail-content">
+          <span className="order-status-mail-eyebrow">TU ACCESO PRIVADO</span>
+          <h2 id="order-status-mail-heading">Revisá tu email. Tu regalo te espera.</h2>
+          <p>Después de confirmar tu compra, te enviamos un enlace privado para entrar a tus regalos cuando quieras.</p>
+          <div className="order-status-mail-tip">
+            <strong>¿No encontrás el mensaje?</strong>
+            <span>Buscá un correo de Te Hice Esto en tu bandeja de entrada. Revisá también <b>Correo no deseado o Spam</b> y marcalo como seguro.</span>
+          </div>
+          <p className="order-status-mail-help">El correo puede tardar unos minutos. Tu compra ya está guardada y <strong>podés empezar a personalizar ahora mismo</strong> desde el botón de abajo.</p>
+          <Link href={href("/mis-regalos")} className="order-status-mail-recovery">¿No llegó? Recuperá tu acceso por email <span aria-hidden="true">↗</span></Link>
+        </div>
+      </section>
+    )}
+
     {ready?(
       <section className="order-status-ready">
         <span>TU REGALO ESTÁ PUBLICADO</span>
