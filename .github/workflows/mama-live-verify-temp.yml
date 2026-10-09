@@ -39,7 +39,7 @@ jobs:
       - name: Identify actual live Mom JS bundle
         run: |
           curl -fsSL --max-time 40 https://tehiceesto.com/experiencias/mama -o /tmp/mama-live.html
-          grep -oE '_next/static/immutable/chunks/[A-Za-z0-9]+\\.js' /tmp/mama-live.html | sort -u > /tmp/mama-scripts.txt || true
+          grep -oE '_next/static/immutable/chunks/[A-Za-z0-9_-]+\\.js' /tmp/mama-live.html | sort -u > /tmp/mama-scripts.txt || true
           cat /tmp/mama-scripts.txt
           while read -r part; do
             curl -fsSL --max-time 20 "https://tehiceesto.com/$part" -o /tmp/mama-piece.js || continue
