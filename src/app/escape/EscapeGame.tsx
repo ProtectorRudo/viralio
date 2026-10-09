@@ -130,6 +130,8 @@ export default function EscapeGame() {
   const [ready, setReady] = useState(false);
   const [angle, setAngle] = useState({ x: 0, y: 0 });
   const audio = useRef<AudioContext | null>(null);
+  const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
+  const [transitioning, setTransitioning] = useState(false);
 
   useEffect(() => {
     try {
@@ -164,6 +166,31 @@ export default function EscapeGame() {
     return ()=>window.clearTimeout(timer);
   },[toast]);
 
+  useEffect(() => {
+    const stop = () => {
+      if(!ambient.current) return;
+      try { ambient.current.noise.stop(); ambient.current.rumble.stop(); } catch { /* no sound context */ }
+      ambient.current = null;
+    };
+    stop();
+    const ctx=audio.current;
+    if(!ctx || phase!=="playing" || paused || !sound) return stop;
+    try {
+      const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
+      const samples=buffer.getChannelData(0);
+      for(let i=0;i<samples.length;i++) samples[i]=(Math.random()*2-1)*.4;
+      const noise=ctx.createBufferSource(); noise.buffer=buffer; noise.loop=true;
+      const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=room===3?240:430;
+      const ng=ctx.createGain();ng.gain.value=room===2?.018:.011;
+      noise.connect(filter);filter.connect(ng);ng.connect(ctx.destination);
+      const rumble=ctx.createOscillator();rumble.type="sine";rumble.frequency.value=room===3?43:54;
+      const rg=ctx.createGain();rg.gain.value=.009;
+      rumble.connect(rg);rg.connect(ctx.destination);
+      noise.start();rumble.start();ambient.current={noise,rumble};
+    } catch { /* low-powered devices still have a silent experience */ }
+    return stop;
+  }, [phase, paused, room, sound]);
+
   function sfx(kind: "click" | "success" | "error" | "step" | "tone" = "click", pitch = 440) {
     if(!sound || typeof window==="undefined") return;
     try {
@@ -183,12 +210,15 @@ export default function EscapeGame() {
   }
   function message(t:string){setToast(t);}
   function begin() {
-    setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
+    setTransitioning(false);setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function nextRoom() {
-    sfx("success");setModal(null);
-    setRoom(v=>Math.min(3,v+1));setPin("");
-    setToast("CAPÍTULO DESBLOQUEADO · Escuchaste pasos detrás de vos.");
+    if(transitioning) return;
+    sfx("success");setModal(null);setTransitioning(true);
+    window.setTimeout(()=>{
+      setRoom(v=>Math.min(3,v+1));setPin("");setTransitioning(false);
+      setToast("CAPÍTULO DESBLOQUEADO · Escuchaste pasos detrás de vos.");
+    },1050);
   }
   function portrait(i:number) {
     sfx();setPuzzles(p=>({...p,portraits:Array.from(new Set([...p.portraits,i]))}));setModal("portrait"+i);
@@ -286,18 +316,19 @@ export default function EscapeGame() {
           <div className={styles.shade} aria-hidden="true"/>
         </div>
         <div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
-        {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} style={{left:spot.x+"%",top:spot.y+"%"}} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
+        {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={{left:spot.x+"%",top:spot.y+"%"}} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
       </section>
       <nav className={styles.mobileInteract} aria-label="Objetos para investigar">
         <span>EXPLORÁ LA HABITACIÓN →</span>
-        <div>{hotspots.map(spot=><button key={spot.id} onClick={spot.act}><b>{spot.glyph}</b>{spot.text}</button>)}</div>
+        <div>{hotspots.map(spot=><button key={spot.id} onClick={spot.act} disabled={transitioning}><b>{spot.glyph}</b>{spot.text}</button>)}</div>
       </nav>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
         <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
       </div>
+      {transitioning&&<div className={styles.transition} aria-live="polite"><span>LA CASA CAMBIA</span><div className={styles.transitionDoor}/><strong>UNA PUERTA SE CIERRA DETRÁS DE VOS</strong></div>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
