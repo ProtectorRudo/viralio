@@ -466,6 +466,23 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       case"balloons":return <section className="thi-scene thi-scene-balloons thi-scene-rich"><p className="thi-kicker">{token(copy.balloons.kicker)}</p><h2>{titleLines(copy.balloons.title)}</h2><div className={experience.slug==="cumpleanos"?"thi-balloons thi-birthday-balloons":"thi-balloons"}>{balloonLines.map((line,i)=><button data-action="balloon" key={line} className={popped.includes(i)?"pop":""} disabled={experience.slug==="cumpleanos"&&!popped.includes(i)&&popped.length>=3} onClick={()=>{if(experience.slug==="cumpleanos"&&(popped.includes(i)||popped.length>=3))return;setPopped(v=>v.includes(i)?v:experience.slug==="cumpleanos"&&v.length>=3?v:[...v,i]);haptic(10);playFx("pop")}}><span>{popped.includes(i)?token(line):""}</span><i>{popped.includes(i)?"✦":token(copy.balloons.popLabel)}</i></button>)}</div>{experience.slug==="cumpleanos"&&<p className="thi-birthday-balloons-count">{popped.length>=3?"Tres sorpresas elegidas. Las otras quedan guardadas.":`Elegí tres globos · ${3-popped.length} por descubrir`}</p>}<button data-action="advance" className="thi-primary" disabled={popped.length<3} onClick={next}>{popped.length<3?countText(copy.balloons.remainingOne,copy.balloons.remainingMany,3-popped.length):token(copy.balloons.cta)}</button></section>;
       case"timeline":return experience.slug==="hijos"?<section className="thi-scene thi-scene-timeline thi-child-timeline thi-scene-rich"><div className="thi-child-story-mist" aria-hidden="true"/><p className="thi-kicker">{token(copy.timeline.kicker)}</p><h2>{titleLines(copy.timeline.title)}</h2><p className="thi-child-section-lead">Cuatro capítulos de un amor que empezó el día que llegaste.</p><div className="thi-timeline"><div className="thi-timeline-line" aria-hidden="true"/>{timelineEntries.map((entry,index)=><article key={entry.title} style={{"--story-i":index} as CSSProperties}><span>{String(index+1).padStart(2,"0")}</span><div className="thi-child-timeline-photo">{scenePhotos.length>0&&<img loading="lazy" src={(scenePhotos[index%scenePhotos.length]).url} alt="" style={{objectPosition:scenePhotos[index%scenePhotos.length].position||"center"}}/>}<i aria-hidden="true"/></div><div className="thi-child-timeline-copy"><strong>{token(entry.title)}</strong><p>{token(entry.body)}</p></div><b aria-hidden="true">✦</b></article>)}</div><button data-action="advance" className="thi-child-cta" onClick={next}><span>{token(copy.timeline.cta)}</span><b>→</b></button></section>:<section className="thi-scene thi-scene-timeline thi-scene-rich"><p className="thi-kicker">{token(copy.timeline.kicker)}</p><h2>{titleLines(copy.timeline.title)}</h2><div className="thi-timeline"><div className="thi-timeline-line" aria-hidden="true"/>{timelineEntries.map((entry,index)=><article key={entry.title}><span>{String(index+1).padStart(2,"0")}</span><i/><strong>{token(entry.title)}</strong><p>{token(entry.body)}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.timeline.cta)}</button></section>;
       case"voices":{
+        // A purchased model always includes the complete voices scene. When the
+        // buyer has not supplied audio, offer a graceful emotional passage
+        // instead of displaying strangers' demo messages or blocking navigation.
+        if(customerGift&&currentAudios.length===0){
+          return <section className="thi-scene thi-scene-voices thi-scene-rich thi-gift-voices-no-audio">
+            <p className="thi-kicker">{token(copy.voices.kicker)}</p>
+            <h2>{titleLines(copy.voices.title)}</h2>
+            <div className="thi-gift-voices-silent">
+              <span aria-hidden="true">♪</span>
+              <p>Hay palabras que no necesitan grabarse para quedarse con vos.</p>
+              <small>Lo que sentimos también se guarda en los momentos compartidos.</small>
+            </div>
+            <button type="button" data-action="advance" className="thi-primary thi-gift-voices-silent-next" onClick={next}>
+              Seguir descubriendo <span aria-hidden="true">→</span>
+            </button>
+          </section>;
+        }
         if(experience.slug==="cumpleanos"){
           const birthdayVoices=currentAudios.length
             ?currentAudios.map((entry,i)=>({name:token(entry.caption||`Mensaje ${i+1}`),message:"",url:entry.url}))
