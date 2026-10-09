@@ -64,4 +64,15 @@ describe("TeHiceEsto demo-to-purchase parity: all nine products",()=>{
     expect(read("src/app/tehiceesto/r/[code]/layout.tsx")).toContain("tehiceesto-premium-v3.css");
     expect(read("src/app/tehiceesto/editar/layout.tsx")).toContain("tehiceesto-premium-v3.css");
   });
+  it("never traps recipients or displays demo voices when a purchased gift has no audio",()=>{
+    const engine=read("src/app/tehiceesto/template-v3/ExperienceEngine.tsx");
+    const css=read("src/app/tehiceesto/tehiceesto-premium-v3.css");
+    expect(engine).toContain('if(customerGift&&currentAudios.length===0)');
+    expect(engine).toContain('className="thi-scene thi-scene-voices thi-scene-rich thi-gift-voices-no-audio"');
+    expect(engine).toContain('data-action="advance" className="thi-primary thi-gift-voices-silent-next" onClick={next}');
+    expect(engine).toContain("Hay palabras que no necesitan grabarse para quedarse con vos.");
+    expect(css).toContain(".thi-template-v3 .thi-gift-voices-silent");
+    expect(css).toContain("@media(max-width:600px)");
+  });
+
 });
