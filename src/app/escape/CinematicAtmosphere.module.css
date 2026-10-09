@@ -85,7 +85,7 @@
   background:radial-gradient(ellipse 20% 36% at 84% 58%,rgba(240,87,48,.17),transparent 92%);
   animation:reactorWarning 5.8s ease-in-out infinite;
 }
-[data-mood="machine"][data-powered="yes"]{
+[data-mood="machine"][data-powered="yes"].atmosphere{
   --moon:rgba(190,232,223,.24);--amber:rgba(208,234,211,.17);--shaft:rgba(182,235,210,.22);
 }
 [data-mood="machine"][data-powered="yes"] .windowGlow{
@@ -96,7 +96,7 @@
   background:radial-gradient(ellipse 45% 46% at 84% 57%,rgba(212,255,219,.17),transparent 83%);
   animation:none;
 }
-[data-paused="yes"] *,[data-paused="yes"] *::before,[data-paused="yes"] *::after{animation-play-state:paused!important}
+[data-paused="yes"].atmosphere *,[data-paused="yes"].atmosphere *::before,[data-paused="yes"].atmosphere *::after{animation-play-state:paused!important}
 @keyframes moonBreath{from{opacity:.63;transform:translate3d(-.3%,0,0)}to{opacity:1;transform:translate3d(.55%,-.5%,0)}}
 @keyframes practicalBreath{from{opacity:.6}to{opacity:1}}
 @keyframes rayShift{from{opacity:.54;transform:rotate(var(--ray-angle,-20deg))}to{opacity:1;transform:rotate(calc(var(--ray-angle,-20deg) + 1.4deg))}}
