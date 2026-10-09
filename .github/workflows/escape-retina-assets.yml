@@ -1,0 +1,68 @@
+name: UMBRAL high-definition photographic assets
+
+on:
+  push:
+    branches: [feat/escape-retina-backgrounds-20261009]
+    paths:
+      - ".github/workflows/escape-retina-assets.yml"
+      - "scripts/upgrade_escape_images.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: umbral-retina-art
+  cancel-in-progress: false
+
+jobs:
+  retina:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out UMBRAL artwork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Python for high-resolution image processing
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install photographic processing engine
+        run: |
+          python -m pip install --disable-pip-version-check "pillow>=10.2,<12" "numpy>=1.26,<3" "opencv-contrib-python-headless>=4.9,<4.12"
+      - name: Load pretrained small super-resolution model, if available
+        shell: bash
+        run: |
+          mkdir -p scripts/models
+          curl -fLsS --retry 2 --max-time 35             https://raw.githubusercontent.com/Saafke/FSRCNN_Tensorflow/master/models/FSRCNN_x2.pb             -o scripts/models/FSRCNN_x2.pb || true
+          if [ -s scripts/models/FSRCNN_x2.pb ]; then
+            echo "FSRCNN 2x model available"
+          else
+            echo "Will use offline Lanczos fallback"
+          fi
+      - name: Generate five true 2x raster exports and measure them
+        run: |
+          python scripts/upgrade_escape_images.py
+          python - <<'PY'
+          import json, pathlib
+          j=json.loads(pathlib.Path("public/escape/images/retina/quality-report.json").read_text())
+          assert len(j["assets"])==5
+          for x in j["assets"]:
+              w,h=map(int,x["retina"].split("x"))
+              assert w>=2800 and h>=1380, x
+              assert x["retina_bytes"]>x["original_bytes"],x
+              print(x["asset"],x["source"],"=>",x["retina"],x["retina_bytes"],x["method"])
+          PY
+      - name: Upload artwork and QA report to working branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/escape/images/retina/*.webp public/escape/images/retina/quality-report.json
+          if ! git diff --cached --quiet; then
+            git commit -m "asset(escape): export 2x retina photographed rooms, correct excessive compression"
+            git fetch origin feat/escape-retina-backgrounds-20261009
+            git rebase origin/feat/escape-retina-backgrounds-20261009
+            git push origin HEAD:feat/escape-retina-backgrounds-20261009
+          fi
