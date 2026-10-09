@@ -47,3 +47,11 @@ jobs:
           path: test-results/
           retention-days: 7
           if-no-files-found: ignore
+      - name: Preserve visual audit images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: umbral-visual-qa
+          path: visual-qa-evidence/
+          if-no-files-found: ignore
+          retention-days: 14
