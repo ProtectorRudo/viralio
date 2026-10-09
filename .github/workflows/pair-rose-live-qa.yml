@@ -1,0 +1,27 @@
+name: Inspect Pair Finale Live Chunks
+on:
+  push:
+    branches: [pair-rose-public-qa-20261009]
+    paths: [".github/workflows/pair-rose-live-qa.yml"]
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Identify actual public final scene JavaScript and styles
+        run: |
+          set -euo pipefail
+          curl -sSL --max-time 30 'https://tehiceesto.com/experiencias/pareja?inspect=20261009' -o /tmp/pair.html
+          grep -oE '/_next/static/immutable/chunks/[A-Za-z0-9_-]+\.(js|css)' /tmp/pair.html | sort -u >/tmp/chunks
+          while read -r path; do
+            case "$path" in
+              *.js)
+                curl -fsSL --max-time 25 "https://viralio.net$path" -o /tmp/check || continue
+                if grep -Fq 'thi-pair-finale-reactions' /tmp/check; then echo "ACTIVE_PAIR_JS=$path SIZE=$(wc -c </tmp/check)"; fi
+                if grep -Fq 'thi-mama-voice-picker' /tmp/check; then echo "MAMA_JS=$path"; fi
+                ;;
+              *.css)
+                curl -fsSL --max-time 25 "https://viralio.net$path" -o /tmp/check || continue
+                if grep -Fq 'thi-pair-finale-reactions' /tmp/check; then echo "ACTIVE_PAIR_CSS=$path SIZE=$(wc -c </tmp/check)"; fi
+                ;;
+            esac
+          done </tmp/chunks
