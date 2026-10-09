@@ -139,6 +139,9 @@ export default function EscapeGame() {
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [apparition, setApparition] = useState(false);
+  const [flashlight, setFlashlight] = useState(false);
+  const [jolt, setJolt] = useState(false);
+  const [storm, setStorm] = useState(false);
 
   useEffect(() => {
     try {
@@ -178,6 +181,26 @@ export default function EscapeGame() {
     const timer=window.setTimeout(()=>setToast(""),3200);
     return ()=>window.clearTimeout(timer);
   },[toast]);
+
+  useEffect(() => {
+    if(phase!=="playing" || paused || modal) return;
+    // Give the house agency: a distant storm at an unpredictable interval.
+    const interval=window.setInterval(()=>{
+      if(Math.random()>.56){
+        setStorm(true);
+        window.setTimeout(()=>setStorm(false),430);
+      }
+    }, 8700);
+    return ()=>window.clearInterval(interval);
+  },[phase,paused,modal]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent)=>{
+      if(event.key==="Escape" && modal && modal!=="finale") setModal(null);
+    };
+    window.addEventListener("keydown",onKey);
+    return ()=>window.removeEventListener("keydown",onKey);
+  },[modal]);
 
   useEffect(() => {
     const stop = () => {
@@ -234,11 +257,16 @@ export default function EscapeGame() {
       gain.gain.exponentialRampToValueAtTime(kind==="error"?.075:.045,now+.015);
       gain.gain.exponentialRampToValueAtTime(.0001,now+(kind==="success"?.6:.24));
       osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+(kind==="success"?.65:.28));
+      if(kind==="error" || kind==="success") {
+        if(navigator.vibrate) navigator.vibrate(kind==="error"?[40,60,45]:[18,28,25]);
+        setJolt(true);
+        window.setTimeout(()=>setJolt(false),380);
+      }
     } catch { /* audio is optional */ }
   }
   function message(t:string){setToast(t);}
   function begin() {
-    setTransitioning(false);setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
+    setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function nextRoom() {
     if(transitioning) return;
@@ -337,14 +365,14 @@ export default function EscapeGame() {
         <div className={styles.hudCenter}><span>CAPÍTULO {String(room+1).padStart(2,"0")}/04</span><strong>{ROOM_NAMES[room]}</strong></div>
         <div className={styles.hudRight}><div className={seconds<=300?styles.timerDanger:styles.timer}><small>TIEMPO RESTANTE</small><strong>{fmt(seconds)}</strong></div><button className={styles.iconButton} onClick={()=>{sfx();setPaused(true);}} aria-label="Pausar partida">Ⅱ</button></div>
       </header>
-      <section className={styles.playfield} onPointerMove={e=>{ if(e.pointerType!=="mouse")return;const r=e.currentTarget.getBoundingClientRect();setAngle({x:((e.clientX-r.left)/r.width-.5)*8,y:((e.clientY-r.top)/r.height-.5)*8});}}>
+      <section className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse")setAngle({x:(x-.5)*8,y:(y-.5)*8});}}>
         <div className={styles.roomArt} style={{transform:"scale(1.025) translate("+(-angle.x)+"px,"+(-angle.y)+"px)"}}>
           <SceneArt room={room} power={puzzles.power}/>
-          <div className={styles.dust} aria-hidden="true"/>
+          <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
           <div className={styles.shade} aria-hidden="true"/>
         </div>
-        <div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
+        <div className={styles.torch} aria-hidden="true"/><div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
         {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={{left:spot.x+"%",top:spot.y+"%"}} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
@@ -355,7 +383,7 @@ export default function EscapeGame() {
       </nav>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
-        <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
+        <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setFlashlight(v=>!v)} aria-pressed={flashlight}>{flashlight?"◉ APAGAR LUZ":"☼ LINTERNA"}</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
       </div>
       {transitioning&&<div className={styles.transition} aria-live="polite"><span>LA CASA CAMBIA</span><div className={styles.transitionDoor}/><strong>UNA PUERTA SE CIERRA DETRÁS DE VOS</strong></div>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
@@ -373,7 +401,7 @@ export default function EscapeGame() {
           {modal==="musicSolved"&&<><div className={styles.artSymbol}>✦</div><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><button className={styles.primary} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></>}
           {modal==="doll"&&<><div className={styles.artSymbol}>♙</div><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
           {modal==="memo"&&<><div className={styles.artSymbol}>⚡</div><h2>Manual de emergencia</h2><p>Una placa oxidada explica cómo alimentar el mecanismo:</p><blockquote>«El motor exige exactamente DOS circuitos activos. Su energía combinada debe ser SIETE. No tolera el exceso».</blockquote><p>Los fusibles tienen valores individuales: 2, 3, 4 y 5.</p></>}
-          {modal==="finale"&&<><div className={styles.artSymbol}>⟡</div><h2>La última decisión</h2><p>La energía vuelve. Una salida se abre y oís una voz infantil desde el otro lado del muro.</p><blockquote>«¿Me vas a dejar acá otra vez?»</blockquote><p>Podés escapar mientras hay tiempo o volver por Eva. Una elección cambia cómo termina el expediente.</p><div className={styles.choices}><button onClick={()=>ending("save")}>VOLVER POR EVA <span>✦</span></button><button onClick={()=>ending("escape")}>CORRER HACIA LA SALIDA <span>↗</span></button></div></>}
+          {modal==="finale"&&<><div className={styles.artSymbol}>⟡</div><h2>La última decisión</h2><p>La energía vuelve. Una salida se abre y oís una voz infantil desde el otro lado del muro.</p><blockquote>«¿Me vas a dejar acá otra vez?»</blockquote><p>Podés escapar mientras hay tiempo o volver por Eva. Una elección cambia cómo termina el expediente.</p>{puzzles.keepsake&&<p className={styles.good}>La medalla que recuperaste empieza a calentarse en tu mano. Eva reconoce su antiguo recuerdo.</p>}<div className={styles.choices}><button onClick={()=>ending("save")}>VOLVER POR EVA <span>✦</span></button><button onClick={()=>ending("escape")}>CORRER HACIA LA SALIDA <span>↗</span></button></div></>}
           {modal.startsWith("hint")&&<><div className={styles.artSymbol}>◇</div><h2>Una señal en la oscuridad</h2><p>{CLUES[room][Number(modal.replace("hint",""))]}</p><p className={styles.hintCost}>Usar pistas reduce la puntuación final, pero nunca bloquea tu escape.</p></>}
         </section>
       </div>}
