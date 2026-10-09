@@ -1,7 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
 mkdirSync("visual-qa-evidence",{recursive:true});
+// Chromium can race the first full-page screenshot immediately after initial
+// webfont/image decode; retry the visual capture without suppressing failures.
+async function visualAudit(page:Page,file:string){
+  for(let attempt=0;attempt<3;attempt++){
+    try{await page.screenshot({path:"visual-qa-evidence/"+file,fullPage:true,animations:"disabled",timeout:12000});return;}
+    catch(error){if(attempt===2)throw error;await page.waitForTimeout(360);}
+  }
+}
 
 test.describe("UMBRAL · el juego puede completarse", () => {
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
@@ -145,14 +153,14 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await expect(page.getByRole("button",{name:/BANDA SONORA DINÁMICA ACTIVADA/})).toBeVisible();
     await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toBeVisible();
-    await page.screenshot({path:"visual-qa-evidence/umbral-intro-mobile-audit.png",fullPage:true,animations:"disabled"});
+    await visualAudit(page,"umbral-intro-mobile-audit.png");
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("navigation", { name: "Objetos para investigar" })).toBeVisible();
-    await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-mobile-sin-linterna.png",fullPage:true,animations:"disabled"});
+    await visualAudit(page,"umbral-vestibulo-mobile-sin-linterna.png");
     const torch=page.getByRole("button",{name:"☼ LINTERNA"});
     await torch.click();
     await expect(page.getByRole("button",{name:"◉ APAGAR LUZ"})).toHaveAttribute("aria-pressed","true");
-    await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-mobile.png",fullPage:true,animations:"disabled"});
+    await visualAudit(page,"umbral-vestibulo-mobile.png");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
     await page.getByRole("navigation", { name: "Objetos para investigar" }).getByRole("button", { name: "Abrir cerradura" }).click();
     await expect(page.getByRole("heading", { name: "Una cerradura sin llave" })).toBeVisible();
