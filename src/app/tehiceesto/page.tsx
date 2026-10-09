@@ -11,6 +11,7 @@ const RECIPIENTS = [
   { slug:"cumpleanos", label:"Cumpleaños", mark:"✦" },
   { slug:"hijos", label:"Hijo/a", mark:"○" },
   { slug:"amistad", label:"Amistad", mark:"⌁" },
+  { slug:"secreto", label:"Sorpresas", mark:"✧" },
 ];
 
 export default async function TeHiceEstoHome() {
