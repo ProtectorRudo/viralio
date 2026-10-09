@@ -12,7 +12,7 @@ jobs:
           set -euo pipefail
           for category in abuelos aniversario propuesta; do
             curl -sSL --max-time 35 "https://tehiceesto.com/experiencias/$category?qa=release-gate" -o "/tmp/$category.html"
-            if grep -q '<title>.*Próximamente' "/tmp/$category.html" && grep -q 'todavía no está disponible' "/tmp/$category.html"; then
+            if grep -q '<title>.*Próximamente' "/tmp/$category.html" && grep -qi 'todavía no está disponible' "/tmp/$category.html"; then
               echo "BLOCKED_DEMO_PASS $category"
             else
               echo "BLOCKED_DEMO_FAIL $category"
