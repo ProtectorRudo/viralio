@@ -290,6 +290,10 @@ export default function EscapeGame() {
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
       </section>
+      <nav className={styles.mobileInteract} aria-label="Objetos para investigar">
+        <span>EXPLORÁ LA HABITACIÓN →</span>
+        <div>{hotspots.map(spot=><button key={spot.id} onClick={spot.act}><b>{spot.glyph}</b>{spot.text}</button>)}</div>
+      </nav>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
         <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
