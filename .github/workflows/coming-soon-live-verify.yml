@@ -1,0 +1,30 @@
+name: Verify TeHiceEsto Coming Soon Public
+on:
+  push:
+    branches: [coming-soon-live-inspect-20261009]
+    paths: ['.github/workflows/coming-soon-live-verify.yml']
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify closed demo pages and identify shared CSS
+        run: |
+          set -euo pipefail
+          for category in abuelos aniversario propuesta; do
+            curl -sSL --max-time 35 "https://tehiceesto.com/experiencias/$category?qa=release-gate" -o "/tmp/$category.html"
+            if grep -q '<title>.*Próximamente' "/tmp/$category.html" && grep -q 'todavía no está disponible' "/tmp/$category.html"; then
+              echo "BLOCKED_DEMO_PASS $category"
+            else
+              echo "BLOCKED_DEMO_FAIL $category"
+              head -c 900 "/tmp/$category.html"; exit 1
+            fi
+          done
+          for page in / /crear; do
+            echo "PAGE $page"
+            curl -sSL --max-time 35 "https://tehiceesto.com$page" -o "/tmp/page-$(echo "$page" | tr / _).html"
+            grep -oE '/_next/static/immutable/chunks/[A-Za-z0-9_-]+\.css' "/tmp/page-$(echo "$page" | tr / _).html" | sort -u | head -40 || true
+            echo "JS_CHUNKS"
+            grep -oE '/_next/static/immutable/chunks/[A-Za-z0-9_-]+\.js' "/tmp/page-$(echo "$page" | tr / _).html" | sort -u | head -35 || true
+          done
+          curl -sSL --max-time 35 'https://tehiceesto.com/experiencias/mama' -o /tmp/mama.html
+          grep -q '0gradzqca-5xg' /tmp/mama.html && echo 'MAMA_SCRIPT_PRESERVED'
