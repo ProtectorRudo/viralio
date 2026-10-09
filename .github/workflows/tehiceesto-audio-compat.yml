@@ -11,7 +11,7 @@ on:
       - 'tests/tehiceesto-audio-upload.test.ts'
       - '.github/workflows/tehiceesto-audio-compat.yml'
   push:
-    branches: [fix/tehiceesto-whatsapp-audio-20261009]
+    branches: [main, fix/tehiceesto-whatsapp-audio-20261009]
 
 permissions:
   contents: read
