@@ -111,6 +111,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("navigation", { name: "Objetos para investigar" }).getByRole("button", { name: "Abrir cerradura" }).click();
     await expect(page.getByRole("heading", { name: "Una cerradura sin llave" })).toBeVisible();
     await page.evaluate(async ()=>{const img=new Image();img.src="/escape/objects/lock.webp";await img.decode();});
+    await expect(page.getByRole("dialog").locator('div[aria-hidden="true"]').first()).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-candado-mobile.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: /PAUSAR/ }).last().click();
