@@ -184,6 +184,56 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
   });
 
+
+  test("fondos y objetos Retina: 2x reales, sin ampliación excesiva en un celular de alta densidad",async ({browser})=>{
+    const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
+    const page=await context.newPage();
+    const errors:string[]=[];
+    page.on("pageerror",e=>errors.push(e.message));
+    const assets=["mansion","room-0","room-1","room-2","room-3"];
+    for(const name of assets){
+      const path="/escape/images/retina/"+name+".webp";
+      const result=await page.request.get(path);
+      expect(result.status(),path).toBe(200);
+      expect((await result.body()).byteLength,path).toBeGreaterThan(115000);
+      const actual=await page.evaluate(async path=>{
+        const image=new Image();
+        image.src=path;
+        await image.decode();
+        return [image.naturalWidth,image.naturalHeight];
+      },path);
+      expect(actual[0],name+" 2x width").toBeGreaterThanOrEqual(2880);
+      expect(actual[1],name+" 2x height").toBeGreaterThanOrEqual(1380);
+    }
+    for(const name of ["clock","lock","doll","music","portrait"]){
+      const path="/escape/images/retina/objects/"+name+".webp";
+      const result=await page.request.get(path);
+      expect(result.status(),path).toBe(200);
+      const size=await page.evaluate(async path=>{
+        const img=new Image();img.src=path;await img.decode();return img.naturalWidth;
+      },path);
+      expect(size,name).toBeGreaterThanOrEqual(1500);
+    }
+    await page.goto("/escape");
+    await expect(page.getByRole("heading",{name:/UMBRAL/})).toBeVisible();
+    await visualAudit(page,"umbral-mansion-retina-mobile.png");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+    const roomBackdrop=page.locator('[data-room="0"]').first();
+    const roomCss=await roomBackdrop.evaluate(el=>getComputedStyle(el).backgroundImage);
+    expect(roomCss).toContain("retina/room-0.webp");
+    await page.waitForFunction(()=>
+      performance.getEntriesByType("resource").some(e=>e.name.includes("/retina/room-0.webp"))
+    ,{timeout:15000});
+    await visualAudit(page,"umbral-vestibulo-retina-mobile.png");
+    await page.getByRole("navigation",{name:"Objetos para investigar"}).getByRole("button",{name:"Abrir cerradura"}).click();
+    const focusImage=await page.locator('[data-focus-object="lock"] [data-material="lock"]').locator("div").first().evaluate(el=>getComputedStyle(el).backgroundImage);
+    expect(focusImage).toContain("retina/objects/lock.webp");
+    await visualAudit(page,"umbral-cerradura-retina-mobile.png");
+    expect(errors).toEqual([]);
+    await context.close();
+  });
+
   test("cerradura física: tres tambores metálicos resuelven el código sin teclado",async ({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/escape");
