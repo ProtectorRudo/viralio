@@ -249,7 +249,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           <span className="friend-pact-stamp">AMISTAD<br />REAL</span>
         </div>
       </div>
-      {!pactSealed ? <FriendAction onClick={next} disabled={uncovered.length<4} onClick={()=>setPactSealed(true)}>{uncovered.length<4?"Aceptá las cuatro cláusulas":"✧ Firmar nuestro pacto"}</FriendAction> : <><p className="friend-pact-complete">✦ Queda oficialmente registrado: esta amistad no tiene fecha de vencimiento. ✦</p><FriendAction onClick={next}>Una última cosa</FriendAction></>}
+      {!pactSealed ? <FriendAction disabled={uncovered.length<4} onClick={()=>setPactSealed(true)}>{uncovered.length<4?"Aceptá las cuatro cláusulas":"✧ Firmar nuestro pacto"}</FriendAction> : <><p className="friend-pact-complete">✦ Queda oficialmente registrado: esta amistad no tiene fecha de vencimiento. ✦</p><FriendAction onClick={next}>Una última cosa</FriendAction></>}
       {pactSealed && <div className="friend-pact-burst" aria-hidden="true">{Array.from({length:15},(_,i)=><i key={i} style={{"--i":i} as React.CSSProperties}>✧</i>)}</div>}
     </section>
   );
