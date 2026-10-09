@@ -18,8 +18,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Check on-runner film tools
+      - name: Install local film encoder
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           command -v ffmpeg
           command -v ffprobe
       - name: Produce original Eva memory movie from photographic game scenes
