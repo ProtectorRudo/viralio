@@ -135,7 +135,7 @@ export default function EscapeGame() {
   const [pin, setPin] = useState("");
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
-  const [angle, setAngle] = useState({ x: 0, y: 0 });
+  const deadlineRef = useRef<number | null>(null);
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [apparition, setApparition] = useState(false);
@@ -179,10 +179,25 @@ export default function EscapeGame() {
     } catch { /* private browsing can restrict storage */ }
   }, [ready, phase, room, seconds, hints, mistakes, puzzles]);
   useEffect(() => {
-    if(phase!=="playing" || paused || modal==="settings") return;
-    const timer = window.setInterval(() => setSeconds(v => Math.max(0, v-1)),1000);
-    return () => clearInterval(timer);
-  }, [phase, paused, modal]);
+    if(phase!=="playing" || paused) {
+      deadlineRef.current=null;
+      return;
+    }
+    const deadline=Date.now()+seconds*1000;
+    deadlineRef.current=deadline;
+    const tick=()=>setSeconds(Math.max(0,Math.ceil((deadline-Date.now())/1000)));
+    const timer=window.setInterval(tick,250);
+    const synchronize=()=>{if(!document.hidden) tick();};
+    window.addEventListener("focus",synchronize);
+    document.addEventListener("visibilitychange",synchronize);
+    return ()=>{
+      window.clearInterval(timer);
+      window.removeEventListener("focus",synchronize);
+      document.removeEventListener("visibilitychange",synchronize);
+    };
+    // A single deadline, not 1500 naive setInterval ticks, avoids background-tab time drift.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, paused]);
   useEffect(() => {
     if(phase!=="playing" || seconds!==0) return;
     const timeout=window.setTimeout(()=>{setPhase("lost");setPaused(false);setModal(null);},0);
@@ -254,7 +269,15 @@ export default function EscapeGame() {
   }, [phase, paused, room]);
 
   function sfx(kind: "click" | "success" | "error" | "step" | "tone" = "click", pitch = 440) {
-    if(!sound || typeof window==="undefined") return;
+    if(typeof window==="undefined") return;
+    if(kind==="error" || kind==="success") {
+      if(typeof navigator!=="undefined" && navigator.vibrate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        navigator.vibrate(kind==="error"?[35,45,35]:[16,22,20]);
+      }
+      setJolt(true);
+      window.setTimeout(()=>setJolt(false),360);
+    }
+    if(!sound) return;
     try {
       const ctx=createAudioContext();
       if(!ctx) return;
@@ -269,16 +292,11 @@ export default function EscapeGame() {
       gain.gain.exponentialRampToValueAtTime(kind==="error"?.075:.045,now+.015);
       gain.gain.exponentialRampToValueAtTime(.0001,now+(kind==="success"?.6:.24));
       osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+(kind==="success"?.65:.28));
-      if(kind==="error" || kind==="success") {
-        if(navigator.vibrate) navigator.vibrate(kind==="error"?[40,60,45]:[18,28,25]);
-        setJolt(true);
-        window.setTimeout(()=>setJolt(false),380);
-      }
     } catch { /* audio is optional */ }
   }
   function message(t:string){setToast(t);}
   function begin() {
-    setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
+    deadlineRef.current=null;setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function nextRoom() {
     if(transitioning) return;
@@ -388,8 +406,8 @@ export default function EscapeGame() {
         <div className={styles.hudCenter}><span>CAPÍTULO {String(room+1).padStart(2,"0")}/04</span><strong>{ROOM_NAMES[room]}</strong></div>
         <div className={styles.hudRight}><div className={seconds<=300?styles.timerDanger:styles.timer}><small>TIEMPO RESTANTE</small><strong>{fmt(seconds)}</strong></div><button className={styles.iconButton} onClick={()=>{sfx();setPaused(true);}} aria-label="Pausar partida">Ⅱ</button></div>
       </header>
-      <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse")setAngle({x:(x-.5)*8,y:(y-.5)*8});}}>
-        <div className={styles.roomArt} style={{transform:"scale(1.025) translate("+(-angle.x)+"px,"+(-angle.y)+"px)"}}>
+      <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
+        <div className={styles.roomArt}>
           <SceneArt room={room} power={puzzles.power}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
