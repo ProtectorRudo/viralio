@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'showcase/**'
+      - 'src/app/escape/**'
+      - 'public/escape/images/**'
+      - 'scripts/build-escape-standalone.mjs'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -27,6 +30,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Use Node for standalone game
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned app dependencies and bundler
+        run: |
+          npm ci
+          npm install --no-save --no-package-lock esbuild@0.25.12
+      - name: Bundle UMBRAL without a Next server
+        run: |
+          node scripts/build-escape-standalone.mjs
+          test -s showcase/escape/index.html
+          test -s showcase/escape/app.js
+          test -s showcase/escape/app.css
+          test -s showcase/escape/images/mansion.webp
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Validate static showcase
