@@ -61,11 +61,11 @@ jobs:
             await expectScene('care');
             for(let i=0;i<3;i++)await page.locator('.mama-care-file').nth(i).click();
             await expect(page.locator('button[data-action=next]')).toBeEnabled();
-            await page.locator('button[data-action=next]').click({force:true});
+            await page.locator('.mama-care-continue').click();
             await expectScene('sacrifices');
             for(let i=0;i<4;i++)await page.locator('.mama-sacrifice-trigger').nth(i).click();
             await expect(page.locator('button[data-action=next]')).toBeEnabled();
-            await page.locator('button[data-action=next]').click({force:true});
+            await page.locator('.mama-sacrifice-continue').click();
             await expectScene('voices');
             console.log('Reached voices, bridge active:',await page.evaluate(()=>!!window.__thiMamaVoice20261009));
           }
