@@ -1,5 +1,6 @@
 "use client";
 
+import type { PointerEvent } from "react";
 import styles from "./Artefact.module.css";
 
 type Kind = "portrait" | "clock" | "lock" | "letter" | "music" | "doll" | "circuit" | "door" | "signal";
@@ -16,7 +17,7 @@ const INSCRIPTIONS:Record<Kind,string> = {
  * outside this purely visual layer and remain fully keyboard-accessible.
  */
 export default function Artefact({kind,mark}:{kind:Kind;mark?:string}) {
-  function followPointer(e:React.PointerEvent<HTMLDivElement>) {
+  function followPointer(e:PointerEvent<HTMLDivElement>) {
     if(e.pointerType==="touch") return;
     const rect=e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty("--look-x",(((e.clientX-rect.left)/rect.width-.5)*6).toFixed(2)+"px");
