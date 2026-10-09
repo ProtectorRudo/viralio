@@ -42,6 +42,15 @@ function context():AudioContext|null {
   }catch{return null;}
 }
 
+/** Shares the already-compressed, mute-aware bus with the original score.
+ * A single AudioContext avoids competing iOS/Android playback sessions.
+ */
+export function getHorrorScoreBus(): { audio: AudioContext; output: AudioNode } | null {
+  const audio=context();
+  if(!audio || !root) return null;
+  return {audio,output:root};
+}
+
 export function unlockHorrorAudio(){
   const a=context();
   if(a && a.state==="suspended") void a.resume().catch(()=>{});
