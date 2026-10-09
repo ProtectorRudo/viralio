@@ -75,6 +75,8 @@ jobs:
           import {chromium} from '@playwright/test';
           const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
           const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+          page.on('pageerror', e=>console.log('PAGE_ERROR',e.message));
+          page.on('console', m=>{if(m.type()==='error')console.log('PAGE_CONSOLE_ERROR',m.text().slice(0,500));});
           let audioResponses=[];
           page.on('response',r=>{if(r.url().includes('/mama-voice-mp3'))audioResponses.push(r.status())});
           const path='https://tehiceesto.com/experiencias/mama';
@@ -89,7 +91,9 @@ jobs:
             await page.locator('.mama-care-continue').click();
             for(const i of [0,1,2,3])await page.locator('.mama-sacrifice-trigger').nth(i).click();
             await page.locator('.mama-sacrifice-continue').click();
-            if(await page.locator('main.thi-experience').getAttribute('data-scene')!=='voices')throw Error('Not in voice room');
+            const diagnosis=await page.evaluate(()=>({scene:document.querySelector('main.thi-experience')?.getAttribute('data-scene'),patch:!!window.__thiMamaVoice20261009,sceneText:document.querySelector('section.thi-scene')?.innerText?.slice(0,300),buttons:[...document.querySelectorAll('button[data-action]')].map(b=>({a:b.getAttribute('data-action'),disabled:b.disabled,text:b.textContent?.slice(0,40)})).slice(0,12)}));
+            console.log('VOICE_NAV_DIAGNOSIS',JSON.stringify(diagnosis));
+            if(diagnosis.scene!=='voices')throw Error('Not in voice room');
             await page.waitForTimeout(500);
           }
           await toVoices();
