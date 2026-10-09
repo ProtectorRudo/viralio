@@ -251,11 +251,11 @@
   transition:transform .82s cubic-bezier(.21,.76,.24,1),opacity .62s;
 }
 .thi-rose-note-edge-left{
-  left:-1px;transform-origin:left center;
+  left:-1px;transform-origin:right center;
   background:linear-gradient(90deg,#f4e5d0 0%,#ecdac2 78%,#d9c0a0);
 }
 .thi-rose-note-edge-right{
-  right:-1px;transform-origin:right center;
+  right:-1px;transform-origin:left center;
   background:linear-gradient(270deg,#f4e5d0 0%,#ecdac2 78%,#d9c0a0);
 }
 .thi-rose-note-edge-left::before,.thi-rose-note-edge-right::before{
