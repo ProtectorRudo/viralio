@@ -1,0 +1,122 @@
+/* UMBRAL / Cinematic optical compositing
+   Designed as a foreground plate: deliberately subtle over original photography.
+   No blur() on full viewport, no CSS filters that soften the photo below. */
+.atmosphere{
+  position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none;
+  isolation:isolate;contain:paint;
+  --moon:rgba(130,176,190,.17);--amber:rgba(227,156,77,.10);
+  --shaft:rgba(167,204,215,.09);--air:rgba(209,217,204,.28);
+}
+.atmosphere>div{position:absolute;inset:0;pointer-events:none}
+.colorGrade{
+  z-index:0;
+  background:linear-gradient(122deg,rgba(10,24,31,.21),transparent 49%,rgba(20,15,12,.19)),
+             radial-gradient(ellipse 67% 63% at 48% 45%,transparent 47%,rgba(2,5,8,.27) 100%);
+}
+.windowGlow{
+  z-index:1;opacity:.83;mix-blend-mode:screen;
+  background:radial-gradient(ellipse 40% 76% at 17% 23%,var(--moon),transparent 91%),
+             radial-gradient(ellipse 32% 40% at 75% 54%,var(--amber),transparent 95%);
+  animation:moonBreath 13s ease-in-out infinite alternate;
+}
+.volume{z-index:2;mix-blend-mode:screen;opacity:.55}
+.volume i{
+  position:absolute;top:-24%;left:var(--ray-x,12%);width:var(--ray-width,27%);height:135%;
+  transform-origin:top center;transform:rotate(var(--ray-angle,-20deg));
+  clip-path:polygon(49% 0,54% 0,100% 100%,0 100%);
+  background:linear-gradient(180deg,var(--shaft),rgba(126,166,180,.014) 72%,transparent);
+  animation:rayShift 22s ease-in-out infinite alternate;
+}
+.shaftOne{--ray-x:0%;--ray-width:23%;--ray-angle:-14deg}
+.shaftTwo{--ray-x:14%;--ray-width:36%;--ray-angle:-21deg;animation-delay:-11s!important;opacity:.53}
+.shaftThree{--ray-x:69%;--ray-width:18%;--ray-angle:17deg;animation-delay:-6s!important;opacity:.42}
+.practical{
+  z-index:3;mix-blend-mode:screen;
+  background:radial-gradient(ellipse 26% 40% at 65% 40%,var(--amber),transparent 87%);
+  animation:practicalBreath 6.7s ease-in-out infinite alternate;
+}
+.windowRain{z-index:4;opacity:0;transition:opacity 1.8s ease;mask-image:linear-gradient(90deg,#000,rgba(0,0,0,.7) 45%,transparent 70%)}
+.windowRain i{
+  position:absolute;display:block;width:1px;border-radius:2px;
+  background:linear-gradient(180deg,transparent,rgba(226,242,240,.025) 24%,rgba(236,246,240,.21) 75%,transparent);
+  box-shadow:0 0 2px rgba(215,239,240,.09);
+  transform:rotate(9deg) translate3d(0,-24px,0);
+  animation:rainSlip linear infinite;
+}
+.suspendedDust{z-index:5;opacity:.55;mix-blend-mode:screen}
+.suspendedDust i{
+  position:absolute;display:block;border-radius:50%;
+  background:var(--air);box-shadow:0 0 8px 1px rgba(236,214,162,.08);
+  animation:dustSuspension ease-in-out infinite alternate;will-change:transform,opacity;
+}
+.anamorphicGlass{
+  z-index:6;opacity:.44;mix-blend-mode:screen;
+  background:
+    radial-gradient(ellipse 9% 28% at var(--torch-x,52%) var(--torch-y,43%),rgba(223,237,240,.055),transparent 96%),
+    linear-gradient(105deg,transparent 21%,rgba(250,236,211,.015) 22%,transparent 24%);
+}
+.falloff{
+  z-index:7;
+  background:radial-gradient(ellipse 100% 82% at 49% 44%,transparent 55%,rgba(0,2,4,.25) 100%);
+}
+[data-mood="foyer"].atmosphere{--moon:rgba(146,182,191,.18);--amber:rgba(241,157,82,.105);--shaft:rgba(179,222,231,.105)}
+[data-mood="foyer"] .windowRain{opacity:.46}
+[data-mood="foyer"] .practical{background:radial-gradient(ellipse 20% 31% at 75% 44%,rgba(224,168,87,.105),transparent 87%)}
+[data-mood="study"].atmosphere{--moon:rgba(71,103,122,.045);--amber:rgba(245,166,69,.22);--shaft:rgba(222,175,99,.105);--air:rgba(239,203,138,.35)}
+[data-mood="study"] .volume{opacity:.42;transform:scaleX(-1)}
+[data-mood="study"] .windowGlow{background:radial-gradient(ellipse 38% 47% at 54% 58%,rgba(238,164,78,.11),transparent 92%);animation:practicalBreath 5.4s ease-in-out infinite alternate}
+[data-mood="study"] .practical{background:radial-gradient(ellipse 19% 29% at 53% 62%,rgba(251,187,93,.17),transparent 92%);animation:candleLuminance 4.1s steps(7,end) infinite}
+[data-mood="study"] .suspendedDust{opacity:.85}
+[data-mood="nursery"].atmosphere{--moon:rgba(129,177,215,.23);--amber:rgba(221,204,184,.026);--shaft:rgba(177,207,231,.14);--air:rgba(210,232,236,.19)}
+[data-mood="nursery"] .windowGlow{background:radial-gradient(ellipse 45% 67% at 83% 25%,rgba(144,196,234,.21),transparent 86%),radial-gradient(ellipse 31% 48% at 37% 50%,rgba(16,48,62,.13),transparent)}
+[data-mood="nursery"] .windowRain{opacity:.64;mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.64) 63%,#000 100%)}
+[data-mood="nursery"] .volume{transform:scaleX(-1);opacity:.7}
+[data-mood="nursery"] .practical{
+  background:linear-gradient(90deg,transparent 33%,rgba(7,16,22,.09) 51%,transparent 66%);
+  animation:nurseryShadow 17s ease-in-out infinite;
+}
+[data-mood="machine"].atmosphere{--moon:rgba(113,157,162,.04);--amber:rgba(218,52,36,.24);--shaft:rgba(221,97,71,.075);--air:rgba(213,185,167,.18)}
+[data-mood="machine"] .volume{opacity:.19}
+[data-mood="machine"] .windowGlow{
+  background:radial-gradient(ellipse 44% 63% at 70% 39%,rgba(202,50,33,.17),transparent 88%);
+  animation:reactorWarning 6.4s ease-in-out infinite;
+}
+[data-mood="machine"] .practical{
+  background:radial-gradient(ellipse 20% 36% at 84% 58%,rgba(240,87,48,.17),transparent 92%);
+  animation:reactorWarning 5.8s ease-in-out infinite;
+}
+[data-mood="machine"][data-powered="yes"]{
+  --moon:rgba(190,232,223,.24);--amber:rgba(208,234,211,.17);--shaft:rgba(182,235,210,.22);
+}
+[data-mood="machine"][data-powered="yes"] .windowGlow{
+  background:radial-gradient(ellipse 71% 81% at 69% 43%,rgba(202,248,216,.15),transparent 88%);
+  animation:moonBreath 13s ease-in-out infinite alternate;
+}
+[data-mood="machine"][data-powered="yes"] .practical{
+  background:radial-gradient(ellipse 45% 46% at 84% 57%,rgba(212,255,219,.17),transparent 83%);
+  animation:none;
+}
+[data-paused="yes"] *,[data-paused="yes"] *::before,[data-paused="yes"] *::after{animation-play-state:paused!important}
+@keyframes moonBreath{from{opacity:.63;transform:translate3d(-.3%,0,0)}to{opacity:1;transform:translate3d(.55%,-.5%,0)}}
+@keyframes practicalBreath{from{opacity:.6}to{opacity:1}}
+@keyframes rayShift{from{opacity:.54;transform:rotate(var(--ray-angle,-20deg))}to{opacity:1;transform:rotate(calc(var(--ray-angle,-20deg) + 1.4deg))}}
+@keyframes candleLuminance{0%,43%,72%,100%{opacity:.83}10%,51%{opacity:.54}24%,68%{opacity:1}75%{opacity:.67}}
+@keyframes rainSlip{from{opacity:0;transform:rotate(9deg) translate3d(0,-19px,0)}18%{opacity:.84}to{opacity:0;transform:rotate(9deg) translate3d(0,105px,0)}}
+@keyframes dustSuspension{0%{opacity:.1;transform:translate3d(0,0,0)}43%{opacity:.65}100%{opacity:.19;transform:translate3d(11px,-29px,0)}}
+@keyframes nurseryShadow{0%,64%,100%{opacity:0;transform:translateX(-25%)}69%{opacity:.41}87%{opacity:.07;transform:translateX(40%)}}
+@keyframes reactorWarning{0%,72%,100%{opacity:.47}4%,8%,71%{opacity:1}6%,74%{opacity:.23}}
+@media(max-width:600px){
+  .volume{opacity:.31}
+  .windowGlow{opacity:.86}
+  .windowRain{opacity:.26}
+  [data-mood="nursery"] .windowRain{opacity:.36}
+  .suspendedDust{opacity:.4}
+  [data-mood="study"] .suspendedDust{opacity:.52}
+  .falloff{background:radial-gradient(ellipse 107% 97% at 51% 45%,transparent 42%,rgba(0,2,4,.22) 100%)}
+}
+@media(prefers-reduced-motion:reduce){
+  .atmosphere *, .atmosphere *::before,.atmosphere *::after{animation:none!important;transition:none!important;will-change:auto!important}
+  .windowRain{opacity:0!important}
+  .practical,.windowGlow{opacity:.7}
+}
+@media(prefers-reduced-data:reduce){.windowRain,.suspendedDust{display:none}}
