@@ -27,7 +27,7 @@ describe("Customer audio compatibility",()=>{
   });
   it("decodes a real Ogg Opus WhatsApp-style voice note with a generic MIME label",async()=>{
     // 160 ms synthetic 440 Hz voice fixture (FFmpeg/libopus; no customer data).
-    const base64="T2dnUwACAAAAAAAAAADuSu0oAAAAAD4R8Z0BE09wdXNIZWFkAQE4AYA+AAAAAABPZ2dTAAAAAAAAAAAAAO5K7SgBAAAAtj5YhAE9T3B1c1RhZ3MMAAAATGF2ZjYxLjcuMTAzAQAAAB0AAABlbmNvZGVyPUxhdmM2MS4xOS4xMDEgbGlib3B1c09nZ1MABDgfAAAAAAAA7krtKAIAAACdyyljCRgYFRUQFg8SDwiC4jRFRViX9UFWDFbbe5bAZyYxz2LmjAijQOf/L/yPMySS7/si2mMe5di8DLGYsAidSG6ze/qKV4f8EMBO8PWmKbWg8AickCvjTlp4HoAbTE00pCUK7ocfgAickCvjTlp6/Kr2ykeqwFwInJd44IdWfRmcmKDZ4jwo38mV6p1gCJyQK+NOWnsDEhAsNgaACJyQK+NOWnsEhjDmAf16i9egCAZhasEuUBDrOpYwYojA";
+    const base64="T2dnUwACAAAAAAAAAADZEGNQAAAAAELY0gABE09wdXNIZWFkAQE4AYC7AAAAAABPZ2dTAAAAAAAAAAAAANkQY1ABAAAA9hE+CwE9T3B1c1RhZ3MMAAAATGF2ZjYxLjcuMTAzAQAAAB0AAABlbmNvZGVyPUxhdmM2MS4xOS4xMDEgbGlib3B1c09nZ1MABLgXAAAAAAAA2RBjUAIAAAAzciFzBzQkJiwmKBVIgltdbFa39AABcM5vZIK+b2Xba9uwtlnLBBTM9HthmKWskZ0gein2l0frUchN9XzXmjPASKSIV6yYhQNXTlZPNH+5tq6SagLWKud+c9x+vCQ+IBkDZoSASJwbUk/ZybZ0LsxBRTVEQ31OAQGl5g1Lmw6GwMEllZ/d7YcPphBInBtSVs4f6x7IhHyzokwWxMbuisMedI/PBJZh8qRDSfZ9FRx2oMTKoqKAwEicG591nPxJDsaXZvHvy6orLJ+nXcvSiCc6hAtDQ6N56ZRJgJYwSJwbV1FfJiso8nDETujQmny22kn4g1GVTQTy5mgd9sFh/Q3le+pZ+UgGbS3gVLImg+FO+nZmoJkBCzS3gA==";
     const data=Uint8Array.from(atob(base64),letter=>letter.charCodeAt(0));
     const voice=new File([data],"PTT-2026-10-09-WA0001.opus",{type:"application/octet-stream"});
     // Check the underlying bundled decoder independently for diagnostic errors.
