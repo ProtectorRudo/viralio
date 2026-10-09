@@ -36,7 +36,7 @@ describe("TeHiceEsto critical checkout regression gates",()=>{
     const code=src("supabase/migrations/20261009_tehiceesto_checkout_recovery.sql");
     expect(code).toContain("o.status='pending'");
     expect(code).toContain("o.checkout_url is null");
-    expect(code).toContain("o.provider_reference is null");
+    expect(code).toContain("when purchase.provider_reference is null then 'create'");
     expect(code).toContain("coalesce(a.attempt_count,0)<12");
     expect(code).toContain("*/5 * * * *");
   });
