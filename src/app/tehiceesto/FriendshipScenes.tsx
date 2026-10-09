@@ -178,7 +178,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <p className="friend-subline">Cuatro frases. Miles de significados. Ningún traductor podría entenderlas.</p>
       <div className="friend-code-library">
         {codes.map(([code,meaning],i)=>(
-          <button type="button" key={code} data-action="insidejoke-open" className={"friend-code-book" + (uncovered.includes(i)?" open":"")} onClick={()=>{reveal(i);setActiveIncident(i)}} aria-expanded={activeIncident===i}>
+          <button type="button" key={code} data-action="insidejoke-open" className={"friend-code-book" + (uncovered.includes(i)?" open":"")} onClick={()=>reveal(i)} aria-expanded={uncovered.includes(i)}>
             <span className="friend-code-front"><small>CÓDIGO · 0{i+1}</small><b>✧</b><strong>{code}</strong><em>ABRIR Y DESCIFRAR <span>↗</span></em></span>
             <span className="friend-code-reveal"><small>TRADUCCIÓN CONFIDENCIAL</small><strong>{code}</strong><span>{meaning}</span><em>DESCIFRADO ✓</em></span>
           </button>
@@ -196,7 +196,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <div className="friend-evidence-board">
         <span className="friend-thread friend-thread-one" aria-hidden="true" /><span className="friend-thread friend-thread-two" aria-hidden="true" />
         {incidents.map(([number,title,,short],i)=>(
-          <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")} onClick={()=>reveal(i)} aria-expanded={uncovered.includes(i)}>
+          <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")} onClick={()=>{reveal(i);setActiveIncident(i)}} aria-expanded={activeIncident===i}>
             <span className="friend-note-tape" aria-hidden="true" />
             <span className="friend-note-front"><small>{number} · ARCHIVO</small><strong>{short}</strong><span>{uncovered.includes(i)?"✓ EVIDENCIA REVISADA":"TOCÁ PARA ABRIR ↗"}</span></span>
           </button>
