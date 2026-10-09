@@ -67,7 +67,6 @@ const recipes:Record<string,string[]>={
   mama: ["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
   papa: ["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
   amistad: ["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
-  secreto: ["invitation","portal","gallery","timepiece","recording","clues","confession","passage","reveal","keepsake"],
 };
 
 function cleanText(value: unknown, max: number) {
@@ -215,9 +214,7 @@ function cleanStudioRecipe(canonical: string[], value: unknown) {
 }
 
 function studioDefaultScene(kind: string, recipe: string[]) {
-  if (kind === "image" && recipe.includes("gallery")) return "gallery";
   if (kind === "image" && recipe.includes("memories")) return "memories";
-  if (kind === "audio" && recipe.includes("recording")) return "recording";
   if (kind === "audio" && recipe.includes("voices")) return "voices";
   if (kind === "video" && recipe.includes("video")) return "video";
   if (kind === "video" && recipe.includes("memories")) return "memories";
@@ -446,7 +443,7 @@ Deno.serve(async (req: Request) => {
 
     try {
       const { gift, story } = await assertStudioAccess(supabase, code, body.editorToken);
-      const recipe = (["premium-v3","premium-v4","secret-v1"].includes(gift.template_version))
+      const recipe = (["premium-v3","premium-v4"].includes(gift.template_version))
         ? canonicalRecipeForGift(gift, story) // Preserve every model scene: personalization changes content, not layout.
         : cleanStudioRecipe(canonicalRecipeForGift(gift, story), body.sceneRecipe);
       if (recipe.length < 2) return json(origin, { error: "recipe_too_short" }, 400);
@@ -808,15 +805,15 @@ Deno.serve(async (req: Request) => {
       );
       const hasVideo = (publishMedia || []).some((item) => item.kind === "video");
       const canonical = canonicalRecipeForGift(gift, story);
-      let publishRecipe = (["premium-v3","premium-v4","secret-v1"].includes(gift.template_version))
+      let publishRecipe = (["premium-v3","premium-v4"].includes(gift.template_version))
         ? [...canonical] // The purchased demo's full journey is guaranteed.
         : Array.isArray(gift.scene_recipe)
           ? gift.scene_recipe.map(String)
           : [...canonical];
 
-      if (!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
-      if (!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
-      if (!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasVideo) publishRecipe = publishRecipe.filter((scene) => scene !== "video");
+      if (!["premium-v3","premium-v4"].includes(gift.template_version) && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
+      if (!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
+      if (!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVideo) publishRecipe = publishRecipe.filter((scene) => scene !== "video");
       if (canonical.includes("intro") && !publishRecipe.includes("intro")) publishRecipe.unshift("intro");
       const terminal = canonical.includes("proposal") ? "proposal" : canonical.includes("finale") ? "finale" : canonical[canonical.length - 1];
       if (terminal && !publishRecipe.includes(terminal)) publishRecipe.push(terminal);
@@ -910,7 +907,7 @@ Deno.serve(async (req: Request) => {
         .update({
           status: "awaiting_payment",
           experience_slug: experienceSlug,
-          template_version: experienceSlug==="secreto" ? "secret-v1" : experienceSlug==="pareja" ? "premium-v4" : "premium-v3",
+          template_version: experienceSlug==="pareja" ? "premium-v4" : "premium-v3",
           giver_name: giverName,
           recipient_name: recipientName,
           feeling: feeling || null,
@@ -963,7 +960,7 @@ Deno.serve(async (req: Request) => {
       .insert({
         status: "awaiting_payment",
         experience_slug: experienceSlug,
-        template_version: experienceSlug==="secreto" ? "secret-v1" : experienceSlug==="pareja" ? "premium-v4" : "premium-v3",
+        template_version: experienceSlug==="pareja" ? "premium-v4" : "premium-v3",
         giver_name: giverName,
         recipient_name: recipientName,
         feeling: feeling || null,

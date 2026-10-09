@@ -5,16 +5,13 @@ import {experiences as liveModels} from "../src/app/tehiceesto/data";
 import {experiences as frozenModels} from "../src/app/tehiceesto/template-v3/data";
 
 const read=(p:string)=>readFileSync(join(process.cwd(),p),"utf8");
-describe("TeHiceEsto demo-to-purchase parity: nine frozen + secret-v1",()=>{
-  const legacyModels=liveModels.filter(model=>model.slug!=="secreto");
-  const live=legacyModels.map(model=>model.slug).sort();
+describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
+  const live=liveModels.map(model=>model.slug).sort();
   it("freezes every advertised model, scene order and copy at sale time",()=>{
     expect(live).toHaveLength(9);
     expect(frozenModels.map(model=>model.slug).sort()).toEqual(live);
-    expect(liveModels).toHaveLength(10);
-    const secret=liveModels.find(model=>model.slug==="secreto");
-    expect(secret?.recipe).toEqual(["invitation","portal","gallery","timepiece","recording","clues","confession","passage","reveal","keepsake"]);
-    for(const demo of legacyModels){
+    expect(liveModels).toHaveLength(9);
+    for(const demo of liveModels){
       const sold=frozenModels.find(x=>x.slug===demo.slug);
       expect(sold).toBeDefined();
       expect(sold!.recipe).toEqual(demo.recipe);
@@ -50,11 +47,11 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen + secret-v1",()=>{
     for(const model of liveModels){
       expect(src).toContain(`${model.slug}: ${JSON.stringify(model.recipe)}`);
     }
-    expect(src).toContain('["premium-v3","premium-v4","secret-v1"].includes(gift.template_version)');
+    expect(src).toContain('["premium-v3","premium-v4"].includes(gift.template_version)');
     expect(src).toContain("? [...canonical]");
-    expect(src).toContain('!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasVoice');
-    expect(src).toContain('!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasPhoto');
-    expect(src).toContain('!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasVideo');
+    expect(src).toContain('!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVoice');
+    expect(src).toContain('!["premium-v3","premium-v4"].includes(gift.template_version) && !hasPhoto');
+    expect(src).toContain('!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVideo');
   });
   it("renders published gifts and both editors from the same frozen model",()=>{
     const page=read("src/app/tehiceesto/r/[code]/page.tsx");

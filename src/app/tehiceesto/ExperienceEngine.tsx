@@ -30,7 +30,6 @@ import { mediaBelongsToScene } from "./mediaRouting";
 import type { SceneTextOverrides } from "./sceneText";
 import FriendshipScenes from "./FriendshipScenes";
 import PairRoseFinale from "./PairRoseFinale";
-import SecretExperience from "./SecretExperience";
 
 export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType};
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
@@ -62,7 +61,7 @@ function AttachedSceneMedia({scene,photos,audios,videos}:{scene:SceneType;photos
   </aside>;
 }
 
-function StandardExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,previewScene,onSceneChange,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;previewScene?:SceneType;onSceneChange?:(scene:SceneType,index:number,total:number)=>void;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
+export default function ExperienceEngine({experience,letterText,photoMedia,audioMedia,soundtrackMedia,videoMedia,copyOverride,initialScene,previewScene,onSceneChange,storyContext,sceneTextOverrides,customerGift=false}:{experience:Experience;letterText?:string;photoMedia?:ThiPhoto[];audioMedia?:ThiAudio[];soundtrackMedia?:ThiAudio;videoMedia?:ThiVideo[];copyOverride?:DeepPartial<ExperienceCopy>;initialScene?:SceneType;previewScene?:SceneType;onSceneChange?:(scene:SceneType,index:number,total:number)=>void;storyContext?:{keyDate?:string;anecdote?:string};sceneTextOverrides?:SceneTextOverrides;customerGift?:boolean}){
   const requestedInitialScene=previewScene||initialScene;
   const initialSceneIndex=requestedInitialScene?Math.max(0,experience.recipe.indexOf(requestedInitialScene)):0;
   const [internalSceneIndex,setInternalSceneIndex]=useState(initialSceneIndex);const [runId,setRunId]=useState(0);const [transitioning,setTransitioning]=useState(false);const [direction,setDirection]=useState<"forward"|"back">("forward");
@@ -1685,12 +1684,4 @@ function StandardExperienceEngine({experience,letterText,photoMedia,audioMedia,s
     </div>
     <div className="thi-progress thi-progress-premium"><button data-action="previous" onClick={prev} disabled={!sceneIndex||transitioning} aria-label={token(copy.ui.previousAria)}>←</button><div><span style={{width:`${progress}%`}}/></div><small>{Math.round(progress)}%</small><button data-action="next" className="thi-progress-next" onClick={next} disabled={!canAdvance()||sceneIndex>=total-1} aria-label={token(copy.ui.nextAria)}>→</button></div>
   </main>;
-}
-
-
-/** Frozen legacy templates remain untouched; this live-only model reuses the private gift content. */
-type EngineProps = Parameters<typeof StandardExperienceEngine>[0];
-export default function ExperienceEngine(props:EngineProps){
-  if(props.experience.slug==="secreto")return <SecretExperience {...props}/>;
-  return <StandardExperienceEngine {...props}/>;
 }
