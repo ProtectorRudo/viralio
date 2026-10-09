@@ -49,6 +49,10 @@ jobs:
           import json, pathlib
           j=json.loads(pathlib.Path("public/escape/images/retina/quality-report.json").read_text())
           assert len(j["assets"])==5
+          assert len(j["objects"])==9
+          for x in j["objects"]:
+              assert x["retina"]=="1500x1500",x
+              assert x["retina_bytes"]>x["original_bytes"],x
           for x in j["assets"]:
               w,h=map(int,x["retina"].split("x"))
               assert w>=2800 and h>=1380, x
@@ -59,7 +63,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/escape/images/retina/*.webp public/escape/images/retina/quality-report.json
+          git add public/escape/images/retina/
           if ! git diff --cached --quiet; then
             git commit -m "asset(escape): export 2x retina photographed rooms, correct excessive compression"
             git fetch origin feat/escape-retina-backgrounds-20261009
