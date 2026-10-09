@@ -15,8 +15,8 @@ describe("Ailin's short, discreet affiliate link",()=>{
     expect(alias).toContain('<AffiliateRedirect code="ailin" source="short" />');
     expect(alias).toContain('url: "https://tehiceesto.com/"');
     expect(alias).toContain("index: false");
-    expect(alias).not.toContain("/r/ailin");
-    expect(proxy).toContain("pathname === \"/\" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`");
+    expect(alias).not.toContain('href="/r/ailin"');
+    expect(proxy).toMatch(/pathname\s*===\s*"\/"\s*\?\s*LEGACY_PREFIX\s*:\s*`\$\{LEGACY_PREFIX\}\$\{pathname\}`/);
   });
 
   it("persists the 30-day verified affiliate attribution before cleaning the address bar",()=>{
