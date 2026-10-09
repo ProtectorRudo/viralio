@@ -6,6 +6,7 @@ import Artefact from "./Artefact";
 import EvaMemory from "./EvaMemory";
 import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
 import EvidenceArchive from "./EvidenceArchive";
+import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiveScore,stopAdaptiveScore,tensionTier,TENSION_TITLES} from "./AdaptiveScore";
 
 type Phase = "intro" | "playing" | "won" | "lost";
 type Difficulty = "story" | "nightmare";
@@ -140,6 +141,7 @@ export default function EscapeGame() {
   const [hints, setHints] = useState([0,0,0,0]);
   const [mistakes, setMistakes] = useState(0);
   const [sound, setSound] = useState(true);
+  const [musicEnabled,setMusicEnabled] = useState(true);
   const [cinematicScares,setCinematicScares] = useState(true);
   const [scareStage,setScareStage] = useState<"off"|"black"|"reveal">("off");
   const scareAlreadyPlayed=useRef(false);
@@ -147,6 +149,8 @@ export default function EscapeGame() {
   const [modal, setModal] = useState<string | null>(null);
   const [dollSpeaking,setDollSpeaking] = useState(false);
   const cinematicPause=modal==="tape" || scareStage!=="off";
+  const scoreDuck=cinematicPause || dollSpeaking || Boolean(modal);
+  const scoreTier=tensionTier(seconds);
   const [pin, setPin] = useState("");
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
@@ -284,7 +288,7 @@ export default function EscapeGame() {
   }, [phase, paused, cinematicPause]);
   useEffect(() => {
     if(phase!=="playing" || seconds!==0) return;
-    const timeout=window.setTimeout(()=>{setPhase("lost");setPaused(false);setModal(null);},0);
+    const timeout=window.setTimeout(()=>{finishAdaptiveScore("lost");playHorror("door",{pan:0,intensity:.55});setPhase("lost");setPaused(false);setModal(null);},0);
     return ()=>window.clearTimeout(timeout);
   },[seconds,phase]);
   useEffect(() => {
@@ -318,6 +322,11 @@ export default function EscapeGame() {
     },18700);
     return ()=>window.clearInterval(foley);
   },[phase,paused,modal,scareStage,room,sound,cinematicScares]);
+
+  useEffect(()=>{
+    updateAdaptiveScore({remaining:seconds,room,active:phase==="playing"&&!paused,silent:!sound||!musicEnabled,duck:scoreDuck});
+  },[seconds,room,phase,paused,sound,musicEnabled,scoreDuck]);
+  useEffect(()=>()=>stopAdaptiveScore(),[]);
 
   const lateDanger=seconds<=300, finalDanger=seconds<=60;
   useEffect(()=>{
@@ -430,6 +439,7 @@ export default function EscapeGame() {
   function message(t:string){setToast(t);}
   function begin() {
     unlockHorrorAudio();
+    startAdaptiveScore({remaining:difficulty==="nightmare"?720:TOTAL,room:0,active:true,silent:!sound||!musicEnabled,duck:false});
     scareAlreadyPlayed.current=false;
     setScareStage("off");
     resumeHorrorAudio();
@@ -481,6 +491,7 @@ export default function EscapeGame() {
     } else {setMistakes(v=>v+1);sfx("error");playHorror("electric",{pan:.3});message("Las luces estallan. DOS circuitos deben sumar exactamente SIETE.");}
   }
   function ending(choice:"save"|"escape"){
+    finishAdaptiveScore("won");
     setPuzzles(p=>({...p,ending:choice}));sfx("success");setPhase("won");setModal(null);
   }
   function showHint(){
@@ -550,6 +561,7 @@ export default function EscapeGame() {
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
         <button className={styles.primary} onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
         <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
+        <button className={styles.scoreChoice} type="button" aria-pressed={musicEnabled} onClick={()=>setMusicEnabled(v=>!v)}>{musicEnabled?"♫ BANDA SONORA DINÁMICA ACTIVADA":"♫ BANDA SONORA DESACTIVADA"}</button>
         <button className={styles.scareChoice} type="button" aria-pressed={cinematicScares} onClick={()=>setCinematicScares(v=>!v)}>{cinematicScares?"◉ EXPERIENCIA DE TERROR CINEMATOGRÁFICO":"◎ TERROR SUAVE · SIN APAGONES"}</button>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
@@ -558,7 +570,7 @@ export default function EscapeGame() {
       <header className={styles.hud}>
         <div className={styles.identity}><div className={styles.monogram}>U<span>.</span></div><div><strong>UMBRAL</strong><small>{difficulty==="nightmare"?"MODO PESADILLA":"EXPEDIENTE 013"}</small></div></div>
         <div className={styles.hudCenter}><span>CAPÍTULO {String(room+1).padStart(2,"0")}/04</span><strong>{ROOM_NAMES[room]}</strong></div>
-        <div className={styles.hudRight}><div className={seconds<=300?styles.timerDanger:styles.timer}><small>TIEMPO RESTANTE</small><strong>{fmt(seconds)}</strong></div><button className={styles.iconButton} onClick={()=>{sfx();setPaused(true);}} aria-label="Pausar partida">Ⅱ</button></div>
+        <div className={styles.hudRight}><div className={seconds<=300?styles.timerDanger:styles.timer}><small>{seconds<=60?"NO QUEDA TIEMPO":"TIEMPO RESTANTE"}</small><strong className={seconds<=10?styles.timerFinal:""}>{fmt(seconds)}</strong><em className={styles.tensionTitle} data-tier={scoreTier}>{TENSION_TITLES[scoreTier]}</em></div><button className={styles.iconButton} onClick={()=>{sfx();setPaused(true);}} aria-label="Pausar partida">Ⅱ</button></div>
       </header>
       <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")+" "+(seconds<=300?styles.lastMinutes:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
         <div className={styles.roomArt}>
@@ -580,8 +592,9 @@ export default function EscapeGame() {
       </nav>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
-        <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setFlashlight(v=>!v)} aria-pressed={flashlight}>{flashlight?"◉ APAGAR LUZ":"☼ LINTERNA"}</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
+        <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setFlashlight(v=>!v)} aria-pressed={flashlight}>{flashlight?"◉ APAGAR LUZ":"☼ LINTERNA"}</button><button onClick={()=>setMusicEnabled(v=>!v)} aria-label={musicEnabled?"Silenciar música":"Activar música"} aria-pressed={musicEnabled}>{musicEnabled?"♫ MÚSICA":"♫ SIN MÚSICA"}</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
       </div>
+      {seconds<=10 && seconds>0 && !paused && !cinematicPause && <div className={styles.finalCountdown} aria-label={"Quedan "+seconds+" segundos"}><span>EL UMBRAL SE CIERRA</span><strong>{seconds}</strong></div>}
       {scareStage!=="off"&&<div className={styles.blackoutCurtain+" "+(scareStage==="reveal"?styles.blackoutReveal:"")} role="dialog" aria-label="Apagón inesperado en la casa" aria-modal="true" aria-live="off">
         <div className={styles.blackoutDark} aria-hidden="true"/>
         <div className={styles.blackoutPresence} aria-hidden="true"/>
@@ -591,7 +604,7 @@ export default function EscapeGame() {
       </div>}
       {transitioning&&<div className={styles.transition} aria-live="polite"><span>LA CASA CAMBIA</span><div className={styles.transitionDoor}/><strong>UNA PUERTA SE CIERRA DETRÁS DE VOS</strong></div>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
-      {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
+      {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
         <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
@@ -614,7 +627,7 @@ export default function EscapeGame() {
           {modal.startsWith("hint")&&<><Artefact kind="signal"/><h2>Una señal en la oscuridad</h2><p>{CLUES[room][Number(modal.replace("hint",""))]}</p><p className={styles.hintCost}>Usar pistas reduce la puntuación final, pero nunca bloquea tu escape.</p></>}
         </section>
       </div>}
-    </> : <section className={styles.ending}>
+    </> : <section className={styles.ending+" "+(phase==="lost"?styles.endingLost:"")}>
       <p className={styles.eyebrow}>{phase==="won"?"EXPEDIENTE CERRADO":"ARCHIVO INTERRUMPIDO"} · {difficulty==="nightmare"?"PESADILLA":"HISTORIA"}</p>
       <div className={styles.endingGlyph}>{phase==="won"?"✦":"◷"}</div>
       <h1>{phase==="won"?(puzzles.ending==="save"?"No escapaste solo.":"Saliste. Pero ella sigue ahí."):"La casa te recordó."}</h1>
@@ -624,7 +637,7 @@ export default function EscapeGame() {
       {phase==="won"&&<p className={styles.personalRecord}>{isNewRecord?"✦ NUEVO RÉCORD PERSONAL":"TU MEJOR PUNTUACIÓN"} · {Math.max(score,personalBest).toLocaleString("es-AR")} PUNTOS</p>}
       {phase==="won"&&puzzles.ending==="save"&&<section className={styles.evaEpilogue} aria-label="Último mensaje de Eva"><span className={styles.eyebrow}>ÚLTIMO REGISTRO · EVA</span><p>«Gracias por volver. Ahora sí podemos irnos.»</p><button onClick={()=>whisperEva("Gracias por volver. Ahora sí podemos irnos.")} aria-label="Escuchar el agradecimiento de Eva">◉ ESCUCHAR SU ÚLTIMA VOZ</button></section>}
       <button className={styles.primary} onClick={begin}>VOLVER A ENTRAR ↻</button>
-      <button className={styles.ghost} onClick={()=>setPhase("intro")}>CAMBIAR EL DESAFÍO</button>
+      <button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPhase("intro");}}>CAMBIAR EL DESAFÍO</button>
       <button className={styles.ghost} onClick={()=>{const txt="Sobreviví a UMBRAL: La casa que recuerda. "+(phase==="won"?"Conseguí "+score+" puntos. ":"")+"¿Te animás a entrar? https://viralio.net/escape";if(navigator.share)void navigator.share({title:"UMBRAL",text:txt,url:"https://viralio.net/escape"}).catch(()=>{});else if(navigator.clipboard)void navigator.clipboard.writeText(txt).then(()=>message("Enlace copiado")).catch(()=>{});}}>COMPARTIR EL DESAFÍO ↗</button>
       {toast&&<div className={styles.toast}>{toast}</div>}
     </section>}
