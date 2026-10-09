@@ -278,3 +278,10 @@
 .whisperButton:hover{box-shadow:0 3px 31px rgba(216,152,94,.26);transform:translateY(-1px)}
 @media(max-width:650px){.memoryDialog{max-height:calc(100dvh - 18px)!important;padding:22px 17px!important}.discoveryActions{flex-direction:column;align-items:stretch}.discoveryActions .primary{min-width:0;width:100%}.discoveryActions .ghost{width:100%}.whisperButton{width:100%;font-size:.65rem}}
 @media(prefers-reduced-motion:reduce){.whisperButton{transition:none}}
+
+/* Optional story closure: heard only on request, the text remains accessible. */
+.evaEpilogue{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(520px,95%);margin:14px auto 26px;padding:24px 26px 22px;border:1px solid rgba(221,188,136,.38);background:linear-gradient(110deg,rgba(131,90,65,.17),rgba(15,24,25,.8));box-shadow:0 13px 40px rgba(0,0,0,.38),inset 0 0 35px rgba(211,170,119,.07)}
+.evaEpilogue:before{content:"";position:absolute;inset:7px;border:1px solid rgba(233,193,148,.12);pointer-events:none}
+.evaEpilogue p{margin:4px 0 9px;max-width:450px;color:#f0ddc2;font:italic clamp(1.12rem,2vw,1.4rem)/1.65 Georgia,serif;text-align:center}
+.evaEpilogue button{min-height:44px;border:1px solid rgba(224,190,143,.48);padding:10px 18px;background:rgba(21,26,27,.8);color:#e0c59e;font-size:.64rem;letter-spacing:.14em;font-weight:700}
+.evaEpilogue button:hover{background:rgba(102,79,58,.52)}
