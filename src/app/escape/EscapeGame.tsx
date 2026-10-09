@@ -6,8 +6,9 @@ import Artefact from "./Artefact";
 import EvidenceArchive from "./EvidenceArchive";
 
 type Phase = "intro" | "playing" | "won" | "lost";
+type Difficulty = "story" | "nightmare";
 type PuzzleState = { portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
-type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState };
+type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
 const INITIAL: PuzzleState = { portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
@@ -23,6 +24,7 @@ const PORTRAITS = [
   { name: "Nora", year: 1918, mark: "4", text: "La niña mira hacia la puerta. Una pequeña cifra cuatro brilla en la madera." },
 ];
 const SAVE_KEY = "umbral-casa-13-v1";
+const RECORD_KEY = "umbral-personal-records-v1";
 let sharedAudioContext: AudioContext | null = null;
 function readAudioContext() { return sharedAudioContext; }
 function createAudioContext() {
@@ -128,6 +130,8 @@ export default function EscapeGame() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [room, setRoom] = useState(0);
   const [seconds, setSeconds] = useState(TOTAL);
+  const [difficulty,setDifficulty] = useState<Difficulty>("story");
+  const [records,setRecords] = useState<Record<Difficulty,number>>({story:0,nightmare:0});
   const [puzzles, setPuzzles] = useState<PuzzleState>(INITIAL);
   const [hints, setHints] = useState([0,0,0,0]);
   const [mistakes, setMistakes] = useState(0);
@@ -165,21 +169,29 @@ export default function EscapeGame() {
         if(saved && saved.phase==="playing" && Number.isFinite(saved.seconds) && saved.room>=0 && saved.room<=3) {
           window.queueMicrotask(() => {
             setPhase(saved.phase); setRoom(saved.room); setSeconds(saved.seconds);
+            if(saved.difficulty==="story" || saved.difficulty==="nightmare") setDifficulty(saved.difficulty);
             setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles);
             setPaused(true);
           });
         }
       }
     } catch { /* saved game unavailable */ }
+    try {
+      const rawRecord=window.localStorage.getItem(RECORD_KEY);
+      if(rawRecord) {
+        const data=JSON.parse(rawRecord) as Partial<Record<Difficulty,number>>;
+        window.queueMicrotask(()=>setRecords({story:Number(data.story)||0,nightmare:Number(data.nightmare)||0}));
+      }
+    } catch { /* records are optional */ }
     window.queueMicrotask(() => setReady(true));
   }, []);
   useEffect(() => {
     if(!ready) return;
     try {
       if(phase!=="playing") window.localStorage.removeItem(SAVE_KEY);
-      else window.localStorage.setItem(SAVE_KEY, JSON.stringify({ phase, room, seconds, hints, mistakes, puzzles } satisfies SaveState));
+      else window.localStorage.setItem(SAVE_KEY, JSON.stringify({ phase, room, seconds, hints, mistakes, puzzles, difficulty } satisfies SaveState));
     } catch { /* private browsing can restrict storage */ }
-  }, [ready, phase, room, seconds, hints, mistakes, puzzles]);
+  }, [ready, phase, room, seconds, hints, mistakes, puzzles, difficulty]);
   useEffect(() => {
     if(phase!=="playing" || paused) {
       deadlineRef.current=null;
@@ -298,7 +310,7 @@ export default function EscapeGame() {
   }
   function message(t:string){setToast(t);}
   function begin() {
-    deadlineRef.current=null;setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
+    deadlineRef.current=null;setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function nextRoom() {
     if(transitioning) return;
@@ -354,7 +366,15 @@ export default function EscapeGame() {
   }
   const totalHints=hints.reduce((a,b)=>a+b,0);
   const recoveredCount=puzzles.portraits.length+Number(puzzles.notesRead)+Number(puzzles.evaRead)+Number(puzzles.nurseryOpen)+Number(puzzles.keepsake)+Number(puzzles.power);
-  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)));
+  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)));
+  const personalBest=records[difficulty]||0;
+  const isNewRecord=phase==="won" && score>=personalBest;
+  useEffect(()=>{
+    if(!ready || phase!=="won" || score<=personalBest) return;
+    const update={...records,[difficulty]:score};
+    try{window.localStorage.setItem(RECORD_KEY,JSON.stringify(update));}catch{/*no persistent storage*/}
+    window.queueMicrotask(()=>setRecords(update));
+  },[ready,phase,score,personalBest,difficulty,records]);
   const hotspots:Spot[] = room===0?[
     ...PORTRAITS.map((p,i)=>({id:"portrait"+i,text:"Retrato de "+p.name,x:18+i*13.8,y:44,glyph:"✧",act:()=>portrait(i)})),
     {id:"clock",text:"Examinar reloj",x:11.7,y:61,glyph:"◷",act:()=>{sfx();setModal("clock");}},
@@ -398,14 +418,15 @@ export default function EscapeGame() {
         <h1>UMBRAL<span>.</span></h1>
         <p className={styles.tagline}>LA CASA QUE RECUERDA</p>
         <p className={styles.story}>La puerta se cerró a tus espaldas. <strong>Tenés 25 minutos</strong> para descubrir qué ocurrió con Eva. Pero hay algo que la casa nunca te contó: no todos los que escapan realmente salen.</p>
-        <div className={styles.introSpecs}><span>◷ 25 MINUTOS</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
+        <div className={styles.introSpecs}><span>◷ CONTRARRELOJ</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
+        <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
         <button className={styles.primary} onClick={begin}>CRUZAR EL UMBRAL <span>↗</span></button>
         <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
     </section> : phase==="playing" ? <>
       <header className={styles.hud}>
-        <div className={styles.identity}><div className={styles.monogram}>U<span>.</span></div><div><strong>UMBRAL</strong><small>EXPEDIENTE 013</small></div></div>
+        <div className={styles.identity}><div className={styles.monogram}>U<span>.</span></div><div><strong>UMBRAL</strong><small>{difficulty==="nightmare"?"MODO PESADILLA":"EXPEDIENTE 013"}</small></div></div>
         <div className={styles.hudCenter}><span>CAPÍTULO {String(room+1).padStart(2,"0")}/04</span><strong>{ROOM_NAMES[room]}</strong></div>
         <div className={styles.hudRight}><div className={seconds<=300?styles.timerDanger:styles.timer}><small>TIEMPO RESTANTE</small><strong>{fmt(seconds)}</strong></div><button className={styles.iconButton} onClick={()=>{sfx();setPaused(true);}} aria-label="Pausar partida">Ⅱ</button></div>
       </header>
@@ -452,12 +473,15 @@ export default function EscapeGame() {
         </section>
       </div>}
     </> : <section className={styles.ending}>
-      <p className={styles.eyebrow}>{phase==="won"?"EXPEDIENTE CERRADO":"ARCHIVO INTERRUMPIDO"}</p>
+      <p className={styles.eyebrow}>{phase==="won"?"EXPEDIENTE CERRADO":"ARCHIVO INTERRUMPIDO"} · {difficulty==="nightmare"?"PESADILLA":"HISTORIA"}</p>
       <div className={styles.endingGlyph}>{phase==="won"?"✦":"◷"}</div>
       <h1>{phase==="won"?(puzzles.ending==="save"?"No escapaste solo.":"Saliste. Pero ella sigue ahí."):"La casa te recordó."}</h1>
       <p>{phase==="won"?(puzzles.ending==="save"?"Encontraste a Eva detrás del último muro. Al cruzar juntos el umbral, la casa quedó en silencio por primera vez.":"Cruzaste el portón antes de que el reloj se detuviera. Afuera, el viento dice tu nombre. Todavía tenés la medalla en la mano."):"El último minuto se consumió. El reloj acaba de empezar de nuevo... y un retrato nuevo apareció en el vestíbulo."}</p>
+      {phase==="won"&&recoveredCount===8&&<div className={styles.perfectEvidence}><strong>ARCHIVO COMPLETO · 8/8</strong><span>Encontraste todos los recuerdos. Ahora sabés por qué Eva no podía abandonar la casa.</span></div>}
       <div className={styles.stats}><div><span>TIEMPO</span><strong>{fmt(seconds)}</strong></div><div><span>PISTAS</span><strong>{totalHints}</strong></div><div><span>ERRORES</span><strong>{mistakes}</strong></div>{phase==="won"&&<div><span>PUNTUACIÓN</span><strong>{score.toLocaleString("es-AR")}</strong></div>}</div>
+      {phase==="won"&&<p className={styles.personalRecord}>{isNewRecord?"✦ NUEVO RÉCORD PERSONAL":"TU MEJOR PUNTUACIÓN"} · {Math.max(score,personalBest).toLocaleString("es-AR")} PUNTOS</p>}
       <button className={styles.primary} onClick={begin}>VOLVER A ENTRAR ↻</button>
+      <button className={styles.ghost} onClick={()=>setPhase("intro")}>CAMBIAR EL DESAFÍO</button>
       <button className={styles.ghost} onClick={()=>{const txt="Sobreviví a UMBRAL: La casa que recuerda. "+(phase==="won"?"Conseguí "+score+" puntos. ":"")+"¿Te animás a entrar? https://viralio.net/escape";if(navigator.share)void navigator.share({title:"UMBRAL",text:txt,url:"https://viralio.net/escape"}).catch(()=>{});else if(navigator.clipboard)void navigator.clipboard.writeText(txt).then(()=>message("Enlace copiado")).catch(()=>{});}}>COMPARTIR EL DESAFÍO ↗</button>
       {toast&&<div className={styles.toast}>{toast}</div>}
     </section>}
