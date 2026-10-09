@@ -1,27 +1,95 @@
-name: Inspect Pair Finale Live Chunks
+name: Verify Live Pareja Rose Finale
 on:
   push:
     branches: [pair-rose-public-qa-20261009]
     paths: [".github/workflows/pair-rose-live-qa.yml"]
 jobs:
-  inspect:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Identify actual public final scene JavaScript and styles
+      - uses: actions/checkout@v4
+      - name: Check public JS and origin content type
         run: |
           set -euo pipefail
-          curl -sSL --max-time 30 'https://tehiceesto.com/experiencias/pareja?inspect=20261009' -o /tmp/pair.html
-          grep -oE '/_next/static/immutable/chunks/[A-Za-z0-9_-]+\.(js|css)' /tmp/pair.html | sort -u >/tmp/chunks
-          while read -r path; do
-            case "$path" in
-              *.js)
-                curl -fsSL --max-time 25 "https://viralio.net$path" -o /tmp/check || continue
-                if grep -Fq 'thi-pair-finale-reactions' /tmp/check; then echo "ACTIVE_PAIR_JS=$path SIZE=$(wc -c </tmp/check)"; fi
-                if grep -Fq 'thi-mama-voice-picker' /tmp/check; then echo "MAMA_JS=$path"; fi
-                ;;
-              *.css)
-                curl -fsSL --max-time 25 "https://viralio.net$path" -o /tmp/check || continue
-                if grep -Fq 'thi-pair-finale-reactions' /tmp/check; then echo "ACTIVE_PAIR_CSS=$path SIZE=$(wc -c </tmp/check)"; fi
-                ;;
-            esac
-          done </tmp/chunks
+          curl -fsSL --max-time 40 -D /tmp/jsheaders 'https://tehiceesto.com/_next/static/immutable/chunks/1lv4ms03n-3m3.js?pairrose=11' -o /tmp/pair.js
+          grep -iE '(content-type:|x-thi-pair-rose-bridge:|HTTP/)' /tmp/jsheaders || true
+          node --check /tmp/pair.js
+          grep -Fq '__thiRoseFinale20261009' /tmp/pair.js
+          grep -Fq 'thi-rose-touch' /tmp/pair.js
+          echo "PAIR_ROSE_PUBLIC_BRIDGE_PASS bytes=$(wc -c </tmp/pair.js)"
+      - name: Install browser
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Check public final scene on mobile
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+          const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2});
+          const errorLog=[];
+          page.on('pageerror',error=>{errorLog.push(error.message);console.log('BROWSER_JS_ERROR',error.message)});
+          await page.addInitScript(()=>{
+            window.__roseVibrations=[];
+            Object.defineProperty(navigator,'vibrate',{configurable:true,value:p=>{window.__roseVibrations.push(p);return true}});
+          });
+          await page.goto('https://tehiceesto.com/experiencias/pareja',{waitUntil:'domcontentloaded',timeout:50000});
+          await page.waitForFunction(()=>window.__thiRoseFinale20261009===true,null,{timeout:18000});
+          console.log('PATCH_JS_PRESENT');
+          const scene=async name=>{
+            await page.locator('main.thi-experience[data-scene="'+name+'"]').waitFor({timeout:20000});
+            console.log('SCENE',name);
+          };
+          const click=async selector=>{await page.locator(selector).first().click({timeout:12000})};
+          await scene('intro');
+          await click('[data-action="advance"]');await scene('door');
+          await click('[data-action="open-door"]');
+          await click('[data-action="advance"]');await scene('memories');
+          await click('[data-action="advance"]');await scene('voices');
+          await click('[data-action="demo-voice"]');
+          await click('[data-action="advance"]');await scene('light');
+          await click('[data-action="light-reveal"]');
+          await click('[data-action="advance"]');await scene('stars');
+          for(let i=0;i<5;i++)await click('.thi-pair-star-node.is-active');
+          await click('[data-action="advance"]');await scene('everyday');
+          for(const s of ['cups','window','frame'])await click('[data-action="everyday-'+s+'"]');
+          await click('.thi-everyday-continue');await scene('scratch');
+          await click('[data-action="scratch-fallback"]');
+          await click('[data-action="advance"]');await scene('hold');
+          await page.locator('[data-action="hold"]').press('Enter');
+          await click('[data-action="advance"]');await scene('letter');
+          await click('[data-action="open-letter"]');
+          await click('[data-action="advance"]');await scene('finale');
+          await page.locator('[data-action="rose-open"]').waitFor({timeout:9000});
+          const layout=await page.evaluate(()=>({
+            rose:!!document.querySelector('.thi-rose-finale'),
+            oldSeal:getComputedStyle(document.querySelector('.thi-pair-finale-seal')).display,
+            oldIcons:getComputedStyle(document.querySelector('.thi-pair-finale-reactions')).display,
+            floating:(()=>{const el=document.querySelector('a.floating-create-cta.floating-whatsapp--experience');return el?getComputedStyle(el).display:null})(),
+            overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth
+          }));
+          console.log('LAYOUT',JSON.stringify(layout));
+          if(!layout.rose||layout.oldSeal!=='none'||layout.oldIcons!=='none'||layout.floating!=='none'||layout.overflow>1)
+            throw Error('Final layout or floating CTA is wrong');
+          await click('[data-action="rose-open"]');
+          await page.waitForFunction(()=>document.querySelector('.thi-rose-finale')?.dataset.roseOpen==='true',{timeout:5000});
+          await page.waitForTimeout(1250);
+          const reveal=await page.evaluate(()=>{
+            const el=document.querySelector('.thi-rose-finale'),canvas=el.querySelector('canvas');
+            const ctx=canvas.getContext('2d'),bytes=ctx?.getImageData(0,0,canvas.width,canvas.height).data;
+            let ink=0;
+            if(bytes)for(let i=3;i<bytes.length;i+=28)if(bytes[i])ink++;
+            return {message:el.querySelector('.thi-rose-love')?.textContent,
+                    afterword:el.querySelector('.thi-rose-afterword')?.textContent,
+                    ink,haptics:window.__roseVibrations.length, canvas:[canvas.width,canvas.height],
+                    pressed:el.querySelector('button').getAttribute('aria-pressed')};
+          });
+          console.log('REVEAL',JSON.stringify(reveal));
+          if(reveal.message!=='Te amo'||reveal.ink<=0||reveal.haptics<2||reveal.pressed!=='true')
+            throw Error('Live rose finale not fully functional');
+          const cta=page.locator('[data-action="create-story"]');
+          await cta.scrollIntoViewIfNeeded();
+          if(!await cta.isVisible())throw Error('Purchase CTA not visible');
+          console.log('SUCCESS: public TeHiceEsto Pareja rose blooms with fireworks and haptics on mobile');
+          await browser.close();
+          NODE
