@@ -15,7 +15,12 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       const asset=await page.request.get("/escape/images/objects/"+name+".webp");
       expect(asset.status(),name+" is missing").toBe(200);
     }
-    await page.screenshot({path:"visual-qa-evidence/umbral-intro-desktop.png",fullPage:true,animations:"disabled"});
+    for(const name of ["footsteps-wood","wood-creak","heavy-door"]) {
+      const recording=await page.request.get("/escape/audio/"+name+".ogg");
+      expect(recording.status(),name+" CC0 recording").toBe(200);
+      expect((await recording.body()).byteLength).toBeGreaterThan(9000);
+    }
+        await page.screenshot({path:"visual-qa-evidence/umbral-intro-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-desktop.png",fullPage:true,animations:"disabled"});
