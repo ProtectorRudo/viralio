@@ -305,3 +305,40 @@
 @keyframes umbralWhisper{0%,25%{opacity:0;transform:translateY(8px)}52%{opacity:.87;transform:translateY(0)}95%{opacity:.85}100%{opacity:0}}
 @media(max-width:590px){.blackoutPresence{width:110vw;height:96dvh;top:52%;background-position:center 25%}.blackoutWhisper{bottom:21%;font-size:1.26rem;letter-spacing:.13em}}
 @media(prefers-reduced-motion:reduce){.blackoutPresence{animation:none!important;opacity:0!important}.blackoutDark{animation:none!important;opacity:1}.blackoutReveal .blackoutWhisper{animation:none!important;opacity:1}.blackoutSkip{min-height:48px}}
+
+/* ACT V / THE CLOCK IS THE ANTAGONIST — score telemetry and cinematic urgency. */
+.scoreChoice{position:relative;display:block;min-height:42px;margin:0 0 2px;padding:10px 14px;border:1px solid rgba(209,163,110,.31);background:linear-gradient(100deg,rgba(46,41,33,.7),rgba(12,21,22,.79));color:#e7c9a2;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-align:left;transition:background .2s,border-color .2s}
+.scoreChoice:hover{border-color:rgba(226,181,115,.8);background:rgba(75,59,42,.62)}
+.tensionTitle{display:block;max-width:170px;margin:2px 0 0 auto;white-space:nowrap;color:#d2b48b;font:600 clamp(.45rem,.78vw,.57rem)/1.4 ui-sans-serif,sans-serif;letter-spacing:.125em;font-style:normal;text-align:right;text-shadow:0 0 18px rgba(203,139,73,.27)}
+.tensionTitle[data-tier="3"],.tensionTitle[data-tier="4"]{color:#eeb899}
+.tensionTitle[data-tier="5"],.tensionTitle[data-tier="6"]{color:#ff9c80;text-shadow:0 0 17px rgba(249,108,81,.65)}
+.timerFinal{animation:umbralTimerBeat 1s ease-in-out infinite;text-shadow:0 0 18px #dd402b}
+.finalCountdown{position:absolute;z-index:18;top:110px;right:3%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:100px;padding:9px 17px 12px;pointer-events:none;border:1px solid rgba(219,113,83,.43);background:radial-gradient(ellipse at 50% 48%,rgba(95,29,22,.78),rgba(10,11,13,.87));box-shadow:0 7px 30px rgba(0,0,0,.65),inset 0 0 19px rgba(222,84,60,.17);text-shadow:0 0 19px #cb4b34;animation:umbralCountdownEnter .22s ease-out}
+.finalCountdown span{font-size:.47rem;letter-spacing:.22em;font-weight:800;color:#f3a993;text-align:center;white-space:nowrap}
+.finalCountdown strong{font:400 4rem/.97 Georgia,serif;color:#f9d6bb;font-variant-numeric:tabular-nums;animation:umbralTimerBeat 1s ease-in-out infinite}
+.endingLost{background:#030406!important;animation:umbralGameOver .85s ease-out both}
+.endingLost .endingGlyph{color:#a25442;text-shadow:0 0 41px rgba(173,68,48,.55)}
+.endingLost h1{color:#e1d0be}
+@keyframes umbralTimerBeat{0%,100%{transform:scale(1);opacity:1}45%{transform:scale(1.055);opacity:.84}}
+@keyframes umbralCountdownEnter{from{transform:scale(1.25);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes umbralGameOver{from{filter:brightness(.18)}to{filter:brightness(1)}}
+@media(min-width:801px){.hud{min-height:100px}.bottomActions{gap:6px}.bottomActions button{padding:11px 12px}}
+@media(max-width:800px){
+ .scoreChoice{font-size:.54rem;padding:8px 12px;min-height:40px}
+ .hud{min-height:78px}
+ .hudRight{gap:7px}.timer strong,.timerDanger strong{font-size:clamp(1.06rem,3.4vw,1.42rem)}
+ .tensionTitle{max-width:120px;letter-spacing:.03em;font-size:.45rem}
+ .finalCountdown{top:86px;right:9px;min-width:79px;padding:8px}
+ .finalCountdown span{font-size:.42rem;letter-spacing:.07em}.finalCountdown strong{font-size:3.15rem}
+ .bottomActions{display:grid;grid-template-columns:1.15fr .76fr .90fr .83fr .76fr;gap:5px}
+ .bottomActions button{padding:10px 3px;min-width:0;white-space:normal;font-size:.45rem;line-height:1.16;letter-spacing:0;text-wrap:balance}
+}
+@media(max-width:375px){
+ .tensionTitle{font-size:.39rem}
+ .bottomActions{gap:3px;grid-template-columns:1.05fr .8fr .8fr 1fr .72fr}
+ .bottomActions button{font-size:.40rem}
+ .bottomActions button span{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .timerFinal,.finalCountdown,.finalCountdown strong,.endingLost{animation:none!important}
+}
