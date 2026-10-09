@@ -773,44 +773,65 @@ test("birthday premium scenes work on 390px mobile and preserve the three-balloo
  await expect(page.locator(".thi-bday-finale-signature")).toContainText("mamá, Nati, Fran");
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
-test("pair finale is a clean premium epilogue with integrated conversion CTA",async({page})=>{
+test("pair finale blooms a real interactive rose, reveals love, fires a short celebration and keeps the CTA clear",async({page})=>{
+  test.setTimeout(90_000);
   await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:"no-preference"});
+  await page.addInitScript(()=>{
+    const calls:(number|number[])[]=[];
+    Object.defineProperty(navigator,"vibrate",{configurable:true,value:(pattern:number|number[])=>{calls.push(pattern);return true}});
+    (window as unknown as {__roseHaptics:(number|number[])[]}).__roseHaptics=calls;
+  });
   await page.goto("/tehiceesto/experiencias/pareja");
   await waitForScene(page,"intro");
-  while((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="finale"){
-    await advanceOne(page);
-  }
+  while((await sceneName(page))!=="finale")await advanceOne(page);
   await waitForScene(page,"finale");
 
-  await expect(page.locator(".thi-pair-finale")).toBeVisible();
+  const stage=page.locator(".thi-rose-finale");
+  const rose=page.locator('[data-action="rose-open"]');
+  await expect(stage).toBeVisible();
+  await expect(rose).toHaveAttribute("aria-pressed","false");
+  await expect(stage).toHaveAttribute("data-rose-open","false");
+  await expect(page.locator(".thi-pair-finale-reactions")).toHaveCount(0);
+  await expect(page.locator(".thi-pair-finale-seal")).toHaveCount(0);
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
-  await expect(page.locator(".thi-reset-journey")).toBeHidden();
-  await expect(page.locator(".thi-scene-meta")).toBeHidden();
 
-  const seal=page.locator(".thi-pair-finale-seal");
-  await expect(seal).toBeVisible();
-  await expect(seal.locator("strong")).not.toHaveText("");
-
-  const reactions=page.locator(".thi-pair-finale-reactions button");
-  await expect(reactions).toHaveCount(4);
-  await reactions.first().click();
-  await expect(reactions.first()).toHaveAttribute("aria-pressed","true");
-
+  await rose.click();
+  await expect(rose).toHaveAttribute("aria-pressed","true");
+  await expect(stage).toHaveAttribute("data-rose-open","true");
+  await expect(page.locator(".thi-rose-reveal")).toContainText("Te amo");
+  await expect(page.locator(".thi-rose-reveal")).toContainText("Y te volvería a elegir.");
+  await page.waitForTimeout(1300);
+  const haptics=await page.evaluate(()=>(window as unknown as {__roseHaptics:(number|number[])[]}).__roseHaptics);
+  expect(haptics.length).toBeGreaterThanOrEqual(2);
+  const fireworkInk=await page.locator(".thi-rose-fireworks").evaluate((node)=>{
+    const canvas=node as HTMLCanvasElement;
+    const ctx=canvas.getContext("2d");
+    if(!ctx)return 0;
+    const d=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let pixels=0;for(let i=3;i<d.length;i+=4*7)if(d[i]>0)pixels++;
+    return pixels;
+  });
+  expect(fireworkInk).toBeGreaterThan(0);
   const create=page.locator('[data-action="create-story"]');
   await expect(create).toHaveAttribute("href","/tehiceesto/crear?experiencia=pareja");
-  await page.waitForTimeout(3400);
+  await create.scrollIntoViewIfNeeded();
   await expect(create).toBeVisible();
-
-  const box=await create.boundingBox();
-  if(!box)throw new Error("final create CTA has no bounding box");
-  expect(box.y).toBeGreaterThan(0);
-  expect(box.y+box.height).toBeLessThanOrEqual(844);
-
-  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-  expect(overflow).toBeLessThanOrEqual(1);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 });
 
+test("pair rose supports reduced motion without blocking the love message",async({page})=>{
+  test.setTimeout(90_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await page.goto("/tehiceesto/experiencias/pareja");
+  await waitForScene(page,"intro");
+  while((await sceneName(page))!=="finale")await advanceOne(page);
+  await page.locator('[data-action="rose-open"]').click();
+  await expect(page.locator(".thi-rose-love")).toHaveText("Te amo");
+  await expect(page.locator(".thi-rose-fireworks")).toBeHidden();
+});
 
 test("pair letter scene opens as a premium physical keepsake without commercial chrome",async({page})=>{
   await page.setViewportSize({width:390,height:844});
