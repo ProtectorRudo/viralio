@@ -12,6 +12,24 @@ async function visualAudit(page:Page,file:string){
 }
 
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("escuchar la casa: pista ambiental accesible con o sin sonido, sin bloquear los acertijos", async ({ page }) => {
+    await page.goto("/escape");
+    await page.getByRole("button", { name: /SONIDO ACTIVADO/ }).click();
+    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
+    const station=page.getByTestId("umbral-listening");
+    await expect(station).toHaveAttribute("data-room","0");
+    await expect(station).toHaveAttribute("data-stage","ready");
+    await page.getByRole("button", { name: "Escuchar detrás de las paredes" }).click();
+    await expect(station).toHaveAttribute("data-stage","tuning");
+    await expect(station).toHaveAttribute("data-stage","heard",{timeout:6000});
+    await expect(station.getByText(/Tres pasos atraviesan el vestíbulo/)).toBeVisible();
+    await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
+    await expect(page.getByRole("heading", { name: "Una cerradura sin llave" })).toBeVisible();
+    await expect(page.getByTestId("umbral-listening")).toHaveCount(0);
+    await page.getByRole("button", { name: "Cerrar" }).click();
+    await expect(page.getByTestId("umbral-listening")).toHaveAttribute("data-stage","ready");
+  });
+
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
     // Cinematic screenshots of four chapters need a generous overall CI budget.
     // Keep all puzzle/assertion steps; do not drop the final scene visual audit.
