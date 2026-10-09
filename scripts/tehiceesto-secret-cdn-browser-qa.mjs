@@ -1,6 +1,6 @@
 import { chromium } from "@playwright/test";
 import {mkdirSync} from "node:fs";
-const url="https://tehiceesto.com/_thi-internal-secret-preview";
+const url="https://tehiceesto.com/demo/secreto";
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:2,hasTouch:true,isMobile:true});
 const errors=[];
