@@ -1082,7 +1082,7 @@ export default function CustomerStudio({code}:{code:string}){
           <span>✓</span>
           <div><strong>La estructura ya está resuelta</strong><p>Las partes están ordenadas para que la emoción crezca de principio a fin.</p></div>
         </div>
-        <details className="studio-parts-details">
+        {gift.template_version==="premium-v3"?<p className="studio-fixed-journey-note">Tu experiencia conserva el recorrido completo del demo. Podés personalizar fotos, audios y palabras sin perder ninguna escena.</p>:<details className="studio-parts-details">
           <summary><span>Quiero quitar o recuperar una parte</span><small>opcional</small><b>＋</b></summary>
           <div className="studio-section-list">{canonical.map((scene,index)=>{
             const terminal=scene==="finale"||scene==="proposal";
@@ -1104,7 +1104,7 @@ export default function CustomerStudio({code}:{code:string}){
                   :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Visible":"Oculta"}</span></button>}
             </article>;
           })}</div>
-        </details>
+        </details>}
       </div>}
 
       {step===5&&<div className="studio-preview-wrap">
