@@ -63,12 +63,17 @@ jobs:
           if(!ready)throw Error('Public Pair JS patch not loaded');
           console.log('LIVE_PATCH_READY');
           const fixture=await evaluate(`(async()=>{
-            const root=document.querySelector('.thi-theme-pareja');
+            // Mount a copy of the final-stage shell OUTSIDE React's reconciled DOM,
+            // so a delayed hydration render cannot erase the QA fixture.
+            const root=document.createElement('main');
+            root.className='thi-theme-pareja';
             root.setAttribute('data-scene','finale');
+            root.style.cssText='position:fixed;inset:80px 0 auto;z-index:9999;display:grid;place-items:center;background:#20131d;width:100%;min-height:430px;';
             const element=document.createElement('section');
             element.className='thi-pair-finale';
             element.innerHTML='<div class="thi-pair-finale-divider"></div>';
             root.appendChild(element);
+            document.body.appendChild(root);
             for(let i=0;i<50;i++){
               if(element.querySelector('[data-action="rose-open"]'))return true;
               await new Promise(r=>setTimeout(r,80));
