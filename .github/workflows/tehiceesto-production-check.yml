@@ -80,3 +80,13 @@ jobs:
             exit 1
           fi
           echo "No legacy parent card detected."
+
+      - name: Verify Alina MP3 is reachable from the real dedicated host
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 30 -D /tmp/alina-headers -o /tmp/alina.mp3 https://tehiceesto.com/mama-voz-web.mp3
+          test "$(wc -c < /tmp/alina.mp3)" -gt 30000
+          grep -qi 'content-type: audio/' /tmp/alina-headers
+          echo "PASS: Alina MP3 served from public TeHiceEsto domain."
+

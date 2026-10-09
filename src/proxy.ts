@@ -124,6 +124,13 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Allow only TeHiceEsto's original voice assets through unchanged.
+  // Otherwise the host rewrite sends /mama-voz-web.mp3 to
+  // /tehiceesto/mama-voz-web.mp3, which does not exist in /public.
+  if (pathname === "/mama-voz-web.mp3" || pathname === "/mama-voz-web.opus") {
+    return NextResponse.next();
+  }
+
   // A non-sensitive deployment marker is exposed so CI can verify
   // that Vercel is serving the exact commit being certified.
   if (pathname === "/api/version") {

@@ -32,6 +32,9 @@ test("Audio real de Alina está publicado en MP3, se puede reproducir o saltar",
   const response=await page.request.get("/mama-voz-web.mp3");
   expect(response.status()).toBe(200);
   expect((await response.body()).byteLength).toBeGreaterThan(30000);
+  const dedicatedHost=await page.request.get("http://127.0.0.1:3000/mama-voz-web.mp3",{headers:{Host:"tehiceesto.com"}});
+  expect(dedicatedHost.status()).toBe(200);
+  expect((await dedicatedHost.body()).byteLength).toBeGreaterThan(30000);
   await enterMamaVoices(page);
   await page.locator('[data-action="mama-voice-choice"]').first().click();
   await expect(page.locator(".thi-mama-voice-player")).toBeVisible();
