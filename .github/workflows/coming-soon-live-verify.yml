@@ -28,6 +28,12 @@ jobs:
             grep -oE '/_next/static/immutable/chunks/[A-Za-z0-9_-]+\.js' "/tmp/page-$(echo "$page" | tr / _).html" | sort -u | head -35 || true
           done
 
+          echo 'PLACEHOLDER_CONTENT_TYPE'
+          curl -sSL --max-time 35 -D /tmp/hd-public -o /tmp/hd-public-body 'https://tehiceesto.com/experiencias/abuelos'
+          grep -Ei '^(HTTP/|content-type:|content-encoding:|x-content-type-options:|location:)' /tmp/hd-public || true
+          echo 'DIRECT_CONTENT_TYPE'
+          curl -sSL --max-time 35 -D /tmp/hd-direct -o /tmp/hd-direct-body 'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/tehiceesto-coming-soon?categoria=abuelos'
+          grep -Ei '^(HTTP/|content-type:|content-encoding:|x-content-type-options:|location:)' /tmp/hd-direct || true
           echo 'CHECK_DIRECT_CSS_HOTFIX'
           curl -sS -L --max-time 40 -D /tmp/css-headers 'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/tehiceesto-comingsoon-css-bridge' -o /tmp/css-bridge
           head -c 500 /tmp/css-headers
