@@ -8,6 +8,7 @@ mkdirSync(output, { recursive: true });
 await build({
   entryPoints: ["src/app/escape/standalone.tsx"],
   bundle: true,
+  external: ["/escape/images/*"],
   platform: "browser",
   format: "iife",
   target: ["es2022"],
