@@ -562,9 +562,11 @@ export default function EscapeGame() {
         <div className={styles.introSpecs}><span>◷ CONTRARRELOJ</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
         <button className={styles.primary} onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
-        <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
-        <button className={styles.scoreChoice} type="button" aria-pressed={musicEnabled} onClick={()=>setMusicEnabled(v=>!v)}>{musicEnabled?"♫ BANDA SONORA DINÁMICA ACTIVADA":"♫ BANDA SONORA DESACTIVADA"}</button>
-        <button className={styles.scareChoice} type="button" aria-pressed={cinematicScares} onClick={()=>setCinematicScares(v=>!v)}>{cinematicScares?"◉ EXPERIENCIA DE TERROR CINEMATOGRÁFICO":"◎ TERROR SUAVE · SIN APAGONES"}</button>
+        <div className={styles.introOptions} aria-label="Preferencias de la experiencia">
+          <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)} aria-pressed={sound}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
+          <button className={styles.scoreChoice} type="button" aria-pressed={musicEnabled} onClick={()=>setMusicEnabled(v=>!v)}>{musicEnabled?"♫ BANDA SONORA DINÁMICA ACTIVADA":"♫ BANDA SONORA DESACTIVADA"}</button>
+          <button className={styles.scareChoice} type="button" aria-pressed={cinematicScares} onClick={()=>setCinematicScares(v=>!v)}>{cinematicScares?"◉ EXPERIENCIA DE TERROR CINEMATOGRÁFICO":"◎ TERROR SUAVE · SIN APAGONES"}</button>
+        </div>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
       <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),url(/escape/images/room-${i}.webp)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
@@ -576,7 +578,7 @@ export default function EscapeGame() {
       </header>
       <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")+" "+(seconds<=300?styles.lastMinutes:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
         <div className={styles.roomArt}>
-          <div className={styles.cinematicRoom} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.35),rgba(2,5,8,.05) 35%,rgba(0,0,0,.25)),url(/escape/images/room-${room}.webp)`}} aria-hidden="true"/>
+          <div className={styles.cinematicRoom} data-room={room} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.25),rgba(2,5,8,.02) 35%,rgba(0,0,0,.14)),url(/escape/images/room-${room}.webp)`}} aria-hidden="true"/>
           <SceneArt room={room} power={puzzles.power} candles={puzzles.candles} studyOpen={puzzles.studyOpen} nurseryOpen={puzzles.nurseryOpen} fuses={puzzles.fuses}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
