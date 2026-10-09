@@ -417,7 +417,7 @@ export default function EscapeGame() {
         <p className={styles.eyebrow}><span className={styles.liveDot}/> UNA EXPERIENCIA INTERACTIVA · CASO 013</p>
         <h1>UMBRAL<span>.</span></h1>
         <p className={styles.tagline}>LA CASA QUE RECUERDA</p>
-        <p className={styles.story}>La puerta se cerró a tus espaldas. <strong>Tenés 25 minutos</strong> para descubrir qué ocurrió con Eva. Pero hay algo que la casa nunca te contó: no todos los que escapan realmente salen.</p>
+        <p className={styles.story}>La puerta se cerró a tus espaldas. <strong>Tenés {difficulty==="nightmare"?"12":"25"} minutos</strong> para descubrir qué ocurrió con Eva. Pero hay algo que la casa nunca te contó: no todos los que escapan realmente salen.</p>
         <div className={styles.introSpecs}><span>◷ CONTRARRELOJ</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
         <button className={styles.primary} onClick={begin}>CRUZAR EL UMBRAL <span>↗</span></button>
