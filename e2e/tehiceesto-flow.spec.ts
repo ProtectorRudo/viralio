@@ -8,6 +8,15 @@ async function advanceOne(page:Page){
   if(current==="finale"||current==="proposal")return;
   await page.waitForTimeout(420);
   if((await sceneName(page))!==current)return;
+  const friendship=await page.locator(".thi-experience.thi-theme-amistad").count()>0;
+  if(friendship){
+    if(current==="casefile"){await page.locator('[data-action="casefile-open"]').click();await page.locator('.friend-case-scene [data-action="advance"]').click();return}
+    if(current==="insidejokes"){for(const i of [0,1,2])await page.locator('[data-action="insidejoke-open"]').nth(i).click();await page.locator('.friend-codes [data-action="advance"]').click();return}
+    if(current==="incidents"){for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();await page.locator('.friend-incidents [data-action="advance"]').click();return}
+    if(current==="proof"){for(const i of [0,1,2])await page.locator('[data-action="proof-open"]').nth(i).click();await page.locator('.friend-presence [data-action="advance"]').click();return}
+    if(current==="letter"){await page.locator('[data-action="letter-open"]').click();await page.locator('.friend-letter-scene [data-action="advance"]').click();return}
+    if(current==="pact"){for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();await page.locator('.friend-pact-scene [data-action="advance"]').click();await page.locator('.friend-pact-scene [data-action="advance"]').click();return}
+  }
   if(current==="intro")await page.locator('[data-action="advance"]').click();
   else if(current==="door"){await page.locator('[data-action="open-door"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="memories"){

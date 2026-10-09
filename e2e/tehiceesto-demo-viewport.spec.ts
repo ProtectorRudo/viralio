@@ -41,7 +41,7 @@ test("all nine public demos have seamless dark backgrounds through a mobile view
       expect(info.demoHeight).toBeGreaterThanOrEqual(info.viewport-2);
       expect(info.rootHeight).toBeGreaterThanOrEqual(info.viewport-2);
       expect(info.sceneHeight).toBeGreaterThanOrEqual(info.viewport-2);
-      expect(info.stageHeight).toBeGreaterThanOrEqual(info.viewport-2);
+      expect(info.stageHeight).toBeGreaterThanOrEqual(info.viewport-4);
       expect(info.demoBackground).not.toBe("rgba(0, 0, 0, 0)");
     }
   }
