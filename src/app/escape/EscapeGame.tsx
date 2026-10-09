@@ -272,7 +272,7 @@ export default function EscapeGame() {
     };
     stop();
     const ctx=readAudioContext();
-    if(!ctx || phase!=="playing" || paused || !sound) return stop;
+    if(!ctx || phase!=="playing" || paused || cinematicPause || !sound) return stop;
     try {
       const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
       const samples=buffer.getChannelData(0);
@@ -287,7 +287,7 @@ export default function EscapeGame() {
       noise.start();rumble.start();ambient.current={noise,rumble};
     } catch { /* low-powered devices still have a silent experience */ }
     return stop;
-  }, [phase, paused, room, sound]);
+  }, [phase, paused, room, sound, cinematicPause]);
 
   useEffect(() => {
     if(phase!=="playing" || paused || room!==2) return;
