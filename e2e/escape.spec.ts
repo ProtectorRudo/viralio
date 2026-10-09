@@ -67,6 +67,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Examinar muñeca" }).first().click();
     await expect(page.getByText(/RECUERDO OPCIONAL RECUPERADO/)).toBeVisible();
     await expect(page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/})).toBeVisible();
+    await page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/}).click();
+    await expect(page.getByText(/No apagues la música/)).toBeVisible();
     await expect(page.getByText(/No apagues la música/)).toBeVisible();
     await expect.poll(async()=>page.evaluate(async()=>{const image=new Image();image.src="/escape/images/objects/doll.webp";await image.decode();return image.naturalWidth;})).toBeGreaterThan(300);
     await page.screenshot({path:"visual-qa-evidence/umbral-muneca-cinematografica.png",fullPage:true,animations:"disabled"});
@@ -79,6 +81,10 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "La canción de Eva" })).toBeVisible();
     await page.getByRole("button",{name:/REPRODUCIR CINTA 013/}).click();
     await expect(page.getByRole("heading",{name:"El último recuerdo"})).toBeVisible();
+    await page.getByRole("button",{name:/PAUSAR CINTA/}).click();
+    await expect(page.getByRole("button",{name:/REANUDAR CINTA/})).toBeVisible();
+    await page.getByRole("button",{name:/REANUDAR CINTA/}).click();
+    await expect(page.getByRole("button",{name:/PAUSAR CINTA/})).toBeVisible();
     const videoResponse=await page.request.get("/escape/images/eva-tape-013.mp4");
     expect(videoResponse.status()).toBe(200);
     expect((await videoResponse.body()).byteLength).toBeGreaterThan(30000);
@@ -103,6 +109,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText("PUNTUACIÓN")).toBeVisible();
     await expect(page.getByText(/NUEVO RÉCORD PERSONAL/)).toBeVisible();
     await expect(page.getByText(/ARCHIVO COMPLETO/)).toBeVisible();
+    await expect(page.getByText(/Gracias por volver/)).toBeVisible();
+    await expect(page.getByRole("button",{name:/Escuchar el agradecimiento/})).toBeVisible();
   });
 
   test("móvil: objetos accesibles sin depender del panorama, pausa y retorno", async ({ page }) => {
