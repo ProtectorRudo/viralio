@@ -124,7 +124,7 @@ export function proxy(request: NextRequest) {
   // Allow only TeHiceEsto's original voice assets through unchanged.
   // Otherwise the host rewrite sends /mama-voz-web.mp3 to
   // /tehiceesto/mama-voz-web.mp3, which does not exist in /public.
-  if (pathname === "/mama-voz-web.mp3" || pathname === "/mama-voz-web.opus") {
+  if (pathname === "/mama-voz-web.mp3" || pathname === "/mama-voz-web.opus" || pathname === "/tehiceesto-pareja-demo-v1.m4a") {
     return NextResponse.next();
   }
 

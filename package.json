@@ -14,7 +14,9 @@
     "preflight:production": "node scripts/production-preflight.mjs",
     "test:postgres": "vitest run --no-file-parallelism tests/postgres.integration.test.ts tests/login-throttle.postgres.integration.test.ts tests/production-preflight.postgres.integration.test.mjs tests/brand-postgres.integration.test.ts tests/universal-business-types.postgres.integration.test.ts",
     "pretest:e2e": "next build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "prebuild": "node scripts/prepare-pareja-demo-voice.mjs",
+    "predev": "node scripts/prepare-pareja-demo-voice.mjs"
   },
   "dependencies": {
     "next": "16.3.4",
