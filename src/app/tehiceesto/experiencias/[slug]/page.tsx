@@ -15,7 +15,7 @@ export default async function ExperiencePage({params}:{params:Promise<{slug:stri
       <div className="thi-coming-panel">
         <p className="thi-coming-eyebrow">UNA HISTORIA POR ESTRENAR · TE HICE ESTO</p>
         <span className="thi-coming-symbol" aria-hidden="true">✦</span>
-        <h1>{experience.recipient}</h1>
+        <h1>{experience.slug==="abuelos"?"Abuelos":experience.slug==="aniversario"?"Aniversario":"Propuesta"}</h1>
         <span className="thi-coming-tag">Próximamente</span>
         <p>Estamos preparando cada detalle para que esta experiencia esté a la altura de lo que querés regalar. Todavía no está disponible para ver ni comprar.</p>
         <Link className="thi-coming-back" href="/tehiceesto">Ver experiencias disponibles <span aria-hidden="true">→</span></Link>
