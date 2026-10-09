@@ -58,6 +58,8 @@ const BASE_COPY: ExperienceCopy = {
       childhood:"Infancia",care:"Cuidados",sacrifices:"Lo invisible",return:"Volver",
       lessons:"Lecciones",presence:"Presencia",inheritance:"Herencia",lookback:"Mirar de nuevo",
       casefile:"Expediente",insidejokes:"Códigos",incidents:"Antecedentes",proof:"Pruebas",pact:"Pacto",
+      invitation:"Invitación",portal:"Umbral",gallery:"Museo invisible",timepiece:"El tiempo",recording:"Una voz",
+      clues:"Señales",confession:"Carta",passage:"Último paso",reveal:"Revelación",keepsake:"Recuerdo",
     },
     resetLabel:"Reiniciar",resetAria:"Reiniciar experiencia",previousAria:"Escena anterior",
     nextAria:"Escena siguiente",createdWith:"creado con ♥ en Te Hice Esto",
