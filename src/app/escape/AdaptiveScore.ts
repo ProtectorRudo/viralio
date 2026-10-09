@@ -53,9 +53,6 @@ const EVA_MOTIF = [76, 72, 81, 76, 77, 76, 72, 68] as const;
 function pitch(midi: number) {
   return 440 * 2 ** ((midi - 69) / 12);
 }
-function clamp(value: number, lo: number, hi: number) {
-  return Math.min(hi, Math.max(lo, value));
-}
 
 type ScoreEngine = {
   ctx: AudioContext;
