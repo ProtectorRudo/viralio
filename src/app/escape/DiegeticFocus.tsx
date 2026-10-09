@@ -39,7 +39,7 @@ export default function DiegeticFocus({
     <div className={styles.cameraGrain}/>
     <div className={styles.darkVelvet}/>
     <div className={styles.artefact} data-material={kind}>
-      <div className={styles.artefactPortrait} style={{backgroundImage:`url("/escape/images/objects/${kind}.webp")`}}/>
+      <div className={styles.artefactPortrait} style={{backgroundImage:`image-set(url("/escape/images/objects/${kind}.webp") 1x,url("/escape/images/retina/objects/${kind}.webp") 2x)`}}/>
       <div className={styles.glass} />
       <div className={styles.rim} />
       <div className={styles.label}><span>UMB / OBJETO RECONSTRUIDO</span><b>{mark??SERIAL[kind]}</b></div>
