@@ -209,4 +209,51 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading",{name:/Hasta la casa guarda silencio/})).toBeVisible();
   });
 
+
+  test("la música original es opcional y el contador acelera hasta diez segundos", async ({page})=>{
+    await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/escape");
+    const soundtrack=page.getByRole("button",{name:/BANDA SONORA DINÁMICA ACTIVADA/});
+    await expect(soundtrack).toHaveAttribute("aria-pressed","true");
+    await soundtrack.click();
+    await expect(page.getByRole("button",{name:/BANDA SONORA DESACTIVADA/})).toHaveAttribute("aria-pressed","false");
+    await page.getByRole("button",{name:/12 MIN/}).click();
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    const musicButton=page.getByRole("button",{name:"Activar música"});
+    await expect(musicButton).toHaveAttribute("aria-pressed","false");
+    await musicButton.click();
+    await expect(page.getByRole("button",{name:"Silenciar música"})).toHaveAttribute("aria-pressed","true");
+    await expect(page.getByText("12:00")).toBeVisible();
+    await page.clock.fastForward(420_000);
+    await expect(page.getByText("05:00")).toBeVisible();
+    await expect(page.getByText("EL TIEMPO SE AGOTA")).toBeVisible();
+    await page.clock.fastForward(290_000);
+    await expect(page.getByText("00:10")).toBeVisible();
+    await expect(page.getByText("ÚLTIMOS SEGUNDOS")).toBeVisible();
+    await expect(page.getByLabel("Quedan 10 segundos")).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-final-ten-seconds-mobile.png",fullPage:true,animations:"disabled"});
+    await page.clock.fastForward(1_000);
+    await expect(page.getByLabel("Quedan 9 segundos")).toBeVisible();
+    await page.clock.fastForward(9_000);
+    await expect(page.getByRole("heading",{name:"La casa te recordó."})).toBeVisible();
+  });
+
+  test("la música se atenúa cuando se pausa y vuelve con la partida",async ({page})=>{
+    await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await expect(page.getByRole("button",{name:"Silenciar música"})).toBeVisible();
+    await page.getByRole("button",{name:"Pausar partida"}).click();
+    await expect(page.getByRole("heading",{name:/Hasta la casa guarda silencio/})).toBeVisible();
+    await page.clock.fastForward(31_000);
+    await expect(page.getByText("25:00")).toBeVisible();
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await page.clock.fastForward(1_000);
+    await expect(page.getByText("24:59")).toBeVisible();
+    await page.getByRole("button",{name:"Silenciar música"}).click();
+    await expect(page.getByRole("button",{name:"Activar música"})).toBeVisible();
+    await expect(page.getByRole("button",{name:"Silenciar"})).toBeVisible();
+  });
+
 });
