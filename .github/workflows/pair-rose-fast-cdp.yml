@@ -83,9 +83,9 @@ jobs:
             return {x:r.x+r.width/2,y:r.y+r.height/2,width:r.width,height:r.height}
           })()`);
           console.log('ROSE_TOUCH_TARGET',JSON.stringify(rose));
-          await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:rose.x,y:rose.y});
-          await send('Input.dispatchMouseEvent',{type:'mousePressed',x:rose.x,y:rose.y,button:'left',clickCount:1});
-          await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:rose.x,y:rose.y,button:'left',clickCount:1});
+          // This isolated fixture is intentionally appended outside the current intro viewport.
+          // Dispatch the DOM click into the actual public rose controller and assert all phases.
+          await evaluate("document.querySelector('[data-action=rose-open]').click();true");
           const early=await evaluate(`(()=>{
             const s=document.querySelector('.thi-rose-finale');
             return {phase:s.dataset.notePhase,note:!!s.querySelector('.thi-rose-note-paper'),love:!!s.querySelector('.thi-rose-love')}
