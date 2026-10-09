@@ -206,7 +206,7 @@ export function startAdaptiveScore(initial: ScoreState) {
   if (!bus) return;
   if (engine) releaseEngine(false);
   const { audio, output } = bus;
-  if (audio.state === "suspended") void audio.resume().catch(() => {});
+  const resumeNeeded = audio.state === "suspended";
   const mixer = audio.createGain();
   mixer.gain.value = 0;
   mixer.connect(output);
@@ -243,6 +243,11 @@ export function startAdaptiveScore(initial: ScoreState) {
     lastTier: tensionTier(initial.remaining), lastSecondHit: -1, lastRoom: initial.room
   };
   engine = current;
+  if (resumeNeeded) {
+    void audio.resume().then(()=>{
+      if(engine===current) refreshMix(current);
+    }).catch(()=>{});
+  }
   current.timer = window.setInterval(tick, 105);
   refreshMix(current);
   tick();
