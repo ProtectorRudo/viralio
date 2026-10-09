@@ -30,7 +30,14 @@ jobs:
       - name: Verify TeHiceEsto currently serves updated JS patch
         run: |
           set -eux
-          curl -fsSL --max-time 45 -o /tmp/mama-public.js 'https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js'
+          curl -fsSL --max-time 45 -D /tmp/mama-public-headers -o /tmp/mama-public.js 'https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js'
+          echo 'HEADERS PUBLIC MAMA:'; head -30 /tmp/mama-public-headers
+          echo 'PUBLIC PATCH MARKERS:'; grep -oE '__thiMamaVoiceHotfixV2|__thiMamaVoiceSkipLive|mama-voice-mp3' /tmp/mama-public.js | sort | uniq -c || true
+          echo 'PUBLIC JS TAIL:'; tail -c 300 /tmp/mama-public.js
+          curl -fsSL --max-time 45 -D /tmp/direct-patch-headers -o /tmp/direct-patch.js 'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/mama-demo-js-patch'
+          echo 'HEADERS DIRECT PATCH:'; head -16 /tmp/direct-patch-headers
+          echo 'DIRECT PATCH MARKERS:'; grep -oE '__thiMamaVoiceHotfixV2|__thiMamaVoiceSkipLive|mama-voice-mp3' /tmp/direct-patch.js | sort | uniq -c || true
+          echo 'DIRECT JS TAIL:'; tail -c 300 /tmp/direct-patch.js
           wc -c /tmp/mama-public.js
           grep -Fq '__thiMamaVoice20261009' /tmp/mama-public.js
           grep -Fq '__thiMamaVoice20261009' /tmp/mama-public.js
