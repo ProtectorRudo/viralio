@@ -116,7 +116,7 @@ test("Te Hice Esto premium rebuild visual contract",async({page},testInfo)=>{
     ["abuelos","archive",".archive-folder"],
     ["mama","childhood",null],
     ["propuesta","origin",null],
-    ["amistad","casefile",".casefile-folder"],
+    ["amistad","casefile",'[data-action="casefile-open"]'],
   ] as const){
     await page.goto(`/tehiceesto/experiencias/${slug}`);
     await page.locator('[data-action="advance"]').click();
