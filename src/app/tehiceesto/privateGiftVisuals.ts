@@ -25,12 +25,14 @@ const THEMES={
   amistad:{a:"#263d62",b:"#6683a6",c:"#edf1f9",d:"#bbcfed",kind:"constellation"},
   aniversario:{a:"#44233e",b:"#895775",c:"#f7dfdc",d:"#e2afc5",kind:"ribbon"},
   propuesta:{a:"#473746",b:"#9b7985",c:"#fff3e9",d:"#e8c5c9",kind:"ring"},
+  secreto:{a:"#26131d",b:"#69404d",c:"#f8dbb4",d:"#d2a77f",kind:"ribbon"},
 } as const;
 type GiftTheme=typeof THEMES[keyof typeof THEMES];
 
 /** Intentional visual slots in the nine gift journeys. Extra scene photos are never removed. */
 export const PRIVATE_PHOTO_SLOTS:Readonly<Record<string,number>>={
   memories:3,
+  gallery:3,
   childhood:1,
   origin:1,
   light:2,
