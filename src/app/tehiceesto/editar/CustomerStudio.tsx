@@ -143,6 +143,16 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
   incidents:{title:"Las anécdotas",copy:"Esos episodios que merecen quedar registrados."},
   proof:{title:"Las pruebas",copy:"Pequeñas evidencias de una amistad enorme."},
   pact:{title:"El pacto",copy:"El cierre entre dos personas que se eligieron."},
+  invitation:{title:"La invitación",copy:"Un sobre sellado con su nombre."},
+  portal:{title:"El umbral",copy:"Una puerta que se abre sólo para esa persona."},
+  gallery:{title:"El museo invisible",copy:"Tres recuerdos para descubrir."},
+  timepiece:{title:"La máquina del tiempo",copy:"Un reloj que esconde instantes."},
+  recording:{title:"La voz",copy:"Escuchá un mensaje personal."},
+  clues:{title:"Las señales",copy:"Tres pistas que conducen al secreto."},
+  confession:{title:"La carta",copy:"Palabras que se despliegan con el tacto."},
+  passage:{title:"El último paso",copy:"Abrí un camino iluminado."},
+  reveal:{title:"La revelación",copy:"La noticia que cambia todo."},
+  keepsake:{title:"Para siempre",copy:"El recuerdo final para conservar."},
 };
 
 function accessKey(code:string){return `thi_editor_access:${code}`}
