@@ -36,6 +36,7 @@ export async function affiliatePublicCall<T=Record<string,unknown>>(
   action:string,
   payload:Record<string,unknown>={},
   session?:string,
+  signal?:AbortSignal,
 ):Promise<T>{
   const response=await fetch(AFFILIATE_PUBLIC_API,{
     method:"POST",
@@ -45,6 +46,7 @@ export async function affiliatePublicCall<T=Record<string,unknown>>(
       ...(session?{"x-affiliate-session":session}:{}),
     },
     body:JSON.stringify({action,...payload}),
+    signal,
     cache:"no-store",
   });
   const data=await response.json().catch(()=>({}));
