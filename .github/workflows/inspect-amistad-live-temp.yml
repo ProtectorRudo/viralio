@@ -1,0 +1,22 @@
+name: Inspect Amistad Live Assets
+on:
+  push:
+    branches: [inspect-amistad-live-20261009]
+    paths: ['.github/workflows/inspect-amistad-live-temp.yml']
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find public friendship bundle and current page
+        run: |
+          set -e
+          curl -fsSL --max-time 35 'https://tehiceesto.com/experiencias/amistad' -o /tmp/friend.html
+          grep -oE '_next/static/immutable/chunks/[A-Za-z0-9_-]+\.js' /tmp/friend.html | sort -u >/tmp/chunks.txt
+          cat /tmp/chunks.txt
+          while read -r chunk; do
+            curl -fsSL --max-time 25 "https://tehiceesto.com/$chunk" -o /tmp/check.js || continue
+            echo "ASSET $chunk ($(wc -c </tmp/check.js) bytes)"
+            grep -Fq 'friend-evidence-board' /tmp/check.js && echo "FRIENDSHIP_SCENES=$chunk" || true
+            grep -Fq 'mama-voice-toggle' /tmp/check.js && echo "MAMA_SCENES=$chunk" || true
+            grep -Fq '__thiMamaVoice20261009' /tmp/check.js && echo "ALREADY_PATCHED=$chunk" || true
+          done </tmp/chunks.txt
