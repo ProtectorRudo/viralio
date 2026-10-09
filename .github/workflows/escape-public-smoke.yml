@@ -1,0 +1,45 @@
+name: UMBRAL public playtest smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/escape-public-smoke.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Check actual public game interaction
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium, expect } from "@playwright/test";
+          const browser = await chromium.launch({headless:true});
+          const page = await browser.newPage({viewport:{width:390,height:844}});
+          const errors=[];
+          page.on("pageerror",err=>errors.push(err.message));
+          await page.goto("https://protectorrudo.github.io/viralio/escape/",{waitUntil:"domcontentloaded",timeout:30000});
+          await expect(page.getByRole("heading",{name:/UMBRAL/})).toBeVisible({timeout:15000});
+          await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+          await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible({timeout:10000});
+          const nav=page.getByRole("navigation",{name:"Objetos para investigar"});
+          await expect(nav).toBeVisible();
+          await nav.getByRole("button",{name:"Abrir cerradura"}).click();
+          await page.getByRole("button",{name:"Ingresar 4"}).click();
+          await page.getByRole("button",{name:"Ingresar 2"}).click();
+          await page.getByRole("button",{name:"Ingresar 7"}).click();
+          await page.getByRole("button",{name:"Confirmar código"}).click();
+          await expect(page.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:10000});
+          if(errors.length) throw Error("Browser runtime errors: "+errors.join(" | "));
+          console.log("PASS: public standalone React loads, mobile targets work and first puzzle unlocks");
+          await browser.close();
+          JS
