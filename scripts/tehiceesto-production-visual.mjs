@@ -39,7 +39,7 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
       const advance=page.locator('[data-action="advance"]').first();
       if(await advance.count()&&await advance.isVisible()){
         await advance.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(route==="/experiencias/amistad"?1700:500);
         scene=await page.locator("main.thi-experience").getAttribute("data-scene");
       }
     }
