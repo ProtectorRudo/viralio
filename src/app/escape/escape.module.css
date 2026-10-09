@@ -147,3 +147,14 @@
 /* Prevent the brand credit from covering the action bar on tall phone screens. */
 .copyright{position:relative;bottom:auto;left:auto;transform:none;text-align:center;min-height:27px;padding:5px 12px 10px;background:#090e10;flex:none}
 @media(max-width:800px){.copyright{font-size:.46rem;padding:8px 8px 9px}.mobileInteract>div{scrollbar-width:thin;scrollbar-color:#7b674f #101416}}
+
+/* CASE DOSSIER & HEADS-UP ACTIONS */
+.caseButton{position:absolute;left:3%;bottom:15px;z-index:6;background:linear-gradient(135deg,rgba(36,32,25,.93),rgba(14,19,20,.94));color:#e9c99a;border:1px solid rgba(227,188,124,.43);padding:11px 15px;letter-spacing:.16em;font-size:.62rem;font-weight:750;min-height:39px;box-shadow:0 3px 18px rgba(0,0,0,.45);transition:background .2s,border .2s}
+.caseButton:hover{background:#46382a;border-color:#e7c08b}
+.caseButton span{color:#a79780;margin-left:11px;border-left:1px solid #6b5844;padding-left:9px}
+.journalDialog{width:min(100%,850px)!important;max-height:min(94dvh,950px);padding:clamp(20px,4vw,43px)!important;background:linear-gradient(135deg,#282620,#141a1b 67%,#111515)!important}
+.journalDialog .close{z-index:4}
+.roomArt{transform:scale(1.025) translate(var(--parallax-x,0px),var(--parallax-y,0px));will-change:transform}
+@media(max-width:800px){.caseButton{left:3%;bottom:13px;padding:9px 11px;font-size:.55rem;min-height:37px}.roomProgress{bottom:20px}.journalDialog{max-height:94dvh!important}}
+@media(max-width:420px){.caseButton span{margin-left:5px;padding-left:5px}.roomProgress>span{display:none}}
+@media(prefers-reduced-motion:reduce){.roomArt{transform:none!important;will-change:auto}}
