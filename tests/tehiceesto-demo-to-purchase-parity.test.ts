@@ -46,7 +46,7 @@ describe("TeHiceEsto demo-to-purchase parity: all nine products",()=>{
       expect(src).toContain(`${model.slug}: ${JSON.stringify(model.recipe)}`);
     }
     expect(src).toContain('gift.template_version==="premium-v3"');
-    expect(src).toContain("?[...canonical]");
+    expect(src).toContain("? [...canonical]");
     expect(src).toContain('gift.template_version!=="premium-v3" && !hasVoice');
     expect(src).toContain('gift.template_version!=="premium-v3" && !hasPhoto');
     expect(src).toContain('gift.template_version!=="premium-v3" && !hasVideo');
