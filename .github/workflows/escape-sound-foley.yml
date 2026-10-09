@@ -1,0 +1,46 @@
+name: UMBRAL · Foley CC0 recordings
+
+on:
+  push:
+    branches: [feat/escape-immersive-audio-blackout-20261009]
+    paths:
+      - ".github/workflows/escape-sound-foley.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  foley:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Retrieve CC0 real-recorded wood/footstep foley and master to OGG
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/escape/audio /tmp/umbral-audio
+          curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/steps%20in%20wood%20floor.wav" -o /tmp/umbral-audio/wood.wav
+          curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/tree_creak_0.ogg" -o /tmp/umbral-audio/creak.ogg
+          curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/door_open_1.mp3" -o /tmp/umbral-audio/door.mp3
+          # All three source recordings are independently released as CC0; the player bundles mastered offline files.
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/wood.wav -af "highpass=f=75,lowpass=f=2600,loudnorm=I=-24:TP=-3:LRA=9" -c:a libvorbis -q:a 3 public/escape/audio/footsteps-wood.ogg
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/creak.ogg -af "highpass=f=90,lowpass=f=2100,loudnorm=I=-24:TP=-3:LRA=8" -c:a libvorbis -q:a 3 public/escape/audio/wood-creak.ogg
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/door.mp3 -af "highpass=f=60,lowpass=f=3600,loudnorm=I=-24:TP=-3:LRA=9" -c:a libvorbis -q:a 3 public/escape/audio/heavy-door.ogg
+          for f in public/escape/audio/*.ogg; do test -s "$f"; ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 "$f"; done
+      - name: Commit original CC0 recordings to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/escape/audio/*.ogg
+          if ! git diff --cached --quiet; then
+            git commit -m "asset(escape): bundle original CC0 field recordings and door foley"
+            git fetch origin feat/escape-immersive-audio-blackout-20261009
+            git rebase origin/feat/escape-immersive-audio-blackout-20261009
+            git push origin HEAD:feat/escape-immersive-audio-blackout-20261009
+          fi
