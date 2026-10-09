@@ -27,6 +27,7 @@ import { normalizeSceneTextOverrides as normalizePremiumV1SceneTextOverrides } f
 import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV3SceneTextOverrides } from "../template-v3/sceneText";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
+import { AudioUploadError, prepareCompatibleAudio } from "../audioUpload";
 
 type Gift = {
   public_code: string;
@@ -299,14 +300,15 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     for(const file of Array.from(files).slice(0,20)){
       setUploading(v=>[...v,file.name]);
       try{
-        const kind=file.type.startsWith("image/")?"image":file.type.startsWith("audio/")?"audio":file.type.startsWith("video/")?"video":null;
+        const kind=file.type.startsWith("image/")?"image":file.type.startsWith("audio/")||/\.(opus|ogg|oga|webm|weba|mp3|m4a|wav|aac)$/i.test(file.name)?"audio":file.type.startsWith("video/")?"video":null;
         if(!kind) throw new Error("unsupported");
-        const prep=await adminCall<{path:string;token:string}>("prepareUpload",{code,fileName:file.name,mimeType:file.type,size:file.size});
-        await uploadSignedFile(prep.path,prep.token,file);
-        await adminCall("registerMedia",{code,storagePath:prep.path,kind,originalName:file.name,mimeType:file.type,size:file.size});
+        const uploadFile=kind==="audio"?await prepareCompatibleAudio(file):file;
+        const prep=await adminCall<{path:string;token:string}>("prepareUpload",{code,fileName:uploadFile.name,mimeType:uploadFile.type,size:uploadFile.size});
+        await uploadSignedFile(prep.path,prep.token,uploadFile);
+        await adminCall("registerMedia",{code,storagePath:prep.path,kind,originalName:file.name,mimeType:uploadFile.type,size:uploadFile.size});
       }catch(error){
         console.error(error);
-        alert(`No se pudo subir ${file.name}`);
+        alert(error instanceof AudioUploadError?error.message:`No se pudo subir ${file.name}`);
       }finally{
         setUploading(v=>v.filter(x=>x!==file.name));
       }
@@ -664,7 +666,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       <div className="thi-admin-panel-heading">
         <div><p className="thi-kicker">Archivos</p><h2>Fotos, audios y videos</h2><p>Cada archivo pertenece a una escena concreta. Ahí aparece —y no antes— durante el recorrido.</p></div>
         <button className="thi-primary" onClick={()=>inputRef.current?.click()}>+ Subir archivos</button>
-        <input ref={inputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,audio/mpeg,audio/mp4,audio/webm,audio/wav,video/mp4,video/webm,video/quicktime" onChange={e=>uploadFiles(e.target.files)}/>
+        <input ref={inputRef} hidden type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,audio/*,.opus,.ogg,.oga,.m4a,.mp3,.wav,.webm,.weba,.aac,video/mp4,video/webm,video/quicktime" onChange={e=>uploadFiles(e.target.files)}/>
       </div>
 
       {uploading.length>0&&<div className="thi-uploading">{uploading.map(name=><span key={name}>Subiendo {name}…</span>)}</div>}
