@@ -74,9 +74,12 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       if(!raw)return;
       const saved=JSON.parse(raw) as {image?:string;signedAt?:string};
       if(saved.image?.startsWith("data:image/png;base64,")&&saved.image.length<350_000){
-        setSignatureImage(saved.image);
-        setSignedAt(saved.signedAt||null);
-        setPactSealed(true);
+        const timer=window.setTimeout(()=>{
+          setSignatureImage(saved.image!);
+          setSignedAt(saved.signedAt||null);
+          setPactSealed(true);
+        },0);
+        return ()=>window.clearTimeout(timer);
       }
     }catch{/* Storage can be unavailable in privacy mode. */}
   },[scene,signatureKey]);
@@ -195,7 +198,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <p className="friend-subline">Tocá los papeles. Algunas historias estaban mejor archivadas.</p>
       <div className="friend-evidence-board">
         <span className="friend-thread friend-thread-one" aria-hidden="true" /><span className="friend-thread friend-thread-two" aria-hidden="true" />
-        {incidents.map(([number,title,,short],i)=>(
+        {incidents.map(([number,,,short],i)=>(
           <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")} onClick={()=>{reveal(i);setActiveIncident(i)}} aria-expanded={activeIncident===i}>
             <span className="friend-note-tape" aria-hidden="true" />
             <span className="friend-note-front"><small>{number} · ARCHIVO</small><strong>{short}</strong><span>{uncovered.includes(i)?"✓ EVIDENCIA REVISADA":"TOCÁ PARA ABRIR ↗"}</span></span>
