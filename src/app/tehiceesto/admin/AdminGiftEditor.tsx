@@ -104,6 +104,9 @@ const scenes: { type: SceneType; label: string }[] = [
   {type:"presence",label:"Presencia"},{type:"inheritance",label:"Herencia"},{type:"lookback",label:"Mirar de nuevo"},
   {type:"casefile",label:"Expediente"},{type:"insidejokes",label:"Códigos internos"},{type:"incidents",label:"Incidentes"},
   {type:"proof",label:"Pruebas"},{type:"pact",label:"Pacto"},
+  {type:"invitation",label:"Invitación"},{type:"portal",label:"Puerta secreta"},{type:"gallery",label:"Museo de recuerdos"},
+  {type:"timepiece",label:"Reloj"},{type:"recording",label:"Mensaje de voz"},{type:"clues",label:"Señales"},
+  {type:"confession",label:"Carta"},{type:"passage",label:"Pasillo"},{type:"reveal",label:"Revelación"},{type:"keepsake",label:"Recuerdo final"},
 ];
 
 function humanSize(size?: number){
