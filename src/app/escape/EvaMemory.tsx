@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./EvaMemory.module.css";
 
 /**
@@ -9,6 +9,8 @@ import styles from "./EvaMemory.module.css";
  */
 export default function EvaMemory({ onClose }: {onClose:()=>void}) {
   const [elapsed,setElapsed] = useState(0);
+  const [videoAvailable,setVideoAvailable] = useState(true);
+  const videoRef=useRef<HTMLVideoElement|null>(null);
   const [playing,setPlaying] = useState(true);
   useEffect(()=>{
     if(!playing) return;
@@ -34,10 +36,11 @@ export default function EvaMemory({ onClose }: {onClose:()=>void}) {
   return <div className={styles.tape} aria-label="Cinta encontrada: último recuerdo de Eva">
     <div className={styles.topLine}><span>◉ CASO 013 / CINTA RECUPERADA</span><span>ARCHIVO DAÑADO</span></div>
     <h2>El último recuerdo</h2>
-    <p className={styles.lead}>La caja conservaba algo más que una melodía. Tocá reproducir para reconstruir los últimos segundos.</p>
+    <p className={styles.lead}>La caja conservaba algo más que una melodía. El último recuerdo comienza a reconstruirse ante tus ojos.</p>
     <div className={styles.viewport}>
       <div className={styles.roomFrame} style={{opacity:elapsed<4.2?1:0}}/>
       <div className={styles.dollFrame} style={{opacity:elapsed<3.7?0:1}}/>
+      {videoAvailable&&<video ref={videoRef} className={styles.filmVideo} src="/escape/images/eva-tape-013.mp4" poster="/escape/images/room-2.webp" autoPlay muted playsInline preload="metadata" onEnded={()=>{setElapsed(8);setPlaying(false);}} onError={()=>setVideoAvailable(false)} aria-label="Reconstrucción muda: la habitación de Eva y un acercamiento inquietante a su muñeca"/>}
       <div className={styles.scanlines}/>
       <div className={styles.vignette}/>
       <div className={styles.rec}><span className={playing?styles.recording:""}/> REC · {timeCode}</div>
@@ -48,9 +51,10 @@ export default function EvaMemory({ onClose }: {onClose:()=>void}) {
     <div className={styles.controls}>
       <button type="button" onClick={()=>{
         setElapsed(0);setPlaying(true);
+        if(videoRef.current){videoRef.current.currentTime=0;void videoRef.current.play().catch(()=>{});}
       }}>↺ REPRODUCIR OTRA VEZ</button>
       <button type="button" className={styles.closeButton} onClick={onClose}>GUARDAR LA CINTA ↗</button>
     </div>
-    <p className={styles.note}>Reconstrucción visual animada a partir del archivo recuperado. Sin reproducción de sonido obligatoria.</p>
+    <p className={styles.note}>Cinta muda con subtítulos. Si el video no se puede cargar, se muestra una reconstrucción animada de las mismas escenas.</p>
   </div>;
 }
