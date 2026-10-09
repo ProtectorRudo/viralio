@@ -1,0 +1,50 @@
+{
+  "assets": [
+    {
+      "asset": "mansion",
+      "source": "1440x694",
+      "retina": "2880x1388",
+      "original_bytes": 112562,
+      "retina_bytes": 256752,
+      "retina_sharpness_reference": 763.342,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-0",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 81470,
+      "retina_bytes": 188020,
+      "retina_sharpness_reference": 108.271,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-1",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 74726,
+      "retina_bytes": 177114,
+      "retina_sharpness_reference": 193.294,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-2",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 78052,
+      "retina_bytes": 183970,
+      "retina_sharpness_reference": 100.201,
+      "method": "FSRCNN x2"
+    },
+    {
+      "asset": "room-3",
+      "source": "1440x745",
+      "retina": "2880x1490",
+      "original_bytes": 72318,
+      "retina_bytes": 171018,
+      "retina_sharpness_reference": 117.711,
+      "method": "FSRCNN x2"
+    }
+  ],
+  "limitations": "2x copies reduce browser interpolation; cannot restore lost source detail."
+}
