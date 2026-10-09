@@ -41,6 +41,22 @@ describe("Te Hice Esto post-purchase onboarding wiring",()=>{
     expect(sql).toContain("tehiceesto-access-email-retry");
     expect(sql).toContain("sync-status");
   });
+  it("sends first-party one-time login links rather than provider redirects",()=>{
+    const src=file("gift-account");
+    expect(src).toContain('new URL("https://tehiceesto.com/mis-regalos")');
+    expect(src).toContain('link?.properties?.hashed_token');
+    expect(src).toContain('brandedAccess.hash=new URLSearchParams');
+    expect(src).toContain('ACCESS_LINK:brandedAccess.toString()');
+    expect(src).not.toContain('String(link.properties.action_link)');
+  });
+  it("exchanges email token hashes securely on the website and handles expiry",()=>{
+    const client=readFileSync(join(root,"src","app","tehiceesto","mis-regalos","MyGifts.tsx"),"utf8");
+    expect(client).toContain('type:"magiclink"');
+    expect(client).toContain('/auth/v1/verify');
+    expect(client).toContain('if(fromNewLink)');
+    expect(client).toContain('clearAuthResponseFromUrl();');
+    expect(client).toContain('El enlace de acceso venció o ya fue utilizado');
+  });
   it("offers recovery after a failed post-purchase send",()=>{
     const src=file("order-status");
     expect(src).toContain("emailRetryDue");

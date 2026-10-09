@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getExperience } from "../data";
 import { creatorCall } from "../creatorApi";
 import { ACCOUNT_TOKEN_KEY,giftAccountCall,requestGiftAccountLink } from "../giftAccountApi";
+import { SUPABASE_PUBLISHABLE_KEY,SUPABASE_URL } from "../creatorApi";
 
 type GiftRow={
   code:string;
@@ -69,6 +70,27 @@ function authTokenFromLocation(){
   return hash.get("access_token")||query.get("access_token")||"";
 }
 
+async function verifyEmailLinkToken():Promise<string>{
+  if(typeof window==="undefined")return "";
+  const hash=new URLSearchParams(window.location.hash.replace(/^#/,""));
+  const tokenHash=hash.get("token_hash");
+  if(!tokenHash)return "";
+  // Strip the one-time credential before network requests or further navigation.
+  clearAuthResponseFromUrl();
+  if(!/^[a-f0-9]{32,128}$/i.test(tokenHash))throw new Error("invalid_access_link");
+  const response=await fetch(`${SUPABASE_URL}/auth/v1/verify`,{
+    method:"POST",
+    headers:{apikey:SUPABASE_PUBLISHABLE_KEY,"content-type":"application/json"},
+    body:JSON.stringify({token_hash:tokenHash,type:"magiclink"}),
+    cache:"no-store",
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||typeof data.access_token!=="string"||!data.access_token){
+    throw new Error("expired_access_link");
+  }
+  return data.access_token;
+}
+
 function clearAuthResponseFromUrl(){
   if(typeof window==="undefined")return;
   const url=new URL(window.location.href);
@@ -86,6 +108,7 @@ export default function MyGifts(){
   const [recoveryEmail,setRecoveryEmail]=useState("");
   const [recoveryState,setRecoveryState]=useState<"idle"|"sending"|"sent"|"error">("idle");
   const [recoveryMessage,setRecoveryMessage]=useState("");
+  const [accessError,setAccessError]=useState(false);
 
   useEffect(()=>{
     let active=true;
@@ -94,10 +117,19 @@ export default function MyGifts(){
       const merged=new Map<string,GiftRow>();
       const requestedCode=new URLSearchParams(window.location.search).get("regalo")?.trim().toLowerCase()||"";
 
-      const callbackToken=authTokenFromLocation();
+      let callbackToken=authTokenFromLocation();
+      const fromNewLink=new URLSearchParams(window.location.hash.replace(/^#/,"")).has("token_hash");
+      if(fromNewLink){
+        try{
+          callbackToken=await verifyEmailLinkToken();
+        }catch{
+          setAccessError(true);
+          callbackToken="";
+        }
+      }
       if(callbackToken){
         window.localStorage.setItem(ACCOUNT_TOKEN_KEY,callbackToken);
-        clearAuthResponseFromUrl();
+        if(!fromNewLink)clearAuthResponseFromUrl();
       }
 
       let accountToken=callbackToken||window.localStorage.getItem(ACCOUNT_TOKEN_KEY)||"";
@@ -213,6 +245,7 @@ export default function MyGifts(){
 
     <section className="account-hero">
       <p className="studio-eyebrow">MIS REGALOS</p>
+      {accessError&&<p role="alert" className="account-alert">El enlace de acceso venció o ya fue utilizado. Pedí uno nuevo más abajo; tu compra sigue guardada.</p>}
       <h1>{gifts.length?"Acá están tus regalos.":"Recuperá tus regalos."}</h1>
       <p>{gifts.length
         ?"Podés editarlos, abrir los que ya publicaste y volver a compartirlos cuando quieras."
