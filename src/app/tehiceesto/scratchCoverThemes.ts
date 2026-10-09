@@ -68,6 +68,11 @@ export const SCRATCH_COVER_PALETTES={
     lineLight:"#f3e4de",lineDark:"#594554",
     textPrimary:"#fffaf7",textSecondary:"#f6e9e8",
   },
+  secreto:{
+    stops:["#bb908d","#794657","#744658","#462b3c","#6e4150"],
+    lineLight:"#f1d4b9",lineDark:"#35202b",
+    textPrimary:"#fff9f0",textSecondary:"#efdbcd",
+  },
 } as const satisfies Record<string,ScratchCoverPalette>;
 
 export function getScratchCoverPalette(slug:string):ScratchCoverPalette{
