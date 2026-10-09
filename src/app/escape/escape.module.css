@@ -267,3 +267,14 @@
  .sceneTitle h2{text-shadow:0 4px 18px #000}
 }
 @media(prefers-reduced-motion:reduce){.heroFog,.cinematicRoom{animation:none}}
+
+/* UMBRAL / Eva's living memory sequence */
+.memoryDialog{width:min(100%,885px)!important;background:linear-gradient(155deg,#1c201e,#0a1114 65%,#080c0f)!important;padding:clamp(22px,4.5vw,48px)!important}
+.memoryDialog .close{z-index:8}
+.discoveryActions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px}
+.discoveryActions .primary{min-width:230px;min-height:53px}
+.discoveryActions .ghost{margin:0!important;padding:14px 16px;border:1px solid rgba(214,175,118,.28)}
+.whisperButton{position:relative;display:block;min-height:53px;padding:12px 25px;margin:14px 0 19px;border:1px solid rgba(242,191,133,.58);background:linear-gradient(115deg,#33251d,#62412c 50%,#30251f);color:#f5d8b3;font-size:.73rem;font-weight:760;letter-spacing:.17em;box-shadow:0 2px 25px rgba(198,135,88,.1);transition:box-shadow .2s,transform .2s}
+.whisperButton:hover{box-shadow:0 3px 31px rgba(216,152,94,.26);transform:translateY(-1px)}
+@media(max-width:650px){.memoryDialog{max-height:calc(100dvh - 18px)!important;padding:22px 17px!important}.discoveryActions{flex-direction:column;align-items:stretch}.discoveryActions .primary{min-width:0;width:100%}.discoveryActions .ghost{width:100%}.whisperButton{width:100%;font-size:.65rem}}
+@media(prefers-reduced-motion:reduce){.whisperButton{transition:none}}
