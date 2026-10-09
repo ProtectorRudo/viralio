@@ -132,6 +132,7 @@ export default function EscapeGame() {
   const [angle, setAngle] = useState({ x: 0, y: 0 });
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [apparition, setApparition] = useState(false);
 
   useEffect(() => {
     try {
@@ -196,6 +197,20 @@ export default function EscapeGame() {
     } catch { /* low-powered devices still have a silent experience */ }
     return stop;
   }, [phase, paused, room, sound]);
+
+  useEffect(() => {
+    if(phase!=="playing" || paused || room!==2) return;
+    let vanish: number | undefined;
+    const appear = window.setTimeout(() => {
+      setApparition(true);
+      setToast("Por un instante, alguien estuvo de pie junto a la ventana.");
+      vanish = window.setTimeout(() => setApparition(false), 1500);
+    }, 12000);
+    return () => {
+      window.clearTimeout(appear);
+      if(vanish!==undefined) window.clearTimeout(vanish);
+    };
+  }, [phase, paused, room]);
 
   function sfx(kind: "click" | "success" | "error" | "step" | "tone" = "click", pitch = 440) {
     if(!sound || typeof window==="undefined") return;
@@ -319,6 +334,7 @@ export default function EscapeGame() {
         <div className={styles.roomArt} style={{transform:"scale(1.025) translate("+(-angle.x)+"px,"+(-angle.y)+"px)"}}>
           <SceneArt room={room} power={puzzles.power}/>
           <div className={styles.dust} aria-hidden="true"/>
+          {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
           <div className={styles.shade} aria-hidden="true"/>
         </div>
         <div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
