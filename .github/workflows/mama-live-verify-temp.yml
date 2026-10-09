@@ -101,6 +101,27 @@ jobs:
           console.log('BRIDGE_DIAGNOSTIC',JSON.stringify(await page.evaluate(()=>({hotfix:!!window.__thiMamaVoice20261009,skip:!!window.__thiMamaVoice20261009,scene:document.querySelector('main.thi-experience')?.getAttribute('data-scene'),scriptUrls:[...document.scripts].filter(x=>x.src).map(x=>x.src.split('/').at(-1)).slice(0,40)}))));
           const skip=page.locator('.thi-mama-voice-skip-live');
           await skip.waitFor({timeout:10000});
+          const visual=await page.evaluate(()=>{
+            const list=document.querySelector('.thi-mama-voice-list')?.getBoundingClientRect();
+            const btn=document.querySelector('.thi-mama-voice-skip-live')?.getBoundingClientRect();
+            const float=document.querySelector('a.floating-create-cta.floating-whatsapp--experience');
+            const c=float?getComputedStyle(float):null;
+            const nav=performance.getEntriesByType('navigation')[0];
+            const proxy=performance.getEntriesByType('resource').filter(r=>r.name.includes('0gradzqca-5xg.js'));
+            return {label:document.querySelector('.thi-mama-voice-skip-live')?.textContent,
+              listBottom:list?.bottom,btnTop:btn?.top,btnHeight:btn?.height,
+              floatingVisible:c?.display!=='none'&&c?.visibility!=='hidden'&&c?.opacity!=='0',
+              navDuration:nav?.duration,proxyResource:proxy.map(r=>({duration:r.duration,responseStart:r.responseStart}))};
+          });
+          console.log('LIVE_VISUAL_CHECK',JSON.stringify(visual));
+          if(!visual.label?.startsWith('Continuar'))throw Error('Continue label wrong');
+          if(visual.btnTop<visual.listBottom-3)throw Error('Continue overlaps or precedes the voice cards');
+          if(visual.floatingVisible)throw Error('Purchase CTA overlays voice cards');
+          await page.locator('[data-action="mama-voice-choice"]').last().click();
+          await page.locator('.thi-mama-voice-player').waitFor();
+          await page.locator('[data-action="mama-voice-back"]').click();
+          await skip.waitFor({timeout:10000});
+          console.log('PASS: Third audio is accessible, and continue is after all 3 cards');
           await skip.click();
           await page.waitForTimeout(600);
           if(await page.locator('main.thi-experience').getAttribute('data-scene')!=='letter')throw Error('Skip CTA did not advance');
