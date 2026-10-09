@@ -181,7 +181,7 @@ export default function EscapeGame() {
   // Story director: the one substantial blackout is reserved for Eva's nursery
   // after exploration, not at random while entering codes or watching a tape.
   useEffect(()=>{
-    if(!cinematicScares || phase!=="playing" || room!==2 || paused || modal || scareStage!=="off" || scareAlreadyPlayed.current)return;
+    if(!cinematicScares || (typeof window!=="undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) || phase!=="playing" || room!==2 || paused || modal || scareStage!=="off" || scareAlreadyPlayed.current)return;
     const id=window.setTimeout(()=>{
       scareAlreadyPlayed.current=true;
       setScareStage("black");
@@ -298,12 +298,32 @@ export default function EscapeGame() {
     // Give the house agency: a distant storm at an unpredictable interval.
     const interval=window.setInterval(()=>{
       if(Math.random()>.56){
+        playHorror("creak",{pan:Math.random()>.5?.68:-.68});
         setStorm(true);
         window.setTimeout(()=>setStorm(false),430);
       }
     }, 8700);
     return ()=>window.clearInterval(interval);
   },[phase,paused,modal]);
+
+  // Low-intensity room foley: movement far from the player, then silence.
+  // Never play over dialogue, clues, the film or the blackout.
+  useEffect(()=>{
+    if(phase!=="playing" || paused || modal || scareStage!=="off" || !sound || !cinematicScares)return;
+    const foley=window.setInterval(()=>{
+      if(room===3) playHorror("electric",{pan:-.7,intensity:.28});
+      else if(room===2 && Math.random()>.33)playHorror("footsteps",{pan:.75,intensity:.42});
+      else if(room===1)playHorror("creak",{pan:-.75,intensity:.34});
+      else if(Math.random()>.58)playHorror("footsteps",{pan:-.65,intensity:.4});
+    },18700);
+    return ()=>window.clearInterval(foley);
+  },[phase,paused,modal,scareStage,room,sound,cinematicScares]);
+
+  useEffect(()=>{
+    if(phase!=="playing" || paused || cinematicPause || !sound || seconds>300)return;
+    const id=window.setInterval(()=>playHorror("heartbeat",{pan:-.12,intensity:.18}),seconds<60?6000:11500);
+    return ()=>window.clearInterval(id);
+  },[phase,paused,cinematicPause,sound,seconds<=60,seconds<=300]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent)=>{
