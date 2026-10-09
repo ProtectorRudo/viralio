@@ -326,3 +326,26 @@
 @media(prefers-reduced-motion:reduce){
   .dialog .notes button{transition:none}
 }
+
+
+/* Final mobile art gate: NEVER hide the photographic hero object on touch devices. */
+@media(max-width:650px){
+  .pinDialog{padding:17px 19px!important;max-height:calc(100dvh - 24px)}
+  .pinDialog .pinDescription .stage{
+    display:block!important;height:clamp(151px,19vh,190px)!important;
+    margin:0 0 7px!important;
+  }
+  .pinLayout{gap:6px}
+  .pinDescription h2{margin:9px 0 5px;font-size:1.62rem;line-height:1.1}
+  .pinDescription p{margin:5px 0;font-size:.82rem;line-height:1.42}
+  .pinLayout .code{margin-top:11px;gap:6px}
+  .pinLayout .code input{min-height:43px;font-size:1.5rem}
+  .pinLayout .code button{min-height:43px}
+  .pinLayout .keypad{margin:2px auto 0}
+  .pinLayout .keypad button{min-height:35px}
+}
+@media(max-height:695px) and (max-width:650px){
+  .pinDialog .pinDescription .stage{height:135px!important}
+  .pinDialog .pinDescription h2{font-size:1.45rem}
+  .pinLayout .keypad button{min-height:31px}
+}
