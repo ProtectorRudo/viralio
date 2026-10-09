@@ -32,7 +32,7 @@ jobs:
       - name: Install pinned packages
         run: npm ci
       - name: Lint escape route in isolation
-        run: npx eslint src/app/escape/page.tsx src/app/escape/EscapeGame.tsx --max-warnings=0
+        run: npx eslint src/app/escape --ext .tsx --max-warnings=0
       - name: Build shared app safely
         run: npm run build
       - name: Install Chromium
