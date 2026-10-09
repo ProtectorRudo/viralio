@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
+import EvidenceArchive from "./EvidenceArchive";
 
 type Phase = "intro" | "playing" | "won" | "lost";
-type PuzzleState = { portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
+type PuzzleState = { portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
 type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
-const INITIAL: PuzzleState = { portraits: [], candles: [], studyOpen: false, notesRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
+const INITIAL: PuzzleState = { portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
 const CLUES = [
   ["Las cifras están en los marcos de tres retratos.", "Cada retrato conserva un año y una cifra. El calendario importa.", "Ordená los retratos de la persona más joven a la más vieja: 1918, 1902, 1891."],
   ["La nota habla del cielo, del camino y de lo que florece.", "Esas palabras representan los símbolos dibujados debajo de las velas.", "Tocá las velas en este orden: luna, llave, rosa."],
@@ -352,6 +353,7 @@ export default function EscapeGame() {
     setModal("hint"+tier);sfx();
   }
   const totalHints=hints.reduce((a,b)=>a+b,0);
+  const recoveredCount=puzzles.portraits.length+Number(puzzles.notesRead)+Number(puzzles.evaRead)+Number(puzzles.nurseryOpen)+Number(puzzles.keepsake)+Number(puzzles.power);
   const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)));
   const hotspots:Spot[] = room===0?[
     ...PORTRAITS.map((p,i)=>({id:"portrait"+i,text:"Retrato de "+p.name,x:18+i*13.8,y:44,glyph:"✧",act:()=>portrait(i)})),
@@ -364,7 +366,7 @@ export default function EscapeGame() {
     {id:"rosa",text:"Vela con la rosa",x:66.7,y:61,glyph:"✿",act:()=>candle("rosa")},
     {id:"studyexit",text:"Puerta secreta",x:87,y:56,glyph:"➜",active:puzzles.studyOpen,act:()=>puzzles.studyOpen?nextRoom():message("La piedra no se mueve. Tal vez las velas sostengan el mecanismo.")},
   ]:room===2?[
-    {id:"scrap",text:"Leer carta",x:24,y:72,glyph:"✉",act:()=>{sfx();setModal("eva");}},
+    {id:"scrap",text:"Leer carta",x:24,y:72,glyph:"✉",act:()=>{sfx();setPuzzles(p=>({...p,evaRead:true}));setModal("eva");}},
     {id:"box",text:"Tocar caja musical",x:55.7,y:56,glyph:"♫",act:()=>{sfx();setModal("music");}},
     {id:"keepsake",text:"Examinar muñeca",x:80,y:48,glyph:"✧",act:()=>{sfx();setPuzzles(p=>({...p,keepsake:true}));setModal("doll");}},
     {id:"nurseryexit",text:"Abrir puerta",x:88,y:78,glyph:"➜",active:puzzles.nurseryOpen,act:()=>puzzles.nurseryOpen?nextRoom():message("La cerradura vibra con una melodía que todavía no reconocés.")},
@@ -416,6 +418,7 @@ export default function EscapeGame() {
         </div>
         <div className={styles.torch} aria-hidden="true"/><div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
         {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={spotPosition(spot)} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
+        <button className={styles.caseButton} onClick={()=>{sfx("click");setModal("journal");}} aria-label={"Abrir expediente. "+recoveredCount+" pruebas encontradas de 8"}>▤ EXPEDIENTE <span>{recoveredCount}/8</span></button>
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
       </section>
@@ -431,9 +434,10 @@ export default function EscapeGame() {
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
-        <section role="dialog" aria-modal="true" aria-label="Objeto investigado" className={styles.dialog}>
+        <section role="dialog" aria-modal="true" aria-label="Objeto investigado" className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
-          <span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>
+          {modal!=="journal"&&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
+          {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power}/>}
           {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
           {modal==="clock"&&<><Artefact kind="clock"/><h2>El reloj detenido</h2><p>Sus agujas marcan las 03:13. En la madera hay una inscripción:</p><blockquote>«El tiempo no importa. La edad sí. De quien llegó último, a quien llegó primero».</blockquote></>}
           {modal==="pin"&&<><Artefact kind="lock"/><h2>Una cerradura sin llave</h2><p>Tres cifras. Escuchás tres golpes del otro lado. Cada vez más cerca.</p><div className={styles.code}><input inputMode="numeric" maxLength={3} autoComplete="off" aria-label="Código de tres cifras" placeholder="— — —" value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,"").slice(0,3))} onKeyDown={e=>{if(e.key==="Enter")pinTry();}}/><button onClick={pinTry} disabled={pin.length!==3}>DESBLOQUEAR ↗</button></div></>}
