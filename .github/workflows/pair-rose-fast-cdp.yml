@@ -1,0 +1,128 @@
+name: Fast Browser QA Pair Paper Reveal
+on:
+  push:
+    branches: [pair-rose-public-qa-20261009]
+    paths: ['.github/workflows/pair-rose-fast-cdp.yml']
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Launch system Chrome without npm dependencies
+        run: |
+          set -e
+          google-chrome --version
+          node -v
+          google-chrome --headless=new --no-sandbox --disable-dev-shm-usage --disable-gpu \
+            --remote-allow-origins='*' --remote-debugging-port=9222 \
+            --user-data-dir=/tmp/thi-rose-cdp about:blank >/tmp/thi-chrome.log 2>&1 &
+          echo $! > /tmp/thi-chrome.pid
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:9222/json >/tmp/targets.json; then break; fi
+            sleep .4
+          done
+          curl -fsS http://127.0.0.1:9222/json | head -c 300
+      - name: Check live real browser note opening stages
+        run: |
+          node --experimental-websocket --input-type=module <<'NODE'
+          const targets=await (await fetch('http://127.0.0.1:9222/json')).json();
+          const target=targets.find(t=>t.type==='page');
+          if(!target)throw Error('No Chrome page');
+          const socket=new WebSocket(target.webSocketDebuggerUrl);
+          await new Promise((resolve,reject)=>{socket.addEventListener('open',resolve,{once:true});socket.addEventListener('error',reject,{once:true})});
+          let n=0;
+          const pending=new Map();
+          socket.addEventListener('message',event=>{
+            const data=JSON.parse(event.data);
+            if(data.id&&pending.has(data.id)){
+              const {resolve,reject}=pending.get(data.id);pending.delete(data.id);
+              if(data.error)reject(Error(JSON.stringify(data.error)));else resolve(data.result);
+            }
+          });
+          const send=(method,params={})=>new Promise((resolve,reject)=>{
+            const id=++n;pending.set(id,{resolve,reject});
+            socket.send(JSON.stringify({id,method,params}));
+          });
+          const evaluate=async expr=>{
+            const result=await send('Runtime.evaluate',{expression:expr,returnByValue:true,awaitPromise:true});
+            if(result.exceptionDetails)throw Error('Browser JS '+JSON.stringify(result.exceptionDetails).slice(0,600));
+            return result.result.value;
+          };
+          await send('Page.enable');
+          await send('Runtime.enable');
+          await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true});
+          await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+          await send('Page.addScriptToEvaluateOnNewDocument',{source:"window.__roseVibrations=[];Object.defineProperty(navigator,'vibrate',{configurable:true,value:p=>{window.__roseVibrations.push(p);return true}});"});
+          await send('Page.navigate',{url:'https://tehiceesto.com/experiencias/pareja'});
+          const ready=await evaluate(`(async()=>{
+            for(let i=0;i<120;i++){
+              if(window.__thiRoseFinale20261009&&document.querySelector('.thi-theme-pareja'))return true;
+              await new Promise(r=>setTimeout(r,200))
+            }
+            return false
+          })()`);
+          if(!ready)throw Error('Public Pair JS patch not loaded');
+          console.log('LIVE_PATCH_READY');
+          const fixture=await evaluate(`(async()=>{
+            const root=document.querySelector('.thi-theme-pareja');
+            root.setAttribute('data-scene','finale');
+            const element=document.createElement('section');
+            element.className='thi-pair-finale';
+            element.innerHTML='<div class="thi-pair-finale-divider"></div>';
+            root.appendChild(element);
+            for(let i=0;i<50;i++){
+              if(element.querySelector('[data-action="rose-open"]'))return true;
+              await new Promise(r=>setTimeout(r,80));
+            }
+            return false;
+          })()`);
+          if(!fixture)throw Error('Rose finale not mounted in mobile preview');
+          const rose=await evaluate(`(()=>{
+            const x=document.querySelector('[data-action="rose-open"]');
+            x.scrollIntoView({block:'center'});
+            const r=x.getBoundingClientRect();
+            return {x:r.x+r.width/2,y:r.y+r.height/2,width:r.width,height:r.height}
+          })()`);
+          console.log('ROSE_TOUCH_TARGET',JSON.stringify(rose));
+          await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:rose.x,y:rose.y});
+          await send('Input.dispatchMouseEvent',{type:'mousePressed',x:rose.x,y:rose.y,button:'left',clickCount:1});
+          await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:rose.x,y:rose.y,button:'left',clickCount:1});
+          const early=await evaluate(`(()=>{
+            const s=document.querySelector('.thi-rose-finale');
+            return {phase:s.dataset.notePhase,note:!!s.querySelector('.thi-rose-note-paper'),love:!!s.querySelector('.thi-rose-love')}
+          })()`);
+          console.log('NOTE_EMERGING',JSON.stringify(early));
+          if(early.phase!=='emerging'||early.love||!early.note)throw Error('Paper did not emerge before love message');
+          await new Promise(r=>setTimeout(r,1850));
+          const middle=await evaluate(`(()=>{
+            const s=document.querySelector('.thi-rose-finale');
+            return {phase:s.dataset.notePhase,left:getComputedStyle(s.querySelector('.thi-rose-note-edge-left')).transform}
+          })()`);
+          console.log('NOTE_UNFOLDING',JSON.stringify(middle));
+          if(middle.phase!=='unfolding')throw Error('Paper did not unfold');
+          await new Promise(r=>setTimeout(r,1150));
+          const final=await evaluate(`(()=>{
+            const s=document.querySelector('.thi-rose-finale');
+            const paper=s.querySelector('.thi-rose-note');
+            const r=paper.getBoundingClientRect();
+            const canvas=s.querySelector('.thi-rose-fireworks');
+            let ink=0;const ctx=canvas.getContext('2d');
+            if(ctx){
+              const bytes=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+              for(let i=3;i<bytes.length;i+=28)if(bytes[i])ink++;
+            }
+            return {phase:s.dataset.notePhase,message:s.querySelector('.thi-rose-love')?.textContent,
+              subtitle:s.querySelector('.thi-rose-afterword')?.textContent,
+              noteRect:{x:r.x,y:r.y,width:r.width,height:r.height},
+              opacity:getComputedStyle(paper).opacity,
+              ink,haptics:window.__roseVibrations.length,
+              horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
+          })()`);
+          console.log('PAPER_REVEALED',JSON.stringify(final));
+          if(final.phase!=='revealed'||final.message!=='Te amo'||final.ink===0||
+             final.haptics<2||final.opacity!=='1'||final.noteRect.width<210||
+             final.noteRect.x<0||final.noteRect.x+final.noteRect.width>395||
+             final.horizontalOverflow>1)
+            throw Error('Mobile folded note/finale regression');
+          console.log('SUCCESS: Live mobile flower -> folding note -> text -> fireworks + haptics');
+          socket.close();
+          NODE
