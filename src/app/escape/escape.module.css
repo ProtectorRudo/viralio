@@ -158,3 +158,19 @@
 @media(max-width:800px){.caseButton{left:3%;bottom:13px;padding:9px 11px;font-size:.55rem;min-height:37px}.roomProgress{bottom:20px}.journalDialog{max-height:94dvh!important}}
 @media(max-width:420px){.caseButton span{margin-left:5px;padding-left:5px}.roomProgress>span{display:none}}
 @media(prefers-reduced-motion:reduce){.roomArt{transform:none!important;will-change:auto}}
+
+/* Two replayable challenge modes; keep the controls understated and legible. */
+.difficulty{display:flex;align-items:stretch;gap:9px;max-width:455px;margin:28px 0 26px;padding:0;border:0;min-width:0}
+.difficulty legend{font-size:.58rem;letter-spacing:.18em;color:#b49d7e;font-weight:700;margin-bottom:9px}
+.difficulty button{min-width:0;flex:1;min-height:62px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:8px 17px;border:1px solid rgba(183,150,106,.33);background:rgba(10,15,16,.6);color:#b7a78c;transition:background .18s,border .18s,transform .18s}
+.difficulty button:hover{border-color:#d2b184;background:rgba(76,58,40,.27)}
+.difficulty button.selectedDifficulty{border-color:#deb98a;background:linear-gradient(105deg,rgba(123,91,57,.43),rgba(46,39,29,.58));box-shadow:inset 0 0 12px rgba(182,134,80,.15)}
+.difficulty b{font:500 1.05rem Georgia,serif;letter-spacing:.1em;color:#f1d9b2}
+.difficulty small{font-size:.54rem;letter-spacing:.17em;color:#bca689}
+.perfectEvidence{max-width:570px;margin:15px auto 0;display:grid;gap:10px;align-items:center;justify-content:center;padding:18px 21px;border:1px solid #967e54;background:radial-gradient(ellipse at 50% 5%,rgba(204,161,98,.2),rgba(23,30,26,.7));color:#ecd09e;box-shadow:0 0 35px rgba(215,177,112,.09)}
+.perfectEvidence strong{font:400 1.22rem Georgia,serif;letter-spacing:.08em}
+.perfectEvidence span{font:italic .92rem/1.5 Georgia,serif;color:#c9bba5}
+.ending>.personalRecord{margin:0 0 22px;color:#e1c392;font:700 .67rem/1.5 ui-sans-serif,sans-serif;letter-spacing:.21em}
+@media(max-width:800px){.difficulty{max-width:460px;margin:20px 0}.difficulty button{min-height:56px}.perfectEvidence{max-width:calc(100% - 20px)}}
+@media(max-width:390px){.difficulty button{padding:7px 11px}.difficulty legend{letter-spacing:.11em}.difficulty small{font-size:.48rem}}
+@media(prefers-reduced-motion:reduce){.difficulty button{transition:none}}
