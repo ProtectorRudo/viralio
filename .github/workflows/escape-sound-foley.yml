@@ -26,11 +26,12 @@ jobs:
           set -euo pipefail
           mkdir -p public/escape/audio /tmp/umbral-audio
           curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/steps%20in%20wood%20floor.wav" -o /tmp/umbral-audio/wood.wav
-          curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/01-footstep_0.ogg" -o /tmp/umbral-audio/footstep.ogg
-          # Both sources are explicitly CC0; dry recordings preserve tactile authenticity.
+          curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/tree_creak_0.ogg" -o /tmp/umbral-audio/creak.ogg
+          curl -fSL --retry 3 --max-time 45 -A "Mozilla/5.0" "https://opengameart.org/sites/default/files/door_open_1.mp3" -o /tmp/umbral-audio/door.mp3
+          # All three source recordings are independently released as CC0; the player bundles mastered offline files.
           ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/wood.wav -af "highpass=f=75,lowpass=f=2600,loudnorm=I=-24:TP=-3:LRA=9" -c:a libvorbis -q:a 3 public/escape/audio/footsteps-wood.ogg
-          ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/footstep.ogg -af "highpass=f=90,lowpass=f=1800,loudnorm=I=-24:TP=-3:LRA=8" -c:a libvorbis -q:a 3 public/escape/audio/wood-creak.ogg
-          cp public/escape/audio/footsteps-wood.ogg public/escape/audio/heavy-door.ogg
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/creak.ogg -af "highpass=f=90,lowpass=f=2100,loudnorm=I=-24:TP=-3:LRA=8" -c:a libvorbis -q:a 3 public/escape/audio/wood-creak.ogg
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/umbral-audio/door.mp3 -af "highpass=f=60,lowpass=f=3600,loudnorm=I=-24:TP=-3:LRA=9" -c:a libvorbis -q:a 3 public/escape/audio/heavy-door.ogg
           for f in public/escape/audio/*.ogg; do test -s "$f"; ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 "$f"; done
       - name: Commit original CC0 recordings to branch
         run: |
