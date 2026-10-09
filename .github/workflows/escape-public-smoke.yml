@@ -141,6 +141,30 @@ jobs:
           await expect(timerPage.getByRole("heading",{name:"La casa te recordó."})).toBeVisible();
           if(timerErrors.length) throw Error("Published score runtime errors: "+timerErrors.join(" | "));
           console.log("PASS: public adaptive score toggle, ten-second urgency and loss ending");
+          // Verify what a real 3× phone downloads, not merely that Retina
+          // files exist at their URLs. A 1× Playwright viewport is insufficient.
+          const retinaContext=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,locale:"es-AR"});
+          const retinaPage=await retinaContext.newPage();
+          const retinaResponses=[];
+          retinaPage.on("response",response=>{
+            if(response.ok()&&response.url().includes("/images/retina/"))retinaResponses.push(response.url());
+          });
+          await retinaPage.goto(BASE+"/",{waitUntil:"networkidle",timeout:35000});
+          await expect(retinaPage.getByRole("heading",{name:/UMBRAL/})).toBeVisible();
+          await retinaPage.waitForFunction(()=>performance.getEntriesByType("resource").some(entry=>entry.name.includes("/images/retina/mansion.webp")),{timeout:10000});
+          await retinaPage.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+          await expect(retinaPage.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+          await retinaPage.waitForFunction(()=>performance.getEntriesByType("resource").some(entry=>entry.name.includes("/images/retina/room-0.webp")),{timeout:10000});
+          if(!retinaResponses.some(x=>x.endsWith("/images/retina/room-0.webp"))) {
+            const resources=retinaResponses.join(" | ");
+            throw Error("Retina room image was not requested on DPR3 phone. Loaded: "+resources);
+          }
+          const crispSource=await retinaPage.request.get(BASE+"/images/retina/room-0.webp");
+          expect(crispSource.status()).toBe(200);
+          expect((await crispSource.body()).length).toBeGreaterThan(150000);
+          console.log("PASS: actual DPR3 mobile downloaded cinematic Retina mansion and scene 0");
+          await retinaContext.close();
+
           // Production custom domain: validate actual Vercel deployment, not just
           // GitHub Pages. This uses a browser and clicks real game controls.
           const production=await browser.newPage({viewport:{width:390,height:844},locale:"es-AR"});
