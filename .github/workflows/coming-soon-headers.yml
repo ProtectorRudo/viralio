@@ -1,4 +1,4 @@
-name: Verify Coming Soon Headers
+name: Verify Coming Soon Redirects
 on:
   push:
     branches: [coming-soon-live-inspect-20261009]
@@ -7,12 +7,19 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Check public blocked-page content types
+      - name: Verify all blocked demos redirect to branded Home
         run: |
-          set -e
-          for page in             'https://tehiceesto.com/experiencias/abuelos'             'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/tehiceesto-coming-soon?categoria=abuelos'; do
-            echo "CHECK_URL $page"
-            curl -sS -L --max-time 25 -D /tmp/headers -o /tmp/response "$page"
-            grep -iE '^(HTTP/|content-type:|x-content-type-options:|location:)' /tmp/headers || true
-            echo "PAGE_SIZE $(wc -c </tmp/response)"
+          set -euo pipefail
+          for slug in abuelos aniversario propuesta; do
+            echo "TEST $slug"
+            curl -sS --max-time 20 -D /tmp/headers -o /tmp/body "https://tehiceesto.com/experiencias/$slug"
+            grep -iE '^(HTTP/|location:|content-type:)' /tmp/headers || true
+            if grep -qiE 'location: https://tehiceesto.com/#para-quien' /tmp/headers; then
+              echo "REDIRECT_PASS $slug"
+            else
+              echo "REDIRECT_FAIL $slug"
+              head -c 500 /tmp/body;exit 1
+            fi
           done
+          curl -sS -L --max-time 25 -D /tmp/follow -o /tmp/home "https://tehiceesto.com/experiencias/abuelos"
+          grep -q '¿Para quién querés hacerlo' /tmp/home && echo 'FINAL_HOME_PASS'
