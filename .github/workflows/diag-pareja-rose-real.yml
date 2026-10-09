@@ -16,6 +16,14 @@ jobs:
             grep -iE '^(HTTP/|cache-control:|age:|content-type:|x-thi-pair-rose-bridge:|etag:)' /tmp/h || true
             echo "PATCH $(grep -c '__thiRoseFinale20261009' /tmp/c || true)"
           done
+      - name: Check alternative complete build as temporary isolated demo
+        run: |
+          for path in /tehiceesto/experiencias/pareja /experiencias/pareja /tehiceesto/crear; do
+            echo "PREVIEW_PATH $path"
+            curl -sS -D /tmp/preview-headers -o /tmp/preview-body --max-time 30 "https://viralio-e0s7dc7kg-protector-rudo-s-projects.vercel.app$path"
+            grep -iE '^(HTTP/|content-type:|location:|x-vercel-protection:)' /tmp/preview-headers || true
+            echo "PREVIEW_MARKER $(grep -o 'thi-rose' /tmp/preview-body | wc -l)"
+          done
       - name: Install browser
         run: |
           npm ci --ignore-scripts
