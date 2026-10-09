@@ -11,6 +11,10 @@ function envDefault(name:string){
 
 const SECRET=envDefault("SUPABASE_SECRET_KEYS");
 // SYNCHRONIZED with frozen premium-v3 demo snapshot. Tests guard all nine journeys.
+function versionForNewGift(slug:string){
+  return slug==="secreto"?"secret-v1":slug==="pareja"?"premium-v4":"premium-v3";
+}
+
 const recipes:Record<string,string[]>={
   pareja: ["intro","door","memories","voices","light","stars","everyday","scratch","hold","letter","finale"],
   cumpleanos: ["intro","candles","balloons","memories","light","voices","hold","letter","finale"],
@@ -71,7 +75,7 @@ function objectValue(value:unknown){
     :{};
 }
 
-function withEditorToken(storyValue:unknown,editorTokenHash:string,contact:{name:string;email:string;whatsapp:string},now:string,fingerprint:string,templateRecipe?:string[]){
+function withEditorToken(storyValue:unknown,editorTokenHash:string,contact:{name:string;email:string;whatsapp:string},now:string,fingerprint:string,templateRecipe?:string[],templateVersion?:string){
   const story=objectValue(storyValue);
   const creator=objectValue(story.creator);
   const hashes:string[]=[];
@@ -97,7 +101,7 @@ function withEditorToken(storyValue:unknown,editorTokenHash:string,contact:{name
       consentAt:creator.consentAt||now,
       ipHash:creator.ipHash||fingerprint,
       ...(templateRecipe?.length?{
-        templateVersion:templateRecipe?.[0]==="invitation"?"secret-v1":"premium-v3",
+        templateVersion:templateVersion|| (templateRecipe?.[0]==="invitation"?"secret-v1":"premium-v3"),
         templateRecipe:[...templateRecipe],
       }:{}),
     },
@@ -347,9 +351,8 @@ Deno.serve(async(req:Request)=>{
     .insert({
       status:"awaiting_payment",
       experience_slug:experienceSlug,
-      // New purchases reproduce the exact live demo snapshot premium-v3 at sale time.
-      // Future demo improvements must never mutate an already-sold gift.
-      template_version:experienceSlug==="secreto"?"secret-v1":"premium-v3",
+      // Freeze this purchase to its own model; all pre-v4 gifts keep their original engine.
+      template_version:versionForNewGift(experienceSlug),
       giver_name:customerName,
       recipient_name:"A definir",
       scene_recipe:recipes[experienceSlug],
@@ -360,6 +363,7 @@ Deno.serve(async(req:Request)=>{
         now,
         fingerprint,
         recipes[experienceSlug],
+        versionForNewGift(experienceSlug),
       ),
       theme_data:{},
     })
