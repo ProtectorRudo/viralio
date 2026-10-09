@@ -195,3 +195,12 @@
   .thi-rose-petal,.thi-rose-heart,.thi-rose-fold{transition:none!important;will-change:auto!important}
   .thi-rose-fireworks{display:none}
 }
+
+/* Release safeguard: keep the tap target visible in the first mobile finale view.
+   Updating the production build also gives long-time visitors fresh hashed assets,
+   instead of the previous immutable JS chunk kept in the browser cache. */
+@media (max-width: 650px) {
+  .thi-theme-pareja[data-scene="finale"] .thi-pair-finale-divider { margin-top: 12px !important; }
+  .thi-theme-pareja[data-scene="finale"] .thi-rose-finale { margin-top: 0 !important; }
+  .thi-theme-pareja[data-scene="finale"] .thi-rose-touch { min-height: 210px; }
+}
