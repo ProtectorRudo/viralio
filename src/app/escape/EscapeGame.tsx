@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
+import EvaMemory from "./EvaMemory";
 import EvidenceArchive from "./EvidenceArchive";
 
 type Phase = "intro" | "playing" | "won" | "lost";
@@ -140,6 +141,8 @@ export default function EscapeGame() {
   const [sound, setSound] = useState(true);
   const [paused, setPaused] = useState(false);
   const [modal, setModal] = useState<string | null>(null);
+  const [dollSpeaking,setDollSpeaking] = useState(false);
+  const cinematicPause=modal==="tape";
   const [pin, setPin] = useState("");
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
@@ -195,7 +198,7 @@ export default function EscapeGame() {
     } catch { /* private browsing can restrict storage */ }
   }, [ready, phase, room, seconds, hints, mistakes, puzzles, difficulty]);
   useEffect(() => {
-    if(phase!=="playing" || paused) {
+    if(phase!=="playing" || paused || cinematicPause) {
       deadlineRef.current=null;
       return;
     }
@@ -213,7 +216,7 @@ export default function EscapeGame() {
     };
     // A single deadline, not 1500 naive setInterval ticks, avoids background-tab time drift.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, paused]);
+  }, [phase, paused, cinematicPause]);
   useEffect(() => {
     if(phase!=="playing" || seconds!==0) return;
     const timeout=window.setTimeout(()=>{setPhase("lost");setPaused(false);setModal(null);},0);
@@ -284,6 +287,34 @@ export default function EscapeGame() {
     };
   }, [phase, paused, room]);
 
+  useEffect(()=>{
+    if(modal==="doll") return;
+    if(typeof window!=="undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    window.queueMicrotask(()=>setDollSpeaking(false));
+  },[modal]);
+
+  function whisperEva(){
+    if(!sound){message("Activá el sonido si querés escuchar a Eva. Su mensaje también está subtitulado.");return;}
+    if(typeof window==="undefined" || !("speechSynthesis" in window)){
+      message("La voz no está disponible en este navegador. Podés leer el mensaje debajo.");return;
+    }
+    try{
+      const synth=window.speechSynthesis;
+      synth.cancel();
+      const utterance=new SpeechSynthesisUtterance("No apagues la música. Todavía estoy acá.");
+      const voices=synth.getVoices();
+      const voice=voices.find(v=>v.lang.toLowerCase().startsWith("es-ar"))||voices.find(v=>v.lang.toLowerCase().startsWith("es"));
+      if(voice) utterance.voice=voice;
+      utterance.lang=voice?.lang||"es-AR";
+      utterance.rate=0.76;utterance.pitch=0.88;utterance.volume=0.67;
+      utterance.onstart=()=>setDollSpeaking(true);
+      utterance.onend=()=>setDollSpeaking(false);
+      utterance.onerror=()=>setDollSpeaking(false);
+      setDollSpeaking(true);
+      synth.speak(utterance);
+    }catch{message("No se pudo reproducir la voz. Los subtítulos siguen disponibles.");setDollSpeaking(false);}
+  }
+
   function sfx(kind: "click" | "success" | "error" | "step" | "tone" = "click", pitch = 440) {
     if(typeof window==="undefined") return;
     if(kind==="error" || kind==="success") {
@@ -312,7 +343,8 @@ export default function EscapeGame() {
   }
   function message(t:string){setToast(t);}
   function begin() {
-    deadlineRef.current=null;setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
+    if(typeof window!=="undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    deadlineRef.current=null;setDollSpeaking(false);setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function nextRoom() {
     if(transitioning) return;
@@ -391,6 +423,7 @@ export default function EscapeGame() {
     {id:"scrap",text:"Leer carta",x:24,y:72,glyph:"✉",act:()=>{sfx();setPuzzles(p=>({...p,evaRead:true}));setModal("eva");}},
     {id:"box",text:"Tocar caja musical",x:55.7,y:56,glyph:"♫",act:()=>{sfx();setModal("music");}},
     {id:"keepsake",text:"Examinar muñeca",x:80,y:48,glyph:"✧",act:()=>{sfx();setPuzzles(p=>({...p,keepsake:true}));setModal("doll");}},
+    ...(puzzles.nurseryOpen?[{id:"tape",text:"Cinta de Eva",x:51,y:70,glyph:"▷",act:()=>{sfx("step");setModal("tape");}}]:[]),
     {id:"nurseryexit",text:"Abrir puerta",x:88,y:78,glyph:"➜",active:puzzles.nurseryOpen,act:()=>puzzles.nurseryOpen?nextRoom():message("La cerradura vibra con una melodía que todavía no reconocés.")},
   ]:[
     {id:"memo",text:"Examinar instrucciones",x:14,y:43,glyph:"!",act:()=>{sfx();setModal("memo");}},
@@ -462,9 +495,10 @@ export default function EscapeGame() {
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
-        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:"")}>
+        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
-          {modal!=="journal"&&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
+          {modal!=="journal" && modal!=="tape"&&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
+          {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
           {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power}/>}
           {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
           {modal==="clock"&&<><Artefact kind="clock"/><h2>El reloj detenido</h2><p>Sus agujas marcan las 03:13. En la madera hay una inscripción:</p><blockquote>«El tiempo no importa. La edad sí. De quien llegó último, a quien llegó primero».</blockquote></>}
@@ -475,8 +509,8 @@ export default function EscapeGame() {
           {modal==="letter"&&<><Artefact kind="letter"/><h2>Una nota entre cenizas</h2><p>La caligrafía tiembla. Es la letra de Eva:</p><blockquote>«Primero mirá el cielo. Después buscá el camino. Al final, recordá lo que florece. Solo entonces se apartarán los libros».</blockquote><p>Las tres velas tienen símbolos distintos grabados en sus bases.</p></>}
           {modal==="eva"&&<><Artefact kind="letter"/><h2>Para quien todavía escucha</h2><p>Una hoja de cuaderno, firmada por Eva. Tiene cuatro notas subrayadas.</p><blockquote>«Cuando la música calle, buscame. Siempre empezaba con SOL. Seguía con MI, con LA, y volvía a SOL».</blockquote><p>Abajo alguien escribió: «No rompas la caja. Tocala».</p></>}
           {modal==="music"&&<><Artefact kind="music"/><h2>La caja musical</h2><p>Los mecanismos están intactos. Tocá las teclas para reconstruir la canción.</p><div className={styles.notes}>{[["DO",261.63],["RE",293.66],["MI",329.63],["FA",349.23],["SOL",392],["LA",440]].map(([note,freq])=><button key={note} onClick={()=>tune(String(note).toLowerCase(),Number(freq))}>{note}</button>)}</div><div className={styles.sequence}>SECUENCIA {puzzles.melody.map(()=> "◆").join("  ")} {puzzles.melody.length<4?"◇  ".repeat(4-puzzles.melody.length):""}</div></>}
-          {modal==="musicSolved"&&<><Artefact kind="music"/><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><button className={styles.primary} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></>}
-          {modal==="doll"&&<><Artefact kind="doll"/><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
+          {modal==="musicSolved"&&<><Artefact kind="music"/><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><div className={styles.discoveryActions}><button className={styles.primary} onClick={()=>{sfx("step");setModal("tape");}}>▶ REPRODUCIR CINTA 013</button><button className={styles.ghost} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></div></>}
+          {modal==="doll"&&<><Artefact kind="doll" speaking={dollSpeaking}/><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><blockquote>«No apagues la música. Todavía estoy acá.»</blockquote><button className={styles.whisperButton} type="button" onClick={whisperEva}>{dollSpeaking?"◉ EVA ESTÁ HABLANDO…":"◉ ESCUCHAR A LA MUÑECA"}</button><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
           {modal==="memo"&&<><Artefact kind="circuit"/><h2>Manual de emergencia</h2><p>Una placa oxidada explica cómo alimentar el mecanismo:</p><blockquote>«El motor exige exactamente DOS circuitos activos. Su energía combinada debe ser SIETE. No tolera el exceso».</blockquote><p>Los fusibles tienen valores individuales: 2, 3, 4 y 5.</p></>}
           {modal==="finale"&&<><Artefact kind="door"/><h2>La última decisión</h2><p>La energía vuelve. Una salida se abre y oís una voz infantil desde el otro lado del muro.</p><blockquote>«¿Me vas a dejar acá otra vez?»</blockquote><p>Podés escapar mientras hay tiempo o volver por Eva. Una elección cambia cómo termina el expediente.</p>{puzzles.keepsake&&<p className={styles.good}>La medalla que recuperaste empieza a calentarse en tu mano. Eva reconoce su antiguo recuerdo.</p>}<div className={styles.choices}><button onClick={()=>ending("save")}>VOLVER POR EVA <span>✦</span></button><button onClick={()=>ending("escape")}>CORRER HACIA LA SALIDA <span>↗</span></button></div></>}
           {modal.startsWith("hint")&&<><Artefact kind="signal"/><h2>Una señal en la oscuridad</h2><p>{CLUES[room][Number(modal.replace("hint",""))]}</p><p className={styles.hintCost}>Usar pistas reduce la puntuación final, pero nunca bloquea tu escape.</p></>}
