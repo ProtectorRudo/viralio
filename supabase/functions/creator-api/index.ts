@@ -215,7 +215,9 @@ function cleanStudioRecipe(canonical: string[], value: unknown) {
 }
 
 function studioDefaultScene(kind: string, recipe: string[]) {
+  if (kind === "image" && recipe.includes("gallery")) return "gallery";
   if (kind === "image" && recipe.includes("memories")) return "memories";
+  if (kind === "audio" && recipe.includes("recording")) return "recording";
   if (kind === "audio" && recipe.includes("voices")) return "voices";
   if (kind === "video" && recipe.includes("video")) return "video";
   if (kind === "video" && recipe.includes("memories")) return "memories";
@@ -908,7 +910,7 @@ Deno.serve(async (req: Request) => {
         .update({
           status: "awaiting_payment",
           experience_slug: experienceSlug,
-          template_version: "premium-v3",
+          template_version: experienceSlug==="secreto" ? "secret-v1" : "premium-v3",
           giver_name: giverName,
           recipient_name: recipientName,
           feeling: feeling || null,
@@ -961,7 +963,7 @@ Deno.serve(async (req: Request) => {
       .insert({
         status: "awaiting_payment",
         experience_slug: experienceSlug,
-        template_version: "premium-v3",
+        template_version: experienceSlug==="secreto" ? "secret-v1" : "premium-v3",
         giver_name: giverName,
         recipient_name: recipientName,
         feeling: feeling || null,
