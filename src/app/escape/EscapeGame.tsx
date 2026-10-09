@@ -309,7 +309,7 @@ export default function EscapeGame() {
     window.queueMicrotask(()=>setDollSpeaking(false));
   },[modal]);
 
-  function whisperEva(){
+  function whisperEva(phrase = "No apagues la música. Todavía estoy acá."){
     if(!sound){message("Activá el sonido si querés escuchar a Eva. Su mensaje también está subtitulado.");return;}
     if(typeof window==="undefined" || !("speechSynthesis" in window)){
       message("La voz no está disponible en este navegador. Podés leer el mensaje debajo.");return;
@@ -317,7 +317,7 @@ export default function EscapeGame() {
     try{
       const synth=window.speechSynthesis;
       synth.cancel();
-      const utterance=new SpeechSynthesisUtterance("No apagues la música. Todavía estoy acá.");
+      const utterance=new SpeechSynthesisUtterance(phrase);
       const voices=synth.getVoices();
       const voice=voices.find(v=>v.lang.toLowerCase().startsWith("es-ar"))||voices.find(v=>v.lang.toLowerCase().startsWith("es"));
       if(voice) utterance.voice=voice;
@@ -526,7 +526,7 @@ export default function EscapeGame() {
           {modal==="eva"&&<><Artefact kind="letter"/><h2>Para quien todavía escucha</h2><p>Una hoja de cuaderno, firmada por Eva. Tiene cuatro notas subrayadas.</p><blockquote>«Cuando la música calle, buscame. Siempre empezaba con SOL. Seguía con MI, con LA, y volvía a SOL».</blockquote><p>Abajo alguien escribió: «No rompas la caja. Tocala».</p></>}
           {modal==="music"&&<><Artefact kind="music"/><h2>La caja musical</h2><p>Los mecanismos están intactos. Tocá las teclas para reconstruir la canción.</p><div className={styles.notes}>{[["DO",261.63],["RE",293.66],["MI",329.63],["FA",349.23],["SOL",392],["LA",440]].map(([note,freq])=><button key={note} onClick={()=>tune(String(note).toLowerCase(),Number(freq))}>{note}</button>)}</div><div className={styles.sequence}>SECUENCIA {puzzles.melody.map(()=> "◆").join("  ")} {puzzles.melody.length<4?"◇  ".repeat(4-puzzles.melody.length):""}</div></>}
           {modal==="musicSolved"&&<><Artefact kind="music"/><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><div className={styles.discoveryActions}><button className={styles.primary} onClick={()=>{sfx("step");setModal("tape");}}>▶ REPRODUCIR CINTA 013</button><button className={styles.ghost} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></div></>}
-          {modal==="doll"&&<><Artefact kind="doll" speaking={dollSpeaking}/><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><blockquote>«No apagues la música. Todavía estoy acá.»</blockquote><button className={styles.whisperButton} type="button" onClick={whisperEva}>{dollSpeaking?"◉ EVA ESTÁ HABLANDO…":"◉ ESCUCHAR A LA MUÑECA"}</button><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
+          {modal==="doll"&&<><Artefact kind="doll" speaking={dollSpeaking}/><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><blockquote>«No apagues la música. Todavía estoy acá.»</blockquote><button className={styles.whisperButton} type="button" onClick={()=>whisperEva()}>{dollSpeaking?"◉ EVA ESTÁ HABLANDO…":"◉ ESCUCHAR A LA MUÑECA"}</button><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
           {modal==="memo"&&<><Artefact kind="circuit"/><h2>Manual de emergencia</h2><p>Una placa oxidada explica cómo alimentar el mecanismo:</p><blockquote>«El motor exige exactamente DOS circuitos activos. Su energía combinada debe ser SIETE. No tolera el exceso».</blockquote><p>Los fusibles tienen valores individuales: 2, 3, 4 y 5.</p></>}
           {modal==="finale"&&<><Artefact kind="door"/><h2>La última decisión</h2><p>La energía vuelve. Una salida se abre y oís una voz infantil desde el otro lado del muro.</p><blockquote>«¿Me vas a dejar acá otra vez?»</blockquote><p>Podés escapar mientras hay tiempo o volver por Eva. Una elección cambia cómo termina el expediente.</p>{puzzles.keepsake&&<p className={styles.good}>La medalla que recuperaste empieza a calentarse en tu mano. Eva reconoce su antiguo recuerdo.</p>}<div className={styles.choices}><button onClick={()=>ending("save")}>VOLVER POR EVA <span>✦</span></button><button onClick={()=>ending("escape")}>CORRER HACIA LA SALIDA <span>↗</span></button></div></>}
           {modal.startsWith("hint")&&<><Artefact kind="signal"/><h2>Una señal en la oscuridad</h2><p>{CLUES[room][Number(modal.replace("hint",""))]}</p><p className={styles.hintCost}>Usar pistas reduce la puntuación final, pero nunca bloquea tu escape.</p></>}
@@ -540,6 +540,7 @@ export default function EscapeGame() {
       {phase==="won"&&recoveredCount===8&&<div className={styles.perfectEvidence}><strong>ARCHIVO COMPLETO · 8/8</strong><span>Encontraste todos los recuerdos. Ahora sabés por qué Eva no podía abandonar la casa.</span></div>}
       <div className={styles.stats}><div><span>TIEMPO</span><strong>{fmt(seconds)}</strong></div><div><span>PISTAS</span><strong>{totalHints}</strong></div><div><span>ERRORES</span><strong>{mistakes}</strong></div>{phase==="won"&&<div><span>PUNTUACIÓN</span><strong>{score.toLocaleString("es-AR")}</strong></div>}</div>
       {phase==="won"&&<p className={styles.personalRecord}>{isNewRecord?"✦ NUEVO RÉCORD PERSONAL":"TU MEJOR PUNTUACIÓN"} · {Math.max(score,personalBest).toLocaleString("es-AR")} PUNTOS</p>}
+      {phase==="won"&&puzzles.ending==="save"&&<section className={styles.evaEpilogue} aria-label="Último mensaje de Eva"><span className={styles.eyebrow}>ÚLTIMO REGISTRO · EVA</span><p>«Gracias por volver. Ahora sí podemos irnos.»</p><button onClick={()=>whisperEva("Gracias por volver. Ahora sí podemos irnos.")} aria-label="Escuchar el agradecimiento de Eva">◉ ESCUCHAR SU ÚLTIMA VOZ</button></section>}
       <button className={styles.primary} onClick={begin}>VOLVER A ENTRAR ↻</button>
       <button className={styles.ghost} onClick={()=>setPhase("intro")}>CAMBIAR EL DESAFÍO</button>
       <button className={styles.ghost} onClick={()=>{const txt="Sobreviví a UMBRAL: La casa que recuerda. "+(phase==="won"?"Conseguí "+score+" puntos. ":"")+"¿Te animás a entrar? https://viralio.net/escape";if(navigator.share)void navigator.share({title:"UMBRAL",text:txt,url:"https://viralio.net/escape"}).catch(()=>{});else if(navigator.clipboard)void navigator.clipboard.writeText(txt).then(()=>message("Enlace copiado")).catch(()=>{});}}>COMPARTIR EL DESAFÍO ↗</button>
