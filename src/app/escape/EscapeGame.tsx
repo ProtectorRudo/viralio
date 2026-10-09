@@ -21,6 +21,7 @@ const PORTRAITS = [
   { name: "Nora", year: 1918, mark: "4", text: "La niña mira hacia la puerta. Una pequeña cifra cuatro brilla en la madera." },
 ];
 const SAVE_KEY = "umbral-casa-13-v1";
+let sharedAudioContext: AudioContext | null = null;
 
 function fmt(seconds: number) {
   return String(Math.floor(Math.max(seconds, 0) / 60)).padStart(2, "0") + ":" + String(Math.max(seconds, 0) % 60).padStart(2, "0");
@@ -100,7 +101,7 @@ function SceneArt({ room, power }: { room: number; power: boolean }) {
       <circle cx="596" cy="340" r="245" fill={power?"url(#halo)":"#090f11"} opacity={power?".34":".9"}/>
       <rect x="300" y="138" width="565" height="379" rx="13" fill="#202b2a" stroke="#7b7661" strokeWidth="13"/>
       <rect x="317" y="157" width="532" height="342" rx="4" fill="#1b2322" stroke="#394943" strokeWidth="6"/>
-      {[380,505,630,755].map((x,i)=><g key={x}><rect x={x-37} y="252" width="74" height="151" rx="7" fill="#111817" stroke="#726a4b" strokeWidth="7"/><rect x={x-22} y="278" width="44" height="52" rx="5" fill={power?"#ad915f":"#3b4b43"} stroke="#8e7959" strokeWidth="3"/><path d={"M"+x+" 331V377"} stroke="#7f7360" strokeWidth="5"/><circle cx={x} cy="385" r="14" fill="#948365"/></g>)}
+      {[380,505,630,755].map(x=><g key={x}><rect x={x-37} y="252" width="74" height="151" rx="7" fill="#111817" stroke="#726a4b" strokeWidth="7"/><rect x={x-22} y="278" width="44" height="52" rx="5" fill={power?"#ad915f":"#3b4b43"} stroke="#8e7959" strokeWidth="3"/><path d={"M"+x+" 331V377"} stroke="#7f7360" strokeWidth="5"/><circle cx={x} cy="385" r="14" fill="#948365"/></g>)}
       <path d="M895 230H1128V485H895Z" fill="#0a1113" stroke="#61503c" strokeWidth="14"/>
       <path d="M1012 463V300" stroke={power?"#d9b66f":"#7a302b"} strokeWidth="18"/><circle cx="1012" cy="300" r="28" fill={power?"#e6c68c":"#a64e40"}/>
       <path d="M85 490V150H267V490" fill="#111518" stroke="#635b49" strokeWidth="12"/>
@@ -129,7 +130,6 @@ export default function EscapeGame() {
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
   const [angle, setAngle] = useState({ x: 0, y: 0 });
-  const audio = useRef<AudioContext | null>(null);
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
   const [transitioning, setTransitioning] = useState(false);
 
@@ -139,13 +139,15 @@ export default function EscapeGame() {
       if(raw) {
         const saved = JSON.parse(raw) as SaveState;
         if(saved && saved.phase==="playing" && Number.isFinite(saved.seconds) && saved.room>=0 && saved.room<=3) {
-          setPhase(saved.phase); setRoom(saved.room); setSeconds(saved.seconds);
-          setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles);
-          setPaused(true);
+          window.queueMicrotask(() => {
+            setPhase(saved.phase); setRoom(saved.room); setSeconds(saved.seconds);
+            setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles);
+            setPaused(true);
+          });
         }
       }
     } catch { /* saved game unavailable */ }
-    setReady(true);
+    window.queueMicrotask(() => setReady(true));
   }, []);
   useEffect(() => {
     if(!ready) return;
@@ -159,7 +161,11 @@ export default function EscapeGame() {
     const timer = window.setInterval(() => setSeconds(v => Math.max(0, v-1)),1000);
     return () => clearInterval(timer);
   }, [phase, paused, modal]);
-  useEffect(() => { if(phase==="playing" && seconds===0) {setPhase("lost"); setPaused(false);setModal(null);} },[seconds,phase]);
+  useEffect(() => {
+    if(phase!=="playing" || seconds!==0) return;
+    const timeout=window.setTimeout(()=>{setPhase("lost");setPaused(false);setModal(null);},0);
+    return ()=>window.clearTimeout(timeout);
+  },[seconds,phase]);
   useEffect(() => {
     if(!toast) return;
     const timer=window.setTimeout(()=>setToast(""),3200);
@@ -173,7 +179,7 @@ export default function EscapeGame() {
       ambient.current = null;
     };
     stop();
-    const ctx=audio.current;
+    const ctx=sharedAudioContext;
     if(!ctx || phase!=="playing" || paused || !sound) return stop;
     try {
       const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
@@ -194,8 +200,8 @@ export default function EscapeGame() {
   function sfx(kind: "click" | "success" | "error" | "step" | "tone" = "click", pitch = 440) {
     if(!sound || typeof window==="undefined") return;
     try {
-      const ctx=audio.current || new window.AudioContext();
-      audio.current=ctx; if(ctx.state==="suspended") void ctx.resume();
+      const ctx=sharedAudioContext || new window.AudioContext();
+      sharedAudioContext=ctx; if(ctx.state==="suspended") void ctx.resume();
       const osc=ctx.createOscillator(), gain=ctx.createGain();
       osc.type=kind==="error"?"sawtooth":kind==="success"?"sine":"triangle";
       const now=ctx.currentTime, base=kind==="tone"?pitch:kind==="success"?510:kind==="error"?110:kind==="step"?85:270;
