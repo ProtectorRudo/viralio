@@ -20,3 +20,17 @@ jobs:
             grep -Fq 'mama-voice-toggle' /tmp/check.js && echo "MAMA_SCENES=$chunk" || true
             grep -Fq '__thiMamaVoice20261009' /tmp/check.js && echo "ALREADY_PATCHED=$chunk" || true
           done </tmp/chunks.txt
+
+      - name: Validate bridged Javascript for both Amistad and Mamá
+        run: |
+          set -e
+          curl -fsSL --max-time 45 "https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/mama-demo-js-patch?test=11" -o /tmp/direct.js
+          echo "DIRECT_BUNDLE_BYTES=$(wc -c </tmp/direct.js)"
+          node --check /tmp/direct.js
+          grep -Fq '__thiFriendshipHotfix20261009' /tmp/direct.js
+          grep -Fq '__thiMamaVoice20261009' /tmp/direct.js
+          echo 'PASS: direct JS bundle parses and preserves both demos'
+          curl -fsSL --max-time 45 "https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js?review=friendshipv11" -o /tmp/live.js
+          node --check /tmp/live.js
+          grep -Fq '__thiFriendshipHotfix20261009' /tmp/live.js
+          echo 'PASS: public JS bridge contains the new friendship patch'
