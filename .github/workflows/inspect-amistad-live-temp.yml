@@ -34,3 +34,67 @@ jobs:
           node --check /tmp/live.js
           grep -Fq '__thiFriendshipHotfix20261009' /tmp/live.js
           echo 'PASS: public JS bridge contains the new friendship patch'
+
+      - name: Install mobile browser
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Verify live friendship journey, signed pact and Mamá isolation
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+          const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+          page.on('pageerror',e=>console.log('BROWSER_ERROR',e.message));
+          const base='https://tehiceesto.com/experiencias/amistad';
+          const scene=async id=>{await page.locator('main.thi-experience[data-scene="'+id+'"]').waitFor({timeout:18000});console.log('SCENE_OK',id)};
+          await page.goto(base,{waitUntil:'domcontentloaded',timeout:50000});
+          await page.waitForFunction(()=>window.__thiFriendshipHotfix20261009===true,null,{timeout:20000});
+          await scene('intro');
+          console.log('PATCH_RUNNING',await page.evaluate(()=>window.__thiFriendshipHotfix20261009));
+          await page.locator('[data-action="open-door"]').click();await scene('casefile');
+          await page.locator('[data-action="casefile-open"]').click();
+          await page.locator('.friend-case-scene [data-action="advance"]').click();await scene('memories');
+          await page.locator('.friend-memories [data-action="advance"]').click();await scene('insidejokes');
+          for(const i of [0,1,2])await page.locator('[data-action="insidejoke-open"]').nth(i).click();
+          await page.locator('.friend-codes [data-action="advance"]').click();await scene('incidents');
+          const y=await page.locator('.friend-incidents h2').evaluate(el=>el.getBoundingClientRect().top);
+          console.log('INCIDENT_TITLE_TOP',y);
+          if(y<120)throw Error('Mobile incident headline cropped');
+          for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();
+          const panel=await page.locator('.friend-case-insight').innerText();
+          console.log('INCIDENT_DETAIL',panel.slice(0,210));
+          if(!panel.includes('El plan sin plan'))throw Error('Investigation detail not accessible');
+          const ctaVisible=await page.locator('a.floating-create-cta.floating-whatsapp--experience').evaluate(el=>getComputedStyle(el).display!=='none').catch(()=>false);
+          if(ctaVisible)throw Error('Floating CTA overlaps friend cards');
+          await page.locator('.friend-incidents [data-action="advance"]').click();await scene('proof');
+          for(const i of [0,1,2])await page.locator('[data-action="proof-open"]').nth(i).click();
+          await page.locator('.friend-presence [data-action="advance"]').click();await scene('letter');
+          const visibility=await page.locator('.friend-letter-sheet').evaluate(el=>getComputedStyle(el).visibility);
+          console.log('CLOSED_ENVELOPE_PAPER',visibility);
+          if(visibility!=='hidden')throw Error('Envelope paper is exposed when closed');
+          await page.locator('[data-action="letter-open"]').click();
+          await page.locator('.friend-letter-scene [data-action="advance"]').click();await scene('pact');
+          for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();
+          await page.locator('.friend-pact-scene [data-action="advance"]').click();
+          await page.locator('.friend-signature-dialog').waitFor();
+          const canvas=page.locator('.friend-signature-canvas');
+          const box=await canvas.boundingBox();
+          if(!box)throw Error('Signature canvas missing');
+          const confirm=page.locator('.friend-signature-confirm');
+          if(await confirm.isEnabled())throw Error('Signature can be saved empty');
+          await page.mouse.move(box.x+box.width*.18,box.y+box.height*.6);
+          await page.mouse.down();
+          await page.mouse.move(box.x+box.width*.40,box.y+box.height*.23,{steps:12});
+          await page.mouse.move(box.x+box.width*.72,box.y+box.height*.65,{steps:12});
+          await page.mouse.up();
+          await confirm.click();
+          await page.locator('.friend-pact-scene.fully-sealed').waitFor({timeout:10000});
+          await page.locator('.friend-pact-live-signature').waitFor({timeout:10000});
+          console.log('SIGNATURE_SAVED',await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.startsWith('thi-friendship-signature-v1:')).length));
+          console.log('PASS: Friendship live mobile journey, envelope, cards, signature');
+          await page.goto('https://tehiceesto.com/experiencias/mama',{waitUntil:'domcontentloaded'});
+          await page.waitForFunction(()=>window.__thiMamaVoice20261009===true,null,{timeout:15000});
+          console.log('PASS: Mother demo patch remains enabled');
+          await browser.close();
+          NODE
