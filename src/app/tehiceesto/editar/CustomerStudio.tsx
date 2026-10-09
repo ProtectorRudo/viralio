@@ -24,6 +24,7 @@ import { effectiveRecipeForMedia } from "../effectiveRecipe";
 import { effectiveRecipeForMedia as effectivePremiumV1RecipeForMedia } from "../template-v1/effectiveRecipe";
 import { effectiveRecipeForMedia as effectivePremiumV2RecipeForMedia } from "../template-v2/effectiveRecipe";
 import { creatorCall,uploadCreatorFile } from "../creatorApi";
+import { AudioUploadError,prepareCompatibleAudio } from "../audioUpload";
 import { requestGiftAccountLink } from "../giftAccountApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
 
@@ -515,12 +516,13 @@ export default function CustomerStudio({code}:{code:string}){
 
     let uploaded=0;
     const failed:string[]=[];
+    const audioProblems:string[]=[];
     const tooLarge:string[]=[];
 
     try{
       for(const file of selected){
         try{
-          const uploadFile=await optimizeStudioUpload(file,kind);
+          const uploadFile=kind==="audio"?await prepareCompatibleAudio(file):await optimizeStudioUpload(file,kind);
           if(uploadFile.size>50*1024*1024){
             tooLarge.push(file.name);
             continue;
@@ -535,8 +537,9 @@ export default function CustomerStudio({code}:{code:string}){
             scene:sceneOverride||undefined,
           });
           uploaded+=1;
-        }catch{
+        }catch(error){
           failed.push(file.name);
+          if(kind==="audio"&&error instanceof AudioUploadError)audioProblems.push(error.message);
         }
       }
 
@@ -545,13 +548,13 @@ export default function CustomerStudio({code}:{code:string}){
       if(tooLarge.length||failed.length){
         const problemCount=tooLarge.length+failed.length;
         if(uploaded){
-          setMessage(`Subimos ${uploaded}. ${problemCount===1?"Hay 1 archivo que necesita otro intento.":`Hay ${problemCount} archivos que necesitan otro intento.`}`);
+          setMessage(`Subimos ${uploaded}. ${audioProblems[0]||(problemCount===1?"Hay 1 archivo que necesita otro intento.":`Hay ${problemCount} archivos que necesitan otro intento.`)}`);
         }else if(tooLarge.length){
           setMessage(kind==="video"
             ?"Ese video es demasiado pesado. Elegí uno más corto y probá de nuevo."
             :"Ese archivo es demasiado pesado. Elegí uno más liviano y probá de nuevo.");
         }else{
-          setMessage("No pudimos subir ese archivo. Podés elegirlo de nuevo y reintentar.");
+          setMessage(audioProblems[0]||"No pudimos subir ese archivo. Podés elegirlo de nuevo y reintentar.");
         }
       }else{
         setMessage(limitNotice||(uploaded===1?"Listo, ya está adentro ✓":`Listo, subimos ${uploaded} archivos ✓`));
@@ -634,7 +637,7 @@ export default function CustomerStudio({code}:{code:string}){
     if(!file||!target||!editorToken)return;
     setUploading([file.name]);setMessage("");
     try{
-      const uploadFile=await optimizeStudioUpload(file,target.kind);
+      const uploadFile=target.kind==="audio"?await prepareCompatibleAudio(file):await optimizeStudioUpload(file,target.kind);
       if(uploadFile.size>50*1024*1024){
         setMessage(target.kind==="video"
           ?"Ese video es demasiado pesado. Elegí uno más corto y probá de nuevo."
@@ -655,8 +658,8 @@ export default function CustomerStudio({code}:{code:string}){
       });
       await loadStudio(editorToken);
       setMessage("Listo, lo cambiamos sin mover nada ✓");
-    }catch{
-      setMessage("No pudimos reemplazar ese archivo. Probá con otro.");
+    }catch(error){
+      setMessage(error instanceof AudioUploadError?error.message:"No pudimos reemplazar ese archivo. Probá con otro.");
     }finally{
       setUploading([]);
       setReplaceTarget(null);
@@ -1019,18 +1022,19 @@ export default function CustomerStudio({code}:{code:string}){
         <header><p className="studio-eyebrow">LAS VOCES</p><h1>Hay cosas que emocionan distinto cuando se escuchan.</h1><p>Subí audios de WhatsApp, notas de voz o una canción que sea de ustedes.</p></header>
         <div className="studio-audio-entry-options">
           <button className="studio-upload-hero audio" type="button" disabled={uploading.length>0||recording} onClick={()=>audioInputRef.current?.click()}>
-            <span>♪</span><div><strong>{audios.length?"Agregar un audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"WhatsApp, MP3, M4A, OGG u OPUS"}</small></div><b>→</b>
+            <span>♪</span><div><strong>{audios.length?"Agregar un audio":"Elegir un audio"}</strong><small>{audios.length?`${audios.length} de 6 audios cargados`:"WhatsApp, MP3 o M4A · los adaptamos automáticamente"}</small></div><b>→</b>
           </button>
           <button className={recording?"studio-record-voice recording":"studio-record-voice"} type="button" disabled={uploading.length>0} onClick={recording?stopVoiceRecording:startVoiceRecording}>
             <span>{recording?"■":"●"}</span>
             <div><strong>{recording?"Detener y usar audio":"Grabar ahora"}</strong><small>{recording?`Grabando · ${Math.floor(recordingSeconds/60)}:${String(recordingSeconds%60).padStart(2,"0")}`:"Usar el micrófono del celular"}</small></div>
           </button>
         </div>
-        <input ref={audioInputRef} hidden type="file" multiple accept="audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus" onChange={event=>uploadFiles(event.target.files,"audio")}/>
+        <p className="studio-audio-guide">¿Lo recibiste por WhatsApp? Compartí el audio, guardalo en Archivos y elegilo acá. No tenés que convertirlo.</p>
+        <input ref={audioInputRef} hidden type="file" multiple accept="audio/*,.m4a,.mp3,.wav,.ogg,.oga,.opus,.webm,.weba,.aac"  onChange={event=>uploadFiles(event.target.files,"audio")}/>
         {recording&&<div className="studio-recording-live"><i/><div><strong>Te estamos escuchando</strong><span>Cuando termines, tocá “Detener y usar audio”.</span></div></div>}
         {audios.length>0?<div className="studio-audio-list">{audios.map((item,index)=><article key={item.id}>
           <span className="studio-audio-number">{String(index+1).padStart(2,"0")}</span>
-          <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata"/>}</div>
+          <div className="studio-audio-main"><input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder={item.metadata?.role==="soundtrack"?"Nombre de la canción":"Ej. Mensaje de mamá"}/>{item.url&&<audio src={item.url} controls preload="metadata" onError={()=>setMessage("Este audio no se puede reproducir en este dispositivo. Tocá Cambiar audio para cargar otra nota de voz.")}/>} </div>
           <label className="studio-audio-role"><span>¿Cómo querés usarlo?</span><select value={item.metadata?.role||"voice"} onChange={event=>updateMedia(item,{role:event.target.value})}><option value="voice">Como mensaje de voz</option><option value="soundtrack">Como música de fondo</option></select></label>
           <div className="studio-audio-actions">
             <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar audio</button>
@@ -1134,7 +1138,7 @@ export default function CustomerStudio({code}:{code:string}){
       ref={replaceInputRef}
       hidden
       type="file"
-      accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/mpeg,audio/mp4,audio/webm,audio/wav,audio/x-m4a,audio/ogg,audio/opus,.m4a,.mp3,.wav,.ogg,.opus":"video/mp4,video/webm,video/quicktime"}
+      accept={replaceTarget?.kind==="image"?"image/jpeg,image/png,image/webp,image/heic,image/heif":replaceTarget?.kind==="audio"?"audio/*,.m4a,.mp3,.wav,.ogg,.oga,.opus,.webm,.weba,.aac":"video/mp4,video/webm,video/quicktime"}
       onChange={event=>replaceMediaFile(event.target.files)}
     />
 

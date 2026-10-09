@@ -1,0 +1,37 @@
+name: TeHiceEsto audio compatibility
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app/tehiceesto/audioUpload.ts'
+      - 'src/app/tehiceesto/editar/CustomerStudio.tsx'
+      - 'src/app/tehiceesto/admin/AdminGiftEditor.tsx'
+      - 'src/app/tehiceesto/vendor/**'
+      - 'tests/tehiceesto-audio-upload.test.ts'
+      - '.github/workflows/tehiceesto-audio-compat.yml'
+  push:
+    branches: [fix/tehiceesto-whatsapp-audio-20261009]
+
+permissions:
+  contents: read
+
+jobs:
+  audio-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Real Ogg/Opus decoding and WAV codec regression tests
+        run: npx vitest run tests/tehiceesto-audio-upload.test.ts
+      - name: Validate TeHiceEsto audio code lint
+        run: npx eslint src/app/tehiceesto/audioUpload.ts tests/tehiceesto-audio-upload.test.ts
+      - name: TypeScript typecheck
+        run: npm run typecheck
+      - name: Next.js production build
+        run: npm run build
