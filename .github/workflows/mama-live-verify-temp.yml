@@ -1,0 +1,82 @@
+name: Verify Mamá Audio Live Bridge
+on:
+  push:
+    branches: [mama-live-verify-20261009]
+    paths: ['.github/workflows/mama-live-verify-temp.yml']
+permissions:
+  contents: read
+jobs:
+  verify-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Verify MP3 endpoint and browser-range support
+        run: |
+          set -eux
+          MP3=https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/mama-voice-mp3
+          curl -fsSL --max-time 35 -D /tmp/mp3-headers -o /tmp/alina.mp3 "$MP3"
+          head -20 /tmp/mp3-headers
+          test "$(wc -c </tmp/alina.mp3)" -gt 30000
+          file /tmp/alina.mp3
+          curl -fsSL --max-time 35 -D /tmp/range-headers -H 'Range: bytes=0-1023' -o /tmp/alina-portion "$MP3"
+          head -20 /tmp/range-headers
+          grep -q '^HTTP/.*206' /tmp/range-headers
+          test "$(wc -c </tmp/alina-portion)" -eq 1024
+      - name: Verify TeHiceEsto currently serves updated JS patch
+        run: |
+          set -eux
+          curl -fsSL --max-time 45 -o /tmp/mama-public.js 'https://tehiceesto.com/_next/static/immutable/chunks/0azfo2qceywqk.js'
+          wc -c /tmp/mama-public.js
+          grep -Fq '__thiMamaVoiceHotfixV2' /tmp/mama-public.js
+          grep -Fq '__thiMamaVoiceSkipLive' /tmp/mama-public.js
+          grep -Fq 'mama-voice-mp3' /tmp/mama-public.js
+          node --check /tmp/mama-public.js
+      - name: Install browser
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Test the actual public Mamá demo on a mobile browser
+        run: |
+          node --input-type=module <<'NODE'
+          import {chromium} from '@playwright/test';
+          const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+          const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+          let audioResponses=[];
+          page.on('response',r=>{if(r.url().includes('/mama-voice-mp3'))audioResponses.push(r.status())});
+          const path='https://tehiceesto.com/experiencias/mama';
+          async function toVoices(){
+            await page.goto(path,{waitUntil:'domcontentloaded',timeout:45000});
+            await page.locator('[data-action="advance"]').first().click();
+            await page.getByRole('button',{name:/Seguir recordando/i}).click();
+            const memoryNext=page.locator('.thi-mama-memory-local-nav>button').last();
+            await memoryNext.click();await memoryNext.click();
+            await page.getByRole('button',{name:/Seguir con la historia/i}).click();
+            for(const i of [0,1,2])await page.locator('.mama-care-file').nth(i).click();
+            await page.locator('.mama-care-continue').click();
+            for(const i of [0,1,2,3])await page.locator('.mama-sacrifice-trigger').nth(i).click();
+            await page.locator('.mama-sacrifice-continue').click();
+            if(await page.locator('main.thi-experience').getAttribute('data-scene')!=='voices')throw Error('Not in voice room');
+            await page.waitForTimeout(500);
+          }
+          await toVoices();
+          const skip=page.locator('.thi-mama-voice-skip-live');
+          await skip.waitFor({timeout:10000});
+          await skip.click();
+          await page.waitForTimeout(600);
+          if(await page.locator('main.thi-experience').getAttribute('data-scene')!=='letter')throw Error('Skip CTA did not advance');
+          console.log('PASS: Mobile voice skip moves into letter with zero audios heard');
+          await toVoices();
+          await page.locator('[data-action="mama-voice-choice"]').first().click();
+          await page.locator('[data-action="mama-voice-toggle"]').click();
+          await page.waitForTimeout(1600);
+          const state=await page.locator('[data-action="mama-voice-toggle"]').getAttribute('data-voice-state');
+          console.log('STATE',state,'AUDIO_RESPONSE',audioResponses);
+          if(state!=='playing'||!audioResponses.some(x=>x===200||x===206))throw Error('Alina MP3 not playing in real mobile browser');
+          await browser.close();
+          console.log('SUCCESS: live Mamá mobile demo works');
+          NODE
