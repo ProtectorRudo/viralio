@@ -38,6 +38,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText(/Primero mirá el cielo/)).toBeVisible();
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: "Vela con la luna" }).first().click();
+    await expect(page.locator('svg g[data-candle="luna"]')).toHaveAttribute("data-active","true");
+    await expect(page.locator('svg g[data-candle="llave"]')).toHaveAttribute("data-active","false");
     await page.getByRole("button", { name: "Vela con la llave" }).first().click();
     await page.getByRole("button", { name: "Vela con la rosa" }).first().click();
     await page.getByRole("button", { name: "Puerta secreta" }).first().click();
@@ -63,6 +65,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.screenshot({path:"visual-qa-evidence/umbral-corazon-desktop.png",fullPage:true});
 
     await page.getByRole("button", { name: "Fusible 2" }).first().click();
+    await expect(page.locator('svg g[data-fuse="2"]')).toHaveAttribute("data-active","true");
+    await expect(page.locator('svg g[data-fuse="3"]')).toHaveAttribute("data-active","false");
     await page.getByRole("button", { name: "Fusible 5" }).first().click();
     await page.getByRole("button", { name: "Bajar palanca" }).first().click();
     await expect(page.getByRole("heading", { name: "La última decisión" })).toBeVisible();
@@ -70,6 +74,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "No escapaste solo." })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-final-desktop.png",fullPage:true});
     await expect(page.getByText("PUNTUACIÓN")).toBeVisible();
+    await expect(page.getByText(/NUEVO RÉCORD PERSONAL/)).toBeVisible();
   });
 
   test("móvil: objetos accesibles sin depender del panorama, pausa y retorno", async ({ page }) => {
