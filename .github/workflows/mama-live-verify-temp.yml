@@ -111,12 +111,14 @@ jobs:
             return {label:document.querySelector('.thi-mama-voice-skip-live')?.textContent,
               listBottom:list?.bottom,btnTop:btn?.top,btnHeight:btn?.height,
               floatingVisible:c?.display!=='none'&&c?.visibility!=='hidden'&&c?.opacity!=='0',
+              cardBlur:getComputedStyle(document.querySelector('.thi-mama-voice-list>button')).backdropFilter,
               navDuration:nav?.duration,proxyResource:proxy.map(r=>({duration:r.duration,responseStart:r.responseStart}))};
           });
           console.log('LIVE_VISUAL_CHECK',JSON.stringify(visual));
           if(!visual.label?.startsWith('Continuar'))throw Error('Continue label wrong');
           if(visual.btnTop<visual.listBottom-3)throw Error('Continue overlaps or precedes the voice cards');
           if(visual.floatingVisible)throw Error('Purchase CTA overlays voice cards');
+          if(visual.cardBlur!=='none')throw Error('Audio cards still consume mobile GPU blur');
           await page.locator('[data-action="mama-voice-choice"]').last().click();
           await page.locator('.thi-mama-voice-player').waitFor();
           await page.locator('[data-action="mama-voice-back"]').click();
