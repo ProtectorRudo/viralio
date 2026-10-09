@@ -200,3 +200,70 @@
 .pinLayout .keypad{width:235px;max-width:100%;margin:0}
 .pinLayout .keypad button{min-height:44px}
 @media(max-width:650px){.pinDialog{padding:25px 20px!important;max-height:calc(100dvh - 24px)}.pinLayout{grid-template-columns:minmax(0,1fr);gap:14px}.pinDescription>div:first-child{display:none}.pinDescription h2{padding-right:16px;margin:22px 0 7px;font-size:1.8rem}.pinDescription p{font-size:.85rem;line-height:1.5}.pinLayout .code{margin-top:14px}.pinLayout .code button{min-height:49px}.pinLayout .keypad{max-width:250px;width:100%;margin:0 auto;padding:8px;gap:5px}.pinLayout .keypad button{min-height:37px}}
+
+/* 2026-10-09 cinematic art-direction pass. Original photography-derived chapter assets. */
+.intro{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;min-height:100dvh;padding:108px clamp(20px,5.8vw,96px) 36px;background-image:linear-gradient(90deg,rgba(0,3,7,.93) 0%,rgba(0,3,7,.79) 30%,rgba(0,5,9,.25) 68%,rgba(0,0,0,.2) 100%),linear-gradient(0deg,#070a0c 0%,transparent 34%),url("/escape/images/mansion.webp");background-size:cover;background-repeat:no-repeat;background-position:center 44%;overflow:visible}
+.intro:before{opacity:.08}.intro:after{display:none}
+.introArt{display:none}
+.brand{position:absolute;z-index:5;top:22px;left:clamp(20px,5.8vw,96px);color:#f3e7db;font-size:clamp(1.25rem,2.6vw,2rem);font-weight:800;letter-spacing:.23em;line-height:1.05;text-shadow:0 2px 17px #000}
+.brand span{display:block;color:#d94844;font-size:.58em;letter-spacing:.55em;font-weight:700;margin:6px 0 0 4px}
+.heroFog{position:absolute;z-index:0;inset:0;pointer-events:none;background:radial-gradient(ellipse at 61% 35%,rgba(228,181,113,.06),transparent 34%),linear-gradient(180deg,transparent 68%,#06080b 100%);animation:heroBreath 11s ease-in-out infinite alternate}
+@keyframes heroBreath{from{opacity:.7}to{opacity:1}}
+.introContent{width:min(650px,100%);padding:0;z-index:2;margin-bottom:auto}
+.intro .eyebrow{color:#bca996;letter-spacing:.24em}
+.intro h1{font-size:clamp(5rem,11.4vw,11rem);color:#f7f0e5;line-height:.82;font-weight:500;letter-spacing:-.085em;margin:29px 0 0;text-shadow:0 5px 35px #000,0 0 55px rgba(222,204,175,.1)}
+.intro h1 span{color:#8e1e23}
+.intro .tagline{color:#f3ece1;letter-spacing:.48em;font:400 clamp(.7rem,1.6vw,1.13rem)/1.4 Georgia,serif;margin:25px 0 22px;text-shadow:0 2px 10px #000}
+.intro .story{max-width:510px;font:400 clamp(.94rem,1.35vw,1.14rem)/1.6 Georgia,serif;color:#eee4d2;text-shadow:0 2px 18px #000}
+.intro .story strong{color:#f5c191}
+.introSpecs{margin:23px 0 14px;gap:17px;color:#d1c7b7}
+.intro .primary{min-width:280px;min-height:58px;background:linear-gradient(115deg,#a61017,#d82722 54%,#8c0b11);color:#fff2e4;border:1px solid #ec5550;box-shadow:inset 0 0 0 1px rgba(255,135,117,.28),0 8px 35px rgba(147,10,13,.4);text-shadow:0 1px 4px #5a060a;letter-spacing:.18em!important;margin:0}
+.intro .primary:hover{background:linear-gradient(115deg,#c71923,#f23b2d 54%,#a21119);box-shadow:0 11px 48px rgba(203,19,25,.38)}
+.intro .soundIntro{display:inline-block;margin-left:18px;font-size:.64rem!important;color:#e7d6bd;vertical-align:middle}
+.intro .introFine{margin:11px 0 23px;font-size:.65rem;color:#a7a99f}
+.chapterRail{position:relative;z-index:3;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;width:100%;margin:25px auto 0}
+.chapterCard{position:relative;min-height:clamp(135px,15vw,215px);background-size:cover;background-position:center;border:1px solid #756b60;box-shadow:0 12px 28px rgba(0,0,0,.65),inset 0 0 0 1px rgba(243,218,187,.13);overflow:hidden;display:flex;align-items:flex-end;padding:16px;gap:11px}
+.chapterCard:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 20px rgba(0,0,0,.6)}
+.chapterNumber{position:relative;z-index:2;border:1px solid #f3ddbb;display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;font:400 1.05rem Georgia,serif;background:rgba(3,7,8,.73);color:#ffecce}
+.chapterCard>div{position:relative;z-index:2;min-width:0;text-shadow:0 2px 10px #000}
+.chapterCard strong{display:block;font:400 clamp(.8rem,1.25vw,1.04rem)/1.15 Georgia,serif;text-transform:uppercase;letter-spacing:.065em;color:#fff1da}
+.chapterCard small{display:block;font:italic clamp(.7rem,.95vw,.85rem)/1.35 Georgia,serif;margin-top:6px;color:#d6d2c9}
+.cinematicRoom{position:absolute;inset:-2%;background-size:cover;background-position:center;filter:contrast(1.12) saturate(.87);transform:scale(1.02);animation:sceneDrift 19s ease-in-out infinite alternate;pointer-events:none}
+.roomArt .artwork{opacity:.07;mix-blend-mode:screen;pointer-events:none}
+.roomArt .shade{background:radial-gradient(ellipse at 50% 52%,transparent 22%,rgba(2,4,8,.18) 57%,rgba(0,0,0,.8) 100%),linear-gradient(180deg,rgba(0,0,0,.33),transparent 35%,rgba(0,0,0,.5))}
+.roomArt .dust{opacity:.23}
+@keyframes sceneDrift{from{transform:scale(1.015) translate(0,0)}to{transform:scale(1.045) translate(-.5%,.6%)}}
+@media(max-width:900px){
+ .intro{padding:85px 5vw 24px;min-height:100dvh;background-position:60% center}
+ .brand{top:18px;left:5vw}
+ .introContent{width:min(600px,100%)}
+ .intro h1{font-size:clamp(5.3rem,17vw,8.8rem)}
+ .intro .tagline{letter-spacing:.24em}
+ .intro .story{max-width:540px;font-size:.98rem}
+ .chapterRail{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .chapterCard{min-height:150px}
+ .chapterCard strong{font-size:.88rem}
+}
+@media(max-width:570px){
+ .intro{padding:81px 18px 27px;justify-content:space-between;background-image:linear-gradient(180deg,rgba(1,4,8,.29) 0%,rgba(0,3,8,.75) 32%,rgba(2,3,5,.91) 62%,#050608 100%),url("/escape/images/mansion.webp");background-position:61% top;background-size:auto 57%,auto 57%;background-repeat:no-repeat;background-color:#050608}
+ .brand{top:17px;left:20px;font-size:1.24rem}
+ .introContent{margin:170px 0 0;max-width:100%;width:100%}
+ .intro .eyebrow{font-size:.55rem}
+ .intro h1{font-size:clamp(4.7rem,19.3vw,7rem);margin:12px 0 0;letter-spacing:-.09em}
+ .intro .tagline{letter-spacing:.24em;font-size:.7rem;margin:17px 0 15px}
+ .intro .story{font-size:.88rem;line-height:1.48;max-width:100%}
+ .introSpecs{margin:17px 0 12px;font-size:.55rem;gap:11px}
+ .intro .primary{width:100%;min-height:52px}
+ .intro .soundIntro{margin:10px 0 0;padding:7px 0;display:block}
+ .intro .introFine{margin:5px 0 10px}
+ .difficulty{margin:14px 0}
+ .difficulty button{min-height:48px}
+ .chapterRail{margin:7px auto 0;gap:8px}
+ .chapterCard{min-height:125px;padding:10px;gap:8px;background-position:center}
+ .chapterNumber{width:26px;height:26px;font-size:.86rem}
+ .chapterCard strong{font-size:.7rem}
+ .chapterCard small{font-size:.63rem;margin-top:3px}
+ .cinematicRoom{background-position:center}
+ .sceneTitle h2{text-shadow:0 4px 18px #000}
+}
+@media(prefers-reduced-motion:reduce){.heroFog,.cinematicRoom{animation:none}}
