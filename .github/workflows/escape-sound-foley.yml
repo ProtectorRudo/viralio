@@ -39,6 +39,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/escape/audio/*.ogg
           if ! git diff --cached --quiet; then
-            git commit -m "asset(escape): bundle original CC0 recorded wooden footsteps"
+            git commit -m "asset(escape): bundle original CC0 field recordings and door foley"
+            git fetch origin feat/escape-immersive-audio-blackout-20261009
+            git rebase origin/feat/escape-immersive-audio-blackout-20261009
             git push origin HEAD:feat/escape-immersive-audio-blackout-20261009
           fi
