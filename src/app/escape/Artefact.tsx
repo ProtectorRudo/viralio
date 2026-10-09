@@ -1,52 +1,31 @@
 import styles from "./Artefact.module.css";
 
 type Kind = "portrait" | "clock" | "lock" | "letter" | "music" | "doll" | "circuit" | "door" | "signal";
-const TICKS = Array.from({ length: 12 }, (_, index) => index);
 
-export default function Artefact({kind,mark}:{kind:Kind;mark?:string}) {
-  return <div className={styles.stage+" "+styles[kind]} aria-hidden="true">
-    <div className={styles.lighting}/>
-    {kind==="portrait"&&<div className={styles.portraitFrame}>
-      <div className={styles.plate}>
-        <div className={styles.figure}><div className={styles.hair}/><div className={styles.face}><i/><i/></div><div className={styles.torso}/></div>
-        <span className={styles.scratch}/>
-      </div>
-      <div className={styles.namePlate}>{mark||"1891"}</div>
-    </div>}
-    {kind==="clock"&&<div className={styles.clockCase}>
-      <div className={styles.clockDial}>
-        {TICKS.map(n=><i key={n} className={styles.clockTick} style={{transform:"translate(-50%,-50%) rotate("+(n*30)+"deg) translateY(-45px)"}}/>)}
-        <b className={styles.clockHandH}/><b className={styles.clockHandM}/><span className={styles.pin}/>
-      </div>
-      <div className={styles.pendulum}><span/></div>
-    </div>}
-    {kind==="lock"&&<div className={styles.lockBody}>
-      <div className={styles.lockShackle}/>
-      <div className={styles.lockFace}><span>IV</span><div className={styles.dials}><i>◆</i><i>◆</i><i>◆</i></div><b className={styles.lockKey}>⌑</b></div>
-    </div>}
-    {kind==="letter"&&<div className={styles.letterPaper}>
-      <div className={styles.letterFold}/>
-      <div className={styles.handwriting}><i/><i/><i/><i/><i/><i/></div>
-      <div className={styles.wax}><span>✢</span></div>
-    </div>}
-    {kind==="music"&&<div className={styles.musicBox}>
-      <div className={styles.musicLid}><div className={styles.moonMark}>♫</div></div>
-      <div className={styles.musicMechanism}>
-        <div className={styles.musicRoller}/><div className={styles.musicPins}>{TICKS.slice(0,8).map(n=><i key={n}/>)}</div>
-      </div>
-      <div className={styles.musicBase}><i/><i/></div>
-    </div>}
-    {kind==="doll"&&<div className={styles.dollFigure}>
-      <div className={styles.dollHair}/><div className={styles.dollHead}><i/><i/></div>
-      <div className={styles.dollDress}><span>♡</span></div>
-    </div>}
-    {kind==="circuit"&&<div className={styles.circuitBoard}>
-      <div className={styles.circuitWires}/>
-      {[2,3,4,5].map(n=><div key={n} className={styles.fuseSlot}><span>{n}</span><i/></div>)}
-      <span className={styles.circuitWarning}>ALIMENTACIÓN · 07</span>
-    </div>}
-    {kind==="door"&&<div className={styles.doorFrame}><div className={styles.doorInterior}/><div className={styles.doorWood}><span>13</span><i/></div></div>}
-    {kind==="signal"&&<div className={styles.signalCompass}><div className={styles.signalRune}>✧</div><div className={styles.signalOrbit}/><span>UNA PISTA. UN CAMINO.</span></div>}
-    <div className={styles.propDust}/>
-  </div>;
+const DETAILS:Record<Kind,{number:string;label:string}> = {
+  portrait:{number:"01",label:"ARCHIVO FAMILIAR"},
+  clock:{number:"02",label:"MECANISMO DETENIDO"},
+  lock:{number:"03",label:"CERRADURA / PROPIEDAD 013"},
+  letter:{number:"04",label:"CORRESPONDENCIA RECUPERADA"},
+  music:{number:"05",label:"MELODÍA DE EVA"},
+  doll:{number:"06",label:"PERTENENCIA DE EVA"},
+  circuit:{number:"07",label:"CONTROL ELÉCTRICO"},
+  door:{number:"08",label:"ÚLTIMO UMBRAL"},
+  signal:{number:"09",label:"MENSAJE SIN REMITENTE"}
+};
+
+/** A physically photographed evidence close-up, rather than a UI icon. */
+export default function Artefact({kind,mark,speaking=false}:{kind:Kind;mark?:string;speaking?:boolean}) {
+  const info=DETAILS[kind];
+  return (
+    <div className={styles.stage+" "+styles[kind]+" "+(speaking?styles.speaking:"")} aria-hidden="true">
+      <div className={styles.photograph} style={{backgroundImage:`url("/escape/images/objects/${kind}.webp")`}}/>
+      <div className={styles.lens}/>
+      <div className={styles.vhsGrain}/>
+      <div className={styles.filmEdge}/>
+      {kind==="portrait"&&<div className={styles.brassPlate}>{mark||"1891"}</div>}
+      {kind==="doll"&&<div className={styles.heartbeat}><span/><span/><span/><span/><span/><span/><span/></div>}
+      <div className={styles.evidenceTag}><span>UMB / {info.number}</span><span>{info.label}</span></div>
+    </div>
+  );
 }
