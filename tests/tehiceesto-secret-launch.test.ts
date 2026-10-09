@@ -20,7 +20,7 @@ describe("Te guardé un secreto — launch quality and model parity", () => {
   it("renders exactly the same cinematic engine for demo and customer", () => {
     const engine = read("ExperienceEngine.tsx");
     expect(engine).toContain('props.experience.slug==="secreto"');
-    expect(engine).toContain("<SecretExperience {...props} />");
+    expect(engine).toMatch(/<SecretExperience\s+\{\.\.\.props\}\s*\/>/);
     expect(read("experiencias/[slug]/page.tsx")).toContain("<ExperienceEngine experience={experience}/>");
     expect(read("r/[code]/page.tsx")).toContain("ExperienceEngine");
   });
