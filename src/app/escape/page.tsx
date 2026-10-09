@@ -14,5 +14,17 @@ export default async function EscapePage() {
   // off the Te Hice Esto storefront without blocking authenticated previews.
   const host = (await headers()).get("host")?.toLowerCase().split(":")[0];
   if (host === "tehiceesto.com" || host === "www.tehiceesto.com") notFound();
-  return <EscapeGame />;
+  return <>
+    {/* A hero rendered through CSS would otherwise wait until the stylesheet
+        loads. Mobile 2x/3x screens can request the crisp photographed master
+        immediately, with no extra fetch on standard-density displays. */}
+    <link
+      rel="preload"
+      as="image"
+      href="/escape/images/retina/mansion.webp"
+      media="(min-resolution: 2dppx)"
+      fetchPriority="high"
+    />
+    <EscapeGame />
+  </>;
 }
