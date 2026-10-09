@@ -319,11 +319,12 @@ export default function EscapeGame() {
     return ()=>window.clearInterval(foley);
   },[phase,paused,modal,scareStage,room,sound,cinematicScares]);
 
+  const lateDanger=seconds<=300, finalDanger=seconds<=60;
   useEffect(()=>{
-    if(phase!=="playing" || paused || cinematicPause || !sound || seconds>300)return;
-    const id=window.setInterval(()=>playHorror("heartbeat",{pan:-.12,intensity:.18}),seconds<60?6000:11500);
+    if(phase!=="playing" || paused || cinematicPause || !sound || !lateDanger)return;
+    const id=window.setInterval(()=>playHorror("heartbeat",{pan:-.12,intensity:.18}),finalDanger?6000:11500);
     return ()=>window.clearInterval(id);
-  },[phase,paused,cinematicPause,sound,seconds<=60,seconds<=300]);
+  },[phase,paused,cinematicPause,sound,finalDanger,lateDanger]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent)=>{
