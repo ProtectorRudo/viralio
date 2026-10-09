@@ -168,4 +168,40 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
     await expect(page.getByText("MODO PESADILLA")).toBeVisible();
   });
+
+  test("el apagón narrativo tapa el juego, muestra la presencia y permite omitirlo", async ({ page }) => {
+    await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
+    await page.goto("/escape");
+    await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toHaveAttribute("aria-pressed","true");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await page.getByRole("button",{name:"Abrir cerradura"}).first().click();
+    await page.getByRole("textbox",{name:"Código de tres cifras"}).fill("427");
+    await page.getByRole("button",{name:/DESBLOQUEAR/}).click();
+    await expect(page.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:5000});
+    for(const name of ["Vela con la luna","Vela con la llave","Vela con la rosa"]) {
+      await page.getByRole("button",{name}).first().click();
+    }
+    await page.getByRole("button",{name:"Puerta secreta"}).first().click();
+    await expect(page.getByRole("heading",{name:"La habitación de Eva",exact:true})).toBeVisible({timeout:5000});
+    await page.clock.fastForward(6100);
+    await expect(page.getByRole("dialog",{name:"Apagón inesperado en la casa"})).toBeVisible();
+    await page.clock.fastForward(2300);
+    await expect(page.getByText("NO APAGUES LA MÚSICA.")).toBeVisible();
+    await page.getByRole("button",{name:/OMITIR SUSTO/}).click();
+    await expect(page.getByRole("dialog",{name:"Apagón inesperado en la casa"})).toHaveCount(0);
+    await expect(page.getByRole("heading",{name:"La habitación de Eva",exact:true})).toBeVisible();
+  });
+
+  test("el modo terror suave evita el apagón y mantiene los controles", async ({ page }) => {
+    await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/}).click();
+    await expect(page.getByRole("button",{name:/TERROR SUAVE/})).toHaveAttribute("aria-pressed","false");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+    await expect(page.getByRole("dialog",{name:"Apagón inesperado en la casa"})).toHaveCount(0);
+    await page.getByRole("button",{name:"Pausar partida"}).click();
+    await expect(page.getByRole("heading",{name:/Hasta la casa guarda silencio/})).toBeVisible();
+  });
+
 });
