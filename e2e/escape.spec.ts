@@ -253,7 +253,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText("24:59")).toBeVisible();
     await page.getByRole("button",{name:"Silenciar música"}).click();
     await expect(page.getByRole("button",{name:"Activar música"})).toBeVisible();
-    await expect(page.getByRole("button",{name:"Silenciar"})).toBeVisible();
+    await expect(page.getByRole("button",{name:"Silenciar",exact:true})).toBeVisible();
   });
 
 });
