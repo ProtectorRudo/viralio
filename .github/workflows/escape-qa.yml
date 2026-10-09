@@ -1,0 +1,48 @@
+name: Escape Room QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/app/escape/**"
+      - "e2e/escape.spec.ts"
+      - ".github/workflows/escape-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: escape-room-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adventure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned packages
+        run: npm ci
+      - name: Lint escape route in isolation
+        run: npx eslint src/app/escape/page.tsx src/app/escape/EscapeGame.tsx --max-warnings=0
+      - name: Build shared app safely
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run all escape-room browser journeys
+        run: npx playwright test e2e/escape.spec.ts
+      - name: Save failed browser traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: umbral-failed-traces
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
