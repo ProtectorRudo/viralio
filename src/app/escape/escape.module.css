@@ -496,3 +496,24 @@
 @media(prefers-reduced-motion:reduce){
  .focusOverlay,.focusOverlay .focusDialog{animation:none!important}
 }
+
+/* Keep the physical lock as the primary encounter. The numeric fallback can be
+   expanded by touch / keyboard; it does not drown out the scene photograph. */
+.keypadAlternative{max-width:390px;width:100%;margin:7px auto 0;border:1px solid rgba(218,178,122,.34);background:rgba(9,13,14,.72)}
+.keypadAlternative summary{position:relative;display:block;list-style:none;cursor:pointer;min-height:43px;padding:13px 34px 11px 14px;font:700 .56rem/1.3 ui-monospace,monospace;letter-spacing:.14em;color:#dbc098;background:linear-gradient(96deg,rgba(84,63,39,.28),rgba(13,20,20,.6))}
+.keypadAlternative summary::-webkit-details-marker{display:none}
+.keypadAlternative summary:after{content:"+";position:absolute;right:14px;top:7px;font:400 1.5rem Georgia,serif;color:#e6c18b}
+.keypadAlternative[open] summary:after{content:"−"}
+.keypadAlternative summary:focus-visible{outline:2px solid #f2d39b;outline-offset:2px}
+.keypadAlternative[open] summary{border-bottom:1px solid rgba(222,173,105,.23)}
+.keypadAlternative .code{display:flex;gap:8px;margin:13px 12px 7px}
+.keypadAlternative .code input{font-size:1.4rem;letter-spacing:.27em;min-height:46px}
+.keypadAlternative .code button{min-width:105px;min-height:46px}
+.keypadAlternative .keypad{margin:12px auto 13px!important}
+@media(max-width:800px){
+ .keypadAlternative{max-width:340px;margin:10px auto 0}
+ .keypadAlternative summary{font-size:.52rem;padding:12px}
+ .keypadAlternative .code{margin:9px 8px}
+ .keypadAlternative .code button{font-size:.61rem}
+ .keypadAlternative .keypad{margin:9px auto!important}
+}
