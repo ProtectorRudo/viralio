@@ -300,8 +300,8 @@ export default function EscapeGame() {
   },[toast]);
 
   useEffect(() => {
-    if(phase!=="playing" || paused || modal) return;
-    // Give the house agency: a distant storm at an unpredictable interval.
+    if(phase!=="playing" || paused || modal || cinematicPause || scareStage!=="off" || transitioning) return;
+    // The visual storm never interrupts letters, apparition or an active blackout.
     const interval=window.setInterval(()=>{
       if(Math.random()>.56){
         playHorror("creak",{pan:Math.random()>.5?.68:-.68});
@@ -310,7 +310,7 @@ export default function EscapeGame() {
       }
     }, 8700);
     return ()=>window.clearInterval(interval);
-  },[phase,paused,modal]);
+  },[phase,paused,modal,cinematicPause,scareStage,transitioning]);
 
   // Low-intensity room foley: movement far from the player, then silence.
   // Never play over dialogue, clues, the film or the blackout.
@@ -371,7 +371,7 @@ export default function EscapeGame() {
   }, [phase, paused, room, sound, cinematicPause]);
 
   useEffect(() => {
-    if(phase!=="playing" || paused || room!==2) return;
+    if(phase!=="playing" || paused || room!==2 || modal || scareStage!=="off" || transitioning) return;
     let vanish: number | undefined;
     const appear = window.setTimeout(() => {
       setApparition(true);
@@ -382,7 +382,7 @@ export default function EscapeGame() {
       window.clearTimeout(appear);
       if(vanish!==undefined) window.clearTimeout(vanish);
     };
-  }, [phase, paused, room]);
+  }, [phase, paused, room, modal, scareStage, transitioning]);
 
   useEffect(()=>{
     if(modal==="doll") return;
