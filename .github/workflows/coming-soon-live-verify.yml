@@ -7,6 +7,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Verify closed demo pages and identify shared CSS
         run: |
           set -euo pipefail
@@ -43,3 +44,59 @@ jobs:
           done
           curl -sSL --max-time 35 'https://tehiceesto.com/experiencias/mama' -o /tmp/mama.html
           grep -q '0gradzqca-5xg' /tmp/mama.html && echo 'MAMA_SCRIPT_PRESERVED'
+
+      - name: Prepare Chromium for public responsive QA
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Public desktop and mobile release gate QA
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+          for(const width of [390,1280]){
+            const page=await browser.newPage({viewport:{width,height:844},hasTouch:width<500,isMobile:width<500});
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            await page.goto('https://tehiceesto.com/',{waitUntil:'domcontentloaded',timeout:50000});
+            await page.waitForTimeout(500);
+            const data=await page.evaluate(()=>{
+              const slugs=['abuelos','aniversario','propuesta'];
+              return slugs.map(slug=>{
+                const a=document.querySelector('.thh-v2-more a[href$="/experiencias/'+slug+'"]');
+                return {slug,exists:!!a,pointerEvents:a?getComputedStyle(a).pointerEvents:null,
+                   badge:a?getComputedStyle(a,'::after').content:null};
+              });
+            });
+            console.log('HOME_COMING_SOON',width,JSON.stringify(data));
+            if(data.some(x=>!x.exists||x.pointerEvents!=='none'||!x.badge.includes('Próximamente')))
+              throw Error('Homepage coming-soon visual gate failed');
+            await page.goto('https://tehiceesto.com/crear',{waitUntil:'domcontentloaded',timeout:50000});
+            await page.waitForTimeout(450);
+            const catalog=await page.evaluate(()=>{
+              const slugs=['abuelos','aniversario','propuesta'];
+              return slugs.map(slug=>{
+                const card=document.querySelector('.thi-simple-card-'+slug);
+                const btn=card?.querySelector('button.thi-simple-choose');
+                const preview=card?.querySelector('a.thi-simple-preview');
+                return {slug,exists:!!card,disabledTouch:btn?getComputedStyle(btn).pointerEvents:null,
+                  badge:btn?getComputedStyle(btn,'::before').content:null,
+                  previewVisible:preview?getComputedStyle(preview).display:null};
+              });
+            });
+            console.log('CATALOG_COMING_SOON',width,JSON.stringify(catalog));
+            if(catalog.some(x=>!x.exists||x.disabledTouch!=='none'||!x.badge.includes('Próximamente')||x.previewVisible!=='none'))
+              throw Error('Catalog coming-soon purchase gate failed');
+            const ready=await page.locator('.thi-simple-card-mama button.thi-simple-choose').isEnabled();
+            if(!ready)throw Error('Approved templates unexpectedly disabled');
+            for(const slug of ['abuelos','aniversario','propuesta']){
+              await page.goto('https://tehiceesto.com/experiencias/'+slug,{waitUntil:'domcontentloaded',timeout:50000});
+              if(!(await page.locator('h1').innerText()).toLowerCase().includes(slug)&&slug!=='abuelos')throw Error('Placeholder title mismatch');
+              if(!(await page.locator('.tag').innerText()).includes('Próximamente'))throw Error('Placeholder badge absent');
+              if(await page.locator('main.thi-experience').count())throw Error('Unfinished experience exposed');
+            }
+            console.log('PASS_PUBLIC_COMING_SOON',width);
+            await page.close();
+          }
+          await browser.close();
+          NODE
