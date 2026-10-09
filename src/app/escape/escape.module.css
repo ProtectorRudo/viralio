@@ -143,3 +143,7 @@
 @keyframes umbralFog{0%{transform:translateX(-6%) translateY(2%) rotate(-1deg)}100%{transform:translateX(9%) translateY(-3%) rotate(2deg)}}
 @media(max-width:800px){.torch{background:radial-gradient(circle 125px at var(--torch-x,50%) var(--torch-y,53%),transparent 0,rgba(6,8,10,.15) 42%,rgba(1,3,6,.83) 82%,rgba(0,2,4,.95) 100%)}.bottomActions{grid-template-columns:1.15fr .8fr .9fr .7fr}.bottomActions button{letter-spacing:0;font-size:.51rem}}
 @media(prefers-reduced-motion:reduce){.fog,.lightning,.jolt{animation:none!important}.torch{transition:none}}
+
+/* Prevent the brand credit from covering the action bar on tall phone screens. */
+.copyright{position:relative;bottom:auto;left:auto;transform:none;text-align:center;min-height:27px;padding:5px 12px 10px;background:#090e10;flex:none}
+@media(max-width:800px){.copyright{font-size:.46rem;padding:8px 8px 9px}.mobileInteract>div{scrollbar-width:thin;scrollbar-color:#7b674f #101416}}
