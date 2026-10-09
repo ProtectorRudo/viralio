@@ -63,7 +63,7 @@ async function sign(token:string,message:string){
 }
 
 async function idempotencyKey(token:string){
-  const digest=hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(token))).slice(0,32);
+  const digest=hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(`checkout-pro-config-v2:${token}`))).slice(0,32);
   return `${digest.slice(0,8)}-${digest.slice(8,12)}-4${digest.slice(13,16)}-8${digest.slice(17,20)}-${digest.slice(20,32)}`;
 }
 
@@ -229,14 +229,10 @@ Deno.serve(async(req:Request)=>{
           failure_url:`https://tehiceesto.com/pedido/${code}?pago=fallido`,
           auto_return:"approved",
         },
-        // Financiación a cargo del vendedor: permite pagar en 1, 2 o 3 cuotas
-        // sin interés, sin restringir débito, crédito, saldo ni otros medios.
+        // Cuotas configuradas mediante parámetros admitidos por Checkout Pro Orders.
+        // El costo financiero depende de la configuración de Mercado Pago.
         payment_method:{
           max_installments:3,
-          installments_cost:"seller",
-          installments:{
-            interest_free:{type:"range",values:[1,3]},
-          },
         },
       },
     }),
