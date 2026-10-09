@@ -28,13 +28,14 @@ jobs:
           const page=await browser.newPage({viewport:{width:390,height:844},locale:"es-AR"});
           const errors=[];
           page.on("pageerror",err=>errors.push(err.message));
-          for (const file of ["images/mansion.webp","images/room-2.webp","images/objects/doll.webp","images/objects/lock.webp","images/eva-tape-013.mp4"]) {
+          for (const file of ["images/mansion.webp","images/room-2.webp","images/objects/doll.webp","images/objects/lock.webp","images/eva-tape-013.mp4","audio/footsteps-wood.ogg","audio/wood-creak.ogg","audio/heavy-door.ogg"]) {
             const response=await page.request.get(BASE+"/"+file);
             expect(response.status(),file).toBe(200);
             if(file.endsWith(".mp4")) expect((await response.body()).byteLength).toBeGreaterThan(30000);
           }
           await page.goto(BASE+"/",{waitUntil:"domcontentloaded",timeout:30000});
           await expect(page.getByRole("heading",{name:/UMBRAL/})).toBeVisible({timeout:15000});
+          await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toHaveAttribute("aria-pressed","true");
           await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
           const nav=page.getByRole("navigation",{name:"Objetos para investigar"});
           await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
@@ -49,6 +50,9 @@ jobs:
           await expect(page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/})).toBeVisible();
           await expect(page.getByText(/No apagues la música/)).toBeVisible();
           await page.getByRole("button",{name:"Cerrar"}).click();
+          await expect(page.getByRole("dialog",{name:"Apagón inesperado en la casa"})).toBeVisible({timeout:12500});
+          await page.getByRole("button",{name:/OMITIR SUSTO/}).click();
+          await expect(page.getByRole("dialog",{name:"Apagón inesperado en la casa"})).toHaveCount(0);
           await nav.getByRole("button",{name:"Tocar caja musical"}).click();
           for(const note of ["SOL","MI","LA","SOL"]) await page.getByRole("button",{name:note,exact:true}).click();
           await page.getByRole("button",{name:/REPRODUCIR CINTA 013/}).click();
@@ -67,6 +71,6 @@ jobs:
           await expect(page.getByRole("heading",{name:"No escapaste solo."})).toBeVisible();
           await expect(page.getByText(/Gracias por volver/)).toBeVisible();
           if(errors.length) throw Error("Public browser errors: "+errors.join(" | "));
-          console.log("PASS: published UMBRAL loads all media; mobile Eva tape and full escape work");
+          console.log("PASS: published UMBRAL loaded CC0 recordings, cinematic blackout and entire mobile rescue journey");
           await browser.close();
           JS
