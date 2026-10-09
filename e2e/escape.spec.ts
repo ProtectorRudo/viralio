@@ -11,6 +11,10 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText("Todo comienza con una puerta cerrada.")).toBeVisible();
     const photo=await page.request.get("/escape/images/mansion.webp");
     expect(photo.status()).toBe(200);
+    for(const name of ["portrait","lock","music","doll","circuit"]) {
+      const asset=await page.request.get("/escape/images/objects/"+name+".webp");
+      expect(asset.status(),name+" is missing").toBe(200);
+    }
     await page.screenshot({path:"visual-qa-evidence/umbral-intro-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
@@ -61,6 +65,9 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: "Examinar muñeca" }).first().click();
     await expect(page.getByText(/RECUERDO OPCIONAL RECUPERADO/)).toBeVisible();
+    await expect(page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/})).toBeVisible();
+    await expect(page.getByText(/No apagues la música/)).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-muneca-cinematografica.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Tocar caja musical" }).first().click();
@@ -68,7 +75,12 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       await page.getByRole("button", { name: note, exact: true }).click();
     }
     await expect(page.getByRole("heading", { name: "La canción de Eva" })).toBeVisible();
-    await page.getByRole("button", { name: "GUARDAR LA FOTOGRAFÍA" }).click();
+    await page.getByRole("button",{name:/REPRODUCIR CINTA 013/}).click();
+    await expect(page.getByRole("heading",{name:"El último recuerdo"})).toBeVisible();
+    await expect(page.getByText(/CASO 013 \/ CINTA RECUPERADA/)).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-cinta-eva.png",fullPage:true,animations:"disabled"});
+    await page.getByRole("button",{name:/GUARDAR LA CINTA/}).click();
+    await expect(page.getByRole("heading",{name:"La habitación de Eva",exact:true})).toBeVisible();
     await page.getByRole("button", { name: "Abrir puerta" }).first().click();
     await expect(page.getByRole("heading", { name: "El corazón de la casa", exact: true })).toBeVisible({ timeout: 5000 });
     await page.screenshot({path:"visual-qa-evidence/umbral-corazon-desktop.png",fullPage:true,animations:"disabled"});
