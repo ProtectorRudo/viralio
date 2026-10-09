@@ -800,9 +800,15 @@ test("pair finale blooms a real interactive rose, reveals love, fires a short ce
   await rose.click();
   await expect(rose).toHaveAttribute("aria-pressed","true");
   await expect(stage).toHaveAttribute("data-rose-open","true");
+  await expect(stage).toHaveAttribute("data-note-phase","emerging");
+  await expect(page.locator("[data-action=rose-paper-note]")).toHaveCount(1);
+  await expect(page.locator(".thi-rose-love")).toHaveCount(0);
+  await expect(stage).toHaveAttribute("data-note-phase","unfolding",{timeout:4500});
+  await expect(stage).toHaveAttribute("data-note-phase","revealed",{timeout:4500});
   await expect(page.locator(".thi-rose-reveal")).toContainText("Te amo");
   await expect(page.locator(".thi-rose-reveal")).toContainText("Y te volvería a elegir.");
-  await page.waitForTimeout(1300);
+  await expect(page.locator("[data-action=rose-paper-note]")).toHaveAttribute("aria-hidden","false");
+  await page.waitForTimeout(600);
   const haptics=await page.evaluate(()=>(window as unknown as {__roseHaptics:(number|number[])[]}).__roseHaptics);
   expect(haptics.length).toBeGreaterThanOrEqual(2);
   const fireworkInk=await page.locator(".thi-rose-fireworks").evaluate((node)=>{
@@ -830,6 +836,7 @@ test("pair rose supports reduced motion without blocking the love message",async
   while((await sceneName(page))!=="finale")await advanceOne(page);
   await page.locator('[data-action="rose-open"]').click();
   await expect(page.locator(".thi-rose-love")).toHaveText("Te amo");
+  await expect(page.locator(".thi-rose-finale")).toHaveAttribute("data-note-phase","revealed");
   await expect(page.locator(".thi-rose-fireworks")).toBeHidden();
 });
 
