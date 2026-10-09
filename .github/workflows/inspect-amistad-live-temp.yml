@@ -30,9 +30,10 @@ jobs:
           grep -Fq '__thiFriendshipHotfix20261009' /tmp/direct.js
           grep -Fq '__thiMamaVoice20261009' /tmp/direct.js
           echo 'PASS: direct JS bundle parses and preserves both demos'
-          curl -fsSL --max-time 45 "https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js?review=friendshipv11" -o /tmp/live.js
+          curl -fsSL --max-time 45 "https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js?review=friendshipv12" -o /tmp/live.js
           node --check /tmp/live.js
           grep -Fq '__thiFriendshipHotfix20261009' /tmp/live.js
+          grep -Fq 'UN RECUERDO PARA' /tmp/live.js
           echo 'PASS: public JS bridge contains the new friendship patch'
 
       - uses: actions/checkout@v4
@@ -53,6 +54,12 @@ jobs:
           await page.waitForFunction(()=>window.__thiFriendshipHotfix20261009===true,null,{timeout:20000});
           await scene('intro');
           console.log('PATCH_RUNNING',await page.evaluate(()=>window.__thiFriendshipHotfix20261009));
+          const door=page.locator('.friend-door-nameplate');
+          await door.waitFor({timeout:12000});
+          const doorDetails=await door.evaluate(el=>({text:el.textContent,rect:el.getBoundingClientRect().toJSON(),nameSize:getComputedStyle(el.querySelector('.friend-door-name')).fontSize}));
+          console.log('DOOR_PLAQUE',JSON.stringify(doorDetails));
+          if(!doorDetails.text.includes('Vale')||!doorDetails.text.includes('UN RECUERDO PARA'))throw Error('Door name not integrated in plaque');
+          if(parseFloat(doorDetails.nameSize)>34)throw Error('Door text is excessively large');
           await page.locator('[data-action="open-door"]').click();await scene('casefile');
           await page.locator('[data-action="casefile-open"]').click();
           await page.locator('.friend-case-scene [data-action="advance"]').click();await scene('memories');
@@ -64,6 +71,14 @@ jobs:
           console.log('INCIDENT_TITLE_TOP',y,'SCROLL_Y',await page.evaluate(()=>window.scrollY));
           if(y<120)throw Error('Mobile incident headline cropped');
           for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();
+          await page.waitForFunction(()=>document.querySelectorAll('.friend-evidence-note.flipped').length>=3,null,{timeout:8000});
+          const backState=await page.locator('.friend-evidence-note').nth(2).evaluate(el=>({flipped:el.classList.contains('flipped'),reverse:getComputedStyle(el.querySelector('.friend-note-reverse')).display,secret:el.querySelector('.friend-note-reverse').textContent}));
+          console.log('PAPER_FLIP_FRONT_BACK',JSON.stringify(backState));
+          if(!backState.flipped||backState.reverse==='none'||!backState.secret.includes('Terminó siendo inolvidable'))throw Error('Back of paper not revealed');
+          await page.locator('[data-action="incident-open"]').nth(2).click();
+          await page.waitForFunction(()=>!document.querySelectorAll('.friend-evidence-note')[2].classList.contains('flipped'),null,{timeout:6000});
+          console.log('PAPER_FLIP_BACK_FRONT',true);
+          await page.locator('[data-action="incident-open"]').nth(2).click();
           await page.waitForFunction(()=>document.querySelector('.friend-case-insight')?.textContent?.includes('El plan sin plan'),null,{timeout:9000});
           const panel=await page.locator('.friend-case-insight').innerText();
           console.log('INCIDENT_DETAIL',panel.slice(0,210));
