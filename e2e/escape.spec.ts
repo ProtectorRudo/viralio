@@ -11,7 +11,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText("Todo comienza con una puerta cerrada.")).toBeVisible();
     const photo=await page.request.get("/escape/images/mansion.webp");
     expect(photo.status()).toBe(200);
-    for(const name of ["portrait","lock","music","doll","circuit"]) {
+    for(const name of ["portrait","clock","lock","letter","music","doll","circuit","door","signal"]) {
       const asset=await page.request.get("/escape/images/objects/"+name+".webp");
       expect(asset.status(),name+" is missing").toBe(200);
     }
@@ -28,6 +28,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: "Retrato de Nora" }).first().click();
     await expect(page.getByText("1918").last()).toBeVisible();
+    await expect.poll(async()=>page.evaluate(async()=>{const image=new Image();image.src="/escape/images/objects/portrait.webp";await image.decode();return image.naturalWidth;})).toBeGreaterThan(300);
     await page.screenshot({path:"visual-qa-evidence/umbral-artefacto-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: /Abrir expediente/ }).click();
@@ -67,6 +68,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText(/RECUERDO OPCIONAL RECUPERADO/)).toBeVisible();
     await expect(page.getByRole("button",{name:/ESCUCHAR A LA MUÑECA/})).toBeVisible();
     await expect(page.getByText(/No apagues la música/)).toBeVisible();
+    await expect.poll(async()=>page.evaluate(async()=>{const image=new Image();image.src="/escape/images/objects/doll.webp";await image.decode();return image.naturalWidth;})).toBeGreaterThan(300);
     await page.screenshot({path:"visual-qa-evidence/umbral-muneca-cinematografica.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
 
@@ -77,6 +79,10 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "La canción de Eva" })).toBeVisible();
     await page.getByRole("button",{name:/REPRODUCIR CINTA 013/}).click();
     await expect(page.getByRole("heading",{name:"El último recuerdo"})).toBeVisible();
+    const videoResponse=await page.request.get("/escape/images/eva-tape-013.mp4");
+    expect(videoResponse.status()).toBe(200);
+    expect((await videoResponse.body()).byteLength).toBeGreaterThan(30000);
+    await expect(page.locator('video[src*="eva-tape-013.mp4"]')).toHaveCount(1);
     await expect(page.getByText(/CASO 013 \/ CINTA RECUPERADA/)).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-cinta-eva.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button",{name:/GUARDAR LA CINTA/}).click();
