@@ -195,7 +195,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     }
     await expect(page.getByRole("textbox",{name:"Código de tres cifras"})).toHaveValue("427");
     await visualAudit(page,"umbral-candado-mecanico-movil.png");
-    await page.getByRole("button",{name:/DESBLOQUEAR MECANISMO/}).click();
+    await page.getByRole("button",{name:/GIRAR LA LLAVE/}).click();
     await expect(page.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:7000});
   });
 
