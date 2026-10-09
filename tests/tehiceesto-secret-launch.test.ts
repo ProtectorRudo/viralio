@@ -20,7 +20,7 @@ describe("Te guardé un secreto — launch quality and model parity", () => {
   it("renders exactly the same cinematic engine for demo and customer", () => {
     const engine = read("ExperienceEngine.tsx");
     expect(engine).toContain('props.experience.slug==="secreto"');
-    expect(engine).toContain("<SecretExperience {...props} />");
+    expect(engine).toMatch(/<SecretExperience\s+\{\.\.\.props\}\s*\/>/);
     expect(read("experiencias/[slug]/page.tsx")).toContain("<ExperienceEngine experience={experience}/>");
     expect(read("r/[code]/page.tsx")).toContain("ExperienceEngine");
   });
@@ -44,6 +44,6 @@ describe("Te guardé un secreto — launch quality and model parity", () => {
     expect(order).toContain(definition);
     expect(creator).toContain(definition);
     expect(order).toContain('"secret-v1"');
-    expect(creator).toContain('gift.template_version==="secret-v1"');
+    expect(creator).toContain('["premium-v3","premium-v4","secret-v1"].includes(gift.template_version)');
   });
 });

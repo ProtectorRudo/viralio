@@ -36,10 +36,11 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen + secret-v1",()=>{
     expect(frozenCSS).toContain(".thi-template-v3");
     expect(frozenCSS).not.toContain(".thi-template-live");
   });
-  it("creates new orders from the frozen v3 recipe, not v2",()=>{
+  it("preserves v3 for previously sold gifts and creates new Pareja orders from frozen v4",()=>{
     const src=read("supabase/functions/order-create/index.ts");
-    expect(src).toContain('template_version:experienceSlug==="secreto"?"secret-v1":"premium-v3"');
-    expect(src).toContain('templateVersion:templateRecipe?.[0]==="invitation"?"secret-v1":"premium-v3"');
+    expect(src).toContain('slug==="pareja"?"premium-v4":"premium-v3"');
+    expect(src).toContain("template_version:versionForNewGift(experienceSlug)");
+    expect(src).toContain("templateVersion:templateVersion||");
     for(const model of liveModels){
       expect(src).toContain(`${model.slug}: ${JSON.stringify(model.recipe)}`);
     }
@@ -49,18 +50,19 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen + secret-v1",()=>{
     for(const model of liveModels){
       expect(src).toContain(`${model.slug}: ${JSON.stringify(model.recipe)}`);
     }
-    expect(src).toContain('gift.template_version==="premium-v3"');
+    expect(src).toContain('["premium-v3","premium-v4","secret-v1"].includes(gift.template_version)');
     expect(src).toContain("? [...canonical]");
-    expect(src).toContain('gift.template_version!=="premium-v3" && gift.template_version!=="secret-v1" && !hasVoice');
-    expect(src).toContain('gift.template_version!=="premium-v3" && gift.template_version!=="secret-v1" && !hasPhoto');
-    expect(src).toContain('gift.template_version!=="premium-v3" && gift.template_version!=="secret-v1" && !hasVideo');
+    expect(src).toContain('!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasVoice');
+    expect(src).toContain('!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasPhoto');
+    expect(src).toContain('!["premium-v3","premium-v4","secret-v1"].includes(gift.template_version) && !hasVideo');
   });
   it("renders published gifts and both editors from the same frozen model",()=>{
     const page=read("src/app/tehiceesto/r/[code]/page.tsx");
     const customer=read("src/app/tehiceesto/editar/CustomerStudio.tsx");
     const admin=read("src/app/tehiceesto/admin/AdminGiftEditor.tsx");
     expect(page).toContain("frozenV3?PremiumV3Engine");
-    expect(page).toContain("frozenV3?[...base.recipe]");
+    expect(page).toContain("(frozenV3||frozenV4)?[...base.recipe]");
+    expect(page).toContain("frozenV4?PremiumV4Engine");
     expect(customer).toContain("recipe:[...base.recipe]");
     expect(customer).toContain("<PremiumV3Engine");
     expect(customer).toContain("Tu experiencia conserva el recorrido completo del demo");
