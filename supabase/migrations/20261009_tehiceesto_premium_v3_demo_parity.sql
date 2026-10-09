@@ -51,4 +51,5 @@ update public.gifts g
       )
 from affected a
 where g.id=a.id
-  and exists(select 1 from public.tehiceesto_template_parity_audit s where s.gift_id=a.id);
+  and (exists(select 1 from snapshots s where s.gift_id=a.id)
+       or exists(select 1 from public.tehiceesto_template_parity_audit s where s.gift_id=a.id));
