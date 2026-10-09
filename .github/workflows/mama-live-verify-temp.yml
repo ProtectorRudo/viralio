@@ -30,7 +30,7 @@ jobs:
       - name: Verify TeHiceEsto currently serves updated JS patch
         run: |
           set -eux
-          curl -fsSL --max-time 45 -o /tmp/mama-public.js 'https://tehiceesto.com/_next/static/immutable/chunks/0azfo2qceywqk.js'
+          curl -fsSL --max-time 45 -o /tmp/mama-public.js 'https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js'
           wc -c /tmp/mama-public.js
           grep -Fq '__thiMamaVoiceHotfixV2' /tmp/mama-public.js
           grep -Fq '__thiMamaVoiceSkipLive' /tmp/mama-public.js
