@@ -152,6 +152,22 @@ export default function EscapeGame() {
   const [paused, setPaused] = useState(false);
   const [modal, setModal] = useState<string | null>(null);
   const [dollSpeaking,setDollSpeaking] = useState(false);
+  // Prefetch exactly one upcoming room after play begins, rather than
+  // downloading all four dark-scene photographs while the player is on the
+  // landing page. Retina is chosen on high-DPI mobile screens; low-density
+  // clients keep the lightweight WebP variant.
+  const nextScenePrefetch = useRef<HTMLImageElement | null>(null);
+  useEffect(()=>{
+    if(phase!=="playing" || room>=3) return;
+    if(window.matchMedia("(prefers-reduced-data: reduce)").matches) return;
+    const density=window.devicePixelRatio>=1.5?"retina/":"";
+    const image=new window.Image();
+    image.decoding="async";
+    image.src="/escape/images/"+density+"room-"+(room+1)+".webp";
+    nextScenePrefetch.current=image;
+    return ()=>{nextScenePrefetch.current=null;};
+  },[phase,room]);
+
   const cinematicPause=modal==="tape" || scareStage!=="off";
   const scoreDuck=cinematicPause || dollSpeaking || Boolean(modal);
   const scoreTier=tensionTier(seconds);
