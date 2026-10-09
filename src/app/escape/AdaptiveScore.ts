@@ -251,6 +251,15 @@ export function startAdaptiveScore(initial: ScoreState) {
   tick();
 }
 
+/** Resume an existing score after a pause, or unlock a saved game after reload. */
+export function resumeAdaptiveScore(next: ScoreState) {
+  if (engine) {
+    updateAdaptiveScore(next);
+  } else {
+    startAdaptiveScore(next);
+  }
+}
+
 export function updateAdaptiveScore(next: ScoreState) {
   const current = engine;
   if (!current) return;
