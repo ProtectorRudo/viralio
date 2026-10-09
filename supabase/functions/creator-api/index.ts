@@ -444,7 +444,7 @@ Deno.serve(async (req: Request) => {
 
     try {
       const { gift, story } = await assertStudioAccess(supabase, code, body.editorToken);
-      const recipe = gift.template_version==="premium-v3"
+      const recipe = (gift.template_version==="premium-v3" || gift.template_version==="secret-v1")
         ? canonicalRecipeForGift(gift, story) // Preserve every model scene: personalization changes content, not layout.
         : cleanStudioRecipe(canonicalRecipeForGift(gift, story), body.sceneRecipe);
       if (recipe.length < 2) return json(origin, { error: "recipe_too_short" }, 400);
@@ -806,15 +806,15 @@ Deno.serve(async (req: Request) => {
       );
       const hasVideo = (publishMedia || []).some((item) => item.kind === "video");
       const canonical = canonicalRecipeForGift(gift, story);
-      let publishRecipe = gift.template_version==="premium-v3"
+      let publishRecipe = (gift.template_version==="premium-v3" || gift.template_version==="secret-v1")
         ? [...canonical] // The purchased demo's full journey is guaranteed.
         : Array.isArray(gift.scene_recipe)
           ? gift.scene_recipe.map(String)
           : [...canonical];
 
-      if (gift.template_version!=="premium-v3" && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
-      if (gift.template_version!=="premium-v3" && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
-      if (gift.template_version!=="premium-v3" && !hasVideo) publishRecipe = publishRecipe.filter((scene) => scene !== "video");
+      if (gift.template_version!=="premium-v3" && gift.template_version!=="secret-v1" && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
+      if (gift.template_version!=="premium-v3" && gift.template_version!=="secret-v1" && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
+      if (gift.template_version!=="premium-v3" && gift.template_version!=="secret-v1" && !hasVideo) publishRecipe = publishRecipe.filter((scene) => scene !== "video");
       if (canonical.includes("intro") && !publishRecipe.includes("intro")) publishRecipe.unshift("intro");
       const terminal = canonical.includes("proposal") ? "proposal" : canonical.includes("finale") ? "finale" : canonical[canonical.length - 1];
       if (terminal && !publishRecipe.includes(terminal)) publishRecipe.push(terminal);
