@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
+import DiegeticFocus from "./DiegeticFocus";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
 import EvaMemory from "./EvaMemory";
@@ -535,6 +536,10 @@ export default function EscapeGame() {
   ];
   const subtitle=["Algo detrás de esos retratos todavía observa.","Los libros saben más de lo que deberían.","Una caja musical lleva años sonando sola.","Solo la electricidad puede abrir la salida."][room];
   const chapterTaglines=["Todo comienza con una puerta cerrada.","Las pistas siempre estuvieron ahí.","Los recuerdos también esconden secretos.","La verdad siempre deja una salida."];
+  const focusKind = modal?.startsWith("portrait") ? "portrait" : modal==="pin" ? "lock"
+    : modal==="clock" || modal==="doll" || modal==="music" ? modal : null;
+  const focusSpot = hotspots.find(spot=>spot.id === (focusKind==="portrait" ? modal : focusKind==="lock" ? "door" : focusKind==="music" ? "box" : focusKind==="doll" ? "keepsake" : focusKind));
+  const focusYear = modal?.startsWith("portrait") ? String(PORTRAITS[Number(modal.replace("portrait",""))]?.year ?? "") : undefined;
   // Project interactive targets through the same viewBox math as the SVG, even
   // when its wide artwork is cropped to fill a portrait-sized phone.
   function spotPosition(spot:Spot) {
@@ -609,8 +614,9 @@ export default function EscapeGame() {
       {transitioning&&<div className={styles.transition} aria-live="polite"><span>LA CASA CAMBIA</span><div className={styles.transitionDoor}/><strong>UNA PUERTA SE CIERRA DETRÁS DE VOS</strong></div>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
-      {modal&&!paused&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
-        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
+      {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
+        {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
+        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
           {modal!=="journal" && modal!=="tape"&&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
