@@ -153,12 +153,18 @@ async function sendCustomAccessEmail(email:string,redirect:string,code:string,or
   const {data:link,error:linkError}=await db.auth.admin.generateLink({
     type:"magiclink",email,options:{redirectTo:safeRedirect.toString()},
   });
-  if(linkError||!link?.properties?.action_link){
-    console.error("thi_access_generate_link_failed",linkError?.message||"no_link");
+  // Deliver a first-party URL with a one-time token hash. Never email Supabase's
+  // action_link: its redirect may fall back to the auth project's localhost SITE_URL.
+  const hashedToken=String(link?.properties?.hashed_token||"").trim();
+  if(linkError||!hashedToken||!/^[a-f0-9]{32,128}$/i.test(hashedToken)){
+    console.error("thi_access_generate_link_failed",linkError?.message||"missing_hashed_token");
     return {ok:false,status:503};
   }
+  const brandedAccess=new URL("https://tehiceesto.com/mis-regalos");
+  if(gift?.public_code&&code)brandedAccess.searchParams.set("regalo",gift.public_code);
+  brandedAccess.hash=new URLSearchParams({token_hash:hashedToken,type:"magiclink"}).toString();
   const mail=premiumMail(String(gift?.giver_name||""),String(gift?.experience_slug||""),
-    String(link.properties.action_link),Boolean(code));
+    brandedAccess.toString(),Boolean(code));
   const sender=(Deno.env.get("TEHICEESTO_EMAIL_FROM")||"Te Hice Esto <hola@tehiceesto.com>").trim();
   try{
     const response=await fetch("https://api.resend.com/emails",{
@@ -170,7 +176,7 @@ async function sendCustomAccessEmail(email:string,redirect:string,code:string,or
           template:{id:"tehiceesto-bienvenida-compra",variables:{
             CUSTOMER_NAME:String(gift?.giver_name||"").trim().split(/\s+/)[0]||"Hola",
             EXPERIENCE_NAME:EXPERIENCE_NAMES[String(gift?.experience_slug||"")]||"personalizada",
-            ACCESS_LINK:String(link.properties.action_link),
+            ACCESS_LINK:brandedAccess.toString(),
           }},
         }:{subject:mail.subject,html:mail.html,text:mail.text}),
         reply_to:"hola@tehiceesto.com",
