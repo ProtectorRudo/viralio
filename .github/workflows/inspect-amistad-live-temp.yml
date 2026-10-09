@@ -35,6 +35,7 @@ jobs:
           grep -Fq '__thiFriendshipHotfix20261009' /tmp/live.js
           echo 'PASS: public JS bridge contains the new friendship patch'
 
+      - uses: actions/checkout@v4
       - name: Install mobile browser
         run: |
           npm ci --ignore-scripts
