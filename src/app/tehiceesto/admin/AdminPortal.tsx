@@ -29,7 +29,7 @@ type GiftRow = {
       contact?: { name?: string; email?: string; whatsapp?: string };
     };
   } | null;
-  order?: { status: string; amount_minor: number | null; currency: string; provider: string } | null;
+  order?: { status: string; amount_minor: number | null; currency: string; provider: string; checkout_url?: string | null } | null;
 };
 
 export default function AdminPortal() {
@@ -80,10 +80,16 @@ export default function AdminPortal() {
   }
 
   useEffect(() => {
-    fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1",{cache:"no-store"})
-      .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
-      .then((data:{configured?:boolean})=>setMpReady(data.configured===true))
-      .catch(()=>setMpReady(false));
+    let active=true;
+    const checkPaymentHealth=()=>{
+      if(document.visibilityState==="hidden")return;
+      fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1",{cache:"no-store"})
+        .then(response=>response.ok?response.json():Promise.reject(new Error("status_failed")))
+        .then((data:{configured?:boolean})=>{if(active)setMpReady(data.configured===true)})
+        .catch(()=>{if(active)setMpReady(false)});
+    };
+    checkPaymentHealth();
+    const healthTimer=window.setInterval(checkPaymentHealth,60_000);
 
     const hasSession = Boolean(window.sessionStorage.getItem(SESSION_KEY));
     setLoggedIn(hasSession);
@@ -92,7 +98,7 @@ export default function AdminPortal() {
 
     const expire = () => setLoggedIn(false);
     window.addEventListener("thi-admin-session-expired", expire);
-    return () => window.removeEventListener("thi-admin-session-expired", expire);
+    return () => {active=false;window.clearInterval(healthTimer);window.removeEventListener("thi-admin-session-expired",expire)};
   }, []);
 
   useEffect(()=>{
@@ -138,6 +144,11 @@ export default function AdminPortal() {
   const draftCount = gifts.filter((gift) => ["draft","awaiting_payment","paid"].includes(gift.status)).length;
   const creatorLeadCount = gifts.filter((gift) => gift.story_data?.creator?.submitted).length;
   const pendingPaymentCount = gifts.filter((gift) => gift.order?.status === "pending").length;
+  const checkoutBlockedCount=gifts.filter((gift)=>{
+    const age=Date.now()-Date.parse(gift.created_at);
+    return gift.story_data?.creator?.submitted===true&&gift.order?.status==="pending"&&
+      !gift.order.checkout_url&&age>=90_000&&age<24*60*60*1000;
+  }).length;
 
   async function saveCommerceSettings() {
     const priceMinor = defaultPrice.trim()===""
@@ -269,6 +280,10 @@ export default function AdminPortal() {
       </header>
 
       {saleAlert&&<div className="thi-sale-alert"><strong>{saleAlert}</strong><span>Ya aparece en el panel con los datos del comprador.</span></div>}
+      {(checkoutBlockedCount>0||mpReady===false)&&<div role="alert" style={{padding:"16px 20px",margin:"12px 0 20px",border:"1px solid rgba(173,76,56,.35)",borderRadius:16,background:"rgba(173,76,56,.08)"}}>
+        <strong>{checkoutBlockedCount>0?`Atención: ${checkoutBlockedCount} pedido(s) sin enlace de pago`:"Atención: conexión de Mercado Pago sin verificar"}</strong>
+        <p style={{margin:"6px 0 0"}}>{checkoutBlockedCount>0?"El sistema intenta recuperar automáticamente los enlaces. Revisá los pedidos antes de lanzar campañas.":"Revisá Mercado Pago antes de enviar público desde influencers."}</p>
+      </div>
 
       <section className="thi-admin-stat-grid">
         <article><span>Total</span><strong>{gifts.length}</strong><small>regalos creados</small></article>
@@ -286,7 +301,7 @@ export default function AdminPortal() {
           </div>
           <div className={`thi-commerce-health ${mpReady===true?"ready":mpReady===false?"fallback":"checking"}`}>
             <i/>
-            <span>{mpReady===true?"Mercado Pago conectado":mpReady===false?"Modo manual":"Verificando"}</span>
+            <span>{mpReady===true?"Credenciales de Mercado Pago válidas":mpReady===false?"Revisar Mercado Pago":"Verificando"}</span>
           </div>
         </div>
 
