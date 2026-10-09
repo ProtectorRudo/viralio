@@ -15,7 +15,7 @@ describe("Hijos · Desde que llegaste · release gate",()=>{
     expect(child.demo.timeline).toHaveLength(4);
     expect(child.demo.stars).toHaveLength(5);
     expect(child.demo.voices).toHaveLength(3);
-    expect(experiences).toHaveLength(9);
+    expect(experiences).toHaveLength(10);
   });
   it("keeps every emotional scene editable through the existing content schema",()=>{
     expect(copy.stars.items).toHaveLength(5);
