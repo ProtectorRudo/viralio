@@ -70,7 +70,7 @@ export default function LockTumblers({
       </div>
       <span className={styles.centerBolt} aria-hidden="true">◈</span>
     </div>
-    <button type="button" className={styles.unlock} disabled={code.length!==3} onClick={onConfirm}>DESBLOQUEAR MECANISMO <span>↗</span></button>
+    <button type="button" className={styles.unlock} disabled={code.length!==3} onClick={onConfirm}>GIRAR LA LLAVE <span>↗</span></button>
     <p className={styles.helper}>Arrastrá los discos verticalmente o usá las flechas. El teclado numérico también funciona.</p>
   </div>;
 }
