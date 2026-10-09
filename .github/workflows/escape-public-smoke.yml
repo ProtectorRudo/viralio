@@ -26,6 +26,17 @@ jobs:
           import { chromium, expect } from "@playwright/test";
           const BASE="https://protectorrudo.github.io/viralio/escape";
           const browser=await chromium.launch({headless:true});
+          // Real mobile Retina loading: make sure full-resolution photographic
+          // assets are preloaded BEFORE the scene and the next chapter is
+          // prefetched on demand, instead of showing an enlarged 75-KB image.
+          const hiDpi=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,locale:"es-AR"});
+          const photoPage=await hiDpi.newPage();
+          await photoPage.goto(BASE+"/",{waitUntil:"domcontentloaded",timeout:30000});
+          await expect(photoPage.locator('link[rel="preload"][as="image"][href*="retina/mansion.webp"]')).toHaveCount(1);
+          await photoPage.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+          await expect.poll(async()=>photoPage.evaluate(()=>performance.getEntriesByType("resource").some(r=>r.name.includes("/images/retina/room-1.webp"))),{timeout:12000}).toBe(true);
+          console.log("PASS: 3x mobile hero Retina is preloaded and the next high-DPI chapter prefetches without a loading-screen flash");
+          await hiDpi.close();
           const page=await browser.newPage({viewport:{width:390,height:844},locale:"es-AR"});
           const errors=[];
           page.on("pageerror",err=>errors.push(err.message));
