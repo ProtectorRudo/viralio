@@ -85,7 +85,10 @@ jobs:
             const hydrationStarted=Date.now();
             await page.waitForFunction(()=>{
               const advance=document.querySelector('[data-action="advance"]');
-              return Boolean(advance&&Object.keys(advance).some(k=>k.startsWith('__reactProps
+              return Boolean(advance && Object.keys(advance).some(k=>k.startsWith('__reactProps')));
+            },null,{timeout:30000});
+            console.log('HYDRATION_READY_MS',Date.now()-hydrationStarted);
+            await page.locator('[data-action="advance"]').first().click();
             await page.getByRole('button',{name:/Seguir recordando/i}).click();
             const memoryNext=page.locator('.thi-mama-memory-local-nav>button').last();
             await memoryNext.click();await memoryNext.click();
