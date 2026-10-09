@@ -1,4 +1,5 @@
 import "../../tehiceesto-premium-v2.css";
+import "../../tehiceesto-premium-v3.css";
 import "./purchased-experience.css";
 import type { Metadata } from "next";
 
