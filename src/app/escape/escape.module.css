@@ -417,3 +417,19 @@
  .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.45rem!important}
  .introOptions{margin-top:9px}
 }
+
+/* Review against the actual 390px phone capture: prioritize a visible doorway,
+   readable controls, and tap targets, rather than dark empty space. */
+@media(max-width:800px){
+ .intro{background-position:39% top!important}
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.61rem!important;line-height:1.32;min-height:46px;padding:9px 10px;letter-spacing:.04em!important}
+ .introOptions .scareChoice{min-height:43px}
+ .mobileInteract button{font-size:.7rem;min-height:48px}
+ .bottomActions{grid-template-columns:1.05fr .86fr 1fr .85fr .86fr}
+ .bottomActions button{font-size:.60rem!important;line-height:1.25;min-height:51px!important;padding:9px 4px!important;letter-spacing:0!important}
+}
+@media(max-width:390px){
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.57rem!important}
+ .bottomActions{gap:4px!important}
+ .bottomActions button{font-size:.54rem!important}
+}
