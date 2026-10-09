@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
 import DiegeticFocus from "./DiegeticFocus";
+import CinematicAtmosphere from "./CinematicAtmosphere";
 import LockTumblers from "./LockTumblers";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
@@ -605,6 +606,7 @@ export default function EscapeGame() {
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
           <div className={styles.shade} aria-hidden="true"/>
+          <CinematicAtmosphere room={room} powered={puzzles.power} paused={paused || transitioning || Boolean(modal)} />
         </div>
         <div className={styles.torch} aria-hidden="true"/><div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
         {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={spotPosition(spot)} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
