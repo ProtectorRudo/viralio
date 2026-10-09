@@ -569,7 +569,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <p className={"thi-mama-voice-status"+(mamaVoiceError?" is-error":"")}>{mamaVoiceError?"No se pudo cargar esta grabación. Probá otra vez.":isPlaying?"Escuchando…":isPaused?"Pausado":voicesPlayed.includes(active)?"Mensaje escuchado":"Tocá para escuchar"}</p>
               </article>
               <button data-action="mama-voice-back" className="thi-mama-voice-back" onClick={backToVoices}>{allHeard?"Ya escuché todas":"Escuchar otra voz"} <span>→</span></button>
-              <button type="button" data-action="advance" className="thi-mama-voice-skip" onClick={next}>Seguir con la carta <span aria-hidden="true">→</span></button>
+              <button type="button" data-action="advance" className="thi-mama-voice-skip" onClick={next}>Continuar <span aria-hidden="true">→</span></button>
             </section>;
           }
           return <section className="thi-scene thi-mama-voices thi-mama-voice-picker">
@@ -584,7 +584,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
                 <span className="thi-mama-voice-list-play">{voicesPlayed.includes(i)?"✓":"▶"}</span>
               </button>)}
             </div>
-            <button type="button" data-action="advance" className="thi-mama-voice-skip" onClick={next}>Continuar sin escuchar todos <span aria-hidden="true">→</span></button>
+            <button type="button" data-action="advance" className="thi-mama-voice-skip" onClick={next}>Continuar <span aria-hidden="true">→</span></button>
           </section>;
         }
         if(experience.slug==="papa"){

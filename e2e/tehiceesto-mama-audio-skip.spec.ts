@@ -23,6 +23,13 @@ test("Mamá puede ir a la carta sin tener que escuchar todos los audios",async({
   await expect(page.locator(".thi-mama-voice-list>button")).toHaveCount(3);
   const skip=page.locator(".thi-mama-voice-picker .thi-mama-voice-skip");
   await expect(skip).toBeEnabled();
+  await expect(skip).toHaveText(/Continuar/);
+  await expect(page.locator('.thi-root>a.floating-create-cta.floating-whatsapp--experience')).toBeHidden();
+  const listAndContinue=await page.evaluate(()=>{const list=document.querySelector('.thi-mama-voice-list')!.getBoundingClientRect();const btn=document.querySelector('.thi-mama-voice-skip')!.getBoundingClientRect();return {listBottom:list.bottom,buttonTop:btn.top}});
+  expect(listAndContinue.buttonTop).toBeGreaterThanOrEqual(listAndContinue.listBottom-3);
+  await page.locator('[data-action="mama-voice-choice"]').last().click();
+  await expect(page.locator('.thi-mama-voice-player')).toBeVisible();
+  await page.locator('[data-action="mama-voice-back"]').click();
   await skip.click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
 });
