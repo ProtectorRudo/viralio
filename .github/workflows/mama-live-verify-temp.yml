@@ -36,6 +36,19 @@ jobs:
           grep -Fq '__thiMamaVoiceSkipLive' /tmp/mama-public.js
           grep -Fq 'mama-voice-mp3' /tmp/mama-public.js
           node --check /tmp/mama-public.js
+      - name: Identify actual live Mom JS bundle
+        run: |
+          curl -fsSL --max-time 40 https://tehiceesto.com/experiencias/mama -o /tmp/mama-live.html
+          grep -oE '_next/static/immutable/chunks/[A-Za-z0-9]+\\.js' /tmp/mama-live.html | sort -u > /tmp/mama-scripts.txt || true
+          cat /tmp/mama-scripts.txt
+          while read -r part; do
+            curl -fsSL --max-time 20 "https://tehiceesto.com/$part" -o /tmp/mama-piece.js || continue
+            if grep -Fq 'mama-voice-toggle' /tmp/mama-piece.js; then
+              echo "CURRENT_MAMA_ENGINE_BUNDLE=$part"
+              wc -c /tmp/mama-piece.js
+              grep -o '__thiMamaVoiceSkipLive' /tmp/mama-piece.js | head -2 || true
+            fi
+          done < /tmp/mama-scripts.txt
       - name: Install browser
         run: |
           npm ci --ignore-scripts
@@ -64,6 +77,7 @@ jobs:
             await page.waitForTimeout(500);
           }
           await toVoices();
+          console.log('BRIDGE_DIAGNOSTIC',JSON.stringify(await page.evaluate(()=>({hotfix:!!window.__thiMamaVoiceHotfixV2,skip:!!window.__thiMamaVoiceSkipLive,scene:document.querySelector('main.thi-experience')?.getAttribute('data-scene'),scriptUrls:[...document.scripts].filter(x=>x.src).map(x=>x.src.split('/').at(-1)).slice(0,40)}))));
           const skip=page.locator('.thi-mama-voice-skip-live');
           await skip.waitFor({timeout:10000});
           await skip.click();
