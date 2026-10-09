@@ -183,6 +183,22 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
   });
 
+  test("cerradura física: tres tambores metálicos resuelven el código sin teclado",async ({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await page.getByRole("navigation",{name:"Objetos para investigar"}).getByRole("button",{name:"Abrir cerradura"}).click();
+    await expect(page.locator('[data-focus-object="lock"]')).toBeVisible();
+    await expect(page.locator('[data-lock-dials]')).toBeVisible();
+    for(const [index,digit] of [4,2,7].entries()){
+      for(let t=0;t<digit;t++) await page.getByRole("button",{name:"Girar dial "+(index+1)+" hacia adelante"}).click();
+    }
+    await expect(page.getByRole("textbox",{name:"Código de tres cifras"})).toHaveValue("427");
+    await visualAudit(page,"umbral-candado-mecanico-movil.png");
+    await page.getByRole("button",{name:/DESBLOQUEAR MECANISMO/}).click();
+    await expect(page.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:7000});
+  });
+
   test("código incorrecto no abre la puerta", async ({ page }) => {
     await page.goto("/escape");
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
