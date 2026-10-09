@@ -154,6 +154,22 @@ export default function EscapeGame() {
   const [jolt, setJolt] = useState(false);
   const [storm, setStorm] = useState(false);
   const [sceneSize,setSceneSize] = useState({ width:0, height:0 });
+  useEffect(()=>{
+    // Warm the image cache before the player opens an object: never reveal a black placeholder.
+    const imagesByRoom=[
+      ["portrait","clock","lock"],
+      ["letter","door","signal"],
+      ["doll","music","letter","door"],
+      ["circuit","door","signal"],
+    ];
+    const preloads=(imagesByRoom[room]||[]).map(name=>{
+      const img=new window.Image();
+      img.src="/escape/images/objects/"+name+".webp";
+      return img;
+    });
+    return ()=>{ for(const img of preloads){img.onload=null;img.onerror=null;} };
+  },[room]);
+
   useEffect(() => {
     if(phase!=="playing") return;
     const element=document.getElementById("umbral-playfield");
