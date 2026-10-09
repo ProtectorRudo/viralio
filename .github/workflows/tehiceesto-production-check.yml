@@ -59,7 +59,7 @@ jobs:
         run: |
           set -euo pipefail
           declare -A checks=(
-            ["/crear"]="Elegí la que más se parece a"
+            ["/crear"]="¿A quién querés"
             ["/experiencias/mama"]="Todo lo que hiciste sin pedir aplausos"
             ["/experiencias/papa"]="Todo eso tuyo que se nos quedó"
             ["/experiencias/amistad"]="Algunas amistades no se explican."
