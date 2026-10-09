@@ -5,6 +5,7 @@ import styles from "./escape.module.css";
 import Artefact from "./Artefact";
 import DiegeticFocus from "./DiegeticFocus";
 import CinematicAtmosphere from "./CinematicAtmosphere";
+import HouseListening from "./HouseListening";
 import LockTumblers from "./LockTumblers";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
@@ -610,6 +611,25 @@ export default function EscapeGame() {
         </div>
         <div className={styles.torch} aria-hidden="true"/><div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
         {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={spotPosition(spot)} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
+        {!paused && !modal && !transitioning && scareStage==="off" && <HouseListening
+          key={room}
+          room={room}
+          solved={room===0?Boolean(puzzles.clockWound):room===1?puzzles.studyOpen:room===2?puzzles.nurseryOpen:puzzles.power}
+          dangerous={seconds<=300}
+          onStart={()=>{
+            if(sound) playHorror(room===3?"electric":"creak",{pan:room%2===0?-.7:.65,intensity:cinematicScares?.24:.13});
+          }}
+          onReveal={()=>{
+            if(sound) {
+              const cue = (["knock","footsteps","heartbeat","electric"] as const)[room] ?? "knock";
+              playHorror(cue,{pan:room%2===0?.85:-.82,intensity:cinematicScares?.46:.19});
+            }
+            if(typeof navigator!=="undefined" && navigator.vibrate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+              navigator.vibrate([13,58,18]);
+            }
+          }}
+        />}
+
         <button className={styles.caseButton} onClick={()=>{sfx("click");setModal("journal");}} aria-label={"Abrir expediente. "+recoveredCount+" pruebas encontradas de 8"}>▤ EXPEDIENTE <span>{recoveredCount}/8</span></button>
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
