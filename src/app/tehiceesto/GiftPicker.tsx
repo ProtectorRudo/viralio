@@ -4,6 +4,7 @@ import Link from "next/link";
 import { type CSSProperties } from "react";
 import { experiences, type Experience } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
+import { isComingSoon } from "./availability";
 
 /**
  * The catalogue is an immediate purchase choice, not an extra wizard.
@@ -68,33 +69,43 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
     <div className="thi-simple-catalog" aria-label="Experiencias disponibles">
       {all.map(gift=>{
         const design=GIFT_STYLE[gift.slug]||GIFT_STYLE.pareja;
+        const upcoming=isComingSoon(gift.slug);
         return <article key={gift.slug}
-          className={`thi-simple-card thi-simple-card-${gift.slug}`}
+          className={`thi-simple-card thi-simple-card-${gift.slug}${upcoming?" thi-simple-card-coming-soon":""}`}
           style={{
             "--gift-accent":design.accent,
             "--gift-tint":design.tint,
             "--gift-line":design.line,
             "--gift-ink":design.ink,
           } as CSSProperties}>
-          <Link className="thi-simple-photo-link"
-            href={`/tehiceesto/experiencias/${gift.slug}`}
-            target="_blank" rel="noopener noreferrer"
-            aria-label={`Ver muestra de ${gift.title} para ${design.recipient.toLowerCase()}`}>
-            <GiftImage gift={gift} recipient={design.badge} symbol={design.symbol}/>
-          </Link>
+          {upcoming
+            ? <div className="thi-simple-photo-link thi-simple-photo-disabled" aria-label={`${gift.title}: próximamente, muestra no disponible`}>
+                <GiftImage gift={gift} recipient={design.badge} symbol={design.symbol}/>
+                <span className="thi-simple-coming-overlay">Próximamente</span>
+              </div>
+            : <Link className="thi-simple-photo-link"
+                href={`/tehiceesto/experiencias/${gift.slug}`}
+                target="_blank" rel="noopener noreferrer"
+                aria-label={`Ver muestra de ${gift.title} para ${design.recipient.toLowerCase()}`}>
+                <GiftImage gift={gift} recipient={design.badge} symbol={design.symbol}/>
+              </Link>}
           <div className="thi-simple-card-content">
             <span className="thi-simple-card-label">{design.recipient}</span>
             <h2>{gift.title}</h2>
             <p>{gift.short}</p>
             <div className="thi-simple-actions">
-              <button type="button" className="thi-simple-choose" onClick={()=>onSelect(gift.slug)}>
-                Elegir y continuar <span aria-hidden="true">→</span>
-              </button>
-              <Link href={`/tehiceesto/experiencias/${gift.slug}`}
-                target="_blank" rel="noopener noreferrer"
-                className="thi-simple-preview">
-                <span aria-hidden="true" className="thi-simple-preview-icon">◉</span> Ver muestra <span aria-hidden="true">↗</span>
-              </Link>
+              {upcoming
+                ? <span className="thi-simple-choose thi-simple-unavailable" role="status" aria-label="Próximamente, todavía no disponible">Próximamente <span aria-hidden="true">✧</span></span>
+                : <>
+                    <button type="button" className="thi-simple-choose" onClick={()=>onSelect(gift.slug)}>
+                      Elegir y continuar <span aria-hidden="true">→</span>
+                    </button>
+                    <Link href={`/tehiceesto/experiencias/${gift.slug}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="thi-simple-preview">
+                      <span aria-hidden="true" className="thi-simple-preview-icon">◉</span> Ver muestra <span aria-hidden="true">↗</span>
+                    </Link>
+                  </>}
             </div>
           </div>
         </article>;

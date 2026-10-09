@@ -95,9 +95,9 @@ export default async function TeHiceEstoHome() {
 
               <div className="thh-v2-more">
                 <span>También para</span>
-                <Link href={href("/experiencias/abuelos")}>Abuelos</Link>
-                <Link href={href("/experiencias/aniversario")}>Aniversario</Link>
-                <Link href={href("/experiencias/propuesta")}>Propuesta</Link>
+                <span className="thh-v2-coming-soon">Abuelos <small>Próximamente</small></span>
+                <span className="thh-v2-coming-soon">Aniversario <small>Próximamente</small></span>
+                <span className="thh-v2-coming-soon">Propuesta <small>Próximamente</small></span>
               </div>
 
               <Link className="thh-button thh-button-primary thh-v2-hero-cta" href={href("/crear")}>

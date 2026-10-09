@@ -14,6 +14,7 @@ import "./tehiceesto-birthday.css";
 import "./tehiceesto-hijos-live.css";
 import "./tehiceesto-mama-voices-fix.css";
 import "./tehiceesto-amistad-live.css";
+import "./tehiceesto-availability.css";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export const metadata: Metadata = {
