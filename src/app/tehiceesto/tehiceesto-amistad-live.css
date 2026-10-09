@@ -528,3 +528,124 @@ body:has(.friendship-scene) .demo-ribbon a{color:#e9c78c}
 @media(prefers-reduced-motion:reduce){
   .friend-pact-document footer .friend-pact-handwritten{animation:none}
 }
+
+
+/* AMISTAD V3 — an integrated brass nameplate, not a floating label. */
+.thi-theme-amistad .friend-real-door .friend-door-nameplate{
+  position:absolute;z-index:3;
+  left:10%;top:12%;width:80%;min-height:22%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:13px 11px;
+  border:1px solid #b49465;
+  outline:1px solid rgba(236,194,127,.24);
+  outline-offset:4px;
+  border-radius:3px;
+  background:linear-gradient(150deg,#34414b 0%,#131e28 36%,#101821 78%,#34404a 100%);
+  box-shadow:0 0 0 3px rgba(8,15,23,.93),inset 0 0 0 2px rgba(199,151,93,.18),
+    inset 0 1px 7px rgba(237,199,142,.09),0 9px 16px rgba(0,0,0,.45);
+  transform:translateZ(2px);
+}
+.thi-theme-amistad .friend-door-nameplate::before,
+.thi-theme-amistad .friend-door-nameplate::after{
+  content:"";position:absolute;top:50%;width:3px;height:3px;
+  border-radius:50%;background:#dfbd81;box-shadow:0 0 0 1px #56432b;
+}
+.thi-theme-amistad .friend-door-nameplate::before{left:6px}
+.thi-theme-amistad .friend-door-nameplate::after{right:6px}
+.thi-theme-amistad .friend-door-plate-eyebrow{
+  color:#bca37b;font:600 8px/1.2 "DM Sans",Arial,sans-serif;
+  letter-spacing:.12em;text-transform:uppercase;
+  white-space:nowrap;
+}
+.thi-theme-amistad .friend-door-nameplate .friend-door-name{
+  display:block;position:static;z-index:auto;
+  margin:0!important;padding:0 3px;
+  max-width:100%;font:400 clamp(24px,2.7vw,35px)/.98 "Instrument Serif",Georgia,serif;
+  letter-spacing:-.012em;color:#f0d8aa;
+  text-shadow:0 1px 4px rgba(0,0,0,.55);
+  overflow-wrap:anywhere;text-align:center;
+}
+.thi-theme-amistad .friend-door-plate-ornament{
+  color:#be9963;font:12px/1 Georgia,serif;opacity:.9;
+}
+.thi-theme-amistad .friend-door-flourish{font-size:20px;opacity:.65}
+
+/* A tactile two-sided paper: short case on the front, secret on the reverse.
+   The full detailed story continues in the separate dossier panel below. */
+.thi-theme-amistad .friend-evidence-note{
+  transform-style:preserve-3d;
+  -webkit-transform-style:preserve-3d;
+}
+.thi-theme-amistad .friend-evidence-note>span:not(.friend-note-tape){
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+  transition:transform .66s cubic-bezier(.18,.7,.18,1),
+    box-shadow .45s ease!important;
+  transform-style:preserve-3d;
+  -webkit-transform-style:preserve-3d;
+  pointer-events:none;
+}
+.thi-theme-amistad .friend-evidence-note .friend-note-reverse{
+  display:flex!important;
+  transform:rotateY(-180deg)!important;
+  justify-content:space-between;
+  gap:5px;
+  box-shadow:0 14px 22px rgba(0,0,0,.27),inset 0 0 0 2px rgba(255,250,233,.22);
+}
+.thi-theme-amistad .friend-evidence-note.open:not(.flipped) .friend-note-front{
+  transform:rotateY(0deg)!important;
+}
+.thi-theme-amistad .friend-evidence-note.flipped .friend-note-front{
+  transform:rotateY(180deg)!important;
+}
+.thi-theme-amistad .friend-evidence-note.flipped .friend-note-reverse{
+  transform:rotateY(0deg)!important;
+}
+.thi-theme-amistad .friend-evidence-note .friend-note-reverse strong{
+  font:400 clamp(18px,2.3vw,25px)/1.04 "Instrument Serif",Georgia,serif!important;
+  letter-spacing:-.013em;
+}
+.thi-theme-amistad .friend-evidence-note .friend-note-reverse>span{
+  font:400 clamp(13px,1.8vw,17px)/1.19 "Instrument Serif",Georgia,serif!important;
+  overflow-wrap:break-word;
+}
+.thi-theme-amistad .friend-evidence-note .friend-note-reverse em{
+  font:700 8px/1.2 "DM Sans",Arial,sans-serif;
+  letter-spacing:.08em;
+  align-self:flex-start;
+  transform:none;
+  padding:3px 6px;
+}
+.thi-theme-amistad .friend-evidence-note.flipped .friend-note-tape{
+  transform:rotate(1deg) translateY(-1px);
+}
+@media(max-width:650px){
+  .thi-theme-amistad .friend-real-door .friend-door-nameplate{
+    top:12%;left:8%;width:84%;min-height:26%;
+    padding:10px 6px;gap:5px;
+  }
+  .thi-theme-amistad .friend-door-plate-eyebrow{font-size:7px;letter-spacing:.1em}
+  .thi-theme-amistad .friend-door-nameplate .friend-door-name{
+    font-size:clamp(22px,6.5vw,29px)!important;line-height:1!important;
+  }
+  .thi-theme-amistad .friend-evidence-note{
+    min-height:174px!important;
+  }
+  .thi-theme-amistad .friend-evidence-note .friend-note-reverse{
+    padding:13px 12px 12px!important;
+    gap:4px;
+  }
+  .thi-theme-amistad .friend-evidence-note .friend-note-reverse strong{
+    font-size:19px!important;line-height:1.05!important;
+  }
+  .thi-theme-amistad .friend-evidence-note .friend-note-reverse>span{
+    font-size:14px!important;line-height:1.12!important;
+  }
+  .thi-theme-amistad .friend-evidence-note .friend-note-reverse small{font-size:7px!important}
+  .thi-theme-amistad .friend-evidence-note .friend-note-reverse em{
+    font-size:7px!important;letter-spacing:.01em!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-theme-amistad .friend-evidence-note>span:not(.friend-note-tape){transition-duration:.01ms!important}
+}

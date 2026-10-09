@@ -25,6 +25,12 @@ const codes = [
   ["“5 MINUTOS”", "Unidad temporal sin relación demostrable con cinco minutos reales."],
   ["EL NOMBRE PROHIBIDO", "No hace falta escribirlo. Ya sabés perfectamente de quién estamos hablando."],
 ];
+const incidentBacks = [
+  "Duración real: información reservada.",
+  "Lo pensamos. Se mandó igual.",
+  "Terminó siendo inolvidable.",
+  "Hay reincidencias confirmadas.",
+];
 const incidents = [
   ["CASO 001", "La salida que iba a ser tranqui", "Duración estimada: 2 horas. Duración real: información reservada.", "La salida tranqui"],
   ["CASO 014", "El mensaje que no había que mandar", "Se discutió. Se analizó. Se mandó igual.", "El mensaje prohibido"],
@@ -62,6 +68,12 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
   const [signatureImage,setSignatureImage] = useState<string|null>(null);
   const [signedAt,setSignedAt] = useState<string|null>(null);
   const [activeIncident,setActiveIncident] = useState(-1);
+  const [flippedIncidents,setFlippedIncidents] = useState<number[]>([]);
+  const toggleIncident=(i:number)=>{
+    reveal(i);
+    setActiveIncident(i);
+    setFlippedIncidents(previous=>previous.includes(i)?previous.filter(value=>value!==i):[...previous,i]);
+  };
   const [reaction, setReaction] = useState("");
   const pointerStart = useRef<{x:number;y:number}|null>(null);
   const reveal = (i:number) => setUncovered(items => items.includes(i) ? items : [...items,i]);
@@ -120,7 +132,11 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           <span className="friend-door-interior" aria-hidden="true"><i>✦</i></span>
           <button type="button" data-action="open-door" className="friend-real-door" onClick={() => setDoorOpen(true)} aria-label={"Abrir la puerta de " + experience.demoRecipient}>
             <span className="friend-door-panel friend-door-panel-top" />
-            <span className="friend-door-name">{experience.demoRecipient}</span>
+            <span className="friend-door-nameplate" aria-hidden="true">
+              <span className="friend-door-plate-eyebrow">UN RECUERDO PARA</span>
+              <span className="friend-door-name">{experience.demoRecipient}</span>
+              <span className="friend-door-plate-ornament">✦</span>
+            </span>
             <span className="friend-door-flourish">✧</span>
             <span className="friend-door-panel friend-door-panel-bottom" />
             <span className="friend-door-handle" aria-hidden="true" />
@@ -199,9 +215,10 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <div className="friend-evidence-board">
         <span className="friend-thread friend-thread-one" aria-hidden="true" /><span className="friend-thread friend-thread-two" aria-hidden="true" />
         {incidents.map(([number,,,short],i)=>(
-          <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")} onClick={()=>{reveal(i);setActiveIncident(i)}} aria-expanded={activeIncident===i}>
+          <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")+(flippedIncidents.includes(i)?" flipped":"")} onClick={()=>toggleIncident(i)} aria-expanded={flippedIncidents.includes(i)} aria-label={(flippedIncidents.includes(i)?"Dar vuelta y cerrar ":"Dar vuelta y revelar ")+short}>
             <span className="friend-note-tape" aria-hidden="true" />
-            <span className="friend-note-front"><small>{number} · ARCHIVO</small><strong>{short}</strong><span>{uncovered.includes(i)?"✓ EVIDENCIA REVISADA":"TOCÁ PARA ABRIR ↗"}</span></span>
+            <span className="friend-note-front"><small>{number} · ARCHIVO</small><strong>{short}</strong><span>{uncovered.includes(i)?"✓ EVIDENCIA REVISADA":"TOCÁ PARA GIRAR ↗"}</span></span>
+            <span className="friend-note-reverse"><small>{number} · CLASIFICADO</small><strong>{short}</strong><span>{incidentBacks[i]}</span><em>↶ VOLVER A GIRAR</em></span>
           </button>
         ))}
       </div>
