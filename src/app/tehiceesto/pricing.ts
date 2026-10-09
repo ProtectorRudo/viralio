@@ -1,4 +1,4 @@
-export const TEHICEESTO_BASE_PRICE_ARS = 1_000;
+export const TEHICEESTO_BASE_PRICE_ARS = 25_000;
 
 export function formatTeHiceEstoPrice(value = TEHICEESTO_BASE_PRICE_ARS) {
   return new Intl.NumberFormat("es-AR", {
