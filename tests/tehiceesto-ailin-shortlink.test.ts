@@ -20,14 +20,15 @@ describe("Ailin's short, discreet affiliate link",()=>{
   });
 
   it("persists the 30-day verified affiliate attribution before cleaning the address bar",()=>{
-    expect(redirect).toContain('affiliatePublicCall<{affiliateToken:string;expiresAt:string}>("track"');
+    expect(redirect).toContain('affiliatePublicCall<{affiliateToken:string;expiresAt:string;tracked?:boolean}>("track"');
     expect(redirect).toContain('document.cookie=`thi_affiliate_token=');
     expect(redirect).toContain('document.cookie=`thi_affiliate_visitor=');
     expect(redirect).toContain('document.cookie=`thi_affiliate_code=');
     expect(redirect.indexOf('document.cookie=`thi_affiliate_token=')).toBeLessThan(redirect.indexOf('window.location.replace(dedicated?"/":"/tehiceesto")'));
     expect(redirect).toContain('window.location.replace(dedicated?"/":"/tehiceesto")');
     expect(order).toContain("resolveAffiliateAttribution(db,body.affiliateToken,order.id)");
-    expect(redirect).toContain("if(!data.affiliateToken||!data.expiresAt)throw");
+    expect(redirect).toContain('data.tracked===false)throw');
+    expect(redirect).toContain("controller.abort()");
     expect(redirect).toContain("if(readCookie(\"thi_affiliate_token\")!==data.affiliateToken)throw");
     expect(redirect).toContain("if(!cancelled)setFailed(true);");
     expect(redirect).toContain('data-action="retry-referral"');
