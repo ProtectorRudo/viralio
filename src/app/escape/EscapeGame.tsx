@@ -144,6 +144,19 @@ export default function EscapeGame() {
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
   const deadlineRef = useRef<number | null>(null);
+  // Warm the detailed close-ups as soon as each chapter starts so inspecting
+  // a clue never produces an empty frame on slower mobile connections.
+  useEffect(() => {
+    if(phase!=="playing") return;
+    const byRoom=[["portrait","clock","lock"],["letter","signal","door"],["letter","music","doll"],["circuit","door","signal"]];
+    const warm=byRoom[room].map(name=>{
+      const item=new window.Image();
+      item.decoding="async";
+      item.src="/escape/objects/"+name+".webp";
+      return item;
+    });
+    return ()=>{warm.forEach(item=>{item.onload=null;item.onerror=null;});};
+  },[phase,room]);
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [apparition, setApparition] = useState(false);
