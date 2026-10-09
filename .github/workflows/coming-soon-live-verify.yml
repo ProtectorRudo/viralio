@@ -27,6 +27,12 @@ jobs:
             grep -oE '/_next/static/immutable/chunks/[A-Za-z0-9_-]+\.js' "/tmp/page-$(echo "$page" | tr / _).html" | sort -u | head -35 || true
           done
 
+          echo 'CHECK_DIRECT_CSS_HOTFIX'
+          curl -sS -L --max-time 40 -D /tmp/css-headers 'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/tehiceesto-comingsoon-css-bridge' -o /tmp/css-bridge
+          head -c 500 /tmp/css-headers
+          echo
+          echo "CSS_LENGTH=$(wc -c </tmp/css-bridge)"
+          grep -q 'Próximamente' /tmp/css-bridge && echo "CSS_PATCH_OK"
           echo 'SHARED_CSS_ASSET_DIAGNOSIS'
           for part in 133ok1w916ki- 18ewy6ykrqrnp 1ud1axunxu08m 2eifnyjw-9z-y 2exyy-y5whww1 2ga1b-zcc6i--; do
             css="https://viralio.net/_next/static/immutable/chunks/$part.css"
