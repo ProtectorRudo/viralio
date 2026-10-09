@@ -137,3 +137,34 @@ jobs:
           path: visual-qa-evidence/
           if-no-files-found: warn
           retention-days: 14
+
+  tehiceesto-launch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Build TeHiceEsto for browser checks
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Guarantee referral attribution and recovery in a real browser
+        run: npx playwright test e2e/tehiceesto-affiliate-launch.spec.ts
+      - name: Audit current production design, nine demos and mobile viewport
+        continue-on-error: true
+        run: node scripts/tehiceesto-production-visual.mjs
+      - name: Preserve production visual audit report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tehiceesto-launch-audit
+          path: tehiceesto-production-visual/
+          if-no-files-found: warn
+          retention-days: 14
