@@ -210,11 +210,11 @@
    No pre-baked message: copy remains editable per purchased gift. */
 .thi-rose-finale{overflow:visible!important}
 .thi-rose-note{
-  position:absolute;z-index:5;left:50%;top:13px;
+  position:absolute;z-index:5;left:50%;top:-12px;
   width:clamp(224px,64vw,305px);height:157px;
   opacity:0;pointer-events:none;
-  transform:translate(-50%,73px) scale(.12) rotate(-16deg);
-  transform-origin:50% 75%;
+  transform:translate(-50%,18px) scale(.1) rotate(-16deg);
+  transform-origin:50% 50%;
   filter:drop-shadow(0 15px 27px rgba(10,9,13,.44));
 }
 .thi-rose-finale.is-open .thi-rose-note{
@@ -307,18 +307,18 @@
     drop-shadow(0 0 18px rgba(227,167,147,.11));
 }
 @keyframes thiRoseSecretEmerge{
-  0%{opacity:0;transform:translate(-50%,75px) scale(.09) rotate(-18deg)}
+  0%{opacity:0;transform:translate(-50%,18px) scale(.09) rotate(-18deg)}
   16%{opacity:1}
-  34%{transform:translate(-50%,59px) scale(.34) rotate(-12deg)}
-  65%{transform:translate(-50%,12px) scale(.76) rotate(-4deg)}
-  100%{opacity:1;transform:translate(-50%,-26px) scale(1) rotate(-2deg)}
+  34%{transform:translate(-50%,9px) scale(.34) rotate(-12deg)}
+  65%{transform:translate(-50%,-7px) scale(.76) rotate(-4deg)}
+  100%{opacity:1;transform:translate(-50%,-22px) scale(1) rotate(-2deg)}
 }
 @keyframes thiRoseLetterInk{
   from{opacity:0;filter:blur(4px);transform:translateY(7px)}
   to{opacity:1;filter:blur(0);transform:translateY(0)}
 }
 @media(max-width:650px){
-  .thi-rose-note{width:min(264px,72vw);height:146px;top:16px}
+  .thi-rose-note{width:min(264px,72vw);height:146px;top:-10px}
   .thi-rose-note .thi-rose-love{font-size:clamp(43px,11vw,53px)!important}
   .thi-rose-note .thi-rose-afterword{font-size:14px!important}
   .thi-theme-pareja[data-scene="finale"] .thi-rose-finale{
@@ -328,7 +328,7 @@
 @media(prefers-reduced-motion:reduce){
   .thi-rose-finale.is-open .thi-rose-note{
     animation:none!important;opacity:1!important;
-    transform:translate(-50%,-24px) rotate(-2deg)!important;
+    transform:translate(-50%,-22px) rotate(-2deg)!important;
   }
   .thi-rose-note-edge-left,.thi-rose-note-edge-right{
     transition:none!important
