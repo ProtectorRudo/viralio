@@ -2529,6 +2529,27 @@
   font-size:13px;
 }
 
+.thi-aff-redirect [data-action="retry-referral"]{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  max-width:calc(100vw - 48px);
+  padding:12px 24px;
+  border:1px solid #916978;
+  border-radius:999px;
+  background:#49323d;
+  color:#fff7f8;
+  font:600 13px/1.3 system-ui,sans-serif;
+  letter-spacing:.015em;
+  cursor:pointer;
+  transition:background .2s ease,transform .2s ease;
+}
+.thi-aff-redirect [data-action="retry-referral"]:hover{background:#6b4555;transform:translateY(-1px)}
+.thi-aff-redirect [data-action="retry-referral"]:focus-visible{outline:3px solid #b9839e;outline-offset:4px}
+
+
 
 /* Commercial circuit: buyer contact visibility */
 .thi-order-contact-card{
