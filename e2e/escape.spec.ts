@@ -12,8 +12,17 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-desktop.png",fullPage:true});
 
+    await page.getByRole("button", { name: /Abrir expediente/ }).click();
+    await expect(page.getByRole("heading", { name: "El expediente de Eva" })).toBeVisible();
+    await expect(page.getByText("0 / 8")).toBeVisible();
+    await page.getByRole("button", { name: "Cerrar" }).click();
+
     await page.getByRole("button", { name: "Retrato de Nora" }).first().click();
-    await expect(page.getByText("1918")).toBeVisible();
+    await expect(page.getByText("1918").last()).toBeVisible();
+    await page.getByRole("button", { name: "Cerrar" }).click();
+    await page.getByRole("button", { name: /Abrir expediente/ }).click();
+    await expect(page.getByText("1 / 8")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "El retrato de Nora" })).toBeVisible();
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
@@ -85,5 +94,19 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: /DESBLOQUEAR/ }).click();
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Código de tres cifras" })).toHaveValue("");
+  });
+  test("el reloj respeta tiempo real, segundo plano y pausa", async ({ page }) => {
+    await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
+    await page.goto("/escape");
+    await page.getByRole("button", { name: /CRUZAR EL UMBRAL/ }).click();
+    await expect(page.getByText("25:00")).toBeVisible();
+    await page.clock.fastForward(15000);
+    await expect(page.getByText("24:45")).toBeVisible();
+    await page.getByRole("button", { name: "Pausar partida" }).click();
+    await page.clock.fastForward(30000);
+    await expect(page.getByText("24:45")).toBeVisible();
+    await page.getByRole("button", { name: /SEGUIR INVESTIGANDO/ }).click();
+    await page.clock.fastForward(5000);
+    await expect(page.getByText("24:40")).toBeVisible();
   });
 });
