@@ -30,7 +30,7 @@ jobs:
           grep -Fq '__thiFriendshipHotfix20261009' /tmp/direct.js
           grep -Fq '__thiMamaVoice20261009' /tmp/direct.js
           echo 'PASS: direct JS bundle parses and preserves both demos'
-          curl -fsSL --max-time 45 "https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js?review=friendshipv12" -o /tmp/live.js
+          curl -fsSL --max-time 45 "https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js?review=friendshipv13" -o /tmp/live.js
           node --check /tmp/live.js
           grep -Fq '__thiFriendshipHotfix20261009' /tmp/live.js
           grep -Fq 'UN RECUERDO PARA' /tmp/live.js
@@ -47,7 +47,8 @@ jobs:
           import { chromium } from '@playwright/test';
           const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
           const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-          page.on('pageerror',e=>console.log('BROWSER_ERROR',e.message));
+          const browserErrors=[];
+          page.on('pageerror',e=>{browserErrors.push(e.message);console.log('BROWSER_ERROR',e.message)});
           const base='https://tehiceesto.com/experiencias/amistad';
           const scene=async id=>{await page.locator('main.thi-experience[data-scene="'+id+'"]').waitFor({timeout:18000});console.log('SCENE_OK',id)};
           await page.goto(base,{waitUntil:'domcontentloaded',timeout:50000});
@@ -56,6 +57,8 @@ jobs:
           console.log('PATCH_RUNNING',await page.evaluate(()=>window.__thiFriendshipHotfix20261009));
           const door=page.locator('.friend-door-nameplate');
           await door.waitFor({timeout:12000});
+          await page.waitForTimeout(450);
+          if(browserErrors.some(s=>s.includes('Minified React error #418')))throw Error('Hydration mismatch from friendship patch');
           const doorDetails=await door.evaluate(el=>({text:el.textContent,rect:el.getBoundingClientRect().toJSON(),nameSize:getComputedStyle(el.querySelector('.friend-door-name')).fontSize}));
           console.log('DOOR_PLAQUE',JSON.stringify(doorDetails));
           if(!doorDetails.text.includes('Vale')||!doorDetails.text.includes('UN RECUERDO PARA'))throw Error('Door name not integrated in plaque');
