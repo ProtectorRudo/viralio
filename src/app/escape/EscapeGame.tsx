@@ -398,6 +398,7 @@ export default function EscapeGame() {
     {id:"lever",text:"Bajar palanca",x:83.6,y:57,glyph:"⏚",act:lever},
   ];
   const subtitle=["Algo detrás de esos retratos todavía observa.","Los libros saben más de lo que deberían.","Una caja musical lleva años sonando sola.","Solo la electricidad puede abrir la salida."][room];
+  const chapterTaglines=["Todo comienza con una puerta cerrada.","Las pistas siempre estuvieron ahí.","Los recuerdos también esconden secretos.","La verdad siempre deja una salida."];
   // Project interactive targets through the same viewBox math as the SVG, even
   // when its wide artwork is cropped to fill a portrait-sized phone.
   function spotPosition(spot:Spot) {
@@ -414,18 +415,21 @@ export default function EscapeGame() {
     <div className={styles.noise} aria-hidden="true"/>
     <div className={styles.vignette} aria-hidden="true"/>
     {phase==="intro" ? <section className={styles.intro}>
+      <div className={styles.brand}>VIRALIO <span>ESCAPE</span></div>
+      <div className={styles.heroFog} aria-hidden="true"/>
       <div className={styles.introArt} aria-hidden="true"><div className={styles.gateFrame}><div className={styles.gate}><span>13</span><i/></div></div><div className={styles.introLight}/></div>
       <div className={styles.introContent}>
         <p className={styles.eyebrow}><span className={styles.liveDot}/> UNA EXPERIENCIA INTERACTIVA · CASO 013</p>
         <h1>UMBRAL<span>.</span></h1>
         <p className={styles.tagline}>LA CASA QUE RECUERDA</p>
-        <p className={styles.story}>La puerta se cerró a tus espaldas. <strong>Tenés {difficulty==="nightmare"?"12":"25"} minutos</strong> para descubrir qué ocurrió con Eva. Pero hay algo que la casa nunca te contó: no todos los que escapan realmente salen.</p>
+        <p className={styles.story}>Hace diez años Eva desapareció en esta casa. Hoy recibiste una carta anónima. La puerta se cerró a tus espaldas. <strong>Tenés {difficulty==="nightmare"?"12":"25"} minutos</strong> para descubrir qué ocurrió con Eva. Pero hay algo que la casa nunca te contó: no todos los que escapan realmente salen.</p>
         <div className={styles.introSpecs}><span>◷ CONTRARRELOJ</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
-        <button className={styles.primary} onClick={begin}>CRUZAR EL UMBRAL <span>↗</span></button>
+        <button className={styles.primary} onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
         <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
+      <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),url(/escape/images/room-${i}.webp)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
     </section> : phase==="playing" ? <>
       <header className={styles.hud}>
         <div className={styles.identity}><div className={styles.monogram}>U<span>.</span></div><div><strong>UMBRAL</strong><small>{difficulty==="nightmare"?"MODO PESADILLA":"EXPEDIENTE 013"}</small></div></div>
@@ -434,6 +438,7 @@ export default function EscapeGame() {
       </header>
       <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")+" "+(seconds<=300?styles.lastMinutes:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
         <div className={styles.roomArt}>
+          <div className={styles.cinematicRoom} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.35),rgba(2,5,8,.05) 35%,rgba(0,0,0,.25)),url(/escape/images/room-${room}.webp)`}} aria-hidden="true"/>
           <SceneArt room={room} power={puzzles.power} candles={puzzles.candles} studyOpen={puzzles.studyOpen} nurseryOpen={puzzles.nurseryOpen} fuses={puzzles.fuses}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
