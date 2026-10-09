@@ -18,6 +18,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
+      - name: Install FFmpeg and FFprobe
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: Inspect original Alina voice
         run: |
           test -s public/mama-voz-web.opus
