@@ -62,7 +62,7 @@ jobs:
             ["/crear"]="Elegí la que más se parece a"
             ["/experiencias/mama"]="Todo lo que hiciste sin pedir aplausos"
             ["/experiencias/papa"]="Todo eso tuyo que se nos quedó"
-            ["/experiencias/amistad"]="Expediente: nuestra amistad"
+            ["/experiencias/amistad"]="Algunas amistades no se explican."
           )
           for route in "${!checks[@]}"; do
             body="$(curl -fsSL --max-time 25 "https://tehiceesto.com$route")"
