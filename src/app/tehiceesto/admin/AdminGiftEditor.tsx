@@ -8,12 +8,15 @@ import ExperienceEngine, { type ThiAudio, type ThiPhoto, type ThiVideo } from ".
 import { fillPrivateGiftPhotos } from "../privateGiftVisuals";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import PremiumV2Engine from "../template-v2/ExperienceEngine";
+import PremiumV3Engine from "../template-v3/ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
 import { getExperience as getPremiumV1Experience } from "../template-v1/data";
 import { getExperience as getPremiumV2Experience } from "../template-v2/data";
+import { getExperience as getPremiumV3Experience } from "../template-v3/data";
 import { getExperienceCopy, type DeepPartial, type ExperienceCopy } from "../experienceCopy";
 import { getExperienceCopy as getPremiumV1ExperienceCopy } from "../template-v1/experienceCopy";
 import { getExperienceCopy as getPremiumV2ExperienceCopy } from "../template-v2/experienceCopy";
+import { getExperienceCopy as getPremiumV3ExperienceCopy } from "../template-v3/experienceCopy";
 import { defaultSceneForMedia } from "../mediaRouting";
 import { defaultSceneForMedia as defaultPremiumV1SceneForMedia } from "../template-v1/mediaRouting";
 import { defaultSceneForMedia as defaultPremiumV2SceneForMedia } from "../template-v2/mediaRouting";
@@ -22,6 +25,7 @@ import AdminCopyEditor from "./AdminCopyEditor";
 import { normalizeSceneTextOverrides,type SceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV1SceneTextOverrides } from "../template-v1/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV3SceneTextOverrides } from "../template-v3/sceneText";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
 
 type Gift = {
@@ -176,21 +180,28 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const liveBase=gift?getExperience(gift.experience_slug):undefined;
   const frozenV1Base=gift?getPremiumV1Experience(gift.experience_slug):undefined;
   const frozenV2Base=gift?getPremiumV2Experience(gift.experience_slug):undefined;
+  const frozenV3Base=gift?getPremiumV3Experience(gift.experience_slug):undefined;
   const base=gift?.template_version==="premium-v1"
     ?frozenV1Base
     :gift?.template_version==="premium-v2"
       ?frozenV2Base
-      :liveBase;
+      :gift?.template_version==="premium-v3"
+        ?frozenV3Base
+        :liveBase;
   const PreviewEngine=(gift?.template_version==="premium-v1"
     ?PremiumV1Engine
     :gift?.template_version==="premium-v2"
       ?PremiumV2Engine
-      :ExperienceEngine) as typeof ExperienceEngine;
+      :gift?.template_version==="premium-v3"
+        ?PremiumV3Engine
+        :ExperienceEngine) as typeof ExperienceEngine;
   const normalizePreviewSceneText=gift?.template_version==="premium-v1"
     ?normalizePremiumV1SceneTextOverrides
     :gift?.template_version==="premium-v2"
       ?normalizePremiumV2SceneTextOverrides
-      :normalizeSceneTextOverrides;
+      :gift?.template_version==="premium-v3"
+        ?normalizePremiumV3SceneTextOverrides
+        :normalizeSceneTextOverrides;
   const creatorContact=gift?.story_data?.creator?.contact;
   const creatorWhatsApp=String(creatorContact?.whatsapp||"").replace(/\D/g,"");
   const creatorMessage=gift
@@ -208,7 +219,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
       closing:gift.closing_text||base.closing,
-      recipe:gift.scene_recipe?.length?gift.scene_recipe:base.recipe,
+      recipe:gift.template_version==="premium-v3"?[...base.recipe]:(gift.scene_recipe?.length?gift.scene_recipe:base.recipe),
       accent:gift.theme_data?.accent||base.accent,
     };
   },[gift,base]);
@@ -217,6 +228,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     if(!previewExperience||!gift)return null;
     if(gift.template_version==="premium-v1")return getPremiumV1ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
     if(gift.template_version==="premium-v2")return getPremiumV2ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
+    if(gift.template_version==="premium-v3")return getPremiumV3ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
     return getExperienceCopy(previewExperience,gift.story_data?.script);
   },[previewExperience,gift]);
 
