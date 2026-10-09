@@ -61,7 +61,12 @@ jobs:
             return false
           })()`);
           if(!ready)throw Error('Public Pair JS patch not loaded');
-          console.log('LIVE_PATCH_READY');
+          // The one-time Refresh header intentionally reloads an old visitor's browser.
+          // Allow that navigation to finish before mounting the independent finale shell.
+          await new Promise(r=>setTimeout(r,2800));
+          const afterRefresh=await evaluate("Boolean(window.__thiRoseFinale20261009 && document.querySelector('.thi-theme-pareja'))");
+          if(!afterRefresh)throw Error('Rose JS not present after automatic cache reset');
+          console.log('LIVE_PATCH_READY_AFTER_AUTO_REFRESH');
           const fixture=await evaluate(`(async()=>{
             // Mount a copy of the final-stage shell OUTSIDE React's reconciled DOM,
             // so a delayed hydration render cannot erase the QA fixture.
