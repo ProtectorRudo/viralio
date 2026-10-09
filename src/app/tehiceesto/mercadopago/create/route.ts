@@ -89,13 +89,10 @@ export async function POST(request: NextRequest) {
             failure_url: `${root}/pedido/${config.code}?pago=fallido`,
             auto_return: "approved",
           },
-          // Cuotas sin interés absorbidas por Te Hice Esto, sin excluir medios.
+          // Solo parámetros admitidos por Checkout Orders.
+          // Las promociones de cuotas se gestionan en Mercado Pago.
           payment_method: {
             max_installments: 3,
-            installments_cost: "seller",
-            installments: {
-              interest_free: { type: "range", values: [1, 3] },
-            },
           },
         },
       }),
