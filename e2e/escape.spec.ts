@@ -5,7 +5,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await expect(page.getByRole("heading", { name: /UMBRAL/ })).toBeVisible();
     await page.getByRole("button", { name: /CRUZAR EL UMBRAL/ }).click();
-    await expect(page.getByText("El vestíbulo", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: "Retrato de Nora" }).first().click();
     await expect(page.getByText("1918")).toBeVisible();
@@ -14,7 +14,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
     await page.getByRole("textbox", { name: "Código de tres cifras" }).fill("427");
     await page.getByRole("button", { name: /DESBLOQUEAR/ }).click();
-    await expect(page.getByText("El despacho", { exact: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: "El despacho", exact: true })).toBeVisible({ timeout: 5000 });
 
     await page.getByRole("button", { name: "Leer nota" }).first().click();
     await expect(page.getByText(/Primero mirá el cielo/)).toBeVisible();
@@ -23,7 +23,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Vela con la llave" }).first().click();
     await page.getByRole("button", { name: "Vela con la rosa" }).first().click();
     await page.getByRole("button", { name: "Puerta secreta" }).first().click();
-    await expect(page.getByText("La habitación de Eva", { exact: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: "La habitación de Eva", exact: true })).toBeVisible({ timeout: 5000 });
 
     await page.getByRole("button", { name: "Leer carta" }).first().click();
     await expect(page.getByText(/Seguía con MI, con LA/)).toBeVisible();
@@ -40,7 +40,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "La canción de Eva" })).toBeVisible();
     await page.getByRole("button", { name: "GUARDAR LA FOTOGRAFÍA" }).click();
     await page.getByRole("button", { name: "Abrir puerta" }).first().click();
-    await expect(page.getByText("El corazón de la casa", { exact: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: "El corazón de la casa", exact: true })).toBeVisible({ timeout: 5000 });
 
     await page.getByRole("button", { name: "Fusible 2" }).first().click();
     await page.getByRole("button", { name: "Fusible 5" }).first().click();
@@ -64,7 +64,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.reload();
     await expect(page.getByRole("heading", { name: /Hasta la casa guarda silencio/ })).toBeVisible();
     await page.getByRole("button", { name: /SEGUIR INVESTIGANDO/ }).click();
-    await expect(page.getByText("El vestíbulo", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
   });
 
   test("código incorrecto no abre la puerta", async ({ page }) => {
@@ -73,7 +73,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
     await page.getByRole("textbox", { name: "Código de tres cifras" }).fill("123");
     await page.getByRole("button", { name: /DESBLOQUEAR/ }).click();
-    await expect(page.getByText("El vestíbulo", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Código de tres cifras" })).toHaveValue("");
   });
 });
