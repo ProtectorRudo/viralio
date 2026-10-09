@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
 import EvaMemory from "./EvaMemory";
+import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
 import EvidenceArchive from "./EvidenceArchive";
 
 type Phase = "intro" | "playing" | "won" | "lost";
@@ -139,10 +140,13 @@ export default function EscapeGame() {
   const [hints, setHints] = useState([0,0,0,0]);
   const [mistakes, setMistakes] = useState(0);
   const [sound, setSound] = useState(true);
+  const [cinematicScares,setCinematicScares] = useState(true);
+  const [scareStage,setScareStage] = useState<"off"|"black"|"reveal">("off");
+  const scareAlreadyPlayed=useRef(false);
   const [paused, setPaused] = useState(false);
   const [modal, setModal] = useState<string | null>(null);
   const [dollSpeaking,setDollSpeaking] = useState(false);
-  const cinematicPause=modal==="tape";
+  const cinematicPause=modal==="tape" || scareStage!=="off";
   const [pin, setPin] = useState("");
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
@@ -169,6 +173,51 @@ export default function EscapeGame() {
     });
     return ()=>{ for(const img of preloads){img.onload=null;img.onerror=null;} };
   },[room]);
+
+  useEffect(()=>{
+    setHorrorMuted(!sound);
+  },[sound]);
+
+  // Story director: the one substantial blackout is reserved for Eva's nursery
+  // after exploration, not at random while entering codes or watching a tape.
+  useEffect(()=>{
+    if(!cinematicScares || phase!=="playing" || room!==2 || paused || modal || scareStage!=="off" || scareAlreadyPlayed.current)return;
+    const id=window.setTimeout(()=>{
+      scareAlreadyPlayed.current=true;
+      setScareStage("black");
+      stopHorrorAudio();
+      resumeHorrorAudio();
+      playHorror("darkness");
+      if(typeof navigator!=="undefined" && navigator.vibrate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) navigator.vibrate([32,115,45]);
+    },5800);
+    return ()=>window.clearTimeout(id);
+  },[cinematicScares,phase,room,paused,modal,scareStage]);
+  
+  useEffect(()=>{
+    if(scareStage==="off")return;
+    const clocks:number[]=[];
+    if(scareStage==="black"){
+      clocks.push(window.setTimeout(()=>{
+        setScareStage("reveal");
+        playHorror("heartbeat",{pan:-.45});
+        playFootstepsAcrossRoom();
+        if(sound)playHorror("shock",{pan:.28,intensity:.78});
+      },2200));
+    }else if(scareStage==="reveal"){
+      clocks.push(window.setTimeout(()=>{
+        setScareStage("off");
+        resumeHorrorAudio();
+        message("La luz regresó. La muñeca está mirando hacia otro lado.");
+      },1650));
+    }
+    return ()=>clocks.forEach(window.clearTimeout);
+  },[scareStage,sound]);
+
+  function skipScare(){
+    setScareStage("off");
+    stopHorrorAudio();
+    window.setTimeout(resumeHorrorAudio,85);
+  }
 
   useEffect(() => {
     if(phase!=="playing") return;
@@ -359,12 +408,16 @@ export default function EscapeGame() {
   }
   function message(t:string){setToast(t);}
   function begin() {
+    unlockHorrorAudio();
+    scareAlreadyPlayed.current=false;
+    setScareStage("off");
+    resumeHorrorAudio();
     if(typeof window!=="undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
     deadlineRef.current=null;setDollSpeaking(false);setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function nextRoom() {
     if(transitioning) return;
-    sfx("success");setModal(null);setTransitioning(true);
+    sfx("success");playHorror("door",{pan:room%2===0?.65:-.7});setModal(null);setTransitioning(true);
     window.setTimeout(()=>{
       setRoom(v=>Math.min(3,v+1));setPin("");setTransitioning(false);
       setToast("CAPÍTULO DESBLOQUEADO · Escuchaste pasos detrás de vos.");
@@ -375,13 +428,13 @@ export default function EscapeGame() {
   }
   function pinTry(){
     if(pin==="427"){nextRoom();}
-    else {setMistakes(v=>v+1);setPin("");sfx("error");message("La cerradura rechaza la combinación. Alguien golpea detrás de la puerta.");}
+    else {setMistakes(v=>v+1);setPin("");sfx("error");playHorror("knock",{pan:.7});message("La cerradura rechaza la combinación. Alguien golpea detrás de la puerta.");}
   }
   function candle(sym:string) {
     if(puzzles.studyOpen){message("El pasadizo ya está abierto.");return;}
     const sequence=[...puzzles.candles,sym],correct=["luna","llave","rosa"];
     if(sequence[sequence.length-1]!==correct[sequence.length-1]){
-      setPuzzles(p=>({...p,candles:[]}));setMistakes(v=>v+1);sfx("error");message("Las tres llamas se apagan al mismo tiempo.");return;
+      setPuzzles(p=>({...p,candles:[]}));setMistakes(v=>v+1);sfx("error");playHorror("creak",{pan:-.8});message("Las tres llamas se apagan al mismo tiempo.");return;
     }
     setPuzzles(p=>({...p,candles:sequence,studyOpen:sequence.length===3}));
     sfx(sequence.length===3?"success":"tone",360+sequence.length*120);
@@ -392,7 +445,7 @@ export default function EscapeGame() {
     const seq=[...puzzles.melody,note],correct=["sol","mi","la","sol"];
     sfx("tone",pitch);
     if(seq[seq.length-1]!==correct[seq.length-1]){
-      setPuzzles(p=>({...p,melody:[]}));setMistakes(v=>v+1);message("Una nota desafinada. La muñeca gira lentamente la cabeza.");return;
+      setPuzzles(p=>({...p,melody:[]}));setMistakes(v=>v+1);playHorror("creak",{pan:.82});message("Una nota desafinada. La muñeca gira lentamente la cabeza.");return;
     }
     const solved=seq.length===4;
     setPuzzles(p=>({...p,melody:seq,nurseryOpen:solved}));
@@ -403,8 +456,8 @@ export default function EscapeGame() {
   }
   function lever(){
     if(puzzles.fuses.length===2 && puzzles.fuses.reduce((a,b)=>a+b,0)===7){
-      setPuzzles(p=>({...p,power:true}));sfx("success");setModal("finale");
-    } else {setMistakes(v=>v+1);sfx("error");message("Las luces estallan. DOS circuitos deben sumar exactamente SIETE.");}
+      setPuzzles(p=>({...p,power:true}));sfx("success");playHorror("electric",{pan:.1});setModal("finale");
+    } else {setMistakes(v=>v+1);sfx("error");playHorror("electric",{pan:.3});message("Las luces estallan. DOS circuitos deben sumar exactamente SIETE.");}
   }
   function ending(choice:"save"|"escape"){
     setPuzzles(p=>({...p,ending:choice}));sfx("success");setPhase("won");setModal(null);
@@ -476,6 +529,7 @@ export default function EscapeGame() {
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
         <button className={styles.primary} onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
         <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
+        <button className={styles.scareChoice} type="button" aria-pressed={cinematicScares} onClick={()=>setCinematicScares(v=>!v)}>{cinematicScares?"◉ EXPERIENCIA DE TERROR CINEMATOGRÁFICO":"◎ TERROR SUAVE · SIN APAGONES"}</button>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
       <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),url(/escape/images/room-${i}.webp)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
@@ -507,6 +561,13 @@ export default function EscapeGame() {
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
         <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setFlashlight(v=>!v)} aria-pressed={flashlight}>{flashlight?"◉ APAGAR LUZ":"☼ LINTERNA"}</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
       </div>
+      {scareStage!=="off"&&<div className={styles.blackoutCurtain+" "+(scareStage==="reveal"?styles.blackoutReveal:"")} role="dialog" aria-label="Apagón inesperado en la casa" aria-modal="true" aria-live="off">
+        <div className={styles.blackoutDark} aria-hidden="true"/>
+        <div className={styles.blackoutPresence} aria-hidden="true"/>
+        <div className={styles.blackoutWhisper}>NO APAGUES LA MÚSICA.</div>
+        <div className={styles.blackoutPulse} aria-hidden="true"/>
+        <button className={styles.blackoutSkip} onClick={skipScare}>OMITIR SUSTO ↗</button>
+      </div>}
       {transitioning&&<div className={styles.transition} aria-live="polite"><span>LA CASA CAMBIA</span><div className={styles.transitionDoor}/><strong>UNA PUERTA SE CIERRA DETRÁS DE VOS</strong></div>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
