@@ -37,7 +37,7 @@ function fmt(seconds: number) {
   return String(Math.floor(Math.max(seconds, 0) / 60)).padStart(2, "0") + ":" + String(Math.max(seconds, 0) % 60).padStart(2, "0");
 }
 
-function SceneArt({ room, power }: { room: number; power: boolean }) {
+function SceneArt({ room, power, candles, studyOpen, nurseryOpen, fuses }: { room: number; power: boolean; candles: string[]; studyOpen: boolean; nurseryOpen: boolean; fuses: number[] }) {
   return <svg className={styles.artwork} viewBox="0 0 1200 690" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs>
       <radialGradient id="wall" cx="49%" cy="41%" r="73%"><stop stopColor="#31302a"/><stop offset=".62" stopColor="#161c1d"/><stop offset="1" stopColor="#05090b"/></radialGradient>
@@ -85,8 +85,9 @@ function SceneArt({ room, power }: { room: number; power: boolean }) {
       <path d="M298 532H921L899 603H319Z" fill="#29231d" stroke="#71563d" strokeWidth="8"/>
       <rect x="362" y="493" width="120" height="10" rx="2" fill="#cfba8f" transform="rotate(-5 362 493)"/>
       <rect x="553" y="478" width="135" height="9" rx="2" fill="#e2d0a5" transform="rotate(8 553 478)"/>
-      {[500,653,787].map((x,i)=><g key={x}><ellipse cx={x} cy="454" rx="24" ry="8" fill="#ab8659" opacity=".45"/><rect x={x-14} y="399" width="28" height="56" rx="5" fill={i===1?"#d8ccb0":"#c4ac8d"}/><path d={"M"+x+" 401Q"+(x-20)+" 379 "+x+" 358Q"+(x+20)+" 382 "+x+" 401Z"} fill={i===2?"#f8cb80":"#ffc07a"} opacity=".9"/><circle cx={x} cy="387" r="39" fill="url(#halo)"/></g>)}
-      <rect x="984" y="300" width="106" height="172" fill="#151817" stroke="#594633" strokeWidth="14"/>
+      {[500,653,787].map((x,i)=><g key={x}><ellipse cx={x} cy="454" rx="24" ry="8" fill="#ab8659" opacity=".45"/><rect x={x-14} y="399" width="28" height="56" rx="5" fill={i===1?"#d8ccb0":"#c4ac8d"}/><path d={"M"+x+" 401Q"+(x-20)+" 379 "+x+" 358Q"+(x+20)+" 382 "+x+" 401Z"} fill={candles.includes(["luna","llave","rosa"][i])?"#f9ecab":"#b88c5c"} opacity={candles.includes(["luna","llave","rosa"][i])?1:.58}/><circle cx={x} cy="387" r={candles.includes(["luna","llave","rosa"][i])?57:25} fill="url(#halo)" opacity={candles.includes(["luna","llave","rosa"][i])?.9:.25}/>{candles.includes(["luna","llave","rosa"][i])&&<circle cx={x} cy="367" r="8" fill="#fbe8af" opacity=".45"/>}</g>)}
+      <rect x="984" y="300" width="106" height="172" fill={studyOpen?"#4f493a":"#151817"} stroke={studyOpen?"#e2bf8a":"#594633"} strokeWidth="14"/>
+      {studyOpen&&<path d="M1006 311L1081 308L1107 462L1002 462Z" fill="#f8cb85" opacity=".16"/>}
       <circle cx="1037" cy="393" r="19" fill="#b49a69"/><path d="M1026 393L1040 401L1047 383" stroke="#28251d" strokeWidth="4" fill="none"/>
     </>}
     {room===2 && <>
@@ -98,7 +99,8 @@ function SceneArt({ room, power }: { room: number; power: boolean }) {
       <path d="M516 556H1024L1000 619H546Z" fill="#201d1c"/>
       <path d="M527 416H839L810 495H552Z" fill="#553b2d" stroke="#917454" strokeWidth="9"/>
       <rect x="555" y="356" width="249" height="92" rx="14" fill="#322821" stroke="#a18a63" strokeWidth="8"/>
-      <ellipse cx="679" cy="356" rx="100" ry="21" fill="#594536" stroke="#a18a63" strokeWidth="5"/>
+      <ellipse cx="679" cy={nurseryOpen?327:356} rx="100" ry="21" fill={nurseryOpen?"#ad9275":"#594536"} stroke="#a18a63" strokeWidth="5"/>
+      {nurseryOpen&&<><path d="M583 367L778 367" stroke="#f4d7a0" strokeWidth="5" opacity=".55"/><circle cx="679" cy="378" r="27" fill="url(#halo)" opacity=".8"/></>}
       <circle cx="679" cy="332" r="16" fill="#b5a17a"/>
       <path d="M899 468V252Q899 211 940 211H1038V478Z" fill="#1b1716" stroke="#6d5140" strokeWidth="15"/>
       <ellipse cx="964" cy="310" rx="29" ry="37" fill="#77716b"/>
@@ -111,7 +113,7 @@ function SceneArt({ room, power }: { room: number; power: boolean }) {
       <circle cx="596" cy="340" r="245" fill={power?"url(#halo)":"#090f11"} opacity={power?".34":".9"}/>
       <rect x="300" y="138" width="565" height="379" rx="13" fill="#202b2a" stroke="#7b7661" strokeWidth="13"/>
       <rect x="317" y="157" width="532" height="342" rx="4" fill="#1b2322" stroke="#394943" strokeWidth="6"/>
-      {[380,505,630,755].map(x=><g key={x}><rect x={x-37} y="252" width="74" height="151" rx="7" fill="#111817" stroke="#726a4b" strokeWidth="7"/><rect x={x-22} y="278" width="44" height="52" rx="5" fill={power?"#ad915f":"#3b4b43"} stroke="#8e7959" strokeWidth="3"/><path d={"M"+x+" 331V377"} stroke="#7f7360" strokeWidth="5"/><circle cx={x} cy="385" r="14" fill="#948365"/></g>)}
+      {[380,505,630,755].map((x,i)=><g key={x}><rect x={x-37} y="252" width="74" height="151" rx="7" fill="#111817" stroke="#726a4b" strokeWidth="7"/><rect x={x-22} y="278" width="44" height="52" rx="5" fill={power||fuses.includes(i+2)?"#e4b778":"#3b4b43"} stroke="#8e7959" strokeWidth="3"/><path d={"M"+x+" 331V377"} stroke="#7f7360" strokeWidth="5"/><circle cx={x} cy="385" r="14" fill={power||fuses.includes(i+2)?"#f2c783":"#948365"}/>{(power||fuses.includes(i+2))&&<circle cx={x} cy="305" r="38" fill="url(#halo)" opacity=".7"/>}</g>)}
       <path d="M895 230H1128V485H895Z" fill="#0a1113" stroke="#61503c" strokeWidth="14"/>
       <path d="M1012 463V300" stroke={power?"#d9b66f":"#7a302b"} strokeWidth="18"/><circle cx="1012" cy="300" r="28" fill={power?"#e6c68c":"#a64e40"}/>
       <path d="M85 490V150H267V490" fill="#111518" stroke="#635b49" strokeWidth="12"/>
@@ -432,7 +434,7 @@ export default function EscapeGame() {
       </header>
       <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
         <div className={styles.roomArt}>
-          <SceneArt room={room} power={puzzles.power}/>
+          <SceneArt room={room} power={puzzles.power} candles={puzzles.candles} studyOpen={puzzles.studyOpen} nurseryOpen={puzzles.nurseryOpen} fuses={puzzles.fuses}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
           <div className={styles.shade} aria-hidden="true"/>
