@@ -14,15 +14,17 @@ export default function AffiliateRedirect({code,source}:{code:string;source:stri
   const [failed,setFailed]=useState(false);
   useEffect(()=>{
     let cancelled=false;
+    const controller=new AbortController();
+    const timer=window.setTimeout(()=>controller.abort(),10000);
     setFailed(false);
     void (async()=>{
       const visitorId=readCookie("thi_affiliate_visitor")||crypto.randomUUID();
       try{
-        const data=await affiliatePublicCall<{affiliateToken:string;expiresAt:string}>("track",{
+        const data=await affiliatePublicCall<{affiliateToken:string;expiresAt:string;tracked?:boolean}>("track",{
           code,visitorId,source,landingPath:"/",referrerDomain:document.referrer?new URL(document.referrer).hostname:"",
-        });
+        },undefined,controller.signal);
         if(cancelled)return;
-        if(!data.affiliateToken||!data.expiresAt)throw new Error("affiliate_attribution_missing");
+        if(!data.affiliateToken||!data.expiresAt||"tracked" in data&&data.tracked===false)throw new Error("affiliate_attribution_missing");
         const expires=Math.max(60,Math.floor((new Date(data.expiresAt).getTime()-Date.now())/1000));
         if(!Number.isFinite(expires))throw new Error("affiliate_expiry_invalid");
         const secure=window.location.protocol==="https:"?"; Secure":"";
@@ -39,9 +41,11 @@ export default function AffiliateRedirect({code,source}:{code:string;source:stri
         // Paid influencer traffic cannot be sent into the store without an
         // attribution token. Offer a deliberate retry rather than losing sales.
         if(!cancelled)setFailed(true);
+      }finally{
+        window.clearTimeout(timer);
       }
     })();
-    return()=>{cancelled=true};
+    return()=>{cancelled=true;controller.abort();window.clearTimeout(timer)};
   },[code,source,retry]);
 
   return(
