@@ -64,6 +64,7 @@ jobs:
           console.log('INCIDENT_TITLE_TOP',y,'SCROLL_Y',await page.evaluate(()=>window.scrollY));
           if(y<120)throw Error('Mobile incident headline cropped');
           for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();
+          await page.waitForFunction(()=>document.querySelector('.friend-case-insight')?.textContent?.includes('El plan sin plan'),null,{timeout:9000});
           const panel=await page.locator('.friend-case-insight').innerText();
           console.log('INCIDENT_DETAIL',panel.slice(0,210));
           if(!panel.includes('El plan sin plan'))throw Error('Investigation detail not accessible');
