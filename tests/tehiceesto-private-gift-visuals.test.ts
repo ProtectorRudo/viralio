@@ -11,7 +11,7 @@ import {
 describe("private customer gifts use anonymous artwork for missing photos",()=>{
   it("supports every current demo category without changing its sample photos",()=>{
     expect(experiences.map(experience=>experience.slug)).toEqual([
-      "pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","papa","amistad",
+      "pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","papa","amistad","secreto",
     ]);
     for(const experience of experiences){
       const before=JSON.stringify(experience.demo.photos);

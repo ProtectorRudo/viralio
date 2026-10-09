@@ -14,6 +14,9 @@ export function naturalSceneForMedia(kind:ThiMediaKind):SceneType{
 
 export function defaultSceneForMedia(kind:ThiMediaKind,recipe:SceneType[]):SceneType{
   const natural=naturalSceneForMedia(kind);
+  if(recipe.includes("gallery") && kind==="image")return "gallery";
+  if(recipe.includes("recording") && kind==="audio")return "recording";
+  if(recipe.includes("reveal") && kind==="video")return "reveal";
   return recipe.includes(natural)?natural:(recipe[0]||natural);
 }
 
