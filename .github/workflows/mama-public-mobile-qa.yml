@@ -1,0 +1,88 @@
+name: Mamá public mobile audio acceptance
+on:
+  push:
+    branches: [mama-actual-public-browser-qa-20261009]
+permissions:
+  contents: read
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Check public JS and audio
+        shell: bash
+        run: |
+          curl -fsSL --max-time 35 -o /tmp/mama.js https://tehiceesto.com/_next/static/immutable/chunks/0gradzqca-5xg.js
+          grep -q '__thiMamaVoice20261009' /tmp/mama.js
+          node --check /tmp/mama.js
+          curl -fsSL --max-time 35 -o /tmp/alina.mp3 https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/mama-voice-mp3
+          test "$(wc -c </tmp/alina.mp3)" -gt 400000
+          echo "Public JS and MP3 endpoints PASS"
+      - name: Install Playwright
+        run: |
+          npm ci --ignore-scripts
+          if command -v google-chrome >/dev/null 2>&1; then
+            google-chrome --version
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Verify public Mamá demo on touch mobile
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {chromium,expect} from '@playwright/test';
+          const browser = await chromium.launch({
+            ...(process.env.CHROME_BIN ? {executablePath:process.env.CHROME_BIN}:{channel:'chrome'}),
+            headless:true,
+            args:['--no-sandbox']
+          });
+          const page = await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+          page.on('pageerror',e=>console.log('PAGE_ERROR',e.message));
+          const audioResponses=[];
+          page.on('response',r=>{if(r.url().includes('mama-voice-mp3'))audioResponses.push(r.status())});
+          const expectScene=async(type)=>{
+            await expect(page.locator('main.thi-experience')).toHaveAttribute('data-scene',type,{timeout:15000});
+          };
+          async function walkToVoices(){
+            await page.goto('https://tehiceesto.com/experiencias/mama',{waitUntil:'domcontentloaded',timeout:50000});
+            await expectScene('intro');
+            await page.getByRole('button',{name:/Abrir regalo/i}).click();
+            await expectScene('childhood');
+            await page.getByRole('button',{name:/Seguir recordando/i}).click();
+            await expectScene('memories');
+            const right=page.locator('.thi-mama-memory-local-nav > button').last();
+            await right.click();await right.click();
+            await page.getByRole('button',{name:/Seguir con la historia/i}).click();
+            await expectScene('care');
+            for(let i=0;i<3;i++)await page.locator('.mama-care-file').nth(i).click();
+            await expect(page.locator('button[data-action=next]')).toBeEnabled();
+            await page.locator('button[data-action=next]').click({force:true});
+            await expectScene('sacrifices');
+            for(let i=0;i<4;i++)await page.locator('.mama-sacrifice-trigger').nth(i).click();
+            await expect(page.locator('button[data-action=next]')).toBeEnabled();
+            await page.locator('button[data-action=next]').click({force:true});
+            await expectScene('voices');
+            console.log('Reached voices, bridge active:',await page.evaluate(()=>!!window.__thiMamaVoice20261009));
+          }
+          await walkToVoices();
+          await expect(page.locator('.thi-mama-voice-picker .thi-mama-voice-skip-live')).toBeVisible();
+          await page.locator('.thi-mama-voice-picker .thi-mama-voice-skip-live').click();
+          await expectScene('letter');
+          console.log('PASS voice skip to letter without listening');
+          await walkToVoices();
+          await page.locator('[data-action="mama-voice-choice"]').first().click();
+          await expect(page.locator('.thi-mama-voice-player')).toBeVisible();
+          await page.locator('[data-action="mama-voice-toggle"]').click();
+          await expect.poll(()=>page.locator('[data-action="mama-voice-toggle"]').getAttribute('data-voice-state'),{timeout:12000}).toBe('playing');
+          await expect.poll(()=>audioResponses.some(x=>x===200||x===206),{timeout:10000}).toBe(true);
+          console.log('PASS real Alina audio playback',JSON.stringify(audioResponses));
+          await page.locator('.thi-mama-voice-player .thi-mama-voice-skip-live').click();
+          await expectScene('letter');
+          console.log('PASS skip from player to letter');
+          await browser.close();
+          NODE
