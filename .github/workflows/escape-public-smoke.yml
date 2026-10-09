@@ -117,5 +117,23 @@ jobs:
           await expect(timerPage.getByRole("heading",{name:"La casa te recordó."})).toBeVisible();
           if(timerErrors.length) throw Error("Published score runtime errors: "+timerErrors.join(" | "));
           console.log("PASS: public adaptive score toggle, ten-second urgency and loss ending");
+          // Production custom domain: validate actual Vercel deployment, not just
+          // GitHub Pages. This uses a browser and clicks real game controls.
+          const production=await browser.newPage({viewport:{width:390,height:844},locale:"es-AR"});
+          const productionErrors=[];
+          production.on("pageerror",e=>productionErrors.push(e.message));
+          const prodResponse=await production.goto("https://viralio.net/escape",{waitUntil:"domcontentloaded",timeout:35000});
+          expect(prodResponse?.status()).toBe(200);
+          await expect(production.getByRole("heading",{name:/UMBRAL/})).toBeVisible({timeout:16000});
+          await production.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+          await expect(production.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+          await production.getByRole("navigation",{name:"Objetos para investigar"}).getByRole("button",{name:"Abrir cerradura"}).click();
+          await expect(production.locator('[data-focus-object="lock"]')).toBeVisible();
+          await expect(production.locator('[data-lock-dials]')).toBeVisible();
+          for(const [index,n] of [4,2,7].entries()) for(let k=0;k<n;k++) await production.getByRole("button",{name:"Girar dial "+(index+1)+" hacia adelante"}).click();
+          await production.getByRole("button",{name:/GIRAR LA LLAVE/}).click();
+          await expect(production.getByRole("heading",{name:"El despacho",exact:true})).toBeVisible({timeout:10000});
+          if(productionErrors.length) throw Error("Production Vercel browser errors: "+productionErrors.join(" | "));
+          console.log("PASS: viralio.net/escape — full real production page, scene focus, mechanical lock and next room");
           await browser.close();
           JS
