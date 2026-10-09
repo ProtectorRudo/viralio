@@ -7,8 +7,12 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
     await page.goto("/escape");
     await expect(page.getByRole("heading", { name: /UMBRAL/ })).toBeVisible();
+    await expect(page.locator(".notRealClass")).toHaveCount(0);
+    await expect(page.getByText("Todo comienza con una puerta cerrada.")).toBeVisible();
+    const photo=await page.request.get("/escape/images/mansion.webp");
+    expect(photo.status()).toBe(200);
     await page.screenshot({path:"visual-qa-evidence/umbral-intro-desktop.png",fullPage:true,animations:"disabled"});
-    await page.getByRole("button", { name: /CRUZAR EL UMBRAL/ }).click();
+    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-desktop.png",fullPage:true,animations:"disabled"});
 
@@ -86,7 +90,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("móvil: objetos accesibles sin depender del panorama, pausa y retorno", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/escape");
-    await page.getByRole("button", { name: /CRUZAR EL UMBRAL/ }).click();
+    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("navigation", { name: "Objetos para investigar" })).toBeVisible();
     const torch=page.getByRole("button",{name:"☼ LINTERNA"});
     await torch.click();
@@ -105,7 +109,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
   test("código incorrecto no abre la puerta", async ({ page }) => {
     await page.goto("/escape");
-    await page.getByRole("button", { name: /CRUZAR EL UMBRAL/ }).click();
+    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
     await page.getByRole("textbox", { name: "Código de tres cifras" }).fill("123");
     await page.getByRole("button", { name: /DESBLOQUEAR/ }).click();
@@ -115,7 +119,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("el reloj respeta tiempo real, segundo plano y pausa", async ({ page }) => {
     await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
     await page.goto("/escape");
-    await page.getByRole("button", { name: /CRUZAR EL UMBRAL/ }).click();
+    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByText("25:00")).toBeVisible();
     await page.clock.fastForward(15000);
     await expect(page.getByText("24:45")).toBeVisible();
@@ -130,7 +134,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await page.getByRole("button",{name:/12 MIN/}).click();
     await expect(page.getByText("Tenés 12 minutos")).toBeVisible();
-    await page.getByRole("button",{name:/CRUZAR EL UMBRAL/}).click();
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
     await expect(page.getByText("12:00")).toBeVisible();
     await page.getByRole("button",{name:"Pausar partida"}).click();
     await page.reload();
