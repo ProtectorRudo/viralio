@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Experience, SceneType } from "./data";
+import FriendSignaturePad from "./FriendSignaturePad";
 
 
 type Photo = { url: string; caption?: string; fit?: "cover" | "contain"; position?: "center" | "top" | "bottom" | "left" | "right" };
@@ -25,10 +26,10 @@ const codes = [
   ["EL NOMBRE PROHIBIDO", "No hace falta escribirlo. Ya sabés perfectamente de quién estamos hablando."],
 ];
 const incidents = [
-  ["CASO 001", "La salida que iba a ser tranqui", "Duración estimada: 2 horas. Duración real: información reservada."],
-  ["CASO 014", "El mensaje que no había que mandar", "Se discutió. Se analizó. Se mandó igual."],
-  ["CASO 028", "El plan sin plan", "Logística inexistente. Presupuesto dudoso. Resultado: inexplicablemente memorable."],
-  ["CASO 041", "La vez que dijimos “nunca más”", "El archivo registra múltiples reincidencias posteriores."],
+  ["CASO 001", "La salida que iba a ser tranqui", "Duración estimada: 2 horas. Duración real: información reservada.", "La salida tranqui"],
+  ["CASO 014", "El mensaje que no había que mandar", "Se discutió. Se analizó. Se mandó igual.", "El mensaje prohibido"],
+  ["CASO 028", "El plan sin plan", "Logística inexistente. Presupuesto dudoso. Resultado: inexplicablemente memorable.", "El plan sin plan"],
+  ["CASO 041", "La vez que dijimos “nunca más”", "El archivo registra múltiples reincidencias posteriores.", "Nunca más"],
 ];
 const presences = [
   ["ESTUVISTE", "Cuando no sabía bien qué decir y tampoco hacía falta que arreglaras nada."],
@@ -57,9 +58,38 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
   const [activePresence, setActivePresence] = useState(-1);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [pactSealed, setPactSealed] = useState(false);
+  const [signatureOpen,setSignatureOpen] = useState(false);
+  const [signatureImage,setSignatureImage] = useState<string|null>(null);
+  const [signedAt,setSignedAt] = useState<string|null>(null);
+  const [activeIncident,setActiveIncident] = useState(-1);
   const [reaction, setReaction] = useState("");
   const pointerStart = useRef<{x:number;y:number}|null>(null);
   const reveal = (i:number) => setUncovered(items => items.includes(i) ? items : [...items,i]);
+  const signatureKey = `thi-friendship-signature-v1:${experience.slug}:${experience.demoGiver}:${experience.demoRecipient}`;
+  useEffect(()=>{
+    if(scene!=="pact")return;
+    try{
+      const key=signatureKey+":"+window.location.pathname;
+      const raw=window.localStorage.getItem(key);
+      if(!raw)return;
+      const saved=JSON.parse(raw) as {image?:string;signedAt?:string};
+      if(saved.image?.startsWith("data:image/png;base64,")&&saved.image.length<350_000){
+        const timer=window.setTimeout(()=>{
+          setSignatureImage(saved.image!);
+          setSignedAt(saved.signedAt||null);
+          setPactSealed(true);
+        },0);
+        return ()=>window.clearTimeout(timer);
+      }
+    }catch{/* Storage can be unavailable in privacy mode. */}
+  },[scene,signatureKey]);
+  const saveSignature=(image:string,time:string)=>{
+    setSignatureImage(image);
+    setSignedAt(time);
+    setPactSealed(true);
+    setSignatureOpen(false);
+    try{window.localStorage.setItem(signatureKey+":"+window.location.pathname,JSON.stringify({image,signedAt:time}))}catch{/* Keep signed in current session. */}
+  };
 
   useEffect(() => {
     if (scene !== "intro" || !doorOpen) return;
@@ -168,15 +198,19 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <p className="friend-subline">Tocá los papeles. Algunas historias estaban mejor archivadas.</p>
       <div className="friend-evidence-board">
         <span className="friend-thread friend-thread-one" aria-hidden="true" /><span className="friend-thread friend-thread-two" aria-hidden="true" />
-        {incidents.map(([number,title,copy],i)=>(
-          <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")} onClick={()=>reveal(i)} aria-expanded={uncovered.includes(i)}>
+        {incidents.map(([number,,,short],i)=>(
+          <button type="button" key={number} data-action="incident-open" className={"friend-evidence-note friend-note-"+i+(uncovered.includes(i)?" open":"")} onClick={()=>{reveal(i);setActiveIncident(i)}} aria-expanded={activeIncident===i}>
             <span className="friend-note-tape" aria-hidden="true" />
-            <span className="friend-note-front"><small>{number}</small><strong>{title}</strong><span>TOCÁ PARA REVELAR ↗</span></span>
-            <span className="friend-note-reverse"><small>{number} · EVIDENCIA CONFIRMADA</small><strong>{title}</strong><span>{copy}</span><em>✓ CONFIRMADO</em></span>
+            <span className="friend-note-front"><small>{number} · ARCHIVO</small><strong>{short}</strong><span>{uncovered.includes(i)?"✓ EVIDENCIA REVISADA":"TOCÁ PARA ABRIR ↗"}</span></span>
           </button>
         ))}
-        <div className="friend-board-tag" aria-hidden="true">Las mejores decisiones<br />no siempre tienen sentido.<span>♡</span></div>
       </div>
+      <aside className={"friend-case-insight"+(activeIncident>=0?" active":"")} aria-live="polite">
+        <div className="friend-case-insight-label"><span>✧</span><small>{activeIncident<0?"ARCHIVO 021 · ELEGÍ UNA PRUEBA":incidents[activeIncident][0]+" · EVIDENCIA CONFIRMADA"}</small></div>
+        <strong>{activeIncident<0?"Las anécdotas que no entran en una foto.":incidents[activeIncident][1]}</strong>
+        <p>{activeIncident<0?"Tocá cualquiera de las cuatro fichas para revelar su historia.":incidents[activeIncident][2]}</p>
+        {activeIncident>=0&&<span className="friend-case-insight-stamp">✓ CASO CONFIRMADO</span>}
+      </aside>
       <FriendAction onClick={next} disabled={uncovered.length<3}>{uncovered.length<3 ? "Descubrí tres expedientes" : "Las pruebas que importan"}</FriendAction>
     </section>
   );
@@ -245,11 +279,23 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
               </button>
             ))}
           </div>
-          <footer><small>FIRMADO PARA QUE NUNCA SE NOS OLVIDE</small><div><em>{experience.demoGiver}</em><span>+</span><em>{experience.demoRecipient}</em></div></footer>
+          <footer>
+            <small>{pactSealed?"PACTO SELLADO CON TU FIRMA":"FIRMADO PARA QUE NUNCA SE NOS OLVIDE"}</small>
+            <div className="friend-pact-signatures">
+              <span className="friend-pact-prepared"><em>{experience.demoGiver}</em><small>QUIEN LO HIZO PARA VOS</small></span>
+              <span className="friend-pact-join">+</span>
+              <span className="friend-pact-personal">
+                {signatureImage?<img className="friend-pact-handwritten" src={signatureImage} alt={"Firma manuscrita de "+experience.demoRecipient}/>:<em>{experience.demoRecipient}</em>}
+                <small>{pactSealed?"FIRMADO POR "+experience.demoRecipient.toUpperCase():"ESPERANDO TU FIRMA"}</small>
+              </span>
+            </div>
+            {pactSealed&&signedAt&&<p className="friend-pact-date">Sellado el {new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"long",year:"numeric"}).format(new Date(signedAt))}</p>}
+          </footer>
           <span className="friend-pact-stamp">AMISTAD<br />REAL</span>
         </div>
       </div>
-      {!pactSealed ? <FriendAction disabled={uncovered.length<4} onClick={()=>setPactSealed(true)}>{uncovered.length<4?"Aceptá las cuatro cláusulas":"✧ Firmar nuestro pacto"}</FriendAction> : <><p className="friend-pact-complete">✦ Queda oficialmente registrado: esta amistad no tiene fecha de vencimiento. ✦</p><FriendAction onClick={next}>Una última cosa</FriendAction></>}
+      {!pactSealed ? <FriendAction disabled={uncovered.length<4} onClick={()=>setSignatureOpen(true)}>{uncovered.length<4?"Aceptá las cuatro cláusulas":"✧ Firmar nuestro pacto"}</FriendAction> : <><p className="friend-pact-complete">✦ Queda firmado: esta amistad no tiene fecha de vencimiento. ✦</p><button type="button" className="friend-pact-resign" onClick={()=>setSignatureOpen(true)}>Volver a firmar ↗</button><FriendAction onClick={next}>Una última cosa</FriendAction></>}
+      {signatureOpen&&<FriendSignaturePad signer={experience.demoRecipient} onDismiss={()=>setSignatureOpen(false)} onConfirm={saveSignature}/>}
       {pactSealed && <div className="friend-pact-burst" aria-hidden="true">{Array.from({length:15},(_,i)=><i key={i} style={{"--i":i} as React.CSSProperties}>✧</i>)}</div>}
     </section>
   );

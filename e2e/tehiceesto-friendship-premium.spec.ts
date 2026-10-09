@@ -33,8 +33,11 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
 
   await scene("incidents");
   await expect(page.locator(".friend-evidence-note")).toHaveCount(4);
+  await expect(page.locator(".friend-case-insight")).toBeVisible();
+  await expect.poll(()=>page.locator(".friend-incidents h2").evaluate(e=>e.getBoundingClientRect().top)).toBeGreaterThan(120);
   for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();
   await expect(page.locator(".friend-evidence-note.open")).toHaveCount(3);
+  await expect(page.locator(".friend-case-insight.active")).toContainText("El plan sin plan");
   await noOverflow();
   await capture("amistad-05-tablero-mobile");
   await page.locator('.friend-incidents [data-action="advance"]').click();
@@ -47,6 +50,8 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
 
   await scene("letter");
   await expect(page.locator(".friend-envelope-wrap.open")).toHaveCount(0);
+  await expect(page.locator(".friend-letter-sheet")).toHaveCSS("visibility","hidden");
+  await expect.poll(()=>page.locator(".friend-letter-scene h2").evaluate(e=>e.getBoundingClientRect().top)).toBeGreaterThan(120);
   await capture("amistad-07-sobre-cerrado-mobile");
   await page.locator('[data-action="letter-open"]').click();
   await expect(page.locator(".friend-envelope-wrap.open")).toHaveCount(1);
@@ -58,7 +63,24 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
   for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();
   await expect(page.locator(".friend-clause.signed")).toHaveCount(4);
   await page.locator('.friend-pact-scene [data-action="advance"]').click();
+  await expect(page.getByRole("dialog",{name:"Ahora sí, dejá tu huella."})).toBeVisible();
+  const signature=page.locator(".friend-signature-canvas");
+  const save=page.locator('[data-action="signature-confirm"]');
+  await expect(save).toBeDisabled();
+  const surface=await signature.boundingBox();
+  expect(surface).toBeTruthy();
+  await page.mouse.move(surface!.x+surface!.width*.15,surface!.y+surface!.height*.7);
+  await page.mouse.down();
+  await page.mouse.move(surface!.x+surface!.width*.34,surface!.y+surface!.height*.34,{steps:12});
+  await page.mouse.move(surface!.x+surface!.width*.67,surface!.y+surface!.height*.7,{steps:10});
+  await page.mouse.up();
+  await expect(save).toBeEnabled();
+  await save.click();
   await expect(page.locator(".friend-pact-scene.fully-sealed")).toBeVisible();
+  await expect(page.locator(".friend-pact-handwritten")).toBeVisible();
+  const persisted=await page.evaluate(()=>Object.entries(localStorage).find(([key])=>key.startsWith("thi-friendship-signature-v1:amistad:"))?.[1]);
+  expect(persisted).toBeTruthy();
+  expect(JSON.parse(persisted!).image).toMatch(/^data:image\/png;base64,/);
   await noOverflow();
   await capture("amistad-08-pacto-firmado-mobile");
   await page.locator('.friend-pact-scene [data-action="advance"]').click();
