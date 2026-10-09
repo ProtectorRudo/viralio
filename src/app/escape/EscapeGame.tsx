@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
+import ClockMechanism from "./ClockMechanism";
+import PhysicalLetter from "./PhysicalLetter";
 import EvaMemory from "./EvaMemory";
 import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
 import EvidenceArchive from "./EvidenceArchive";
@@ -10,11 +12,11 @@ import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiv
 
 type Phase = "intro" | "playing" | "won" | "lost";
 type Difficulty = "story" | "nightmare";
-type PuzzleState = { portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
+type PuzzleState = { clockWound?: boolean; portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
 type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
-const INITIAL: PuzzleState = { portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
+const INITIAL: PuzzleState = { clockWound:false, portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
 const CLUES = [
   ["Las cifras están en los marcos de tres retratos.", "Cada retrato conserva un año y una cifra. El calendario importa.", "Ordená los retratos de la persona más joven a la más vieja: 1918, 1902, 1891."],
   ["La nota habla del cielo, del camino y de lo que florece.", "Esas palabras representan los símbolos dibujados debajo de las velas.", "Tocá las velas en este orden: luna, llave, rosa."],
@@ -298,8 +300,8 @@ export default function EscapeGame() {
   },[toast]);
 
   useEffect(() => {
-    if(phase!=="playing" || paused || modal) return;
-    // Give the house agency: a distant storm at an unpredictable interval.
+    if(phase!=="playing" || paused || modal || cinematicPause || scareStage!=="off" || transitioning) return;
+    // The visual storm never interrupts letters, apparition or an active blackout.
     const interval=window.setInterval(()=>{
       if(Math.random()>.56){
         playHorror("creak",{pan:Math.random()>.5?.68:-.68});
@@ -308,7 +310,7 @@ export default function EscapeGame() {
       }
     }, 8700);
     return ()=>window.clearInterval(interval);
-  },[phase,paused,modal]);
+  },[phase,paused,modal,cinematicPause,scareStage,transitioning]);
 
   // Low-intensity room foley: movement far from the player, then silence.
   // Never play over dialogue, clues, the film or the blackout.
@@ -369,7 +371,7 @@ export default function EscapeGame() {
   }, [phase, paused, room, sound, cinematicPause]);
 
   useEffect(() => {
-    if(phase!=="playing" || paused || room!==2) return;
+    if(phase!=="playing" || paused || room!==2 || modal || scareStage!=="off" || transitioning) return;
     let vanish: number | undefined;
     const appear = window.setTimeout(() => {
       setApparition(true);
@@ -380,7 +382,7 @@ export default function EscapeGame() {
       window.clearTimeout(appear);
       if(vanish!==undefined) window.clearTimeout(vanish);
     };
-  }, [phase, paused, room]);
+  }, [phase, paused, room, modal, scareStage, transitioning]);
 
   useEffect(()=>{
     if(modal==="doll") return;
@@ -501,7 +503,7 @@ export default function EscapeGame() {
   }
   const totalHints=hints.reduce((a,b)=>a+b,0);
   const recoveredCount=puzzles.portraits.length+Number(puzzles.notesRead)+Number(puzzles.evaRead)+Number(puzzles.nurseryOpen)+Number(puzzles.keepsake)+Number(puzzles.power);
-  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)));
+  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)+(puzzles.clockWound?300:0)));
   const personalBest=records[difficulty]||0;
   const isNewRecord=phase==="won" && score>=personalBest;
   useEffect(()=>{
@@ -560,9 +562,11 @@ export default function EscapeGame() {
         <div className={styles.introSpecs}><span>◷ CONTRARRELOJ</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
         <button className={styles.primary} onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
-        <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
-        <button className={styles.scoreChoice} type="button" aria-pressed={musicEnabled} onClick={()=>setMusicEnabled(v=>!v)}>{musicEnabled?"♫ BANDA SONORA DINÁMICA ACTIVADA":"♫ BANDA SONORA DESACTIVADA"}</button>
-        <button className={styles.scareChoice} type="button" aria-pressed={cinematicScares} onClick={()=>setCinematicScares(v=>!v)}>{cinematicScares?"◉ EXPERIENCIA DE TERROR CINEMATOGRÁFICO":"◎ TERROR SUAVE · SIN APAGONES"}</button>
+        <div className={styles.introOptions} aria-label="Preferencias de la experiencia">
+          <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)} aria-pressed={sound}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
+          <button className={styles.scoreChoice} type="button" aria-pressed={musicEnabled} onClick={()=>setMusicEnabled(v=>!v)}>{musicEnabled?"♫ BANDA SONORA DINÁMICA ACTIVADA":"♫ BANDA SONORA DESACTIVADA"}</button>
+          <button className={styles.scareChoice} type="button" aria-pressed={cinematicScares} onClick={()=>setCinematicScares(v=>!v)}>{cinematicScares?"◉ EXPERIENCIA DE TERROR CINEMATOGRÁFICO":"◎ TERROR SUAVE · SIN APAGONES"}</button>
+        </div>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
       <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),url(/escape/images/room-${i}.webp)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
@@ -574,7 +578,7 @@ export default function EscapeGame() {
       </header>
       <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")+" "+(seconds<=300?styles.lastMinutes:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
         <div className={styles.roomArt}>
-          <div className={styles.cinematicRoom} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.35),rgba(2,5,8,.05) 35%,rgba(0,0,0,.25)),url(/escape/images/room-${room}.webp)`}} aria-hidden="true"/>
+          <div className={styles.cinematicRoom} data-room={room} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.25),rgba(2,5,8,.02) 35%,rgba(0,0,0,.14)),url(/escape/images/room-${room}.webp)`}} aria-hidden="true"/>
           <SceneArt room={room} power={puzzles.power} candles={puzzles.candles} studyOpen={puzzles.studyOpen} nurseryOpen={puzzles.nurseryOpen} fuses={puzzles.fuses}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
@@ -606,19 +610,19 @@ export default function EscapeGame() {
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null);}}>
-        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="tape"?styles.memoryDialog:"")}>
+        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
           {modal!=="journal" && modal!=="tape"&&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
           {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power}/>}
           {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
-          {modal==="clock"&&<><Artefact kind="clock"/><h2>El reloj detenido</h2><p>Sus agujas marcan las 03:13. En la madera hay una inscripción:</p><blockquote>«El tiempo no importa. La edad sí. De quien llegó último, a quien llegó primero».</blockquote></>}
+          {modal==="clock"&&<div className={styles.clockLayout}><div className={styles.clockStory}><Artefact kind="clock"/><h2>El reloj detenido</h2><p>La aguja quedó inmóvil en las 03:13. Debajo del péndulo hay un mecanismo que todavía puede girar.</p><span className={styles.clockAside}>FABRICANTE: J. VÉLEZ · AÑO 1891<br/>CERRADO POR EL TIEMPO, NO POR UNA LLAVE.</span></div><ClockMechanism solved={Boolean(puzzles.clockWound)} onSolve={()=>{setPuzzles(p=>({...p,clockWound:true}));sfx("success");playHorror("creak",{pan:-.27});message("Desbloqueaste el grabado oculto del reloj. +300 puntos de investigación.");}}/></div>}
           {modal==="pin"&&<div className={styles.pinLayout}>
             <div className={styles.pinDescription}><Artefact kind="lock"/><h2>Una cerradura sin llave</h2><p>Tres cifras. Escuchás tres golpes del otro lado. Cada vez más cerca.</p><div className={styles.code}><input inputMode="numeric" maxLength={3} autoComplete="off" aria-label="Código de tres cifras" placeholder="— — —" value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,"").slice(0,3))} onKeyDown={e=>{if(e.key==="Enter")pinTry();}}/><button onClick={pinTry} disabled={pin.length!==3}>DESBLOQUEAR ↗</button></div></div>
             <div className={styles.keypad} aria-label="Teclado físico de la cerradura">{[1,2,3,4,5,6,7,8,9,"⌫",0,"↵"].map(key=><button key={key} type="button" aria-label={key==="⌫"?"Borrar último dígito":key==="↵"?"Confirmar código":"Ingresar "+key} disabled={key==="↵"&&pin.length!==3} onClick={()=>{sfx("click");if(key==="⌫")setPin(v=>v.slice(0,-1));else if(key==="↵")pinTry();else setPin(v=>(v+key).slice(0,3));}}>{key}</button>)}</div>
           </div>}
-          {modal==="letter"&&<><Artefact kind="letter"/><h2>Una nota entre cenizas</h2><p>La caligrafía tiembla. Es la letra de Eva:</p><blockquote>«Primero mirá el cielo. Después buscá el camino. Al final, recordá lo que florece. Solo entonces se apartarán los libros».</blockquote><p>Las tres velas tienen símbolos distintos grabados en sus bases.</p></>}
-          {modal==="eva"&&<><Artefact kind="letter"/><h2>Para quien todavía escucha</h2><p>Una hoja de cuaderno, firmada por Eva. Tiene cuatro notas subrayadas.</p><blockquote>«Cuando la música calle, buscame. Siempre empezaba con SOL. Seguía con MI, con LA, y volvía a SOL».</blockquote><p>Abajo alguien escribió: «No rompas la caja. Tocala».</p></>}
+          {modal==="letter"&&<><h2>Una nota entre cenizas</h2><p>Un papel doblado entre las páginas. La caligrafía tiembla: es la letra de Eva. Hay algo escrito del otro lado.</p><PhysicalLetter kind="study"/></>}
+          {modal==="eva"&&<><h2>Para quien todavía escucha</h2><p>Eva dejó una carta junto a sus juguetes. Algunas palabras están escritas con otra tinta. Dale vuelta para encontrar el resto.</p><PhysicalLetter kind="eva"/></>}
           {modal==="music"&&<><Artefact kind="music"/><h2>La caja musical</h2><p>Los mecanismos están intactos. Tocá las teclas para reconstruir la canción.</p><div className={styles.notes}>{[["DO",261.63],["RE",293.66],["MI",329.63],["FA",349.23],["SOL",392],["LA",440]].map(([note,freq])=><button key={note} onClick={()=>tune(String(note).toLowerCase(),Number(freq))}>{note}</button>)}</div><div className={styles.sequence}>SECUENCIA {puzzles.melody.map(()=> "◆").join("  ")} {puzzles.melody.length<4?"◇  ".repeat(4-puzzles.melody.length):""}</div></>}
           {modal==="musicSolved"&&<><Artefact kind="music"/><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><div className={styles.discoveryActions}><button className={styles.primary} onClick={()=>{sfx("step");setModal("tape");}}>▶ REPRODUCIR CINTA 013</button><button className={styles.ghost} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></div></>}
           {modal==="doll"&&<><Artefact kind="doll" speaking={dollSpeaking}/><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><blockquote>«No apagues la música. Todavía estoy acá.»</blockquote><button className={styles.whisperButton} type="button" onClick={()=>whisperEva()}>{dollSpeaking?"◉ EVA ESTÁ HABLANDO…":"◉ ESCUCHAR A LA MUÑECA"}</button><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
@@ -632,6 +636,7 @@ export default function EscapeGame() {
       <div className={styles.endingGlyph}>{phase==="won"?"✦":"◷"}</div>
       <h1>{phase==="won"?(puzzles.ending==="save"?"No escapaste solo.":"Saliste. Pero ella sigue ahí."):"La casa te recordó."}</h1>
       <p>{phase==="won"?(puzzles.ending==="save"?"Encontraste a Eva detrás del último muro. Al cruzar juntos el umbral, la casa quedó en silencio por primera vez.":"Cruzaste el portón antes de que el reloj se detuviera. Afuera, el viento dice tu nombre. Todavía tenés la medalla en la mano."):"El último minuto se consumió. El reloj acaba de empezar de nuevo... y un retrato nuevo apareció en el vestíbulo."}</p>
+      {phase==="won"&&puzzles.clockWound&&<p className={styles.clockAchievement}>✦ MECANISMO RESTAURADO · +300 PUNTOS · Descubriste lo que ocultaba el reloj.</p>}
       {phase==="won"&&recoveredCount===8&&<div className={styles.perfectEvidence}><strong>ARCHIVO COMPLETO · 8/8</strong><span>Encontraste todos los recuerdos. Ahora sabés por qué Eva no podía abandonar la casa.</span></div>}
       <div className={styles.stats}><div><span>TIEMPO</span><strong>{fmt(seconds)}</strong></div><div><span>PISTAS</span><strong>{totalHints}</strong></div><div><span>ERRORES</span><strong>{mistakes}</strong></div>{phase==="won"&&<div><span>PUNTUACIÓN</span><strong>{score.toLocaleString("es-AR")}</strong></div>}</div>
       {phase==="won"&&<p className={styles.personalRecord}>{isNewRecord?"✦ NUEVO RÉCORD PERSONAL":"TU MEJOR PUNTUACIÓN"} · {Math.max(score,personalBest).toLocaleString("es-AR")} PUNTOS</p>}

@@ -342,3 +342,94 @@
 @media(prefers-reduced-motion:reduce){
  .timerFinal,.finalCountdown,.finalCountdown strong,.endingLost{animation:none!important}
 }
+
+/* UMBRAL · PREMIUM TACTILE AUDIT
+   Objects have substance, and the interface moves out of the art's way. */
+.clockDialog{width:min(100%,1030px)!important;padding:clamp(19px,3vw,33px)!important;max-height:calc(100dvh - 22px)}
+.clockLayout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:24px;align-items:center}
+.clockStory{align-self:center;min-width:0}
+.clockStory>div:first-child{height:clamp(220px,26vw,298px);margin:0 0 17px}
+.clockStory h2{font-size:clamp(2rem,3vw,2.8rem);margin:10px 0}
+.clockStory p{max-width:320px;margin:9px 0;font:italic 1.02rem/1.7 Georgia,serif;color:#cab99e}
+.clockAside{display:block;border-top:1px solid rgba(214,168,114,.29);padding-top:17px;margin-top:25px;color:#b59b77;font:700 .56rem/1.9 ui-monospace,monospace;letter-spacing:.15em}
+.clockLayout>div:last-child{margin:0!important}
+.letterDialog{width:min(100%,810px)!important;padding:clamp(18px,3vw,36px)!important}
+.letterDialog>h2{font-size:clamp(2.2rem,4vw,3.25rem);margin:12px 0}
+.letterDialog>p{font:italic .97rem/1.55 Georgia,serif;color:#cdb99a;max-width:580px;margin:0 0 16px}
+.clockAchievement{width:min(100%,660px);margin:0 auto 23px!important;color:#e3c48c;font:700 .68rem/1.7 ui-monospace,monospace;letter-spacing:.115em;text-align:center}
+/* Reticles: a focus cue, not 15 oversized buttons covering valuable art.
+   Hit targets remain 50px and the full-width mobile object list is unchanged. */
+.hotspot{width:50px;height:50px;border:0!important;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(235,202,143,.12) 0 22%,rgba(12,17,17,.48) 32%,rgba(16,19,19,.18) 59%,transparent 62%);box-shadow:none!important;color:#e4caa0;transition:transform .22s ease,filter .22s ease!important}
+.hotspot:before{inset:9px;border:1px solid rgba(241,204,145,.53);border-radius:50%;animation:focusBreathe 3.9s ease-in-out infinite}
+.hotspot:after{content:"";position:absolute;inset:17px;border:1px solid #ead4a4;border-radius:50%;box-shadow:0 0 15px rgba(255,221,160,.4);pointer-events:none}
+.hotspot span{font-size:14px;line-height:1;filter:drop-shadow(0 2px 4px #000)}
+.hotspot:hover,.hotspot:focus-visible{transform:translate(-50%,-50%) scale(1.13);filter:brightness(1.5);background:radial-gradient(circle,rgba(245,209,144,.17),rgba(9,14,14,.65) 65%,transparent)}
+.hotspot:hover small,.hotspot:focus-visible small{opacity:1}
+.hotspotActive:before{border-color:#dbcd9f;box-shadow:0 0 9px rgba(251,231,165,.26)}
+.cinematicRoom{animation:premiumLivingShot 24s cubic-bezier(.47,0,.33,1) infinite alternate!important;filter:contrast(1.09) saturate(.98) brightness(1.02)!important;will-change:transform}
+.cinematicRoom:before{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(ellipse 34% 45% at 71% 41%,rgba(255,188,95,.19),transparent 73%),radial-gradient(ellipse 50% 62% at 22% 62%,rgba(97,144,174,.045),transparent 75%);animation:practicalLamp 8.5s ease-in-out infinite alternate}
+.cinematicRoom:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.34),transparent 29%,transparent 69%,rgba(0,0,0,.23)),radial-gradient(ellipse at 55% 43%,transparent 45%,rgba(0,0,0,.21) 93%)}
+.roomArt:has(.artwork [data-candle="rosa"][data-active="true"]) .cinematicRoom:before{background:radial-gradient(ellipse 45% 48% at 56% 50%,rgba(243,194,110,.24),transparent 74%)}
+.roomArt:has(.artwork [data-fuse="2"][data-active="true"]) .cinematicRoom:before{background:radial-gradient(ellipse 47% 56% at 58% 46%,rgba(239,98,62,.23),transparent 68%)}
+@keyframes premiumLivingShot{from{transform:scale(1.045) translate3d(-.3%,.1%,0)}to{transform:scale(1.098) translate3d(.4%,-.45%,0)}}
+@keyframes practicalLamp{from{opacity:.73}to{opacity:1}}
+@keyframes focusBreathe{0%,100%{opacity:.52;transform:scale(.91)}50%{opacity:1;transform:scale(1.08)}}
+@media(max-width:800px){
+ .clockDialog{padding:19px 15px!important}
+ .clockLayout{grid-template-columns:1fr;gap:6px}
+ .clockStory>div:first-child{height:115px;margin:0 0 8px}
+ .clockStory h2{font-size:1.8rem;margin:3px 0 2px}
+ .clockStory p{font-size:.77rem;line-height:1.45;margin:4px 0;max-width:100%}
+ .clockAside{display:none}
+ .clockLayout>div:last-child{margin:2px 0 0!important}
+ .letterDialog{padding:23px 16px!important}
+ .letterDialog>h2{font-size:2rem}
+ .letterDialog>p{font-size:.8rem}
+ .hotspot{width:49px;height:49px}
+ .cinematicRoom{will-change:auto}
+}
+@media(prefers-reduced-motion:reduce){
+ .hotspot:before,.cinematicRoom,.cinematicRoom:before{animation:none!important}
+ .cinematicRoom{will-change:auto;transform:scale(1.02)!important}
+}
+
+/* Real screenshot audit, 390×844: with flashlight enabled the entire mobile
+   foyer was nearly black. Keep the suspense without erasing the scene. */
+.introOptions{display:flex;flex-wrap:wrap;align-items:center;max-width:670px;gap:8px 9px;margin:13px 0 8px}
+.introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{position:relative;display:inline-flex;align-items:center;justify-content:flex-start;flex:0 1 auto;width:auto;max-width:100%;min-height:38px;margin:0;padding:9px 12px;border:1px solid rgba(216,183,133,.33);background:linear-gradient(105deg,rgba(35,31,27,.78),rgba(11,17,18,.8));color:#e7d5bb;font:700 .54rem/1.35 ui-sans-serif,sans-serif!important;letter-spacing:.105em!important;text-align:left;vertical-align:middle;box-shadow:inset 0 0 12px rgba(243,195,132,.025)}
+.introOptions button[aria-pressed="false"]{border-color:rgba(181,145,110,.39);background:rgba(18,21,23,.87);color:#b7a48d}
+.introOptions button:hover,.introOptions button:focus-visible{border-color:#ebc38d;background:rgba(93,70,51,.62)}
+.intro .primary{margin-top:4px!important}
+@media(max-width:800px){
+ .introOptions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:11px 0 6px}
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{min-width:0;min-height:40px;padding:7px 8px;font-size:.47rem!important;letter-spacing:.055em!important}
+ .introOptions .scareChoice{grid-column:1/3}
+ .intro .introFine{font-size:.55rem;line-height:1.55}
+ .roomArt .cinematicRoom{filter:brightness(1.25) contrast(1.035) saturate(.98)!important}
+ .roomArt .shade{background:radial-gradient(ellipse at 50% 50%,transparent 28%,rgba(3,6,9,.065) 65%,rgba(0,0,0,.38) 100%),linear-gradient(180deg,rgba(0,0,0,.27),transparent 31%,rgba(0,0,0,.2))}
+ .torch{background:radial-gradient(circle 165px at var(--torch-x,50%) var(--torch-y,53%),transparent 0,rgba(3,7,9,.07) 37%,rgba(1,4,7,.27) 75%,rgba(1,3,6,.52) 100%)!important}
+ .cinematicRoom[data-room="0"]{background-position:49% center}
+ .cinematicRoom[data-room="1"]{background-position:42% center}
+ .cinematicRoom[data-room="2"]{background-position:65% center}
+ .cinematicRoom[data-room="3"]{background-position:57% center}
+}
+@media(max-width:420px){
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.45rem!important}
+ .introOptions{margin-top:9px}
+}
+
+/* Review against the actual 390px phone capture: prioritize a visible doorway,
+   readable controls, and tap targets, rather than dark empty space. */
+@media(max-width:800px){
+ .intro{background-position:39% top!important}
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.61rem!important;line-height:1.32;min-height:46px;padding:9px 10px;letter-spacing:.04em!important}
+ .introOptions .scareChoice{min-height:43px}
+ .mobileInteract button{font-size:.7rem;min-height:48px}
+ .bottomActions{grid-template-columns:1.05fr .86fr 1fr .85fr .86fr}
+ .bottomActions button{font-size:.60rem!important;line-height:1.25;min-height:51px!important;padding:9px 4px!important;letter-spacing:0!important}
+}
+@media(max-width:390px){
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.57rem!important}
+ .bottomActions{gap:4px!important}
+ .bottomActions button{font-size:.54rem!important}
+}

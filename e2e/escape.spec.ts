@@ -1,7 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
 mkdirSync("visual-qa-evidence",{recursive:true});
+// Chromium can race the first full-page screenshot immediately after initial
+// webfont/image decode; retry the visual capture without suppressing failures.
+async function visualAudit(page:Page,file:string){
+  for(let attempt=0;attempt<3;attempt++){
+    try{await page.screenshot({path:"visual-qa-evidence/"+file,fullPage:true,animations:"disabled",timeout:12000});return;}
+    catch(error){if(attempt===2)throw error;await page.waitForTimeout(360);}
+  }
+}
 
 test.describe("UMBRAL · el juego puede completarse", () => {
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
@@ -41,6 +49,20 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "El retrato de Nora" })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-expediente-recuperado-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
+    await page.getByRole("button", { name: "Examinar reloj" }).first().click();
+    await expect(page.getByRole("heading",{name:"El reloj detenido"})).toBeVisible();
+    const clock=page.locator('[data-clock-solved]');
+    await expect(clock).toHaveAttribute("data-clock-solved","false");
+    await expect(page.getByRole("slider",{name:"Manivela del reloj"})).toHaveAttribute("aria-valuenow","0");
+    await page.screenshot({path:"visual-qa-evidence/umbral-reloj-mecanismo-desktop.png",fullPage:true,animations:"disabled"});
+    for(let t=0;t<8;t++) await page.getByRole("button",{name:"Girar manivela un cuarto de vuelta"}).click();
+    await expect(clock).toHaveAttribute("data-clock-solved","true");
+    await expect(page.getByText(/La edad sí importa/)).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-reloj-restaurado-desktop.png",fullPage:true,animations:"disabled"});
+    await page.getByRole("button", { name: "Cerrar" }).click();
+    await page.getByRole("button", { name: "Examinar reloj" }).first().click();
+    await expect(page.locator('[data-clock-solved]')).toHaveAttribute("data-clock-solved","true");
+    await page.getByRole("button", { name: "Cerrar" }).click();
     for (const person of ["Elías","Mara"]) {
       await page.getByRole("button", { name: "Retrato de "+person }).first().click();
       await page.getByRole("button", { name: "Cerrar" }).click();
@@ -55,6 +77,11 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: "Leer nota" }).first().click();
     await expect(page.getByText(/Primero mirá el cielo/)).toBeVisible();
+    await expect(page.getByRole("button",{name:"Dar vuelta la carta"})).toHaveAttribute("aria-pressed","false");
+    await page.getByRole("button",{name:"Dar vuelta la carta"}).click();
+    await expect(page.getByRole("button",{name:"Volver al frente de la carta"})).toHaveAttribute("aria-pressed","true");
+    await page.screenshot({path:"visual-qa-evidence/umbral-carta-reverso.png",fullPage:true,animations:"disabled"});
+    await page.getByRole("button",{name:"Volver al frente de la carta"}).click();
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: "Vela con la luna" }).first().click();
     await expect(page.locator('svg g[data-candle="luna"]')).toHaveAttribute("data-active","true");
@@ -67,6 +94,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: "Leer carta" }).first().click();
     await expect(page.getByText(/Seguía con MI, con LA/)).toBeVisible();
+    await page.getByRole("button",{name:"Dar vuelta la carta"}).click();
+    await expect(page.getByRole("button",{name:"Volver al frente de la carta"})).toHaveAttribute("aria-pressed","true");
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Examinar muñeca" }).first().click();
@@ -115,18 +144,24 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByText(/NUEVO RÉCORD PERSONAL/)).toBeVisible();
     await expect(page.getByText(/ARCHIVO COMPLETO/)).toBeVisible();
     await expect(page.getByText(/Gracias por volver/)).toBeVisible();
+    await expect(page.getByText(/MECANISMO RESTAURADO/)).toBeVisible();
     await expect(page.getByRole("button",{name:/Escuchar el agradecimiento/})).toBeVisible();
   });
 
   test("móvil: objetos accesibles sin depender del panorama, pausa y retorno", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/escape");
+    await expect(page.getByRole("button",{name:/BANDA SONORA DINÁMICA ACTIVADA/})).toBeVisible();
+    await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toBeVisible();
+    await visualAudit(page,"umbral-intro-mobile-audit.png");
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("navigation", { name: "Objetos para investigar" })).toBeVisible();
+    await visualAudit(page,"umbral-vestibulo-mobile-sin-linterna.png");
     const torch=page.getByRole("button",{name:"☼ LINTERNA"});
     await torch.click();
     await expect(page.getByRole("button",{name:"◉ APAGAR LUZ"})).toHaveAttribute("aria-pressed","true");
-    await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-mobile.png",fullPage:true,animations:"disabled"});
+    await visualAudit(page,"umbral-vestibulo-mobile.png");
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
     await page.getByRole("navigation", { name: "Objetos para investigar" }).getByRole("button", { name: "Abrir cerradura" }).click();
     await expect(page.getByRole("heading", { name: "Una cerradura sin llave" })).toBeVisible();
     await page.getByRole("button", { name: "Cerrar" }).click();
