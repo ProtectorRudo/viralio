@@ -6,7 +6,9 @@ export type SceneType =
   | "origin" | "reasons" | "certainty" | "threshold"
   | "childhood" | "care" | "sacrifices" | "return"
   | "lessons" | "presence" | "inheritance" | "lookback"
-  | "casefile" | "insidejokes" | "incidents" | "proof" | "pact";
+  | "casefile" | "insidejokes" | "incidents" | "proof" | "pact"
+  | "invitation" | "portal" | "gallery" | "timepiece" | "recording"
+  | "clues" | "confession" | "passage" | "reveal" | "keepsake";
 
 export type DemoContent = {
   memories?: string[];
@@ -395,6 +397,35 @@ export const experiences: Experience[] = [
       letter:"Podría ponerme sentimental, pero después usarías esto en mi contra. Así que sólo voy a decir que tener una persona con la que puedo ser completamente ridícula es una suerte enorme.",
     },
   },
+  {
+    slug:"secreto",
+    eyebrow:"Sorpresas y grandes noticias · NUEVO",
+    title:"Te guardé un secreto",
+    short:"Diez escenas, pistas y una gran revelación. Hay noticias que merecen mucho más que un mensaje.",
+    icon:"✧",
+    accent:"#d9b77a",
+    demoRecipient:"Mamá",
+    demoGiver:"Lucía",
+    opening:"No quería contártelo con un mensaje. Quería que lo descubrieras.",
+    closing:"Mamá… vas a ser abuela.",
+    tags:["Sorpresas","Revelaciones","Noticias","Familia"],
+    recipe:["invitation","portal","gallery","timepiece","recording","clues","confession","passage","reveal","keepsake"],
+    demo:{
+      memories:[
+        "El comienzo de algo hermoso.",
+        "Los días que se vuelven hogar.",
+        "Lo mejor todavía estaba por llegar.",
+      ],
+      photos:[
+        {url:"https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=900&q=83",position:"center"},
+        {url:"https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=83",position:"center"},
+        {url:"https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=900&q=83",position:"center"},
+      ],
+      letter:"No todos los días tenemos la oportunidad de preparar algo así. Cada parte de este recorrido tiene un pedacito de lo que significás para mí. Y todavía falta lo más importante.",
+      voices:[{name:"Lucía",message:"Si estás escuchando esto, significa que ya estás muy cerca. Quería que este momento fuera tan especial como vos."}],
+    },
+  },
+
 ];
 
 export function getExperience(slug:string){
