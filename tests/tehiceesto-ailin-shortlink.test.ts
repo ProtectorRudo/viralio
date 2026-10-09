@@ -6,7 +6,8 @@ const root = process.cwd();
 const src=(p:string)=>readFileSync(join(root,p),"utf8");
 
 describe("Ailin's short, discreet affiliate link",()=>{
-  const alias=src("src/app/a/page.tsx");
+  const alias=src("src/app/tehiceesto/a/page.tsx");
+  const proxy=src("src/proxy.ts");
   const redirect=src("src/app/tehiceesto/r/[code]/AffiliateRedirect.tsx");
   const order=src("supabase/functions/order-create/index.ts");
 
@@ -15,6 +16,7 @@ describe("Ailin's short, discreet affiliate link",()=>{
     expect(alias).toContain('url: "https://tehiceesto.com/"');
     expect(alias).toContain("index: false");
     expect(alias).not.toContain("/r/ailin");
+    expect(proxy).toContain("pathname === \"/\" ? LEGACY_PREFIX : `${LEGACY_PREFIX}${pathname}`");
   });
 
   it("persists the 30-day verified affiliate attribution before cleaning the address bar",()=>{
@@ -25,5 +27,9 @@ describe("Ailin's short, discreet affiliate link",()=>{
     expect(redirect.indexOf('document.cookie=`thi_affiliate_token=')).toBeLessThan(redirect.indexOf('window.location.replace(dedicated?"/":"/tehiceesto")'));
     expect(redirect).toContain('window.location.replace(dedicated?"/":"/tehiceesto")');
     expect(order).toContain("resolveAffiliateAttribution(db,body.affiliateToken,order.id)");
+    expect(redirect).toContain("if(!data.affiliateToken||!data.expiresAt)throw");
+    expect(redirect).toContain("if(readCookie(\"thi_affiliate_token\")!==data.affiliateToken)throw");
+    expect(redirect).toContain("if(!cancelled)setFailed(true);");
+    expect(redirect).toContain('data-action="retry-referral"');
   });
 });
