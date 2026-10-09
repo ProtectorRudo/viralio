@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
 import DiegeticFocus from "./DiegeticFocus";
+import LockTumblers from "./LockTumblers";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
 import EvaMemory from "./EvaMemory";
@@ -625,7 +626,8 @@ export default function EscapeGame() {
           {modal==="clock"&&<div className={styles.clockLayout}><div className={styles.clockStory}><Artefact kind="clock"/><h2>El reloj detenido</h2><p>La aguja quedó inmóvil en las 03:13. Debajo del péndulo hay un mecanismo que todavía puede girar.</p><span className={styles.clockAside}>FABRICANTE: J. VÉLEZ · AÑO 1891<br/>CERRADO POR EL TIEMPO, NO POR UNA LLAVE.</span></div><ClockMechanism solved={Boolean(puzzles.clockWound)} onSolve={()=>{setPuzzles(p=>({...p,clockWound:true}));sfx("success");playHorror("creak",{pan:-.27});message("Desbloqueaste el grabado oculto del reloj. +300 puntos de investigación.");}}/></div>}
           {modal==="pin"&&<div className={styles.pinLayout}>
             <div className={styles.pinDescription}><Artefact kind="lock"/><h2>Una cerradura sin llave</h2><p>Tres cifras. Escuchás tres golpes del otro lado. Cada vez más cerca.</p><div className={styles.code}><input inputMode="numeric" maxLength={3} autoComplete="off" aria-label="Código de tres cifras" placeholder="— — —" value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,"").slice(0,3))} onKeyDown={e=>{if(e.key==="Enter")pinTry();}}/><button onClick={pinTry} disabled={pin.length!==3}>DESBLOQUEAR ↗</button></div></div>
-            <div className={styles.keypad} aria-label="Teclado físico de la cerradura">{[1,2,3,4,5,6,7,8,9,"⌫",0,"↵"].map(key=><button key={key} type="button" aria-label={key==="⌫"?"Borrar último dígito":key==="↵"?"Confirmar código":"Ingresar "+key} disabled={key==="↵"&&pin.length!==3} onClick={()=>{sfx("click");if(key==="⌫")setPin(v=>v.slice(0,-1));else if(key==="↵")pinTry();else setPin(v=>(v+key).slice(0,3));}}>{key}</button>)}</div>
+            <LockTumblers code={pin} onChange={setPin} onConfirm={pinTry} onTick={()=>sfx("click")}/>
+            <div className={styles.keypad} aria-label="Teclado numérico alternativo de la cerradura">{[1,2,3,4,5,6,7,8,9,"⌫",0,"↵"].map(key=><button key={key} type="button" aria-label={key==="⌫"?"Borrar último dígito":key==="↵"?"Confirmar código":"Ingresar "+key} disabled={key==="↵"&&pin.length!==3} onClick={()=>{sfx("click");if(key==="⌫")setPin(v=>v.slice(0,-1));else if(key==="↵")pinTry();else setPin(v=>(v+key).slice(0,3));}}>{key}</button>)}</div>
           </div>}
           {modal==="letter"&&<><h2>Una nota entre cenizas</h2><p>Un papel doblado entre las páginas. La caligrafía tiembla: es la letra de Eva. Hay algo escrito del otro lado.</p><PhysicalLetter kind="study"/></>}
           {modal==="eva"&&<><h2>Para quien todavía escucha</h2><p>Eva dejó una carta junto a sus juguetes. Algunas palabras están escritas con otra tinta. Dale vuelta para encontrar el resto.</p><PhysicalLetter kind="eva"/></>}
