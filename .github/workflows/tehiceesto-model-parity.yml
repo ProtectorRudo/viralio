@@ -1,0 +1,42 @@
+name: TeHiceEsto Model Parity Build
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/app/tehiceesto/**"
+      - "supabase/functions/order-create/**"
+      - "supabase/functions/creator-api/**"
+      - "tests/tehiceesto-**"
+      - ".github/workflows/tehiceesto-model-parity.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/app/tehiceesto/**"
+      - "supabase/functions/order-create/**"
+      - "supabase/functions/creator-api/**"
+
+concurrency:
+  group: tehiceesto-parity-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify-model-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Verify demo-to-purchase parity of all 9 models
+        run: npx vitest run tests/tehiceesto-demo-to-purchase-parity.test.ts tests/tehiceesto-private-gift-visuals.test.ts tests/tehiceesto-postpurchase-email.test.ts
+      - name: Typecheck the entire project
+        run: npm run typecheck
+      - name: Build production Next.js app
+        run: npm run build
