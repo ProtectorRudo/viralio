@@ -21,6 +21,7 @@ const recipes:Record<string,string[]>={
   mama: ["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
   papa: ["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
   amistad: ["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
+  secreto: ["invitation","portal","gallery","timepiece","recording","clues","confession","passage","reveal","keepsake"],
 };
 
 function cors(origin:string|null){
@@ -96,7 +97,7 @@ function withEditorToken(storyValue:unknown,editorTokenHash:string,contact:{name
       consentAt:creator.consentAt||now,
       ipHash:creator.ipHash||fingerprint,
       ...(templateRecipe?.length?{
-        templateVersion:"premium-v3",
+        templateVersion:templateRecipe?.[0]==="invitation"?"secret-v1":"premium-v3",
         templateRecipe:[...templateRecipe],
       }:{}),
     },
@@ -344,7 +345,7 @@ Deno.serve(async(req:Request)=>{
       experience_slug:experienceSlug,
       // New purchases reproduce the exact live demo snapshot premium-v3 at sale time.
       // Future demo improvements must never mutate an already-sold gift.
-      template_version:"premium-v3",
+      template_version:experienceSlug==="secreto"?"secret-v1":"premium-v3",
       giver_name:customerName,
       recipient_name:"A definir",
       scene_recipe:recipes[experienceSlug],
