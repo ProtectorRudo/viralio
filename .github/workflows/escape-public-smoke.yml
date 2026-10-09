@@ -73,5 +73,26 @@ jobs:
           await expect(page.getByText(/Gracias por volver/)).toBeVisible();
           if(errors.length) throw Error("Public browser errors: "+errors.join(" | "));
           console.log("PASS: published UMBRAL loaded CC0 recordings, cinematic blackout and entire mobile rescue journey");
+
+          // The published score and urgency must exist, not just the CI build.
+          const timerPage=await browser.newPage({viewport:{width:390,height:844},locale:"es-AR"});
+          const timerErrors=[];
+          timerPage.on("pageerror",e=>timerErrors.push(e.message));
+          await timerPage.clock.install({time:new Date("2026-10-09T21:00:00Z")});
+          await timerPage.goto(BASE+"/",{waitUntil:"domcontentloaded",timeout:30000});
+          await expect(timerPage.getByRole("button",{name:/BANDA SONORA DINÁMICA ACTIVADA/})).toHaveAttribute("aria-pressed","true");
+          await timerPage.getByRole("button",{name:/12 MIN/}).click();
+          await timerPage.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+          await expect(timerPage.getByRole("button",{name:"Silenciar música"})).toBeVisible();
+          await timerPage.clock.fastForward(710_000);
+          await expect(timerPage.getByText("00:10")).toBeVisible();
+          await expect(timerPage.getByLabel("Quedan 10 segundos")).toBeVisible();
+          await expect(timerPage.getByText("ÚLTIMOS SEGUNDOS")).toBeVisible();
+          await timerPage.getByRole("button",{name:"Silenciar música"}).click();
+          await expect(timerPage.getByRole("button",{name:"Activar música"})).toHaveAttribute("aria-pressed","false");
+          await timerPage.clock.fastForward(10_000);
+          await expect(timerPage.getByRole("heading",{name:"La casa te recordó."})).toBeVisible();
+          if(timerErrors.length) throw Error("Published score runtime errors: "+timerErrors.join(" | "));
+          console.log("PASS: public adaptive score toggle, ten-second urgency and loss ending");
           await browser.close();
           JS
