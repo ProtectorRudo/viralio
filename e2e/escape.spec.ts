@@ -27,6 +27,10 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "El retrato de Nora" })).toBeVisible();
     await page.screenshot({path:"visual-qa-evidence/umbral-expediente-recuperado-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
+    for (const person of ["Elías","Mara"]) {
+      await page.getByRole("button", { name: "Retrato de "+person }).first().click();
+      await page.getByRole("button", { name: "Cerrar" }).click();
+    }
 
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
     await page.screenshot({path:"visual-qa-evidence/umbral-candado-desktop.png",fullPage:true,animations:"disabled"});
@@ -76,6 +80,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.screenshot({path:"visual-qa-evidence/umbral-final-desktop.png",fullPage:true,animations:"disabled"});
     await expect(page.getByText("PUNTUACIÓN")).toBeVisible();
     await expect(page.getByText(/NUEVO RÉCORD PERSONAL/)).toBeVisible();
+    await expect(page.getByText(/ARCHIVO COMPLETO/)).toBeVisible();
   });
 
   test("móvil: objetos accesibles sin depender del panorama, pausa y retorno", async ({ page }) => {
