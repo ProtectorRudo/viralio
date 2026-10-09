@@ -13,6 +13,9 @@ async function visualAudit(page:Page,file:string){
 
 test.describe("UMBRAL · el juego puede completarse", () => {
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
+    // Cinematic screenshots of four chapters need a generous overall CI budget.
+    // Keep all puzzle/assertion steps; do not drop the final scene visual audit.
+    test.setTimeout(90_000);
     await page.goto("/escape");
     await expect(page.getByRole("heading", { name: /UMBRAL/ })).toBeVisible();
     await expect(page.locator(".notRealClass")).toHaveCount(0);
@@ -31,6 +34,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
         await page.screenshot({path:"visual-qa-evidence/umbral-intro-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
+    await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","foyer");
+    await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-powered","no");
     await page.screenshot({path:"visual-qa-evidence/umbral-vestibulo-desktop.png",fullPage:true,animations:"disabled"});
 
     await page.getByRole("button", { name: /Abrir expediente/ }).click();
@@ -79,6 +84,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     for(const digit of [4,2,7]) await page.getByRole("button",{name:"Ingresar "+digit}).click();
     await page.getByRole("button", { name: "Confirmar código" }).click();
     await expect(page.getByRole("heading", { name: "El despacho", exact: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","study");
     await page.screenshot({path:"visual-qa-evidence/umbral-despacho-desktop.png",fullPage:true,animations:"disabled"});
 
     await page.getByRole("button", { name: "Leer nota" }).first().click();
@@ -96,6 +102,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Vela con la rosa" }).first().click();
     await page.getByRole("button", { name: "Puerta secreta" }).first().click();
     await expect(page.getByRole("heading", { name: "La habitación de Eva", exact: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","nursery");
     await page.screenshot({path:"visual-qa-evidence/umbral-eva-desktop.png",fullPage:true,animations:"disabled"});
 
     await page.getByRole("button", { name: "Leer carta" }).first().click();
@@ -138,6 +145,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading",{name:"La habitación de Eva",exact:true})).toBeVisible();
     await page.getByRole("button", { name: "Abrir puerta" }).first().click();
     await expect(page.getByRole("heading", { name: "El corazón de la casa", exact: true })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","machine");
     await page.screenshot({path:"visual-qa-evidence/umbral-corazon-desktop.png",fullPage:true,animations:"disabled"});
 
     await page.getByRole("button", { name: "Fusible 2" }).first().click();
