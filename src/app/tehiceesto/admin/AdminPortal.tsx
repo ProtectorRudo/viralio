@@ -283,7 +283,7 @@ export default function AdminPortal() {
       {(checkoutBlockedCount>0||mpReady===false)&&<div role="alert" style={{padding:"16px 20px",margin:"12px 0 20px",border:"1px solid rgba(173,76,56,.35)",borderRadius:16,background:"rgba(173,76,56,.08)"}}>
         <strong>{checkoutBlockedCount>0?`Atención: ${checkoutBlockedCount} pedido(s) sin enlace de pago`:"Atención: conexión de Mercado Pago sin verificar"}</strong>
         <p style={{margin:"6px 0 0"}}>{checkoutBlockedCount>0?"El sistema intenta recuperar automáticamente los enlaces. Revisá los pedidos antes de lanzar campañas.":"Revisá Mercado Pago antes de enviar público desde influencers."}</p>
-      </div>
+      </div>}
 
       <section className="thi-admin-stat-grid">
         <article><span>Total</span><strong>{gifts.length}</strong><small>regalos creados</small></article>
