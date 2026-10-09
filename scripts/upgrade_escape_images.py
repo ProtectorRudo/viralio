@@ -94,8 +94,31 @@ for name in NAMES:
     }
     print(json.dumps(row, ensure_ascii=False))
     rows.append(row)
+# The objects are mounted much closer to the eye than the room background.
+# Preserve real texture on modern 2x/3x phones without changing filenames.
+OBJECTS = ["portrait", "clock", "lock", "letter", "music", "doll", "circuit", "door", "signal"]
+object_dst = DST / "objects"
+object_dst.mkdir(parents=True, exist_ok=True)
+object_rows = []
+for name in OBJECTS:
+    source = SRC / "objects" / f"{name}.webp"
+    with Image.open(source) as im:
+        orig = im.convert("RGB")
+    if min(orig.size) < 700:
+        raise ValueError(f"Object source unexpectedly low-res: {name} {orig.size}")
+    retina, method = enhance_2x(orig)
+    target = object_dst / f"{name}.webp"
+    retina.save(target, "WEBP", quality=90, method=6, exact=True)
+    object_rows.append({
+        "asset": name, "source": f"{orig.width}x{orig.height}",
+        "retina": f"{retina.width}x{retina.height}",
+        "original_bytes": source.stat().st_size,
+        "retina_bytes": target.stat().st_size,
+        "method": method,
+    })
+    print("OBJECT", name, orig.size, "=>", retina.size, target.stat().st_size)
 (DST / "quality-report.json").write_text(
-    json.dumps({"assets": rows, "limitations": "2x copies reduce browser interpolation; cannot restore lost source detail."}, ensure_ascii=False, indent=2),
+    json.dumps({"assets": rows, "objects": object_rows, "limitations": "2x copies reduce browser interpolation; cannot restore lost source detail."}, ensure_ascii=False, indent=2),
     encoding="utf8",
 )
 print(f"PASS: {len(rows)} retina backgrounds generated, total bytes={sum(x['retina_bytes'] for x in rows)}")
