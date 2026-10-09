@@ -181,6 +181,10 @@ Deno.serve(async(req:Request)=>{
   try{body=await req.json();}catch{return reply(origin,{error:"invalid_json"},400);}
 
   const experienceSlug=clean(body.experienceSlug,40);
+  // Preserve the existing production release gate for unfinished templates.
+  if(["abuelos","aniversario","propuesta"].includes(experienceSlug)){
+    return reply(origin,{error:"experience_coming_soon",message:"Esta experiencia estará disponible próximamente."},409);
+  }
   const customerName=clean(body.customerName,100);
   const email=clean(body.email,180).toLowerCase();
   const whatsapp=clean(body.whatsapp,40).replace(/[^0-9+]/g,"");
