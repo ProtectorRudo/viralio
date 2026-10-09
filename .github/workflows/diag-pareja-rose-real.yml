@@ -1,0 +1,37 @@
+name: Check Pareja Rose Cached Mobile
+on:
+  push:
+    branches: [diag-pareja-rose-real-mobile-20261009]
+    paths: ['.github/workflows/diag-pareja-rose-real.yml']
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare browser-cache and edge headers
+        run: |
+          for host in tehiceesto.com viralio.net; do
+            echo "HOST $host"
+            curl -sS -D /tmp/h -o /tmp/c "https://$host/_next/static/immutable/chunks/1lv4ms03n-3m3.js"
+            grep -iE '^(HTTP/|cache-control:|age:|content-type:|x-thi-pair-rose-bridge:|etag:)' /tmp/h || true
+            echo "PATCH $(grep -c '__thiRoseFinale20261009' /tmp/c || true)"
+          done
+      - name: Install browser
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Test first visit and cached revisit
+        run: |
+          node --input-type=module <<'NODE'
+          import {chromium} from '@playwright/test';
+          const b=await chromium.launch({args:['--no-sandbox']});
+          const page=await b.newPage({viewport:{width:390,height:760},isMobile:true,hasTouch:true});
+          page.on('pageerror',e=>console.log('ERROR',e.message));
+          await page.goto('https://tehiceesto.com/experiencias/pareja',{waitUntil:'domcontentloaded'});
+          await page.waitForFunction(()=>document.querySelector('main.thi-experience'));
+          console.log('FIRST',JSON.stringify(await page.evaluate(()=>({flag:window.__thiRoseFinale20261009||false, scriptCount:[...document.scripts].filter(x=>x.src.includes('1lv4ms03n-3m3')).length,scrollY:scrollY}))));
+          await page.reload({waitUntil:'domcontentloaded'});
+          await page.waitForFunction(()=>document.querySelector('main.thi-experience'));
+          console.log('SECOND',JSON.stringify(await page.evaluate(()=>({flag:window.__thiRoseFinale20261009||false, scriptCount:[...document.scripts].filter(x=>x.src.includes('1lv4ms03n-3m3')).length,scrollY:scrollY}))));
+          await b.close();
+          NODE
