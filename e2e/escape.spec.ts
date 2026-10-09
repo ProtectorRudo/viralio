@@ -190,6 +190,9 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     const page=await context.newPage();
     const errors:string[]=[];
     page.on("pageerror",e=>errors.push(e.message));
+    // Image.decode resolves relative URLs against the document. The test must
+    // navigate away from about:blank before decoding photographic assets.
+    await page.goto("/escape");
     const assets=["mansion","room-0","room-1","room-2","room-3"];
     for(const name of assets){
       const path="/escape/images/retina/"+name+".webp";
