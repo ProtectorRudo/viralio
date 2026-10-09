@@ -14,7 +14,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3333",
+    command: "cd .. && node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3333",
     url: "http://127.0.0.1:3333/escape",
     timeout: 120_000,
     reuseExistingServer: false,
