@@ -13,6 +13,9 @@ async function visualAudit(page:Page,file:string){
 
 test.describe("UMBRAL · el juego puede completarse", () => {
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
+    // Cinematic screenshots of four chapters need a generous overall CI budget.
+    // Keep all puzzle/assertion steps; do not drop the final scene visual audit.
+    test.setTimeout(90_000);
     await page.goto("/escape");
     await expect(page.getByRole("heading", { name: /UMBRAL/ })).toBeVisible();
     await expect(page.locator(".notRealClass")).toHaveCount(0);
