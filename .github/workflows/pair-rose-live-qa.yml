@@ -11,11 +11,13 @@ jobs:
       - name: Check public JS and origin content type
         run: |
           set -euo pipefail
-          curl -fsSL --max-time 40 -D /tmp/jsheaders 'https://tehiceesto.com/_next/static/immutable/chunks/1lv4ms03n-3m3.js?pairrose=11' -o /tmp/pair.js
+          curl -fsSL --max-time 40 -D /tmp/jsheaders 'https://tehiceesto.com/_next/static/immutable/chunks/1lv4ms03n-3m3.js?pairpaper=21' -o /tmp/pair.js
           grep -iE '(content-type:|x-thi-pair-rose-bridge:|HTTP/)' /tmp/jsheaders || true
           node --check /tmp/pair.js
           grep -Fq '__thiRoseFinale20261009' /tmp/pair.js
           grep -Fq 'thi-rose-touch' /tmp/pair.js
+          grep -Fq 'thi-rose-note-paper' /tmp/pair.js
+          echo 'PAPER_NOTE_ASSET_PRESENT'
           echo "PAIR_ROSE_PUBLIC_BRIDGE_PASS bytes=$(wc -c </tmp/pair.js)"
       - name: Install browser
         run: |
@@ -72,24 +74,43 @@ jobs:
           if(!layout.rose||layout.oldSeal!=='none'||layout.oldIcons!=='none'||layout.floating!=='none'||layout.overflow>1)
             throw Error('Final layout or floating CTA is wrong');
           await click('[data-action="rose-open"]');
-          await page.waitForFunction(()=>document.querySelector('.thi-rose-finale')?.dataset.roseOpen==='true',{timeout:5000});
-          await page.waitForTimeout(1250);
+          await page.waitForFunction(()=>document.querySelector('.thi-rose-finale')?.dataset.notePhase==='emerging',null,{timeout:4500});
+          const secret=page.locator('[data-action="rose-paper-note"]');
+          if(await secret.count()!==1)throw Error('Physical note missing from rose');
+          if(await page.locator('.thi-rose-love').count())throw Error('Love text revealed before paper opens');
+          console.log('ROSE_BLOOMED_AND_NOTE_EMERGING');
+          await page.waitForFunction(()=>document.querySelector('.thi-rose-finale')?.dataset.notePhase==='unfolding',null,{timeout:5200});
+          console.log('NOTE_UNFOLDING',JSON.stringify(await page.evaluate(()=>{
+            const l=document.querySelector('.thi-rose-note-edge-left');
+            const r=document.querySelector('.thi-rose-note-edge-right');
+            return {left:getComputedStyle(l).transform,right:getComputedStyle(r).transform}
+          })));
+          await page.waitForFunction(()=>document.querySelector('.thi-rose-finale')?.dataset.notePhase==='revealed',null,{timeout:5500});
+          await page.waitForTimeout(640);
           const reveal=await page.evaluate(()=>{
-            const el=document.querySelector('.thi-rose-finale'),canvas=el.querySelector('canvas');
+            const el=document.querySelector('.thi-rose-finale'),note=el.querySelector('.thi-rose-note'),canvas=el.querySelector('canvas');
             const ctx=canvas.getContext('2d'),bytes=ctx?.getImageData(0,0,canvas.width,canvas.height).data;
             let ink=0;
             if(bytes)for(let i=3;i<bytes.length;i+=28)if(bytes[i])ink++;
+            const noteRect=note.getBoundingClientRect(),stageRect=el.getBoundingClientRect();
             return {message:el.querySelector('.thi-rose-love')?.textContent,
-                    afterword:el.querySelector('.thi-rose-afterword')?.textContent,
-                    ink,haptics:window.__roseVibrations.length, canvas:[canvas.width,canvas.height],
-                    pressed:el.querySelector('button').getAttribute('aria-pressed')};
+                afterword:el.querySelector('.thi-rose-afterword')?.textContent,
+                noteVisible:getComputedStyle(note).opacity, noteRect:noteRect.toJSON(),
+                stageRect:stageRect.toJSON(),noteAria:note.getAttribute('aria-hidden'),
+                ink,haptics:window.__roseVibrations.length,canvas:[canvas.width,canvas.height],
+                pressed:el.querySelector('button').getAttribute('aria-pressed'),
+                overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
           });
-          console.log('REVEAL',JSON.stringify(reveal));
-          if(reveal.message!=='Te amo'||reveal.ink<=0||reveal.haptics<2||reveal.pressed!=='true')
-            throw Error('Live rose finale not fully functional');
+          console.log('REVEAL_PAPER_NOTE',JSON.stringify(reveal));
+          if(reveal.message!=='Te amo'||reveal.noteAria!=='false'||Number(reveal.noteVisible)<.97||
+             reveal.ink<=0||reveal.haptics<2||reveal.pressed!=='true'||reveal.overflow>1)
+            throw Error('Live folded note finale not fully functional');
+          if(reveal.noteRect.width<200||reveal.noteRect.right>395||reveal.noteRect.left<0)
+            throw Error('Unfolded note clipped on mobile');
+          await page.screenshot({path:'pair-secret-note-open.png',fullPage:true});
           const cta=page.locator('[data-action="create-story"]');
           await cta.scrollIntoViewIfNeeded();
           if(!await cta.isVisible())throw Error('Purchase CTA not visible');
-          console.log('SUCCESS: public TeHiceEsto Pareja rose blooms with fireworks and haptics on mobile');
+          console.log('SUCCESS: public TeHiceEsto Pareja rose -> folded note -> love -> fireworks -> haptics on mobile');
           await browser.close();
           NODE
