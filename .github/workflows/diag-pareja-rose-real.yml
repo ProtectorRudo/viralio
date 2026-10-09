@@ -24,6 +24,19 @@ jobs:
             grep -iE '^(HTTP/|content-type:|location:|x-vercel-protection:)' /tmp/preview-headers || true
             echo "PREVIEW_MARKER $(grep -o 'thi-rose' /tmp/preview-body | wc -l)"
           done
+      - name: Check single-use Chrome cache invalidation
+        run: |
+          set -e
+          for cookie in absent present; do
+            echo "CACHE_COOKIE $cookie"
+            if [ "$cookie" = present ]; then
+              curl -fsSL -D /tmp/h -o /tmp/p --max-time 35 -H 'Cookie: thi_rose_refresh=1' 'https://tehiceesto.com/experiencias/pareja'
+            else
+              curl -fsSL -D /tmp/h -o /tmp/p --max-time 35 'https://tehiceesto.com/experiencias/pareja'
+            fi
+            grep -iE '^(HTTP/|clear-site-data:|set-cookie:|cache-control:|content-type:)' /tmp/h || true
+            echo "HTML_OK $(grep -co 'type="module"' /tmp/p || true)"
+          done
       - name: Install browser
         run: |
           npm ci --ignore-scripts
