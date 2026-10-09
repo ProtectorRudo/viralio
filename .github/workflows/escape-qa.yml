@@ -6,6 +6,7 @@ on:
     paths:
       - "src/app/escape/**"
       - "e2e/escape.spec.ts"
+      - "e2e/escape.playwright.config.ts"
       - ".github/workflows/escape-qa.yml"
   workflow_dispatch:
 
