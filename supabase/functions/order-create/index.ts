@@ -12,7 +12,7 @@ function envDefault(name:string){
 const SECRET=envDefault("SUPABASE_SECRET_KEYS");
 // SYNCHRONIZED with frozen premium-v3 demo snapshot. Tests guard all nine journeys.
 function versionForNewGift(slug:string){
-  return slug==="secreto"?"secret-v1":slug==="pareja"?"premium-v4":"premium-v3";
+  return slug==="pareja"?"premium-v4":"premium-v3";
 }
 
 const recipes:Record<string,string[]>={
@@ -25,7 +25,6 @@ const recipes:Record<string,string[]>={
   mama: ["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
   papa: ["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
   amistad: ["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
-  secreto: ["invitation","portal","gallery","timepiece","recording","clues","confession","passage","reveal","keepsake"],
 };
 
 function cors(origin:string|null){
@@ -101,7 +100,7 @@ function withEditorToken(storyValue:unknown,editorTokenHash:string,contact:{name
       consentAt:creator.consentAt||now,
       ipHash:creator.ipHash||fingerprint,
       ...(templateRecipe?.length?{
-        templateVersion:templateVersion|| (templateRecipe?.[0]==="invitation"?"secret-v1":"premium-v3"),
+        templateVersion:templateVersion||"premium-v3",
         templateRecipe:[...templateRecipe],
       }:{}),
     },

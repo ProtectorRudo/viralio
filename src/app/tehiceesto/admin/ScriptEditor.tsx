@@ -18,8 +18,6 @@ const sceneNames:Record<SceneType,string>={
   sacrifices:"Sacrificios",return:"Volver",lessons:"Lecciones",presence:"Presencia",
   inheritance:"Herencia",lookback:"Mirar de nuevo",casefile:"Expediente",
   insidejokes:"Códigos internos",incidents:"Incidentes",proof:"Pruebas",pact:"Pacto",
-  invitation:"Invitación",portal:"Umbral",gallery:"Museo invisible",timepiece:"El tiempo",recording:"Una voz",
-  clues:"Señales",confession:"Carta secreta",passage:"Último paso",reveal:"La revelación",keepsake:"Recuerdo final",
 };
 
 const sceneDescriptions:Partial<Record<SceneType,string>>={
