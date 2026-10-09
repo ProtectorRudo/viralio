@@ -75,3 +75,26 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify the public UMBRAL playtest URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://protectorrudo.github.io/viralio/escape"
+          ok=0
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 15 "$base/" -o /tmp/umbral-pages.html && grep -Fq "UMBRAL" /tmp/umbral-pages.html; then
+              ok=1
+              break
+            fi
+            echo "Waiting for public Pages propagation ($attempt)"
+            sleep 5
+          done
+          test "$ok" -eq 1
+          curl -fsSL --max-time 20 "$base/app.js" -o /tmp/umbral-pages.js
+          curl -fsSL --max-time 20 "$base/app.css" -o /tmp/umbral-pages.css
+          curl -fsSL --max-time 20 "$base/images/mansion.webp" -o /tmp/umbral-pages.webp
+          test "$(wc -c </tmp/umbral-pages.js)" -gt 30000
+          test "$(wc -c </tmp/umbral-pages.css)" -gt 10000
+          test "$(wc -c </tmp/umbral-pages.webp)" -gt 10000
+          echo "PASS: UMBRAL is publicly served at $base/"
+
