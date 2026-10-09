@@ -1,0 +1,18 @@
+name: Verify Coming Soon Headers
+on:
+  push:
+    branches: [coming-soon-live-inspect-20261009]
+    paths: ['.github/workflows/coming-soon-headers.yml']
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check public blocked-page content types
+        run: |
+          set -e
+          for page in             'https://tehiceesto.com/experiencias/abuelos'             'https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/tehiceesto-coming-soon?categoria=abuelos'; do
+            echo "CHECK_URL $page"
+            curl -sS -L --max-time 25 -D /tmp/headers -o /tmp/response "$page"
+            grep -iE '^(HTTP/|content-type:|x-content-type-options:|location:)' /tmp/headers || true
+            echo "PAGE_SIZE $(wc -c </tmp/response)"
+          done
