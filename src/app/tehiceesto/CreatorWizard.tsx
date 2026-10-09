@@ -252,7 +252,8 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                   <span>○</span>
                   <div>
                     <strong>Tu pedido quedó registrado.</strong>
-                    <p>El pago online está temporalmente fuera de servicio. La personalización se habilita cuando el pago figure acreditado.</p>
+                    <p>No pudimos preparar el enlace de Mercado Pago. Tu pedido se guardó y todavía no se realizó ningún cobro. Podés reintentar sin duplicarlo.</p>
+                    <button type="button" className="order-primary thi-simple-pay" onClick={()=>void createOrder()} style={{width:"100%",margin:"14px 0 10px"}}>Reintentar pago seguro →</button>
                     {orderCode&&<Link href={`/tehiceesto/pedido/${orderCode}`}>Ver seguimiento privado ↗</Link>}
                   </div>
                 </div>
