@@ -1,4 +1,5 @@
 name: UMBRAL public playtest smoke
+# Validates real CC0 foley bundled by the static showcase builder, plus live blackout.
 on:
   push:
     branches: [main]
