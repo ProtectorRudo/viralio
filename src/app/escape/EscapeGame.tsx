@@ -575,7 +575,7 @@ export default function EscapeGame() {
         </div>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
-      <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),url(/escape/images/room-${i}.webp)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
+      <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),image-set(url("/escape/images/room-${i}.webp") 1x,url("/escape/images/retina/room-${i}.webp") 2x)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
     </section> : phase==="playing" ? <>
       <header className={styles.hud}>
         <div className={styles.identity}><div className={styles.monogram}>U<span>.</span></div><div><strong>UMBRAL</strong><small>{difficulty==="nightmare"?"MODO PESADILLA":"EXPEDIENTE 013"}</small></div></div>
@@ -584,7 +584,7 @@ export default function EscapeGame() {
       </header>
       <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")+" "+(seconds<=300?styles.lastMinutes:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse"){e.currentTarget.style.setProperty("--parallax-x",(-1*(x-.5)*8)+"px");e.currentTarget.style.setProperty("--parallax-y",(-1*(y-.5)*8)+"px");}}}>
         <div className={styles.roomArt}>
-          <div className={styles.cinematicRoom} data-room={room} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.25),rgba(2,5,8,.02) 35%,rgba(0,0,0,.14)),url(/escape/images/room-${room}.webp)`}} aria-hidden="true"/>
+          <div className={styles.cinematicRoom} data-room={room} style={{backgroundImage:`linear-gradient(180deg,rgba(0,0,0,.25),rgba(2,5,8,.02) 35%,rgba(0,0,0,.14)),image-set(url("/escape/images/room-${room}.webp") 1x,url("/escape/images/retina/room-${room}.webp") 2x)`}} aria-hidden="true"/>
           <SceneArt room={room} power={puzzles.power} candles={puzzles.candles} studyOpen={puzzles.studyOpen} nurseryOpen={puzzles.nurseryOpen} fuses={puzzles.fuses}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
           {room===2 && apparition && <div className={styles.apparition} aria-hidden="true"><i/><i/></div>}
