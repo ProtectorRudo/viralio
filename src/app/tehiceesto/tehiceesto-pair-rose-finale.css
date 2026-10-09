@@ -1,0 +1,197 @@
+/* TeHiceEsto Pareja — cinematic rose finale.
+ * Reusable model: personalized text only; identical interactions for every gift.
+ * Fireworks are drawn for <5 seconds and stop. Safe in low-power/reduced motion.
+ */
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale{
+  padding-bottom:clamp(95px,13svh,142px)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale-divider{
+  margin-top:clamp(18px,3svh,27px);
+}
+.thi-rose-finale{
+  position:relative;isolation:isolate;
+  width:min(100%,780px);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  margin:clamp(10px,1.7svh,19px) auto 0;
+  text-align:center;min-height:277px;
+  -webkit-tap-highlight-color:transparent;
+}
+.thi-rose-aura{
+  position:absolute;z-index:-1;left:50%;top:114px;
+  width:min(390px,82vw);height:215px;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse at center,
+    rgba(158,32,73,.25) 0%,rgba(136,35,80,.12) 34%,transparent 73%);
+  filter:blur(10px);
+  pointer-events:none;transition:opacity .85s,transform 1.2s;
+}
+.thi-rose-finale.is-open .thi-rose-aura{
+  opacity:1;transform:translate(-50%,-50%) scale(1.24);
+}
+.thi-rose-fireworks{
+  position:absolute;z-index:-1;inset:-82px -3% -58px;
+  width:106%;height:calc(100% + 140px);
+  pointer-events:none;contain:layout paint;
+}
+.thi-rose-touch{
+  position:relative;z-index:2;display:block;
+  width:clamp(172px,33vw,219px);
+  height:clamp(211px,40vw,267px);
+  padding:0;background:none;border:0;border-radius:42%;
+  cursor:pointer;touch-action:manipulation;
+  transform:translateZ(0);
+  animation:thiRoseEnter 1.15s cubic-bezier(.2,.75,.23,1) .5s both;
+}
+.thi-rose-touch:focus-visible{
+  outline:2px solid #efc4b8;outline-offset:5px;
+}
+.thi-rose-touch:disabled{cursor:default}
+.thi-rose-svg{
+  display:block;width:100%;height:100%;
+  overflow:visible;filter:drop-shadow(0 14px 22px rgba(0,0,0,.25));
+  animation:thiRoseFloat 4.8s ease-in-out infinite alternate;
+}
+.thi-rose-flower{
+  transform-origin:130px 144px;
+}
+.thi-rose-petal{
+  transform-origin:130px 151px;
+  transition:transform 1.32s cubic-bezier(.19,.84,.18,1),
+             filter 1s ease;
+  will-change:transform;
+}
+.thi-rose-heart,.thi-rose-fold{
+  transform-origin:130px 119px;
+  transition:transform 1.12s cubic-bezier(.18,.86,.2,1) .22s;
+}
+.thi-rose-finale.is-open .thi-rose-petal-back{
+  transform:translateY(-11px) scale(1.12) rotate(-2deg);
+}
+.thi-rose-finale.is-open .thi-rose-petal-left{
+  transform:translate(-23px,-9px) rotate(-21deg);
+}
+.thi-rose-finale.is-open .thi-rose-petal-right{
+  transform:translate(24px,-9px) rotate(22deg);
+}
+.thi-rose-finale.is-open .thi-rose-petal-front-left{
+  transform:translate(-10px,4px) rotate(-13deg);
+}
+.thi-rose-finale.is-open .thi-rose-petal-front-right{
+  transform:translate(10px,4px) rotate(14deg);
+}
+.thi-rose-finale.is-open .thi-rose-heart{
+  transform:translateY(-8px) scale(1.04);
+}
+.thi-rose-finale.is-open .thi-rose-fold{
+  transform:translateY(-7px);
+}
+.thi-rose-finale.is-open .thi-rose-svg{
+  animation:thiRoseBloomLift 1.6s cubic-bezier(.17,.79,.18,1) both;
+}
+.thi-rose-touch-glimmer{
+  position:absolute;left:76%;top:22%;
+  color:#ffdcb4;font-size:24px;
+  opacity:.65;text-shadow:0 0 22px rgba(255,194,173,.75);
+  pointer-events:none;
+  animation:thiRoseGlimmer 2.6s ease-in-out infinite;
+}
+.thi-rose-finale.is-open .thi-rose-touch-glimmer{
+  opacity:0;animation:none;
+}
+.thi-rose-instruction{
+  position:relative;z-index:2;
+  min-height:19px;margin:-8px auto 0!important;
+  color:rgba(239,201,191,.78)!important;
+  letter-spacing:.17em!important;
+  font:600 clamp(9px,1.6vw,11px)/1.4 Arial,sans-serif!important;
+  animation:thiRoseHint 3s ease-in-out infinite;
+}
+.thi-rose-finale.is-open .thi-rose-instruction{animation:none}
+.thi-rose-reveal{
+  position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;gap:6px;min-height:0;
+  width:min(480px,96%);margin:0 auto;
+  pointer-events:none;
+}
+.thi-rose-finale.is-open .thi-rose-reveal{padding:6px 0 15px;}
+.thi-rose-reveal-kicker{
+  display:block;color:#ecbb9e;
+  font:600 9px/1.5 Arial,sans-serif;letter-spacing:.26em;
+  animation:thiRoseCopyEnter .9s ease .65s both;
+}
+.thi-rose-love{
+  display:block;font:italic 400 clamp(55px,11vw,83px)/1.06 Georgia,serif;
+  color:#ffead9;letter-spacing:-.045em;
+  text-shadow:0 0 30px rgba(250,125,143,.32),0 2px 32px rgba(0,0,0,.35);
+  animation:thiRoseCopyEnter 1.1s cubic-bezier(.16,.85,.23,1) .9s both;
+}
+.thi-rose-afterword{
+  display:block;color:rgba(247,211,198,.77);
+  font:italic 400 clamp(17px,2.6vw,22px)/1.5 Georgia,serif;
+  animation:thiRoseCopyEnter 1s ease 1.3s both;
+}
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale-restart{
+  margin-top:clamp(13px,2.4svh,24px)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale-create{
+  margin-top:clamp(22px,3svh,30px)!important;
+}
+@keyframes thiRoseEnter{
+  from{opacity:0;transform:translateY(26px) scale(.82);filter:blur(7px)}
+  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes thiRoseFloat{
+  from{transform:translateY(0) rotate(-1deg)}
+  to{transform:translateY(-8px) rotate(1.2deg)}
+}
+@keyframes thiRoseBloomLift{
+  from{transform:translateY(0) scale(1)}
+  48%{transform:translateY(-15px) scale(1.075)}
+  to{transform:translateY(-5px) scale(1.035)}
+}
+@keyframes thiRoseGlimmer{
+  0%,100%{opacity:.3;transform:scale(.87) rotate(0)}
+  50%{opacity:.95;transform:scale(1.25) rotate(24deg)}
+}
+@keyframes thiRoseHint{
+  0%,100%{opacity:.62}
+  50%{opacity:1}
+}
+@keyframes thiRoseCopyEnter{
+  from{opacity:0;transform:translateY(19px);filter:blur(4px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+/* El CTA flotante tapa el cierre romántico y duplica "Quiero una así". */
+.thi-root:has(.thi-demo-page .thi-template-live.thi-theme-pareja[data-scene="finale"])
+ > a.floating-create-cta.floating-whatsapp--experience{
+  display:none!important;visibility:hidden!important;
+  opacity:0!important;pointer-events:none!important;
+}
+@media(max-width:650px){
+  .thi-theme-pareja[data-scene="finale"] .thi-pair-finale{
+    padding-top:clamp(93px,11svh,117px)!important;
+    padding-bottom:calc(100px + env(safe-area-inset-bottom))!important;
+  }
+  .thi-theme-pareja[data-scene="finale"] .thi-pair-finale>h2{
+    font-size:clamp(32px,8.6vw,41px)!important;line-height:1.04!important;
+    width:min(91vw,420px)!important;
+  }
+  .thi-theme-pareja[data-scene="finale"] .thi-pair-finale>.thi-lead{
+    margin-top:19px!important;
+  }
+  .thi-rose-finale{margin-top:2px;min-height:237px}
+  .thi-rose-touch{width:174px;height:213px}
+  .thi-rose-fireworks{inset:-45px -2% -56px;width:104%;height:calc(100% + 102px)}
+  .thi-rose-instruction{font-size:9px!important;letter-spacing:.12em!important}
+  .thi-rose-reveal-kicker{font-size:8px}
+  .thi-rose-afterword{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-rose-touch,.thi-rose-svg,.thi-rose-touch-glimmer,.thi-rose-instruction,
+  .thi-rose-reveal-kicker,.thi-rose-love,.thi-rose-afterword{
+    animation:none!important;opacity:1!important;filter:none!important;
+  }
+  .thi-rose-petal,.thi-rose-heart,.thi-rose-fold{transition:none!important;will-change:auto!important}
+  .thi-rose-fireworks{display:none}
+}
