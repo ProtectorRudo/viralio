@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useRef, useState } from "react";
 import { experiences } from "./data";
+import { isComingSoon } from "./availability";
 import GiftPicker from "./GiftPicker";
 import { formatTeHiceEstoPrice } from "./pricing";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./creatorApi";
@@ -60,7 +61,7 @@ function clearStoredOrderRequest(){
 }
 
 export default function CreatorWizard({initialExperience=""}:{initialExperience?:string}) {
-  const validInitial=experiences.some((experience)=>experience.slug===initialExperience)?initialExperience:"";
+  const validInitial=experiences.some((experience)=>experience.slug===initialExperience&&!isComingSoon(experience.slug))?initialExperience:"";
   const [step, setStep] = useState<Step>(validInitial?1:0);
   const [selectedSlug, setSelectedSlug] = useState(validInitial);
   const [contact, setContact] = useState(INITIAL_CONTACT);
@@ -81,6 +82,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
     contact.consent;
 
   function chooseTemplate(slug: string) {
+    if(isComingSoon(slug))return;
     orderRequestId.current="";
     clearStoredOrderRequest();
     setSelectedSlug(slug);
@@ -97,7 +99,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
   }
 
   async function createOrder() {
-    if (!selected || !contactValid || submitState === "submitting") return;
+    if (!selected || isComingSoon(selected.slug) || !contactValid || submitState === "submitting") return;
 
     setSubmitState("submitting");
     setErrorMessage("");
