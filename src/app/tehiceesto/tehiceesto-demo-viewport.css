@@ -56,6 +56,7 @@ body:has(.thi-root .thi-demo-page) {
 .thi-root .thi-demo-page-amistad { background-color: #0a0d14; }
 .thi-root .thi-demo-page-aniversario { background-color: #0d070c; }
 .thi-root .thi-demo-page-propuesta { background-color: #0b080c; }
+.thi-root .thi-demo-page-secreto { background-color: #150b13; }
 
 /* The final scene's atmosphere already fills its parent. Allow it to extend
    across the dynamic viewport without adding any artificial footer. */
