@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { Experience } from "./data";
 import type { SceneTextOverrides } from "./sceneText";
 import type { ThiPhoto as ExperiencePhoto, ThiAudio as ExperienceAudio } from "./ExperienceEngine";
@@ -36,6 +37,8 @@ export default function SecretExperience({
   experience, letterText, photoUrls, photoMedia, audioMedia, soundtrackMedia,
   storyContext, sceneTextOverrides, customerGift=false,
 }: SecretProps) {
+  const pathname = usePathname();
+  const purchaseHref = `${pathname.startsWith("/tehiceesto/") ? "/tehiceesto" : ""}/crear?experiencia=secreto`;
   const [step, setStep] = useState(0);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
   const [doorOpen, setDoorOpen] = useState(false);
@@ -170,7 +173,7 @@ export default function SecretExperience({
             <h2>{t("Algunas historias tienen una puerta que sólo se abre para una persona.")}</h2>
             <button type="button" className={"secret-doorframe " + (doorOpen ? "is-open" : "")} onClick={() => { setDoorOpen(true); pulse(); }} aria-label="Girar la llave y abrir la puerta">
               <span className="secret-doorlight" />
-              <span className="secret-inside"><span>BIENVENIDA, {name.toLocaleUpperCase("es-AR")}</span>✧</span>
+              <span className="secret-inside"><span>UN LUGAR SOLO PARA {name.toLocaleUpperCase("es-AR")}</span>✧</span>
               <span className="secret-door"><span className="secret-door-mould" /><span className="secret-doorknob">✧</span></span>
               <span className="secret-key">⚿</span>
             </button>
@@ -241,14 +244,14 @@ export default function SecretExperience({
                 <audio className="secret-voice-player" src={audioMedia[0].url} controls preload="none" onPlay={() => setVoiceOpened(true)} onEnded={() => setVoiceOpened(true)} />
               ) : (
                 <button className="secret-play" type="button" onClick={() => { setVoiceOpened(true); pulse(); }}>
-                  {voiceOpened ? "✓ MENSAJE ABIERTO" : "▷ DESCUBRIR EL MENSAJE"}
+                  {voiceOpened ? "✓ MENSAJE ABIERTO" : "▷ LEER EL MENSAJE"}
                 </button>
               )}
             </div>
             {voiceOpened && (
               <blockquote className="secret-voice-transcript">
-                <small>{audioMedia?.[0] ? "UN MENSAJE PARA VOS" : "DEMO · MENSAJE ESCRITO DE EJEMPLO"}</small>
-                <p>{t("Si estás escuchando esto, significa que ya estás muy cerca. Quería que este momento fuera tan especial como vos.")}</p>
+                <small>{customerGift ? "UN MENSAJE PARA VOS" : (audioMedia?.[0] ? "UN MENSAJE PARA VOS" : "DEMO · MENSAJE ESCRITO DE EJEMPLO")}</small>
+                <p>{customerGift ? (audioMedia?.[0]?.caption || t("Hay palabras que no necesitan grabarse para quedarse con vos. Lo que viene merece vivirse sin apuro.")) : t("Si estás escuchando esto, significa que ya estás muy cerca. Quería que este momento fuera tan especial como vos.")}</p>
               </blockquote>
             )}
           </section>
@@ -360,7 +363,7 @@ export default function SecretExperience({
               <button type="button" onClick={() => { setStep(0); setCopied(false); }}>Volver a vivirlo ↺</button>
             </div>
             <p className="secret-gesture">{t("Hay regalos que se abren. Este se queda con vos.")}</p>
-            {!customerGift && <Link href="/crear?experiencia=secreto" className="secret-demo-cta">Quiero crear una sorpresa así →</Link>}
+            {!customerGift && <Link href={purchaseHref} className="secret-demo-cta">Quiero crear una sorpresa así →</Link>}
           </section>
         )}
       </div>
