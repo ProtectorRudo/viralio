@@ -142,6 +142,18 @@ export default function EscapeGame() {
   const [flashlight, setFlashlight] = useState(false);
   const [jolt, setJolt] = useState(false);
   const [storm, setStorm] = useState(false);
+  const [sceneSize,setSceneSize] = useState({ width:0, height:0 });
+  useEffect(() => {
+    if(phase!=="playing") return;
+    const element=document.getElementById("umbral-playfield");
+    if(!element) return;
+    const observer=new ResizeObserver(entries => {
+      const rect=entries[0]?.contentRect;
+      if(rect) setSceneSize({width:rect.width,height:rect.height});
+    });
+    observer.observe(element);
+    return ()=>observer.disconnect();
+  },[phase]);
 
   useEffect(() => {
     try {
@@ -343,6 +355,17 @@ export default function EscapeGame() {
     {id:"lever",text:"Bajar palanca",x:83.6,y:57,glyph:"⏚",act:lever},
   ];
   const subtitle=["Algo detrás de esos retratos todavía observa.","Los libros saben más de lo que deberían.","Una caja musical lleva años sonando sola.","Solo la electricidad puede abrir la salida."][room];
+  // Project interactive targets through the same viewBox math as the SVG, even
+  // when its wide artwork is cropped to fill a portrait-sized phone.
+  function spotPosition(spot:Spot) {
+    const {width:w,height:h}=sceneSize;
+    if(!w || !h) return {left:spot.x+"%",top:spot.y+"%"};
+    const imageWidth=w<=800?Math.max(790,w):w;
+    const scale=Math.max(imageWidth/1200,h/690);
+    const left=(w-imageWidth)/2+(imageWidth-1200*scale)/2+12*spot.x*scale;
+    const top=(h-690*scale)/2+6.9*spot.y*scale;
+    return {left:left+"px",top:top+"px"};
+  }
 
   return <main className={styles.root}>
     <div className={styles.noise} aria-hidden="true"/>
@@ -365,7 +388,7 @@ export default function EscapeGame() {
         <div className={styles.hudCenter}><span>CAPÍTULO {String(room+1).padStart(2,"0")}/04</span><strong>{ROOM_NAMES[room]}</strong></div>
         <div className={styles.hudRight}><div className={seconds<=300?styles.timerDanger:styles.timer}><small>TIEMPO RESTANTE</small><strong>{fmt(seconds)}</strong></div><button className={styles.iconButton} onClick={()=>{sfx();setPaused(true);}} aria-label="Pausar partida">Ⅱ</button></div>
       </header>
-      <section className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse")setAngle({x:(x-.5)*8,y:(y-.5)*8});}}>
+      <section id="umbral-playfield" className={styles.playfield+" "+(flashlight?styles.torchOn:"")+" "+(jolt?styles.jolt:"")} onPointerMove={e=>{const r=e.currentTarget.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;e.currentTarget.style.setProperty("--torch-x",(x*100)+"%");e.currentTarget.style.setProperty("--torch-y",(y*100)+"%");if(e.pointerType==="mouse")setAngle({x:(x-.5)*8,y:(y-.5)*8});}}>
         <div className={styles.roomArt} style={{transform:"scale(1.025) translate("+(-angle.x)+"px,"+(-angle.y)+"px)"}}>
           <SceneArt room={room} power={puzzles.power}/>
           <div className={styles.dust} aria-hidden="true"/><div className={styles.fog} aria-hidden="true"/><div className={styles.lightning+" "+(storm?styles.stormOn:"")} aria-hidden="true"/>
@@ -373,7 +396,7 @@ export default function EscapeGame() {
           <div className={styles.shade} aria-hidden="true"/>
         </div>
         <div className={styles.torch} aria-hidden="true"/><div className={styles.sceneTitle}><span>0{room+1} / REGISTRO ENCONTRADO</span><h2>{ROOM_NAMES[room]}</h2><p>{subtitle}</p></div>
-        {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={{left:spot.x+"%",top:spot.y+"%"}} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
+        {hotspots.map((spot)=><button key={spot.id} className={styles.hotspot+" "+(spot.active?styles.hotspotActive:"")} disabled={transitioning} style={spotPosition(spot)} onClick={spot.act} aria-label={spot.text} title={spot.text}><span>{spot.glyph}</span><small>{spot.text}</small></button>)}
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
       </section>
