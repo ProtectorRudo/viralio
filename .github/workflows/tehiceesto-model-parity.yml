@@ -40,3 +40,7 @@ jobs:
         run: npm run typecheck
       - name: Build production Next.js app
         run: npm run build
+      - name: Install Chromium for paid-traffic affiliate gate
+        run: npx playwright install --with-deps chromium
+      - name: Browser test Ailin attribution, cookies, retry and clean redirect
+        run: npx playwright test e2e/tehiceesto-affiliate-launch.spec.ts
