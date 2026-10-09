@@ -1,0 +1,100 @@
+
+/* Availability states: premium, restrained, never look like broken links. */
+.thh-v2-more .thh-v2-coming-soon{
+  display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;
+  column-gap:7px;row-gap:3px;
+  color:#6f655f;opacity:.88;cursor:default;
+}
+.thh-v2-coming-soon small{
+  display:inline-flex;align-items:center;
+  padding:4px 7px;border-radius:999px;
+  border:1px solid rgba(128,103,83,.22);
+  background:rgba(158,129,109,.07);
+  color:#8b7568;font-size:9px!important;line-height:1.15;
+  font-weight:650;letter-spacing:.025em;
+}
+.thi-purchase-page .thi-simple-card-coming-soon{
+  background:linear-gradient(130deg,rgba(29,25,28,.97),rgba(18,17,20,.98));
+  border-color:rgba(255,255,255,.10);
+  box-shadow:none;
+}
+.thi-simple-card-coming-soon .thi-simple-photo-disabled{
+  position:relative;display:block;overflow:hidden;cursor:default;
+  pointer-events:none;
+}
+.thi-simple-card-coming-soon .thi-simple-photo-disabled .thi-simple-image{
+  filter:grayscale(.58) saturate(.62) brightness(.67);
+  transform:none!important;
+}
+.thi-simple-coming-overlay{
+  position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:inline-flex;align-items:center;justify-content:center;
+  max-width:calc(100% - 18px);
+  padding:10px 17px;
+  border:1px solid rgba(255,232,204,.55);
+  background:rgba(20,18,23,.76);backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  color:#f4e8db;white-space:nowrap;
+  font:600 11px/1.1 "DM Sans",Arial,sans-serif;
+  letter-spacing:.08em;text-transform:uppercase;
+  box-shadow:0 10px 23px rgba(0,0,0,.35);
+}
+.thi-purchase-page .thi-simple-card-coming-soon .thi-simple-card-content h2{color:#d8cfc7}
+.thi-purchase-page .thi-simple-card-coming-soon .thi-simple-card-content p{color:#9d9391}
+.thi-purchase-page .thi-simple-card-coming-soon .thi-simple-unavailable{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:46px;padding:11px 19px;
+  border:1px solid rgba(221,192,160,.35);
+  border-radius:999px;
+  background:rgba(232,206,172,.07)!important;
+  color:#dbc9b8!important;opacity:1;
+  font:600 13px/1.1 "DM Sans",Arial,sans-serif;
+  letter-spacing:.035em;
+  cursor:default!important;pointer-events:none;
+  box-shadow:none!important;transform:none!important;
+}
+.thi-simple-card-coming-soon .thi-simple-unavailable span{font-size:17px;color:#cfae85}
+.thi-coming-page{
+  min-height:100svh;
+  display:grid;place-items:center;
+  padding:clamp(100px,14svh,152px) 18px 90px;
+  text-align:center;color:#302921;
+  background:radial-gradient(ellipse at 50% 28%,rgba(237,206,163,.36),transparent 52%),#f7f2e9;
+  position:relative;isolation:isolate;overflow:hidden;
+}
+.thi-coming-aura{
+  position:absolute;z-index:-1;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(650px,90vw);height:min(650px,90vw);
+  display:grid;place-items:center;border:1px solid rgba(133,100,72,.16);
+  border-radius:50%;font-size:140px;color:rgba(180,142,95,.13);
+}
+.thi-coming-panel{
+  max-width:600px;width:100%;padding:clamp(28px,5vw,65px) clamp(20px,6vw,56px);
+  border:1px solid rgba(130,107,84,.27);
+  background:rgba(255,254,249,.66);
+  box-shadow:0 30px 100px rgba(77,52,32,.09);
+}
+.thi-coming-eyebrow{color:#947854;font:700 10px/1.4 Arial,sans-serif;letter-spacing:.18em;margin:0 auto 20px}
+.thi-coming-symbol{display:block;color:#c19a65;font-size:30px;margin-bottom:3px}
+.thi-coming-panel h1{font:400 clamp(48px,10vw,83px)/1.05 Georgia,serif;letter-spacing:-.055em;margin:0 auto 18px}
+.thi-coming-tag{
+  display:inline-flex;padding:8px 19px;margin:0 auto 17px;
+  border-radius:999px;border:1px solid #b39a79;background:#f2e5d4;
+  color:#795c42;font-size:13px;font-weight:700;letter-spacing:.045em;
+}
+.thi-coming-panel>p:not(.thi-coming-eyebrow){max-width:440px;margin:10px auto 30px;color:#786d60;font:16px/1.6 Arial,sans-serif}
+.thi-coming-back{
+  min-height:53px;display:inline-flex;align-items:center;justify-content:center;gap:20px;
+  padding:14px 23px;border-radius:999px;
+  color:#fffaf0!important;background:#302923;
+  font-size:13px;font-weight:650;letter-spacing:.01em;
+  transition:background .25s,transform .25s;
+}
+.thi-coming-back:hover{background:#524337;transform:translateY(-2px)}
+.thi-coming-back:focus-visible{outline:3px solid #aa7e50;outline-offset:4px}
+@media(max-width:560px){
+  .thh-v2-more .thh-v2-coming-soon{font-size:12px}
+  .thh-v2-coming-soon small{font-size:8px!important}
+  .thi-simple-coming-overlay{font-size:9px;padding:8px 10px}
+  .thi-coming-panel{padding:36px 23px}
+}
