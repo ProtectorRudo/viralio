@@ -1,6 +1,6 @@
 "use client";
 
-import type { PointerEvent } from "react";
+import type { PointerEvent, CSSProperties } from "react";
 import styles from "./DiegeticFocus.module.css";
 
 type FocusKind="portrait"|"clock"|"lock"|"doll"|"music";
@@ -33,7 +33,7 @@ export default function DiegeticFocus({
     e.currentTarget.style.setProperty("--shine-y",Math.round(y*100)+"%");
   }
   return <div className={styles.focusWorld} data-focus-object={kind} data-focus-room={room}
-    style={{"--origin-x":origin.x+"%","--origin-y":origin.y+"%"} as React.CSSProperties}
+    style={{"--origin-x":origin.x+"%","--origin-y":origin.y+"%"} as CSSProperties}
     onPointerMove={move} aria-hidden="true">
     <div className={styles.camera} style={{backgroundImage:`linear-gradient(110deg,rgba(0,2,5,.08),rgba(0,3,6,.52) 61%,rgba(0,1,3,.91)),url("/escape/images/room-${room}.webp")`}} />
     <div className={styles.cameraGrain}/>
