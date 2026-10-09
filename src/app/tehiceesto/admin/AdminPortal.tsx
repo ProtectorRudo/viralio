@@ -39,6 +39,7 @@ export default function AdminPortal() {
   const [accessKey, setAccessKey] = useState("");
   const [loginError, setLoginError] = useState("");
   const [gifts, setGifts] = useState<GiftRow[]>([]);
+  const [lastGiftSyncAt,setLastGiftSyncAt] = useState(0);
   const [commerce, setCommerce] = useState<CommerceSettings|null>(null);
   const [defaultPrice, setDefaultPrice] = useState("");
   const [commerceSaving, setCommerceSaving] = useState(false);
@@ -65,6 +66,7 @@ export default function AdminPortal() {
       }
       approvedSeen.current=approvedNow;
       setGifts(nextGifts);
+      setLastGiftSyncAt(Date.now());
       setCommerce(commerceData.settings);
       setDefaultPrice(
         commerceData.settings.default_price_minor != null
@@ -145,7 +147,7 @@ export default function AdminPortal() {
   const creatorLeadCount = gifts.filter((gift) => gift.story_data?.creator?.submitted).length;
   const pendingPaymentCount = gifts.filter((gift) => gift.order?.status === "pending").length;
   const checkoutBlockedCount=gifts.filter((gift)=>{
-    const age=Date.now()-Date.parse(gift.created_at);
+    const age=lastGiftSyncAt-Date.parse(gift.created_at);
     return gift.story_data?.creator?.submitted===true&&gift.order?.status==="pending"&&
       !gift.order.checkout_url&&age>=90_000&&age<24*60*60*1000;
   }).length;
