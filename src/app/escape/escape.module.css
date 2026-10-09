@@ -267,3 +267,62 @@
  .sceneTitle h2{text-shadow:0 4px 18px #000}
 }
 @media(prefers-reduced-motion:reduce){.heroFog,.cinematicRoom{animation:none}}
+
+
+/* 2026 cinematic artefacts pass — physical staging, not generic software modals. */
+.dialog:not(.journalDialog){
+  border:1px solid rgba(220,170,110,.58);
+  background:
+    linear-gradient(113deg,rgba(27,22,17,.96),rgba(12,15,15,.97) 72%),
+    url("/escape/images/room-1.webp") center / cover;
+  box-shadow:0 35px 125px #000,0 0 0 1px rgba(189,143,84,.14),inset 0 0 90px rgba(0,0,0,.37);
+}
+.dialog:not(.journalDialog):after{
+  content:"";display:block;position:relative;margin:25px 0 0;
+  height:1px;background:linear-gradient(90deg,transparent,#98734d 38%,#e7c58b 50%,#98734d 62%,transparent);
+  opacity:.78;
+}
+.dialog:not(.journalDialog) .eyebrow{
+  color:#e1be8a;text-shadow:0 1px 14px rgba(0,0,0,.7)
+}
+.dialog:not(.journalDialog) h2{color:#f1e1c3;text-shadow:0 4px 30px rgba(0,0,0,.8);letter-spacing:-.035em}
+.dialog:not(.journalDialog) p{color:#d0c3ae;font-size:1rem}
+.dialog:not(.journalDialog) blockquote{
+  background:
+    linear-gradient(120deg,rgba(226,210,172,.97),rgba(187,159,111,.97)),
+    repeating-linear-gradient(12deg,transparent 0 7px,rgba(104,65,40,.08) 8px 10px);
+  border:1px solid #866a49;border-left:5px double #775635;
+  color:#3d3023;text-shadow:0 1px 0 rgba(255,255,255,.26);
+  box-shadow:inset 0 0 34px rgba(91,54,31,.19),0 13px 30px rgba(0,0,0,.25);
+  transform:rotate(-.25deg);padding:22px 25px;
+}
+.dialog .close{
+  z-index:8;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 20%,#7c6546,#292b24 65%,#171b19);
+  border:2px ridge #a68a63;color:#e9d3ab;
+  box-shadow:inset 0 0 8px #141512,0 4px 12px rgba(0,0,0,.5);
+}
+.dialog .notes{gap:7px}
+.dialog .notes button{
+  position:relative;min-height:83px;
+  border-radius:2px 2px 7px 7px;border:2px ridge #b2966f;
+  color:#392a1d;text-shadow:0 1px 0 rgba(255,245,208,.8);
+  background:linear-gradient(96deg,#857052 0%,#f2dcb0 14%,#dcc295 42%,#9c825f 95%);
+  box-shadow:inset 2px 0 4px #f6e6c9,inset -3px 0 8px #8b7053,0 6px 0 #4c3a27,0 11px 15px rgba(0,0,0,.36);
+  font:750 .68rem ui-sans-serif,sans-serif;letter-spacing:.09em
+}
+.dialog .notes button:before{content:"";position:absolute;left:21%;right:21%;top:6px;height:3px;background:rgba(76,53,29,.3);border-radius:50%}
+.dialog .notes button:hover{background:linear-gradient(96deg,#af885a,#ffedc6 30%,#dbc194 83%,#8b6b49)}
+.dialog .notes button:active{transform:translateY(5px);box-shadow:inset 1px 4px 8px #776043,0 1px 0 #4c3a27}
+.pinDialog .pinDescription .stage{height:230px}
+@media(max-width:650px){
+  .dialog:not(.journalDialog){padding:27px 23px}
+  .dialog:not(.journalDialog) blockquote{padding:17px 19px;font-size:1.03rem;line-height:1.6}
+  .dialog:not(.journalDialog) p{font-size:.92rem}
+  .dialog .notes{gap:5px}
+  .dialog .notes button{min-height:67px;font-size:.57rem}
+  .pinDialog .pinDescription .stage{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .dialog .notes button{transition:none}
+}
