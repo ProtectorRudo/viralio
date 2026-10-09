@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
+import ClockMechanism from "./ClockMechanism";
 import EvaMemory from "./EvaMemory";
 import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
 import EvidenceArchive from "./EvidenceArchive";
@@ -10,11 +11,11 @@ import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiv
 
 type Phase = "intro" | "playing" | "won" | "lost";
 type Difficulty = "story" | "nightmare";
-type PuzzleState = { portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
+type PuzzleState = { clockWound?: boolean; portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
 type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
-const INITIAL: PuzzleState = { portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
+const INITIAL: PuzzleState = { clockWound:false, portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
 const CLUES = [
   ["Las cifras están en los marcos de tres retratos.", "Cada retrato conserva un año y una cifra. El calendario importa.", "Ordená los retratos de la persona más joven a la más vieja: 1918, 1902, 1891."],
   ["La nota habla del cielo, del camino y de lo que florece.", "Esas palabras representan los símbolos dibujados debajo de las velas.", "Tocá las velas en este orden: luna, llave, rosa."],
@@ -501,7 +502,7 @@ export default function EscapeGame() {
   }
   const totalHints=hints.reduce((a,b)=>a+b,0);
   const recoveredCount=puzzles.portraits.length+Number(puzzles.notesRead)+Number(puzzles.evaRead)+Number(puzzles.nurseryOpen)+Number(puzzles.keepsake)+Number(puzzles.power);
-  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)));
+  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)+(puzzles.clockWound?300:0)));
   const personalBest=records[difficulty]||0;
   const isNewRecord=phase==="won" && score>=personalBest;
   useEffect(()=>{
@@ -612,7 +613,7 @@ export default function EscapeGame() {
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
           {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power}/>}
           {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
-          {modal==="clock"&&<><Artefact kind="clock"/><h2>El reloj detenido</h2><p>Sus agujas marcan las 03:13. En la madera hay una inscripción:</p><blockquote>«El tiempo no importa. La edad sí. De quien llegó último, a quien llegó primero».</blockquote></>}
+          {modal==="clock"&&<><Artefact kind="clock"/><h2>El reloj detenido</h2><p>La aguja quedó inmóvil en las 03:13. Debajo del péndulo hay un mecanismo que todavía puede girar.</p><ClockMechanism solved={Boolean(puzzles.clockWound)} onSolve={()=>{setPuzzles(p=>({...p,clockWound:true}));sfx("success");playHorror("creak",{pan:-.27});message("Desbloqueaste el grabado oculto del reloj. +300 puntos de investigación.");}}/></>}
           {modal==="pin"&&<div className={styles.pinLayout}>
             <div className={styles.pinDescription}><Artefact kind="lock"/><h2>Una cerradura sin llave</h2><p>Tres cifras. Escuchás tres golpes del otro lado. Cada vez más cerca.</p><div className={styles.code}><input inputMode="numeric" maxLength={3} autoComplete="off" aria-label="Código de tres cifras" placeholder="— — —" value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,"").slice(0,3))} onKeyDown={e=>{if(e.key==="Enter")pinTry();}}/><button onClick={pinTry} disabled={pin.length!==3}>DESBLOQUEAR ↗</button></div></div>
             <div className={styles.keypad} aria-label="Teclado físico de la cerradura">{[1,2,3,4,5,6,7,8,9,"⌫",0,"↵"].map(key=><button key={key} type="button" aria-label={key==="⌫"?"Borrar último dígito":key==="↵"?"Confirmar código":"Ingresar "+key} disabled={key==="↵"&&pin.length!==3} onClick={()=>{sfx("click");if(key==="⌫")setPin(v=>v.slice(0,-1));else if(key==="↵")pinTry();else setPin(v=>(v+key).slice(0,3));}}>{key}</button>)}</div>
@@ -632,6 +633,7 @@ export default function EscapeGame() {
       <div className={styles.endingGlyph}>{phase==="won"?"✦":"◷"}</div>
       <h1>{phase==="won"?(puzzles.ending==="save"?"No escapaste solo.":"Saliste. Pero ella sigue ahí."):"La casa te recordó."}</h1>
       <p>{phase==="won"?(puzzles.ending==="save"?"Encontraste a Eva detrás del último muro. Al cruzar juntos el umbral, la casa quedó en silencio por primera vez.":"Cruzaste el portón antes de que el reloj se detuviera. Afuera, el viento dice tu nombre. Todavía tenés la medalla en la mano."):"El último minuto se consumió. El reloj acaba de empezar de nuevo... y un retrato nuevo apareció en el vestíbulo."}</p>
+      {phase==="won"&&puzzles.clockWound&&<p className={styles.clockAchievement}>✦ MECANISMO RESTAURADO · +300 PUNTOS · Descubriste lo que ocultaba el reloj.</p>}
       {phase==="won"&&recoveredCount===8&&<div className={styles.perfectEvidence}><strong>ARCHIVO COMPLETO · 8/8</strong><span>Encontraste todos los recuerdos. Ahora sabés por qué Eva no podía abandonar la casa.</span></div>}
       <div className={styles.stats}><div><span>TIEMPO</span><strong>{fmt(seconds)}</strong></div><div><span>PISTAS</span><strong>{totalHints}</strong></div><div><span>ERRORES</span><strong>{mistakes}</strong></div>{phase==="won"&&<div><span>PUNTUACIÓN</span><strong>{score.toLocaleString("es-AR")}</strong></div>}</div>
       {phase==="won"&&<p className={styles.personalRecord}>{isNewRecord?"✦ NUEVO RÉCORD PERSONAL":"TU MEJOR PUNTUACIÓN"} · {Math.max(score,personalBest).toLocaleString("es-AR")} PUNTOS</p>}
