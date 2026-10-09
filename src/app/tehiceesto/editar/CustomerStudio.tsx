@@ -6,17 +6,22 @@ import { useCallback,useEffect,useRef,useState } from "react";
 import ExperienceEngine from "../ExperienceEngine";
 import { fillPrivateGiftPhotos } from "../privateGiftVisuals";
 import { fillPrivateGiftPhotos as fillV3GiftPhotos } from "../template-v3/privateGiftVisuals";
+import { fillPrivateGiftPhotos as fillV4GiftPhotos } from "../template-v4/privateGiftVisuals";
 import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import PremiumV2Engine from "../template-v2/ExperienceEngine";
 import PremiumV3Engine from "../template-v3/ExperienceEngine";
+import PremiumV4Engine from "../template-v4/ExperienceEngine";
 import { getExperience,type SceneType } from "../data";
 import { getExperienceCopy } from "../experienceCopy";
 import { getExperienceCopy as getPremiumV2ExperienceCopy } from "../template-v2/experienceCopy";
 import { getExperience as getPremiumV1Experience,type SceneType as PremiumSceneType } from "../template-v1/data";
 import { getExperience as getPremiumV2Experience,type SceneType as PremiumV2SceneType } from "../template-v2/data";
 import { getExperience as getPremiumV3Experience,type SceneType as PremiumV3SceneType } from "../template-v3/data";
+import { getExperience as getPremiumV4Experience,type SceneType as PremiumV4SceneType } from "../template-v4/data";
 import { getExperienceCopy as getPremiumV3ExperienceCopy } from "../template-v3/experienceCopy";
+import { getExperienceCopy as getPremiumV4ExperienceCopy } from "../template-v4/experienceCopy";
 import { normalizeSceneTextOverrides as normalizePremiumV3SceneTextOverrides } from "../template-v3/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV4SceneTextOverrides } from "../template-v4/sceneText";
 import { normalizeSceneTextOverrides } from "../sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumSceneTextOverrides } from "../template-v1/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
@@ -329,6 +334,35 @@ function Preview({
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV3SceneType|undefined}))}
       storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}}
       sceneTextOverrides={normalizePremiumV3SceneTextOverrides(sceneTextOverrides)}
+    />;
+  }
+
+  if(gift.template_version==="premium-v4"){
+    const base=getPremiumV4Experience(gift.experience_slug);
+    if(!base)return null;
+    const experience={
+      ...base,
+      demo:{...base.demo,photos:[]},
+      demoGiver:gift.giver_name,
+      demoRecipient:gift.recipient_name,
+      opening:gift.opening_text||base.opening,
+      closing:gift.closing_text||base.closing,
+      recipe:[...base.recipe] as PremiumV4SceneType[],
+      accent:gift.theme_data?.accent||base.accent,
+    };
+    return <PremiumV4Engine
+      customerGift
+      experience={experience}
+      previewScene={previewScene as PremiumV4SceneType}
+      onSceneChange={scene=>onSceneChange(scene)}
+      copyOverride={gift.story_data?.script as never}
+      letterText={gift.letter_text||undefined}
+      photoMedia={fillV4GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined})))}
+      audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined}))}
+      soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
+      videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined}))}
+      storyContext={{keyDate:gift.story_data?.keyDate,anecdote:gift.story_data?.anecdote}}
+      sceneTextOverrides={normalizePremiumV4SceneTextOverrides(sceneTextOverrides)}
     />;
   }
 
@@ -785,13 +819,16 @@ export default function CustomerStudio({code}:{code:string}){
   const frozenV1Base=gift?getPremiumV1Experience(gift.experience_slug):undefined;
   const frozenV2Base=gift?getPremiumV2Experience(gift.experience_slug):undefined;
   const frozenV3Base=gift?getPremiumV3Experience(gift.experience_slug):undefined;
+  const frozenV4Base=gift?getPremiumV4Experience(gift.experience_slug):undefined;
   const selectedBase=gift?.template_version==="premium-v1"
     ?frozenV1Base
     :gift?.template_version==="premium-v2"
       ?frozenV2Base
       :gift?.template_version==="premium-v3"
         ?frozenV3Base
-        :currentBase;
+        :gift?.template_version==="premium-v4"
+          ?frozenV4Base
+          :currentBase;
   const canonical=selectedBase?.recipe||[];
   const media=payload?.media||[];
   const photos=media.filter(item=>item.kind==="image");
@@ -806,7 +843,7 @@ export default function CustomerStudio({code}:{code:string}){
     :gift?.template_version==="premium-v2"
       ?effectivePremiumV2RecipeForMedia
       :effectiveRecipeForMedia;
-  const effectiveRecipe=gift?.template_version==="premium-v3"
+  const effectiveRecipe=["premium-v3","premium-v4"].includes(gift?.template_version||"")
     ?[...canonical]
     :recipeResolver(gift?.scene_recipe||[],{
     hasPhoto:memoryPhotos.length>0||canonical.includes("memories"),
@@ -815,7 +852,9 @@ export default function CustomerStudio({code}:{code:string}){
     hasLightPhoto:lightPhotos.length>0||canonical.includes("light"),
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
-  const selectedCopy=gift?.template_version==="premium-v3"&&frozenV3Base
+  const selectedCopy=gift?.template_version==="premium-v4"&&frozenV4Base
+    ?getPremiumV4ExperienceCopy(frozenV4Base)
+    :gift?.template_version==="premium-v3"&&frozenV3Base
     ?getPremiumV3ExperienceCopy(frozenV3Base)
     :gift?.template_version==="premium-v2"&&frozenV2Base
       ?getPremiumV2ExperienceCopy(frozenV2Base)
@@ -1096,7 +1135,7 @@ export default function CustomerStudio({code}:{code:string}){
           <span>✓</span>
           <div><strong>La estructura ya está resuelta</strong><p>Las partes están ordenadas para que la emoción crezca de principio a fin.</p></div>
         </div>
-        {gift.template_version==="premium-v3"?<p className="studio-fixed-journey-note">Tu experiencia conserva el recorrido completo del demo. Podés personalizar fotos, audios y palabras sin perder ninguna escena.</p>:<details className="studio-parts-details">
+        {["premium-v3","premium-v4"].includes(gift.template_version||"")?<p className="studio-fixed-journey-note">Tu experiencia conserva el recorrido completo del demo. Podés personalizar fotos, audios y palabras sin perder ninguna escena.</p>:<details className="studio-parts-details">
           <summary><span>Quiero quitar o recuperar una parte</span><small>opcional</small><b>＋</b></summary>
           <div className="studio-section-list">{canonical.map((scene,index)=>{
             const terminal=scene==="finale"||scene==="proposal";
