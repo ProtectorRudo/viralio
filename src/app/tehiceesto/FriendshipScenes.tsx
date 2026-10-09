@@ -43,6 +43,13 @@ const clauses = [
   ["IV", "Si todo se complica, existe siempre el derecho irrestricto a mandar “¿estás?”."],
 ];
 
+type FriendActionProps = {children: React.ReactNode; onClick: () => void; disabled?: boolean};
+function FriendAction({children,onClick,disabled=false}:FriendActionProps) {
+  return <button type="button" data-action="advance" className="friend-btn" onClick={onClick} disabled={disabled}>
+    <span>{children}</span><span className="friend-btn-icon" aria-hidden="true">↗</span>
+  </button>;
+}
+
 export default function FriendshipScenes({ scene, experience, photos, memory, letterText, anecdote, date, next, restart, onUnlock }: Props) {
   const [doorOpen, setDoorOpen] = useState(false);
   const [folderOpen, setFolderOpen] = useState(false);
@@ -65,11 +72,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
     onUnlock(ready);
   }, [scene,doorOpen,folderOpen,uncovered,envelopeOpen,pactSealed,onUnlock]);
 
-  const Action = ({children, onClick = next, disabled = false}: {children:React.ReactNode;onClick?:()=>void;disabled?:boolean}) => (
-    <button type="button" data-action="advance" className="friend-btn" onClick={onClick} disabled={disabled}>
-      <span>{children}</span><span className="friend-btn-icon" aria-hidden="true">↗</span>
-    </button>
-  );
+
 
   if (scene === "intro") return (
     <section className={"thi-scene friendship-scene friend-entrance" + (doorOpen ? " door-is-open" : "")}>
@@ -78,7 +81,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
         <p className="friend-overline">EXPEDIENTE PERSONAL · ACCESO EXCLUSIVO</p>
         <h1>Algunas amistades no se explican.<br /><em>Se abren.</em></h1>
         <p className="friend-description">Detrás de esta puerta está el archivo confidencial de una amistad legendaria. Pruebas, recuerdos y todo eso que solo ustedes entienden.</p>
-        <Action onClick={() => setDoorOpen(true)}>{doorOpen ? "Abriendo recuerdos…" : "Abrir la puerta"}</Action>
+        <FriendAction onClick={() => setDoorOpen(true)}>{doorOpen ? "Abriendo recuerdos…" : "Abrir la puerta"}</FriendAction>
         <small>Una experiencia preparada por {experience.demoGiver}</small>
       </div>
       <div className="friend-door-scene">
@@ -119,7 +122,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           </span>
         </button>
       </div>
-      {!folderOpen ? <p className="friend-hint">Tocá el expediente para desclasificarlo</p> : <Action>Ver la evidencia</Action>}
+      {!folderOpen ? <p className="friend-hint">Tocá el expediente para desclasificarlo</p> : <FriendAction onClick={next}>Ver la evidencia</FriendAction>}
     </section>
   );
 
@@ -137,7 +140,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           </figure>
         ))}
       </div>
-      <Action>Hay más pruebas</Action>
+      <FriendAction onClick={next}>Hay más pruebas</FriendAction>
     </section>
   );
 
@@ -154,7 +157,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           </button>
         ))}
       </div>
-      <Action disabled={uncovered.length<3}>{uncovered.length<3 ? "Descifrá al menos tres códigos" : "Revisar los antecedentes"}</Action>
+      <FriendAction onClick={next} disabled={uncovered.length<3}>{uncovered.length<3 ? "Descifrá al menos tres códigos" : "Revisar los antecedentes"}</FriendAction>
     </section>
   );
 
@@ -174,7 +177,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
         ))}
         <div className="friend-board-tag" aria-hidden="true">Las mejores decisiones<br />no siempre tienen sentido.<span>♡</span></div>
       </div>
-      <Action disabled={uncovered.length<3}>{uncovered.length<3 ? "Descubrí tres expedientes" : "Las pruebas que importan"}</Action>
+      <FriendAction onClick={next} disabled={uncovered.length<3}>{uncovered.length<3 ? "Descubrí tres expedientes" : "Las pruebas que importan"}</FriendAction>
     </section>
   );
 
@@ -185,7 +188,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <p className="friend-subline">Hay presencias que no hacen ruido. Pero sostienen toda la historia.</p>
       <div className="friend-presence-layout">
         <div className="friend-presence-timeline">
-          {presences.map(([title,copy],i)=>(
+          {presences.map(([title],i)=>(
             <button type="button" key={title} data-action="proof-open" className={"friend-presence-entry"+(activePresence===i?" active":"")+(uncovered.includes(i)?" visited":"")} onClick={()=>{reveal(i);setActivePresence(i)}} aria-expanded={activePresence===i}>
               <span>{String(i+1).padStart(2,"0")}</span><strong>{title}</strong><span className="friend-presence-icon">{activePresence===i?"✦":"+"}</span>
             </button>
@@ -200,7 +203,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           </div>
         </div>
       </div>
-      <Action disabled={uncovered.length<3}>{uncovered.length<3?"Iluminá tres recuerdos":"Hay algo que quiero decirte"}</Action>
+      <FriendAction onClick={next} disabled={uncovered.length<3}>{uncovered.length<3?"Iluminá tres recuerdos":"Hay algo que quiero decirte"}</FriendAction>
     </section>
   );
 
@@ -224,7 +227,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
         </div>
       </div>
       <p className="friend-hint">{envelopeOpen?"Una carta que ya es parte de la historia.":"Tocá el sello o deslizá hacia arriba para abrir"}</p>
-      {envelopeOpen && <Action>Para que quede por escrito</Action>}
+      {envelopeOpen && <FriendAction onClick={next}>Para que quede por escrito</FriendAction>}
     </section>
   );
 
@@ -246,7 +249,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
           <span className="friend-pact-stamp">AMISTAD<br />REAL</span>
         </div>
       </div>
-      {!pactSealed ? <Action disabled={uncovered.length<4} onClick={()=>setPactSealed(true)}>{uncovered.length<4?"Aceptá las cuatro cláusulas":"✧ Firmar nuestro pacto"}</Action> : <><p className="friend-pact-complete">✦ Queda oficialmente registrado: esta amistad no tiene fecha de vencimiento. ✦</p><Action>Una última cosa</Action></>}
+      {!pactSealed ? <FriendAction onClick={next} disabled={uncovered.length<4} onClick={()=>setPactSealed(true)}>{uncovered.length<4?"Aceptá las cuatro cláusulas":"✧ Firmar nuestro pacto"}</FriendAction> : <><p className="friend-pact-complete">✦ Queda oficialmente registrado: esta amistad no tiene fecha de vencimiento. ✦</p><FriendAction onClick={next}>Una última cosa</FriendAction></>}
       {pactSealed && <div className="friend-pact-burst" aria-hidden="true">{Array.from({length:15},(_,i)=><i key={i} style={{"--i":i} as React.CSSProperties}>✧</i>)}</div>}
     </section>
   );
