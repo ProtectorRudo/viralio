@@ -67,11 +67,12 @@ describe("private customer gifts use anonymous artwork for missing photos",()=>{
     const published=readFileSync(resolve(root,"r/[code]/page.tsx"),"utf8");
     const customerPreview=readFileSync(resolve(root,"editar/CustomerStudio.tsx"),"utf8");
     const adminPreview=readFileSync(resolve(root,"admin/AdminGiftEditor.tsx"),"utf8");
-    expect(published).toContain("fillPrivateGiftPhotos(");
+    expect(published).toContain("fillLegacyGiftPhotos");
+    expect(published).toContain("fillV3GiftPhotos");
     expect(published).toContain("demo:{...base.demo,photos:[]}");
     expect(customerPreview).toContain("fillPrivateGiftPhotos(");
     expect(adminPreview).toContain("fillPrivateGiftPhotos(");
-    for(const version of ["template-v1","template-v2"]){
+    for(const version of ["template-v1","template-v2","template-v3"]){
       const engine=readFileSync(resolve(root,version,"ExperienceEngine.tsx"),"utf8");
       expect(engine).not.toContain("privateGiftVisuals");
     }
