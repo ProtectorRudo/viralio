@@ -267,3 +267,21 @@
  .sceneTitle h2{text-shadow:0 4px 18px #000}
 }
 @media(prefers-reduced-motion:reduce){.heroFog,.cinematicRoom{animation:none}}
+
+/* UMBRAL / Eva's living memory sequence */
+.memoryDialog{width:min(100%,885px)!important;background:linear-gradient(155deg,#1c201e,#0a1114 65%,#080c0f)!important;padding:clamp(22px,4.5vw,48px)!important}
+.memoryDialog .close{z-index:8}
+.discoveryActions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px}
+.discoveryActions .primary{min-width:230px;min-height:53px}
+.discoveryActions .ghost{margin:0!important;padding:14px 16px;border:1px solid rgba(214,175,118,.28)}
+.whisperButton{position:relative;display:block;min-height:53px;padding:12px 25px;margin:14px 0 19px;border:1px solid rgba(242,191,133,.58);background:linear-gradient(115deg,#33251d,#62412c 50%,#30251f);color:#f5d8b3;font-size:.73rem;font-weight:760;letter-spacing:.17em;box-shadow:0 2px 25px rgba(198,135,88,.1);transition:box-shadow .2s,transform .2s}
+.whisperButton:hover{box-shadow:0 3px 31px rgba(216,152,94,.26);transform:translateY(-1px)}
+@media(max-width:650px){.memoryDialog{max-height:calc(100dvh - 18px)!important;padding:22px 17px!important}.discoveryActions{flex-direction:column;align-items:stretch}.discoveryActions .primary{min-width:0;width:100%}.discoveryActions .ghost{width:100%}.whisperButton{width:100%;font-size:.65rem}}
+@media(prefers-reduced-motion:reduce){.whisperButton{transition:none}}
+
+/* Optional story closure: heard only on request, the text remains accessible. */
+.evaEpilogue{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(520px,95%);margin:14px auto 26px;padding:24px 26px 22px;border:1px solid rgba(221,188,136,.38);background:linear-gradient(110deg,rgba(131,90,65,.17),rgba(15,24,25,.8));box-shadow:0 13px 40px rgba(0,0,0,.38),inset 0 0 35px rgba(211,170,119,.07)}
+.evaEpilogue:before{content:"";position:absolute;inset:7px;border:1px solid rgba(233,193,148,.12);pointer-events:none}
+.evaEpilogue p{margin:4px 0 9px;max-width:450px;color:#f0ddc2;font:italic clamp(1.12rem,2vw,1.4rem)/1.65 Georgia,serif;text-align:center}
+.evaEpilogue button{min-height:44px;border:1px solid rgba(224,190,143,.48);padding:10px 18px;background:rgba(21,26,27,.8);color:#e0c59e;font-size:.64rem;letter-spacing:.14em;font-weight:700}
+.evaEpilogue button:hover{background:rgba(102,79,58,.52)}

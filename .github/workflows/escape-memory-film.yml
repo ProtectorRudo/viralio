@@ -1,0 +1,51 @@
+name: UMBRAL · Build Eva Tape
+
+on:
+  push:
+    branches: [feat/escape-eva-living-house-20261009]
+    paths:
+      - ".github/workflows/escape-memory-film.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install local film encoder
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Produce original Eva memory movie from photographic game scenes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/umbral-film public/escape/images
+          ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 18 -i public/escape/images/room-2.webp -vf "scale=720:405,zoompan=z='min(zoom+0.0008,1.09)':d=1:s=640x360:fps=18,format=yuv420p,eq=contrast=1.14:saturation=0.75:brightness=-0.06,fade=t=out:st=3.4:d=0.6" -t 4 -r 18 -an -c:v libx264 -preset medium -crf 22 /tmp/umbral-film/room.mp4
+          ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 18 -i public/escape/images/objects/doll.webp -vf "scale=720:720,crop=720:405:0:130,zoompan=z='min(zoom+0.001,1.11)':d=1:s=640x360:fps=18,format=yuv420p,eq=contrast=1.15:saturation=0.7:brightness=-0.10,fade=t=in:st=0:d=0.4,fade=t=out:st=3.1:d=0.6" -t 3.7 -r 18 -an -c:v libx264 -preset medium -crf 22 /tmp/umbral-film/doll.mp4
+          printf "file '/tmp/umbral-film/room.mp4'\nfile '/tmp/umbral-film/doll.mp4'\n" > /tmp/umbral-film/sequence.txt
+          ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i /tmp/umbral-film/sequence.txt -c copy -movflags +faststart public/escape/images/eva-tape-013.mp4
+          wc -c public/escape/images/eva-tape-013.mp4
+          test "$(wc -c < public/escape/images/eva-tape-013.mp4)" -gt 30000
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 public/escape/images/eva-tape-013.mp4
+      - name: Commit video to the working branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/escape/images/eva-tape-013.mp4
+          if git diff --cached --quiet; then
+            echo "Video already matches committed bytes"
+          else
+            git commit -m "asset(escape): add Eva's original cinematic memory tape"
+            git push origin HEAD:feat/escape-eva-living-house-20261009
+          fi
