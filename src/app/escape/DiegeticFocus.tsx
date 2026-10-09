@@ -35,7 +35,7 @@ export default function DiegeticFocus({
   return <div className={styles.focusWorld} data-focus-object={kind} data-focus-room={room}
     style={{"--origin-x":origin.x+"%","--origin-y":origin.y+"%"} as CSSProperties}
     onPointerMove={move} aria-hidden="true">
-    <div className={styles.camera} style={{backgroundImage:`linear-gradient(110deg,rgba(0,2,5,.08),rgba(0,3,6,.52) 61%,rgba(0,1,3,.91)),url("/escape/images/room-${room}.webp")`}} />
+    <div className={styles.camera} style={{backgroundImage:`linear-gradient(110deg,rgba(0,2,5,.08),rgba(0,3,6,.52) 61%,rgba(0,1,3,.91)),image-set(url("/escape/images/room-${room}.webp") 1x,url("/escape/images/retina/room-${room}.webp") 2x)`}} />
     <div className={styles.cameraGrain}/>
     <div className={styles.darkVelvet}/>
     <div className={styles.artefact} data-material={kind}>
