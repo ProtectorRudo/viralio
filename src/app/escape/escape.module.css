@@ -392,3 +392,28 @@
  .hotspot:before,.cinematicRoom,.cinematicRoom:before{animation:none!important}
  .cinematicRoom{will-change:auto;transform:scale(1.02)!important}
 }
+
+/* Real screenshot audit, 390×844: with flashlight enabled the entire mobile
+   foyer was nearly black. Keep the suspense without erasing the scene. */
+.introOptions{display:flex;flex-wrap:wrap;align-items:center;max-width:670px;gap:8px 9px;margin:13px 0 8px}
+.introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{position:relative;display:inline-flex;align-items:center;justify-content:flex-start;flex:0 1 auto;width:auto;max-width:100%;min-height:38px;margin:0;padding:9px 12px;border:1px solid rgba(216,183,133,.33);background:linear-gradient(105deg,rgba(35,31,27,.78),rgba(11,17,18,.8));color:#e7d5bb;font:700 .54rem/1.35 ui-sans-serif,sans-serif!important;letter-spacing:.105em!important;text-align:left;vertical-align:middle;box-shadow:inset 0 0 12px rgba(243,195,132,.025)}
+.introOptions button[aria-pressed="false"]{border-color:rgba(181,145,110,.39);background:rgba(18,21,23,.87);color:#b7a48d}
+.introOptions button:hover,.introOptions button:focus-visible{border-color:#ebc38d;background:rgba(93,70,51,.62)}
+.intro .primary{margin-top:4px!important}
+@media(max-width:800px){
+ .introOptions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:11px 0 6px}
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{min-width:0;min-height:40px;padding:7px 8px;font-size:.47rem!important;letter-spacing:.055em!important}
+ .introOptions .scareChoice{grid-column:1/3}
+ .intro .introFine{font-size:.55rem;line-height:1.55}
+ .roomArt .cinematicRoom{filter:brightness(1.25) contrast(1.035) saturate(.98)!important}
+ .roomArt .shade{background:radial-gradient(ellipse at 50% 50%,transparent 28%,rgba(3,6,9,.065) 65%,rgba(0,0,0,.38) 100%),linear-gradient(180deg,rgba(0,0,0,.27),transparent 31%,rgba(0,0,0,.2))}
+ .torch{background:radial-gradient(circle 165px at var(--torch-x,50%) var(--torch-y,53%),transparent 0,rgba(3,7,9,.07) 37%,rgba(1,4,7,.27) 75%,rgba(1,3,6,.52) 100%)!important}
+ .cinematicRoom[data-room="0"]{background-position:49% center}
+ .cinematicRoom[data-room="1"]{background-position:42% center}
+ .cinematicRoom[data-room="2"]{background-position:65% center}
+ .cinematicRoom[data-room="3"]{background-position:57% center}
+}
+@media(max-width:420px){
+ .introOptions .soundIntro,.introOptions .scoreChoice,.introOptions .scareChoice{font-size:.45rem!important}
+ .introOptions{margin-top:9px}
+}
