@@ -44,6 +44,6 @@ describe("Te guardé un secreto — launch quality and model parity", () => {
     expect(order).toContain(definition);
     expect(creator).toContain(definition);
     expect(order).toContain('"secret-v1"');
-    expect(creator).toContain('gift.template_version==="secret-v1"');
+    expect(creator).toContain('["premium-v3","premium-v4","secret-v1"].includes(gift.template_version)');
   });
 });
