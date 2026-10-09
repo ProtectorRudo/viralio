@@ -14,15 +14,18 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
     await page.getByRole("button", { name: /Abrir expediente/ }).click();
     await expect(page.getByRole("heading", { name: "El expediente de Eva" })).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-expediente-desktop.png",fullPage:true});
     await expect(page.getByText("0 / 8")).toBeVisible();
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Retrato de Nora" }).first().click();
     await expect(page.getByText("1918").last()).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-artefacto-desktop.png",fullPage:true});
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: /Abrir expediente/ }).click();
     await expect(page.getByText("1 / 8")).toBeVisible();
     await expect(page.getByRole("heading", { name: "El retrato de Nora" })).toBeVisible();
+    await page.screenshot({path:"visual-qa-evidence/umbral-expediente-recuperado-desktop.png",fullPage:true});
     await page.getByRole("button", { name: "Cerrar" }).click();
 
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
@@ -108,5 +111,17 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: /SEGUIR INVESTIGANDO/ }).click();
     await page.clock.fastForward(5000);
     await expect(page.getByText("24:40")).toBeVisible();
+  });
+  test("el modo pesadilla exige doce minutos sin afectar el modo historia",async ({page})=>{
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/12 MIN/}).click();
+    await expect(page.getByText("Tenés 12 minutos")).toBeVisible();
+    await page.getByRole("button",{name:/CRUZAR EL UMBRAL/}).click();
+    await expect(page.getByText("12:00")).toBeVisible();
+    await page.getByRole("button",{name:"Pausar partida"}).click();
+    await page.reload();
+    await expect(page.getByRole("heading",{name:/Hasta la casa guarda silencio/})).toBeVisible();
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await expect(page.getByText("MODO PESADILLA")).toBeVisible();
   });
 });
