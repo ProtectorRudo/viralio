@@ -59,8 +59,9 @@ jobs:
           await page.locator('.friend-memories [data-action="advance"]').click();await scene('insidejokes');
           for(const i of [0,1,2])await page.locator('[data-action="insidejoke-open"]').nth(i).click();
           await page.locator('.friend-codes [data-action="advance"]').click();await scene('incidents');
+          await page.waitForTimeout(350);
           const y=await page.locator('.friend-incidents h2').evaluate(el=>el.getBoundingClientRect().top);
-          console.log('INCIDENT_TITLE_TOP',y);
+          console.log('INCIDENT_TITLE_TOP',y,'SCROLL_Y',await page.evaluate(()=>window.scrollY));
           if(y<120)throw Error('Mobile incident headline cropped');
           for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();
           const panel=await page.locator('.friend-case-insight').innerText();
