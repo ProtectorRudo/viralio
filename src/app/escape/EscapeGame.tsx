@@ -22,6 +22,12 @@ const PORTRAITS = [
 ];
 const SAVE_KEY = "umbral-casa-13-v1";
 let sharedAudioContext: AudioContext | null = null;
+function readAudioContext() { return sharedAudioContext; }
+function createAudioContext() {
+  if(typeof window==="undefined") return null;
+  sharedAudioContext ??= new window.AudioContext();
+  return sharedAudioContext;
+}
 
 function fmt(seconds: number) {
   return String(Math.floor(Math.max(seconds, 0) / 60)).padStart(2, "0") + ":" + String(Math.max(seconds, 0) % 60).padStart(2, "0");
@@ -180,7 +186,7 @@ export default function EscapeGame() {
       ambient.current = null;
     };
     stop();
-    const ctx=sharedAudioContext;
+    const ctx=readAudioContext();
     if(!ctx || phase!=="playing" || paused || !sound) return stop;
     try {
       const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
@@ -215,8 +221,9 @@ export default function EscapeGame() {
   function sfx(kind: "click" | "success" | "error" | "step" | "tone" = "click", pitch = 440) {
     if(!sound || typeof window==="undefined") return;
     try {
-      const ctx=sharedAudioContext || new window.AudioContext();
-      sharedAudioContext=ctx; if(ctx.state==="suspended") void ctx.resume();
+      const ctx=createAudioContext();
+      if(!ctx) return;
+      if(ctx.state==="suspended") void ctx.resume();
       const osc=ctx.createOscillator(), gain=ctx.createGain();
       osc.type=kind==="error"?"sawtooth":kind==="success"?"sine":"triangle";
       const now=ctx.currentTime, base=kind==="tone"?pitch:kind==="success"?510:kind==="error"?110:kind==="step"?85:270;
