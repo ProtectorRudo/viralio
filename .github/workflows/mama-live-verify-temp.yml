@@ -49,6 +49,15 @@ jobs:
               grep -o '__thiMamaVoiceSkipLive' /tmp/mama-piece.js | head -2 || true
             fi
           done < /tmp/mama-scripts.txt
+      - name: Identify Mom engine among production scripts
+        run: |
+          set -eux
+          for f in 2u5v7xdlfh11m.js 0zzxa124u-3tt.js 2e5v3vseouhnh.js turbopack-3egkanvz5ntfj.js 2corl6wyj4669.js 0-_ohob160l9y.js 0h8rgq4_8g54b.js 03nlifkr_qn72.js 0gradzqca-5xg.js 0c0hxoamwjsbw.js 36s0t0o8ux5as.js; do
+            curl -fsSL --max-time 22 "https://tehiceesto.com/_next/static/immutable/chunks/$f" -o /tmp/chunk || continue
+            echo "CHUNK=$f SIZE=$(wc -c </tmp/chunk)"
+            if grep -Fq 'mama-voice-toggle' /tmp/chunk; then echo "MAMA_ENGINE_CHUNK=$f"; fi
+            if grep -Fq 'thi-mama-voice-picker' /tmp/chunk; then echo "MAMA_PICKER_CHUNK=$f"; fi
+          done
       - name: Install browser
         run: |
           npm ci --ignore-scripts
