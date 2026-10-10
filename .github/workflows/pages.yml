@@ -39,6 +39,12 @@ jobs:
         run: |
           npm ci
           npm install --no-save --no-package-lock esbuild@0.25.12
+      - name: Prepare audio for CASO M
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak ffmpeg
+          python3 -m pip install --quiet --user --break-system-packages edge-tts || true
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Bundle UMBRAL without a Next server
         run: |
           node scripts/build-escape-standalone.mjs
@@ -49,6 +55,7 @@ jobs:
           test -s showcase/rescate-mauro/index.html
           test -s showcase/rescate-mauro/app.js
           test -s showcase/rescate-mauro/app.css
+          test -s showcase/rescate-mauro/audio/rescue-message.mp3
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Validate static showcase
@@ -56,6 +63,7 @@ jobs:
           test -f showcase/rescate-mauro/index.html
           test -f showcase/rescate-mauro/app.js
           test -f showcase/rescate-mauro/app.css
+          test -s showcase/rescate-mauro/audio/rescue-message.mp3
           node --check showcase/rescate-mauro/app.js
           test -f showcase/index.html
           test -f showcase/moka/index.html
@@ -117,7 +125,9 @@ jobs:
           test "$rescue_ok" -eq 1
           curl -fsSL --max-time 20 "$rescue/app.js" -o /tmp/rescate-mauro.js
           curl -fsSL --max-time 20 "$rescue/app.css" -o /tmp/rescate-mauro.css
+          curl -fsSL --max-time 20 "$rescue/audio/rescue-message.mp3" -o /tmp/rescate-mauro-message.mp3
           test "$(wc -c </tmp/rescate-mauro.js)" -gt 20000
           test "$(wc -c </tmp/rescate-mauro.css)" -gt 5000
+          test "$(wc -c </tmp/rescate-mauro-message.mp3)" -gt 2000
           echo "PASS: Rescate Mauro 3D invite is publicly served at $rescue/"
 
