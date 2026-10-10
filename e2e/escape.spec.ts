@@ -92,8 +92,16 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   });
 
   test("exploración: 12 objetos por escena, tres puntos de vista y mecanismos físicos", async ({page})=>{
-    test.setTimeout(100_000);
+    test.setTimeout(140_000);
     await page.setViewportSize({width:390,height:844});
+    // Seed before Next hydrates. Autosave can overwrite an injected saved game.
+    await page.addInitScript(()=>{
+      const pending=window.sessionStorage.getItem("__umbral_e2e_room_seed");
+      if(pending){
+        window.localStorage.setItem("umbral-casa-13-v1",pending);
+        window.sessionStorage.removeItem("__umbral_e2e_room_seed");
+      }
+    });
     const rooms=[
       {room:0,drawer:"Cajón de la consola",tool:"Llave de bronce",lock:"Caja de caoba"},
       {room:1,drawer:"Cajón del escritorio",tool:"Disco de latón",lock:"Archivador con cerradura"},
@@ -103,7 +111,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     for(const scene of rooms){
       await page.goto("/escape");
       await page.evaluate((room)=>{
-        window.localStorage.setItem("umbral-casa-13-v1",JSON.stringify({
+        window.sessionStorage.setItem("__umbral_e2e_room_seed",JSON.stringify({
           phase:"playing",room,seconds:1200,hints:[0,0,0,0],mistakes:0,difficulty:"story",
           puzzles:{clockWound:false,mirrorRead:false,portraits:[],candles:[],studyOpen:false,notesRead:false,evaRead:false,melody:[],nurseryOpen:false,keepsake:false,fuses:[],power:false,ending:null},
         }));
