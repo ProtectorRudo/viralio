@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import styles from "./RoomExplorer.module.css";
 
 type Kind = "drawer" | "slide" | "rotate" | "pull" | "look" | "collect" | "lock";
@@ -93,6 +93,7 @@ export default function RoomExplorer({
   const [zone,setZone]=useState(1);
   const [selected,setSelected]=useState<string|null>(null);
   const [held,setHeld]=useState<string|null>(null);
+  const dragging=useRef<{id:number;startX:number;startY:number;startValue:number;kind:Kind;objectId:string}|null>(null);
   const objects=ROOM_OBJECTS[room]??ROOM_OBJECTS[0];
   const object=objects.find(item=>item.id===selected);
   const current=objects.filter(item=>item.zone===zone);
@@ -131,7 +132,27 @@ export default function RoomExplorer({
     onChange({...state,mechanisms:{...mechanisms,[item.id]:100},discovered:[...new Set([...(state.discovered??[]),item.id])]});
     onSound(true);
   }
-  function shift(to:number){setZone(Math.min(2,Math.max(0,to)));setSelected(null);onSound(false);}
+  function dragStart(e:ReactPointerEvent<HTMLDivElement>,item:ObjectDef){
+    if(item.kind==="look"||item.kind==="collect"||item.kind==="lock")return;
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+    e.preventDefault();
+    dragging.current={id:e.pointerId,startX:e.clientX,startY:e.clientY,startValue:mechanisms[item.id]??0,kind:item.kind,objectId:item.id};
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+  function dragMove(e:ReactPointerEvent<HTMLDivElement>,item:ObjectDef){
+    const drag=dragging.current;
+    if(!drag||drag.id!==e.pointerId||drag.objectId!==item.id)return;
+    e.preventDefault();
+    const dist=drag.kind==="drawer"||drag.kind==="pull"?e.clientY-drag.startY:e.clientX-drag.startX;
+    const value=Math.max(0,Math.min(100,Math.round(drag.startValue+dist*.75)));
+    if(value!==(mechanisms[item.id]??0))activate(item,value);
+  }
+  function dragEnd(e:ReactPointerEvent<HTMLDivElement>){
+    if(dragging.current?.id!==e.pointerId)return;
+    dragging.current=null;
+    if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
+  }
+  function shift(to:number){dragging.current=null;setZone(Math.min(2,Math.max(0,to)));setSelected(null);onSound(false);}
   const progress=object?(mechanisms[object.id]??0):0;
   const opened=Boolean(object&&(discovered.has(object.id)||progress>=(object.threshold??65)));
   const photoPosition=["12%","50%","87%"][zone];
@@ -167,7 +188,7 @@ export default function RoomExplorer({
       </div>
       <div className={styles.objectContent}>
         <div className={styles.physicalScene} data-kind={object.kind}>
-          <div className={styles.fixture} style={{transform:object.kind==="rotate"?`rotate(${progress*3.4}deg)`:object.kind==="pull"?`translateY(${progress*.7}px)`:object.kind==="slide"?`translateX(${progress*.65}px)`:object.kind==="drawer"?`translateY(${progress*.65}px)`:undefined}}>
+          <div className={styles.fixture} role="img" aria-label={"Manipulación táctil de "+object.title} data-draggable={object.kind!=="look"&&object.kind!=="collect"&&object.kind!=="lock"?"true":"false"} onPointerDown={e=>dragStart(e,object)} onPointerMove={e=>dragMove(e,object)} onPointerUp={dragEnd} onPointerCancel={dragEnd} onLostPointerCapture={()=>{dragging.current=null}} style={{transform:object.kind==="rotate"?`rotate(${progress*3.4}deg)`:object.kind==="pull"?`translateY(${progress*.7}px)`:object.kind==="slide"?`translateX(${progress*.65}px)`:object.kind==="drawer"?`translateY(${progress*.65}px)`:undefined}}>
             <span aria-hidden="true">{object.icon}</span>
             <strong>{object.kind==="drawer"?"◈ TIRADOR":object.kind==="rotate"?"⟳ EJE":object.kind==="pull"?"↓ CADENA":object.kind==="lock"?"⚿ CERRADURA":object.kind==="slide"?"⇢ DESLIZAR":"OBJETO"}</strong>
           </div>
@@ -179,7 +200,7 @@ export default function RoomExplorer({
             ?<blockquote>{object.detail}</blockquote>
             :object.kind==="lock"
               ?<><p>{opened?object.after:object.detail}</p><button className={styles.useItem} type="button" disabled={!object.requires||!collected.has(object.requires)||opened} onClick={()=>unlock(object)}>{opened?"MECANISMO DESBLOQUEADO":!object.requires||!collected.has(object.requires)?"FALTA UNA PIEZA DEL INVENTARIO":held===object.requires?"INSERTAR Y GIRAR "+object.requires.toUpperCase():"SELECCIONAR "+object.requires?.toUpperCase()}</button></>
-              :<><p>{opened?object.after:object.detail}</p><label className={styles.rangeLabel} htmlFor={"umbral-handle-"+object.id}>{GAUGE_LABELS[object.kind]} <b>{progress}%</b></label><input id={"umbral-handle-"+object.id} type="range" min="0" max="100" value={progress} step="1" onChange={e=>activate(object,Number(e.target.value))} aria-label={GAUGE_LABELS[object.kind]+" · "+object.title}/></>}
+              :<><p>{opened?object.after:object.detail}</p><p className={styles.dragHint}>↗ ARRASTRÁ LA PIEZA DIRECTAMENTE O USÁ EL CONTROL DE ABAJO.</p><label className={styles.rangeLabel} htmlFor={"umbral-handle-"+object.id}>{GAUGE_LABELS[object.kind]} <b>{progress}%</b></label><input id={"umbral-handle-"+object.id} type="range" min="0" max="100" value={progress} step="1" onChange={e=>activate(object,Number(e.target.value))} aria-label={GAUGE_LABELS[object.kind]+" · "+object.title}/></>}
           {opened&&object.kind!=="lock"&&object.kind!=="collect"&&<blockquote className={styles.revelation}>{object.after}</blockquote>}
           {object.gives&&<button type="button" className={styles.pickUp} disabled={collected.has(object.gives)||(object.kind!=="collect"&&!opened)} onClick={()=>collect(object)}>{collected.has(object.gives)?"✓ EN EL INVENTARIO":"＋ RECOGER "+object.gives.toUpperCase()}</button>}
         </div>
