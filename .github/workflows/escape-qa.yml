@@ -6,6 +6,9 @@ on:
     paths:
       - "src/app/escape/**"
       - "e2e/escape.spec.ts"
+      - "e2e/rescate.spec.ts"
+      - "e2e/rescate.playwright.config.ts"
+      - "scripts/build-escape-standalone.mjs"
       - "e2e/escape.playwright.config.ts"
       - ".github/workflows/escape-qa.yml"
   workflow_dispatch:
@@ -39,6 +42,15 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run all escape-room browser journeys
         run: npx playwright test --config e2e/escape.playwright.config.ts
+      - name: Bundle isolated invitation game
+        run: |
+          npm install --no-save --no-package-lock esbuild@0.25.12
+          node scripts/build-escape-standalone.mjs
+          test -s showcase/rescate-mauro/index.html
+          test -s showcase/rescate-mauro/app.js
+          test -s showcase/rescate-mauro/app.css
+      - name: Play full 3D kidnapping-to-birthday journey
+        run: npx playwright test --config e2e/rescate.playwright.config.ts
       - name: Save failed browser traces
         if: failure()
         uses: actions/upload-artifact@v4

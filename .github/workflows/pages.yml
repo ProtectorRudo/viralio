@@ -46,10 +46,17 @@ jobs:
           test -s showcase/escape/app.js
           test -s showcase/escape/app.css
           test -s showcase/escape/images/mansion.webp
+          test -s showcase/rescate-mauro/index.html
+          test -s showcase/rescate-mauro/app.js
+          test -s showcase/rescate-mauro/app.css
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Validate static showcase
         run: |
+          test -f showcase/rescate-mauro/index.html
+          test -f showcase/rescate-mauro/app.js
+          test -f showcase/rescate-mauro/app.css
+          node --check showcase/rescate-mauro/app.js
           test -f showcase/index.html
           test -f showcase/moka/index.html
           test -f showcase/moka/moka.css
@@ -97,4 +104,20 @@ jobs:
           test "$(wc -c </tmp/umbral-pages.css)" -gt 10000
           test "$(wc -c </tmp/umbral-pages.webp)" -gt 10000
           echo "PASS: UMBRAL is publicly served at $base/"
+          rescue="https://protectorrudo.github.io/viralio/rescate-mauro"
+          rescue_ok=0
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 15 "$rescue/" -o /tmp/rescate-mauro.html && grep -Fq "Rescate a Mauro" /tmp/rescate-mauro.html; then
+              rescue_ok=1
+              break
+            fi
+            echo "Waiting for Rescate Mauro public Pages propagation ($attempt)"
+            sleep 5
+          done
+          test "$rescue_ok" -eq 1
+          curl -fsSL --max-time 20 "$rescue/app.js" -o /tmp/rescate-mauro.js
+          curl -fsSL --max-time 20 "$rescue/app.css" -o /tmp/rescate-mauro.css
+          test "$(wc -c </tmp/rescate-mauro.js)" -gt 20000
+          test "$(wc -c </tmp/rescate-mauro.css)" -gt 5000
+          echo "PASS: Rescate Mauro 3D invite is publicly served at $rescue/"
 
