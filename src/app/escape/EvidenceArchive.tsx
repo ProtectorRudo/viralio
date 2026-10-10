@@ -7,8 +7,8 @@ type Props = { portraits:number[]; notesRead:boolean; evaRead:boolean; nurseryOp
 export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen,keepsake,power,mirrorRead}:Props) {
   const records:Evidence[] = [
     {id:"nora",title:"El retrato de Nora",chapter:"VESTÍBULO",note:"1918 · El marco lleva el número 4. Alguien alteró el orden de las fotos.",symbol:"✧",character:"nora",found:portraits.includes(2)},
-    {id:"mara",title:"La madre",chapter:"VESTÍBULO",note:"1902 · La cifra 2 aparece bajo un ramo de flores marchitas.",symbol:"◇",character:"mara",found:portraits.includes(1)},
-    {id:"elias",title:"El guardián",chapter:"VESTÍBULO",note:"1891 · La cifra 7 está marcada sobre la madera.",symbol:"♜",character:"elias",found:portraits.includes(0)},
+    {id:"mara",title:"Mara · la madre",chapter:"VESTÍBULO",note:"1902 · La cifra 2 aparece bajo un ramo de flores marchitas.",symbol:"◇",character:"mara",found:portraits.includes(1)},
+    {id:"elias",title:"Elías · el guardián",chapter:"VESTÍBULO",note:"1891 · La cifra 7 está marcada sobre la madera.",symbol:"♜",character:"elias",found:portraits.includes(0)},
     {id:"letter",title:"Nota entre cenizas",chapter:"DESPACHO",note:"«Cielo, camino y lo que florece». Las velas esconden una secuencia.",symbol:"✉",found:notesRead},
     {id:"eva",title:"El cuaderno de Eva",chapter:"HABITACIÓN",note:"Una melodía quedó escrita: SOL · MI · LA · SOL.",symbol:"♫",character:"eva",found:evaRead},
     {id:"song",title:"El secreto de la caja",chapter:"HABITACIÓN",note:"La fotografía de Eva apareció debajo de la música.",symbol:"☽",found:nurseryOpen},
