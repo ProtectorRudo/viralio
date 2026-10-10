@@ -56,15 +56,17 @@ function App(){
  const [musicPlaying,setMusicPlaying]=useState(false);
  const [tapeStatus,setTapeStatus]=useState<"idle"|"playing"|"ended"|"error">("idle");
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
- const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
+ const flags=useRef({unlocked:false,clockActivated:false,intruder:false,remaining:180});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
  const [tensionCue,setTensionCue]=useState<""|"signal"|"flicker"|"knock">("");
+ const [blackout,setBlackout]=useState(false),[graffiti,setGraffiti]=useState(false),[graffitiReveal,setGraffitiReveal]=useState(false);
+ const blackoutTriggered=useRef(false),blackoutTimers=useRef<number[]>([]),graffitiMarker=useRef<HTMLDivElement|null>(null);
  const finalMinute=seconds<=60;
  const cuesFired=useRef(new Set<number>()),cueTimer=useRef<number|null>(null);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
- useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);},[]);
+ useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
   config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
@@ -84,6 +86,15 @@ function App(){
     // World-space telemetry is also useful for joystick accessibility tests.
     el.dataset.cameraX=pos.x.toFixed(2);
     el.dataset.cameraZ=pos.z.toFixed(2);
+     const paint=graffitiMarker.current;
+     if(paint){
+       const wall=world.current?.project([-1.48,2.55,-5.47]);
+       if(wall){
+         paint.style.left=wall.x+"px";paint.style.top=wall.y+"px";
+         paint.style.visibility=wall.visible?"visible":"hidden";
+         paint.style.setProperty("--spray-scale",String(Math.max(.58,Math.min(1.7,4.8/Math.max(1,wall.distance)))));
+       }
+     }
      const marker=envelopeMarker.current;
      if(marker&&unlockedRef.current){
       const point=world.current?.project([.02,.79,-1.48]);
@@ -126,6 +137,27 @@ function App(){
   return()=>clearInterval(id);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,muted,expired,drawerOpen,seconds<=48,seconds<=105]);
+ // Synchronize actual 3D approach with the mission timer.
+ useEffect(()=>{
+  if(screen!=="game")return;
+  flags.current.remaining=seconds;
+  if(flags.current.intruder)world.current?.setFlags({...flags.current});
+ },[screen,seconds]);
+ // Blackout at 01:00 remaining: full darkness, then an impossible-to-miss
+ // red warning permanently painted onto the back wall.
+ useEffect(()=>{
+  if(screen!=="game"||expired||drawerOpen||seconds>60||blackoutTriggered.current)return;
+  blackoutTriggered.current=true;setBlackout(true);setDoorWarning(false);
+  setTensionCue("");setToast("");sound("static");navigator.vibrate?.([75,75,170]);
+  const reveal=window.setTimeout(()=>{
+    setBlackout(false);setGraffiti(true);setGraffitiReveal(true);
+    world.current?.lookAt({id:"board",label:"Pintada roja",pos:[-1.48,2.55,-5.47],reach:10,hint:"SEGUÍS VOS."});
+    setToast("ALGUIEN DEJÓ UN MENSAJE EN LA PARED.");sound("metal");navigator.vibrate?.([25,70,110]);
+  },1650);
+  const clear=window.setTimeout(()=>setGraffitiReveal(false),4200);
+  blackoutTimers.current.push(reveal,clear);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,expired,drawerOpen,seconds]);
  // Sparingly placed environmental beats, not looping pop-ups.
  useEffect(()=>{
   if(screen!=="game"||expired||drawerOpen)return;
@@ -151,17 +183,17 @@ function App(){
  useEffect(()=>{
   if(screen!=="game"||expired||seconds>60||threatFired.current)return;
   threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
-  setDoorWarning(true);setShowNear(false);setToast("RUIDO EN EL PASILLO · ¡LA PUERTA SE ESTÁ ABRIENDO!");
+  setShowNear(false);setToast("RUIDO EN EL PASILLO · ¡LA PUERTA SE ESTÁ ABRIENDO!");
   sound("door");navigator.vibrate?.([140,100,260]);
   const schedule=(ms:number,cb:()=>void)=>threatTimers.current.push(window.setTimeout(cb,ms));
-  schedule(1700,()=>sound("step"));
+  schedule(1700,()=>{setDoorWarning(true);sound("step");});
   schedule(3100,()=>sound("step"));
   schedule(4500,()=>sound("step"));
   schedule(10000,()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);});
   schedule(12900,()=>sound("metal"));
    for(const at of [14200,19100,23700,28600,32700])schedule(at,()=>sound("step"));
   schedule(12800,()=>setFigureWarning(false));
-  schedule(3100,()=>setDoorWarning(false));
+  schedule(4300,()=>setDoorWarning(false));
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
@@ -417,9 +449,12 @@ function App(){
    <audio data-testid="rescate-music-audio" ref={musicAudio} src="./audio/suspense.wav" preload="auto" loop
      onPlaying={()=>setMusicPlaying(true)} onPause={()=>setMusicPlaying(false)}
      onError={()=>{setMusicPlaying(false);setToast("MÚSICA NO DISPONIBLE · REINTENTÁ SONIDO");}}/>
-   <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto"
+   <audio data-testid="rescate-tape-audio" ref={tapeAudio} preload="auto"
      onEnded={()=>{setTapeStatus("ended");if(musicAudio.current)musicAudio.current.volume=.65}}
-     onError={()=>setTapeStatus("error")}/>
+     onError={()=>setTapeStatus("error")}>
+     <source src="./audio/mauro-voice.webm" type="audio/webm; codecs=opus"/>
+     <source src="./audio/rescue-message.mp3" type="audio/mpeg"/>
+    </audio>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
     <span className={styles.classified}>CANAL 09 / M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
@@ -451,6 +486,9 @@ function App(){
     <div className={styles.sceneGrain} aria-hidden="true"/>
     {seconds<=60&&!drawerOpen&&<div className={styles.pulseFrame} aria-hidden="true"/>}
     {tensionCue&&<div className={styles.tensionCue} data-effect={tensionCue} aria-hidden="true"/>}
+    {graffiti&&<div ref={graffitiMarker} data-testid="rescate-graffiti-wall" className={styles.graffitiWall} aria-label="Pintada roja en la pared: SEGUÍS VOS."><span>SEGUÍS</span><strong>VOS.</strong></div>}
+    {graffitiReveal&&<div className={styles.graffitiCinematic} data-testid="rescate-graffiti-reveal" aria-hidden="true"><span>SEGUÍS VOS.</span></div>}
+    {blackout&&<div className={styles.blackout} data-testid="rescate-blackout" role="img" aria-label="Se cortó la luz"><i/></div>}
     <div className={styles.threatVignette} data-threat={flags.current.intruder?"yes":"no"} aria-hidden="true"/>
     {figureWarning&&<div className={styles.knifeAlert} data-testid="rescate-knife-alert" role="alert"><span>ADVERTENCIA · PRESENCIA DETECTADA</span><strong>NO ESTÁS SOLO.</strong><small>¡APURATE, EL TIEMPO SE AGOTA!</small></div>}
     {doorWarning&&<div className={styles.doorAlert} data-testid="rescate-intruder-alert" role="alert"><span>¡ESCUCHASTE ESO!</span><strong>ALGUIEN ESTÁ ABRIENDO LA PUERTA.</strong><small>NO TE DETENGAS · QUEDA 1 MINUTO</small></div>}
@@ -559,7 +597,7 @@ function App(){
         <div><span>ARCH.</span> FOTOGRAFÍAS, HORARIOS Y RECORTES</div>
         <small>NO TODAS LAS NOTAS SON CLAVES DEL CANDADO.</small>
        </div>}
-       {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>MENSAJE RECONSTRUIDO · VOZ PROVISIONAL, NO ES LA VOZ ORIGINAL</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
+       {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>GRABACIÓN ORIGINAL · VOZ DE MAURO</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
       {focus.id in EVIDENCE&&(focus.id!=="calendar"||photoFlipped)?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
       {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate} disabled={focus.id==="calendar"&&!photoFlipped}>{focus.id==="calendar"&&!photoFlipped?"PRIMERO REVISÁ EL REVERSO":focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>
@@ -614,7 +652,9 @@ function App(){
      <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);blackoutTriggered.current=false;for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];
+ setBlackout(false);setGraffiti(false);setGraffitiReveal(false);flags.current.remaining=180;
+ cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;

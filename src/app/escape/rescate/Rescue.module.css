@@ -813,3 +813,47 @@
  .app[data-stage="game"] .evidenceNumber{font-size:.96rem}
 }
 @media(prefers-reduced-motion:reduce){.tensionCue{animation:none!important;display:none}}
+
+/* M-013 — blackout / painted wall reveal (full viewport but never captures taps).
+   The written warning is projected from rear-wall 3D coordinates every frame. */
+.blackout{position:absolute;inset:0;z-index:65;background:#010101;
+ pointer-events:none;animation:powerOut 1.65s step-end both}
+.blackout i{position:absolute;left:50%;top:48%;width:8px;height:8px;
+ border-radius:100%;box-shadow:0 0 90px 22px #6a161b36;opacity:.25}
+@keyframes powerOut{0%,10%,30%,34%,94%,100%{background:#010101}
+ 11%,29%{background:#111015}35%,37%{background:#070607}}
+.graffitiWall{position:absolute;visibility:hidden;left:0;top:0;z-index:4;
+ pointer-events:none;transform:translate(-50%,-50%) rotate(-9deg) scale(var(--spray-scale,1));
+ transform-origin:center;display:flex;align-items:center;justify-content:center;flex-direction:column;
+ width:clamp(174px,49vw,310px);padding:7px 3px 13px;color:#cd272b;white-space:nowrap;
+ font:1000 clamp(1.6rem,9vw,3.15rem)/.89 Impact,"Arial Black",sans-serif;letter-spacing:.04em;
+ text-transform:uppercase;text-shadow:1px 2px 0 #4a0708,0 0 12px #b20d1166;
+ filter:drop-shadow(0 2px 0 #4406098f)}
+.graffitiWall:before{content:"";position:absolute;left:13%;right:10%;top:4%;bottom:1%;
+ background:radial-gradient(ellipse at 26% 29%,#ad111127,transparent 64%);
+ border:4px dashed #a51b1b55;transform:rotate(5deg);filter:blur(4px)}
+.graffitiWall:after{content:"";position:absolute;bottom:-10px;left:23%;width:6px;height:28px;
+ border-radius:50%;background:#a21e20;box-shadow:32px 9px 0 -1px #a62224,
+ 90px -4px 0 -1px #9f1c21,135px 6px 0 -2px #a01f24}
+.graffitiWall span,.graffitiWall strong{display:block;position:relative;font:inherit;letter-spacing:inherit;
+ color:#c52c2f;-webkit-text-stroke:.35px #8e1a20}
+.graffitiWall strong{font-size:1.55em;line-height:.85;transform:translateX(17px) rotate(1deg)}
+.graffitiCinematic{position:absolute;left:50%;top:43%;z-index:45;
+ width:min(580px,93vw);transform:translate(-50%,-50%) rotate(-6deg);
+ pointer-events:none;text-align:center;opacity:0;animation:graffitiShock 2.7s ease-out forwards}
+.graffitiCinematic span{display:inline-block;background:linear-gradient(165deg,#fa353c,#a91720);
+ background-clip:text;-webkit-background-clip:text;color:transparent;
+ font:1000 clamp(2.25rem,12vw,6rem)/1 Impact,"Arial Black",sans-serif;letter-spacing:.01em;
+ text-shadow:2px 2px 0 #32090b,0 2px 44px #a618238a;
+ -webkit-text-stroke:.5px #b71420;filter:drop-shadow(0 0 15px #bd23267a)}
+@keyframes graffitiShock{0%{opacity:0;filter:blur(8px);transform:translate(-50%,-50%) scale(1.27) rotate(-12deg)}
+ 12%,68%{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1) rotate(-6deg)}
+ 100%{opacity:0;transform:translate(-50%,-50%) scale(1.07) rotate(-6deg)}}
+@media(max-width:670px){
+ .graffitiWall{font-size:clamp(1.7rem,9vw,2.7rem);width:clamp(150px,57vw,280px)}
+ .graffitiCinematic{top:43%}
+}
+@media(prefers-reduced-motion:reduce){
+ .blackout,.graffitiCinematic{animation:none}
+ .graffitiCinematic{opacity:1}
+}
