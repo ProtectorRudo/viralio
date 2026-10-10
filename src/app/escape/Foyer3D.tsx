@@ -41,11 +41,12 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
   const [nearby,setNearby]=useState<FoyerTarget[]>([]);
   const [showNearby,setShowNearby]=useState(false);
   const [soundOn,setSoundOn]=useState(true);
+  const soundEnabled=useRef(true);
   useEffect(()=>{liveState.current=progress;world.current?.setFlags(progress)},[progress]);
   const onChangeRef=useRef(onChange);
   const onSoundRef=useRef(onSound);
   useEffect(()=>{onChangeRef.current=onChange;onSoundRef.current=onSound},[onChange,onSound]);
-  const notify=useCallback((s:string,good=false)=>{setNotice(s);onSoundRef.current?.(good)},[]);
+  const notify=useCallback((s:string,good=false)=>{setNotice(s);if(soundEnabled.current)onSoundRef.current?.(good)},[]);
   useEffect(()=>{
     const surface=canvas.current;if(!surface)return;
     let disposed=false;
@@ -60,7 +61,7 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
     const down=(e:KeyboardEvent)=>{
       if(e.repeat&&e.key.toLowerCase()==="e")return;
       if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright","shift"].includes(e.key.toLowerCase())){keys.current.add(e.key.toLowerCase());e.preventDefault();}
-      if(e.key.toLowerCase()==="e"){const t=world.current?.aim();if(t){setInspection(t.id);onSoundRef.current?.(false)}}
+      if(e.key.toLowerCase()==="e"){const t=world.current?.aim();if(t){setInspection(t.id);if(soundEnabled.current)onSoundRef.current?.(false)}}
       if(e.key==="Escape")setInspection(null);
     };
     const up=(e:KeyboardEvent)=>keys.current.delete(e.key.toLowerCase());
@@ -148,7 +149,7 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
   function interact(){
     const t=currentRef.current;
     if(!t)return notify("Acercate a un objeto y apuntalo con la mira.");
-    setInspection(t.id);onSoundRef.current?.(false);
+    setInspection(t.id);if(soundEnabled.current)onSoundRef.current?.(false);
   }
   return <section className={styles.shell} data-testid="umbral-real-3d" role="dialog" aria-modal="true" aria-label="Vestíbulo tridimensional jugable">
     <div className={styles.viewport}>
@@ -194,6 +195,6 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
         </div>
       </div>}
     </div>
-    <div className={styles.inventory} data-testid="umbral-3d-inventory"><strong>MOCHILA DE INVESTIGACIÓN</strong><span>{progress.key?"♢ LLAVE DE BRONCE":"Sin objetos"} {progress.box?"· PLACA FAMILIAR":""}</span><button type="button" onClick={()=>setSoundOn(v=>!v)} aria-label="Cambiar sonido en vestíbulo 3D">{soundOn?"◉ SONIDO":"◎ SILENCIO"}</button></div>
+    <div className={styles.inventory} data-testid="umbral-3d-inventory"><strong>MOCHILA DE INVESTIGACIÓN</strong><span>{progress.key?"♢ LLAVE DE BRONCE":"Sin objetos"} {progress.box?"· PLACA FAMILIAR":""}</span><button type="button" onClick={()=>setSoundOn(v=>{soundEnabled.current=!v;return !v})} aria-label="Cambiar sonido en vestíbulo 3D">{soundOn?"◉ SONIDO":"◎ SILENCIO"}</button></div>
   </section>;
 }
