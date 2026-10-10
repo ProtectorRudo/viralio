@@ -159,8 +159,9 @@ function App(){
   schedule(4500,()=>sound("step"));
   schedule(10000,()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);});
   schedule(12900,()=>sound("metal"));
-  schedule(16500,()=>setFigureWarning(false));
-  schedule(8500,()=>setDoorWarning(false));
+   for(const at of [14200,19100,23700,28600,32700])schedule(at,()=>sound("step"));
+  schedule(12800,()=>setFigureWarning(false));
+  schedule(3100,()=>setDoorWarning(false));
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
