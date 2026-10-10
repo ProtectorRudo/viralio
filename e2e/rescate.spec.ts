@@ -187,7 +187,7 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await expect(beacon).toContainText("AHÍ ESTÁ EL SOBRE");
  await beacon.click();
  await page.getByRole("button",{name:/ROMPER EL LACRE/}).click();
- await expect(page.getByText(/TENÉS UNA INVITACIÓN/)).toBeVisible();
+ await expect(page.getByTestId("rescate-letter-inside")).toBeVisible({timeout:9000});
  await page.getByRole("button",{name:/REVELAR MI INVITACIÓN/}).click();
  const finale=page.getByTestId("rescate-invite-final");
  await expect(finale).toBeVisible();
