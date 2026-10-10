@@ -4,7 +4,7 @@
  * Supports WebGL1 mobiles without any third-party runtime or CDN.
  */
 export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"board"|"locker"|"lamp"|"pipe";
-export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean};
+export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean;remaining?:number};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
@@ -569,14 +569,19 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.useProgram(program);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
-  const elapsed=Math.max(0,(now-intruderStarted)/1000),progress=intruderStarted?Math.min(1,elapsed/4):0;
+  const elapsed=current.intruder?Math.max(0,60-(current.remaining??60)):0;
+  const progress=intruderStarted?Math.min(1,(now-intruderStarted)/4000):0;
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
-  // Door first; shadow at 00:55, intruder at ~00:50, blade glint at ~00:47.
-  const approachLimit=Math.max(.25,Math.min(.92,6.28-pose.z-2.6));
-  const approach=intruderStarted?Math.max(0,Math.min(approachLimit,(elapsed-9)*.055)):0;
+  // Cross the threshold progressively and stop safely in front of the player.
+  const walk=Math.max(0,elapsed-9);
+  const advance=walk<=10?walk*.038:walk<=24?.38+(walk-10)*.057:walk<=37?1.178+(walk-24)*.087:2.309+(walk-37)*.09;
+  const safeAdvance=Math.max(0,6.28-(pose.z+.95));
+  const approach=current.intruder?Math.min(2.85,safeAdvance,advance):0;
   gl.uniform1f(ufs,approach);
-  gl.uniform1f(ufmarch,Math.max(0,elapsed-9)*5.2);
+  gl.uniform1f(ufmarch,walk*4.9);
+  canvas.dataset.intruderApproach=approach.toFixed(2);
+  canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
@@ -593,7 +598,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
    gl.uniform1f(urim,m.id==="figure"?1:0);
-   gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?Math.max(0,1-Math.abs(elapsed-13)/1.15)*.90:0);
+   gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
    gl.uniform2f(upiv,3.73,2.14);
