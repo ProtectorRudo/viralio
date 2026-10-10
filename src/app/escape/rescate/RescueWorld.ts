@@ -13,7 +13,7 @@ export const TARGETS:Target[]=[
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
  {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
  {id:"envelope",label:"Sobre encontrado",pos:[.02,.79,-1.48],reach:3.3,hint:"El papel lleva un sello rojo. Por fin llegaste."},
- {id:"phone",label:"Teléfono desconectado",pos:[2.4,1.18,-3.14],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
+ {id:"phone",label:"Teléfono desconectado",pos:[2.38,1.12,-2.30],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
  {id:"camera",label:"Cámara de seguridad",pos:[3.6,3.35,-5.06],reach:4.7,hint:"La luz roja se enciende cuando te movés."},
  {id:"board",label:"Tablero de seguimiento",pos:[1.55,2.2,-5.27],reach:4.0,hint:"Planos, fotos y horarios de los movimientos de Mauro."},
  {id:"locker",label:"Armario oxidado",pos:[-3.72,1.56,-3.4],reach:2.85,hint:"Tiene marcas de dedos en el polvo."},
@@ -154,10 +154,10 @@ function scene(opened:boolean){
  g.limb([.86,2.10,6.30],[.99,1.59,6.23],.25,.19,"#181f27");
  g.limb([.99,1.59,6.23],[.89,1.01,6.08],.19,.125,"#1d2229"); // knife arm
  g.ellipsoid(.89,.98,6.06,.145,.16,.14,"#343435");
- g.limb([.03,1.03,6.33],[-.07,.47,6.32],.23,.155,"#131820");
- g.limb([.62,1.03,6.34],[.73,.48,6.32],.23,.155,"#10151c");
- g.ellipsoid(-.08,.22,6.20,.18,.095,.28,"#24252a"); // leather boots
- g.ellipsoid(.72,.22,6.18,.18,.095,.29,"#202227");
+ g.limb([.03,1.03,6.33],[-.07,.47,6.32],.195,.145,"#131820","figure-leg");
+ g.limb([.62,1.03,6.34],[.73,.48,6.32],.195,.145,"#10151c","figure-leg");
+ g.ellipsoid(-.08,.22,6.20,.18,.095,.28,"#24252a","figure-leg"); // leather boots
+ g.ellipsoid(.72,.22,6.18,.18,.095,.29,"#202227","figure-leg");
  g.limb([.87,.93,6.04],[.87,.70,6.03],.08,.064,"#322920"); // knife handle
  g.box(.87,.68,6.03,.21,.05,.14,"#84837b","figure"); // small guard
  g.limb([.87,.64,6.03],[.87,.32,6.03],.070,.038,"#7d8d95","knife-blade");
@@ -331,7 +331,7 @@ uniform mediump vec3 eye;
 uniform vec3 right,up,forward;
 uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
 uniform vec2 doorPivot;
-uniform float doorGroup,figureGroup;
+uniform float doorGroup,figureGroup,legGroup;
 uniform vec2 clockPivot;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 void main(){
@@ -347,7 +347,7 @@ void main(){
    float phase=figureMarch;
    float leg=step(.33,p.x);
    float stride=sin(phase+leg*3.14159265);
-   if(w.y<1.17){
+   if(legGroup>.5){
      w.z+=.20*stride*walking;
      w.y+=.056*max(0.,stride)*walking;
    }else{
@@ -416,7 +416,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -524,7 +524,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){
-   const figurePart=m.id==="figure"||m.id==="knife-blade";
+   const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
    if(figurePart&&(!intruderStarted||elapsed<9))continue;
    if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
@@ -533,7 +533,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"?1:0);
-   gl.uniform1f(ufg,m.id==="figure"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
    gl.uniform1f(urim,m.id==="figure"?1:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?Math.max(0,1-Math.abs(elapsed-13)/1.15)*.90:0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
