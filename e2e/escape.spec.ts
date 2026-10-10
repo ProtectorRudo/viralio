@@ -377,7 +377,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   });
 
 
-  test("fondos y objetos Retina: 2x reales, sin ampliación excesiva en un celular de alta densidad",async ({browser})=>{
+  test("fondos originales: masters 1672×941 y variantes móviles sin reescalado engañoso",async ({browser})=>{
     const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
     const page=await context.newPage();
     const errors:string[]=[];
@@ -397,8 +397,18 @@ test.describe("UMBRAL · el juego puede completarse", () => {
         await image.decode();
         return [image.naturalWidth,image.naturalHeight];
       },path);
-      expect(actual[0],name+" 2x width").toBeGreaterThanOrEqual(2880);
-      expect(actual[1],name+" 2x height").toBeGreaterThanOrEqual(1380);
+      expect(actual[0],name+" master width").toBe(1672);
+      expect(actual[1],name+" master height").toBe(941);
+      const mobile=await page.request.get("/escape/images/"+name+".webp");
+      expect(mobile.status(),name+" 1x").toBe(200);
+      const base=await page.evaluate(async name=>{
+        const image=new Image();
+        image.src="/escape/images/"+name+".webp";
+        await image.decode();
+        return [image.naturalWidth,image.naturalHeight];
+      },name);
+      expect(base,name+" real downsample").toEqual([1180,664]);
+      expect((await mobile.body()).byteLength,name+" 1x size").toBeLessThan((await result.body()).byteLength);
     }
     for(const name of ["clock","lock","doll","music","portrait"]){
       const path="/escape/images/retina/objects/"+name+".webp";
