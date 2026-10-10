@@ -62,7 +62,7 @@ test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:
  const help=page.getByTestId("rescate-hint-panel");
  await expect(help).toBeVisible();
  await expect(help).toContainText("PISTA 1/5");
- await expect(help).toContainText("calendario");
+ await expect(help).toContainText("fotografía");
  await help.getByRole("button",{name:/PEDIR OTRA PISTA/}).click();
  await expect(help).toContainText("PISTA 2/5");
  await help.getByRole("button",{name:"Cerrar pista"}).click();
@@ -96,8 +96,9 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await walkTo(page,"a","x",-2.13);
  await walkTo(page,"w","z",-2.35);
- await examineNearby(page,"Calendario arrancado");
- await expect(page.getByRole("dialog")).toContainText("13");
+ await examineNearby(page,"Fotografía dañada");
+ await page.getByTestId("rescate-photo").getByRole("button",{name:/DAR VUELTA/}).click();
+ await expect(page.getByRole("dialog")).toContainText("XIII");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 3\/3/)).toBeVisible();
  // Go around the front of the physical table (collision volumes prevent
