@@ -69,7 +69,7 @@ test("CASO M · pistas físicas, combinación 1310, cajón y sobre revelan cumpl
  await expect(page.getByRole("dialog")).toContainText("DÍA");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await walkTo(page,"a","x",-2.13);
- await walkTo(page,"w","z",-3.61);
+ await walkTo(page,"w","z",-2.35);
  await examineNearby(page,"Calendario arrancado");
  await expect(page.getByRole("dialog")).toContainText("13");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
