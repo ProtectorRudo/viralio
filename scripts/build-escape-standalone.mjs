@@ -77,6 +77,11 @@ await build({
 // unreliable speechSynthesis. Prefer an expressive Argentine Spanish voice,
 // fall back to offline Latin-American Spanish if neural TTS is unavailable.
 const audioDir=join(rescueOutput,"audio");mkdirSync(audioDir,{recursive:true});
+// Authentic four-second Mauro voice recording (not generated speech).
+const originalVoice=resolve("src/app/escape/rescate/audio/mauro-voice.webm");
+if(!existsSync(originalVoice))throw Error("CASO M: falta la grabación original de Mauro");
+cpSync(originalVoice,join(audioDir,"mauro-voice.webm"));
+console.log("CASO M original voice recorded message copied");
 // Real cinematic score; mobile Safari / Chrome play PCM WAV reliably.
 const {writeSuspenseSoundtrack}=await import("./generate-caso-m-soundtrack.mjs");
 const soundtrack=writeSuspenseSoundtrack(join(audioDir,"suspense.wav"));
