@@ -146,7 +146,7 @@ function App(){
  },[screen,seconds,expired,drawerOpen]);
  useEffect(()=>{
   if(screen!=="game"||!musicAudio.current||muted||tapeStatus==="playing")return;
-  musicAudio.current.volume=seconds<=60?.83:.65;
+  musicAudio.current.volume=finalMinute?.83:.65;
  },[screen,muted,finalMinute,tapeStatus]);
  useEffect(()=>{
   if(screen!=="game"||expired||seconds>60||threatFired.current)return;
