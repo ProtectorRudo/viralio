@@ -303,3 +303,77 @@
  .clockInteraction[data-clock="running"] .clockHour,.clockInteraction[data-clock="running"] .clockMinute,
  .clockInteraction[data-clock="done"] .clockHour,.clockInteraction[data-clock="done"] .clockMinute{transition-duration:0s}
 }
+
+/* CASO M · cinematic revision: environmental story, tactile evidence and dramatic escalation. */
+.introBackdrop{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+ background:radial-gradient(ellipse at 55% 56%,#29343c8b 0%,transparent 50%),
+ linear-gradient(118deg,#060b11 16%,#101720 51%,#07080d 80%);perspective:650px}
+.introBackdrop:before{content:"";position:absolute;inset:-25%;background:conic-gradient(from 30deg at 70% 48%,transparent 0 70deg,#8c23241b 80deg,transparent 120deg 200deg,#a79a7812 210deg,transparent 242deg);
+ animation:introSweep 11s linear infinite}
+.introDoor{position:absolute;left:50%;top:9%;width:min(48vw,260px);height:82%;transform:translateX(-50%) rotateY(-8deg);
+ border:11px solid #353c41;border-top-width:15px;background:linear-gradient(105deg,#0b0e14,#232832 82%,#14151a);
+ box-shadow:0 0 0 12px #15191b,0 0 90px #be4f2a13,12px 20px 50px #000b;opacity:.59}
+.introDoor:after{content:"";position:absolute;top:50%;right:8%;width:13px;height:7px;border-radius:40%;background:#d5b48a;box-shadow:0 0 19px #cd7349aa}
+.introDoor i{position:absolute;inset:4%;border:1px solid #58534c3c}
+.introLight{position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,#ab252216 50%,transparent 62%),
+ radial-gradient(ellipse at 70% 90%,#8e251d28,transparent 35%);animation:lightBreath 6s ease-in-out infinite}
+.intro:after{content:"";position:absolute;inset:0;pointer-events:none;background:
+ repeating-linear-gradient(0deg,#0000 0 4px,#0006 5px,#0000 6px);opacity:.15}
+.introText{isolation:isolate}
+.introText h1{font-weight:950;text-shadow:0 12px 42px #000f,0 0 37px #a95b4920}
+.introCard{backdrop-filter:blur(9px);border-left-color:#e06c5d;box-shadow:0 24px 55px #000a,inset 0 1px #efcfab20}
+.introTimer{filter:drop-shadow(0 5px 21px #b743383c)}
+.start{transition:transform .16s,box-shadow .2s;background:linear-gradient(115deg,#aa674f,#6b3835 60%,#33252c)}
+.start:active{transform:scale(.985)}
+.threatVignette{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:1;
+ background:radial-gradient(ellipse at center,transparent 37%,#8c171a66 100%);
+ transition:opacity 1.4s ease}
+.threatVignette[data-threat="yes"]{opacity:1;animation:threatBeat 2.25s ease-in-out infinite}
+.doorAlert{position:absolute;z-index:12;left:50%;top:23%;transform:translateX(-50%);
+ width:min(400px,calc(100% - 22px));padding:19px 15px;text-align:center;
+ border:1px solid #e16f65;background:linear-gradient(110deg,#2a1114f5,#100d14f4);
+ box-shadow:0 15px 40px #000b,0 0 30px #b12b2b55;pointer-events:none;
+ animation:warningEntry .48s ease-out both}
+.doorAlert span,.doorAlert small{display:block;color:#ff9588;font:800 .62rem/1.5 ui-monospace,monospace;letter-spacing:.11em}
+.doorAlert strong{display:block;margin:7px 0;color:#fff1e3;font:900 clamp(1rem,4vw,1.3rem)/1.17 Arial,sans-serif;letter-spacing:.01em}
+.doorAlert small{font-size:.49rem;color:#d5baa7}
+.evidenceSlip{background:linear-gradient(115deg,#cbb58d,#ac947c);padding:6px 7px;color:#392d27!important;
+ border:1px solid #d2b893;box-shadow:1px 4px 9px #0008}
+.evidenceSlip:nth-child(even){margin-left:9px!important;margin-right:-5px!important}
+.paperCalendar{width:min(100%,310px);margin:18px auto;padding:14px 13px 16px;
+ background:#f1e6cf;color:#322a27;box-shadow:3px 14px 34px #0009;transform:rotate(-1.6deg);
+ border-top:10px solid #913d3c}
+.calendarMonth{display:flex;justify-content:space-between;padding:6px 7px 13px;align-items:center;
+ border-bottom:1px solid #baac90;color:#613e38;font:900 1.26rem ui-monospace,monospace;letter-spacing:.11em}
+.calendarMonth b{font-size:.74rem;color:#7b675a}
+.calendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:#dfd1b9;
+ border:1px solid #dbd0b9;margin-top:12px}
+.calendarGrid span{background:#f4ecd9;display:grid;place-items:center;min-width:0;aspect-ratio:1;
+ color:#51453a;font:700 .7rem ui-monospace,monospace}
+.calendarGrid span:nth-child(-n+7){background:#e0d3bf;color:#775c53}
+.calendarGrid span[data-day="marked"]{position:relative;color:#a22223;font-weight:950;
+ background:#f3d4bd;box-shadow:inset 0 0 0 2px #ae3831;border-radius:50%;transform:rotate(-8deg)}
+.paperCalendar>small{display:block;margin-top:12px;color:#846456;letter-spacing:.1em;font:800 .49rem ui-monospace,monospace}
+.tapeControl{border:1px solid #b2a082;padding:20px 15px;margin:15px 0;
+ background:linear-gradient(155deg,#2d363a,#0a1214);box-shadow:inset 0 0 24px #0007,0 8px 25px #0005;text-align:center}
+.tapeControl>span{font:800 .58rem ui-monospace,monospace;color:#e67b69;letter-spacing:.09em}
+.tapeControl>p{color:#f1d9b9;font:italic 1.3rem/1.48 Georgia,serif;margin:17px 0 9px}
+.tapeControl>small{display:block;color:#ac9e8f;font:700 .49rem ui-monospace,monospace}
+.tapeControl button{min-height:49px;width:100%;margin-top:15px;border:1px solid #e8b684;
+ color:#ffebcf;background:#79523a;cursor:pointer;font:800 .66rem ui-monospace,monospace}
+@keyframes introSweep{to{transform:rotate(360deg)}}
+@keyframes lightBreath{50%{opacity:.31;filter:brightness(1.65)}}
+@keyframes threatBeat{50%{opacity:.49}}
+@keyframes warningEntry{from{opacity:0;transform:translate(-50%,-22px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(max-width:670px){
+ .introBackdrop .introDoor{width:61vw;left:55%;top:7%;height:81%}
+ .introText{width:calc(100% - 30px);padding-top:85px}
+ .introText h1{font-size:clamp(2.1rem,10.45vw,3.45rem);letter-spacing:-.069em}
+ .introText>p{font-size:1.04rem;line-height:1.5}
+ .doorAlert{top:21%;padding:15px 12px}
+ .objectives{width:min(160px,43vw);top:28%}
+ .evidenceSlip{font-size:.46rem!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .introBackdrop:before,.introLight,.threatVignette[data-threat="yes"],.doorAlert{animation:none!important}
+}
