@@ -490,10 +490,19 @@ function App(){
       <button type="button" className={styles.confirm} onClick={unlock}>⛓ PROBAR COMBINACIÓN</button>
       <button type="button" className={styles.secondary} onClick={closeInspect}>VOLVER A BUSCAR PISTAS {canContinue?"· TENÉS TODO":""}</button>
     </div></div>}
-    {overlay==="letter"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Sobre del cajón"><div className={styles.letterCard} data-open={openedLetter?"yes":"no"}>
-      {!openedLetter?<><span className={styles.letterCaption}>OBJETO RECUPERADO · ÚLTIMA PRUEBA</span><button className={styles.envelope} type="button" onClick={envelope} aria-label="Romper el sello del sobre y abrirlo"><i className={styles.flap}/><b>M</b><small>CONFIDENCIAL</small></button><p>El sobre está dirigido a vos. ¿Querés saber qué había dentro del cajón?</p></>
-       :<><span className={styles.letterCaption}>EXPEDIENTE 013 · RESUELTO</span><h2>¿EN SERIO PENSASTE<br/>QUE HABÍA UN SECUESTRO?</h2><p>Tu misión no era encontrar a Mauro... era encontrar esta carta.</p><p className={styles.letterReveal}>¡TENÉS UNA INVITACIÓN!</p></>}
-      <button className={styles.confirm} onClick={openedLetter?finish:envelope}>{openedLetter?"ABRIR LA INVITACIÓN DE CUMPLEAÑOS 🎉":"ROMPER EL SELLO ↗"}</button>
+    {overlay==="letter"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Sobre del cajón"><div className={styles.letterCard} data-open={openedLetter?"yes":"no"} data-breaking={sealBreaking?"yes":"no"}>
+      {!openedLetter?<><span className={styles.letterCaption}>EVIDENCIA FINAL · UN MENSAJE PARA VOS</span>
+       <span className={styles.sealInstruction}>{sealBreaking?"EL SELLO SE ESTÁ ROMPIENDO…":"ESTABA ESPERANDO A QUE LO ENCONTRARAS."}</span>
+       <button className={styles.envelope} type="button" onClick={envelope} disabled={sealBreaking} aria-label="Romper el sello del sobre y abrirlo">
+        <i className={styles.envelopeSeam}/><i className={styles.flap}/><b>M</b><small>PERSONAL · CONFIDENCIAL</small>
+       </button><p>Hay algo escrito adentro. Pero antes tenés que romper el sello.</p></>
+       :<><span className={styles.letterCaption}>EXPEDIENTE M-013 · EL SECRETO</span>
+        <div className={styles.letterInside} data-testid="rescate-letter-inside"><small>CONFIDENCIAL / PARA VOS</small>
+          <h2>ESTA VEZ,<br/>LA MISIÓN ES OTRA.</h2>
+          <p>Nunca tuviste que rescatar a Mauro. <strong>Tenías que encontrar la invitación.</strong></p>
+          <p className={styles.letterReveal}>TE ESPERAMOS PARA CELEBRAR.</p>
+        </div></>}
+      <button className={styles.confirm} disabled={sealBreaking} onClick={openedLetter?finish:envelope}>{openedLetter?"REVELAR MI INVITACIÓN →":sealBreaking?"ROMPIENDO EL LACRE…":"ROMPER EL LACRE →"}</button>
     </div></div>}
     {expired&&<div className={styles.timeout} role="dialog" aria-modal="true" aria-label="Tiempo agotado">
       <span>00:00 · CONEXIÓN PERDIDA</span><h2>SE TERMINÓ EL TIEMPO.</h2><p>Pero Mauro dejó una última oportunidad. La puerta sigue entreabierta...</p>
@@ -503,21 +512,21 @@ function App(){
    </>}
   {screen==="final"&&<section className={styles.finale} data-testid="rescate-invite-final">
     <div className={styles.confetti} aria-hidden="true">{particles.map((p,i)=><i key={i} style={{left:p.left,animationDelay:p.delay,animationDuration:p.duration,background:p.color}}/>)}</div>
-    <span className={styles.finalKicker}>CASO 013 · RESUELTO CON ÉXITO</span>
-    <h1>¡SORPRESA!<em>¡ESTÁS INVITADO!</em></h1>
+    <span className={styles.finalKicker}>MISIÓN CUMPLIDA · EXPEDIENTE M-013 CERRADO</span>
+    <h1>NO ERA UN SECUESTRO.<em>ERA UNA INVITACIÓN.</em></h1>
     <div className={styles.invitationPaper}>
-      <span>OPERACIÓN RESCATE · INFORME FINAL</span>
-      <div className={styles.partyIcon}>✦</div>
-      <h2>Mauro cumple años.</h2>
-      <p>El secuestro era una excusa. La verdadera misión era conseguir que vengas a festejar conmigo.</p>
+      <span className={styles.inviteEyebrow}>INVITACIÓN PRIVADA · CELEBRACIÓN 2026</span>
+      <div className={styles.partyIcon}>✳</div><div className={styles.inviteMonogram}>M<span>·</span>013</div>
+      <h2>Una noche para celebrar.</h2>
+      <p>Seguiste las pistas, desafiaste al reloj y abriste el último sobre. <strong>Ahora sólo falta una cosa: que estés ahí.</strong></p>
       <div className={styles.details}><div><small>FECHA</small><strong>{config.current.fecha}</strong></div><div><small>HORA</small><strong>{config.current.hora}</strong></div><div><small>LUGAR</small><strong>{config.current.lugar}</strong></div></div>
-      <p className={styles.secret}>Queda prohibido revelar los códigos de esta misión. 🤫</p>
+      <p className={styles.secret}>La mejor parte del caso comienza cuando llegues.</p>
     </div>
     <div className={styles.finalActions}>
-     <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
+     <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
