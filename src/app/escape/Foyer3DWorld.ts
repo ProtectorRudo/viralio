@@ -299,8 +299,8 @@ export function createFoyerWorld(canvas:HTMLCanvasElement,flags:FoyerFlags,onFra
   gl.uniform1i(uMap,0);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);
   gl.clearColor(.018,.029,.038,1);
   let current={...flags},meshes:Mesh[]=[];
-  let pose:Pose={x:0,y:1.66,z:4.0,yaw:0,pitch:0};
-  let active=true,raf=0,last=0,lastUi=0,animation=0;
+  const pose:Pose={x:0,y:1.66,z:4.0,yaw:0,pitch:0};
+  let active=true,raf=0,lastUi=0,animation=0;
   const textures=new Map<string,WebGLTexture>();
   const textureSources:Record<string,string>={
     elias:"/escape/images/retina/characters/elias.webp",
@@ -397,7 +397,6 @@ export function createFoyerWorld(canvas:HTMLCanvasElement,flags:FoyerFlags,onFra
     const goal=current.drawer?1:0;
     animation+=clamp((goal-animation)*.12,-.16,.16);
     if(onFrame&&now-lastUi>170){lastUi=now;onFrame({...pose},aim());}
-    last=now;
   }
   raf=requestAnimationFrame(draw);
   const collide=(x:number,z:number)=>{
