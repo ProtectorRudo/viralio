@@ -50,7 +50,8 @@ function App(){
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
  const pointer=useRef<{id:number;x:number;y:number;originX:number;originY:number;dragged:boolean}|null>(null),buttons=useRef(new Set<string>());
  const lastCanvasTap=useRef(0),raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),droneGain=useRef<GainNode|null>(null),audioRef=useRef(false);
- const tapeAudio=useRef<HTMLAudioElement|null>(null);
+ const tapeAudio=useRef<HTMLAudioElement|null>(null),musicAudio=useRef<HTMLAudioElement|null>(null);
+ const [musicPlaying,setMusicPlaying]=useState(false);
  const [tapeStatus,setTapeStatus]=useState<"idle"|"playing"|"ended"|"error">("idle");
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
@@ -127,27 +128,6 @@ function App(){
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
- // A recurring suspense motif makes the score musical, not just a low hum.
- useEffect(()=>{
-  if(screen!=="game"||muted)return;
-  let bar=0;
-  const motif=()=>{
-   const a=audio.current,bus=droneGain.current;if(!a||!bus||a.state==="closed")return;
-   const tense=seconds<=60,notes=tense?[233.1,246.9,311.1,220]:[164.8,174.6,233.1,146.8];
-   const t=a.currentTime,root=notes[bar++%notes.length];
-   for(const [i,f] of [root,root*1.414].entries()){
-    const o=a.createOscillator(),g=a.createGain();o.type=i?"sine":"triangle";
-    o.frequency.setValueAtTime(f,t+i*.12);
-    o.frequency.linearRampToValueAtTime(f*1.012,t+3+i*.12);
-    g.gain.setValueAtTime(.0001,t+i*.12);
-    g.gain.linearRampToValueAtTime(tense?.16:.10,t+.6+i*.12);
-    g.gain.exponentialRampToValueAtTime(.0001,t+5.2+i*.12);
-    o.connect(g);g.connect(bus);o.start(t+i*.12);o.stop(t+5.3+i*.12);
-   }
-  };
-  motif();const id=window.setInterval(motif,6700);return()=>window.clearInterval(id);
- // eslint-disable-next-line react-hooks/exhaustive-deps
- },[screen,muted,seconds<=60]);
  function fallbackVoice(){
   if(!("speechSynthesis" in window)){setTapeStatus("error");setToast("LA GRABACIÓN NO ESTÁ DISPONIBLE. LEÉ LA TRANSCRIPCIÓN.");return;}
   const synth=window.speechSynthesis;
@@ -212,25 +192,27 @@ function App(){
   if(screen!=="intro")return;
   try{
    const ctx=new AudioContext();audio.current=ctx;audioRef.current=true;void ctx.resume();
-   const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sawtooth";oscillator.frequency.value=110;
-   const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=840;
-   gain.gain.value=muted?0:.38;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
-   drone.current=oscillator;droneGain.current=gain;
-   // Three detuned suspense tones create a continuous, low-volume cinematic bed.
-   const layerA=ctx.createOscillator(),layerB=ctx.createOscillator(),layerC=ctx.createOscillator();
-   layerA.type="sine";layerA.frequency.value=63;
-   layerB.type="triangle";layerB.frequency.value=95.6;
-   layerC.type="sine";layerC.frequency.value=127.4;
-   const mix=ctx.createGain();mix.gain.value=.24;
-   for(const o of [layerA,layerB,layerC]){o.connect(mix);o.start();}
-   mix.connect(filter);ambientOsc.current=[layerA,layerB,layerC];
-   const tremolo=ctx.createOscillator(),depth=ctx.createGain();
-   tremolo.type="sine";tremolo.frequency.value=.24;depth.gain.value=34;
-   tremolo.connect(depth);depth.connect(filter.frequency);tremolo.start();ambientOsc.current.push(tremolo);
+   // Real soundtrack, started synchronously from the trusted user click.
+   const recording=musicAudio.current;
+   if(recording){
+    recording.volume=.65;
+    void recording.play().then(()=>setMusicPlaying(true)).catch(()=>{
+     setMusicPlaying(false);setToast("TOCÁ «ACTIVAR MÚSICA» PARA ESCUCHAR LA BANDA SONORA");
+    });
+   }
   }catch{/* Game still works silently */}
-  sound("start");setScreen("game");
+  setScreen("game");
  }
- function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.38;if(!v){window.speechSynthesis?.cancel();tapeAudio.current?.pause();}return !v});}
+ function toggleMute(){
+  const player=musicAudio.current;
+  if(!muted&&!musicPlaying){
+   if(player)void player.play().then(()=>setMusicPlaying(true)).catch(()=>setToast("VOLVÉ A TOCAR PARA ACTIVAR EL AUDIO"));
+   return;
+  }
+  const next=!muted;setMuted(next);
+  if(next){player?.pause();tapeAudio.current?.pause();window.speechSynthesis?.cancel();setMusicPlaying(false);}
+  else if(player){player.volume=.65;void player.play().then(()=>setMusicPlaying(true)).catch(()=>setToast("VOLVÉ A TOCAR PARA ACTIVAR EL AUDIO"));}
+ }
  function viewDown(e:ReactPointerEvent<HTMLCanvasElement>){
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,dragged:false};e.currentTarget.setPointerCapture(e.pointerId);
