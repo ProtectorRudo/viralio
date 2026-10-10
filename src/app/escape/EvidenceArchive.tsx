@@ -30,7 +30,7 @@ export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen
       <span>✉ COMPROMISO DE RESCATE · DOCUMENTO FIRMADO</span>
       <p>«Me comprometo a intentar salvar a Eva y a descubrir lo que ocurrió dentro de la casa.»</p>
       <div className={styles.inkSignature}>{pledge.signature
-        ?<img src={pledge.signature} alt="Firma manuscrita del jugador" width="250" height="86"/>
+        ?<span className={styles.handwriting} role="img" aria-label="Firma manuscrita del jugador" style={{backgroundImage:`url("${pledge.signature}")`}}/>
         :<strong>{pledge.name}</strong>}</div>
       <small>FIRMADO · {new Date(pledge.signedAt).toLocaleDateString("es-AR")}</small>
     </aside>}
