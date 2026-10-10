@@ -7,6 +7,7 @@ async function start(page:Page){
  await expect(page.getByRole("heading",{name:/SECUESTRARON/})).toBeVisible();
  await page.getByRole("button",{name:/ACEPTAR MISIÓN/}).click();
  await expect(page.getByTestId("rescate-mauro-app")).toHaveAttribute("data-stage","game");
+ await expect(page.getByTestId("rescate-timer")).toContainText("03:00");
  const canvas=page.getByTestId("rescate-webgl");
  await expect(canvas).toBeVisible();
  await expect.poll(()=>canvas.evaluate((n)=>{
@@ -14,7 +15,6 @@ async function start(page:Page){
   const gl=c.getContext("webgl");
   return Boolean(gl&&c.width>200&&c.height>200&&gl.getParameter(gl.VERSION).includes("WebGL"));
  })).toBe(true);
- await expect(page.getByTestId("rescate-timer")).toContainText("03:00");
 }
 async function walk(page:Page,key:string,ms:number){
  await page.keyboard.down(key);
@@ -63,6 +63,8 @@ test("CASO M · pistas físicas, combinación 1310, cajón y sobre revelan cumpl
  await expect(page.getByRole("dialog")).toContainText("13");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 3\/3/)).toBeVisible();
+ // Walk back from the calendar to within arm’s reach of the locked drawer.
+ await walk(page,"s",400);
  await examineNearby(page,"Candado del cajón");
  const lock=page.getByTestId("rescate-lock");
  await expect(lock).toBeVisible();
