@@ -74,7 +74,7 @@ test("CASO M · al minuto final aparece la advertencia y luego el intruso",async
  // Freeze the wall clock first: real browser rendering must not consume time
  // while we advance game ticks for the 60-second event.
  const now=await page.evaluate(()=>Date.now());
- await page.clock.pauseAt(new Date(now));
+ await page.clock.pauseAt(new Date(now+10000));
  const read=await page.getByTestId("rescate-timer").innerText();
  const parts=read.match(/([0-9]{2}):([0-9]{2})/);
  expect(parts).not.toBeNull();
