@@ -56,3 +56,16 @@
  }
 }
 @media(prefers-reduced-motion:reduce){.camera{animation:none!important;transform:scale(1.025)!important}}
+
+/* Character-specific cinematic closeup. The focused large image and the
+   inspected card must always show the same individual. */
+.artefact[data-material="portrait"] .artefactPortrait{
+ background-size:auto 88%;background-position:50% 41%;
+ mask-image:radial-gradient(ellipse 72% 76% at 50% 48%,#000 50%,rgba(0,0,0,.92) 70%,transparent 91%);
+ filter:contrast(1.07) saturate(.74) brightness(.91);
+}
+.artefact[data-portrait-person="mara"] .artefactPortrait{filter:sepia(.14) saturate(.7) brightness(.93)}
+.artefact[data-portrait-person="nora"] .artefactPortrait{filter:contrast(1.10) saturate(.64) brightness(.90)}
+@media(max-width:800px){
+ .artefact[data-material="portrait"] .artefactPortrait{background-size:auto 100%!important;background-position:center 43%!important}
+}
