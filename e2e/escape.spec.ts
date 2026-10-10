@@ -12,6 +12,54 @@ async function visualAudit(page:Page,file:string){
 }
 
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("identidad visual: Elías, Mara, Nora y Eva nunca comparten retrato", async ({page})=>{
+    test.setTimeout(55_000);
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/escape");
+    for(const id of ["elias","mara","nora","eva"]){
+      for(const folder of ["characters","retina/characters"]){
+        const path="/escape/images/"+folder+"/"+id+".webp";
+        const result=await page.request.get(path);
+        expect(result.status(),path).toBe(200);
+        expect((await result.body()).byteLength).toBeGreaterThan(7500);
+        const actual=await page.evaluate(async(path)=>{
+          const img=new Image();
+          img.src=path;
+          await img.decode();
+          return [img.naturalWidth,img.naturalHeight];
+        },path);
+        expect(actual,id+" "+folder).toEqual(folder==="characters"?[280,353]:[420,530]);
+      }
+    }
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    const foundPaths=new Set<string>();
+    for(const [id,name,year] of [["elias","Elías","1891"],["mara","Mara","1902"],["nora","Nora","1918"]]){
+      await page.getByRole("navigation",{name:"Objetos para investigar"}).getByRole("button",{name:"Retrato de "+name}).click();
+      await expect(page.getByRole("heading",{name,exact:true})).toBeVisible();
+      const frame=page.locator('[data-portrait-person="'+id+'"]');
+      await expect(frame).toHaveCount(2);
+      const mainPhoto=frame.last().locator("div").first();
+      const bg=await mainPhoto.evaluate(el=>getComputedStyle(el).backgroundImage);
+      expect(bg).toContain("/characters/"+id+".webp");
+      expect(bg).toContain("/retina/characters/"+id+".webp");
+      expect(foundPaths.has(bg)).toBe(false);
+      foundPaths.add(bg);
+      await expect(page.getByText(year).last()).toBeVisible();
+      await visualAudit(page,"umbral-retrato-unico-"+id+".png");
+      await page.getByRole("button",{name:"Cerrar"}).click();
+    }
+    await page.getByRole("button",{name:/Abrir expediente/}).click();
+    for(const id of ["elias","mara","nora"]){
+      const image=page.locator('[data-archive-person="'+id+'"]');
+      await expect(image).toBeVisible();
+      const css=await image.evaluate(el=>getComputedStyle(el).backgroundImage);
+      expect(css).toContain("/characters/"+id+".webp");
+    }
+    await expect(page.getByText("3 / 8")).toBeVisible();
+    await visualAudit(page,"umbral-archivo-familiar-unico.png");
+  });
+
   test("audio de alta fidelidad: un solo mezclador en móvil, incluso tras pausar, silenciar y abrir objetos", async ({page})=>{
     await page.addInitScript(()=>{
       const Original=window.AudioContext;
@@ -139,7 +187,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button", { name: "Retrato de Nora" }).first().click();
     await expect(page.locator('[data-focus-object="portrait"][data-focus-room="0"]')).toBeVisible();
     await expect(page.getByText("1918").last()).toBeVisible();
-    await expect.poll(async()=>page.evaluate(async()=>{const image=new Image();image.src="/escape/images/objects/portrait.webp";await image.decode();return image.naturalWidth;})).toBeGreaterThan(300);
+    await expect.poll(async()=>page.evaluate(async()=>{const image=new Image();image.src="/escape/images/retina/characters/nora.webp";await image.decode();return image.naturalWidth;})).toBeGreaterThanOrEqual(420);
     await page.screenshot({path:"visual-qa-evidence/umbral-artefacto-desktop.png",fullPage:true,animations:"disabled"});
     await page.getByRole("button", { name: "Cerrar" }).click();
     await page.getByRole("button", { name: /Abrir expediente/ }).click();
