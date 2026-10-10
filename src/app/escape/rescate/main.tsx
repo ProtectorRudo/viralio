@@ -59,10 +59,11 @@ function App(){
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
  const [tensionCue,setTensionCue]=useState<""|"signal"|"flicker"|"knock">("");
+ const cuesFired=useRef(new Set<number>()),cueTimer=useRef<number|null>(null);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
- useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);},[]);
+ useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
   config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
@@ -124,6 +125,28 @@ function App(){
   return()=>clearInterval(id);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,muted,expired,drawerOpen,seconds<=48,seconds<=105]);
+ // Sparingly placed environmental beats, not looping pop-ups.
+ useEffect(()=>{
+  if(screen!=="game"||expired||drawerOpen)return;
+  const beats:{at:number;style:"signal"|"flicker"|"knock";caption:string;foley:"static"|"step"|"door"}[]=[
+   {at:146,style:"signal",caption:"INTERFERENCIA EN LA TRANSMISIÓN…",foley:"static"},
+   {at:109,style:"flicker",caption:"LA LUZ FALLÓ POR UN INSTANTE.",foley:"static"},
+   {at:78,style:"knock",caption:"TRES GOLPES DEL OTRO LADO.",foley:"door"},
+   {at:31,style:"flicker",caption:"LA HABITACIÓN SE ESTÁ QUEDANDO A OSCURAS.",foley:"static"}
+  ];
+  const beat=beats.find(b=>seconds===b.at&&!cuesFired.current.has(b.at));
+  if(!beat)return;
+  cuesFired.current.add(beat.at);setTensionCue(beat.style);setToast(beat.caption);
+  sound(beat.foley);
+  if(beat.style==="knock")navigator.vibrate?.([35,110,45,110,75]);
+  if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);
+  cueTimer.current=window.setTimeout(()=>setTensionCue(""),1300);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,seconds,expired,drawerOpen]);
+ useEffect(()=>{
+  if(screen!=="game"||!musicAudio.current||muted||tapeStatus==="playing")return;
+  musicAudio.current.volume=seconds<=60?.83:.65;
+ },[screen,muted,seconds<=60,tapeStatus]);
  useEffect(()=>{
   if(screen!=="game"||expired||seconds>60||threatFired.current)return;
   threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
@@ -163,12 +186,24 @@ function App(){
    if(musicAudio.current)musicAudio.current.volume=.22;
   }).catch(()=>fallbackVoice());
  }
- function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"|"paper"){
+ function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"|"paper"|"static"){
   if(muted||!audioRef.current)return;
   const a=audio.current;if(!a)return;
   try{
    if(a.state==="suspended")void a.resume();
    const now=a.currentTime,osc=a.createOscillator(),gain=a.createGain();
+    if(type==="static"){
+     const len=Math.round(a.sampleRate*.78),buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
+     let seed=71926,low=0;for(let i=0;i<len;i++){
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const v=seed/2147483648-1;low=low*.88+v*.12;
+      const t=i/a.sampleRate;
+      samples[i]=(v*.36+low*.44)*Math.sin(Math.PI*Math.min(1,t/.78))*(.45+.5*Math.sin(t*96));
+     }
+     const noise=a.createBufferSource(),filter=a.createBiquadFilter(),amp=a.createGain();
+     noise.buffer=buffer;filter.type="bandpass";filter.frequency.value=1200;filter.Q.value=.7;
+     amp.gain.value=.22;noise.connect(filter);filter.connect(amp);amp.connect(a.destination);noise.start(now);return;
+    }
     if(type==="paper"){
      const len=Math.round(a.sampleRate*.75),buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
      let seed=29013;for(let i=0;i<len;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;
@@ -577,7 +612,7 @@ function App(){
      <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
