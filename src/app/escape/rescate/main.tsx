@@ -127,16 +127,28 @@ function App(){
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
+ function fallbackVoice(){
+  if(!("speechSynthesis" in window)){setTapeStatus("error");setToast("LA GRABACIÓN NO ESTÁ DISPONIBLE. LEÉ LA TRANSCRIPCIÓN.");return;}
+  const synth=window.speechSynthesis;
+  synth.cancel();
+  const voice=new SpeechSynthesisUtterance("Por favor... no pierdas tiempo... Van a volver.");
+  voice.lang="es-AR";voice.rate=.78;voice.pitch=.74;voice.volume=1;
+  const available=synth.getVoices();
+  voice.voice=available.find(x=>x.lang==="es-AR")||available.find(x=>x.lang.startsWith("es"))||null;
+  voice.onstart=()=>setTapeStatus("playing");
+  voice.onend=()=>setTapeStatus("ended");
+  voice.onerror=()=>setTapeStatus("error");
+  synth.speak(voice);
+ }
  function playTape(){
   sound("click");
-  if(muted){setToast("ACTIVÁ EL SONIDO PARA ESCUCHAR LA CINTA");return;}
-  if(!("speechSynthesis" in window)){setToast("VOZ PROVISIONAL · LEÉ LA TRANSCRIPCIÓN DEL CASSETTE");return;}
-  window.speechSynthesis.cancel();
-  const utterance=new SpeechSynthesisUtterance("Por favor, no pierdas tiempo... van a volver.");
-  utterance.lang="es-AR";utterance.rate=.79;utterance.pitch=.78;utterance.volume=.94;
-  const voices=window.speechSynthesis.getVoices();
-  utterance.voice=voices.find(v=>v.lang==="es-AR")||voices.find(v=>v.lang.startsWith("es"))||null;
-  window.speechSynthesis.speak(utterance);
+  if(muted){setToast("PRIMERO ACTIVÁ EL SONIDO PARA ESCUCHAR LA CINTA");return;}
+  const player=tapeAudio.current;
+  if(!player||player.error){fallbackVoice();return;}
+  player.pause();player.currentTime=0;player.volume=1;
+  void player.play().then(()=>{setTapeStatus("playing");
+   if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(.10,audio.current.currentTime,.14);
+  }).catch(()=>fallbackVoice());
  }
  function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"){
   if(muted||!audioRef.current)return;
