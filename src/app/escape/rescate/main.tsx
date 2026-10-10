@@ -50,6 +50,8 @@ function App(){
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
  const pointer=useRef<{id:number;x:number;y:number;originX:number;originY:number;dragged:boolean}|null>(null),buttons=useRef(new Set<string>());
  const lastCanvasTap=useRef(0),raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),droneGain=useRef<GainNode|null>(null),audioRef=useRef(false);
+ const tapeAudio=useRef<HTMLAudioElement|null>(null);
+ const [tapeStatus,setTapeStatus]=useState<"idle"|"playing"|"ended"|"error">("idle");
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
@@ -125,16 +127,49 @@ function App(){
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
+ // A recurring suspense motif makes the score musical, not just a low hum.
+ useEffect(()=>{
+  if(screen!=="game"||muted)return;
+  let bar=0;
+  const motif=()=>{
+   const a=audio.current,bus=droneGain.current;if(!a||!bus||a.state==="closed")return;
+   const tense=seconds<=60,notes=tense?[233.1,246.9,311.1,220]:[164.8,174.6,233.1,146.8];
+   const t=a.currentTime,root=notes[bar++%notes.length];
+   for(const [i,f] of [root,root*1.414].entries()){
+    const o=a.createOscillator(),g=a.createGain();o.type=i?"sine":"triangle";
+    o.frequency.setValueAtTime(f,t+i*.12);
+    o.frequency.linearRampToValueAtTime(f*1.012,t+3+i*.12);
+    g.gain.setValueAtTime(.0001,t+i*.12);
+    g.gain.linearRampToValueAtTime(tense?.16:.10,t+.6+i*.12);
+    g.gain.exponentialRampToValueAtTime(.0001,t+5.2+i*.12);
+    o.connect(g);g.connect(bus);o.start(t+i*.12);o.stop(t+5.3+i*.12);
+   }
+  };
+  motif();const id=window.setInterval(motif,6700);return()=>window.clearInterval(id);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,muted,seconds<=60]);
+ function fallbackVoice(){
+  if(!("speechSynthesis" in window)){setTapeStatus("error");setToast("LA GRABACIÓN NO ESTÁ DISPONIBLE. LEÉ LA TRANSCRIPCIÓN.");return;}
+  const synth=window.speechSynthesis;
+  synth.cancel();
+  const voice=new SpeechSynthesisUtterance("Por favor... no pierdas tiempo... Van a volver.");
+  voice.lang="es-AR";voice.rate=.78;voice.pitch=.74;voice.volume=1;
+  const available=synth.getVoices();
+  voice.voice=available.find(x=>x.lang==="es-AR")||available.find(x=>x.lang.startsWith("es"))||null;
+  voice.onstart=()=>setTapeStatus("playing");
+  voice.onend=()=>setTapeStatus("ended");
+  voice.onerror=()=>setTapeStatus("error");
+  synth.speak(voice);
+ }
  function playTape(){
   sound("click");
-  if(muted){setToast("ACTIVÁ EL SONIDO PARA ESCUCHAR LA CINTA");return;}
-  if(!("speechSynthesis" in window)){setToast("VOZ PROVISIONAL · LEÉ LA TRANSCRIPCIÓN DEL CASSETTE");return;}
-  window.speechSynthesis.cancel();
-  const utterance=new SpeechSynthesisUtterance("Por favor, no pierdas tiempo... van a volver.");
-  utterance.lang="es-AR";utterance.rate=.79;utterance.pitch=.78;utterance.volume=.94;
-  const voices=window.speechSynthesis.getVoices();
-  utterance.voice=voices.find(v=>v.lang==="es-AR")||voices.find(v=>v.lang.startsWith("es"))||null;
-  window.speechSynthesis.speak(utterance);
+  if(muted){setToast("PRIMERO ACTIVÁ EL SONIDO PARA ESCUCHAR LA CINTA");return;}
+  const player=tapeAudio.current;
+  if(!player||player.error){fallbackVoice();return;}
+  player.pause();player.currentTime=0;player.volume=1;
+  void player.play().then(()=>{setTapeStatus("playing");
+   if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(.10,audio.current.currentTime,.14);
+  }).catch(()=>fallbackVoice());
  }
  function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"){
   if(muted||!audioRef.current)return;
@@ -177,9 +212,9 @@ function App(){
   if(screen!=="intro")return;
   try{
    const ctx=new AudioContext();audio.current=ctx;audioRef.current=true;void ctx.resume();
-   const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sawtooth";oscillator.frequency.value=48;
-   const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=95;
-   gain.gain.value=muted?0:.012;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
+   const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sawtooth";oscillator.frequency.value=110;
+   const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=840;
+   gain.gain.value=muted?0:.38;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
    drone.current=oscillator;droneGain.current=gain;
    // Three detuned suspense tones create a continuous, low-volume cinematic bed.
    const layerA=ctx.createOscillator(),layerB=ctx.createOscillator(),layerC=ctx.createOscillator();
@@ -195,7 +230,7 @@ function App(){
   }catch{/* Game still works silently */}
   sound("start");setScreen("game");
  }
- function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.012;if(!v)window.speechSynthesis?.cancel();return !v});}
+ function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.38;if(!v){window.speechSynthesis?.cancel();tapeAudio.current?.pause();}return !v});}
  function viewDown(e:ReactPointerEvent<HTMLCanvasElement>){
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,dragged:false};e.currentTarget.setPointerCapture(e.pointerId);
@@ -248,7 +283,7 @@ function App(){
   setOverlay(t.id==="drawer"?"lock":t.id==="envelope"?"letter":"inspect");
   setShowNear(false);sound("click");
  }
- function closeInspect(){setOverlay("none");setFocus(null);setWrong(false);}
+ function closeInspect(){tapeAudio.current?.pause();window.speechSynthesis?.cancel();if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.2);setTapeStatus("idle");setOverlay("none");setFocus(null);setWrong(false);}
  function touchObject(){
   const obj=world.current?.aim()||active;
   if(obj)examine(obj);
@@ -326,6 +361,9 @@ function App(){
  }
  const canContinue=seen.length===3;
  return <main className={styles.app} data-stage={screen} data-testid="rescate-mauro-app">
+   <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto"
+     onEnded={()=>{setTapeStatus("ended");if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.18)}}
+     onError={()=>setTapeStatus("error")}/>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
     <span className={styles.classified}>EXPEDIENTE M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
@@ -401,7 +439,7 @@ function App(){
        </div><span>{photoFlipped?"EVIDENCIA / ENCONTRADA":"ARCHIVO FOTOGRÁFICO SIN FECHA"}</span></div>
        <button type="button" className={styles.photoFlipButton} onClick={()=>{setPhotoFlipped(v=>!v);sound("click")}}>{photoFlipped?"↶ VOLVER A MIRAR EL FRENTE":"↻ DAR VUELTA LA FOTOGRAFÍA"}</button>
       </div>}
-      {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>VOZ PROVISIONAL · PENDIENTE DE GRABACIÓN ORIGINAL</small><button type="button" onClick={playTape}>▶ REPRODUCIR LA GRABACIÓN</button></div>}
+      {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>MENSAJE RECONSTRUIDO · VOZ PROVISIONAL, NO ES LA VOZ ORIGINAL</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
       {focus.id in EVIDENCE&&(focus.id!=="calendar"||photoFlipped)?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
       {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate} disabled={focus.id==="calendar"&&!photoFlipped}>{focus.id==="calendar"&&!photoFlipped?"PRIMERO REVISÁ EL REVERSO":focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>

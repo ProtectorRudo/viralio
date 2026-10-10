@@ -1,5 +1,6 @@
 import { build } from "esbuild";
-import { readFileSync, writeFileSync, mkdirSync, cpSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, unlinkSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, resolve } from "node:path";
 
 const output = resolve("showcase/escape");
@@ -72,6 +73,24 @@ await build({
   }],
   logLevel:"warning",
 });
+// Build a locally hosted recording, so mobile WebViews do not depend on
+// unreliable speechSynthesis. Prefer an expressive Argentine Spanish voice,
+// fall back to offline Latin-American Spanish if neural TTS is unavailable.
+const audioDir=join(rescueOutput,"audio");mkdirSync(audioDir,{recursive:true});
+const voiceFile=join(audioDir,"rescue-message.mp3");
+if(!existsSync(voiceFile)){
+ try{
+  execFileSync("edge-tts",["--voice","es-AR-TomasNeural","--text","Por favor... no pierdas tiempo... van a volver.","--write-media",voiceFile],{timeout:25000,stdio:"ignore"});
+  console.log("CASO M voice: Argentine Spanish recording ready");
+ }catch{
+  try{
+   const wav=join(audioDir,"rescue-tmp.wav");
+   execFileSync("espeak",["-v","es-la","-s","150","-p","36","-a","180","-w",wav,"Por favor. No pierdas tiempo. Van a volver."],{timeout:8000,stdio:"ignore"});
+   execFileSync("ffmpeg",["-hide_banner","-loglevel","error","-y","-i",wav,"-af","highpass=f=180,lowpass=f=3800,acompressor=threshold=-25dB:ratio=3:attack=12:release=125,volume=1.8","-ar","22050","-ac","1","-b:a","48k",voiceFile],{timeout:12000,stdio:"ignore"});
+   unlinkSync(wav);console.log("CASO M voice: offline backup recording ready");
+  }catch{console.warn("CASO M voice unavailable; browser voice fallback stays enabled");}
+ }
+}
 writeFileSync(join(rescueOutput,"index.html"),
   '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#070a0e"><meta name="description" content="Una misteriosa misión de tres minutos para encontrar a Mauro. Escape room 3D de ficción con una sorpresa final."><meta property="og:title" content="CASO M: ¿Dónde está Mauro?"><meta property="og:description" content="Tenés 3 minutos. Encontrá las pistas. Abrí el sobre. Una experiencia interactiva de ficción."><title>CASO M · Rescate a Mauro</title><link rel="stylesheet" href="./app.css"></head><body style="margin:0;background:#070a0e"><div id="rescate-root"></div><script defer src="./app.js"></script></body></html>');
 console.log("Rescate Mauro 3D invitation built:",readFileSync(join(rescueOutput,"app.js")).length,"JS bytes");

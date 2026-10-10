@@ -430,3 +430,5 @@
  to{opacity:1;transform:translate(-50%,0) scale(1)}}
 @media(max-width:670px){.knifeAlert{top:20%;padding:15px 12px}}
 @media(prefers-reduced-motion:reduce){.knifeAlert{animation:none}}
+
+.tapeStatus{display:block;margin-top:11px!important;letter-spacing:.08em;font-size:.59rem!important;color:#d9c7a2!important}

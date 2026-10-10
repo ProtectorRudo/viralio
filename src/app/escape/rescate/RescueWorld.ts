@@ -53,6 +53,40 @@ class Room {
    this.quad("scene",[make(a,aa),make(b,aa),make(b,bb),make(a,bb)],norm,color);
   }
  }
+ // Softly faceted anatomical volumes: lower poly count than a GLTF,
+ // but a real silhouette instead of stacked rectangular blocks.
+ ellipsoid(cx:number,cy:number,cz:number,rx:number,ry:number,rz:number,color:string,kind="figure"){
+  const rings=9,sides=12;
+  const pos=(phi:number,theta:number):V=>[
+   cx+rx*Math.sin(phi)*Math.cos(theta),
+   cy+ry*Math.cos(phi),
+   cz+rz*Math.sin(phi)*Math.sin(theta)];
+  const norm=(p:V):V=>{
+   const q:V=[(p[0]-cx)/rx,(p[1]-cy)/ry,(p[2]-cz)/rz];
+   const d=Math.hypot(...q)||1;return q.map(v=>v/d) as V;
+  };
+  for(let i=0;i<rings;i++)for(let j=0;j<sides;j++){
+   const p0=pos(Math.PI*i/rings,Math.PI*2*j/sides),p1=pos(Math.PI*(i+1)/rings,Math.PI*2*j/sides);
+   const p2=pos(Math.PI*(i+1)/rings,Math.PI*2*(j+1)/sides),p3=pos(Math.PI*i/rings,Math.PI*2*(j+1)/sides);
+   for(const [a,b,c] of [[p0,p1,p2],[p0,p2,p3]] as const){
+    const n=norm([(a[0]+b[0]+c[0])/3,(a[1]+b[1]+c[1])/3,(a[2]+b[2]+c[2])/3]);
+    this.add(kind,a,n,color);this.add(kind,b,n,color);this.add(kind,c,n,color);
+   }
+  }
+ }
+ limb(a:V,b:V,ra:number,rb:number,color:string,kind="figure"){
+  const d:V=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],len=Math.hypot(...d)||1,axis=d.map(v=>v/len) as V;
+  const seed:V=Math.abs(axis[1])<.93?[0,1,0]:[1,0,0];
+  const cross=(x:V,y:V):V=>[x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]];
+  const unit=(v:V):V=>{const n=Math.hypot(...v)||1;return v.map(x=>x/n) as V};
+  const side=unit(cross(axis,seed)),front=unit(cross(axis,side)),sides=10;
+  for(let j=0;j<sides;j++){
+   const t=j*Math.PI*2/sides,u=(j+1)*Math.PI*2/sides;
+   const at=(p:V,r:number,angle:number):V=>p.map((v,i)=>v+r*(side[i]*Math.cos(angle)+front[i]*Math.sin(angle))) as V;
+   const normal=unit(side.map((v,i)=>v*Math.cos((t+u)/2)+front[i]*Math.sin((t+u)/2)) as V);
+   this.quad(kind,[at(a,ra,t),at(b,rb,t),at(b,rb,u),at(a,ra,u)],normal,color);
+  }
+ }
 }
 const WALL="#383c42",FLOOR="#2d3033",WOOD="#644735";
 function scene(opened:boolean){
@@ -91,19 +125,33 @@ function scene(opened:boolean){
  g.box(-.64,1.41,4.78,.32,.055,.12,"#a99c85","door");
  // The corridor stays EMPTY until the 60-second threat sequence.
  // A held knife appears only after its shadow has crossed the back wall.
- g.box(.32,2.60,6.28,.55,.57,.40,"#15151b","figure");
- g.box(.32,1.72,6.28,.82,1.32,.42,"#12151b","figure");
- for(const x of [-.27,.91])g.box(x,1.65,6.28,.24,1.30,.33,"#18181e","figure");
- for(const x of [.09,.58])g.box(x,.52,6.28,.27,1.12,.35,"#121419","figure");
- // The right hand grips a dark handle below the arm, blade pointing at floor.
- g.box(.93,.94,6.028,.13,.29,.16,"#302722","figure");
- g.box(.93,.79,6.025,.23,.055,.17,"#5e5a50","figure");
- // Metallic flat of the blade + razor bevel + physically pointed tip.
- g.box(.94,.54,6.024,.10,.45,.075,"#8e9da7","knife-blade");
- g.box(.97,.54,5.980,.035,.45,.018,"#e0e7e4","knife-blade");
- g.add("knife-blade",[.89,.31,5.982],[0,0,-1],"#c5d4da");
- g.add("knife-blade",[.99,.31,5.982],[0,0,-1],"#c5d4da");
- g.add("knife-blade",[.94,.14,5.982],[0,0,-1],"#c5d4da");
+ // Tall hooded intruder: sculpted shoulders, face recess, clothing folds
+ // and staggered legs, all shaded as a true 3-D volume rather than Minecraft blocks.
+ g.ellipsoid(.32,2.58,6.28,.315,.37,.295,"#111821");
+ g.ellipsoid(.32,2.55,6.00,.235,.29,.075,"#05070c"); // face remains unreadable
+ g.ellipsoid(.30,2.94,6.31,.33,.14,.27,"#222b32"); // folded hood rim
+ g.ellipsoid(.32,2.07,6.29,.61,.29,.36,"#1a2028"); // broad, soft shoulders
+ g.limb([.32,2.12,6.28],[.32,1.25,6.28],.47,.35,"#171d25"); // tailored coat
+ g.limb([.32,1.31,6.28],[.32,.90,6.28],.39,.52,"#111821"); // coat flare
+ g.ellipsoid(.32,1.24,6.27,.48,.18,.30,"#25272a"); // belt/fold
+ g.limb([.27,2.36,6.02],[.32,1.21,6.01],.063,.10,"#384048"); // coat lapel
+ g.limb([-.26,2.12,6.29],[-.39,1.58,6.23],.24,.195,"#171d25"); // left sleeve
+ g.limb([-.39,1.58,6.23],[-.32,1.06,6.12],.195,.13,"#1a1c22");
+ g.ellipsoid(-.32,1.06,6.10,.14,.15,.12,"#26272a"); // gloved hand
+ g.limb([.86,2.10,6.30],[.99,1.59,6.23],.25,.19,"#181f27");
+ g.limb([.99,1.59,6.23],[.89,1.01,6.08],.19,.125,"#1d2229"); // knife arm
+ g.ellipsoid(.89,.98,6.06,.145,.16,.14,"#343435");
+ g.limb([.03,1.03,6.33],[-.07,.47,6.32],.23,.155,"#131820");
+ g.limb([.62,1.03,6.34],[.73,.48,6.32],.23,.155,"#10151c");
+ g.ellipsoid(-.08,.40,6.20,.21,.14,.32,"#24252a"); // leather boots
+ g.ellipsoid(.72,.40,6.18,.22,.14,.33,"#202227");
+ g.limb([.87,.93,6.04],[.87,.70,6.03],.08,.064,"#322920"); // knife handle
+ g.box(.87,.68,6.03,.21,.05,.14,"#84837b","figure"); // small guard
+ g.limb([.87,.64,6.03],[.87,.32,6.03],.070,.038,"#7d8d95","knife-blade");
+ g.box(.895,.50,5.958,.020,.36,.009,"#d2e2e8","knife-blade"); // highlight edge
+ g.add("knife-blade",[.833,.34,5.955],[0,0,-1],"#9eacb2");
+ g.add("knife-blade",[.916,.34,5.955],[0,0,-1],"#d0dbe0");
+ g.add("knife-blade",[.869,.19,5.955],[0,0,-1],"#b6c7ce");
  // A separate foreshadowing SHADOW on the corridor wall, shown first.
  g.box(.98,1.17,6.645,.12,.47,.018,"#251923","knife-shadow");
  g.box(.98,.86,6.645,.18,.07,.02,"#251923","knife-shadow");
@@ -238,7 +286,7 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
-uniform float time,emission,threat,bladeFlash;
+uniform float time,emission,threat,bladeFlash,characterRim;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
  float d=distance(vPos,overhead);
@@ -251,6 +299,9 @@ void main(){
  float fog=clamp((vDistance-5.8)/15.0,0.,.69);
  outColor=mix(outColor,vec3(.028,.037,.050),fog);
  if(emission>.5)outColor+=vColor*vec3(.32,.21,.11);
+ // Side/back light separates coat and face from the doorway without revealing
+ // the identity of the figure.
+ outColor+=characterRim*vec3(.14,.16,.20)*(1.0+.5*sin(time*2.1));
  // A single brief cold highlight on the blade; nothing bright before it enters.
  outColor+=vec3(.72,.86,.96)*bladeFlash;
  gl_FragColor=vec4(pow(outColor,vec3(.9)),1.0);
@@ -285,7 +336,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),uth=uniform("threat"),ublade=uniform("bladeFlash");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -389,6 +440,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"?1:0);
    gl.uniform1f(ufg,m.id==="figure"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(urim,m.id==="figure"?1:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?Math.max(0,1-Math.abs(elapsed-13)/1.15)*.90:0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
