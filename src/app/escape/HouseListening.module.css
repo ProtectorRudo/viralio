@@ -90,3 +90,27 @@
 @media(prefers-reduced-data:reduce){
   .ringOuter,.scanLine{display:none}
 }
+
+/* The original 390px layout put ESCUCHAR over EXPEDIENTE. Two equal-sized
+   primary controls now occupy disjoint bottom halves of the scene. */
+@media(max-width:800px){
+  .control{
+    bottom:14px;left:13px;transform:none;
+    width:calc(50% - 19px);max-width:none;gap:0;
+  }
+  .listenButton{
+    width:100%;min-width:0;min-height:50px;
+    border-radius:7px;padding:10px 8px;
+    background:linear-gradient(155deg,#31382f,#192725);
+    border:1px solid rgba(217,184,132,.58);
+    color:#f5e4c9;font-size:.65rem;letter-spacing:.085em;
+    box-shadow:0 9px 24px rgba(0,0,0,.55),inset 0 1px rgba(231,211,171,.1);
+  }
+  .listenButton span{font-size:.95rem;margin-right:7px}
+  .instruction{display:none}
+  .transcript{bottom:87px;max-width:calc(100% - 28px);border-radius:7px}
+}
+@media(max-width:390px){
+  .listenButton{font-size:.56rem;letter-spacing:.04em}
+  .listenButton span{font-size:.82rem;margin-right:4px}
+}
