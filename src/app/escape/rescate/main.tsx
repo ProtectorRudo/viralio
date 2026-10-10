@@ -471,7 +471,7 @@ function App(){
        aria-expanded={evidenceExpanded} data-testid="rescate-dossier-toggle">
        <span>◈ EXPEDIENTE · {seen.length}/3 INDICIOS</span><b>{evidenceExpanded?"−":"+"}</b></button>
      <div className={styles.dossierContents}><span>INDICIOS RECUPERADOS</span>
-      {seen.map((k)=><div key={k} data-found="yes" className={styles.evidenceSlip}>
+      {seen.map((k)=><div key={k} data-testid="rescate-evidence-slip" data-found="yes" className={styles.evidenceSlip}>
         <span className={styles.evidenceMark}>◆</span>
         <div className={styles.evidenceLabel}><strong>{EVIDENCE[k].title}</strong><small>{k==="cassette"?"CINTA Nº 10":k==="memo"?"ARCHIVO DE VIDEO":"REVERSO DE FOTOGRAFÍA"}</small></div>
         <span className={styles.evidenceNumber}>{EVIDENCE[k].value}</span>
