@@ -55,6 +55,17 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
  await page.screenshot({path:`visual-qa-evidence/rescate-mauro-3d-${testInfo.project.name}.png`,fullPage:true});
 });
 
+test("CASO M · toque directo sobre el cajón abre el candado",async({page},testInfo)=>{
+ await start(page);
+ const canvas=page.getByTestId("rescate-webgl");
+ const bounds=await canvas.boundingBox();
+ expect(bounds).not.toBeNull();
+ const x=bounds!.x+bounds!.width*.5,y=bounds!.y+bounds!.height*.598;
+ if(testInfo.project.use.hasTouch)await page.touchscreen.tap(x,y);
+ else await page.mouse.click(x,y);
+ await expect(page.getByRole("dialog",{name:/Candado de seis cifras/})).toBeVisible();
+});
+
 test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:00",async({page})=>{
  test.setTimeout(95000);
  await start(page);
