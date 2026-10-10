@@ -242,11 +242,26 @@ function scene(opened:boolean){
  g.box(3.67,1.028,-1.43,.51,.14,.31,"#303b40");
  g.tube([3.47,1.148,-1.45],[3.87,1.148,-1.45],.076,"#92938b");
  g.tube([3.92,1.04,-1.46],[4.07,.95,-1.48],.025,"#b1a28e");
- // Chair legs and backrest. Touch of world context beyond clues.
- for(const x of [1.0,2.4])for(const z of [-.73,.06])g.box(x,.44,z,.11,.85,.11,"#414449");
- g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
- g.box(1.7,1.58,.18,1.5,1.28,.14,"#4e3d34");
- for(let y=1.2;y<2.01;y+=.18)g.box(1.7,y,.28,1.31,.045,.06,"#79634d");
+ // A deliberately overturned office chair in the right-rear corner,
+ // no giant panel blocking the player's line of sight to the lock.
+ for(const x of [3.47,4.11])for(const z of [.75,1.43])g.box(x,.34,z,.075,.68,.095,"#353d3e");
+ g.box(3.79,.70,1.10,.81,.13,.74,"#4a4c4d");
+ g.box(4.12,1.13,1.31,.13,.82,.72,"#403b36");
+ for(const y of [.89,1.12,1.34])g.box(4.07,y,1.33,.060,.046,.58,"#756253");
+ // Shelved files occupy the far-left utility alcove, away from the lock.
+ for(const y of [.58,1.23,1.90])g.box(-4.48,y,1.13,.58,.072,1.55,"#63584c");
+ for(let i=0;i<12;i++){const z=.47+i*.125;
+  g.box(-4.42,1.57,z,.12,.48,.085,i%3?"#766a58":"#3d5556");
+ }
+ // Low equipment trunk and loose cable: background storytelling only.
+ g.box(-3.86,.33,2.53,1.08,.58,.74,"#4b4e4b");
+ g.box(-3.86,.66,2.53,1.12,.08,.78,"#7c715c");
+ g.box(-3.86,.41,2.12,.29,.14,.047,"#a29073");
+ for(let i=0;i<7;i++){
+  const t=i/6*Math.PI*1.6;
+  g.tube([-3.28+.14*Math.cos(t),.028,2.76+.12*Math.sin(t)],
+         [-3.28+.14*Math.cos(t+.31),.028,2.76+.12*Math.sin(t+.31)],.014,"#242b2c");
+ }
  // Evidence photograph on the wall. Nothing displays the solution on its front.
  // Cream paper frame, dark developed photograph, aged tape and damaged corners.
  g.box(-2.75,2.12,-5.59,1.65,1.94,.10,"#6e6254");
@@ -322,20 +337,15 @@ function scene(opened:boolean){
  g.tube([0,4.00,-1.65],[0,3.23,-1.65],.055,"#89837a");
  g.box(0,3.20,-1.65,.61,.18,.55,"#c2a47c");
  g.box(0,3.08,-1.65,.4,.032,.31,"#ffd9a2","emissive");
- // Story-driven environmental dressing, kept light for phone GPUs.
- // Recorder desk: cold coffee, marked paper and coiled signal cable.
- g.tube([-3.18,1.08,-3.10],[-3.18,1.24,-3.10],.105,"#d6bf9e");
- g.tube([-3.18,1.24,-3.10],[-3.18,1.255,-3.10],.094,"#604436");
- g.box(-3.02,1.002,-3.21,.29,.014,.17,"#e0c8a5");
- g.box(-3.02,1.018,-3.19,.19,.011,.014,"#655a4c");
- for(let i=0;i<8;i++){const t=i/7*Math.PI*1.8;
-  g.tube([-2.16+.14*Math.cos(t),1.02,-2.71+.13*Math.sin(t)],
-         [-2.16+.14*Math.cos(t+.37),1.02,-2.71+.13*Math.sin(t+.37)],.012,"#292b29");}
- // Contact sheets from surveillance on the right workstation.
+ // Documents, coffee and evidence prints physically REST ON the new desks.
+ g.tube([-4.16,1.05,-2.22],[-4.16,1.25,-2.22],.09,"#d3bea0");
+ g.tube([-4.16,1.25,-2.22],[-4.16,1.267,-2.22],.082,"#554539");
+ g.box(-3.53,1.000,-2.32,.31,.015,.19,"#dbc5a6");
+ g.box(-3.53,1.02,-2.32,.18,.010,.013,"#5d5551");
  for(let i=0;i<4;i++){
-  const x=2.93+(i%2)*.16,z=-3.08+Math.floor(i/2)*.18;
-  g.box(x,1.013,z,.15,.009,.13,"#c9b69a");
-  g.box(x,1.023,z,.083,.008,.062,i%2===0?"#465352":"#655f56");
+  const x=3.17+i%2*.18,z=-1.57+Math.floor(i/2)*.16;
+  g.box(x,1.0,z,.16,.015,.12,"#c6b698");
+  g.box(x,1.014,z,.096,.009,.071,i%2?"#435252":"#6a6159");
  }
  // Torn witness reports, visually low but clearly resting on the floor.
  for(let i=0;i<12;i++){
@@ -425,7 +435,7 @@ void main(){
  // Keep the intruder a shape in darkness: disclose only edges in red/amber
   // light, preventing the low-poly model from becoming a giant visible doll.
   float breathing=.72+.25*sin(time*2.0);
-  outColor= mix(outColor,outColor*.33,characterRim*.75);
+  outColor= mix(outColor,outColor*.22,characterRim*.88);
   outColor+=characterRim*vec3(.14,.09,.07)*(.04+rim*.70)*breathing;
  // A single brief cold highlight on the blade; nothing bright before it enters.
  outColor+=vec3(.72,.86,.96)*bladeFlash;
