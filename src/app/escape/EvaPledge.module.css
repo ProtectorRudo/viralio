@@ -85,3 +85,26 @@
  .envelope{margin:32px auto 23px}
 }
 @media(prefers-reduced-motion:reduce){.letter,.envelope{animation:none;transition:none}}
+
+
+/* The player truly breaks the seal and opens the triangular paper flap; an
+   inner document rises before the full parchment comes into focus. */
+.emergingLetter{position:absolute;left:10%;right:10%;top:18%;height:72%;z-index:2;display:flex;
+ flex-direction:column;justify-content:flex-start;gap:13px;align-items:center;padding-top:25px;
+ background:linear-gradient(130deg,#eee1c4,#d0b997);border:1px solid #ba9f78;box-shadow:0 -4px 13px rgba(0,0,0,.14);
+ transform:translateY(0);color:#65513c;pointer-events:none}
+.emergingLetter i{font:750 .55rem ui-monospace,monospace;letter-spacing:.17em}
+.emergingLetter b{font:italic 1.03rem Georgia,serif}
+.envelopeScene[data-opening="true"] .emergingLetter{animation:innerLetterLift .82s cubic-bezier(.19,.72,.23,1) both}
+.envelopeScene[data-opening="true"] .flap{transform-origin:50% 0%;animation:paperFlapOpen .58s cubic-bezier(.19,.82,.23,1) both}
+.envelopeScene[data-opening="true"] .wax{animation:brokenSeal .42s ease-out both}
+.envelopeScene[data-opening="true"] .envelopeFace{z-index:3}
+.envelopeScene[data-opening="true"] .envelope{pointer-events:none}
+@keyframes paperFlapOpen{0%{transform:rotateX(0deg);z-index:3}100%{transform:rotateX(178deg);z-index:1}}
+@keyframes brokenSeal{0%{transform:translate(-50%,-50%) scale(1);opacity:1}60%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.45) rotate(-17deg);opacity:0}}
+@keyframes innerLetterLift{0%,27%{transform:translateY(0);opacity:1}77%,100%{transform:translateY(-58%);opacity:1}}
+@media(prefers-reduced-motion:reduce){
+ .envelopeScene[data-opening="true"] .emergingLetter{animation:none;transform:translateY(-50%)}
+ .envelopeScene[data-opening="true"] .flap{animation:none;transform:rotateX(178deg)}
+ .envelopeScene[data-opening="true"] .wax{animation:none;opacity:0}
+}
