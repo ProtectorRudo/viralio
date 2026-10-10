@@ -21,11 +21,22 @@ async function walk(page:Page,key:string,ms:number){
  await page.waitForTimeout(ms);
  await page.keyboard.up(key);
 }
+/** Hold the walk control until the real 3D camera reaches a coordinate.
+    Headless software WebGL can render slowly, so a fixed 2-second walk is
+    not a portable assertion of distance traveled. */
+async function walkTo(page:Page,key:string,axis:"x"|"z",bound:number,direction:"below"|"above"="below"){
+ await page.keyboard.down(key);
+ try{
+  const position=()=>page.getByTestId("rescate-webgl").getAttribute("data-camera-"+axis).then(x=>x===null?NaN:Number(x));
+  if(direction==="below")await expect.poll(position,{timeout:20000,intervals:[125,250,450]}).toBeLessThan(bound);
+  else await expect.poll(position,{timeout:20000,intervals:[125,250,450]}).toBeGreaterThan(bound);
+ }finally{await page.keyboard.up(key)}
+}
 async function examineNearby(page:Page,name:string){
  const nearby=page.getByTestId("rescate-nearby");
  if(!(await nearby.isVisible()))await page.getByRole("button",{name:/EXPLORAR ALREDEDOR/}).click();
  await expect(nearby).toBeVisible();
- await nearby.getByRole("button",{name:new RegExp(name,"i")}).click();
+ await nearby.getByRole("button",{name:new RegExp(name,"i")}).click({timeout:12000});
  await expect(page.getByRole("dialog")).toBeVisible();
 }
 
@@ -45,11 +56,11 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
 });
 
 test("CASO M · pistas físicas, combinación 1310, cajón y sobre revelan cumpleaños",async({page})=>{
- test.setTimeout(110000);
+ test.setTimeout(140000);
  await page.goto("/rescate-mauro/?fecha=13%20de%20octubre&hora=20%3A00&lugar=La%20Plata");
  await page.getByRole("button",{name:/ACEPTAR MISIÓN/}).click();
  await expect(page.getByTestId("rescate-webgl")).toBeVisible();
- await walk(page,"w",2050);
+ await walkTo(page,"w","z",-1.03);
  await examineNearby(page,"Grabador de voz");
  await expect(page.getByRole("dialog")).toContainText("10");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
@@ -57,14 +68,14 @@ test("CASO M · pistas físicas, combinación 1310, cajón y sobre revelan cumpl
  await examineNearby(page,"Informe confidencial");
  await expect(page.getByRole("dialog")).toContainText("DÍA");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
- await walk(page,"a",850);
- await walk(page,"w",1050);
+ await walkTo(page,"a","x",-2.13);
+ await walkTo(page,"w","z",-3.61);
  await examineNearby(page,"Calendario arrancado");
  await expect(page.getByRole("dialog")).toContainText("13");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 3\/3/)).toBeVisible();
  // Walk back from the calendar to within arm’s reach of the locked drawer.
- await walk(page,"s",400);
+ await walkTo(page,"s","z",-2.78,"above");
  await examineNearby(page,"Candado del cajón");
  const lock=page.getByTestId("rescate-lock");
  await expect(lock).toBeVisible();
