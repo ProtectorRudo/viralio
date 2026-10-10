@@ -137,6 +137,27 @@ function App(){
   return()=>clearInterval(id);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,muted,expired,drawerOpen,seconds<=48,seconds<=105]);
+ // Synchronize actual 3D approach with the mission timer.
+ useEffect(()=>{
+  if(screen!=="game")return;
+  flags.current.remaining=seconds;
+  if(flags.current.intruder)world.current?.setFlags({...flags.current});
+ },[screen,seconds]);
+ // Blackout at 01:00 remaining: full darkness, then an impossible-to-miss
+ // red warning permanently painted onto the back wall.
+ useEffect(()=>{
+  if(screen!=="game"||expired||drawerOpen||seconds>60||blackoutTriggered.current)return;
+  blackoutTriggered.current=true;setBlackout(true);setDoorWarning(false);
+  setTensionCue("");setToast("");sound("static");navigator.vibrate?.([75,75,170]);
+  const reveal=window.setTimeout(()=>{
+    setBlackout(false);setGraffiti(true);setGraffitiReveal(true);
+    world.current?.lookAt({id:"board",label:"Pintada roja",pos:[-1.48,2.55,-5.47],reach:10,hint:"SEGUÍS VOS."});
+    setToast("ALGUIEN DEJÓ UN MENSAJE EN LA PARED.");sound("metal");navigator.vibrate?.([25,70,110]);
+  },1650);
+  const clear=window.setTimeout(()=>setGraffitiReveal(false),4200);
+  blackoutTimers.current.push(reveal,clear);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,expired,drawerOpen,seconds]);
  // Sparingly placed environmental beats, not looping pop-ups.
  useEffect(()=>{
   if(screen!=="game"||expired||drawerOpen)return;
@@ -162,17 +183,17 @@ function App(){
  useEffect(()=>{
   if(screen!=="game"||expired||seconds>60||threatFired.current)return;
   threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
-  setDoorWarning(true);setShowNear(false);setToast("RUIDO EN EL PASILLO · ¡LA PUERTA SE ESTÁ ABRIENDO!");
+  setShowNear(false);setToast("RUIDO EN EL PASILLO · ¡LA PUERTA SE ESTÁ ABRIENDO!");
   sound("door");navigator.vibrate?.([140,100,260]);
   const schedule=(ms:number,cb:()=>void)=>threatTimers.current.push(window.setTimeout(cb,ms));
-  schedule(1700,()=>sound("step"));
+  schedule(1700,()=>{setDoorWarning(true);sound("step");});
   schedule(3100,()=>sound("step"));
   schedule(4500,()=>sound("step"));
   schedule(10000,()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);});
   schedule(12900,()=>sound("metal"));
    for(const at of [14200,19100,23700,28600,32700])schedule(at,()=>sound("step"));
   schedule(12800,()=>setFigureWarning(false));
-  schedule(3100,()=>setDoorWarning(false));
+  schedule(4300,()=>setDoorWarning(false));
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
