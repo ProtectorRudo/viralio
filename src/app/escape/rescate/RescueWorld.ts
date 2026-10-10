@@ -3,14 +3,15 @@
  * Original mesh-based 3D geometry (not a moving photograph).
  * Supports WebGL1 mobiles without any third-party runtime or CDN.
  */
-export type ClueId="calendar"|"cassette"|"memo"|"drawer"|"envelope"|"phone"|"camera"|"locker"|"lamp"|"pipe";
-export type SceneFlags={unlocked:boolean};
+export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"locker"|"lamp"|"pipe";
+export type SceneFlags={unlocked:boolean;clockActivated:boolean};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Calendario arrancado",pos:[-2.7,2.1,-5.16],reach:3.4,hint:"La fecha parece marcada con demasiada insistencia."},
  {id:"cassette",label:"Grabador de voz",pos:[-2.8,1.03,-2.53],reach:2.9,hint:"La cinta está atascada en una grabación."},
  {id:"memo",label:"Informe confidencial",pos:[2.45,1.02,-2.55],reach:2.9,hint:"Un informe arrugado con instrucciones."},
- {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Cuatro pequeñas ruedas numéricas protegen el cajón."},
+ {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
+ {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
  {id:"envelope",label:"Sobre encontrado",pos:[.15,1.11,-1.73],reach:2.9,hint:"El papel lleva un sello rojo. Por fin llegaste."},
  {id:"phone",label:"Teléfono desconectado",pos:[2.4,1.18,-3.14],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
  {id:"camera",label:"Cámara de seguridad",pos:[3.6,3.35,-5.06],reach:4.7,hint:"La luz roja se enciende cuando te movés."},
@@ -101,7 +102,7 @@ function scene(opened:boolean){
   g.box(0,.64,-1.672,.075,.11,.05,"#1c2021");
  }
  // Four-digit lock physically attached to drawer.
- if(!opened){for(let i=0;i<4;i++){const x=-.42+i*.28;g.box(x,.86,-1.685,.21,.26,.12,"#aaa293");g.box(x,.86,-1.612,.17,.14,.024,"#343b3d");}}
+ if(!opened){for(let i=0;i<6;i++){const x=-.66+i*.255;g.box(x,.86,-1.685,.20,.26,.12,"#aaa293");g.box(x,.86,-1.612,.165,.14,.024,"#343b3d");}}
  // An old radio/cassette, a physical specimen on the left.
  g.box(-2.7,1.05,-2.68,.85,.28,.53,"#3f4548");
  g.box(-2.7,1.175,-2.43,.68,.036,.18,"#89928b");
@@ -123,6 +124,17 @@ function scene(opened:boolean){
  g.box(-2.75,2.15,-5.47,1.39,1.59,.027,"#d4c5ac","calendar");
  g.box(-2.75,2.91,-5.44,1.53,.20,.06,"#654b4b");
  g.box(-2.75,1.33,-5.43,1.50,.04,.07,"#928370");
+ // Clock with real WebGL hands that animate around a shared spindle.
+ const cx=3.73,cy=2.14,cz=-5.43;
+ g.box(cx,cy,cz,1.46,1.46,.15,"#65503f");
+ g.box(cx,cy,cz+.09,1.23,1.24,.07,"#b3a891");
+ for(let i=0;i<12;i++){
+  const a=i*Math.PI/6,x=cx+Math.sin(a)*.48,y=cy+Math.cos(a)*.48;
+  g.box(x,y,cz+.147,.055,.072,.031,"#443930");
+ }
+ g.box(cx,cy+.205,cz+.17,.07,.45,.045,"#262b2b","clock-hour");
+ g.box(cx,cy+.315,cz+.19,.038,.66,.042,"#5b3329","clock-minute");
+ g.box(cx,cy,cz+.23,.11,.11,.06,"#c9aa74");
  // Evidence board, family photographs and other false leads on the back wall.
  g.box(1.55,2.11,-5.66,2.5,1.65,.17,"#69463c");
  g.box(1.55,2.12,-5.54,2.33,1.49,.01,"#ae8660");
@@ -163,13 +175,17 @@ function scene(opened:boolean){
 }
 const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;
 uniform vec3 eye,right,up,forward;
-uniform float ratio;
+uniform float ratio,clockAngle;
+uniform vec2 clockPivot;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 void main(){
- vec3 d=p-eye;
+ vec3 w=p;
+ float ss=sin(clockAngle),cc=cos(clockAngle);
+ w.xy=clockPivot+vec2((p.x-clockPivot.x)*cc+(p.y-clockPivot.y)*ss,-(p.x-clockPivot.x)*ss+(p.y-clockPivot.y)*cc);
+ vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
- vPos=p;vNorm=n;vColor=c;vDistance=z;
+ vPos=w;vNorm=n;vColor=c;vDistance=z;
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
@@ -217,7 +233,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -232,7 +248,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  };
  let current={...flags};rebuild(current.unlocked);
  const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
- let active=true,raf=0,lastHud=0;
+ let active=true,raf=0,lastHud=0,clockStarted=flags.clockActivated?performance.now()-3100:0;
  function basis(){
   const cp=Math.cos(pose.pitch);
   const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
@@ -280,6 +296,11 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
+   const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
+   const eased=t*t*(3-2*t);
+   gl.uniform2f(upiv,3.73,2.14);
+   gl.uniform1f(ua,m.id==="clock-hour"?eased*(Math.PI*6+Math.PI*5/6):
+      m.id==="clock-minute"?eased*Math.PI*8:0);
    gl.drawArrays(gl.TRIANGLES,0,m.count);
   }
   if(onFrame&&now-lastHud>125){lastHud=now;onFrame({...pose},aim());}
@@ -299,7 +320,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
     pose.yaw=Math.atan2(-dx,-dz);pose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
   },
   aim,nearby,getPose:()=>({...pose}),
-  setFlags:(next:SceneFlags)=>{if(next.unlocked===current.unlocked)return;current={...next};rebuild(current.unlocked)},
+  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
   dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);gl.deleteProgram(program);gl.flush()},
  };
 }
