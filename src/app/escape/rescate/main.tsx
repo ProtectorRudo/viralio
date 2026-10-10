@@ -431,7 +431,20 @@ function App(){
        </div><span>{photoFlipped?"EVIDENCIA / ENCONTRADA":"ARCHIVO FOTOGRÁFICO SIN FECHA"}</span></div>
        <button type="button" className={styles.photoFlipButton} onClick={()=>{setPhotoFlipped(v=>!v);sound("click")}}>{photoFlipped?"↶ VOLVER A MIRAR EL FRENTE":"↻ DAR VUELTA LA FOTOGRAFÍA"}</button>
       </div>}
-      {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>MENSAJE RECONSTRUIDO · VOZ PROVISIONAL, NO ES LA VOZ ORIGINAL</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
+      {focus.id==="memo"&&<div className={styles.surveillanceScreen} data-testid="rescate-surveillance">
+        <div className={styles.surveillanceHeader}><span>● REC · CÁMARA 03</span><span>ARCHIVO 2026</span></div>
+        <div className={styles.surveillanceFootage}><span>OBJETIVO / M</span><i/><i/><div className={styles.surveillanceCross}>+</div><small>SEGUIMIENTO ARCHIVADO</small></div>
+        <p>REGISTRO OPERATIVO: <strong>2026</strong></p><small>SOLO IMPORTAN LAS DOS ÚLTIMAS CIFRAS DEL AÑO</small>
+       </div>}
+       {focus.id==="board"&&<div className={styles.investigationBoard} data-testid="rescate-investigation-board">
+        <strong>OPERACIÓN M · PLAN DE SEGUIMIENTO</strong>
+        <div><span>07:10</span> INICIO DE RUTINA / OBSERVADO</div>
+        <div><span>12:40</span> TRAYECTO EN LA CIUDAD / CONFIRMADO</div>
+        <div><span>17:00</span> ÚLTIMO MOVIMIENTO / SIN VERIFICAR</div>
+        <div><span>ARCH.</span> FOTOGRAFÍAS, HORARIOS Y RECORTES</div>
+        <small>NO TODAS LAS NOTAS SON CLAVES DEL CANDADO.</small>
+       </div>}
+       {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>MENSAJE RECONSTRUIDO · VOZ PROVISIONAL, NO ES LA VOZ ORIGINAL</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
       {focus.id in EVIDENCE&&(focus.id!=="calendar"||photoFlipped)?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
       {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate} disabled={focus.id==="calendar"&&!photoFlipped}>{focus.id==="calendar"&&!photoFlipped?"PRIMERO REVISÁ EL REVERSO":focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>
@@ -477,7 +490,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
