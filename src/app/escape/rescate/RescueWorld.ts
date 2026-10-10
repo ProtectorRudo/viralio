@@ -3,18 +3,19 @@
  * Original mesh-based 3D geometry (not a moving photograph).
  * Supports WebGL1 mobiles without any third-party runtime or CDN.
  */
-export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"locker"|"lamp"|"pipe";
+export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"board"|"locker"|"lamp"|"pipe";
 export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
  {id:"cassette",label:"Grabador de voz",pos:[-2.8,1.03,-2.53],reach:2.9,hint:"La cinta está atascada en una grabación."},
- {id:"memo",label:"Informe confidencial",pos:[2.45,1.02,-2.55],reach:2.9,hint:"Un informe arrugado con instrucciones."},
+ {id:"memo",label:"Archivo de vigilancia",pos:[2.48,1.47,-2.87],reach:3.1,hint:"Un monitor conserva una grabación de seguridad."},
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
  {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
- {id:"envelope",label:"Sobre encontrado",pos:[.15,1.11,-1.73],reach:2.9,hint:"El papel lleva un sello rojo. Por fin llegaste."},
+ {id:"envelope",label:"Sobre encontrado",pos:[.02,.79,-1.48],reach:3.3,hint:"El papel lleva un sello rojo. Por fin llegaste."},
  {id:"phone",label:"Teléfono desconectado",pos:[2.4,1.18,-3.14],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
  {id:"camera",label:"Cámara de seguridad",pos:[3.6,3.35,-5.06],reach:4.7,hint:"La luz roja se enciende cuando te movés."},
+ {id:"board",label:"Tablero de seguimiento",pos:[1.55,2.2,-5.27],reach:4.0,hint:"Planos, fotos y horarios de los movimientos de Mauro."},
  {id:"locker",label:"Armario oxidado",pos:[-3.72,1.56,-3.4],reach:2.85,hint:"Tiene marcas de dedos en el polvo."},
  {id:"lamp",label:"Luz de interrogatorio",pos:[-.2,3.43,-1.8],reach:4.2,hint:"El foco emite un zumbido intermitente."},
  {id:"pipe",label:"Tubería de ventilación",pos:[3.8,2.15,-.1],reach:3.5,hint:"Algo golpea una tubería al otro lado."},
@@ -155,8 +156,8 @@ function scene(opened:boolean){
  g.ellipsoid(.89,.98,6.06,.145,.16,.14,"#343435");
  g.limb([.03,1.03,6.33],[-.07,.47,6.32],.23,.155,"#131820");
  g.limb([.62,1.03,6.34],[.73,.48,6.32],.23,.155,"#10151c");
- g.ellipsoid(-.08,.40,6.20,.21,.14,.32,"#24252a"); // leather boots
- g.ellipsoid(.72,.40,6.18,.22,.14,.33,"#202227");
+ g.ellipsoid(-.08,.22,6.20,.18,.095,.28,"#24252a"); // leather boots
+ g.ellipsoid(.72,.22,6.18,.18,.095,.29,"#202227");
  g.limb([.87,.93,6.04],[.87,.70,6.03],.08,.064,"#322920"); // knife handle
  g.box(.87,.68,6.03,.21,.05,.14,"#84837b","figure"); // small guard
  g.limb([.87,.64,6.03],[.87,.32,6.03],.070,.038,"#7d8d95","knife-blade");
@@ -176,38 +177,67 @@ function scene(opened:boolean){
   g.box(0,4.02,z,1.1,.15,.53,"#a69d82");
   g.box(0,3.92,z,.83,.035,.32,"#c6ac81","emissive");
  }
- // Central interrogation table, visible 3D unlocked drawer.
- g.box(0,.85,-2.65,3.18,.15,1.65,WOOD);
- for(const x of [-1.4,1.4])for(const z of [-3.25,-2.1])g.box(x,.40,z,.15,.83,.16,"#6d5a4b");
- g.box(0,.52,-2.63,2.84,.52,1.29,"#463e3a");
- g.box(0,.68,-1.79,1.46,.43,.09,"#8c7158");
- for(let i=-1;i<=1;i++)g.box(i*.43,.68,-1.729,.28,.24,.027,"#64554c");
- // The drawer emerges into the room after unlocking.
+ // Workstations directly beneath side props (previously suspended in air).
+ for(const x of [-2.68,2.58]){
+  g.box(x,.825,-2.78,1.62,.17,1.35,"#505357");
+  g.box(x,.929,-2.78,1.67,.04,1.40,"#987654");
+  for(const dx of [-.68,.68])for(const dz of [-.54,.54]){
+   g.box(x+dx,.414,-2.78+dz,.12,.828,.12,"#495256");
+   g.box(x+dx,.04,-2.78+dz,.16,.075,.16,"#353b3d");
+  }
+  g.box(x,.40,-3.35,1.35,.07,.065,"#6b6760");
+  g.box(x,.015,-2.78,1.70,.016,1.47,"#181b1e");
+ }
+ // Heavy six-wheel combination-lock cabinet: readable goal from spawn.
+ g.box(0,.83,-2.65,3.24,.22,1.76,"#3e4449");
+ g.box(0,.957,-2.65,3.30,.061,1.82,"#a17c57");
+ for(const x of [-1.43,1.43])for(const z of [-3.31,-2.04]){
+  g.box(x,.40,z,.16,.79,.16,"#65676a");
+  g.box(x,.038,z,.20,.074,.20,"#33373b");
+ }
+ g.box(0,.02,-2.62,3.2,.02,1.82,"#16191b");
+ g.box(0,.53,-2.61,2.88,.49,1.36,"#30373e");
+ g.box(0,.67,-1.75,2.55,.42,.13,"#8a6d52");
+ g.box(0,.79,-1.66,2.34,.30,.07,"#202b33");
+ g.box(0,.79,-1.612,2.27,.25,.029,"#a69b86");
+ g.box(0,1.012,-1.97,1.26,.080,.063,"#d4b787");
+ for(const x of [-1.22,1.22])for(const y of [.56,.83])g.tube([x,y,-1.58],[x,y,-1.53],.051,"#dabd8e");
  if(opened){
-  g.box(.02,.62,-1.23,1.5,.13,.97,"#aa8b69","drawer");
-  g.box(.02,.70,-.73,1.52,.26,.09,"#6b5140","drawer");
-  g.box(.02,.72,-1.50,.25,.037,.19,"#e5d1a9","envelope");
+  g.box(0,.66,-1.22,1.58,.066,1.12,"#bba078","drawer");
+  for(const x of [-.76,.76])g.box(x,.73,-1.22,.075,.19,1.09,"#846850","drawer");
+  g.box(0,.73,-.67,1.65,.20,.10,"#866448","drawer");
+  g.box(0,.706,-1.48,.43,.021,.27,"#e5d4b1","envelope");
+  g.box(0,.72,-1.445,.10,.022,.10,"#983f32","envelope");
  }else{
-  g.box(0,.65,-1.724,.27,.28,.09,"#b6ad92");
-  g.box(0,.64,-1.672,.075,.11,.05,"#1c2021");
+  g.box(0,.75,-1.55,.34,.22,.12,"#b5a885");
+  g.box(0,.75,-1.49,.14,.12,.05,"#222a30");
+  for(let i=0;i<6;i++){
+   const x=-.82+i*.326;
+   g.box(x,.79,-1.56,.282,.246,.068,"#354047");
+   g.tube([x,.79,-1.529],[x,.79,-1.44],.11,"#c4b7a0");
+   g.box(x,.79,-1.422,.11,.09,.026,"#39474c");
+   g.box(x,.876,-1.410,.065,.027,.023,"#f2d8ab");
+  }
  }
- // Four-digit lock physically attached to drawer.
- if(!opened){for(let i=0;i<6;i++){const x=-.66+i*.255;g.box(x,.86,-1.685,.20,.26,.12,"#aaa293");g.box(x,.86,-1.612,.165,.14,.024,"#343b3d");}}
- // Cassette recorder with tape reels and a glowing REC lamp.
- g.box(-2.7,1.05,-2.68,1.02,.28,.64,"#343d40");
- g.box(-2.7,1.199,-2.57,.83,.016,.36,"#c8b795");
- g.box(-2.7,1.215,-2.57,.68,.016,.25,"#303b3d");
- for(const x of [-2.92,-2.48]){
-  g.box(x,1.23,-2.56,.19,.025,.19,"#c0baa8");
-  g.box(x,1.249,-2.56,.065,.014,.065,"#414347");
- }
- g.box(-2.99,1.08,-2.34,.10,.09,.07,"#b94b42","emissive");
- for(let x=-2.8;x<=-2.37;x+=.13)g.box(x,1.08,-2.34,.10,.055,.07,"#b4a68d");
- // Files and a stamped investigative memo.
- g.box(2.32,1.0,-2.8,.7,.024,.42,"#cfbb9d","memo");
- g.box(2.51,1.024,-2.61,.14,.005,.04,"#663f39");
- g.box(-.76,.98,-2.8,.81,.031,.42,"#8c765d");
- g.box(-.88,1.001,-2.8,.52,.007,.31,"#d5c4aa");
+ // Recorder grounded to the LEFT bench.
+ g.box(-2.70,1.07,-2.68,1.04,.25,.64,"#343d40");
+ g.box(-2.70,1.213,-2.57,.82,.017,.36,"#cbb997");
+ g.box(-2.70,1.23,-2.57,.69,.016,.25,"#303b3d");
+ for(const x of [-2.92,-2.48]){g.box(x,1.246,-2.56,.19,.022,.19,"#c0baa8");g.box(x,1.261,-2.56,.065,.014,.065,"#414347");}
+ g.box(-2.99,1.09,-2.34,.10,.09,.07,"#b94b42","emissive");
+ // Right table has a surveillance playback monitor — its footage reveals 2026.
+ g.box(2.49,1.43,-3.04,1.12,.88,.16,"#222b31");
+ g.box(2.49,1.43,-2.945,.94,.67,.031,"#415a64","memo");
+ g.box(2.49,1.69,-2.924,.90,.12,.021,"#202f39");
+ for(let i=0;i<5;i++)g.box(2.13+i*.17,1.70,-2.906,.09,.025,.02,"#bbac91");
+ g.box(2.32,1.34,-2.917,.21,.18,.019,"#829091");
+ g.box(2.62,1.38,-2.914,.28,.21,.018,"#263c46");
+ g.box(2.49,.970,-3.05,.11,.10,.13,"#626a6d");
+ g.box(2.49,.950,-3.05,.43,.035,.29,"#767b72");
+ // Handset sits on table too.
+ g.box(2.38,1.025,-2.31,.56,.13,.33,"#374148");
+ g.tube([2.18,1.14,-2.33],[2.61,1.14,-2.33],.08,"#797e78");
+ g.tube([2.65,1.02,-2.27],[2.84,.92,-2.28],.026,"#9c9180");
  // Chair legs and backrest. Touch of world context beyond clues.
  for(const x of [1.0,2.4])for(const z of [-.73,.06])g.box(x,.44,z,.11,.85,.11,"#414449");
  g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
@@ -249,10 +279,6 @@ function scene(opened:boolean){
  g.box(-3.75,1.51,-3.65,1.54,2.98,.90,"#414d50");
  g.box(-3.35,1.65,-3.18,.08,.41,.08,"#d1b380");
  for(const y of [.65,1.16,2.15,2.67])g.box(-3.74,y,-3.185,1.28,.035,.06,"#666f73");
- // Telephone with angular volumetric mouthpiece.
- g.box(2.44,1.10,-2.85,.6,.23,.54,"#39434b");
- g.tube([2.25,1.25,-2.92],[2.67,1.25,-2.92],.085,"#797e78");
- g.tube([2.75,1.06,-2.81],[2.95,.88,-2.82],.037,"#9c9180");
  // Security camera, red recording indicator.
  g.box(3.48,3.41,-5.32,.53,.24,.51,"#87918f");
  g.box(3.48,3.44,-5.03,.26,.17,.06,"#222831");
