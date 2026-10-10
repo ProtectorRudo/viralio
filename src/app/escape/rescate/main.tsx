@@ -56,15 +56,17 @@ function App(){
  const [musicPlaying,setMusicPlaying]=useState(false);
  const [tapeStatus,setTapeStatus]=useState<"idle"|"playing"|"ended"|"error">("idle");
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
- const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
+ const flags=useRef({unlocked:false,clockActivated:false,intruder:false,remaining:180});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
  const [tensionCue,setTensionCue]=useState<""|"signal"|"flicker"|"knock">("");
+ const [blackout,setBlackout]=useState(false),[graffiti,setGraffiti]=useState(false),[graffitiReveal,setGraffitiReveal]=useState(false);
+ const blackoutTriggered=useRef(false),blackoutTimers=useRef<number[]>([]),graffitiMarker=useRef<HTMLDivElement|null>(null);
  const finalMinute=seconds<=60;
  const cuesFired=useRef(new Set<number>()),cueTimer=useRef<number|null>(null);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
- useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);},[]);
+ useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
   config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
@@ -84,6 +86,15 @@ function App(){
     // World-space telemetry is also useful for joystick accessibility tests.
     el.dataset.cameraX=pos.x.toFixed(2);
     el.dataset.cameraZ=pos.z.toFixed(2);
+     const paint=graffitiMarker.current;
+     if(paint){
+       const wall=world.current?.project([-1.48,2.55,-5.47]);
+       if(wall){
+         paint.style.left=wall.x+"px";paint.style.top=wall.y+"px";
+         paint.style.visibility=wall.visible?"visible":"hidden";
+         paint.style.setProperty("--spray-scale",String(Math.max(.58,Math.min(1.7,4.8/Math.max(1,wall.distance)))));
+       }
+     }
      const marker=envelopeMarker.current;
      if(marker&&unlockedRef.current){
       const point=world.current?.project([.02,.79,-1.48]);
