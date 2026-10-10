@@ -56,8 +56,7 @@ class Room {
  }
  // Softly faceted anatomical volumes: lower poly count than a GLTF,
  // but a real silhouette instead of stacked rectangular blocks.
- ellipsoid(cx:number,cy:number,cz:number,rx:number,ry:number,rz:number,color:string,kind="figure"){
-  const rings=9,sides=12;
+ ellipsoid(cx:number,cy:number,cz:number,rx:number,ry:number,rz:number,color:string,kind="figure",rings=9,sides=12){
   const pos=(phi:number,theta:number):V=>[
    cx+rx*Math.sin(phi)*Math.cos(theta),
    cy+ry*Math.cos(phi),
@@ -128,11 +127,11 @@ function scene(opened:boolean){
  // A held knife appears only after its shadow has crossed the back wall.
  // Tall hooded intruder: sculpted shoulders, face recess, clothing folds
  // and staggered legs, all shaded as a true 3-D volume rather than Minecraft blocks.
- g.ellipsoid(.32,2.58,6.28,.315,.37,.295,"#111821");
- g.ellipsoid(.32,2.55,6.00,.215,.275,.084,"#060a0e"); // under the hood
- g.ellipsoid(.32,2.56,5.912,.164,.233,.047,"#3f3b37"); // dark half-masked face only briefly revealed
- g.ellipsoid(.250,2.62,5.856,.044,.023,.012,"#0a0c0d"); // shadowed left eye socket
- g.ellipsoid(.391,2.62,5.856,.044,.023,.012,"#0a0c0d");
+ g.ellipsoid(.32,2.58,6.28,.315,.37,.295,"#111821","figure",13,18);
+ g.ellipsoid(.32,2.55,6.00,.215,.275,.084,"#060a0e","figure",15,20); // under the hood
+ g.ellipsoid(.32,2.56,5.912,.164,.233,.047,"#282928","figure",15,20); // dark half-masked face only briefly revealed
+ g.ellipsoid(.250,2.62,5.856,.042,.013,.009,"#070a0b"); // shadowed left eye socket
+ g.ellipsoid(.391,2.62,5.856,.042,.013,.009,"#070a0b");
  g.ellipsoid(.32,2.49,5.855,.060,.008,.006,"#171718"); // subtle mask seam
  g.box(.32,2.445,5.827,.015,.073,.013,"#6d574d"); // cracked surface
 
@@ -141,12 +140,12 @@ function scene(opened:boolean){
  g.limb([.32,2.12,6.28],[.32,1.25,6.28],.40,.33,"#161b20"); // tailored coat
  g.limb([.32,1.31,6.28],[.32,.90,6.28],.34,.40,"#12171d"); // coat flare
  g.ellipsoid(.32,1.24,6.27,.34,.12,.25,"#242426"); // belt/fold
- g.limb([.27,2.36,6.02],[.32,1.21,6.01],.063,.10,"#384048"); // coat lapel
- g.limb([.05,2.30,5.97],[.24,1.14,5.98],.034,.025,"#4a4d4e"); // first coat seam
- g.limb([.57,2.30,5.97],[.42,1.14,5.98],.034,.025,"#4a4d4e"); // second seam
- for(const y of [1.88,1.61,1.34])g.ellipsoid(.32,y,5.933,.035,.031,.022,"#a19486"); // coat buttons
- g.box(.06,1.35,5.961,.29,.035,.021,"#41464a");
- g.box(.56,1.35,5.961,.29,.035,.021,"#41464a");
+ g.limb([.27,2.36,6.13],[.32,1.35,6.11],.028,.038,"#252a2e"); // coat lapel
+ g.limb([.05,2.30,6.14],[.24,1.30,6.12],.024,.018,"#26292b"); // first coat seam
+ g.limb([.57,2.30,6.14],[.42,1.30,6.12],.024,.018,"#26292b"); // second seam
+ for(const y of [1.88,1.61,1.34])g.ellipsoid(.32,y,6.11,.024,.019,.019,"#56544f"); // coat buttons
+ g.box(.06,1.35,6.10,.22,.025,.020,"#272b2f");
+ g.box(.56,1.35,6.10,.22,.025,.020,"#272b2f");
 
  g.limb([-.22,2.12,6.29],[-.31,1.58,6.23],.20,.157,"#181d23"); // left sleeve
  g.limb([-.31,1.58,6.23],[-.28,1.06,6.12],.152,.116,"#191c20");
