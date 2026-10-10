@@ -188,15 +188,33 @@ function App(){
      osc.start(now);osc.stop(now+.74);return;
     }
     if(type==="door"||type==="step"){
-     osc.type=type==="door"?"sawtooth":"sine";
-     osc.frequency.setValueAtTime(type==="door"?92:76,now);
-     osc.frequency.exponentialRampToValueAtTime(type==="door"?24:43,now+(type==="door"?1.4:.23));
-     gain.gain.setValueAtTime(.0001,now);
-     gain.gain.exponentialRampToValueAtTime(type==="door"?.14:.19,now+.035);
-     gain.gain.exponentialRampToValueAtTime(.0001,now+(type==="door"?1.48:.33));
-     const filter=a.createBiquadFilter();filter.type="lowpass";filter.frequency.value=type==="door"?370:160;
-     osc.connect(filter);filter.connect(gain);gain.connect(a.destination);
-     osc.start(now);osc.stop(now+(type==="door"?1.5:.35));return;
+     // Layer real filtered texture under impacts, never a simple sine beep.
+     const len=Math.round(a.sampleRate*(type==="door"?1.65:.43));
+     const buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
+     let seed=type==="door"?554903:10388,low=0;
+     for(let i=0;i<len;i++){
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const white=seed/2147483648-1;
+      low=low*.91+white*.09;
+      const t=i/a.sampleRate;
+      const env=type==="door"?
+       Math.min(1,t/.12)*Math.exp(-t*.8)*(1+.24*Math.sin(t*39)):
+       Math.min(1,t/.018)*Math.exp(-t*15);
+      samples[i]=(low*.64+white*.08)*env;
+     }
+     const source=a.createBufferSource(),filter=a.createBiquadFilter(),body=a.createGain();
+     source.buffer=buffer;filter.type="lowpass";filter.frequency.value=type==="door"?830:440;
+     filter.Q.value=type==="door"?1.15:.50;body.gain.value=type==="door"?.52:.47;
+     source.connect(filter);filter.connect(body);body.connect(a.destination);
+     source.start(now);
+     // Dull structural thump makes the footstep physical, not electronic.
+     osc.type="triangle";
+     osc.frequency.setValueAtTime(type==="door"?94:63,now);
+     osc.frequency.exponentialRampToValueAtTime(type==="door"?31:39,now+(type==="door"?.83:.21));
+     gain.gain.setValueAtTime(.001,now);gain.gain.exponentialRampToValueAtTime(type==="door"?.085:.11,now+.026);
+     gain.gain.exponentialRampToValueAtTime(.0001,now+(type==="door"?.86:.23));
+     osc.connect(gain);gain.connect(a.destination);osc.start(now);osc.stop(now+(type==="door"?.9:.24));
+     return;
     }
    osc.type=type==="wrong"||type==="beat"?"sine":type==="celebrate"?"triangle":"sawtooth";
    const freq={start:93,click:270,clue:390,wrong:64,unlock:490,beat:48,tick:890,celebrate:600}[type];
