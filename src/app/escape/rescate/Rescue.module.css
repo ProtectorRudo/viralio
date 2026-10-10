@@ -412,3 +412,21 @@
  font:800 .68rem/1.3 ui-monospace,monospace;letter-spacing:.07em}
 .confirm:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.75)}
 @media(prefers-reduced-motion:reduce){.polaroidCard{transition:none}}
+
+/* A brief second shock when the silhouette passes the open door. */
+.knifeAlert{position:absolute;left:50%;top:24%;transform:translateX(-50%);z-index:13;
+ width:min(365px,calc(100% - 24px));pointer-events:none;text-align:center;
+ background:linear-gradient(130deg,#180c0ff3,#2b1218f6);
+ border:1px solid #b84847;padding:18px 16px;
+ box-shadow:0 18px 60px #000d,0 0 45px #8a222d55;
+ animation:knifeAlertIn .43s ease-out both}
+.knifeAlert span,.knifeAlert small{display:block;color:#ef9d8e;
+ font:800 .56rem/1.5 ui-monospace,monospace;letter-spacing:.1em}
+.knifeAlert strong{display:block;color:#fff2e7;margin:8px 0;
+ font:900 clamp(1.6rem,6vw,2.6rem)/1.06 Arial,sans-serif;letter-spacing:-.04em;
+ text-shadow:0 0 20px #c83f4c77}
+.knifeAlert small{font-size:.47rem;color:#eac5b4}
+@keyframes knifeAlertIn{from{opacity:0;transform:translate(-50%,-14px) scale(.93)}
+ to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@media(max-width:670px){.knifeAlert{top:20%;padding:15px 12px}}
+@media(prefers-reduced-motion:reduce){.knifeAlert{animation:none}}

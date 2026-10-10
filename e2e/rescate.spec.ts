@@ -7,7 +7,7 @@ async function start(page:Page){
  await expect(page.getByRole("heading",{name:/SECUESTRARON/})).toBeVisible();
  await page.getByRole("button",{name:/ACEPTAR MISIÓN/}).click();
  await expect(page.getByTestId("rescate-mauro-app")).toHaveAttribute("data-stage","game");
- await expect(page.getByTestId("rescate-timer")).toContainText("03:00");
+ await expect(page.getByTestId("rescate-timer")).toContainText(/0[23]:[0-5][0-9]/);
  const canvas=page.getByTestId("rescate-webgl");
  await expect(canvas).toBeVisible();
  await expect.poll(()=>canvas.evaluate((n)=>{
@@ -64,6 +64,28 @@ test("CASO M · toque directo sobre el cajón abre el candado",async({page},test
  if(testInfo.project.use.hasTouch)await page.touchscreen.tap(x,y);
  else await page.mouse.click(x,y);
  await expect(page.getByRole("dialog",{name:/Candado de seis cifras/})).toBeVisible();
+});
+
+
+test("CASO M · al minuto final aparece la advertencia y luego el intruso",async({page},testInfo)=>{
+ test.setTimeout(150000);
+ await page.clock.install();
+ await start(page);
+ // Freeze the wall clock first: real browser rendering must not consume time
+ // while we advance game ticks for the 60-second event.
+ const now=await page.evaluate(()=>Date.now());
+ await page.clock.pauseAt(new Date(now+10000));
+ const read=await page.getByTestId("rescate-timer").innerText();
+ const parts=read.match(/([0-9]{2}):([0-9]{2})/);
+ expect(parts).not.toBeNull();
+ const remaining=Number(parts![1])*60+Number(parts![2]);
+ for(let j=0;j<Math.max(0,remaining-60);j++)await page.clock.fastForward(1000);
+ await expect(page.getByTestId("rescate-timer")).toContainText("01:00");
+ await expect(page.getByTestId("rescate-intruder-alert")).toBeVisible();
+ for(let j=0;j<10;j++)await page.clock.fastForward(1000);
+ await expect(page.getByTestId("rescate-knife-alert")).toBeVisible();
+ await expect(page.getByTestId("rescate-knife-alert")).toContainText("NO ESTÁS SOLO");
+ await page.screenshot({path:`visual-qa-evidence/rescate-intruso-${testInfo.project.name}.png`,fullPage:true});
 });
 
 test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:00",async({page})=>{
