@@ -617,8 +617,8 @@ export default function EscapeGame() {
         <div className={styles.flicker} aria-hidden="true"/>
       </section>
       <nav className={styles.mobileInteract} aria-label="Objetos para investigar">
-        <span>EXPLORÁ LA HABITACIÓN →</span>
-        <div>{hotspots.map(spot=><button key={spot.id} onClick={spot.act} disabled={transitioning}><b>{spot.glyph}</b>{spot.text}</button>)}</div>
+        <span>OBJETOS PARA INVESTIGAR · {String(hotspots.length).padStart(2,"0")}</span>
+        <div>{hotspots.map(spot=><button type="button" key={spot.id} onClick={spot.act} disabled={transitioning} aria-pressed={spot.active ? true : undefined}><b aria-hidden="true">{spot.glyph}</b>{spot.text}</button>)}</div>
       </nav>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
