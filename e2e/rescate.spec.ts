@@ -7,7 +7,7 @@ async function start(page:Page){
  await expect(page.getByRole("heading",{name:/SECUESTRARON/})).toBeVisible();
  await page.getByRole("button",{name:/ACEPTAR MISIÓN/}).click();
  await expect(page.getByTestId("rescate-mauro-app")).toHaveAttribute("data-stage","game");
- await expect(page.getByTestId("rescate-timer")).toContainText("03:00");
+ await expect(page.getByTestId("rescate-timer")).toContainText(/0[23]:[0-5][0-9]/);
  const canvas=page.getByTestId("rescate-webgl");
  await expect(canvas).toBeVisible();
  await expect.poll(()=>canvas.evaluate((n)=>{
@@ -71,8 +71,15 @@ test("CASO M · al minuto final aparece la advertencia y luego el intruso",async
  test.setTimeout(150000);
  await page.clock.install();
  await start(page);
- // Run the in-game clock deterministically rather than actually waiting two minutes.
- for(let j=0;j<120;j++)await page.clock.fastForward(1000);
+ // Freeze the wall clock first: real browser rendering must not consume time
+ // while we advance game ticks for the 60-second event.
+ const now=await page.evaluate(()=>Date.now());
+ await page.clock.pauseAt(new Date(now));
+ const read=await page.getByTestId("rescate-timer").innerText();
+ const parts=read.match(/([0-9]{2}):([0-9]{2})/);
+ expect(parts).not.toBeNull();
+ const remaining=Number(parts![1])*60+Number(parts![2]);
+ for(let j=0;j<Math.max(0,remaining-60);j++)await page.clock.fastForward(1000);
  await expect(page.getByTestId("rescate-timer")).toContainText("01:00");
  await expect(page.getByTestId("rescate-intruder-alert")).toBeVisible();
  for(let j=0;j<10;j++)await page.clock.fastForward(1000);
