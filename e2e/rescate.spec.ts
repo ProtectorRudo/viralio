@@ -74,8 +74,11 @@ test("CASO M · pistas físicas, combinación 1310, cajón y sobre revelan cumpl
  await expect(page.getByRole("dialog")).toContainText("13");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 3\/3/)).toBeVisible();
- // Walk back from the calendar to within arm’s reach of the locked drawer.
- await walkTo(page,"s","z",-2.78,"above");
+ // Go around the front of the physical table (collision volumes prevent
+ // reaching through the tabletop from the calendar side of the room).
+ await walkTo(page,"s","z",-1.31,"above");
+ await walkTo(page,"d","x",-1.13,"above");
+ await expect.poll(async()=>{const n=page.getByTestId("rescate-webgl");return [Number(await n.getAttribute("data-camera-x")),Number(await n.getAttribute("data-camera-z"))];}).toEqual(expect.arrayContaining([expect.any(Number),expect.any(Number)]));
  await examineNearby(page,"Candado del cajón");
  const lock=page.getByTestId("rescate-lock");
  await expect(lock).toBeVisible();
