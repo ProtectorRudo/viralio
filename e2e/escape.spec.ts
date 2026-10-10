@@ -12,6 +12,77 @@ async function visualAudit(page:Page,file:string){
 }
 
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("exploración: 12 objetos por escena, tres puntos de vista y mecanismos físicos", async ({page})=>{
+    test.setTimeout(100_000);
+    const rooms=[
+      {room:0,drawer:"Cajón de la consola",tool:"Llave de bronce",lock:"Caja de caoba"},
+      {room:1,drawer:"Cajón del escritorio",tool:"Disco de latón",lock:"Archivador con cerradura"},
+      {room:2,drawer:"Baúl de juguetes",tool:"Llave de cuerda",lock:"Armario de la infancia"},
+      {room:3,drawer:"Caja de herramientas",tool:"Llave inglesa",lock:"Rejilla de mantenimiento"},
+    ];
+    for(const scene of rooms){
+      await page.goto("/escape");
+      await page.evaluate((room)=>{
+        window.localStorage.setItem("umbral-casa-13-v1",JSON.stringify({
+          phase:"playing",room,seconds:1200,hints:[0,0,0,0],mistakes:0,difficulty:"story",
+          puzzles:{clockWound:false,mirrorRead:false,portraits:[],candles:[],studyOpen:false,notesRead:false,evaRead:false,melody:[],nurseryOpen:false,keepsake:false,fuses:[],power:false,ending:null},
+        }));
+      },scene.room);
+      await page.reload();
+      await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+      await page.getByRole("button",{name:"Recorrer habitación y manipular objetos"}).click();
+      const explorer=page.getByTestId("umbral-explorer");
+      await expect(explorer).toHaveAttribute("data-room",String(scene.room));
+      await expect(page.getByTestId("umbral-explorer-view")).toBeVisible();
+
+      await page.getByRole("button",{name:"Ir a "+["Entrada","Biblioteca","Zona de juegos","Caldera"][scene.room]}).click();
+      await expect(explorer.locator('[class*="node"]')).toHaveCount(4);
+      await page.getByRole("button",{name:"Examinar "+scene.drawer}).click();
+      const sheet=page.getByTestId("umbral-object-inspection");
+      await expect(sheet).toBeVisible();
+      const mechanism=sheet.getByRole("slider");
+      await expect(mechanism).toBeVisible();
+      await mechanism.focus();
+      await mechanism.press("End");
+      await expect(sheet.locator('[class*="revelation"]')).toBeVisible();
+      await sheet.getByRole("button",{name:/RECOGER/}).click();
+      await expect(page.getByTestId("umbral-inventory")).toContainText(scene.tool);
+      await page.getByRole("button",{name:"Ir a "+["Escalera","Escritorio","Armario","Panel central"][scene.room]}).click();
+      await page.getByRole("button",{name:"Examinar "+scene.lock}).click();
+      await expect(sheet).toBeVisible();
+      await sheet.getByRole("button",{name:new RegExp("SELECCIONAR "+scene.tool,"i")}).click();
+      await sheet.getByRole("button",{name:new RegExp("INSERTAR Y GIRAR "+scene.tool,"i")}).click();
+      await expect(sheet).toContainText(["4 · 2 · 7","Solo la rosa florece","medallón plateado","fusible de cobre"][scene.room]);
+      await sheet.getByRole("button",{name:/RECOGER/}).click();
+      await expect(page.getByTestId("umbral-inventory")).toContainText(["Placa familiar","Documento sellado","Medallón de plata","Fusible de cobre"][scene.room]);
+      await expect(page.getByTestId("umbral-inventory")).toContainText("2 OBJETOS");
+      await visualAudit(page,"umbral-exploracion-"+scene.room+".png");
+      await page.getByRole("button",{name:"Salir de exploración"}).click();
+    }
+  });
+
+  test("exploración: inventario y posición mecánica sobreviven al guardado", async ({page})=>{
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    await page.getByRole("button",{name:"Recorrer habitación y manipular objetos"}).click();
+    await page.getByRole("button",{name:"Ir a Entrada"}).click();
+    await page.getByRole("button",{name:"Examinar Cajón de la consola"}).click();
+    const slider=page.getByRole("slider",{name:/CORRER EL CAJÓN/});
+    await slider.focus();await slider.press("End");
+    await page.getByRole("button",{name:/RECOGER LLAVE DE BRONCE/}).click();
+    await expect(page.getByTestId("umbral-inventory")).toContainText("Llave de bronce");
+    await page.getByRole("button",{name:"Salir de exploración"}).click();
+    await page.reload();
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await page.getByRole("button",{name:"Recorrer habitación y manipular objetos"}).click();
+    await expect(page.getByTestId("umbral-inventory")).toContainText("Llave de bronce");
+    await page.getByRole("button",{name:"Ir a Entrada"}).click();
+    await page.getByRole("button",{name:"Examinar Cajón de la consola"}).click();
+    await expect(page.getByRole("slider",{name:/CORRER EL CAJÓN/})).toHaveValue("100");
+    await expect(page.getByRole("button",{name:/EN EL INVENTARIO/})).toBeDisabled();
+  });
+
   test("identidad visual: Elías, Mara, Nora y Eva nunca comparten retrato", async ({page})=>{
     test.setTimeout(55_000);
     await page.setViewportSize({width:390,height:844});
