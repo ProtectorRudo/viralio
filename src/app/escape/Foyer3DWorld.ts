@@ -425,7 +425,12 @@ export function createFoyerWorld(canvas:HTMLCanvasElement,flags:FoyerFlags,onFra
       pose.yaw=(pose.yaw-dx*.0049+Math.PI*4)%(Math.PI*2);
       pose.pitch=clamp(pose.pitch-dy*.0033,-1.02,1.02);
     },
-    setFlags:(value:FoyerFlags)=>{current={...value};rebuild();},
+    setFlags:(value:FoyerFlags)=>{
+      // The parent timer rerenders each second; only rebuild GPU geometry
+      // when actual drawers, locks or recovered objects change.
+      if(current.drawer===value.drawer&&current.key===value.key&&current.box===value.box&&current.clock===value.clock)return;
+      current={...value};rebuild();
+    },
     destroy:()=>{active=false;cancelAnimationFrame(raf);for(const m of meshes)gl.deleteBuffer(m.buffer);for(const t of textures.values())gl.deleteTexture(t);gl.deleteProgram(program);gl.flush();},
   };
 }
