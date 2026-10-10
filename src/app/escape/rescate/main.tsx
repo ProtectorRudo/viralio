@@ -340,7 +340,7 @@ function App(){
  }
  const canContinue=seen.length===3;
  return <main className={styles.app} data-stage={screen} data-testid="rescate-mauro-app">
-   <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto" playsInline
+   <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto"
      onEnded={()=>{setTapeStatus("ended");if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.18)}}
      onError={()=>setTapeStatus("error")}/>
   {screen==="intro"&&<section className={styles.intro}>
