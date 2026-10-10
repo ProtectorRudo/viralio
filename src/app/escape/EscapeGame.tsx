@@ -6,6 +6,7 @@ import Artefact from "./Artefact";
 import DiegeticFocus from "./DiegeticFocus";
 import CinematicAtmosphere from "./CinematicAtmosphere";
 import HouseListening from "./HouseListening";
+import EvaMirror from "./EvaMirror";
 import LockTumblers from "./LockTumblers";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
@@ -16,11 +17,11 @@ import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiv
 
 type Phase = "intro" | "playing" | "won" | "lost";
 type Difficulty = "story" | "nightmare";
-type PuzzleState = { clockWound?: boolean; portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
+type PuzzleState = { clockWound?: boolean; mirrorRead?: boolean; portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
 type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
-const INITIAL: PuzzleState = { clockWound:false, portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
+const INITIAL: PuzzleState = { clockWound:false, mirrorRead:false, portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
 const CLUES = [
   ["Las cifras están en los marcos de tres retratos.", "Cada retrato conserva un año y una cifra. El calendario importa.", "Ordená los retratos de la persona más joven a la más vieja: 1918, 1902, 1891."],
   ["La nota habla del cielo, del camino y de lo que florece.", "Esas palabras representan los símbolos dibujados debajo de las velas.", "Tocá las velas en este orden: luna, llave, rosa."],
@@ -523,7 +524,7 @@ export default function EscapeGame() {
   }
   const totalHints=hints.reduce((a,b)=>a+b,0);
   const recoveredCount=puzzles.portraits.length+Number(puzzles.notesRead)+Number(puzzles.evaRead)+Number(puzzles.nurseryOpen)+Number(puzzles.keepsake)+Number(puzzles.power);
-  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)+(puzzles.clockWound?300:0)));
+  const score=Math.max(100,Math.round(seconds*2+4000-(totalHints*240)-(mistakes*90)+(puzzles.keepsake?500:0)+(puzzles.ending==="save"?700:0)+(difficulty==="nightmare"?1600:0)+(recoveredCount===8?850:0)+(puzzles.clockWound?300:0)+(puzzles.mirrorRead?300:0)));
   const personalBest=records[difficulty]||0;
   const isNewRecord=phase==="won" && score>=personalBest;
   useEffect(()=>{
@@ -546,6 +547,7 @@ export default function EscapeGame() {
     {id:"scrap",text:"Leer carta",x:24,y:72,glyph:"✉",act:()=>{sfx();setPuzzles(p=>({...p,evaRead:true}));setModal("eva");}},
     {id:"box",text:"Tocar caja musical",x:55.7,y:56,glyph:"♫",act:()=>{sfx();setModal("music");}},
     {id:"keepsake",text:"Examinar muñeca",x:80,y:48,glyph:"✧",act:()=>{sfx();setPuzzles(p=>({...p,keepsake:true}));setModal("doll");}},
+    {id:"mirror",text:"Limpiar espejo empañado",x:39,y:39,glyph:"◈",active:Boolean(puzzles.mirrorRead),act:()=>{sfx("step");setModal("mirror");}},
     ...(puzzles.nurseryOpen?[{id:"tape",text:"Cinta de Eva",x:51,y:70,glyph:"▷",act:()=>{sfx("step");setModal("tape");}}]:[]),
     {id:"nurseryexit",text:"Abrir puerta",x:88,y:78,glyph:"➜",active:puzzles.nurseryOpen,act:()=>puzzles.nurseryOpen?nextRoom():message("La cerradura vibra con una melodía que todavía no reconocés.")},
   ]:[
@@ -655,11 +657,11 @@ export default function EscapeGame() {
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget || (focusKind && e.target instanceof Element && e.target.closest("[data-focus-object]")))setModal(null);}}>
         {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
-        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
+        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
-          {modal!=="journal" && modal!=="tape"&&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
+          {modal!=="journal" && modal!=="tape" && modal!=="mirror" &&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
-          {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power}/>}
+          {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power} mirrorRead={Boolean(puzzles.mirrorRead)}/>}
           {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
           {modal==="clock"&&<div className={styles.clockLayout}><div className={styles.clockStory}><Artefact kind="clock"/><h2>El reloj detenido</h2><p>La aguja quedó inmóvil en las 03:13. Debajo del péndulo hay un mecanismo que todavía puede girar.</p><span className={styles.clockAside}>FABRICANTE: J. VÉLEZ · AÑO 1891<br/>CERRADO POR EL TIEMPO, NO POR UNA LLAVE.</span></div><ClockMechanism solved={Boolean(puzzles.clockWound)} onSolve={()=>{setPuzzles(p=>({...p,clockWound:true}));sfx("success");playHorror("creak",{pan:-.27});message("Desbloqueaste el grabado oculto del reloj. +300 puntos de investigación.");}}/></div>}
           {modal==="pin"&&<div className={styles.pinLayout}>
@@ -671,6 +673,7 @@ export default function EscapeGame() {
               <div className={styles.keypad} aria-label="Teclado numérico alternativo de la cerradura">{[1,2,3,4,5,6,7,8,9,"⌫",0,"↵"].map(key=><button key={key} type="button" aria-label={key==="⌫"?"Borrar último dígito":key==="↵"?"Confirmar código":"Ingresar "+key} disabled={key==="↵"&&pin.length!==3} onClick={()=>{sfx("click");if(key==="⌫")setPin(v=>v.slice(0,-1));else if(key==="↵")pinTry();else setPin(v=>(v+key).slice(0,3));}}>{key}</button>)}</div>
             </details>
           </div>}
+          {modal==="mirror"&&<EvaMirror revealed={Boolean(puzzles.mirrorRead)} onReveal={()=>{setPuzzles(p=>({...p,mirrorRead:true}));sfx("success");if(sound)playHorror("creak",{pan:.38,intensity:.25});message("Una frase apareció bajo el vaho: NO ME DEJES ATRÁS.");}}/>}
           {modal==="letter"&&<><h2>Una nota entre cenizas</h2><p>Un papel doblado entre las páginas. La caligrafía tiembla: es la letra de Eva. Hay algo escrito del otro lado.</p><PhysicalLetter kind="study"/></>}
           {modal==="eva"&&<><h2>Para quien todavía escucha</h2><p>Eva dejó una carta junto a sus juguetes. Algunas palabras están escritas con otra tinta. Dale vuelta para encontrar el resto.</p><PhysicalLetter kind="eva"/></>}
           {modal==="music"&&<><Artefact kind="music"/><h2>La caja musical</h2><p>Los mecanismos están intactos. Tocá las teclas para reconstruir la canción.</p><div className={styles.notes}>{[["DO",261.63],["RE",293.66],["MI",329.63],["FA",349.23],["SOL",392],["LA",440]].map(([note,freq])=><button key={note} onClick={()=>tune(String(note).toLowerCase(),Number(freq))}>{note}</button>)}</div><div className={styles.sequence}>SECUENCIA {puzzles.melody.map(()=> "◆").join("  ")} {puzzles.melody.length<4?"◇  ".repeat(4-puzzles.melody.length):""}</div></>}

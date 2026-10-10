@@ -30,6 +30,31 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByTestId("umbral-listening")).toHaveAttribute("data-stage","ready");
   });
 
+  test("espejo: alternativa por teclado y recuerdo persistente en partida guardada", async ({ page }) => {
+    await page.addInitScript(() => {
+      // Init scripts run again on reload: seed just once to test real persistence.
+      if(window.sessionStorage.getItem("umbral-mirror-seeded")==="yes")return;
+      window.sessionStorage.setItem("umbral-mirror-seeded","yes");
+      window.localStorage.setItem("umbral-casa-13-v1", JSON.stringify({
+        phase:"playing", room:2, seconds:950, hints:[0,0,0,0], mistakes:0, difficulty:"story",
+        puzzles:{clockWound:false,mirrorRead:false,portraits:[],candles:[],studyOpen:true,notesRead:true,evaRead:false,melody:[],nurseryOpen:false,keepsake:false,fuses:[],power:false,ending:null},
+      }));
+    });
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await page.getByRole("button",{name:"Limpiar espejo empañado"}).first().click();
+    await expect(page.getByTestId("umbral-mirror")).toHaveAttribute("data-revealed","false");
+    const fallback=page.getByRole("button",{name:/REVELAR INSCRIPCIÓN SIN DESLIZAR/});
+    await fallback.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("umbral-mirror")).toHaveAttribute("data-revealed","true");
+    await page.getByRole("button",{name:"Cerrar"}).click();
+    await page.reload();
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await page.getByRole("button",{name:"Limpiar espejo empañado"}).first().click();
+    await expect(page.getByTestId("umbral-mirror")).toHaveAttribute("data-revealed","true");
+  });
+
   test("cuatro capítulos, pistas correctas, decisión y puntuación", async ({ page }) => {
     // Cinematic screenshots of four chapters need a generous overall CI budget.
     // Keep all puzzle/assertion steps; do not drop the final scene visual audit.
@@ -122,6 +147,37 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading", { name: "La habitación de Eva", exact: true })).toBeVisible({ timeout: 5000 });
     await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","nursery");
     await page.screenshot({path:"visual-qa-evidence/umbral-eva-desktop.png",fullPage:true,animations:"disabled"});
+
+
+    // A real mouse gesture physically removes fog instead of revealing the
+    // memory on the first tap. Reopen + expediente must preserve it.
+    await page.getByRole("button",{name:"Limpiar espejo empañado"}).first().click();
+    const mirror=page.getByTestId("umbral-mirror");
+    await expect(mirror).toHaveAttribute("data-revealed","false");
+    await visualAudit(page,"umbral-espejo-empanado.png");
+    const mirrorCanvas=mirror.locator("canvas");
+    await expect(mirrorCanvas).toBeVisible();
+    const box=await mirrorCanvas.boundingBox();
+    expect(box).toBeTruthy();
+    if(!box)throw new Error("The mirror canvas must be measurable");
+    for(let row=0;row<7;row++){
+      if(await mirror.getAttribute("data-revealed")==="true")break;
+      const yy=box.y+box.height*(.13+row*.12);
+      await page.mouse.move(box.x+box.width*.12,yy);
+      await page.mouse.down();
+      await page.mouse.move(box.x+box.width*.88,yy,{steps:12});
+      await page.mouse.up();
+    }
+    await expect(mirror).toHaveAttribute("data-revealed","true",{timeout:4000});
+    await expect(mirror.getByText("NO ME", {exact:false})).toBeVisible();
+    await visualAudit(page,"umbral-espejo-revelado.png");
+    await page.getByRole("button",{name:"Cerrar"}).click();
+    await page.getByRole("button",{name:"Limpiar espejo empañado"}).first().click();
+    await expect(page.getByTestId("umbral-mirror")).toHaveAttribute("data-revealed","true");
+    await page.getByRole("button",{name:"Cerrar"}).click();
+    await page.getByRole("button",{name:/Abrir expediente/}).click();
+    await expect(page.getByLabel("Documento secreto del espejo")).toContainText("NO ME DEJES ATRÁS");
+    await page.getByRole("button",{name:"Cerrar"}).click();
 
     await page.getByRole("button", { name: "Leer carta" }).first().click();
     await expect(page.getByText(/Seguía con MI, con LA/)).toBeVisible();

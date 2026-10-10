@@ -1,9 +1,9 @@
 import styles from "./EvidenceArchive.module.css";
 
 type Evidence = {id:string; title:string;note:string;chapter:string;found:boolean;symbol:string};
-type Props = { portraits:number[]; notesRead:boolean; evaRead:boolean; nurseryOpen:boolean; keepsake:boolean; power:boolean };
+type Props = { portraits:number[]; notesRead:boolean; evaRead:boolean; nurseryOpen:boolean; keepsake:boolean; power:boolean; mirrorRead?:boolean };
 
-export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen,keepsake,power}:Props) {
+export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen,keepsake,power,mirrorRead}:Props) {
   const records:Evidence[] = [
     {id:"nora",title:"El retrato de Nora",chapter:"VESTÍBULO",note:"1918 · El marco lleva el número 4. Alguien alteró el orden de las fotos.",symbol:"✧",found:portraits.includes(2)},
     {id:"mara",title:"La madre",chapter:"VESTÍBULO",note:"1902 · La cifra 2 aparece bajo un ramo de flores marchitas.",symbol:"◇",found:portraits.includes(1)},
@@ -35,6 +35,7 @@ export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen
         <div className={styles.stampTiny}>{record.found?"RECUPERADO":"SIN CLASIFICAR"}</div>
       </article>)}
     </div>
+    {mirrorRead&&<aside className={styles.bonusMemory} aria-label="Documento secreto del espejo"><span>◈ ANEXO OCULTO · HABITACIÓN DE EVA</span><strong>«NO ME DEJES ATRÁS»</strong><p>Una inscripción encontrada del lado interior del espejo. No forma parte de las ocho pruebas obligatorias. +300 puntos por escuchar lo que la casa había ocultado.</p></aside>}
     <p className={styles.caption}>No necesitás descubrir todo para salir, pero los recuerdos que llevás pueden cambiar el significado de tu escape.</p>
   </div>;
 }
