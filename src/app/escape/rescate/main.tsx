@@ -40,7 +40,7 @@ function App(){
  const [openedLetter,setOpenedLetter]=useState(false);
  const [muted,setMuted]=useState(false),[toast,setToast]=useState("");
  const [error,setError]=useState(""),[available,setAvailable]=useState(false);
- const [agent,setAgent]=useState("AGENTE ANÓNIMO");
+ const overlayState=useRef<Overlay>("none"),expiredState=useRef(false);
  const world=useRef<World|null>(null),canvas=useRef<HTMLCanvasElement|null>(null),activeRef=useRef<Target|null>(null);
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
  const pointer=useRef<{id:number;x:number;y:number}|null>(null),buttons=useRef(new Set<string>());
@@ -48,6 +48,7 @@ function App(){
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
  const flags=useRef({unlocked:false});
  const config=useRef<Config>({fecha:"13 DE OCTUBRE",hora:"HORARIO A CONFIRMAR",lugar:"LUGAR A CONFIRMAR"});
+ useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
   config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE").slice(0,80),hora:(q.get("hora")||"HORARIO A CONFIRMAR").slice(0,80),lugar:(q.get("lugar")||"LUGAR A CONFIRMAR").slice(0,125)};
  },[]);
@@ -69,9 +70,9 @@ function App(){
    world.current=engine;queueMicrotask(()=>{if(!disposed)setAvailable(true)});
   }catch(ex){const s=ex instanceof Error?ex.message:"No se pudo cargar el motor 3D";queueMicrotask(()=>{if(!disposed)setError(s)});}
   const onKeyDown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase();
-   if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(key)){buttons.current.add(key);if(overlay==="none")e.preventDefault();}
-   if(key==="e"&&overlay==="none"&&!e.repeat){const t=world.current?.aim();if(t)examine(t);}
-   if(key==="escape"&&overlay!=="none"){setOverlay("none");}
+   if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(key)){buttons.current.add(key);if(overlayState.current==="none")e.preventDefault();}
+   if(key==="e"&&overlayState.current==="none"&&!e.repeat){const t=world.current?.aim();if(t)examine(t);}
+   if(key==="escape"&&overlayState.current!=="none"){setOverlay("none");}
   };
   const onKeyUp=(e:KeyboardEvent)=>buttons.current.delete(e.key.toLowerCase());
   window.addEventListener("keydown",onKeyDown);window.addEventListener("keyup",onKeyUp);
@@ -80,7 +81,7 @@ function App(){
    if(disposed)return;
    raf.current=requestAnimationFrame(move);
    const dt=Math.min(.058,(now-(frameLast.current||now))/1000);frameLast.current=now;
-   if(overlay!=="none"||expired)return;
+   if(overlayState.current!=="none"||expiredState.current)return;
    const k=held,f=(k.has("w")||k.has("arrowup")?1:0)-(k.has("s")||k.has("arrowdown")?1:0);
    const side=(k.has("d")||k.has("arrowright")?1:0)-(k.has("a")||k.has("arrowleft")?1:0);
    world.current?.move(f-joystick.current.y,side+joystick.current.x,dt);
