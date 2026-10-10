@@ -8,12 +8,12 @@ export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
- {id:"cassette",label:"Grabador de voz",pos:[-2.8,1.03,-2.53],reach:2.9,hint:"La cinta está atascada en una grabación."},
- {id:"memo",label:"Archivo de vigilancia",pos:[2.48,1.47,-2.87],reach:3.1,hint:"Un monitor conserva una grabación de seguridad."},
+ {id:"cassette",label:"Grabador de voz",pos:[-3.72,1.15,-1.65],reach:3.1,hint:"La cinta está atascada en una grabación."},
+ {id:"memo",label:"Archivo de vigilancia",pos:[3.70,1.47,-1.92],reach:3.2,hint:"Un monitor conserva una grabación de seguridad."},
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
  {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
  {id:"envelope",label:"Sobre encontrado",pos:[.02,.79,-1.48],reach:3.3,hint:"El papel lleva un sello rojo. Por fin llegaste."},
- {id:"phone",label:"Teléfono desconectado",pos:[2.38,1.12,-2.30],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
+ {id:"phone",label:"Teléfono desconectado",pos:[3.65,1.12,-1.25],reach:3.0,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
  {id:"camera",label:"Cámara de seguridad",pos:[3.6,3.35,-5.06],reach:4.7,hint:"La luz roja se enciende cuando te movés."},
  {id:"board",label:"Tablero de seguimiento",pos:[1.55,2.2,-5.27],reach:4.0,hint:"Planos, fotos y horarios de los movimientos de Mauro."},
  {id:"locker",label:"Armario oxidado",pos:[-3.72,1.56,-3.4],reach:2.85,hint:"Tiene marcas de dedos en el polvo."},
@@ -177,16 +177,17 @@ function scene(opened:boolean){
   g.box(0,4.02,z,1.1,.15,.53,"#a69d82");
   g.box(0,3.92,z,.83,.035,.32,"#c6ac81","emissive");
  }
- // Workstations directly beneath side props (previously suspended in air).
- for(const x of [-2.68,2.58]){
-  g.box(x,.825,-2.78,1.62,.17,1.35,"#505357");
-  g.box(x,.929,-2.78,1.67,.04,1.40,"#987654");
-  for(const dx of [-.68,.68])for(const dz of [-.54,.54]){
-   g.box(x+dx,.414,-2.78+dz,.12,.828,.12,"#495256");
-   g.box(x+dx,.04,-2.78+dz,.16,.075,.16,"#353b3d");
+ // Isolated left/right investigation stations, away from combination lock.
+ // The 1m central walkway is deliberately left clear.
+ for(const x of [-3.68,3.68]){
+  g.box(x,.826,-1.91,1.52,.17,1.29,"#454c51");
+  g.box(x,.933,-1.91,1.56,.046,1.32,"#8b6b4c");
+  for(const dx of [-.62,.62])for(const dz of [-.48,.48]){
+   g.box(x+dx,.421,-1.91+dz,.12,.84,.12,"#52585a");
+   g.box(x+dx,.04,-1.91+dz,.17,.075,.17,"#2b3132");
   }
-  g.box(x,.40,-3.35,1.35,.07,.065,"#6b6760");
-  g.box(x,.015,-2.78,1.70,.016,1.47,"#181b1e");
+  g.box(x,.035,-1.91,1.66,.018,1.43,"#151819");
+  g.box(x,.49,-2.48,1.28,.07,.055,"#535554");
  }
  // Heavy six-wheel combination-lock cabinet: readable goal from spawn.
  g.box(0,.83,-2.65,3.24,.22,1.76,"#3e4449");
@@ -219,25 +220,28 @@ function scene(opened:boolean){
    g.box(x,.876,-1.410,.065,.027,.023,"#f2d8ab");
   }
  }
- // Recorder grounded to the LEFT bench.
- g.box(-2.70,1.07,-2.68,1.04,.25,.64,"#343d40");
- g.box(-2.70,1.213,-2.57,.82,.017,.36,"#cbb997");
- g.box(-2.70,1.23,-2.57,.69,.016,.25,"#303b3d");
- for(const x of [-2.92,-2.48]){g.box(x,1.246,-2.56,.19,.022,.19,"#c0baa8");g.box(x,1.261,-2.56,.065,.014,.065,"#414347");}
- g.box(-2.99,1.09,-2.34,.10,.09,.07,"#b94b42","emissive");
- // Right table has a surveillance playback monitor — its footage reveals 2026.
- g.box(2.49,1.43,-3.04,1.12,.88,.16,"#222b31");
- g.box(2.49,1.43,-2.945,.94,.67,.031,"#415a64","memo");
- g.box(2.49,1.69,-2.924,.90,.12,.021,"#202f39");
- for(let i=0;i<5;i++)g.box(2.13+i*.17,1.70,-2.906,.09,.025,.02,"#bbac91");
- g.box(2.32,1.34,-2.917,.21,.18,.019,"#829091");
- g.box(2.62,1.38,-2.914,.28,.21,.018,"#263c46");
- g.box(2.49,.970,-3.05,.11,.10,.13,"#626a6d");
- g.box(2.49,.950,-3.05,.43,.035,.29,"#767b72");
- // Handset sits on table too.
- g.box(2.38,1.025,-2.31,.56,.13,.33,"#374148");
- g.tube([2.18,1.14,-2.33],[2.61,1.14,-2.33],.08,"#797e78");
- g.tube([2.65,1.02,-2.27],[2.84,.92,-2.28],.026,"#9c9180");
+ // Left: tape interrogation station with two real reels, indication lamp.
+ g.box(-3.69,1.067,-1.83,1.08,.22,.62,"#333f43");
+ g.box(-3.69,1.195,-1.71,.89,.023,.40,"#c8b898");
+ g.box(-3.69,1.222,-1.71,.70,.025,.27,"#30383b");
+ for(const x of [-3.89,-3.49]){
+  g.tube([x,1.249,-1.72],[x,1.265,-1.72],.095,"#d9cbb0");
+  g.tube([x,1.270,-1.72],[x,1.280,-1.72],.04,"#393d40");
+ }
+ g.box(-4.03,1.092,-1.48,.090,.081,.07,"#bd544a","emissive");
+ // Surveillance monitor occupies right-side workspace; its screen is readable.
+ g.box(3.68,1.42,-2.15,1.07,.87,.18,"#1c2429");
+ g.box(3.68,1.43,-2.043,.88,.65,.030,"#46616c","memo");
+ g.box(3.68,1.688,-2.024,.85,.105,.020,"#20333c");
+ for(let i=0;i<5;i++)g.box(3.36+i*.16,1.685,-2.011,.085,.024,.016,"#beb19a");
+ g.box(3.56,1.30,-2.010,.22,.17,.022,"#809598");
+ g.box(3.83,1.39,-2.010,.26,.19,.022,"#2a414d");
+ g.box(3.68,.974,-2.14,.12,.11,.13,"#777b79");
+ g.box(3.68,.947,-2.14,.41,.037,.33,"#6f7978");
+ // Telephone lies beneath surveillance monitor, slightly toward player.
+ g.box(3.67,1.028,-1.43,.51,.14,.31,"#303b40");
+ g.tube([3.47,1.148,-1.45],[3.87,1.148,-1.45],.076,"#92938b");
+ g.tube([3.92,1.04,-1.46],[4.07,.95,-1.48],.025,"#b1a28e");
  // Chair legs and backrest. Touch of world context beyond clues.
  for(const x of [1.0,2.4])for(const z of [-.73,.06])g.box(x,.44,z,.11,.85,.11,"#414449");
  g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
@@ -540,7 +544,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   return best;
  }
- const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13},{x:1.7,z:0,w:1.64,d:1.3}];
+ const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13},{x:1.7,z:0,w:1.64,d:1.3},{x:-3.68,z:-1.91,w:1.60,d:1.37},{x:3.68,z:-1.91,w:1.60,d:1.37}];
  function collides(x:number,z:number){
   if(x< -4.48||x>4.48||z< -5.17||z>4.79)return true;
   return obstacles.some(o=>Math.abs(o.x-x)<o.w/2+.23&&Math.abs(o.z-z)<o.d/2+.23);
@@ -560,8 +564,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
   // Door first; shadow at 00:55, intruder at ~00:50, blade glint at ~00:47.
-  const approachLimit=Math.max(.5,Math.min(2.55,6.28-pose.z-2.2));
-  const approach=intruderStarted?Math.max(0,Math.min(approachLimit,(elapsed-9)*.075)):0;
+  const approachLimit=Math.max(.25,Math.min(.92,6.28-pose.z-2.6));
+  const approach=intruderStarted?Math.max(0,Math.min(approachLimit,(elapsed-9)*.055)):0;
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,Math.max(0,elapsed-9)*5.2);
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
