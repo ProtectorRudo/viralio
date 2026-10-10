@@ -32,7 +32,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Examinar reloj"}).first().click();
     await page.getByRole("button",{name:"Cerrar"}).click();
-    await page.getByRole("button",{name:"Silenciar"}).click();
+    await page.getByRole("button",{name:"Silenciar",exact:true}).click();
     await page.getByRole("button",{name:"Activar sonido"}).click();
     await page.getByRole("button",{name:"Silenciar música"}).click();
     await page.getByRole("button",{name:"Activar música"}).click();
