@@ -92,10 +92,18 @@ test("CASO M · al minuto final aparece la advertencia y luego el intruso",async
  const remaining=Number(parts![1])*60+Number(parts![2]);
  for(let j=0;j<Math.max(0,remaining-60);j++)await page.clock.fastForward(1000);
  await expect(page.getByTestId("rescate-timer")).toContainText("01:00");
+ await expect(page.getByTestId("rescate-blackout")).toBeVisible();
+ await page.clock.fastForward(1900);
+ await expect(page.getByTestId("rescate-blackout")).toHaveCount(0);
+ await expect(page.getByTestId("rescate-graffiti-reveal")).toContainText("SEGUÍS VOS.");
+ await expect(page.getByTestId("rescate-graffiti-wall")).toContainText("SEGUÍS");
  await expect(page.getByTestId("rescate-intruder-alert")).toBeVisible();
  for(let j=0;j<10;j++)await page.clock.fastForward(1000);
  await expect(page.getByTestId("rescate-knife-alert")).toBeVisible();
  await expect(page.getByTestId("rescate-knife-alert")).toContainText("NO ESTÁS SOLO");
+ // The attacker must CROSS the threshold — previous version moved only 25cm.
+ for(let k=0;k<27;k++)await page.clock.fastForward(1000);
+ await expect.poll(()=>page.getByTestId("rescate-webgl").getAttribute("data-intruder-approach").then(v=>Number(v||0)),{timeout:8000}).toBeGreaterThan(.35);
  await page.screenshot({path:`visual-qa-evidence/rescate-intruso-${testInfo.project.name}.png`,fullPage:true});
 });
 
