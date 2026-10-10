@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useRef,useState,type PointerEvent as ReactPointerEvent} from "react";
 import {createRoot} from "react-dom/client";
-import {createWorld,type Target,type ClueId,type World} from "./RescueWorld";
+import {createWorld,TARGETS,type Target,type ClueId,type World} from "./RescueWorld";
 import styles from "./Rescue.module.css";
 
 type Screen="intro"|"game"|"final";
