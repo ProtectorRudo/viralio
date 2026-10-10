@@ -247,3 +247,59 @@
  .toast{bottom:137px}
 }
 @media(prefers-reduced-motion:reduce){.radar,.introTimer>span,.countdown strong,.confetti i{animation:none!important}}
+
+
+/* Case M / six-wheel mechanical lock: all digits visible on a 360px phone. */
+.dials{grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(4px,1.1vw,9px);padding:20px 0 10px}
+.dial{border-width:3px;min-width:0}
+.dial strong{font-size:clamp(1.75rem,5.6vw,2.45rem);min-height:68px}
+.dial button{min-height:44px;font-size:1.35rem}
+.hintPanel{position:absolute;top:calc(143px + env(safe-area-inset-top,0px));right:clamp(10px,3vw,24px);
+ z-index:17;width:min(390px,calc(100% - 22px));background:linear-gradient(139deg,#31302bfa,#121d20fc);
+ border:1px solid #dbb988;box-shadow:0 14px 40px #000d,0 0 0 1px #f0d2a520;
+ padding:16px 18px;color:#eee0cb}
+.hintHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hintHead span{font:800 .56rem/1.5 ui-monospace,monospace;letter-spacing:.13em;color:#f0c48d}
+.hintHead button{flex:none;min-width:38px;min-height:38px;cursor:pointer;border:1px solid #9f8a70;background:#26302e;color:#efddc2}
+.hintPanel>p{font:italic clamp(.95rem,2.4vw,1.13rem)/1.5 Georgia,serif;margin:15px 0 12px;color:#f0e2cd}
+.nextHint{display:block;width:100%;min-height:46px;margin-top:12px;border:1px solid #cfad7b;background:#574535;
+ color:#fbeacf;cursor:pointer;font:800 .59rem ui-monospace,monospace;letter-spacing:.09em}
+.clockInteraction{display:flex;align-items:center;flex-direction:column;gap:16px;margin:16px 0 14px}
+.clockDial{position:relative;width:188px;height:188px;flex:none;border:11px ridge #957851;border-radius:50%;
+ background:radial-gradient(circle at 44% 34%,#eadcba,#afa084 80%);
+ box-shadow:inset 0 0 26px #34281eaa,0 15px 30px #0009,0 0 0 4px #594331b8}
+.clockDial>span{position:absolute;font:800 .78rem Georgia,serif;color:#302a25}
+.clockTwelve{top:12px;left:50%;transform:translateX(-50%)}
+.clockThree{right:14px;top:50%;transform:translateY(-50%)}
+.clockSix{bottom:11px;left:50%;transform:translateX(-50%)}
+.clockNine{left:15px;top:50%;transform:translateY(-50%)}
+.clockDial i{position:absolute;bottom:50%;left:50%;display:block;transform-origin:50% 100%;transform:translateX(-50%) rotate(0deg)}
+.clockHour{width:7px;height:48px;border-radius:70% 70% 2px 2px;background:linear-gradient(90deg,#272625,#60574a,#272625);
+ box-shadow:0 1px 4px #0008;z-index:2}
+.clockMinute{width:4px;height:69px;border-radius:70% 70% 2px 2px;background:linear-gradient(90deg,#69362a,#a65540,#69362a);
+ box-shadow:0 1px 4px #0008;z-index:3}
+.clockDial .clockAxle{width:14px;height:14px;left:50%;bottom:50%;transform:translate(-50%,50%);border-radius:50%;
+ background:#b39263;border:3px solid #5c4032;box-shadow:0 1px 4px #0008;z-index:4}
+.clockInteraction[data-clock="running"] .clockHour,.clockInteraction[data-clock="done"] .clockHour{
+ transform:translateX(-50%) rotate(1230deg);
+ transition:transform 3s cubic-bezier(.22,.53,.16,1)}
+.clockInteraction[data-clock="running"] .clockMinute,.clockInteraction[data-clock="done"] .clockMinute{
+ transform:translateX(-50%) rotate(1440deg);
+ transition:transform 3s cubic-bezier(.22,.53,.16,1)}
+.clockInteraction>p{margin:0;text-align:center;color:#d9c5a8;font:italic 1.04rem/1.4 Georgia,serif}
+.clockInteraction[data-clock="done"]>p{color:#f1cf8d;font:800 .80rem/1.4 ui-monospace,monospace;letter-spacing:.13em}
+.clockStart{width:100%;min-height:54px;padding:12px 14px;border:1px solid #e1bb87;border-radius:4px;background:#7b6043;color:#fff0d5;
+ cursor:pointer;font:800 .65rem/1.4 ui-monospace,monospace;letter-spacing:.09em}
+.clockStart:disabled{background:#394039;border-color:#7b8779;opacity:.85;cursor:default}
+@media(max-width:670px){
+ .dials{gap:5px;padding:16px 0 9px}
+ .dial{border-width:2px}
+ .dial strong{font-size:clamp(1.5rem,6vw,2rem);min-height:63px}
+ .dial button{min-height:41px;font-size:1.24rem}
+ .hintPanel{top:calc(121px + env(safe-area-inset-top,0px));right:10px;padding:14px}
+ .topHints button[data-testid="rescate-hint-button"]{border-color:#f2ce93;background:#654933e8;color:#ffeed2;font-size:.48rem}
+}
+@media(prefers-reduced-motion:reduce){
+ .clockInteraction[data-clock="running"] .clockHour,.clockInteraction[data-clock="running"] .clockMinute,
+ .clockInteraction[data-clock="done"] .clockHour,.clockInteraction[data-clock="done"] .clockMinute{transition-duration:0s}
+}
