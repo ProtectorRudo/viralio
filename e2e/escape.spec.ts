@@ -12,6 +12,37 @@ async function visualAudit(page:Page,file:string){
 }
 
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("audio de alta fidelidad: un solo mezclador en móvil, incluso tras pausar, silenciar y abrir objetos", async ({page})=>{
+    await page.addInitScript(()=>{
+      const Original=window.AudioContext;
+      if(!Original)return;
+      class TrackedAudioContext extends Original{
+        constructor(){
+          super();
+          const tracked=window as Window & {__umbralAudioContexts?:number};
+          tracked.__umbralAudioContexts=(tracked.__umbralAudioContexts??0)+1;
+        }
+      }
+      Object.defineProperty(window,"AudioContext",{configurable:true,value:TrackedAudioContext});
+    });
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await expect(page.getByTestId("umbral-threshold")).toBeVisible();
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+    await page.getByRole("button",{name:"Examinar reloj"}).first().click();
+    await page.getByRole("button",{name:"Cerrar"}).click();
+    await page.getByRole("button",{name:"Silenciar",exact:true}).click();
+    await page.getByRole("button",{name:"Activar sonido"}).click();
+    await page.getByRole("button",{name:"Silenciar música"}).click();
+    await page.getByRole("button",{name:"Activar música"}).click();
+    await page.getByRole("button",{name:"Pausar partida"}).click();
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await page.getByRole("button",{name:"Escuchar detrás de las paredes"}).click();
+    await expect(page.getByTestId("umbral-listening")).toHaveAttribute("data-stage","tuning");
+    await expect.poll(async()=>page.evaluate(()=>(window as Window & {__umbralAudioContexts?:number}).__umbralAudioContexts)).toBe(1);
+  });
+
   test("umbral de entrada: puerta física, salto accesible y reloj sin tiempo perdido", async ({page})=>{
     await page.goto("/escape");
     await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
