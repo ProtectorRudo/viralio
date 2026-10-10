@@ -4,7 +4,7 @@
  * Supports WebGL1 mobiles without any third-party runtime or CDN.
  */
 export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"locker"|"lamp"|"pipe";
-export type SceneFlags={unlocked:boolean;clockActivated:boolean};
+export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Calendario arrancado",pos:[-2.7,2.1,-5.16],reach:3.4,hint:"La fecha parece marcada con demasiada insistencia."},
@@ -75,12 +75,24 @@ function scene(opened:boolean){
   for(let z=-5;z<4.85;z+=1.35)g.box(x,1.73,z,.06,3.46,.14,"#66686a");
  }
  for(let z=-5;z<5.1;z+=2.3)g.box(0,3.94,z,9.7,.20,.19,"#4f5154");
- // Rusty door, sealed from outside.
- g.box(0,1.65,5.12,2.24,3.22,.19,"#404749");
- for(const x of [-.99,.99])g.box(x,1.65,5.00,.07,3.4,.09,"#93938b");
- g.box(0,3.29,4.99,2.1,.09,.12,"#8e928c");
- for(let y=.35;y<2.9;y+=.51)g.box(0,y,4.98,1.85,.03,.06,"#606d70");
- g.box(.87,1.4,4.89,.19,.09,.18,"#b1a279");
+ // Doorway, real swinging door and shadowy intruder.
+ for(const [x,w] of [[-3.1,3.8],[3.1,3.8]])g.box(x,2,5.28,w,4.1,.35,"#30363b");
+ g.box(0,3.75,5.28,2.4,.88,.35,"#33373d");
+ g.box(0,-.05,5.78,2.37,.12,1.9,"#77665b");
+ g.box(-1.16,1.9,5.84,.12,3.7,1.95,"#4b383b");
+ g.box(1.16,1.9,5.84,.12,3.7,1.95,"#4b383b");
+ g.box(0,1.8,6.72,2.3,3.55,.08,"#693737");
+ g.box(0,3.47,6.28,1.5,.06,.13,"#b84039","emissive");
+ for(const x of [-1.2,1.2])g.box(x,1.63,5.02,.12,3.35,.18,"#a88e79");
+ g.box(0,3.30,5.02,2.5,.12,.2,"#a88e79");
+ g.box(0,1.66,5.04,2.23,3.22,.18,"#43484b","door");
+ for(let y=.38;y<2.95;y+=.57)g.box(0,y,4.92,1.94,.032,.067,"#7a7770","door");
+ g.box(-.72,1.41,4.87,.17,.12,.16,"#dab880","door");
+ g.box(-.64,1.41,4.78,.32,.055,.12,"#a99c85","door");
+ g.box(.32,2.60,6.28,.55,.57,.40,"#15151b","figure");
+ g.box(.32,1.72,6.28,.82,1.32,.42,"#12151b","figure");
+ for(const x of [-.27,.91])g.box(x,1.65,6.28,.24,1.30,.33,"#18181e","figure");
+ for(const x of [.09,.58])g.box(x,.52,6.28,.27,1.12,.35,"#121419","figure");
  // Two side fluorescent lamps / grimy fixture.
  for(const z of [-3.2,1.15]){
   g.box(0,4.02,z,1.1,.15,.53,"#a69d82");
@@ -103,12 +115,16 @@ function scene(opened:boolean){
  }
  // Four-digit lock physically attached to drawer.
  if(!opened){for(let i=0;i<6;i++){const x=-.66+i*.255;g.box(x,.86,-1.685,.20,.26,.12,"#aaa293");g.box(x,.86,-1.612,.165,.14,.024,"#343b3d");}}
- // An old radio/cassette, a physical specimen on the left.
- g.box(-2.7,1.05,-2.68,.85,.28,.53,"#3f4548");
- g.box(-2.7,1.175,-2.43,.68,.036,.18,"#89928b");
- g.box(-2.98,1.07,-2.39,.19,.15,.07,"#1d2024");
- g.box(-2.47,1.07,-2.39,.19,.15,.07,"#1d2024");
- for(let x=-2.95;x<=-2.45;x+=.15)g.box(x,1.00,-2.38,.04,.04,.06,"#b5a688");
+ // Cassette recorder with tape reels and a glowing REC lamp.
+ g.box(-2.7,1.05,-2.68,1.02,.28,.64,"#343d40");
+ g.box(-2.7,1.199,-2.57,.83,.016,.36,"#c8b795");
+ g.box(-2.7,1.215,-2.57,.68,.016,.25,"#303b3d");
+ for(const x of [-2.92,-2.48]){
+  g.box(x,1.23,-2.56,.19,.025,.19,"#c0baa8");
+  g.box(x,1.249,-2.56,.065,.014,.065,"#414347");
+ }
+ g.box(-2.99,1.08,-2.34,.10,.09,.07,"#b94b42","emissive");
+ for(let x=-2.8;x<=-2.37;x+=.13)g.box(x,1.08,-2.34,.10,.055,.07,"#b4a68d");
  // Files and a stamped investigative memo.
  g.box(2.32,1.0,-2.8,.7,.024,.42,"#cfbb9d","memo");
  g.box(2.51,1.024,-2.61,.14,.005,.04,"#663f39");
@@ -119,11 +135,24 @@ function scene(opened:boolean){
  g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
  g.box(1.7,1.58,.18,1.5,1.28,.14,"#4e3d34");
  for(let y=1.2;y<2.01;y+=.18)g.box(1.7,y,.28,1.31,.045,.06,"#79634d");
- // Giant clock and calendar are actual wall-mounted polygon surfaces.
- g.box(-2.75,2.14,-5.59,1.55,1.74,.17,"#a79b87");
- g.box(-2.75,2.15,-5.47,1.39,1.59,.027,"#d4c5ac","calendar");
- g.box(-2.75,2.91,-5.44,1.53,.20,.06,"#654b4b");
- g.box(-2.75,1.33,-5.43,1.50,.04,.07,"#928370");
+ // Actually legible calendar, with an inked date in its month grid.
+ g.box(-2.75,2.14,-5.59,1.75,1.98,.17,"#a79b87");
+ g.box(-2.75,2.15,-5.47,1.58,1.80,.035,"#ecdfc9","calendar");
+ g.box(-2.75,2.92,-5.42,1.60,.28,.075,"#8c3b38");
+ for(let col=0;col<8;col++)g.box(-3.46+col*.202,2.03,-5.432,.008,1.17,.015,"#8c8578");
+ for(let row=0;row<6;row++)g.box(-2.75,2.60-row*.232,-5.432,1.42,.009,.015,"#8c8578");
+ g.box(-3.15,2.25,-5.411,.195,.18,.027,"#b8554b");
+ const digit=(n:number,x:number,y:number)=>{
+  const segments=n===1?[1,2]:[0,1,6,2,3];
+  for(const k of segments){
+   const horizontal=[0,3,6].includes(k),dx=k===1||k===2?.075:k===4||k===5?-.075:0;
+   const dy=k===0?.113:k===3?-.113:k===6?0:k===1||k===5?.058:-.058;
+   g.box(x+dx,y+dy,-5.375,horizontal?.13:.022,horizontal?.022:.10,.024,"#5d2529");
+  }
+ };
+ digit(1,-3.22,2.23);digit(3,-3.04,2.23);
+ for(let i=0;i<16;i++){const a=i*Math.PI/8;g.box(-3.13+Math.cos(a)*.235,2.23+Math.sin(a)*.23,-5.365,.058,.024,.018,"#a83734");}
+ g.box(-2.75,1.19,-5.43,1.64,.045,.08,"#928370");
  // Clock with real WebGL hands that animate around a shared spindle.
  const cx=3.73,cy=2.14,cz=-5.43;
  g.box(cx,cy,cz,1.46,1.46,.15,"#65503f");
