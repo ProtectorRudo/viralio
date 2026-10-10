@@ -397,6 +397,7 @@ export type World={
  look:(dx:number,dy:number)=>void;
  pick:(x:number,y:number,w:number,h:number)=>Target|null;
  lookAt:(target:Target)=>void;
+ project:(position:V)=>{x:number;y:number;visible:boolean;distance:number};
  aim:()=>Target|null;
  nearby:()=>Target[];
  getPose:()=>Pose;
@@ -452,7 +453,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   if(w<=0||h<=0||x<0||y<0||x>w||y>h)return null;
   const {forward,right,up}=basis(),ratio=w/h;
   const extents:Record<ClueId,[number,number]> = {
-   calendar:[1.65,1.94],cassette:[1.1,.62],memo:[.91,.64],
+   calendar:[1.65,1.94],cassette:[1.1,.62],memo:[1.1,.89],board:[2.65,1.9],
    clock:[1.54,1.55],drawer:[1.6,.95],envelope:[.43,.32],
    phone:[.85,.58],camera:[.62,.40],locker:[1.7,3.05],
    lamp:[.72,.66],pipe:[1.18,1.45]
@@ -474,6 +475,16 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    if(score<rank){rank=score;selected=target;}
   }
   return selected;
+ }
+ function project(position:V){
+  const {forward,right,up}=basis();
+  const v:V=[position[0]-pose.x,position[1]-pose.y,position[2]-pose.z];
+  const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
+  const width=canvas.clientWidth,height=canvas.clientHeight,ratio=width/Math.max(1,height);
+  if(depth<=.12||!width||!height)return {x:-1000,y:-1000,visible:false,distance:depth};
+  const x=width*.5+(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth)*width*.5;
+  const y=height*.5-(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth*height*.5;
+  return {x,y,visible:x>60&&x<width-60&&y>170&&y<height-150,distance:depth};
  }
  function aim(){
   const {forward}=basis();let best:Target|null=null,score=1e6;
@@ -543,7 +554,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    if(!collides(pose.x+dx,pose.z))pose.x+=dx;
    if(!collides(pose.x,pose.z+dz))pose.z+=dz;
   },
-  pick,
+  pick,project,
   look:(dx:number,dy:number)=>{pose.yaw=(pose.yaw-dx*.0048+Math.PI*4)%(Math.PI*2);pose.pitch=Math.max(-1.05,Math.min(1.05,pose.pitch-dy*.0038));},
   lookAt:(target:Target)=>{
     const dx=target.pos[0]-pose.x,dy=target.pos[1]-pose.y,dz=target.pos[2]-pose.z;
