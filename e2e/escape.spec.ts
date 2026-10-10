@@ -290,6 +290,65 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("button",{name:/Escuchar el agradecimiento/})).toBeVisible();
   });
 
+  test("auditoría real del celular: una escena nítida, sin superposiciones ni carrusel cortado", async ({page})=>{
+    test.setTimeout(70_000);
+    for(const width of [360,390,430]){
+      await page.setViewportSize({width,height:844});
+      await page.goto("/escape");
+      // Each width represents a fresh player: do not let the previous saved
+      // investigation auto-resume and hide the entrance button on reload.
+      await page.evaluate(()=>window.localStorage.removeItem("umbral-casa-13-v1"));
+      await page.reload();
+      await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+      await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+      await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+
+      const dossier=page.getByRole("button",{name:/Abrir expediente/});
+      const listening=page.getByRole("button",{name:"Escuchar detrás de las paredes"});
+      const a=await dossier.boundingBox(),b=await listening.boundingBox();
+      expect(a).toBeTruthy();expect(b).toBeTruthy();
+      if(!a||!b)throw new Error("Missing primary controls");
+      expect(Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x)).toBeLessThanOrEqual(0);
+      expect(a.height).toBeGreaterThanOrEqual(43);
+      expect(b.height).toBeGreaterThanOrEqual(43);
+      expect(Math.abs(a.y-b.y)).toBeLessThanOrEqual(4);
+
+      const shelf=page.getByRole("navigation",{name:"Objetos para investigar"});
+      await expect(shelf).toBeVisible();
+      const candidates=shelf.getByRole("button");
+      await expect(candidates).toHaveCount(5);
+      for(const item of await candidates.all()){
+        const box=await item.boundingBox();
+        expect(box).toBeTruthy();
+        if(!box)throw new Error("Missing clue button");
+        expect(box.x).toBeGreaterThanOrEqual(-1);
+        expect(box.x+box.width).toBeLessThanOrEqual(width+1);
+        expect(box.height).toBeGreaterThanOrEqual(48);
+      }
+      const controls=page.locator('[class*="bottomActions"]').getByRole("button");
+      await expect(controls).toHaveCount(5);
+      for(const control of await controls.all()){
+        const box=await control.boundingBox();
+        expect(box).toBeTruthy();
+        if(!box)throw new Error("Missing utility button");
+        expect(box.x).toBeGreaterThanOrEqual(-1);
+        expect(box.x+box.width).toBeLessThanOrEqual(width+1);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width+1);
+      await visualAudit(page,`umbral-nueva-composicion-${width}.png`);
+      await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+      await page.waitForTimeout(120);
+      const header=await page.locator("header").first().boundingBox();
+      expect(header).toBeTruthy();
+      // The timer stays on-screen while a player scrolls the clue sheet.
+      if(header)expect(header.y).toBeGreaterThanOrEqual(-2);
+      if(header)expect(header.y).toBeLessThanOrEqual(4);
+      await page.getByRole("navigation",{name:"Objetos para investigar"}).getByRole("button",{name:"Abrir cerradura"}).click();
+      await expect(page.getByRole("heading",{name:"Una cerradura sin llave"})).toBeVisible();
+    }
+  });
+
   test("móvil: objetos accesibles sin depender del panorama, pausa y retorno", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/escape");
