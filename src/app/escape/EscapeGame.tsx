@@ -12,7 +12,8 @@ import LockTumblers from "./LockTumblers";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
 import EvaMemory from "./EvaMemory";
-import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
+import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,playInterfaceCue,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
+import {startRoomTone,stopRoomTone} from "./RoomTone";
 import EvidenceArchive from "./EvidenceArchive";
 import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiveScore,stopAdaptiveScore,tensionTier,TENSION_TITLES} from "./AdaptiveScore";
 
@@ -36,14 +37,6 @@ const PORTRAITS = [
 ];
 const SAVE_KEY = "umbral-casa-13-v1";
 const RECORD_KEY = "umbral-personal-records-v1";
-let sharedAudioContext: AudioContext | null = null;
-function readAudioContext() { return sharedAudioContext; }
-function createAudioContext() {
-  if(typeof window==="undefined") return null;
-  sharedAudioContext ??= new window.AudioContext();
-  return sharedAudioContext;
-}
-
 function fmt(seconds: number) {
   return String(Math.floor(Math.max(seconds, 0) / 60)).padStart(2, "0") + ":" + String(Math.max(seconds, 0) % 60).padStart(2, "0");
 }
@@ -181,7 +174,6 @@ export default function EscapeGame() {
   const [toast, setToast] = useState("");
   const [ready, setReady] = useState(false);
   const deadlineRef = useRef<number | null>(null);
-  const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
 
   const [apparition, setApparition] = useState(false);
   const [flashlight, setFlashlight] = useState(false);
@@ -369,30 +361,14 @@ export default function EscapeGame() {
     return ()=>window.removeEventListener("keydown",onKey);
   },[modal]);
 
-  useEffect(() => {
-    const stop = () => {
-      if(!ambient.current) return;
-      try { ambient.current.noise.stop(); ambient.current.rumble.stop(); } catch { /* no sound context */ }
-      ambient.current = null;
-    };
-    stop();
-    const ctx=readAudioContext();
-    if(!ctx || phase!=="playing" || paused || cinematicPause || !sound) return stop;
-    try {
-      const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);
-      const samples=buffer.getChannelData(0);
-      for(let i=0;i<samples.length;i++) samples[i]=(Math.random()*2-1)*.4;
-      const noise=ctx.createBufferSource(); noise.buffer=buffer; noise.loop=true;
-      const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=room===3?240:430;
-      const ng=ctx.createGain();ng.gain.value=room===2?.018:.011;
-      noise.connect(filter);filter.connect(ng);ng.connect(ctx.destination);
-      const rumble=ctx.createOscillator();rumble.type="sine";rumble.frequency.value=room===3?43:54;
-      const rg=ctx.createGain();rg.gain.value=.009;
-      rumble.connect(rg);rg.connect(ctx.destination);
-      noise.start();rumble.start();ambient.current={noise,rumble};
-    } catch { /* low-powered devices still have a silent experience */ }
-    return stop;
-  }, [phase, paused, room, sound, cinematicPause]);
+  useEffect(()=>{
+    // One quiet diegetic room bed per scene, routed through the same mute-aware
+    // mixer as the procedural score and recorded foley. Avoid opening a second
+    // AudioContext or leaking rumble while the player pauses or reads evidence.
+    if(phase==="playing" && !paused && !cinematicPause && !transitioning && !modal && sound)startRoomTone(room);
+    else stopRoomTone();
+    return stopRoomTone;
+  },[phase,paused,room,sound,cinematicPause,transitioning,modal]);
 
   useEffect(() => {
     if(phase!=="playing" || paused || room!==2 || modal || scareStage!=="off" || transitioning) return;
@@ -445,22 +421,7 @@ export default function EscapeGame() {
       setJolt(true);
       window.setTimeout(()=>setJolt(false),360);
     }
-    if(!sound) return;
-    try {
-      const ctx=createAudioContext();
-      if(!ctx) return;
-      if(ctx.state==="suspended") void ctx.resume();
-      const osc=ctx.createOscillator(), gain=ctx.createGain();
-      osc.type=kind==="error"?"sawtooth":kind==="success"?"sine":"triangle";
-      const now=ctx.currentTime, base=kind==="tone"?pitch:kind==="success"?510:kind==="error"?110:kind==="step"?85:270;
-      osc.frequency.setValueAtTime(base,now);
-      if(kind==="success") osc.frequency.exponentialRampToValueAtTime(830,now+.36);
-      if(kind==="error") osc.frequency.exponentialRampToValueAtTime(53,now+.22);
-      gain.gain.setValueAtTime(.0001,now);
-      gain.gain.exponentialRampToValueAtTime(kind==="error"?.075:.045,now+.015);
-      gain.gain.exponentialRampToValueAtTime(.0001,now+(kind==="success"?.6:.24));
-      osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+(kind==="success"?.65:.28));
-    } catch { /* audio is optional */ }
+    if(sound) playInterfaceCue(kind,pitch);
   }
   function message(t:string){setToast(t);}
   function begin() {
