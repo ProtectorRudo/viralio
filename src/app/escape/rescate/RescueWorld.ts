@@ -276,7 +276,8 @@ function scene(opened:boolean){
  return g;
 }
 const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;
-uniform vec3 eye,right,up,forward;
+uniform mediump vec3 eye;
+uniform vec3 right,up,forward;
 uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
 uniform vec2 doorPivot;
 uniform float doorGroup,figureGroup;
@@ -312,7 +313,7 @@ void main(){
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 uniform float time,emission,threat,bladeFlash,characterRim;
-uniform vec3 eye;
+uniform mediump vec3 eye;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
  float d=distance(vPos,overhead);
