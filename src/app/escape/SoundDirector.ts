@@ -130,7 +130,7 @@ function oscillator(a:AudioContext,frequency:number,when:number,length:number,am
   o.start(when);o.stop(when+length+.03);
 }
 
-function foley(a:AudioContext,cue:HorrorCue,pan:number){
+function foley(a:AudioContext,cue:HorrorCue,pan:number,intensity:number){
   const now=a.currentTime;
   const duration=cue==="darkness"?2.25:cue==="shock"?.85:cue==="heartbeat"?1.45:cue==="electric"?.8:cue==="door"?1.7:.88;
   const count=Math.max(1,Math.floor(a.sampleRate*duration));
@@ -156,23 +156,23 @@ function foley(a:AudioContext,cue:HorrorCue,pan:number){
   const filter=a.createBiquadFilter();filter.type="lowpass";
   filter.frequency.value=cue==="darkness"?650:cue==="shock"?2400:cue==="electric"?1750:cue==="creak"?980:920;
   const highpass=a.createBiquadFilter();highpass.type="highpass";highpass.frequency.value=35;
-  const chain=output(a,pan,cue==="shock"?.19:cue==="darkness"?.21:.18,cue==="footsteps");
+  const chain=output(a,pan,(cue==="shock"?.19:cue==="darkness"?.21:.18)*intensity,cue==="footsteps");
   src.connect(filter);filter.connect(highpass);highpass.connect(chain.gain);
   src.start(now);src.stop(now+duration);
   if(cue==="door"||cue==="creak"||cue==="darkness")reverb(a,highpass,.18);
   if(cue==="darkness"){
-    oscillator(a,55,now,2.25,.15,0);
-    oscillator(a,79,now+.25,1.7,.035,-.65);
+    oscillator(a,55,now,2.25,.15*intensity,0);
+    oscillator(a,79,now+.25,1.7,.035*intensity,-.65);
   }
   if(cue==="shock"){
-    oscillator(a,82,now,.65,.16,0);
-    oscillator(a,145,now,.3,.035,-.55,"sawtooth");
+    oscillator(a,82,now,.65,.16*intensity,0);
+    oscillator(a,145,now,.3,.035*intensity,-.55,"sawtooth");
   }
   if(cue==="heartbeat"){
-    oscillator(a,57,now,.18,.13,-.15);
-    oscillator(a,47,now+.36,.23,.1,.15);
-    oscillator(a,57,now+.78,.18,.13,-.15);
-    oscillator(a,47,now+1.1,.23,.1,.15);
+    oscillator(a,57,now,.18,.13*intensity,-.15);
+    oscillator(a,47,now+.36,.23,.1*intensity,.15);
+    oscillator(a,57,now+.78,.18,.13*intensity,-.15);
+    oscillator(a,47,now+1.1,.23,.1*intensity,.15);
   }
 }
 
@@ -190,13 +190,16 @@ export function playHorror(cue:HorrorCue,options?:{pan?:number;intensity?:number
   if(muted || (typeof document!=="undefined"&&document.hidden))return;
   const a=context();
   if(!a || a.state!=="running")return;
-  const pan=options?.pan??0;
+  const pan=Math.max(-1,Math.min(1,options?.pan??0));
+  // Crucial for mobile: synthesized fallback must obey intensity just as CC0 samples do.
+  const intensity=Math.max(0,Math.min(1.4,options?.intensity??1));
+  if(intensity===0)return;
   const url=SAMPLES[cue];
   if(url && cache.has(url)){
-    playSample(a,cache.get(url)!,cue,pan,options?.intensity??1);
+    playSample(a,cache.get(url)!,cue,pan,intensity);
     return;
   }
-  foley(a,cue,pan);
+  foley(a,cue,pan,intensity);
   if(url)void load(url);
 }
 
@@ -206,4 +209,43 @@ export function playFootstepsAcrossRoom(){
   pans.forEach((pan,i)=>window.setTimeout(()=>{
     if(generation===current)playHorror("footsteps",{pan,intensity:.7+(i*.055)});
   },i*430));
+}
+
+
+/** Unified, compressed and mute-aware interface sounds. Previous versions of
+ * EscapeGame created a second AudioContext directly for these effects, which
+ * can compete with music/foley on Android and bypass mute transitions.
+ */
+export type InterfaceCue = "click" | "success" | "error" | "step" | "tone";
+export function playInterfaceCue(kind:InterfaceCue="click",pitch=440){
+  if(muted || (typeof document!=="undefined" && document.hidden))return;
+  const a=context();
+  if(!a || a.state!=="running")return;
+  const now=a.currentTime;
+  const base=kind==="tone"?Math.max(100,Math.min(1900,pitch)):kind==="success"?510:kind==="error"?110:kind==="step"?85:270;
+  const duration=kind==="success"?.62:kind==="error"?.29:kind==="step"?.16:kind==="tone"?.30:.12;
+  const osc=a.createOscillator();
+  const filter=a.createBiquadFilter();
+  const envelope=a.createGain();
+  const pan=a.createStereoPanner();
+  const tilt=kind==="error"?.18:kind==="step"?-.16:0;
+  osc.type=kind==="error"?"sawtooth":kind==="success"?"sine":"triangle";
+  osc.frequency.setValueAtTime(base,now);
+  if(kind==="success")osc.frequency.exponentialRampToValueAtTime(830,now+.34);
+  if(kind==="error")osc.frequency.exponentialRampToValueAtTime(53,now+.22);
+  filter.type="lowpass";
+  filter.frequency.value=kind==="error"?620:kind==="step"?360:kind==="tone"?1750:1400;
+  pan.pan.value=tilt;
+  envelope.gain.setValueAtTime(.0001,now);
+  envelope.gain.exponentialRampToValueAtTime(kind==="error"?.062:kind==="success"?.058:kind==="step"?.033:.031,now+.014);
+  envelope.gain.exponentialRampToValueAtTime(.0001,now+duration);
+  osc.connect(filter);
+  filter.connect(envelope);
+  envelope.connect(pan);
+  pan.connect(root??a.destination);
+  osc.start(now);
+  osc.stop(now+duration+.02);
+  osc.onended=()=>{
+    try{osc.disconnect();filter.disconnect();envelope.disconnect();pan.disconnect();}catch{}
+  };
 }
