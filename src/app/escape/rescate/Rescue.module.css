@@ -710,3 +710,29 @@
  .pulseFrame,.recDot,.letterInside,.invitationPaper{animation:none!important}
  .envelope .flap,.envelope b{transition:none!important}
 }
+
+/* Performance discipline: no CSS backdrop blur above a continuously rendered
+ * WebGL canvas. Mobile Chromium/Android and software GL otherwise repaint the
+ * entire scene for each overlay, making tap targets appear unresponsive. */
+.app[data-stage="game"] .dossierToggle,
+.app[data-stage="game"] .dossierContents,
+.app[data-stage="game"] .topHints button,
+.app[data-stage="game"] .actionButton,
+.app[data-stage="game"] .scanButton,
+.app[data-stage="game"] .target,
+.app[data-stage="game"] .modalShade,
+.app[data-stage="game"] .introCard,
+.app[data-stage="game"] .toast,
+.app[data-stage="game"] .nearby{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.app[data-stage="game"] .dossierToggle{background:#0b1416f2}
+.app[data-stage="game"] .dossierContents{background:#0b1215f5}
+.app[data-stage="game"] .topHints button{background:#11191ced}
+.app[data-stage="game"] .target{background:#111b1df2}
+.app[data-stage="game"] .modalShade{background:#04070af1}
+.app[data-stage="game"] .toast{background:#152425f4}
+.app[data-stage="game"] .nearby{background:#10191df8}
+.sceneGrain{display:none}
+@media(max-width:670px){
+ .app[data-stage="game"] .pulseFrame{animation:none;opacity:.33}
+ .app[data-stage="game"] .reticle[data-has-target="yes"]{box-shadow:0 0 8px #e3ae7355}
+}
