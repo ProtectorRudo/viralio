@@ -2,6 +2,7 @@
 
 import type { PointerEvent, CSSProperties } from "react";
 import styles from "./DiegeticFocus.module.css";
+import {characterImageSet,type CharacterId} from "./PortraitAssets";
 
 type FocusKind="portrait"|"clock"|"lock"|"doll"|"music";
 const SERIAL:Record<FocusKind,string>={
@@ -19,9 +20,9 @@ const SERIAL:Record<FocusKind,string>={
  * not inside a generic boxed modal.
  */
 export default function DiegeticFocus({
-  room,kind,origin={x:50,y:50},mark
+  room,kind,origin={x:50,y:50},mark,character
 }:{
-  room:number;kind:FocusKind;origin?:{x:number;y:number};mark?:string;
+  room:number;kind:FocusKind;origin?:{x:number;y:number};mark?:string;character?:CharacterId;
 }){
   function move(e:PointerEvent<HTMLDivElement>){
     if(e.pointerType!=="mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -38,8 +39,8 @@ export default function DiegeticFocus({
     <div className={styles.camera} style={{backgroundImage:`linear-gradient(110deg,rgba(0,2,5,.08),rgba(0,3,6,.52) 61%,rgba(0,1,3,.91)),image-set(url("/escape/images/room-${room}.webp") 1x,url("/escape/images/retina/room-${room}.webp") 2x)`}} />
     <div className={styles.cameraGrain}/>
     <div className={styles.darkVelvet}/>
-    <div className={styles.artefact} data-material={kind}>
-      <div className={styles.artefactPortrait} style={{backgroundImage:`image-set(url("/escape/images/objects/${kind}.webp") 1x,url("/escape/images/retina/objects/${kind}.webp") 2x)`}}/>
+    <div className={styles.artefact} data-material={kind} data-portrait-person={kind==="portrait"?character:undefined}>
+      <div className={styles.artefactPortrait} style={{backgroundImage:kind==="portrait"&&character?characterImageSet(character):`image-set(url("/escape/images/objects/${kind}.webp") 1x,url("/escape/images/retina/objects/${kind}.webp") 2x)`}}/>
       <div className={styles.glass} />
       <div className={styles.rim} />
       <div className={styles.label}><span>UMB / OBJETO RECONSTRUIDO</span><b>{mark??SERIAL[kind]}</b></div>
