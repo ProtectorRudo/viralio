@@ -55,8 +55,8 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
         if(currentRef.current?.id!==target?.id){currentRef.current=target;setCurrent(target)}
         setUiPose({x:pose.x,z:pose.z});
       });
-      world.current=engine;setReady(true);
-    }catch(e){setFailure(e instanceof Error?e.message:"El motor 3D no pudo iniciarse.")}
+      world.current=engine;window.queueMicrotask(()=>{if(!disposed)setReady(true)});
+    }catch(e){const reason=e instanceof Error?e.message:"El motor 3D no pudo iniciarse.";window.queueMicrotask(()=>{if(!disposed)setFailure(reason)});}
     const down=(e:KeyboardEvent)=>{
       if(e.repeat&&e.key.toLowerCase()==="e")return;
       if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright","shift"].includes(e.key.toLowerCase())){keys.current.add(e.key.toLowerCase());e.preventDefault();}
@@ -65,6 +65,7 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
     };
     const up=(e:KeyboardEvent)=>keys.current.delete(e.key.toLowerCase());
     window.addEventListener("keydown",down);window.addEventListener("keyup",up);
+    const heldKeys=keys.current;
     const frame=(timestamp:number)=>{
       if(disposed)return;
       const dt=Math.min(.058,(timestamp-(lastTime.current||timestamp))/1000);
@@ -76,7 +77,7 @@ export default function Foyer3D({progress=EMPTY,onChange,onClose,onSound}:Props)
       frameId.current=requestAnimationFrame(frame);
     };
     frameId.current=requestAnimationFrame(frame);
-    return ()=>{disposed=true;cancelAnimationFrame(frameId.current);window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);world.current?.destroy();world.current=null;keys.current.clear()};
+    return ()=>{disposed=true;cancelAnimationFrame(frameId.current);window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);world.current?.destroy();world.current=null;heldKeys.clear()};
   },[]);
   const object=inspection?FOYER_TARGETS.find(t=>t.id===inspection):null;
   function viewStart(e:ReactPointerEvent<HTMLCanvasElement>){
