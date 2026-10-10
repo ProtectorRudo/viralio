@@ -34,7 +34,7 @@ async function walkTo(page:Page,key:string,axis:"x"|"z",bound:number,direction:"
 }
 async function examineNearby(page:Page,name:string){
  const nearby=page.getByTestId("rescate-nearby");
- if(!(await nearby.isVisible()))await page.getByRole("button",{name:/EXPLORAR ALREDEDOR/}).click();
+ if(!(await nearby.isVisible()))await page.getByRole("button",{name:/OBJETOS CERCANOS/}).click();
  await expect(nearby).toBeVisible();
  await nearby.getByRole("button",{name:new RegExp(name,"i")}).click({timeout:12000});
  await expect(page.getByRole("dialog")).toBeVisible();
