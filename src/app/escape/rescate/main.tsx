@@ -12,17 +12,18 @@ const CODE="131026";
 const EVIDENCE:Record<Ev,{title:string;value:string;body:string}>={
  calendar:{title:"Fotografía intervenida",value:"XIII",body:"Al dorso alguien escribió «XIII». Parece un número romano. No hay ninguna fecha escrita."},
  cassette:{title:"Cinta recuperada",value:"10",body:"La etiqueta de la cinta tiene escrito «10». El audio advierte que alguien está por regresar."},
- memo:{title:"Documento de operación",value:"2026",body:"Informe confidencial de la operación fechado en 2026. Una nota advierte que solo importan las dos últimas cifras del año."},
+ memo:{title:"Grabación vigilada",value:"2026",body:"Registro de seguridad: operación archivada en 2026. Para la clave solo importan las últimas dos cifras del año."},
 };
 const DESCRIPTIONS:Record<ClueId,string>={
  calendar:"Una vieja fotografía adherida a la pared. La parte de atrás podría esconder algo importante.",
  cassette:"El grabador está conectado, a pesar de que la habitación parece abandonada.",
- memo:"Un documento confidencial fechado en el año de la operación. Alguien quiso que lo encontraras.",
+ memo:"Un monitor de vigilancia conectado a la cámara. Su archivo contiene el año en que prepararon el operativo.",
  clock:"Un reloj viejo cuyas agujas quedaron detenidas. El mecanismo sigue conectado a alguna parte de la casa.",
  drawer:"Un cajón pesado, asegurado con un candado de seis ruedas. El sobre está adentro.",
  envelope:"Un sobre oscuro, con un lacre que lleva una letra M.",
  phone:"La línea está cortada. Al levantar el tubo se escucha el eco de una respiración.",
- camera:"La luz roja de REC se enciende. Alguien sigue tu recorrido desde otra habitación.",
+ camera:"La luz roja de REC se enciende. El monitor sobre la mesa derecha permite revisar las grabaciones.",
+ board:"El tablero está cubierto de horarios, fotos y rutas. Estuvieron estudiando los movimientos de Mauro.",
  locker:"El armario contiene un abrigo mojado y botas demasiado grandes. No hay ninguna clave.",
  lamp:"La luz oscila y proyecta una silueta sobre la silla. Cuando volvés a mirar, desaparece.",
  pipe:"Del otro lado del conducto se oyen tres golpes. No forman parte del código.",
@@ -47,6 +48,7 @@ function App(){
  const [error,setError]=useState(""),[available,setAvailable]=useState(false);
  const overlayState=useRef<Overlay>("none"),expiredState=useRef(false);
  const world=useRef<World|null>(null),canvas=useRef<HTMLCanvasElement|null>(null),activeRef=useRef<Target|null>(null);
+ const envelopeMarker=useRef<HTMLButtonElement|null>(null),unlockedRef=useRef(false);
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
  const pointer=useRef<{id:number;x:number;y:number;originX:number;originY:number;dragged:boolean}|null>(null),buttons=useRef(new Set<string>());
  const lastCanvasTap=useRef(0),raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),audioRef=useRef(false);
@@ -79,6 +81,15 @@ function App(){
     // World-space telemetry is also useful for joystick accessibility tests.
     el.dataset.cameraX=pos.x.toFixed(2);
     el.dataset.cameraZ=pos.z.toFixed(2);
+     const marker=envelopeMarker.current;
+     if(marker&&unlockedRef.current){
+      const point=world.current?.project([.02,.79,-1.48]);
+      if(point){marker.style.left=point.x+"px";marker.style.top=point.y+"px";
+       marker.style.visibility=point.visible?"visible":"hidden";
+       marker.dataset.anchorVisible=point.visible?"yes":"no";
+       marker.dataset.worldDistance=point.distance.toFixed(2);
+      }
+     }
     if(activeRef.current?.id!==target?.id){activeRef.current=target;setActive(target);}
     // re-render of position deliberately throttled in engine.
    });
@@ -313,7 +324,7 @@ function App(){
  }
  function unlock(){
   if(digits.join("")!==CODE){setWrong(true);sound("wrong");setToast("CLAVE INCORRECTA · REVISÁ LAS PISTAS");navigator.vibrate?.([50,70,50]);return;}
-  setWrong(false);setDrawerOpen(true);flags.current.unlocked=true;world.current?.setFlags({...flags.current});
+  setWrong(false);setDrawerOpen(true);unlockedRef.current=true;flags.current.unlocked=true;world.current?.setFlags({...flags.current});
   sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();
   const envelopeTarget=TARGETS.find(t=>t.id==="envelope");if(envelopeTarget)world.current?.lookAt(envelopeTarget);
   setToast("¡ABRISTE EL CAJÓN! EL SOBRE ESTÁ FRENTE A VOS.");
@@ -381,7 +392,7 @@ function App(){
       {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
     </div>
-    {drawerOpen&&overlay==="none"&&<button type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
+    {drawerOpen&&overlay==="none"&&<button ref={envelopeMarker} type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
        <span className={styles.beaconArrow}>↙</span><strong>¡AHÍ ESTÁ EL SOBRE!</strong><small>TOCÁ PARA ABRIRLO</small>
      </button>}
     <div className={styles.controlBar}>
