@@ -89,7 +89,7 @@ class Room {
   }
  }
 }
-const WALL="#383c42",FLOOR="#2d3033",WOOD="#644735";
+const WALL="#383c42",FLOOR="#2d3033";
 function scene(opened:boolean){
  const g=new Room();
  // A believable, limited navigable room, roughly 10 × 11 m.
