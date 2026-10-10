@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./escape.module.css";
 import Artefact from "./Artefact";
+import {type CharacterId} from "./PortraitAssets";
 import DiegeticFocus from "./DiegeticFocus";
 import CinematicAtmosphere from "./CinematicAtmosphere";
 import HouseListening from "./HouseListening";
@@ -30,10 +31,10 @@ const CLUES = [
   ["La carta de Eva contiene una melodía escrita con nombres de notas.", "La caja musical acepta una secuencia de cuatro sonidos.", "Tocá SOL → MI → LA → SOL."],
   ["Dos fusibles pueden sumar exactamente siete.", "La palanca responde solo cuando se activan dos fusibles.", "Activá el 2 y el 5, o el 3 y el 4. Después bajá la palanca."]
 ];
-const PORTRAITS = [
-  { name: "Elías", year: 1891, mark: "7", text: "Sus ojos siguen fijos en la cerradura. En el marco, un siete tallado." },
-  { name: "Mara", year: 1902, mark: "2", text: "Una mujer sostiene una flor marchita. Debajo, la cifra dos." },
-  { name: "Nora", year: 1918, mark: "4", text: "La niña mira hacia la puerta. Una pequeña cifra cuatro brilla en la madera." },
+const PORTRAITS: {id:CharacterId;name:string;year:number;mark:string;text:string}[] = [
+  { id:"elias",name: "Elías", year: 1891, mark: "7", text: "Sus ojos siguen fijos en la cerradura. En el marco, un siete tallado." },
+  { id:"mara",name: "Mara", year: 1902, mark: "2", text: "Una mujer sostiene una flor marchita. Debajo, la cifra dos." },
+  { id:"nora",name: "Nora", year: 1918, mark: "4", text: "La niña mira hacia la puerta. Una pequeña cifra cuatro brilla en la madera." },
 ];
 const SAVE_KEY = "umbral-casa-13-v1";
 const RECORD_KEY = "umbral-personal-records-v1";
@@ -183,7 +184,7 @@ export default function EscapeGame() {
   useEffect(()=>{
     // Warm the image cache before the player opens an object: never reveal a black placeholder.
     const imagesByRoom=[
-      ["portrait","clock","lock"],
+      ["clock","lock"],
       ["letter","door","signal"],
       ["doll","music","letter","door"],
       ["circuit","door","signal"],
@@ -193,6 +194,19 @@ export default function EscapeGame() {
       img.src="/escape/images/objects/"+name+".webp";
       return img;
     });
+    if(room===0){
+      // Preload each unique family member, not the old shared portrait.webp.
+      for(const person of PORTRAITS){
+        const img=new window.Image();
+        img.src="/escape/images/characters/"+person.id+".webp";
+        preloads.push(img);
+      }
+    }
+    if(room===2){
+      const img=new window.Image();
+      img.src="/escape/images/characters/eva.webp";
+      preloads.push(img);
+    }
     return ()=>{ for(const img of preloads){img.onload=null;img.onerror=null;} };
   },[room]);
 
@@ -540,6 +554,7 @@ export default function EscapeGame() {
     : modal==="clock" || modal==="doll" || modal==="music" ? modal : null;
   const focusSpot = hotspots.find(spot=>spot.id === (focusKind==="portrait" ? modal : focusKind==="lock" ? "door" : focusKind==="music" ? "box" : focusKind==="doll" ? "keepsake" : focusKind));
   const focusYear = modal?.startsWith("portrait") ? String(PORTRAITS[Number(modal.replace("portrait",""))]?.year ?? "") : undefined;
+  const focusPerson = modal?.startsWith("portrait") ? PORTRAITS[Number(modal.replace("portrait",""))]?.id : undefined;
   // Project interactive targets through the same viewBox math as the SVG, even
   // when its wide artwork is cropped to fill a portrait-sized phone.
   function spotPosition(spot:Spot) {
@@ -636,13 +651,13 @@ export default function EscapeGame() {
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget || (focusKind && e.target instanceof Element && e.target.closest("[data-focus-object]")))setModal(null);}}>
-        {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
+        {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} character={focusPerson} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
         <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
           {modal!=="journal" && modal!=="tape" && modal!=="mirror" &&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
           {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power} mirrorRead={Boolean(puzzles.mirrorRead)}/>}
-          {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
+          {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" character={p.id} mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
           {modal==="clock"&&<div className={styles.clockLayout}><div className={styles.clockStory}><Artefact kind="clock"/><h2>El reloj detenido</h2><p>La aguja quedó inmóvil en las 03:13. Debajo del péndulo hay un mecanismo que todavía puede girar.</p><span className={styles.clockAside}>FABRICANTE: J. VÉLEZ · AÑO 1891<br/>CERRADO POR EL TIEMPO, NO POR UNA LLAVE.</span></div><ClockMechanism solved={Boolean(puzzles.clockWound)} onSolve={()=>{setPuzzles(p=>({...p,clockWound:true}));sfx("success");playHorror("creak",{pan:-.27});message("Desbloqueaste el grabado oculto del reloj. +300 puntos de investigación.");}}/></div>}
           {modal==="pin"&&<div className={styles.pinLayout}>
             <div className={styles.pinDescription}><Artefact kind="lock"/><h2>Una cerradura sin llave</h2><p>Tres cifras. Escuchás tres golpes del otro lado. Cada vez más cerca.</p></div>
@@ -657,7 +672,7 @@ export default function EscapeGame() {
           {modal==="letter"&&<><h2>Una nota entre cenizas</h2><p>Un papel doblado entre las páginas. La caligrafía tiembla: es la letra de Eva. Hay algo escrito del otro lado.</p><PhysicalLetter kind="study"/></>}
           {modal==="eva"&&<><h2>Para quien todavía escucha</h2><p>Eva dejó una carta junto a sus juguetes. Algunas palabras están escritas con otra tinta. Dale vuelta para encontrar el resto.</p><PhysicalLetter kind="eva"/></>}
           {modal==="music"&&<><Artefact kind="music"/><h2>La caja musical</h2><p>Los mecanismos están intactos. Tocá las teclas para reconstruir la canción.</p><div className={styles.notes}>{[["DO",261.63],["RE",293.66],["MI",329.63],["FA",349.23],["SOL",392],["LA",440]].map(([note,freq])=><button key={note} onClick={()=>tune(String(note).toLowerCase(),Number(freq))}>{note}</button>)}</div><div className={styles.sequence}>SECUENCIA {puzzles.melody.map(()=> "◆").join("  ")} {puzzles.melody.length<4?"◇  ".repeat(4-puzzles.melody.length):""}</div></>}
-          {modal==="musicSolved"&&<><Artefact kind="music"/><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><div className={styles.discoveryActions}><button className={styles.primary} onClick={()=>{sfx("step");setModal("tape");}}>▶ REPRODUCIR CINTA 013</button><button className={styles.ghost} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></div></>}
+          {modal==="musicSolved"&&<><Artefact kind="portrait" character="eva" mark="FOTO 013"/><Artefact kind="music"/><h2>La canción de Eva</h2><p>La caja se abre por primera vez en décadas. Adentro hay una pequeña fotografía de Eva, sonriente. En el reverso:</p><blockquote>«No abras la puerta sin encender primero el corazón de la casa».</blockquote><div className={styles.discoveryActions}><button className={styles.primary} onClick={()=>{sfx("step");setModal("tape");}}>▶ REPRODUCIR CINTA 013</button><button className={styles.ghost} onClick={()=>setModal(null)}>GUARDAR LA FOTOGRAFÍA</button></div></>}
           {modal==="doll"&&<><Artefact kind="doll" speaking={dollSpeaking}/><h2>La muñeca de Eva</h2><p>En el vestido hay una costura con forma de corazón. Encontraste una medalla grabada: «NUNCA DEJES A NADIE ATRÁS».</p><blockquote>«No apagues la música. Todavía estoy acá.»</blockquote><button className={styles.whisperButton} type="button" onClick={()=>whisperEva()}>{dollSpeaking?"◉ EVA ESTÁ HABLANDO…":"◉ ESCUCHAR A LA MUÑECA"}</button><p className={styles.good}>RECUERDO OPCIONAL RECUPERADO · +500 PUNTOS</p></>}
           {modal==="memo"&&<><Artefact kind="circuit"/><h2>Manual de emergencia</h2><p>Una placa oxidada explica cómo alimentar el mecanismo:</p><blockquote>«El motor exige exactamente DOS circuitos activos. Su energía combinada debe ser SIETE. No tolera el exceso».</blockquote><p>Los fusibles tienen valores individuales: 2, 3, 4 y 5.</p></>}
           {modal==="finale"&&<><Artefact kind="door"/><h2>La última decisión</h2><p>La energía vuelve. Una salida se abre y oís una voz infantil desde el otro lado del muro.</p><blockquote>«¿Me vas a dejar acá otra vez?»</blockquote><p>Podés escapar mientras hay tiempo o volver por Eva. Una elección cambia cómo termina el expediente.</p>{puzzles.keepsake&&<p className={styles.good}>La medalla que recuperaste empieza a calentarse en tu mano. Eva reconoce su antiguo recuerdo.</p>}<div className={styles.choices}><button onClick={()=>ending("save")}>VOLVER POR EVA <span>✦</span></button><button onClick={()=>ending("escape")}>CORRER HACIA LA SALIDA <span>↗</span></button></div></>}
