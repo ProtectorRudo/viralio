@@ -312,6 +312,7 @@ void main(){
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 uniform float time,emission,threat,bladeFlash,characterRim;
+uniform vec3 eye;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
  float d=distance(vPos,overhead);
