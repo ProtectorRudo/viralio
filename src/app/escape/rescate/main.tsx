@@ -117,6 +117,7 @@ function App(){
   window.setTimeout(()=>sound("step"),3100);
   window.setTimeout(()=>sound("step"),4500);
   window.setTimeout(()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);},10000);
+  window.setTimeout(()=>sound("metal"),12900);
   window.setTimeout(()=>setFigureWarning(false),16500);
   window.setTimeout(()=>setDoorWarning(false),8500);
  // Audio/event is intentionally triggered exactly once.
@@ -133,12 +134,23 @@ function App(){
   utterance.voice=voices.find(v=>v.lang==="es-AR")||voices.find(v=>v.lang.startsWith("es"))||null;
   window.speechSynthesis.speak(utterance);
  }
- function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"){
+ function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"){
   if(muted||!audioRef.current)return;
   const a=audio.current;if(!a)return;
   try{
    if(a.state==="suspended")void a.resume();
    const now=a.currentTime,osc=a.createOscillator(),gain=a.createGain();
+    if(type==="metal"){
+     osc.type="sawtooth";osc.frequency.setValueAtTime(760,now);
+     osc.frequency.exponentialRampToValueAtTime(1360,now+.16);
+     osc.frequency.exponentialRampToValueAtTime(200,now+.68);
+     gain.gain.setValueAtTime(.0001,now);
+     gain.gain.exponentialRampToValueAtTime(.037,now+.045);
+     gain.gain.exponentialRampToValueAtTime(.0001,now+.72);
+     const band=a.createBiquadFilter();band.type="bandpass";band.frequency.value=970;band.Q.value=.75;
+     osc.connect(band);band.connect(gain);gain.connect(a.destination);
+     osc.start(now);osc.stop(now+.74);return;
+    }
     if(type==="door"||type==="step"){
      osc.type=type==="door"?"sawtooth":"sine";
      osc.frequency.setValueAtTime(type==="door"?92:76,now);
