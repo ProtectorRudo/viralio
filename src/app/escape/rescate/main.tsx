@@ -449,9 +449,12 @@ function App(){
    <audio data-testid="rescate-music-audio" ref={musicAudio} src="./audio/suspense.wav" preload="auto" loop
      onPlaying={()=>setMusicPlaying(true)} onPause={()=>setMusicPlaying(false)}
      onError={()=>{setMusicPlaying(false);setToast("MÚSICA NO DISPONIBLE · REINTENTÁ SONIDO");}}/>
-   <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto"
+   <audio data-testid="rescate-tape-audio" ref={tapeAudio} preload="auto"
      onEnded={()=>{setTapeStatus("ended");if(musicAudio.current)musicAudio.current.volume=.65}}
-     onError={()=>setTapeStatus("error")}/>
+     onError={()=>setTapeStatus("error")}>
+     <source src="./audio/mauro-voice.webm" type="audio/webm; codecs=opus"/>
+     <source src="./audio/rescue-message.mp3" type="audio/mpeg"/>
+    </audio>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
     <span className={styles.classified}>CANAL 09 / M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
