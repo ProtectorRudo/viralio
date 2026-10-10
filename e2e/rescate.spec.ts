@@ -118,7 +118,8 @@ test("CASO M · grabadora usa MP3 real y reproduce sonido en Android",async({pag
  await expect(play).toBeVisible();
  await play.click();
  await expect.poll(()=>recording.evaluate(node=>(node as HTMLAudioElement).currentTime),{timeout:10000}).toBeGreaterThan(0);
- await expect(recording).toHaveAttribute("src","./audio/rescue-message.mp3");
+ await expect(recording.locator("source").first()).toHaveAttribute("src","./audio/mauro-voice.webm");
+ await expect.poll(()=>recording.evaluate(el=>(el as HTMLAudioElement).currentSrc),{timeout:9000}).toContain("mauro-voice.webm");
 });
 
 test("CASO M · música cinematográfica real comienza al aceptar misión",async({page})=>{
