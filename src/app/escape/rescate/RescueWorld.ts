@@ -89,10 +89,28 @@ function scene(opened:boolean){
  for(let y=.38;y<2.95;y+=.57)g.box(0,y,4.92,1.94,.032,.067,"#7a7770","door");
  g.box(-.72,1.41,4.87,.17,.12,.16,"#dab880","door");
  g.box(-.64,1.41,4.78,.32,.055,.12,"#a99c85","door");
+ // The corridor stays EMPTY until the 60-second threat sequence.
+ // A held knife appears only after its shadow has crossed the back wall.
  g.box(.32,2.60,6.28,.55,.57,.40,"#15151b","figure");
  g.box(.32,1.72,6.28,.82,1.32,.42,"#12151b","figure");
  for(const x of [-.27,.91])g.box(x,1.65,6.28,.24,1.30,.33,"#18181e","figure");
  for(const x of [.09,.58])g.box(x,.52,6.28,.27,1.12,.35,"#121419","figure");
+ // The right hand grips a dark handle below the arm, blade pointing at floor.
+ g.box(.93,.94,6.028,.13,.29,.16,"#302722","figure");
+ g.box(.93,.79,6.025,.23,.055,.17,"#5e5a50","figure");
+ // Metallic flat of the blade + razor bevel + physically pointed tip.
+ g.box(.94,.54,6.024,.10,.45,.075,"#8e9da7","knife-blade");
+ g.box(.97,.54,5.980,.035,.45,.018,"#e0e7e4","knife-blade");
+ g.add("knife-blade",[.89,.31,5.982],[0,0,-1],"#c5d4da");
+ g.add("knife-blade",[.99,.31,5.982],[0,0,-1],"#c5d4da");
+ g.add("knife-blade",[.94,.14,5.982],[0,0,-1],"#c5d4da");
+ // A separate foreshadowing SHADOW on the corridor wall, shown first.
+ g.box(.98,1.17,6.645,.12,.47,.018,"#251923","knife-shadow");
+ g.box(.98,.86,6.645,.18,.07,.02,"#251923","knife-shadow");
+ g.box(.98,.60,6.645,.095,.46,.018,"#251923","knife-shadow");
+ g.add("knife-shadow",[.93,.37,6.630],[0,0,-1],"#251923");
+ g.add("knife-shadow",[1.03,.37,6.630],[0,0,-1],"#251923");
+ g.add("knife-shadow",[.98,.16,6.630],[0,0,-1],"#251923");
  // Two side fluorescent lamps / grimy fixture.
  for(const z of [-3.2,1.15]){
   g.box(0,4.02,z,1.1,.15,.53,"#a69d82");
@@ -220,7 +238,7 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
-uniform float time,emission,threat;
+uniform float time,emission,threat,bladeFlash;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
  float d=distance(vPos,overhead);
@@ -233,6 +251,8 @@ void main(){
  float fog=clamp((vDistance-5.8)/15.0,0.,.69);
  outColor=mix(outColor,vec3(.028,.037,.050),fog);
  if(emission>.5)outColor+=vColor*vec3(.32,.21,.11);
+ // A single brief cold highlight on the blade; nothing bright before it enters.
+ outColor+=vec3(.72,.86,.96)*bladeFlash;
  gl_FragColor=vec4(pow(outColor,vec3(.9)),1.0);
 }`;
 function compile(gl:WebGLRenderingContext,type:number,code:string){
@@ -265,7 +285,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),uth=uniform("threat");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),uth=uniform("threat"),ublade=uniform("bladeFlash");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -354,17 +374,22 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const elapsed=Math.max(0,(now-intruderStarted)/1000),progress=intruderStarted?Math.min(1,elapsed/4):0;
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
-  gl.uniform1f(ufs,intruderStarted?Math.max(0,Math.min(1.38,(elapsed-3)*.21)):0);
+  // Door first; shadow at 00:55, intruder at ~00:50, blade glint at ~00:47.
+  gl.uniform1f(ufs,intruderStarted?Math.max(0,Math.min(1.38,(elapsed-7)*.23)):0);
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){
+   const figurePart=m.id==="figure"||m.id==="knife-blade";
+   if(figurePart&&(!intruderStarted||elapsed<9))continue;
+   if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,stride*4,0);
    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"?1:0);
-   gl.uniform1f(ufg,m.id==="figure"?1:0);
+   gl.uniform1f(ufg,m.id==="figure"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?Math.max(0,1-Math.abs(elapsed-13)/1.15)*.90:0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
    gl.uniform2f(upiv,3.73,2.14);
