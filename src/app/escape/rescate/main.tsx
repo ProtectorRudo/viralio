@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useRef,useState,type PointerEvent as ReactPointerEvent} from "react";
 import {createRoot} from "react-dom/client";
-import {createWorld,type Target,type ClueId,type World} from "./RescueWorld";
+import {createWorld,TARGETS,type Target,type ClueId,type World} from "./RescueWorld";
 import styles from "./Rescue.module.css";
 
 type Screen="intro"|"game"|"final";
@@ -49,19 +49,20 @@ function App(){
  const world=useRef<World|null>(null),canvas=useRef<HTMLCanvasElement|null>(null),activeRef=useRef<Target|null>(null);
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
  const pointer=useRef<{id:number;x:number;y:number;originX:number;originY:number;dragged:boolean}|null>(null),buttons=useRef(new Set<string>());
- const lastCanvasTap=useRef(0),raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),droneGain=useRef<GainNode|null>(null),audioRef=useRef(false);
- const tapeAudio=useRef<HTMLAudioElement|null>(null);
+ const lastCanvasTap=useRef(0),raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),audioRef=useRef(false);
+ const tapeAudio=useRef<HTMLAudioElement|null>(null),musicAudio=useRef<HTMLAudioElement|null>(null);
+ const [musicPlaying,setMusicPlaying]=useState(false);
  const [tapeStatus,setTapeStatus]=useState<"idle"|"playing"|"ended"|"error">("idle");
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]);
- const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"LUGAR A CONFIRMAR"});
+ const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
  useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
-  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"LUGAR A CONFIRMAR").slice(0,125)};
+  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
  },[]);
  useEffect(()=>{
   if(screen!=="game"||expired||overlay==="letter"||drawerOpen)return;
@@ -127,27 +128,6 @@ function App(){
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
- // A recurring suspense motif makes the score musical, not just a low hum.
- useEffect(()=>{
-  if(screen!=="game"||muted)return;
-  let bar=0;
-  const motif=()=>{
-   const a=audio.current,bus=droneGain.current;if(!a||!bus||a.state==="closed")return;
-   const tense=seconds<=60,notes=tense?[233.1,246.9,311.1,220]:[164.8,174.6,233.1,146.8];
-   const t=a.currentTime,root=notes[bar++%notes.length];
-   for(const [i,f] of [root,root*1.414].entries()){
-    const o=a.createOscillator(),g=a.createGain();o.type=i?"sine":"triangle";
-    o.frequency.setValueAtTime(f,t+i*.12);
-    o.frequency.linearRampToValueAtTime(f*1.012,t+3+i*.12);
-    g.gain.setValueAtTime(.0001,t+i*.12);
-    g.gain.linearRampToValueAtTime(tense?.16:.10,t+.6+i*.12);
-    g.gain.exponentialRampToValueAtTime(.0001,t+5.2+i*.12);
-    o.connect(g);g.connect(bus);o.start(t+i*.12);o.stop(t+5.3+i*.12);
-   }
-  };
-  motif();const id=window.setInterval(motif,6700);return()=>window.clearInterval(id);
- // eslint-disable-next-line react-hooks/exhaustive-deps
- },[screen,muted,seconds<=60]);
  function fallbackVoice(){
   if(!("speechSynthesis" in window)){setTapeStatus("error");setToast("LA GRABACIÓN NO ESTÁ DISPONIBLE. LEÉ LA TRANSCRIPCIÓN.");return;}
   const synth=window.speechSynthesis;
@@ -168,7 +148,7 @@ function App(){
   if(!player||player.error){fallbackVoice();return;}
   player.pause();player.currentTime=0;player.volume=1;
   void player.play().then(()=>{setTapeStatus("playing");
-   if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(.10,audio.current.currentTime,.14);
+   if(musicAudio.current)musicAudio.current.volume=.22;
   }).catch(()=>fallbackVoice());
  }
  function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"){
@@ -212,25 +192,27 @@ function App(){
   if(screen!=="intro")return;
   try{
    const ctx=new AudioContext();audio.current=ctx;audioRef.current=true;void ctx.resume();
-   const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sawtooth";oscillator.frequency.value=110;
-   const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=840;
-   gain.gain.value=muted?0:.38;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
-   drone.current=oscillator;droneGain.current=gain;
-   // Three detuned suspense tones create a continuous, low-volume cinematic bed.
-   const layerA=ctx.createOscillator(),layerB=ctx.createOscillator(),layerC=ctx.createOscillator();
-   layerA.type="sine";layerA.frequency.value=63;
-   layerB.type="triangle";layerB.frequency.value=95.6;
-   layerC.type="sine";layerC.frequency.value=127.4;
-   const mix=ctx.createGain();mix.gain.value=.24;
-   for(const o of [layerA,layerB,layerC]){o.connect(mix);o.start();}
-   mix.connect(filter);ambientOsc.current=[layerA,layerB,layerC];
-   const tremolo=ctx.createOscillator(),depth=ctx.createGain();
-   tremolo.type="sine";tremolo.frequency.value=.24;depth.gain.value=34;
-   tremolo.connect(depth);depth.connect(filter.frequency);tremolo.start();ambientOsc.current.push(tremolo);
-  }catch{/* Game still works silently */}
-  sound("start");setScreen("game");
+  }catch{/* Audio effects are optional; music still plays */}
+  // Real soundtrack must not depend on AudioContext support.
+  const recording=musicAudio.current;
+  if(recording){
+   recording.volume=.65;
+   void recording.play().then(()=>setMusicPlaying(true)).catch(()=>{
+    setMusicPlaying(false);setToast("TOCÁ «ACTIVAR MÚSICA» PARA ESCUCHAR LA BANDA SONORA");
+   });
+  }
+  setScreen("game");
  }
- function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.38;if(!v){window.speechSynthesis?.cancel();tapeAudio.current?.pause();}return !v});}
+ function toggleMute(){
+  const player=musicAudio.current;
+  if(!muted&&!musicPlaying){
+   if(player)void player.play().then(()=>setMusicPlaying(true)).catch(()=>setToast("VOLVÉ A TOCAR PARA ACTIVAR EL AUDIO"));
+   return;
+  }
+  const next=!muted;setMuted(next);
+  if(next){player?.pause();tapeAudio.current?.pause();window.speechSynthesis?.cancel();setMusicPlaying(false);}
+  else if(player){player.volume=.65;void player.play().then(()=>setMusicPlaying(true)).catch(()=>setToast("VOLVÉ A TOCAR PARA ACTIVAR EL AUDIO"));}
+ }
  function viewDown(e:ReactPointerEvent<HTMLCanvasElement>){
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,dragged:false};e.currentTarget.setPointerCapture(e.pointerId);
@@ -283,7 +265,7 @@ function App(){
   setOverlay(t.id==="drawer"?"lock":t.id==="envelope"?"letter":"inspect");
   setShowNear(false);sound("click");
  }
- function closeInspect(){tapeAudio.current?.pause();window.speechSynthesis?.cancel();if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.2);setTapeStatus("idle");setOverlay("none");setFocus(null);setWrong(false);}
+ function closeInspect(){tapeAudio.current?.pause();window.speechSynthesis?.cancel();if(musicAudio.current)musicAudio.current.volume=.65;setTapeStatus("idle");setOverlay("none");setFocus(null);setWrong(false);}
  function touchObject(){
   const obj=world.current?.aim()||active;
   if(obj)examine(obj);
@@ -332,24 +314,18 @@ function App(){
  function unlock(){
   if(digits.join("")!==CODE){setWrong(true);sound("wrong");setToast("CLAVE INCORRECTA · REVISÁ LAS PISTAS");navigator.vibrate?.([50,70,50]);return;}
   setWrong(false);setDrawerOpen(true);flags.current.unlocked=true;world.current?.setFlags({...flags.current});
-  sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();setToast("¡EL CANDADO SE ABRIÓ! Acercate al cajón y tomá el sobre.");
+  sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();
+  const envelopeTarget=TARGETS.find(t=>t.id==="envelope");if(envelopeTarget)world.current?.lookAt(envelopeTarget);
+  setToast("¡ABRISTE EL CAJÓN! EL SOBRE ESTÁ FRENTE A VOS.");
  }
  function envelope(){
   setOpenedLetter(true);sound("clue");
  }
- function finish(){for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
+ function finish(){musicAudio.current?.pause();for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
  function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
- const HINTS=[
-  "Hay una fotografía vieja en la pared. ¿Qué habrá escrito alguien del otro lado?",
-  "La etiqueta del grabador tiene un número: puede representar un mes.",
-  "En el informe figura el año. El candado usa solamente sus últimas dos cifras.",
-  "XIII es trece en números romanos. Ordená los indicios como día, mes y año.",
-  "Hay un reloj en la pared. Activá sus agujas para conocer la hora del encuentro."
- ];
+ const HINTS=["Las tres pruebas están en objetos distintos. La fotografía parece ocultar algo más en su reverso."];
  function hint(){
-  setHintOpen(true);
-  setHintLevel(v=>Math.min(HINTS.length,v+1));
-  sound("click");
+  setHintOpen(true);setHintLevel(1);sound("click");
  }
  function shareMessage(){
   const {fecha,hora,lugar}=config.current;
@@ -361,8 +337,11 @@ function App(){
  }
  const canContinue=seen.length===3;
  return <main className={styles.app} data-stage={screen} data-testid="rescate-mauro-app">
+   <audio data-testid="rescate-music-audio" ref={musicAudio} src="./audio/suspense.wav" preload="auto" loop
+     onPlaying={()=>setMusicPlaying(true)} onPause={()=>setMusicPlaying(false)}
+     onError={()=>{setMusicPlaying(false);setToast("MÚSICA NO DISPONIBLE · REINTENTÁ SONIDO");}}/>
    <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto"
-     onEnded={()=>{setTapeStatus("ended");if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.18)}}
+     onEnded={()=>{setTapeStatus("ended");if(musicAudio.current)musicAudio.current.volume=.65}}
      onError={()=>setTapeStatus("error")}/>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
@@ -391,8 +370,8 @@ function App(){
     </header>
     <div className={styles.topHints}>
       <span>PRUEBAS {seen.length}/3</span>
-      <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ RECIBIR UNA PISTA</button>
-      <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":"SONIDO ON"}</button>
+      <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ {hintLevel?"VER MI PISTA":"RECIBIR UNA PISTA"}</button>
+      <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":musicPlaying?"MÚSICA ON":"ACTIVAR MÚSICA"}</button>
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
     {!available&&!error&&<div className={styles.load}>INICIANDO RECONSTRUCCIÓN TRIDIMENSIONAL...</div>}
@@ -402,6 +381,9 @@ function App(){
       {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
     </div>
+    {drawerOpen&&overlay==="none"&&<button type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
+       <span className={styles.beaconArrow}>↙</span><strong>¡AHÍ ESTÁ EL SOBRE!</strong><small>TOCÁ PARA ABRIRLO</small>
+     </button>}
     <div className={styles.controlBar}>
       <div className={styles.joyColumn}>
        <div ref={joyBox} className={styles.joy} onPointerDown={joyStart} onPointerMove={joyMove} onPointerUp={joyEnd} onPointerCancel={joyEnd} onLostPointerCapture={()=>{joyId.current=null;joystick.current={x:0,y:0}}} data-testid="rescate-joystick" aria-label="Joystick para caminar">
@@ -418,9 +400,8 @@ function App(){
      {near.length?near.map(t=><button key={t.id} onClick={()=>examine(t)}>{t.label} <span>↗</span></button>):<p>Caminá más cerca de los muebles.</p>}
     </div>}
     {hintOpen&&<aside className={styles.hintPanel} data-testid="rescate-hint-panel" aria-label="Pista de la misión">
-      <div className={styles.hintHead}><span>AYUDA CONFIDENCIAL · PISTA {hintLevel}/{HINTS.length}</span><button type="button" aria-label="Cerrar pista" onClick={()=>setHintOpen(false)}>✕</button></div>
+      <div className={styles.hintHead}><span>AYUDA CONFIDENCIAL · PISTA ÚNICA</span><button type="button" aria-label="Cerrar pista" onClick={()=>setHintOpen(false)}>✕</button></div>
       <p>{HINTS[Math.max(0,hintLevel-1)]}</p>
-      {hintLevel<HINTS.length&&<button type="button" className={styles.nextHint} onClick={hint}>PEDIR OTRA PISTA →</button>}
     </aside>}
     {toast&&<div className={styles.toast} role="status" onClick={()=>setToast("")}>{toast} <button type="button" aria-label="Cerrar aviso" onClick={()=>setToast("")}>✕</button></div>}
     {overlay==="inspect"&&focus&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label={"Examinar "+focus.label}><div className={styles.inspectCard}>
@@ -485,7 +466,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;

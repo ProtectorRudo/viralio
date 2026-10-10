@@ -128,13 +128,25 @@ function scene(opened:boolean){
  // Tall hooded intruder: sculpted shoulders, face recess, clothing folds
  // and staggered legs, all shaded as a true 3-D volume rather than Minecraft blocks.
  g.ellipsoid(.32,2.58,6.28,.315,.37,.295,"#111821");
- g.ellipsoid(.32,2.55,6.00,.235,.29,.075,"#05070c"); // face remains unreadable
+ g.ellipsoid(.32,2.55,6.00,.235,.29,.075,"#080d12"); // under the hood
+ g.ellipsoid(.32,2.56,5.912,.194,.255,.068,"#bdb0a0"); // theatrical weathered mask
+ g.ellipsoid(.228,2.61,5.842,.062,.045,.021,"#0a0d11"); // sunken dark eyes
+ g.ellipsoid(.413,2.61,5.842,.062,.045,.021,"#0a0d11");
+ g.ellipsoid(.32,2.475,5.836,.070,.024,.015,"#303037"); // silent mouth
+ g.box(.32,2.445,5.827,.015,.073,.013,"#6d574d"); // cracked surface
+
  g.ellipsoid(.30,2.94,6.31,.33,.14,.27,"#222b32"); // folded hood rim
  g.ellipsoid(.32,2.07,6.29,.61,.29,.36,"#1a2028"); // broad, soft shoulders
  g.limb([.32,2.12,6.28],[.32,1.25,6.28],.47,.35,"#171d25"); // tailored coat
  g.limb([.32,1.31,6.28],[.32,.90,6.28],.39,.52,"#111821"); // coat flare
  g.ellipsoid(.32,1.24,6.27,.48,.18,.30,"#25272a"); // belt/fold
  g.limb([.27,2.36,6.02],[.32,1.21,6.01],.063,.10,"#384048"); // coat lapel
+ g.limb([.05,2.30,5.97],[.24,1.14,5.98],.034,.025,"#4a4d4e"); // first coat seam
+ g.limb([.57,2.30,5.97],[.42,1.14,5.98],.034,.025,"#4a4d4e"); // second seam
+ for(const y of [1.88,1.61,1.34])g.ellipsoid(.32,y,5.933,.035,.031,.022,"#a19486"); // coat buttons
+ g.box(.06,1.35,5.961,.29,.035,.021,"#41464a");
+ g.box(.56,1.35,5.961,.29,.035,.021,"#41464a");
+
  g.limb([-.26,2.12,6.29],[-.39,1.58,6.23],.24,.195,"#171d25"); // left sleeve
  g.limb([-.39,1.58,6.23],[-.32,1.06,6.12],.195,.13,"#1a1c22");
  g.ellipsoid(-.32,1.06,6.10,.14,.15,.12,"#26272a"); // gloved hand
@@ -264,8 +276,9 @@ function scene(opened:boolean){
  return g;
 }
 const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;
-uniform vec3 eye,right,up,forward;
-uniform float ratio,clockAngle,doorAngle,figureStep;
+uniform mediump vec3 eye;
+uniform vec3 right,up,forward;
+uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
 uniform vec2 doorPivot;
 uniform float doorGroup,figureGroup;
 uniform vec2 clockPivot;
@@ -278,7 +291,20 @@ void main(){
   float da=sin(doorAngle),dc=cos(doorAngle);
   w.xz=doorPivot+vec2((p.x-doorPivot.x)*dc+(p.z-doorPivot.y)*da,-(p.x-doorPivot.x)*da+(p.z-doorPivot.y)*dc);
  }
- if(figureGroup>.5)w.z-=figureStep;
+ if(figureGroup>.5){
+   float walking=smoothstep(.15,.95,figureStep);
+   float phase=figureMarch;
+   float leg=step(.33,p.x);
+   float stride=sin(phase+leg*3.14159265);
+   if(w.y<1.17){
+     w.z+=.20*stride*walking;
+     w.y+=.056*max(0.,stride)*walking;
+   }else{
+     w.y+=.025*abs(sin(phase))*walking;
+   }
+   w.z-=figureStep;
+   w.x+=figureAim*walking+.035*sin(phase*.5)*walking;
+ }
  vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
@@ -287,6 +313,7 @@ void main(){
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 uniform float time,emission,threat,bladeFlash,characterRim;
+uniform mediump vec3 eye;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
  float d=distance(vPos,overhead);
@@ -301,7 +328,8 @@ void main(){
  if(emission>.5)outColor+=vColor*vec3(.32,.21,.11);
  // Side/back light separates coat and face from the doorway without revealing
  // the identity of the figure.
- outColor+=characterRim*vec3(.14,.16,.20)*(1.0+.5*sin(time*2.1));
+ float rim=pow(1.0-abs(dot(normalize(vNorm),normalize(eye-vPos))),2.2);
+ outColor+=characterRim*vec3(.10,.19,.24)*(.13+rim*1.7)*(1.0+.17*sin(time*2.1));
  // A single brief cold highlight on the blade; nothing bright before it enters.
  outColor+=vec3(.72,.86,.96)*bladeFlash;
  gl_FragColor=vec4(pow(outColor,vec3(.9)),1.0);
@@ -336,7 +364,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -426,7 +454,11 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
   // Door first; shadow at 00:55, intruder at ~00:50, blade glint at ~00:47.
-  gl.uniform1f(ufs,intruderStarted?Math.max(0,Math.min(1.38,(elapsed-7)*.23)):0);
+  const approachLimit=Math.max(.5,Math.min(4.3,6.28-pose.z-1.65));
+  const approach=intruderStarted?Math.max(0,Math.min(approachLimit,(elapsed-9)*.14)):0;
+  gl.uniform1f(ufs,approach);
+  gl.uniform1f(ufmarch,Math.max(0,elapsed-9)*5.2);
+  gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){

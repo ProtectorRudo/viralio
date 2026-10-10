@@ -432,3 +432,22 @@
 @media(prefers-reduced-motion:reduce){.knifeAlert{animation:none}}
 
 .tapeStatus{display:block;margin-top:11px!important;letter-spacing:.08em;font-size:.59rem!important;color:#d9c7a2!important}
+
+/* The final evidence is an action, not an easily missed 3D scrap. */
+.envelopeBeacon{position:absolute;z-index:12;top:47%;left:50%;transform:translate(-50%,-50%);
+ display:flex;flex-direction:column;align-items:center;gap:5px;
+ width:min(330px,calc(100vw - 46px));min-height:77px;
+ padding:13px 15px 12px;color:#2d241c;background:linear-gradient(128deg,#ffe6b4,#d6a96c);
+ border:2px solid #fff0ca;border-radius:9px;box-shadow:0 8px 45px #000e,0 0 45px #ffc46f82;
+ text-align:center;cursor:pointer;animation:envelopePulse 2.1s ease-in-out infinite}
+.envelopeBeacon:after{content:"";position:absolute;left:50%;bottom:-28px;
+ border-left:17px solid transparent;border-right:17px solid transparent;
+ border-top:27px solid #d6a96c;transform:translateX(-50%);filter:drop-shadow(0 5px 5px #0007)}
+.envelopeBeacon strong{font:900 clamp(.80rem,3.9vw,1.10rem)/1.2 Arial,sans-serif;letter-spacing:.04em}
+.envelopeBeacon small{font:800 .58rem ui-monospace,monospace;letter-spacing:.12em}
+.beaconArrow{font-size:1.4rem;line-height:.85;transform:rotate(-35deg);color:#7e4228}
+.envelopeBeacon:active{transform:translate(-50%,-50%) scale(.97)}
+@keyframes envelopePulse{50%{box-shadow:0 8px 49px #000d,0 0 75px #ffd18dc4;
+ border-color:#fff9e7}}
+@media(max-width:670px){.envelopeBeacon{top:48%;max-width:78vw;padding:11px 13px}}
+@media(prefers-reduced-motion:reduce){.envelopeBeacon{animation:none}}

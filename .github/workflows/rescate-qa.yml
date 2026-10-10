@@ -47,6 +47,7 @@ jobs:
           test -s showcase/rescate-mauro/app.js
           test -s showcase/rescate-mauro/app.css
           test -s showcase/rescate-mauro/audio/rescue-message.mp3
+          test -s showcase/rescate-mauro/audio/suspense.wav
           node --check showcase/rescate-mauro/app.js
       - name: Install browser
         run: npx playwright install --with-deps chromium

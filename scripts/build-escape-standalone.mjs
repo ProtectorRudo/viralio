@@ -77,6 +77,10 @@ await build({
 // unreliable speechSynthesis. Prefer an expressive Argentine Spanish voice,
 // fall back to offline Latin-American Spanish if neural TTS is unavailable.
 const audioDir=join(rescueOutput,"audio");mkdirSync(audioDir,{recursive:true});
+// Real cinematic score; mobile Safari / Chrome play PCM WAV reliably.
+const {writeSuspenseSoundtrack}=await import("./generate-caso-m-soundtrack.mjs");
+const soundtrack=writeSuspenseSoundtrack(join(audioDir,"suspense.wav"));
+console.log("CASO M music:",soundtrack.seconds,"seconds,",soundtrack.bytes,"bytes");
 const voiceFile=join(audioDir,"rescue-message.mp3");
 if(!existsSync(voiceFile)){
  try{
