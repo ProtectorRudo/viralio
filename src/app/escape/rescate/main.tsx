@@ -10,9 +10,9 @@ type Ev="calendar"|"cassette"|"memo";
 type Config={fecha:string;hora:string;lugar:string};
 const CODE="131026";
 const EVIDENCE:Record<Ev,{title:string;value:string;body:string}>={
- calendar:{title:"El calendario",value:"13",body:"Alguien rodeó con tinta el día TRECE. El resto de los días fue tachado."},
- cassette:{title:"Cinta recuperada",value:"10",body:"Una voz distorsionada repite: «El mes de octubre. El décimo mes. No lo olvides»."},
- memo:{title:"Documento de operación",value:"2026",body:"Informe fechado en 2026. La orden subrayada dice: «DÍA → MES → AÑO (dos últimas cifras)». La combinación tiene seis posiciones."},
+ calendar:{title:"El calendario",value:"13",body:"Una fecha fue encerrada con tinta roja. El resto de los días está manchado y tachado."},
+ cassette:{title:"Cinta recuperada",value:"10",body:"La etiqueta de la cinta tiene escrito «10». El audio advierte que alguien está por regresar."},
+ memo:{title:"Documento de operación",value:"2026",body:"Informe confidencial de la operación fechado en 2026. Una nota advierte que solo importan las dos últimas cifras del año."},
 };
 const DESCRIPTIONS:Record<ClueId,string>={
  calendar:"Un calendario de octubre, casi completamente destruido. Una fecha está encerrada en rojo.",
@@ -47,10 +47,12 @@ function App(){
  const overlayState=useRef<Overlay>("none"),expiredState=useRef(false);
  const world=useRef<World|null>(null),canvas=useRef<HTMLCanvasElement|null>(null),activeRef=useRef<Target|null>(null);
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
- const pointer=useRef<{id:number;x:number;y:number}|null>(null),buttons=useRef(new Set<string>());
+ const pointer=useRef<{id:number;x:number;y:number;originX:number;originY:number;dragged:boolean}|null>(null),buttons=useRef(new Set<string>());
  const raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),droneGain=useRef<GainNode|null>(null),audioRef=useRef(false);
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
- const flags=useRef({unlocked:false,clockActivated:false});
+ const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
+ const [doorWarning,setDoorWarning]=useState(false);
+ const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"LUGAR A CONFIRMAR"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
  useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);},[]);
@@ -134,14 +136,19 @@ function App(){
  function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.012;return !v});}
  function viewDown(e:ReactPointerEvent<HTMLCanvasElement>){
   if(e.pointerType==="mouse"&&e.button!==0)return;
-  pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY};e.currentTarget.setPointerCapture(e.pointerId);
+  pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,dragged:false};e.currentTarget.setPointerCapture(e.pointerId);
  }
  function viewMove(e:ReactPointerEvent<HTMLCanvasElement>){
   const p=pointer.current;if(p?.id!==e.pointerId||overlay!=="none")return;
-  world.current?.look(e.clientX-p.x,e.clientY-p.y);pointer.current={...p,x:e.clientX,y:e.clientY};
+  world.current?.look(e.clientX-p.x,e.clientY-p.y);pointer.current={...p,x:e.clientX,y:e.clientY,dragged:p.dragged||Math.hypot(e.clientX-p.originX,e.clientY-p.originY)>11};
  }
  function viewUp(e:ReactPointerEvent<HTMLCanvasElement>){
-  if(pointer.current?.id!==e.pointerId)return;pointer.current=null;
+  const gesture=pointer.current;if(gesture?.id!==e.pointerId)return;pointer.current=null;
+  if(!gesture.dragged&&overlayState.current==="none"&&!expiredState.current){
+   const rect=e.currentTarget.getBoundingClientRect();
+   const hit=world.current?.pick(e.clientX-rect.left,e.clientY-rect.top,rect.width,rect.height);
+   if(hit)examine(hit);
+  }
   if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
  }
  function joyStart(e:ReactPointerEvent<HTMLDivElement>){if(joyId.current!==null)return;
@@ -163,6 +170,7 @@ function App(){
  }
  function examine(t:Target){
   if(t.id==="envelope"&&!drawerOpen)return;
+  if(t.id==="cassette")playTape();
   setFocus(t);
   setOverlay(t.id==="drawer"?"lock":t.id==="envelope"?"letter":"inspect");
   setShowNear(false);sound("click");
@@ -246,13 +254,13 @@ function App(){
  const canContinue=seen.length===3;
  return <main className={styles.app} data-stage={screen} data-testid="rescate-mauro-app">
   {screen==="intro"&&<section className={styles.intro}>
-    <div className={styles.noise}/>
+    <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
     <span className={styles.classified}>EXPEDIENTE M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
     <span className={styles.radar} aria-hidden="true"><i/><i/><i/></span>
     <div className={styles.introText}>
       <span className={styles.red}>◉ PRIORIDAD MÁXIMA · MISIÓN FICTICIA</span>
       <h1>SECUESTRARON<br/><em>A MAURO.</em></h1>
-      <p>Una última señal. Una habitación cerrada. Tres minutos para encontrar las pistas y descubrir dónde lo tienen.</p>
+      <p>Una habitación abandonada. Un mensaje de auxilio. Tenés tres minutos antes de que regresen.</p>
       <div className={styles.introCard}><span>ÚLTIMO MENSAJE RECIBIDO</span><p>«Si querés saber dónde está Mauro... abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p></div>
       <div className={styles.introTimer}>03<span>:</span>00 <small>PARA RESOLVER EL CASO</small></div>
       <button type="button" className={styles.start} onClick={start}>ACEPTAR MISIÓN <span>↗</span></button>
@@ -263,6 +271,8 @@ function App(){
   {screen==="game"&&<>
     <canvas ref={canvas} className={styles.canvas} data-testid="rescate-webgl" onPointerDown={viewDown} onPointerMove={viewMove} onPointerUp={viewUp} onPointerCancel={viewUp} onLostPointerCapture={()=>{pointer.current=null}} aria-label="Habitación 3D: deslizá para mirar"/>
     <div className={styles.film} aria-hidden="true"/>
+    <div className={styles.threatVignette} data-threat={flags.current.intruder?"yes":"no"} aria-hidden="true"/>
+    {doorWarning&&<div className={styles.doorAlert} data-testid="rescate-intruder-alert" role="alert"><span>¡ESCUCHASTE ESO!</span><strong>ALGUIEN ESTÁ ABRIENDO LA PUERTA.</strong><small>NO TE DETENGAS · QUEDA 1 MINUTO</small></div>}
     <header className={styles.hud}>
       <div className={styles.hudTitle}><span>CASO 013 · OPERACIÓN RESCATE</span><strong>¿DÓNDE ESTÁ MAURO?</strong></div>
       <div className={styles.countdown} data-critical={seconds<=35?"yes":"no"} data-testid="rescate-timer"><small>TIEMPO RESTANTE</small><strong>{fmtTime(seconds)}</strong></div>
@@ -276,8 +286,9 @@ function App(){
     {!available&&!error&&<div className={styles.load}>INICIANDO RECONSTRUCCIÓN TRIDIMENSIONAL...</div>}
     <div className={styles.reticle} data-has-target={active?"yes":"no"}><span>+</span></div>
     {active&&overlay==="none"&&<div className={styles.target}><span>OBJETO DETECTADO</span><strong>{active.label}</strong></div>}
-    <div className={styles.objectives}><span>PRUEBAS RECUPERADAS</span>
-      {(["calendar","cassette","memo"] as Ev[]).map(k=><div key={k} data-found={seen.includes(k)?"yes":"no"}>{seen.includes(k)?"◆":"◇"} <span>{seen.includes(k)?EVIDENCE[k].title+" · "+EVIDENCE[k].value:"EVIDENCIA POR ENCONTRAR"}</span></div>)}
+    <div className={styles.objectives}><span>EXPEDIENTE · INDICIOS RECUPERADOS</span>
+      {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
+      {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
     </div>
     <div className={styles.controlBar}>
       <div className={styles.joyColumn}>
@@ -288,7 +299,7 @@ function App(){
       <div className={styles.actions}>
        <button className={styles.actionButton} type="button" onClick={touchObject}>◎ EXAMINAR</button>
        <button className={styles.scanButton} type="button" onClick={()=>{setNear(world.current?.nearby()||[]);setShowNear(x=>!x)}} aria-expanded={showNear}>⌕ EXPLORAR ALREDEDOR</button>
-       <span>DESLIZÁ PARA MIRAR</span>
+       <span>TOCÁ UN OBJETO O DESLIZÁ PARA MIRAR</span>
       </div>
     </div>
     {showNear&&<div className={styles.nearby} data-testid="rescate-nearby"><div>OBJETOS A TU ALCANCE <button onClick={()=>setShowNear(false)} aria-label="Cerrar objetos cercanos">✕</button></div>
@@ -310,13 +321,15 @@ function App(){
        <p>{clockState==="idle"?"Pulsá el mecanismo para que las agujas recuperen su última posición.":clockState==="running"?"Las agujas giran cada vez más rápido...":"SEÑAL RECUPERADA · 17:00 HS"}</p>
        <button type="button" className={styles.clockStart} onClick={activateClock} disabled={clockState!=="idle"}>{clockState==="idle"?"⟳ ACTIVAR Y GIRAR LAS AGUJAS":clockState==="running"?"GIRANDO...":"✓ DETENIDO EN 17:00"}</button>
       </div>}
+      {focus.id==="calendar"&&<div className={styles.paperCalendar} data-testid="rescate-calendar-paper"><div className={styles.calendarMonth}>OCTUBRE <b>2026</b></div><div className={styles.calendarGrid}>{["L","M","M","J","V","S","D",...Array.from({length:3},()=>""),...Array.from({length:31},(_,i)=>String(i+1))].map((day,i)=><span key={i} data-day={day==="13"?"marked":"normal"}>{day}</span>)}</div><small>UNA FECHA FUE MARCADA CON TINTA ROJA</small></div>}
+      {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>VOZ PROVISIONAL · PENDIENTE DE GRABACIÓN ORIGINAL</small><button type="button" onClick={playTape}>▶ REPRODUCIR LA GRABACIÓN</button></div>}
       {focus.id in EVIDENCE?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
       {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate}>{focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>
     </div></div>}
     {overlay==="lock"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Candado de seis cifras"><div className={styles.lockCard}>
       <span className={styles.lockSerial}>CAJÓN N.º 013 · CERRADURA MECÁNICA</span>
-      <h2>SEIS CIFRAS.</h2><p>El candado pide una fecha completa: día, mes y año. Girá las ruedas con el dedo.</p>
+      <h2>SEIS CIFRAS.</h2><p>Las seis ruedas esconden una combinación. Buscá patrones entre los indicios y girá con el dedo.</p>
       <div className={styles.dials} data-testid="rescate-lock">
        {digits.map((d,i)=><div key={i} className={styles.dial} onPointerDown={e=>dialStart(e,i)} onPointerMove={dialMove} onPointerUp={dialEnd} onPointerCancel={dialEnd} onLostPointerCapture={()=>{dialDrag.current=null}}>
         <button type="button" aria-label={"Subir cifra "+(i+1)} onClick={()=>wheel(i,1)}>⌃</button>
@@ -355,7 +368,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
