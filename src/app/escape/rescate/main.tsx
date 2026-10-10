@@ -56,12 +56,12 @@ function App(){
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]);
- const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"LUGAR A CONFIRMAR"});
+ const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
  useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
-  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"LUGAR A CONFIRMAR").slice(0,125)};
+  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
  },[]);
  useEffect(()=>{
   if(screen!=="game"||expired||overlay==="letter"||drawerOpen)return;
@@ -332,24 +332,18 @@ function App(){
  function unlock(){
   if(digits.join("")!==CODE){setWrong(true);sound("wrong");setToast("CLAVE INCORRECTA · REVISÁ LAS PISTAS");navigator.vibrate?.([50,70,50]);return;}
   setWrong(false);setDrawerOpen(true);flags.current.unlocked=true;world.current?.setFlags({...flags.current});
-  sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();setToast("¡EL CANDADO SE ABRIÓ! Acercate al cajón y tomá el sobre.");
+  sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();
+  const envelopeTarget=TARGETS.find(t=>t.id==="envelope");if(envelopeTarget)world.current?.lookAt(envelopeTarget);
+  setToast("¡ABRISTE EL CAJÓN! EL SOBRE ESTÁ FRENTE A VOS.");
  }
  function envelope(){
   setOpenedLetter(true);sound("clue");
  }
  function finish(){for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
  function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
- const HINTS=[
-  "Hay una fotografía vieja en la pared. ¿Qué habrá escrito alguien del otro lado?",
-  "La etiqueta del grabador tiene un número: puede representar un mes.",
-  "En el informe figura el año. El candado usa solamente sus últimas dos cifras.",
-  "XIII es trece en números romanos. Ordená los indicios como día, mes y año.",
-  "Hay un reloj en la pared. Activá sus agujas para conocer la hora del encuentro."
- ];
+ const HINTS=["Las tres pruebas están en objetos distintos. La fotografía parece ocultar algo más en su reverso."];
  function hint(){
-  setHintOpen(true);
-  setHintLevel(v=>Math.min(HINTS.length,v+1));
-  sound("click");
+  setHintOpen(true);setHintLevel(1);sound("click");
  }
  function shareMessage(){
   const {fecha,hora,lugar}=config.current;
@@ -391,7 +385,7 @@ function App(){
     </header>
     <div className={styles.topHints}>
       <span>PRUEBAS {seen.length}/3</span>
-      <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ RECIBIR UNA PISTA</button>
+      <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ {hintLevel?"VER MI PISTA":"RECIBIR UNA PISTA"}</button>
       <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":"SONIDO ON"}</button>
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
@@ -402,6 +396,9 @@ function App(){
       {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
     </div>
+    {drawerOpen&&overlay==="none"&&<button type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
+       <span className={styles.beaconArrow}>↙</span><strong>¡AHÍ ESTÁ EL SOBRE!</strong><small>TOCÁ PARA ABRIRLO</small>
+     </button>}
     <div className={styles.controlBar}>
       <div className={styles.joyColumn}>
        <div ref={joyBox} className={styles.joy} onPointerDown={joyStart} onPointerMove={joyMove} onPointerUp={joyEnd} onPointerCancel={joyEnd} onLostPointerCapture={()=>{joyId.current=null;joystick.current={x:0,y:0}}} data-testid="rescate-joystick" aria-label="Joystick para caminar">
@@ -418,9 +415,8 @@ function App(){
      {near.length?near.map(t=><button key={t.id} onClick={()=>examine(t)}>{t.label} <span>↗</span></button>):<p>Caminá más cerca de los muebles.</p>}
     </div>}
     {hintOpen&&<aside className={styles.hintPanel} data-testid="rescate-hint-panel" aria-label="Pista de la misión">
-      <div className={styles.hintHead}><span>AYUDA CONFIDENCIAL · PISTA {hintLevel}/{HINTS.length}</span><button type="button" aria-label="Cerrar pista" onClick={()=>setHintOpen(false)}>✕</button></div>
+      <div className={styles.hintHead}><span>AYUDA CONFIDENCIAL · PISTA ÚNICA</span><button type="button" aria-label="Cerrar pista" onClick={()=>setHintOpen(false)}>✕</button></div>
       <p>{HINTS[Math.max(0,hintLevel-1)]}</p>
-      {hintLevel<HINTS.length&&<button type="button" className={styles.nextHint} onClick={hint}>PEDIR OTRA PISTA →</button>}
     </aside>}
     {toast&&<div className={styles.toast} role="status" onClick={()=>setToast("")}>{toast} <button type="button" aria-label="Cerrar aviso" onClick={()=>setToast("")}>✕</button></div>}
     {overlay==="inspect"&&focus&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label={"Examinar "+focus.label}><div className={styles.inspectCard}>
