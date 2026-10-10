@@ -607,7 +607,7 @@
   .timer,.timerDanger{min-width:67px}
   .timer small,.timerDanger small{font-size:.45rem;letter-spacing:.095em}
   .timer strong,.timerDanger strong{font-size:clamp(1.16rem,4.6vw,1.5rem);letter-spacing:.035em}
-  .tensionTitle{display:none!important}
+  .tensionTitle{display:block!important;max-width:85px;white-space:normal;font-size:.43rem;line-height:1.12;letter-spacing:.012em;margin-top:2px}
   .iconButton{flex:none;min-width:43px;width:43px;height:43px;font-size:1.1rem;
     background:#1b2324;border:1px solid rgba(202,174,135,.33);border-radius:8px}
 
