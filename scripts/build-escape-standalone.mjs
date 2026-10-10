@@ -44,3 +44,34 @@ cpSync(resolve("public/escape/audio"), join(output,"audio"), {recursive:true});
 writeFileSync(join(output,"index.html"), 
   '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070b0e"><title>UMBRAL · Viralio Escape</title><meta name="description" content="Cuatro capítulos de misterio. Encontrá las pistas y escapá de la casa."><link rel="preload" as="image" href="./images/retina/mansion.webp" media="(min-resolution: 2dppx)" fetchpriority="high"><link rel="stylesheet" href="./app.css"></head><body style="margin:0;background:#070b0e"><div id="escape-root"></div><script defer src="./app.js"></script></body></html>');
 console.log("UMBRAL standalone built:", readFileSync(join(output,"app.js")).length, "JS bytes,", readFileSync(join(output,"app.css")).length, "CSS bytes");
+
+/* Independent birthday-invitation game. Keep UMBRAL's shipped files intact. */
+const rescueOutput=resolve("showcase/rescate-mauro");
+mkdirSync(rescueOutput,{recursive:true});
+await build({
+  entryPoints:["src/app/escape/rescate/main.tsx"],
+  bundle:true,
+  platform:"browser",
+  format:"iife",
+  target:["es2022"],
+  jsx:"automatic",
+  define:{"process.env.NODE_ENV":'"production"'},
+  outdir:rescueOutput,
+  entryNames:"app",
+  minify:true,
+  legalComments:"none",
+  plugins:[{
+    name:"local-css-modules",
+    setup(e){
+      e.onLoad({filter:/\.module\.css$/},({path})=>({
+        contents:readFileSync(path,"utf8"),
+        loader:"local-css",
+        resolveDir:resolve(path,".."),
+      }));
+    }
+  }],
+  logLevel:"warning",
+});
+writeFileSync(join(rescueOutput,"index.html"),
+  '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#070a0e"><meta name="description" content="Una misteriosa misión de tres minutos para encontrar a Mauro. Escape room 3D de ficción con una sorpresa final."><meta property="og:title" content="CASO M: ¿Dónde está Mauro?"><meta property="og:description" content="Tenés 3 minutos. Encontrá las pistas. Abrí el sobre. Una experiencia interactiva de ficción."><title>CASO M · Rescate a Mauro</title><link rel="stylesheet" href="./app.css"></head><body style="margin:0;background:#070a0e"><div id="rescate-root"></div><script defer src="./app.js"></script></body></html>');
+console.log("Rescate Mauro 3D invitation built:",readFileSync(join(rescueOutput,"app.js")).length,"JS bytes");
