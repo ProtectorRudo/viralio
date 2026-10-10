@@ -9,11 +9,11 @@ export type Target={id:ClueId;label:string;pos:[number,number,number];reach:numb
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
  {id:"cassette",label:"Grabador de voz",pos:[-3.72,1.15,-1.65],reach:3.1,hint:"La cinta está atascada en una grabación."},
- {id:"memo",label:"Archivo de vigilancia",pos:[3.70,1.47,-1.92],reach:3.2,hint:"Un monitor conserva una grabación de seguridad."},
+ {id:"memo",label:"Archivo de vigilancia",pos:[3.70,1.47,-3.31],reach:3.2,hint:"Un monitor conserva una grabación de seguridad."},
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
  {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
  {id:"envelope",label:"Sobre encontrado",pos:[.02,.79,-1.48],reach:3.3,hint:"El papel lleva un sello rojo. Por fin llegaste."},
- {id:"phone",label:"Teléfono desconectado",pos:[3.65,1.12,-1.25],reach:3.0,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
+ {id:"phone",label:"Teléfono desconectado",pos:[3.65,1.12,-2.64],reach:3.0,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
  {id:"camera",label:"Cámara de seguridad",pos:[3.6,3.35,-5.06],reach:4.7,hint:"La luz roja se enciende cuando te movés."},
  {id:"board",label:"Tablero de seguimiento",pos:[1.55,2.2,-5.27],reach:4.0,hint:"Planos, fotos y horarios de los movimientos de Mauro."},
  {id:"locker",label:"Armario oxidado",pos:[-3.72,1.56,-3.4],reach:2.85,hint:"Tiene marcas de dedos en el polvo."},
@@ -179,15 +179,15 @@ function scene(opened:boolean){
  }
  // Isolated left/right investigation stations, away from combination lock.
  // The 1m central walkway is deliberately left clear.
- for(const x of [-3.68,3.68]){
-  g.box(x,.826,-1.91,1.52,.17,1.29,"#454c51");
-  g.box(x,.933,-1.91,1.56,.046,1.32,"#8b6b4c");
+ for(const [x,z] of [[-3.68,-1.91],[3.68,-3.30]] as const){
+  g.box(x,.826,z,1.52,.17,1.29,"#454c51");
+  g.box(x,.933,z,1.56,.046,1.32,"#8b6b4c");
   for(const dx of [-.62,.62])for(const dz of [-.48,.48]){
-   g.box(x+dx,.421,-1.91+dz,.12,.84,.12,"#52585a");
-   g.box(x+dx,.04,-1.91+dz,.17,.075,.17,"#2b3132");
+   g.box(x+dx,.421,z+dz,.12,.84,.12,"#52585a");
+   g.box(x+dx,.04,z+dz,.17,.075,.17,"#2b3132");
   }
-  g.box(x,.035,-1.91,1.66,.018,1.43,"#151819");
-  g.box(x,.49,-2.48,1.28,.07,.055,"#535554");
+  g.box(x,.035,z,1.66,.018,1.43,"#151819");
+  g.box(x,.49,z-.57,1.28,.07,.055,"#535554");
  }
  // Heavy six-wheel combination-lock cabinet: readable goal from spawn.
  g.box(0,.83,-2.65,3.24,.22,1.76,"#3e4449");
@@ -230,18 +230,18 @@ function scene(opened:boolean){
  }
  g.box(-4.03,1.092,-1.48,.090,.081,.07,"#bd544a","emissive");
  // Surveillance monitor occupies right-side workspace; its screen is readable.
- g.box(3.68,1.42,-2.15,1.07,.87,.18,"#1c2429");
- g.box(3.68,1.43,-2.043,.88,.65,.030,"#46616c","memo");
- g.box(3.68,1.688,-2.024,.85,.105,.020,"#20333c");
- for(let i=0;i<5;i++)g.box(3.36+i*.16,1.685,-2.011,.085,.024,.016,"#beb19a");
- g.box(3.56,1.30,-2.010,.22,.17,.022,"#809598");
- g.box(3.83,1.39,-2.010,.26,.19,.022,"#2a414d");
- g.box(3.68,.974,-2.14,.12,.11,.13,"#777b79");
- g.box(3.68,.947,-2.14,.41,.037,.33,"#6f7978");
+ g.box(3.68,1.42,-3.54,1.07,.87,.18,"#1c2429");
+ g.box(3.68,1.43,-3.433,.88,.65,.030,"#46616c","memo");
+ g.box(3.68,1.688,-3.414,.85,.105,.020,"#20333c");
+ for(let i=0;i<5;i++)g.box(3.36+i*.16,1.685,-3.401,.085,.024,.016,"#beb19a");
+ g.box(3.56,1.30,-3.400,.22,.17,.022,"#809598");
+ g.box(3.83,1.39,-3.400,.26,.19,.022,"#2a414d");
+ g.box(3.68,.974,-3.53,.12,.11,.13,"#777b79");
+ g.box(3.68,.947,-3.53,.41,.037,.33,"#6f7978");
  // Telephone lies beneath surveillance monitor, slightly toward player.
- g.box(3.67,1.028,-1.43,.51,.14,.31,"#303b40");
- g.tube([3.47,1.148,-1.45],[3.87,1.148,-1.45],.076,"#92938b");
- g.tube([3.92,1.04,-1.46],[4.07,.95,-1.48],.025,"#b1a28e");
+ g.box(3.67,1.028,-2.82,.51,.14,.31,"#303b40");
+ g.tube([3.47,1.148,-2.84],[3.87,1.148,-2.84],.076,"#92938b");
+ g.tube([3.92,1.04,-2.85],[4.07,.95,-2.87],.025,"#b1a28e");
  // A deliberately overturned office chair in the right-rear corner,
  // no giant panel blocking the player's line of sight to the lock.
  for(const x of [3.47,4.11])for(const z of [.75,1.43])g.box(x,.34,z,.075,.68,.095,"#353d3e");
@@ -343,7 +343,7 @@ function scene(opened:boolean){
  g.box(-3.53,1.000,-2.32,.31,.015,.19,"#dbc5a6");
  g.box(-3.53,1.02,-2.32,.18,.010,.013,"#5d5551");
  for(let i=0;i<4;i++){
-  const x=3.17+i%2*.18,z=-1.57+Math.floor(i/2)*.16;
+  const x=3.17+i%2*.18,z=-2.96+Math.floor(i/2)*.16;
   g.box(x,1.0,z,.16,.015,.12,"#c6b698");
   g.box(x,1.014,z,.096,.009,.071,i%2?"#435252":"#6a6159");
  }
@@ -499,7 +499,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   return TARGETS.filter(t=>current.unlocked||t.id!=="envelope");
  }
  function nearby(){
-  return targets().filter(t=>Math.hypot(t.pos[0]-pose.x,t.pos[2]-pose.z)<3.25)
+  return targets().filter(t=>Math.hypot(t.pos[0]-pose.x,t.pos[2]-pose.z)<4.6)
   .sort((a,b)=>Math.hypot(a.pos[0]-pose.x,a.pos[2]-pose.z)-Math.hypot(b.pos[0]-pose.x,b.pos[2]-pose.z));
  }
  // Screen-space hit areas match the actual model dimensions. Taps on a
@@ -554,7 +554,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   return best;
  }
- const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13},{x:1.7,z:0,w:1.64,d:1.3},{x:-3.68,z:-1.91,w:1.60,d:1.37},{x:3.68,z:-1.91,w:1.60,d:1.37}];
+ const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13},{x:1.7,z:0,w:1.64,d:1.3},{x:-3.68,z:-1.91,w:1.60,d:1.37},{x:3.68,z:-3.30,w:1.60,d:1.37}];
  function collides(x:number,z:number){
   if(x< -4.48||x>4.48||z< -5.17||z>4.79)return true;
   return obstacles.some(o=>Math.abs(o.x-x)<o.w/2+.23&&Math.abs(o.z-z)<o.d/2+.23);
