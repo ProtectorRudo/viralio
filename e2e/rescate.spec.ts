@@ -152,7 +152,8 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await expect(page.getByRole("dialog")).toContainText("10");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 1\/3/)).toBeVisible();
- await examineNearby(page,"Informe confidencial");
+ await examineNearby(page,"Archivo de vigilancia");
+ await expect(page.getByTestId("rescate-surveillance")).toBeVisible();
  await expect(page.getByRole("dialog")).toContainText("2026");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await walkTo(page,"a","x",-2.13);
@@ -181,6 +182,8 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await expect(page.getByText(/ABRISTE EL CAJÓN/)).toBeVisible();
  const beacon=page.getByTestId("rescate-envelope-beacon");
  await expect(beacon).toBeVisible();
+ await expect(beacon).toHaveAttribute("data-anchor-visible","yes");
+ await expect(beacon).toHaveAttribute("data-world-distance",/^[0-9]+\.[0-9]{2}$/);
  await expect(beacon).toContainText("AHÍ ESTÁ EL SOBRE");
  await beacon.click();
  await page.getByRole("button",{name:/ROMPER EL SELLO/}).click();
