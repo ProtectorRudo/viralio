@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useRef, useState, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import styles from "./RoomExplorer.module.css";
 
 type Kind = "drawer" | "slide" | "rotate" | "pull" | "look" | "collect" | "lock";
@@ -90,13 +90,21 @@ export default function RoomExplorer({
   onClose:()=>void;
   onSound:(success:boolean)=>void;
 }) {
-  const [zone,setZone]=useState(1);
+  // Continuous room-space camera: world X in [40,260], distance in [0,1].
+  // The photographed environment moves under the player rather than swapping
+  // three static slides. Photo-based 2.5D, not falsely advertised as a 3D mesh.
+  const [cameraX,setCameraX]=useState(150);
+  const [distance,setDistance]=useState(.12);
+  const [lookY,setLookY]=useState(0);
+  const [draggingView,setDraggingView]=useState(false);
+  const viewRef=useRef<{pointerId:number;x:number;y:number;cameraX:number;lookY:number}|null>(null);
+  const zone=Math.max(0,Math.min(2,Math.floor(cameraX/100)));
   const [selected,setSelected]=useState<string|null>(null);
   const [held,setHeld]=useState<string|null>(null);
   const dragging=useRef<{id:number;startX:number;startY:number;startValue:number;kind:Kind;objectId:string}|null>(null);
   const objects=ROOM_OBJECTS[room]??ROOM_OBJECTS[0];
   const object=objects.find(item=>item.id===selected);
-  const current=objects.filter(item=>item.zone===zone);
+  const current=objects.filter(item=>Math.abs(item.zone*100+item.x-cameraX)<63);
   const discovered=new Set(state.discovered??[]);
   const collected=new Set(state.collected??[]);
   const mechanisms=state.mechanisms??{};
@@ -152,38 +160,80 @@ export default function RoomExplorer({
     dragging.current=null;
     if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
   }
-  function shift(to:number){dragging.current=null;setZone(Math.min(2,Math.max(0,to)));setSelected(null);onSound(false);}
+  function shift(to:number){dragging.current=null;viewRef.current=null;setCameraX(Math.max(40,Math.min(260,50+100*to)));setSelected(null);onSound(false);}
+  function walk(steps:number){setCameraX(v=>Math.min(260,Math.max(40,v+steps)));}
+  function clamp(n:number,min:number,max:number){return Math.min(max,Math.max(min,n));}
+  function viewDown(e:ReactPointerEvent<HTMLDivElement>){
+    if((e.target as HTMLElement).closest("button"))return;
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+    e.preventDefault();
+    viewRef.current={pointerId:e.pointerId,x:e.clientX,y:e.clientY,cameraX,lookY};
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDraggingView(true);
+  }
+  function viewMove(e:ReactPointerEvent<HTMLDivElement>){
+    const active=viewRef.current;
+    if(!active||active.pointerId!==e.pointerId)return;
+    e.preventDefault();
+    const box=e.currentTarget.getBoundingClientRect();
+    setCameraX(clamp(active.cameraX-(e.clientX-active.x)*190/Math.max(box.width,260),40,260));
+    setLookY(clamp(active.lookY+(e.clientY-active.y)*45/Math.max(box.height,240),-20,20));
+  }
+  function viewUp(e:ReactPointerEvent<HTMLDivElement>){
+    if(viewRef.current?.pointerId!==e.pointerId)return;
+    viewRef.current=null;setDraggingView(false);
+    if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
+  }
+  function viewKeys(e:ReactKeyboardEvent<HTMLDivElement>){
+    if(e.target!==e.currentTarget)return;
+    if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){walk(-14);e.preventDefault();}
+    if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){walk(14);e.preventDefault();}
+    if(e.key==="ArrowUp"||e.key==="w"||e.key==="W"){setDistance(v=>clamp(v+.1,0,1));e.preventDefault();}
+    if(e.key==="ArrowDown"||e.key==="s"||e.key==="S"){setDistance(v=>clamp(v-.1,0,1));e.preventDefault();}
+  }
   const progress=object?(mechanisms[object.id]??0):0;
   const opened=Boolean(object&&(discovered.has(object.id)||progress>=(object.threshold??65)));
-  const photoPosition=["12%","50%","87%"][zone];
+  const photoPosition=((cameraX-40)/220*100).toFixed(2)+"%";
+  const imageScale=(165+distance*105).toFixed(1)+"%";
 
-  return <section className={styles.explorer} aria-label="Recorrer la habitación" data-testid="umbral-explorer" data-room={room}>
+  return <section className={styles.explorer} aria-label="Recorrer la habitación" data-testid="umbral-explorer" data-room={room} data-navigation="free-look">
     <header className={styles.header}>
-      <div><span>EXPLORACIÓN LIBRE · SECTOR {zone+1}/3</span><h2>{REGION_NAMES[room]?.[zone]}</h2></div>
+      <div><span>RECORRIDO EN TIEMPO REAL · {Math.round(distance*100)}% CERCA</span><h2>{REGION_NAMES[room]?.[zone]}</h2></div>
       <button type="button" onClick={onClose} className={styles.exit} aria-label="Salir de exploración">✕ <span>SALIR</span></button>
     </header>
-    <div className={styles.panorama} data-testid="umbral-explorer-view" style={{backgroundPosition:photoPosition,backgroundImage:`linear-gradient(90deg,rgba(2,6,9,.58),transparent 36%,rgba(2,5,8,.46)),image-set(url("/escape/images/room-${room}.webp") 1x,url("/escape/images/retina/room-${room}.webp") 2x)`}}>
-      <div className={styles.panoramaTitle}>ZONA {zone+1} <span>· INVESTIGÁ, NO ADIVINES</span></div>
+    <div className={styles.panorama} data-testid="umbral-explorer-view" data-camera={Math.round(cameraX)} data-distance={distance.toFixed(2)} data-dragging={draggingView?"yes":"no"} tabIndex={0} role="region" aria-label="Escena recorrible: arrastrá para mirar alrededor, flechas para caminar, arriba y abajo para acercarte" onKeyDown={viewKeys} onPointerDown={viewDown} onPointerMove={viewMove} onPointerUp={viewUp} onPointerCancel={viewUp} onLostPointerCapture={()=>{viewRef.current=null;setDraggingView(false)}} onWheel={e=>{if(e.ctrlKey)e.preventDefault();setDistance(v=>clamp(v-e.deltaY*.0008,0,1));}} style={{backgroundSize:"auto "+imageScale,backgroundPosition:photoPosition+" "+(50+lookY*.7)+"%",backgroundImage:`linear-gradient(90deg,rgba(2,6,9,.58),transparent 36%,rgba(2,5,8,.46)),image-set(url("/escape/images/room-${room}.webp") 1x,url("/escape/images/retina/room-${room}.webp") 2x)`}}>
+      <div className={styles.panoramaTitle}>↔ ARRASTRÁ PARA MIRAR <span>· ↑ ACERCATE · ↓ RETROCEDÉ</span></div>
+      <div className={styles.depthVignette} style={{opacity:.4+distance*.25}} aria-hidden="true"/>
+      <div className={styles.playerPos} aria-label={"Posición de exploración: "+Math.round((cameraX-40)/220*100)+" por ciento"}><i style={{left:((cameraX-40)/220*100)+"%"}}/></div>
       {current.map((item,index)=><button
         type="button"
         key={item.id}
         className={styles.node+" "+(discovered.has(item.id)? " "+styles.visited:"")}
-        style={{left:item.x+"%",top:item.y+"%"}}
+        style={{left:(50+(item.zone*100+item.x-cameraX)*(.69+distance*.11))+"%",top:clamp(item.y+lookY*.22-distance*5,21,81)+"%",transform:"translate(-50%,-50%) scale("+(1+distance*.16)+")"}}
         onClick={()=>inspect(item)}
         aria-label={"Examinar "+item.title}
         title={item.title}
       ><span aria-hidden="true">{item.icon}</span><small>{item.title}</small><i>{String(index+1).padStart(2,"0")}</i></button>)}
       <span className={styles.grain} aria-hidden="true"/>
     </div>
+    <div className={styles.roamControls} aria-label="Caminar y acercarse">
+      <button type="button" onClick={()=>walk(-23)} aria-label="Caminar hacia la izquierda">← <span>CAMINAR</span></button>
+      <div className={styles.cameraReadout}><strong>VISTA LIBRE</strong><span>{Math.round((cameraX-40)/220*100)}% DEL RECORRIDO</span></div>
+      <button type="button" onClick={()=>walk(23)} aria-label="Caminar hacia la derecha"><span>CAMINAR</span> →</button>
+      <button type="button" onClick={()=>setDistance(v=>clamp(v+.16,0,1))} disabled={distance>=1} aria-label="Acercarse a la escena">＋ <span>ACERCARSE</span></button>
+      <button type="button" onClick={()=>setDistance(v=>clamp(v-.16,0,1))} disabled={distance<=0} aria-label="Retroceder de la escena">－ <span>RETROCEDER</span></button>
+    </div>
+    <details className={styles.landmarks}><summary>PUNTOS DE REFERENCIA · DESPLAZAMIENTO RÁPIDO</summary>
     <div className={styles.wayfinding}>
       <button type="button" onClick={()=>shift(zone-1)} disabled={zone===0} aria-label="Moverse hacia la izquierda">← <span>IZQUIERDA</span></button>
       <div className={styles.regionDots}>{REGION_NAMES[room].map((name,i)=><button type="button" key={name} aria-pressed={zone===i} onClick={()=>shift(i)} aria-label={"Ir a "+name}>{String(i+1).padStart(2,"0")}</button>)}</div>
       <button type="button" onClick={()=>shift(zone+1)} disabled={zone===2} aria-label="Moverse hacia la derecha"><span>DERECHA</span> →</button>
     </div>
 
+    </details>
     {object&&<div className={styles.objectSheet} data-testid="umbral-object-inspection" data-object={object.id}>
       <div className={styles.inspectionHeading}>
-        <div><span>OBJETO {String(objects.indexOf(object)+1).padStart(2,"0")} / {String(objects.length).padStart(2,"0")} · {REGION_NAMES[room][zone]}</span><h3>{object.title}</h3></div>
+        <div><span>OBJETO {String(objects.indexOf(object)+1).padStart(2,"0")} / {String(objects.length).padStart(2,"0")} · {REGION_NAMES[room][object.zone]}</span><h3>{object.title}</h3></div>
         <button onClick={()=>setSelected(null)} type="button" aria-label="Guardar objeto y volver a la habitación">✕</button>
       </div>
       <div className={styles.objectContent}>

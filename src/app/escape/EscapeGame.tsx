@@ -17,12 +17,13 @@ import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,playInterfaceCue,se
 import {startRoomTone,stopRoomTone} from "./RoomTone";
 import EvidenceArchive from "./EvidenceArchive";
 import RoomExplorer,{EMPTY_EXPLORATION,type ExplorationState} from "./RoomExplorer";
+import EvaPledge,{type EvaPledgeRecord} from "./EvaPledge";
 import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiveScore,stopAdaptiveScore,tensionTier,TENSION_TITLES} from "./AdaptiveScore";
 
 type Phase = "intro" | "playing" | "won" | "lost";
 type Difficulty = "story" | "nightmare";
 type PuzzleState = { clockWound?: boolean; mirrorRead?: boolean; portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
-type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty; exploration?:ExplorationState };
+type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty; exploration?:ExplorationState; pledge?:EvaPledgeRecord|null };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
 const INITIAL: PuzzleState = { clockWound:false, mirrorRead:false, portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
@@ -137,6 +138,8 @@ type Spot = { id: string; text: string; x: number; y: number; act: () => void; a
 export default function EscapeGame() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [entering, setEntering] = useState(false);
+  const [showPledge,setShowPledge]=useState(false);
+  const [pledge,setPledge]=useState<EvaPledgeRecord|null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [room, setRoom] = useState(0);
   const [seconds, setSeconds] = useState(TOTAL);
@@ -278,7 +281,7 @@ export default function EscapeGame() {
           window.queueMicrotask(() => {
             setPhase(saved.phase); setRoom(saved.room); setSeconds(saved.seconds);
             if(saved.difficulty==="story" || saved.difficulty==="nightmare") setDifficulty(saved.difficulty);
-            setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles); setExploration(saved.exploration??EMPTY_EXPLORATION);
+            setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles); setExploration(saved.exploration??EMPTY_EXPLORATION);setPledge(saved.pledge??null);
             setPaused(true);
           });
         }
@@ -297,9 +300,9 @@ export default function EscapeGame() {
     if(!ready) return;
     try {
       if(phase!=="playing") window.localStorage.removeItem(SAVE_KEY);
-      else window.localStorage.setItem(SAVE_KEY, JSON.stringify({ phase, room, seconds, hints, mistakes, puzzles, difficulty, exploration } satisfies SaveState));
+      else window.localStorage.setItem(SAVE_KEY, JSON.stringify({ phase, room, seconds, hints, mistakes, puzzles, difficulty, exploration, pledge } satisfies SaveState));
     } catch { /* private browsing can restrict storage */ }
-  }, [ready, phase, room, seconds, hints, mistakes, puzzles, difficulty, exploration]);
+  }, [ready, phase, room, seconds, hints, mistakes, puzzles, difficulty, exploration, pledge]);
   useEffect(() => {
     if(phase!=="playing" || paused || cinematicPause) {
       deadlineRef.current=null;
@@ -451,9 +454,14 @@ export default function EscapeGame() {
     deadlineRef.current=null;setDollSpeaking(false);setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setExploration(EMPTY_EXPLORATION);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function approachHouse() {
-    if(entering) return;
+    if(entering || showPledge) return;
     // Both the door sound and the Web Audio unlock belong to a real user tap.
     // The 25/12-minute countdown will not start until the cinematic finishes.
+    setShowPledge(true);
+  }
+  function acceptPledge(record:EvaPledgeRecord) {
+    setPledge(record);
+    setShowPledge(false);
     unlockHorrorAudio();
     if(sound)playHorror("door",{pan:-.48,intensity:cinematicScares?.72:.31});
     setEntering(true);
@@ -591,6 +599,7 @@ export default function EscapeGame() {
         </div>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
+      {showPledge&&<EvaPledge onConfirm={acceptPledge} onBack={()=>setShowPledge(false)} onPaperSound={()=>{sfx("step");if(sound)playHorror("creak",{pan:-.23,intensity:.16});}}/>}
       {entering&&<ThresholdSequence toRoom={0} arrival onComplete={begin}/>}
       <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),image-set(url("/escape/images/room-${i}.webp") 1x,url("/escape/images/retina/room-${i}.webp") 2x)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
     </section> : phase==="playing" ? <>
@@ -653,14 +662,14 @@ export default function EscapeGame() {
       </div>}
       {transitioning&&<ThresholdSequence toRoom={Math.min(room+1,3)} arrival={false} onComplete={finishRoomThreshold}/>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
-      {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
+      {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);setPledge(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget || (focusKind && e.target instanceof Element && e.target.closest("[data-focus-object]")))setModal(null);}}>
         {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} character={focusPerson} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
         {modal==="explore"?<RoomExplorer room={room} state={exploration} onChange={setExploration} onClose={()=>setModal(null)} onSound={success=>sfx(success?"success":"step")}/>:<section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
           {modal!=="journal" && modal!=="tape" && modal!=="mirror" &&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
-          {modal==="journal"&&<EvidenceArchive portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power} mirrorRead={Boolean(puzzles.mirrorRead)}/>}
+          {modal==="journal"&&<EvidenceArchive pledge={pledge} portraits={puzzles.portraits} notesRead={puzzles.notesRead} evaRead={puzzles.evaRead||false} nurseryOpen={puzzles.nurseryOpen} keepsake={puzzles.keepsake} power={puzzles.power} mirrorRead={Boolean(puzzles.mirrorRead)}/>}
           {modal.startsWith("portrait")&&(()=>{const p=PORTRAITS[Number(modal.replace("portrait",""))];return <><Artefact kind="portrait" character={p.id} mark={String(p.year)}/><h2>{p.name}</h2><p>{p.text}</p><div className={styles.evidence}><span>AÑO DEL RETRATO</span><strong>{p.year}</strong><span>MARCA</span><strong>{p.mark}</strong></div></>})()}
           {modal==="clock"&&<div className={styles.clockLayout}><div className={styles.clockStory}><Artefact kind="clock"/><h2>El reloj detenido</h2><p>La aguja quedó inmóvil en las 03:13. Debajo del péndulo hay un mecanismo que todavía puede girar.</p><span className={styles.clockAside}>FABRICANTE: J. VÉLEZ · AÑO 1891<br/>CERRADO POR EL TIEMPO, NO POR UNA LLAVE.</span></div><ClockMechanism solved={Boolean(puzzles.clockWound)} onSolve={()=>{setPuzzles(p=>({...p,clockWound:true}));sfx("success");playHorror("creak",{pan:-.27});message("Desbloqueaste el grabado oculto del reloj. +300 puntos de investigación.");}}/></div>}
           {modal==="pin"&&<div className={styles.pinLayout}>

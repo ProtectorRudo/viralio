@@ -28,3 +28,15 @@
 .clipping[data-record="nora"]{background:linear-gradient(123deg,#e8dbc6,#c8bdaa)}
 .clipping[data-record="eva"]{background:linear-gradient(130deg,#e5dac8,#c4b4a6)}
 @media(max-width:650px){.portraitPhoto{height:99px;width:83px;border-width:4px}.clipping:has(.portraitPhoto){min-height:228px}}
+
+
+/* Original player's pledge carried throughout the investigation. */
+.signedPromise{position:relative;margin:14px 0 18px;padding:16px 20px;
+ background:repeating-linear-gradient(0deg,transparent 0 25px,rgba(89,75,52,.045) 26px,transparent 27px),linear-gradient(120deg,#e5d5b7,#c7b18b);
+ border:1px solid #846c4a;box-shadow:0 8px 22px rgba(0,0,0,.27);color:#3c3329;transform:rotate(-.5deg)}
+.signedPromise>span{font:750 .55rem ui-monospace,monospace;letter-spacing:.17em;color:#685036}
+.signedPromise>p{margin:13px 0 8px;font:italic 1.03rem/1.4 Georgia,serif}
+.inkSignature{display:flex;align-items:center;justify-content:flex-end;min-height:59px;border-bottom:1px solid rgba(73,50,28,.41);overflow:hidden}
+.inkSignature .handwriting{display:block;min-width:175px;width:64%;height:71px;background-size:contain;background-position:right center;background-repeat:no-repeat;mix-blend-mode:multiply}
+.inkSignature strong{font:italic 1.5rem Georgia,serif}
+.signedPromise>small{display:block;text-align:right;font:700 .51rem ui-monospace,monospace;letter-spacing:.12em;margin-top:8px}

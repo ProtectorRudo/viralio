@@ -1,10 +1,11 @@
 import styles from "./EvidenceArchive.module.css";
 import {characterImageSet,type CharacterId} from "./PortraitAssets";
+import type {EvaPledgeRecord} from "./EvaPledge";
 
 type Evidence = {id:string; title:string;note:string;chapter:string;found:boolean;symbol:string;character?:CharacterId};
-type Props = { portraits:number[]; notesRead:boolean; evaRead:boolean; nurseryOpen:boolean; keepsake:boolean; power:boolean; mirrorRead?:boolean };
+type Props = { portraits:number[]; notesRead:boolean; evaRead:boolean; nurseryOpen:boolean; keepsake:boolean; power:boolean; mirrorRead?:boolean; pledge?:EvaPledgeRecord|null };
 
-export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen,keepsake,power,mirrorRead}:Props) {
+export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen,keepsake,power,mirrorRead,pledge}:Props) {
   const records:Evidence[] = [
     {id:"nora",title:"El retrato de Nora",chapter:"VESTÍBULO",note:"1918 · El marco lleva el número 4. Alguien alteró el orden de las fotos.",symbol:"✧",character:"nora",found:portraits.includes(2)},
     {id:"mara",title:"Mara · la madre",chapter:"VESTÍBULO",note:"1902 · La cifra 2 aparece bajo un ramo de flores marchitas.",symbol:"◇",character:"mara",found:portraits.includes(1)},
@@ -25,6 +26,14 @@ export default function EvidenceArchive({portraits,notesRead,evaRead,nurseryOpen
         <p>Todo deja una huella. Algunas pistas también cambian el final.</p>
       </div>
     </header>
+    {pledge&&<aside className={styles.signedPromise} data-testid="umbral-signed-pledge" aria-label="Carta original firmada">
+      <span>✉ COMPROMISO DE RESCATE · DOCUMENTO FIRMADO</span>
+      <p>«Me comprometo a intentar salvar a Eva y a descubrir lo que ocurrió dentro de la casa.»</p>
+      <div className={styles.inkSignature}>{pledge.signature
+        ?<span className={styles.handwriting} role="img" aria-label="Firma manuscrita del jugador" style={{backgroundImage:`url("${pledge.signature}")`}}/>
+        :<strong>{pledge.name}</strong>}</div>
+      <small>FIRMADO · {new Date(pledge.signedAt).toLocaleDateString("es-AR")}</small>
+    </aside>}
     <div className={styles.progress}><span>PIEZAS RECUPERADAS</span><strong>{found} / {records.length}</strong><div className={styles.track}><div style={{width:(found/records.length*100)+"%"}}/></div></div>
     <div className={styles.pinboard} aria-label="Tablero de pistas">
       {records.map((record,index)=><article key={record.id} data-record={record.id} className={styles.clipping+" "+(!record.found?styles.hiddenClue:"")} style={{transform:"rotate("+([-2,1,2,-1,2,-2,-1,1][index])+"deg)"}}>
