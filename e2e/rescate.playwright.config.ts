@@ -11,6 +11,7 @@ export default defineConfig({
  use:{baseURL:"http://127.0.0.1:4173",browserName:"chromium",trace:"retain-on-failure",
   launchOptions:{args:["--enable-webgl","--use-angle=swiftshader","--enable-unsafe-swiftshader"]}},
  webServer:{
+  cwd:process.cwd(),
   command:"python3 -m http.server 4173 --directory showcase --bind 127.0.0.1",
   url:"http://127.0.0.1:4173/",
   reuseExistingServer:false,
