@@ -775,3 +775,34 @@
 @media(max-width:800px) and (prefers-reduced-motion:reduce){
   .roomArt,.roomArt .cinematicRoom{animation:none!important;transform:none!important}
 }
+
+
+/* UMBRAL / Active room exploration, the primary player-driven route. */
+.exploreSceneButton{
+ position:absolute;z-index:7;top:21px;right:17px;min-height:46px;
+ display:flex;align-items:center;gap:9px;padding:11px 17px;
+ cursor:pointer;border:1px solid rgba(235,195,138,.73);border-radius:7px;
+ color:#f3dcbb;background:linear-gradient(125deg,rgba(29,39,38,.94),rgba(8,16,20,.94));
+ box-shadow:0 10px 38px rgba(0,0,0,.64),inset 0 1px rgba(245,224,187,.11);
+ font:750 .65rem/1.2 ui-monospace,monospace;letter-spacing:.095em;
+ transition:border .18s,background .18s;
+}
+.exploreSceneButton span{font-size:.48rem;color:#d8b88b}
+.exploreSceneButton:hover,.exploreSceneButton:focus-visible{border-color:#ffe0af;background:#35413a}
+.exploreSceneButton:focus-visible,.exploreMobileButton:focus-visible{outline:2px solid #ffdfae;outline-offset:3px}
+.exploreMobileButton{display:none}
+@media(max-width:800px){
+ .exploreSceneButton{display:none!important}
+ .exploreMobileButton{
+   display:flex;width:calc(100% - 26px);min-height:67px;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+   margin:0 13px 12px;cursor:pointer;
+   border:1px solid rgba(226,186,122,.68);border-radius:9px;
+   background:linear-gradient(130deg,#443829,#27352f 53%,#1a2426);
+   box-shadow:0 8px 27px rgba(0,0,0,.37),inset 0 1px rgba(246,217,166,.16);
+   color:#ffead0;font:800 clamp(.78rem,3.25vw,.93rem)/1.2 ui-monospace,monospace;
+   letter-spacing:.105em;text-align:center;
+ }
+ .exploreMobileButton span{color:#dec5a2;font:700 .54rem/1.4 ui-monospace,monospace;letter-spacing:.08em}
+ .mobileInteract>span:after{content:" · ACCESO DIRECTO";color:#b2a08c;font-size:.46rem}
+}
+@media(prefers-reduced-motion:reduce){.exploreSceneButton{transition:none}}

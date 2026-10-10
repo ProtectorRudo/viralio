@@ -16,12 +16,13 @@ import EvaMemory from "./EvaMemory";
 import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,playInterfaceCue,setHorrorMuted,stopHorrorAudio,resumeHorrorAudio} from "./SoundDirector";
 import {startRoomTone,stopRoomTone} from "./RoomTone";
 import EvidenceArchive from "./EvidenceArchive";
+import RoomExplorer,{EMPTY_EXPLORATION,type ExplorationState} from "./RoomExplorer";
 import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiveScore,stopAdaptiveScore,tensionTier,TENSION_TITLES} from "./AdaptiveScore";
 
 type Phase = "intro" | "playing" | "won" | "lost";
 type Difficulty = "story" | "nightmare";
 type PuzzleState = { clockWound?: boolean; mirrorRead?: boolean; portraits: number[]; candles: string[]; studyOpen: boolean; notesRead: boolean; evaRead: boolean; melody: string[]; nurseryOpen: boolean; keepsake: boolean; fuses: number[]; power: boolean; ending: "escape" | "save" | null };
-type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty };
+type SaveState = { phase: Phase; room: number; seconds: number; hints: number[]; mistakes: number; puzzles: PuzzleState; difficulty?: Difficulty; exploration?:ExplorationState };
 const TOTAL = 25 * 60;
 const ROOM_NAMES = ["El vestíbulo", "El despacho", "La habitación de Eva", "El corazón de la casa"];
 const INITIAL: PuzzleState = { clockWound:false, mirrorRead:false, portraits: [], candles: [], studyOpen: false, notesRead: false, evaRead: false, melody: [], nurseryOpen: false, keepsake: false, fuses: [], power: false, ending: null };
@@ -142,6 +143,7 @@ export default function EscapeGame() {
   const [difficulty,setDifficulty] = useState<Difficulty>("story");
   const [records,setRecords] = useState<Record<Difficulty,number>>({story:0,nightmare:0});
   const [puzzles, setPuzzles] = useState<PuzzleState>(INITIAL);
+  const [exploration,setExploration] = useState<ExplorationState>(EMPTY_EXPLORATION);
   const [hints, setHints] = useState([0,0,0,0]);
   const [mistakes, setMistakes] = useState(0);
   const [sound, setSound] = useState(true);
@@ -276,7 +278,7 @@ export default function EscapeGame() {
           window.queueMicrotask(() => {
             setPhase(saved.phase); setRoom(saved.room); setSeconds(saved.seconds);
             if(saved.difficulty==="story" || saved.difficulty==="nightmare") setDifficulty(saved.difficulty);
-            setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles);
+            setHints(saved.hints); setMistakes(saved.mistakes); setPuzzles(saved.puzzles); setExploration(saved.exploration??EMPTY_EXPLORATION);
             setPaused(true);
           });
         }
@@ -295,9 +297,9 @@ export default function EscapeGame() {
     if(!ready) return;
     try {
       if(phase!=="playing") window.localStorage.removeItem(SAVE_KEY);
-      else window.localStorage.setItem(SAVE_KEY, JSON.stringify({ phase, room, seconds, hints, mistakes, puzzles, difficulty } satisfies SaveState));
+      else window.localStorage.setItem(SAVE_KEY, JSON.stringify({ phase, room, seconds, hints, mistakes, puzzles, difficulty, exploration } satisfies SaveState));
     } catch { /* private browsing can restrict storage */ }
-  }, [ready, phase, room, seconds, hints, mistakes, puzzles, difficulty]);
+  }, [ready, phase, room, seconds, hints, mistakes, puzzles, difficulty, exploration]);
   useEffect(() => {
     if(phase!=="playing" || paused || cinematicPause) {
       deadlineRef.current=null;
@@ -446,7 +448,7 @@ export default function EscapeGame() {
     setScareStage("off");
     resumeHorrorAudio();
     if(typeof window!=="undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
-    deadlineRef.current=null;setDollSpeaking(false);setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
+    deadlineRef.current=null;setDollSpeaking(false);setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setExploration(EMPTY_EXPLORATION);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
   function approachHouse() {
     if(entering) return;
@@ -627,6 +629,7 @@ export default function EscapeGame() {
           }}
         />}
 
+        <button type="button" className={styles.exploreSceneButton} data-testid="umbral-explore-launch" onClick={()=>{sfx("step");setModal("explore");}}>⌖ RECORRER LA ESCENA <span>12 OBJETOS POR ZONAS</span></button>
         <button className={styles.caseButton} onClick={()=>{sfx("click");setModal("journal");}} aria-label={"Abrir expediente. "+recoveredCount+" pruebas encontradas de 8"}>▤ EXPEDIENTE <span>{recoveredCount}/8</span></button>
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
         <div className={styles.flicker} aria-hidden="true"/>
@@ -635,6 +638,7 @@ export default function EscapeGame() {
         <span>OBJETOS PARA INVESTIGAR · {String(hotspots.length).padStart(2,"0")}</span>
         <div>{hotspots.map(spot=><button type="button" key={spot.id} onClick={spot.act} disabled={transitioning} aria-pressed={spot.active ? true : undefined}><b aria-hidden="true">{spot.glyph}</b>{spot.text}</button>)}</div>
       </nav>
+      <button type="button" className={styles.exploreMobileButton} onClick={()=>{sfx("step");setModal("explore");}} aria-label="Recorrer habitación y manipular objetos">⌖ EXPLORAR LA HABITACIÓN <span>12 OBJETOS · 3 ZONAS · INVENTARIO →</span></button>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
         <div className={styles.bottomActions}><button onClick={showHint}>◇ PEDIR PISTA <span>{hints[room]}/3</span></button><button onClick={()=>{setPaused(true);sfx();}}>Ⅱ PAUSAR</button><button onClick={()=>setFlashlight(v=>!v)} aria-pressed={flashlight}>{flashlight?"◉ APAGAR LUZ":"☼ LINTERNA"}</button><button onClick={()=>setMusicEnabled(v=>!v)} aria-label={musicEnabled?"Silenciar música":"Activar música"} aria-pressed={musicEnabled}>{musicEnabled?"♫ MÚSICA":"♫ SIN MÚSICA"}</button><button onClick={()=>setSound(v=>!v)} aria-label={sound?"Silenciar":"Activar sonido"}>{sound?"◉ SONIDO":"◎ MUDO"}</button></div>
@@ -652,7 +656,7 @@ export default function EscapeGame() {
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget || (focusKind && e.target instanceof Element && e.target.closest("[data-focus-object]")))setModal(null);}}>
         {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} character={focusPerson} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
-        <section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
+        {modal==="explore"?<RoomExplorer room={room} state={exploration} onChange={setExploration} onClose={()=>setModal(null)} onSound={success=>sfx(success?"success":"step")}/>:<section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
           {modal!=="journal" && modal!=="tape" && modal!=="mirror" &&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
@@ -677,7 +681,7 @@ export default function EscapeGame() {
           {modal==="memo"&&<><Artefact kind="circuit"/><h2>Manual de emergencia</h2><p>Una placa oxidada explica cómo alimentar el mecanismo:</p><blockquote>«El motor exige exactamente DOS circuitos activos. Su energía combinada debe ser SIETE. No tolera el exceso».</blockquote><p>Los fusibles tienen valores individuales: 2, 3, 4 y 5.</p></>}
           {modal==="finale"&&<><Artefact kind="door"/><h2>La última decisión</h2><p>La energía vuelve. Una salida se abre y oís una voz infantil desde el otro lado del muro.</p><blockquote>«¿Me vas a dejar acá otra vez?»</blockquote><p>Podés escapar mientras hay tiempo o volver por Eva. Una elección cambia cómo termina el expediente.</p>{puzzles.keepsake&&<p className={styles.good}>La medalla que recuperaste empieza a calentarse en tu mano. Eva reconoce su antiguo recuerdo.</p>}<div className={styles.choices}><button onClick={()=>ending("save")}>VOLVER POR EVA <span>✦</span></button><button onClick={()=>ending("escape")}>CORRER HACIA LA SALIDA <span>↗</span></button></div></>}
           {modal.startsWith("hint")&&<><Artefact kind="signal"/><h2>Una señal en la oscuridad</h2><p>{CLUES[room][Number(modal.replace("hint",""))]}</p><p className={styles.hintCost}>Usar pistas reduce la puntuación final, pero nunca bloquea tu escape.</p></>}
-        </section>
+        </section>}
       </div>}
     </> : <section className={styles.ending+" "+(phase==="lost"?styles.endingLost:"")}>
       <p className={styles.eyebrow}>{phase==="won"?"EXPEDIENTE CERRADO":"ARCHIVO INTERRUMPIDO"} · {difficulty==="nightmare"?"PESADILLA":"HISTORIA"}</p>
