@@ -267,14 +267,39 @@ function scene(opened:boolean){
  g.box(cx,cy+.205,cz+.17,.07,.45,.045,"#262b2b","clock-hour");
  g.box(cx,cy+.315,cz+.19,.038,.66,.042,"#5b3329","clock-minute");
  g.box(cx,cy,cz+.23,.11,.11,.06,"#c9aa74");
- // Evidence board, family photographs and other false leads on the back wall.
- g.box(1.55,2.11,-5.66,2.5,1.65,.17,"#69463c");
- g.box(1.55,2.12,-5.54,2.33,1.49,.01,"#ae8660");
- for(const [x,y,shade] of [[.71,2.49,"#c5b6a1"],[1.74,2.57,"#bbb3a6"],[2.2,1.65,"#cec2a9"],[.82,1.72,"#bfb59d"]] as const){
-  g.box(x,y,-5.51,.63,.48,.014,shade);
-  g.box(x,y+.15,-5.495,.34,.14,.012,"#786d66");
-  g.box(x,y-.11,-5.495,.43,.025,.014,"#6e6053");
+ // A real conspiracy board: layered images, routes, schedules and red thread.
+ g.box(1.51,2.15,-5.68,2.76,1.94,.15,"#5d3e33");
+ g.box(1.51,2.15,-5.573,2.59,1.78,.023,"#9e8061");
+ const notes=[
+  [.54,2.66,.53,.45,"#d5c4a9"],[1.12,2.74,.44,.44,"#ead7b8"],
+  [1.78,2.70,.51,.51,"#c6b499"],[2.36,2.61,.51,.43,"#e1d0b3"],
+  [.51,2.12,.49,.52,"#cec1a7"],[1.10,2.18,.49,.46,"#efe2c6"],
+  [1.70,2.14,.58,.48,"#bda585"],[2.34,2.13,.48,.49,"#d5c0a2"],
+  [.55,1.66,.52,.43,"#ddc8aa"],[1.15,1.62,.42,.39,"#bba78d"],
+  [1.71,1.63,.49,.44,"#dbceb4"],[2.36,1.65,.55,.38,"#c4b69b"]
+ ] as const;
+ for(let i=0;i<notes.length;i++){
+  const [x,y,w,h,shade]=notes[i],z=-5.549+(i%3)*.006;
+  g.box(x,y,z,w,h,.014,shade);
+  if(i%3===0){
+   g.box(x,y+.07,z+.017,w*.66,h*.53,.016,"#465960");
+   g.ellipsoid(x,y+.12,z+.036,.06,.07,.012,"#a5a193","scene");
+   g.box(x,y-.13,z+.017,w*.69,.024,.012,"#5d5147");
+  }else{
+   for(let row=0;row<4;row++){
+    const lineW=w*(.69-.055*row),lineY=y+h*.31-row*.087;
+    g.box(x-.025,lineY,z+.018,lineW,.013,.013,row===0?"#574e49":"#817468");
+   }
+  }
+  g.box(x-.11,y+h/2,z+.027,.22,.047,.012,"#c0ae8c"); // tape
+  g.box(x,y+h/2-.033,z+.036,.036,.036,.019,i%2?"#a74a3e":"#566963"); // pin
  }
+ const nodes:V[]=[[.54,2.66,-5.491],[1.12,2.74,-5.487],[2.36,2.61,-5.481],
+  [1.70,2.14,-5.483],[.55,1.66,-5.482],[1.71,1.63,-5.477],[2.34,2.13,-5.478]];
+ for(const [i,j] of [[0,3],[3,2],[0,4],[4,5],[1,6],[6,2],[5,3]] as const)
+  g.tube(nodes[i],nodes[j],.011,"#9b312d");
+ // Broad strip of security-camera timeline under the observation notes.
+ for(let i=0;i<5;i++)g.box(.77+i*.36,1.42,-5.532,.30,.040,.012,i%2?"#52463b":"#8c513e");
  // Armario, fake lead, beside the wall.
  g.box(-3.75,1.51,-3.65,1.54,2.98,.90,"#414d50");
  g.box(-3.35,1.65,-3.18,.08,.41,.08,"#d1b380");
