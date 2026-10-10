@@ -85,7 +85,7 @@ test("CASO M · pistas físicas, combinación 1310, cajón y sobre revelan cumpl
  await page.getByRole("button",{name:"Subir cifra 1"}).click();
  for(let i=0;i<3;i++)await page.getByRole("button",{name:"Subir cifra 2"}).click();
  await page.getByRole("button",{name:"Subir cifra 3"}).click();
- await expect(lock.locator('[class*="dial"] strong')).toHaveText(["1","3","1","0"]);
+ await expect(lock.locator('strong[aria-label^="Cifra "]')).toHaveText(["1","3","1","0"]);
  await page.getByRole("button",{name:/PROBAR COMBINACIÓN/}).click();
  await expect(lock).not.toBeVisible();
  await expect(page.getByText(/EL CANDADO SE ABRIÓ/)).toBeVisible();
