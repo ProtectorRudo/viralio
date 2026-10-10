@@ -41,3 +41,20 @@
  to{transform:perspective(1150px) translate3d(var(--shift-x),var(--shift-y),0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1.083) translateY(-.65%)}
 }
 @media(prefers-reduced-motion:reduce){.photograph{animation:none!important;will-change:auto;transform:scale(1.045)!important}.glassReflection{background:linear-gradient(115deg,transparent 28%,rgba(255,236,190,.065),transparent 62%)}}
+
+/* Person-specific photographic orientation and archival finish. Distinct
+   frames are part of the portraits, never shared one-frame prop. */
+.portrait .photograph{
+ background-size:auto 116%;
+ background-position:center 29%;
+ filter:contrast(1.07) saturate(.72) brightness(.93);
+ animation:portraitMuseumLight 17s ease-in-out infinite alternate!important;
+}
+.portrait[data-portrait-person="mara"] .photograph{background-size:auto 119%;background-position:50% 30%;filter:sepia(.19) saturate(.77) brightness(.94)}
+.portrait[data-portrait-person="nora"] .photograph{background-size:auto 117%;background-position:50% 31%;filter:contrast(1.09) saturate(.64) brightness(.90)}
+.portrait[data-portrait-person="eva"] .photograph{background-size:auto 119%;background-position:50% 34%;filter:sepia(.16) saturate(.68) brightness(.9)}
+.portrait[data-portrait-person="elias"] .brassPlate{border-color:#8c7657}
+.portrait[data-portrait-person="mara"] .brassPlate{border-color:#c8ac81;background:linear-gradient(90deg,#63462e,#f4d7a5,#70523a);font-style:italic}
+.portrait[data-portrait-person="nora"] .brassPlate{border-color:#a98e78;background:linear-gradient(90deg,#44372c,#cbb7a5,#66584d)}
+@keyframes portraitMuseumLight{from{transform:scale(1.027)}to{transform:scale(1.052) translateY(-.3%)}}
+@media(prefers-reduced-motion:reduce){.portrait .photograph{animation:none!important;transform:scale(1.035)!important}}
