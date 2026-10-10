@@ -107,12 +107,46 @@ function App(){
   return()=>clearInterval(id);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,muted,expired,drawerOpen,seconds<=48,seconds<=105]);
- function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"){
+ useEffect(()=>{
+  if(screen!=="game"||expired||seconds>60||threatFired.current)return;
+  threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
+  setDoorWarning(true);setShowNear(false);setToast("RUIDO EN EL PASILLO · ¡LA PUERTA SE ESTÁ ABRIENDO!");
+  sound("door");navigator.vibrate?.([140,100,260]);
+  window.setTimeout(()=>sound("step"),1700);
+  window.setTimeout(()=>sound("step"),3100);
+  window.setTimeout(()=>sound("step"),4500);
+  window.setTimeout(()=>setDoorWarning(false),8500);
+ // Audio/event is intentionally triggered exactly once.
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,expired,seconds]);
+ function playTape(){
+  sound("click");
+  if(muted){setToast("ACTIVÁ EL SONIDO PARA ESCUCHAR LA CINTA");return;}
+  if(!("speechSynthesis" in window)){setToast("VOZ PROVISIONAL · LEÉ LA TRANSCRIPCIÓN DEL CASSETTE");return;}
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance("Por favor, no pierdas tiempo... van a volver.");
+  utterance.lang="es-AR";utterance.rate=.79;utterance.pitch=.78;utterance.volume=.94;
+  const voices=window.speechSynthesis.getVoices();
+  utterance.voice=voices.find(v=>v.lang==="es-AR")||voices.find(v=>v.lang.startsWith("es"))||null;
+  window.speechSynthesis.speak(utterance);
+ }
+ function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"){
   if(muted||!audioRef.current)return;
   const a=audio.current;if(!a)return;
   try{
    if(a.state==="suspended")void a.resume();
    const now=a.currentTime,osc=a.createOscillator(),gain=a.createGain();
+    if(type==="door"||type==="step"){
+     osc.type=type==="door"?"sawtooth":"sine";
+     osc.frequency.setValueAtTime(type==="door"?92:76,now);
+     osc.frequency.exponentialRampToValueAtTime(type==="door"?24:43,now+(type==="door"?1.4:.23));
+     gain.gain.setValueAtTime(.0001,now);
+     gain.gain.exponentialRampToValueAtTime(type==="door"?.14:.19,now+.035);
+     gain.gain.exponentialRampToValueAtTime(.0001,now+(type==="door"?1.48:.33));
+     const filter=a.createBiquadFilter();filter.type="lowpass";filter.frequency.value=type==="door"?370:160;
+     osc.connect(filter);filter.connect(gain);gain.connect(a.destination);
+     osc.start(now);osc.stop(now+(type==="door"?1.5:.35));return;
+    }
    osc.type=type==="wrong"||type==="beat"?"sine":type==="celebrate"?"triangle":"sawtooth";
    const freq={start:93,click:270,clue:390,wrong:64,unlock:490,beat:48,tick:890,celebrate:600}[type];
    osc.frequency.setValueAtTime(freq,now);
@@ -130,10 +164,21 @@ function App(){
    const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=95;
    gain.gain.value=muted?0:.012;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
    drone.current=oscillator;droneGain.current=gain;
+   // Three detuned suspense tones create a continuous, low-volume cinematic bed.
+   const layerA=ctx.createOscillator(),layerB=ctx.createOscillator(),layerC=ctx.createOscillator();
+   layerA.type="sine";layerA.frequency.value=63;
+   layerB.type="triangle";layerB.frequency.value=95.6;
+   layerC.type="sine";layerC.frequency.value=127.4;
+   const mix=ctx.createGain();mix.gain.value=.24;
+   for(const o of [layerA,layerB,layerC]){o.connect(mix);o.start();}
+   mix.connect(filter);ambientOsc.current=[layerA,layerB,layerC];
+   const tremolo=ctx.createOscillator(),depth=ctx.createGain();
+   tremolo.type="sine";tremolo.frequency.value=.24;depth.gain.value=34;
+   tremolo.connect(depth);depth.connect(filter.frequency);tremolo.start();ambientOsc.current.push(tremolo);
   }catch{/* Game still works silently */}
   sound("start");setScreen("game");
  }
- function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.012;return !v});}
+ function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.012;if(!v)window.speechSynthesis?.cancel();return !v});}
  function viewDown(e:ReactPointerEvent<HTMLCanvasElement>){
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,dragged:false};e.currentTarget.setPointerCapture(e.pointerId);
@@ -229,7 +274,7 @@ function App(){
  function envelope(){
   setOpenedLetter(true);sound("clue");
  }
- function finish(){sound("celebrate");setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;}
+ function finish(){sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
  function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
  const HINTS=[
   "Primero buscá el calendario en la pared del fondo. Una fecha está marcada en rojo.",
@@ -368,7 +413,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
