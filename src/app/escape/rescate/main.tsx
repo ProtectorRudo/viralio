@@ -8,17 +8,18 @@ type Screen="intro"|"game"|"final";
 type Overlay="none"|"inspect"|"lock"|"letter";
 type Ev="calendar"|"cassette"|"memo";
 type Config={fecha:string;hora:string;lugar:string};
-const CODE="1310";
+const CODE="131026";
 const EVIDENCE:Record<Ev,{title:string;value:string;body:string}>={
  calendar:{title:"El calendario",value:"13",body:"Alguien rodeó con tinta el día TRECE. El resto de los días fue tachado."},
  cassette:{title:"Cinta recuperada",value:"10",body:"Una voz distorsionada repite: «El mes de octubre. El décimo mes. No lo olvides»."},
- memo:{title:"Orden de operación",value:"DÍA → MES",body:"«Primero el día. Después el mes. Cuatro ruedas. Nadie conseguirá abrirlo a ciegas»."},
+ memo:{title:"Documento de operación",value:"2026",body:"Informe fechado en 2026. La orden subrayada dice: «DÍA → MES → AÑO (dos últimas cifras)». La combinación tiene seis posiciones."},
 };
 const DESCRIPTIONS:Record<ClueId,string>={
  calendar:"Un calendario de octubre, casi completamente destruido. Una fecha está encerrada en rojo.",
  cassette:"El grabador está conectado, a pesar de que la habitación parece abandonada.",
- memo:"Un documento confidencial dejado sobre la mesa. Alguien quiso que lo encontraras.",
- drawer:"Un cajón pesado, asegurado con un candado de cuatro ruedas. El sobre está adentro.",
+ memo:"Un documento confidencial fechado en el año de la operación. Alguien quiso que lo encontraras.",
+ clock:"Un reloj viejo cuyas agujas quedaron detenidas. El mecanismo sigue conectado a alguna parte de la casa.",
+ drawer:"Un cajón pesado, asegurado con un candado de seis ruedas. El sobre está adentro.",
  envelope:"Un sobre oscuro, con un lacre que lleva una letra M.",
  phone:"La línea está cortada. Al levantar el tubo se escucha el eco de una respiración.",
  camera:"La luz roja de REC se enciende. Alguien sigue tu recorrido desde otra habitación.",
@@ -36,7 +37,10 @@ function App(){
  const [seen,setSeen]=useState<Ev[]>([]);
  const [active,setActive]=useState<Target|null>(null),[focus,setFocus]=useState<Target|null>(null);
  const [near,setNear]=useState<Target[]>([]),[showNear,setShowNear]=useState(false);
- const [drawerOpen,setDrawerOpen]=useState(false),[digits,setDigits]=useState([0,0,0,0]),[wrong,setWrong]=useState(false);
+ const [drawerOpen,setDrawerOpen]=useState(false),[digits,setDigits]=useState([0,0,0,0,0,0]),[wrong,setWrong]=useState(false);
+ const [clockState,setClockState]=useState<"idle"|"running"|"done">("idle");
+ const clockTimeout=useRef<number|null>(null);
+ const [hintOpen,setHintOpen]=useState(false),[hintLevel,setHintLevel]=useState(0);
  const [openedLetter,setOpenedLetter]=useState(false);
  const [muted,setMuted]=useState(false),[toast,setToast]=useState("");
  const [error,setError]=useState(""),[available,setAvailable]=useState(false);
@@ -46,11 +50,12 @@ function App(){
  const pointer=useRef<{id:number;x:number;y:number}|null>(null),buttons=useRef(new Set<string>());
  const raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),droneGain=useRef<GainNode|null>(null),audioRef=useRef(false);
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
- const flags=useRef({unlocked:false});
- const config=useRef<Config>({fecha:"13 DE OCTUBRE",hora:"HORARIO A CONFIRMAR",lugar:"LUGAR A CONFIRMAR"});
+ const flags=useRef({unlocked:false,clockActivated:false});
+ const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"LUGAR A CONFIRMAR"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
+ useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
-  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE").slice(0,80),hora:(q.get("hora")||"HORARIO A CONFIRMAR").slice(0,80),lugar:(q.get("lugar")||"LUGAR A CONFIRMAR").slice(0,125)};
+  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"LUGAR A CONFIRMAR").slice(0,125)};
  },[]);
  useEffect(()=>{
   if(screen!=="game"||expired||overlay==="letter"||drawerOpen)return;
@@ -174,9 +179,22 @@ function App(){
  }
  function activate(){
   if(!focus)return;
+  if(focus.id==="clock"){activateClock();return;}
   if(focus.id in EVIDENCE){discover(focus.id as Ev);}
   else sound("click");
   closeInspect();
+ }
+ function activateClock(){
+  if(clockState!=="idle")return;
+  setClockState("running");
+  flags.current.clockActivated=true;
+  world.current?.setFlags({...flags.current});
+  sound("click");
+  clockTimeout.current=window.setTimeout(()=>{
+    setClockState("done");
+    sound("clue");
+    setToast("RELOJ ACTIVADO · LAS AGUJAS SE DETUVIERON EN LAS 17:00 HS");
+  },3100);
  }
  function wheel(index:number,step:number){setDigits(old=>old.map((v,i)=>i===index?(v+step+10)%10:v));sound("click")}
  function dialStart(e:ReactPointerEvent<HTMLDivElement>,i:number){
@@ -197,7 +215,7 @@ function App(){
  }
  function unlock(){
   if(digits.join("")!==CODE){setWrong(true);sound("wrong");setToast("CLAVE INCORRECTA · REVISÁ LAS PISTAS");navigator.vibrate?.([50,70,50]);return;}
-  setWrong(false);setDrawerOpen(true);flags.current.unlocked=true;world.current?.setFlags({unlocked:true});
+  setWrong(false);setDrawerOpen(true);flags.current.unlocked=true;world.current?.setFlags({...flags.current});
   sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();setToast("¡EL CANDADO SE ABRIÓ! Acercate al cajón y tomá el sobre.");
  }
  function envelope(){
@@ -205,11 +223,16 @@ function App(){
  }
  function finish(){sound("celebrate");setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;}
  function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
+ const HINTS=[
+  "Primero buscá el calendario en la pared del fondo. Una fecha está marcada en rojo.",
+  "Revisá el grabador sobre la mesa. La cinta revela a qué MES corresponde la fecha.",
+  "El informe, junto al teléfono, tiene el AÑO y también explica el orden de la combinación.",
+  "El candado usa una fecha de seis cifras: dos para el DÍA, dos para el MES y las últimas dos del AÑO.",
+  "Hay un reloj en la pared. Tocá el reloj y activá sus agujas para averiguar la hora del encuentro."
+ ];
  function hint(){
-  if(!seen.includes("calendar"))setToast("PISTA: MIRÁ EL CALENDARIO EN LA PARED DEL FONDO.");
-  else if(!seen.includes("cassette"))setToast("PISTA: REVISÁ EL GRABADOR, SOBRE LA MESA.");
-  else if(!seen.includes("memo"))setToast("PISTA: HAY UN INFORME JUNTO AL TELÉFONO.");
-  else setToast("PISTA: UNÍ EL DÍA Y EL MES EN ESE ORDEN.");
+  setHintOpen(true);
+  setHintLevel(v=>Math.min(HINTS.length,v+1));
   sound("click");
  }
  function shareMessage(){
@@ -230,7 +253,7 @@ function App(){
       <span className={styles.red}>◉ PRIORIDAD MÁXIMA · MISIÓN FICTICIA</span>
       <h1>SECUESTRARON<br/><em>A MAURO.</em></h1>
       <p>Una última señal. Una habitación cerrada. Tres minutos para encontrar las pistas y descubrir dónde lo tienen.</p>
-      <div className={styles.introCard}><span>ÚLTIMO MENSAJE RECIBIDO</span><p>«Si querés saber dónde está Mauro... abrí el cajón. Encontrá las cuatro cifras. El tiempo ya está corriendo».</p></div>
+      <div className={styles.introCard}><span>ÚLTIMO MENSAJE RECIBIDO</span><p>«Si querés saber dónde está Mauro... abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p></div>
       <div className={styles.introTimer}>03<span>:</span>00 <small>PARA RESOLVER EL CASO</small></div>
       <button type="button" className={styles.start} onClick={start}>ACEPTAR MISIÓN <span>↗</span></button>
       <small className={styles.disclaimer}>Experiencia de ficción y entretenimiento · No se trata de una emergencia real</small>
@@ -246,7 +269,7 @@ function App(){
     </header>
     <div className={styles.topHints}>
       <span>PRUEBAS {seen.length}/3</span>
-      <button type="button" onClick={hint}>¿UNA PISTA?</button>
+      <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ RECIBIR UNA PISTA</button>
       <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":"SONIDO ON"}</button>
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
@@ -271,16 +294,29 @@ function App(){
     {showNear&&<div className={styles.nearby} data-testid="rescate-nearby"><div>OBJETOS A TU ALCANCE <button onClick={()=>setShowNear(false)} aria-label="Cerrar objetos cercanos">✕</button></div>
      {near.length?near.map(t=><button key={t.id} onClick={()=>examine(t)}>{t.label} <span>↗</span></button>):<p>Caminá más cerca de los muebles.</p>}
     </div>}
+    {hintOpen&&<aside className={styles.hintPanel} data-testid="rescate-hint-panel" aria-label="Pista de la misión">
+      <div className={styles.hintHead}><span>AYUDA CONFIDENCIAL · PISTA {hintLevel}/{HINTS.length}</span><button type="button" aria-label="Cerrar pista" onClick={()=>setHintOpen(false)}>✕</button></div>
+      <p>{HINTS[Math.max(0,hintLevel-1)]}</p>
+      {hintLevel<HINTS.length&&<button type="button" className={styles.nextHint} onClick={hint}>PEDIR OTRA PISTA →</button>}
+    </aside>}
     {toast&&<div className={styles.toast} role="status" onClick={()=>setToast("")}>{toast} <button type="button" aria-label="Cerrar aviso" onClick={()=>setToast("")}>✕</button></div>}
     {overlay==="inspect"&&focus&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label={"Examinar "+focus.label}><div className={styles.inspectCard}>
       <span>ARCHIVO / INSPECCIÓN</span><h2>{focus.label}</h2><p>{DESCRIPTIONS[focus.id]}</p>
+      {focus.id==="clock"&&<div className={styles.clockInteraction} data-testid="rescate-clock" data-clock={clockState}>
+       <div className={styles.clockDial} aria-label="Reloj mecánico con las agujas girando hasta las cinco en punto">
+        <span className={styles.clockTwelve}>12</span><span className={styles.clockThree}>3</span><span className={styles.clockSix}>6</span><span className={styles.clockNine}>9</span>
+        <i className={styles.clockHour}/><i className={styles.clockMinute}/><i className={styles.clockAxle}/>
+       </div>
+       <p>{clockState==="idle"?"Pulsá el mecanismo para que las agujas recuperen su última posición.":clockState==="running"?"Las agujas giran cada vez más rápido...":"SEÑAL RECUPERADA · 17:00 HS"}</p>
+       <button type="button" className={styles.clockStart} onClick={activateClock} disabled={clockState!=="idle"}>{clockState==="idle"?"⟳ ACTIVAR Y GIRAR LAS AGUJAS":clockState==="running"?"GIRANDO...":"✓ DETENIDO EN 17:00"}</button>
+      </div>}
       {focus.id in EVIDENCE?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
-      <button className={styles.confirm} onClick={activate}>{focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>
+      {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate}>{focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>
     </div></div>}
-    {overlay==="lock"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Candado de cuatro cifras"><div className={styles.lockCard}>
+    {overlay==="lock"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Candado de seis cifras"><div className={styles.lockCard}>
       <span className={styles.lockSerial}>CAJÓN N.º 013 · CERRADURA MECÁNICA</span>
-      <h2>CUATRO CIFRAS.</h2><p>La combinación está escondida en esta sala. Girá cada rueda con el dedo.</p>
+      <h2>SEIS CIFRAS.</h2><p>El candado pide una fecha completa: día, mes y año. Girá las ruedas con el dedo.</p>
       <div className={styles.dials} data-testid="rescate-lock">
        {digits.map((d,i)=><div key={i} className={styles.dial} onPointerDown={e=>dialStart(e,i)} onPointerMove={dialMove} onPointerUp={dialEnd} onPointerCancel={dialEnd} onLostPointerCapture={()=>{dialDrag.current=null}}>
         <button type="button" aria-label={"Subir cifra "+(i+1)} onClick={()=>wheel(i,1)}>⌃</button>
@@ -319,7 +355,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0]);setDrawerOpen(false);flags.current.unlocked=false;setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
