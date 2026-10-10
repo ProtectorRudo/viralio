@@ -59,6 +59,7 @@ function App(){
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
  const [tensionCue,setTensionCue]=useState<""|"signal"|"flicker"|"knock">("");
+ const finalMinute=seconds<=60;
  const cuesFired=useRef(new Set<number>()),cueTimer=useRef<number|null>(null);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
@@ -146,7 +147,7 @@ function App(){
  useEffect(()=>{
   if(screen!=="game"||!musicAudio.current||muted||tapeStatus==="playing")return;
   musicAudio.current.volume=seconds<=60?.83:.65;
- },[screen,muted,seconds<=60,tapeStatus]);
+ },[screen,muted,finalMinute,tapeStatus]);
  useEffect(()=>{
   if(screen!=="game"||expired||seconds>60||threatFired.current)return;
   threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
