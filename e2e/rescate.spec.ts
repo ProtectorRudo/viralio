@@ -102,18 +102,32 @@ test("CASO M · grabadora usa MP3 real y reproduce sonido en Android",async({pag
  await expect(recording).toHaveAttribute("src","./audio/rescue-message.mp3");
 });
 
+test("CASO M · música cinematográfica real comienza al aceptar misión",async({page})=>{
+ await start(page);
+ const music=page.getByTestId("rescate-music-audio");
+ await expect(music).toHaveAttribute("src","./audio/suspense.wav");
+ await expect.poll(()=>music.evaluate(el=>(el as HTMLAudioElement).readyState),{timeout:20000}).toBeGreaterThanOrEqual(2);
+ await expect.poll(()=>music.evaluate(el=>(el as HTMLAudioElement).currentTime),{timeout:10000}).toBeGreaterThan(.15);
+ await expect(page.getByRole("button",{name:"MÚSICA ON"})).toBeVisible();
+ await page.getByRole("button",{name:"MÚSICA ON"}).click();
+ await expect(page.getByRole("button",{name:"SONIDO OFF"})).toBeVisible();
+});
+
 test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:00",async({page})=>{
  test.setTimeout(95000);
  await start(page);
  await page.getByTestId("rescate-hint-button").click();
  const help=page.getByTestId("rescate-hint-panel");
  await expect(help).toBeVisible();
- await expect(help).toContainText("PISTA 1/5");
+ await expect(help).toContainText("PISTA ÚNICA");
  await expect(help).toContainText("fotografía");
- await help.getByRole("button",{name:/PEDIR OTRA PISTA/}).click();
- await expect(help).toContainText("PISTA 2/5");
+ await expect(help.getByRole("button",{name:/PEDIR OTRA PISTA/})).toHaveCount(0);
  await help.getByRole("button",{name:"Cerrar pista"}).click();
  await expect(help).toBeHidden();
+ await page.getByTestId("rescate-hint-button").click();
+ await expect(help).toContainText("PISTA ÚNICA");
+ await expect(help.getByRole("button",{name:/PEDIR OTRA PISTA/})).toHaveCount(0);
+ await help.getByRole("button",{name:"Cerrar pista"}).click();
  await walkTo(page,"d","x",3.0,"above");
  await walkTo(page,"w","z",-2.26);
  await examineNearby(page,"Reloj del interrogatorio");
@@ -165,7 +179,10 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await page.getByRole("button",{name:/PROBAR COMBINACIÓN/}).click();
  await expect(lock).not.toBeVisible();
  await expect(page.getByText(/EL CANDADO SE ABRIÓ/)).toBeVisible();
- await examineNearby(page,"Sobre encontrado");
+ const beacon=page.getByTestId("rescate-envelope-beacon");
+ await expect(beacon).toBeVisible();
+ await expect(beacon).toContainText("AHÍ ESTÁ EL SOBRE");
+ await beacon.click();
  await page.getByRole("button",{name:/ROMPER EL SELLO/}).click();
  await expect(page.getByText(/TENÉS UNA INVITACIÓN/)).toBeVisible();
  await page.getByRole("button",{name:/ABRIR LA INVITACIÓN/}).click();
