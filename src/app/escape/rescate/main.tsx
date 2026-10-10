@@ -127,6 +127,27 @@ function App(){
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
+ // A recurring suspense motif makes the score musical, not just a low hum.
+ useEffect(()=>{
+  if(screen!=="game"||muted)return;
+  let bar=0;
+  const motif=()=>{
+   const a=audio.current,bus=droneGain.current;if(!a||!bus||a.state==="closed")return;
+   const tense=seconds<=60,notes=tense?[233.1,246.9,311.1,220]:[164.8,174.6,233.1,146.8];
+   const t=a.currentTime,root=notes[bar++%notes.length];
+   for(const [i,f] of [root,root*1.414].entries()){
+    const o=a.createOscillator(),g=a.createGain();o.type=i?"sine":"triangle";
+    o.frequency.setValueAtTime(f,t+i*.12);
+    o.frequency.linearRampToValueAtTime(f*1.012,t+3+i*.12);
+    g.gain.setValueAtTime(.0001,t+i*.12);
+    g.gain.linearRampToValueAtTime(tense?.16:.10,t+.6+i*.12);
+    g.gain.exponentialRampToValueAtTime(.0001,t+5.2+i*.12);
+    o.connect(g);g.connect(bus);o.start(t+i*.12);o.stop(t+5.3+i*.12);
+   }
+  };
+  motif();const id=window.setInterval(motif,6700);return()=>window.clearInterval(id);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,muted,seconds<=60]);
  function fallbackVoice(){
   if(!("speechSynthesis" in window)){setTapeStatus("error");setToast("LA GRABACIÓN NO ESTÁ DISPONIBLE. LEÉ LA TRANSCRIPCIÓN.");return;}
   const synth=window.speechSynthesis;
