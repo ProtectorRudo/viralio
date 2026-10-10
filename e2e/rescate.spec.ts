@@ -88,6 +88,20 @@ test("CASO M · al minuto final aparece la advertencia y luego el intruso",async
  await page.screenshot({path:`visual-qa-evidence/rescate-intruso-${testInfo.project.name}.png`,fullPage:true});
 });
 
+test("CASO M · grabadora usa MP3 real y reproduce sonido en Android",async({page})=>{
+ test.setTimeout(85000);
+ await start(page);
+ const recording=page.getByTestId("rescate-tape-audio");
+ await expect.poll(()=>recording.evaluate(node=>(node as HTMLAudioElement).readyState),{timeout:15000}).toBeGreaterThanOrEqual(2);
+ await walkTo(page,"w","z",-1.03);
+ await examineNearby(page,"Grabador de voz");
+ const play=page.getByTestId("rescate-play-tape");
+ await expect(play).toBeVisible();
+ await play.click();
+ await expect.poll(()=>recording.evaluate(node=>(node as HTMLAudioElement).currentTime),{timeout:10000}).toBeGreaterThan(0);
+ await expect(recording).toHaveAttribute("src","./audio/rescue-message.mp3");
+});
+
 test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:00",async({page})=>{
  test.setTimeout(95000);
  await start(page);
