@@ -16,7 +16,7 @@
  color:#f0dec0;background:#222a29;border-radius:4px;font:700 .62rem ui-monospace,monospace;letter-spacing:.08em}
 .exit:focus-visible,.wayfinding button:focus-visible,.node:focus-visible,.objectSheet button:focus-visible,.inventory button:focus-visible{outline:2px solid #f4d19a;outline-offset:3px}
 .panorama{height:clamp(260px,44dvh,455px);position:relative;isolation:isolate;overflow:hidden;
- background-repeat:no-repeat;background-size:cover;background-color:#131b1e;
+ background-repeat:no-repeat;background-size:auto 170%;background-color:#131b1e;
  border-bottom:3px solid rgba(196,155,109,.32);transition:background-position .58s cubic-bezier(.2,.7,.2,1)}
 .panorama:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#081013ab 0,transparent 20%,transparent 70%,#05090aaf 100%),
  radial-gradient(ellipse 70% 55% at 50% 50%,transparent 23%,#0009)}
