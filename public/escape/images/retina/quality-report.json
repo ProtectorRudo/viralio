@@ -2,48 +2,53 @@
   "assets": [
     {
       "asset": "mansion",
-      "source": "1440x694",
-      "retina": "2880x1388",
-      "original_bytes": 112562,
-      "retina_bytes": 256752,
-      "retina_sharpness_reference": 763.342,
-      "method": "FSRCNN x2"
+      "source": "1672x941 original generated cinematic master",
+      "base": "1180x664",
+      "retina": "1672x941",
+      "original_bytes": 116412,
+      "retina_bytes": 234074,
+      "method": "original rendered master / Pillow WebP q83; downsampled 1x WebP q79",
+      "retina_sha256_prefix": "8a71431f4cc92876"
     },
     {
       "asset": "room-0",
-      "source": "1440x745",
-      "retina": "2880x1490",
-      "original_bytes": 81470,
-      "retina_bytes": 188020,
-      "retina_sharpness_reference": 108.271,
-      "method": "FSRCNN x2"
+      "source": "1672x941 original generated cinematic master",
+      "base": "1180x664",
+      "retina": "1672x941",
+      "original_bytes": 111556,
+      "retina_bytes": 223088,
+      "method": "original rendered master / Pillow WebP q83; downsampled 1x WebP q79",
+      "retina_sha256_prefix": "7acd95edce099b70"
     },
     {
       "asset": "room-1",
-      "source": "1440x745",
-      "retina": "2880x1490",
-      "original_bytes": 74726,
-      "retina_bytes": 177114,
-      "retina_sharpness_reference": 193.294,
-      "method": "FSRCNN x2"
+      "source": "1672x941 original generated cinematic master",
+      "base": "1180x664",
+      "retina": "1672x941",
+      "original_bytes": 74720,
+      "retina_bytes": 146556,
+      "method": "original rendered master / Pillow WebP q83; downsampled 1x WebP q79",
+      "retina_sha256_prefix": "a131b3431980e64c"
     },
     {
       "asset": "room-2",
-      "source": "1440x745",
-      "retina": "2880x1490",
-      "original_bytes": 78052,
-      "retina_bytes": 183970,
-      "retina_sharpness_reference": 100.201,
-      "method": "FSRCNN x2"
+      "source": "1672x941 original generated cinematic master",
+      "base": "1180x664",
+      "retina": "1672x941",
+      "original_bytes": 120790,
+      "retina_bytes": 237380,
+      "method": "original rendered master / Pillow WebP q83; downsampled 1x WebP q79",
+      "retina_sha256_prefix": "8c6c67054a284acb"
     },
     {
       "asset": "room-3",
-      "source": "1440x745",
-      "retina": "2880x1490",
-      "original_bytes": 72318,
-      "retina_bytes": 171018,
-      "retina_sharpness_reference": 117.711,
-      "method": "FSRCNN x2"
+      "source": "1672x941 original generated cinematic master",
+      "base": "1180x664",
+      "retina": "1672x941",
+      "original_bytes": 110290,
+      "retina_bytes": 222386,
+      "method": "original rendered master / Pillow WebP q83; downsampled 1x WebP q79",
+      "retina_sha256_prefix": "2c09ef2988b767c3"
     }
   ],
   "objects": [
@@ -120,5 +125,5 @@
       "method": "FSRCNN x2"
     }
   ],
-  "limitations": "2x copies reduce browser interpolation; cannot restore lost source detail."
+  "limitations": "Scene masters are newly generated 1672x941 photorealistic renders, not 4K and not AI upscaled from the earlier 1440px compressed scenes. True pixel detail does not exceed master resolution; 1x variants downsampled to 1180x664. Legacy small object photographs retain earlier upscaled copies until redesigned."
 }
