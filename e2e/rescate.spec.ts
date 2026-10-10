@@ -170,10 +170,27 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await walkTo(page,"a","x",-2.13);
  await walkTo(page,"w","z",-2.35);
  await examineNearby(page,"Fotografía dañada");
+ const photograph=page.getByTestId("rescate-photo");
+ await expect(photograph.locator("svg[role='img']")).toBeVisible();
  await page.getByTestId("rescate-photo").getByRole("button",{name:/DAR VUELTA/}).click();
  await expect(page.getByRole("dialog")).toContainText("XIII");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 3\/3/)).toBeVisible();
+ const dossier=page.getByTestId("rescate-dossier-toggle");
+ await expect(dossier).toHaveAttribute("aria-expanded","true");
+ const slips=page.getByTestId("rescate-evidence-slip");
+ await expect(slips).toHaveCount(3);
+ for(let i=0;i<3;i++){
+  const card=await slips.nth(i).boundingBox();
+  expect(card).not.toBeNull();
+  expect(card!.width).toBeGreaterThan(150);
+  expect(card!.height).toBeGreaterThan(40);
+  if(i>0){
+   const previous=await slips.nth(i-1).boundingBox();
+   expect(card!.y).toBeGreaterThanOrEqual(previous!.y+previous!.height-1);
+  }
+ }
+ await expect(slips).toContainText(["Cinta recuperada","Grabación vigilada","Fotografía intervenida"]);
  // Go around the front of the physical table (collision volumes prevent
  // reaching through the tabletop from the calendar side of the room).
  await walkTo(page,"s","z",-1.31,"above");
