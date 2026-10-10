@@ -12,6 +12,24 @@ async function visualAudit(page:Page,file:string){
 }
 
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("umbral de entrada: puerta física, salto accesible y reloj sin tiempo perdido", async ({page})=>{
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    const passage=page.getByTestId("umbral-threshold");
+    await expect(passage).toHaveAttribute("data-type","arrival");
+    await expect(passage).toHaveAttribute("data-to","0");
+    await expect(page.getByTestId("umbral-threshold-destination")).toBeVisible();
+    await expect(page.getByText("LA CASA TE ESTABA ESPERANDO.")).toBeVisible();
+    await page.waitForTimeout(600);
+    await expect(page.getByRole("button",{name:"Omitir secuencia cinematográfica"})).toBeVisible();
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+    await expect(passage).toHaveCount(0);
+    await expect(page.getByText(/24:5[89]|25:00/)).toBeVisible();
+    await page.getByRole("button",{name:"Examinar reloj"}).first().click();
+    await expect(page.getByRole("heading",{name:"El reloj detenido"})).toBeVisible();
+  });
+
   test("escuchar la casa: pista ambiental accesible con o sin sonido, sin bloquear los acertijos", async ({ page }) => {
     await page.goto("/escape");
     await page.getByRole("button", { name: /SONIDO ACTIVADO/ }).click();
@@ -126,6 +144,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByText(/USAR TECLADO NUMÉRICO/).click();
     for(const digit of [4,2,7]) await page.getByRole("button",{name:"Ingresar "+digit}).click();
     await page.getByRole("button", { name: "Confirmar código" }).click();
+    await expect(page.getByTestId("umbral-threshold")).toHaveAttribute("data-to","1");
+    await expect(page.getByTestId("umbral-threshold")).toHaveAttribute("data-type","chapter");
     await expect(page.getByRole("heading", { name: "El despacho", exact: true })).toBeVisible({ timeout: 5000 });
     await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","study");
     await page.screenshot({path:"visual-qa-evidence/umbral-despacho-desktop.png",fullPage:true,animations:"disabled"});

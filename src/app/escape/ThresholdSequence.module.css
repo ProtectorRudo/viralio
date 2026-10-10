@@ -1,0 +1,143 @@
+/* UMBRAL / Directed chapter passage. Physical door in CSS geometry; underlying
+   scene is the same DPR-aware photographic asset the game actually renders.
+   No downloaded animation, additional movie or blurry screenshot. */
+.sequence{
+ position:fixed;inset:0;z-index:90;overflow:hidden;isolation:isolate;display:grid;place-items:center;
+ color:#f4ebdf;background:#020507;
+ perspective:1450px;contain:layout paint;
+}
+.sequence::before{
+ content:"";position:absolute;inset:0;z-index:7;pointer-events:none;
+ background:radial-gradient(ellipse 95% 86% at 50% 48%,transparent 43%,rgba(0,0,0,.73)),
+ linear-gradient(180deg,rgba(0,0,0,.47),transparent 28%,transparent 67%,rgba(1,3,5,.81));
+}
+.nextRoom{position:absolute;inset:-1.5%;background-size:cover;background-position:center;filter:brightness(.53) saturate(.67) contrast(1.08);
+ animation:thresholdZoom 2.4s cubic-bezier(.26,.4,.18,1) both;transform:scale(1.055)}
+.aperture{
+ position:absolute;left:50%;top:50%;width:min(53vw,570px);height:min(82dvh,750px);
+ transform:translate(-50%,-50%);z-index:3;
+ background:radial-gradient(ellipse at 50% 48%,transparent 25%,rgba(3,6,8,.75) 100%);
+ box-shadow:0 0 0 400vmax rgba(2,5,8,.3),inset 0 0 85px 17px rgba(2,4,6,.9);
+ border-radius:44% 44% 1% 1%/17% 17% 1% 1%;
+ animation:thresholdAperture 2s ease-in-out both;
+}
+.arch{
+ position:absolute;left:50%;top:49%;height:min(80dvh,730px);width:min(50vw,550px);
+ transform:translate(-50%,-50%);z-index:4;perspective:1400px;
+ border:clamp(12px,2vw,25px) ridge #4b3d2b;border-bottom:0;
+ border-radius:47% 47% 0 0/17% 17% 0 0;
+ background:linear-gradient(90deg,#0a0e11,transparent 18%,transparent 82%,#05090b);
+ box-shadow:0 0 0 4px #201913,0 0 0 12px #131614,0 0 0 15px rgba(151,117,73,.3),
+ 0 30px 120px #000, inset 0 0 50px rgba(0,0,0,.95);
+ animation:thresholdArch 2s cubic-bezier(.55,.03,.49,1) both;
+}
+.arch:after{content:"";position:absolute;inset:1%;pointer-events:none;
+ box-shadow:inset 0 0 15px #05080a;border-radius:inherit;z-index:8}
+.door{
+ position:absolute;inset:1px 2px 0 2px;transform-origin:2% center;
+ transform:rotateY(0deg);transform-style:preserve-3d;backface-visibility:hidden;
+ border:9px ridge #665038;border-radius:44% 44% 0 0/17% 17% 0 0;
+ background:
+  repeating-linear-gradient(91deg,rgba(197,155,99,.025) 0 1px,transparent 2px 16px,rgba(0,0,0,.08) 17px 23px),
+  linear-gradient(105deg,#201911 0%,#493825 9%,#281f16 21%,#69543b 34%,#322617 50%,#473523 65%,#1b1611 91%,#0c0e0e);
+ box-shadow:inset 15px 3px 38px rgba(0,0,0,.65),inset -12px 0 25px rgba(0,0,0,.81),
+ 0 18px 75px rgba(0,0,0,.84);
+ animation:woodDoorSwing 1.78s cubic-bezier(.54,.03,.16,1) .21s both;
+}
+.wornPaint{position:absolute;inset:0;pointer-events:none;opacity:.49;
+ background:repeating-linear-gradient(91deg,transparent 0 13px,rgba(219,182,123,.08) 14px,transparent 19px 35px);
+ mask-image:linear-gradient(90deg,#000,transparent 50%,#000)}
+.panelTop,.panelMiddle,.panelBottom{position:absolute;left:11%;right:11%;
+ border:9px ridge rgba(141,108,74,.65);background:linear-gradient(115deg,rgba(17,15,13,.4),rgba(88,65,42,.28),rgba(4,6,7,.55));
+ box-shadow:inset 0 0 25px rgba(0,0,0,.67),0 0 0 4px rgba(21,18,16,.7);border-radius:40% 40% 5px 5px/18% 18% 5px 5px}
+.panelTop{top:17%;height:29%}
+.panelMiddle{top:51%;height:20%;border-radius:3px}
+.panelBottom{top:75%;height:18%;border-radius:3px}
+.panelTop span,.panelMiddle span,.panelBottom span{
+ position:absolute;inset:11%;display:block;border:2px solid rgba(183,147,99,.23);box-shadow:inset 0 0 24px rgba(0,0,0,.38)}
+.hardware{position:absolute;right:13%;top:53%;width:60px;height:120px;transform:translateY(-50%);
+ border:2px ridge rgba(205,164,106,.8);border-radius:19px 19px 15px 15px;
+ background:linear-gradient(110deg,#3c3228,#b4956a 26%,#63503a 51%,#a47e52 79%,#342a22);
+ box-shadow:inset 1px 0 6px rgba(255,224,172,.36),0 5px 15px #000}
+.hardware i:first-child{position:absolute;top:20px;left:50%;transform:translateX(-50%);
+ width:10px;height:10px;border-radius:50%;background:#2f281e;box-shadow:inset 0 0 1px #f6d5a2}
+.hardware i:last-child{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+ width:12px;height:18px;border:3px solid #483b29;border-radius:60% 60% 25% 25%}
+.hardware b{position:absolute;top:55px;left:17%;width:65px;height:15px;border-radius:9px 50% 50% 9px;
+ background:linear-gradient(180deg,#dfbe82,#6b5030 57%,#30271e);
+ box-shadow:0 4px 12px #000;transform:rotate(-12deg);transform-origin:8% 50%}
+.doorNumber{position:absolute;top:13%;left:50%;transform:translateX(-50%);font:400 clamp(1.7rem,4vw,3.2rem)/1 Georgia,serif;
+ color:rgba(230,200,157,.72);letter-spacing:.15em;text-shadow:0 2px 12px #000}
+.doorEdge{position:absolute;top:1%;right:-11px;height:98%;width:12px;
+ transform:rotateY(90deg);transform-origin:left center;background:linear-gradient(#9e7951,#392715,#9d7546)}
+.hinge{position:absolute;left:0;top:15%;width:6px;height:68%;
+ background:repeating-linear-gradient(180deg,#a28761 0 12px,#32271a 13px 37px);
+ filter:drop-shadow(0 0 4px rgba(227,199,146,.23))}
+.lightSpill{position:absolute;inset:0;z-index:5;pointer-events:none;
+ background:radial-gradient(ellipse 30% 68% at 51% 43%,rgba(208,210,170,.24),transparent 93%);
+ mix-blend-mode:screen;animation:lightBehindDoor 2.1s ease-out both}
+.filmGrain{position:absolute;inset:-35%;z-index:8;pointer-events:none;opacity:.1;
+ background-image:url("data:image/svg+xml,%3Csvg%20viewBox='0%200%20150%20150'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='.7'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='.3'/%3E%3C/svg%3E");
+ animation:thresholdGrain .37s steps(2,end) infinite}
+.letterboxTop,.letterboxBottom{position:absolute;left:0;right:0;height:clamp(15px,4dvh,38px);background:#010304;z-index:9;pointer-events:none}
+.letterboxTop{top:0;box-shadow:0 8px 35px rgba(0,0,0,.58)}
+.letterboxBottom{bottom:0;box-shadow:0 -8px 35px rgba(0,0,0,.66)}
+.copy{position:absolute;z-index:11;left:50%;bottom:clamp(89px,17dvh,184px);
+ width:min(710px,calc(100% - 44px));transform:translateX(-50%);text-align:center;text-shadow:0 3px 14px #000,0 10px 35px #000;
+ pointer-events:none;animation:thresholdCopy 1.25s cubic-bezier(.16,1,.3,1) .62s both}
+.eyebrow{display:block;font:700 .58rem/1.6 ui-monospace,monospace;letter-spacing:.32em;color:#f1c79e}
+.copy h2{font:400 clamp(2.15rem,5.3vw,4.85rem)/.99 Georgia,serif;letter-spacing:-.065em;color:#fff0dc;margin:12px auto 10px;max-width:730px}
+.copy p{font:italic clamp(.92rem,1.6vw,1.19rem)/1.5 Georgia,serif;color:#ecdfd1;margin:8px 0}
+.signal{display:block;font:700 .57rem/1.5 ui-monospace,monospace;letter-spacing:.18em;color:#dfc6ab;margin-top:15px}
+.floorMark{position:absolute;left:24px;bottom:21px;z-index:12;
+ font:700 .52rem ui-monospace,monospace;letter-spacing:.2em;color:rgba(206,197,176,.49)}
+.skip{position:absolute;right:clamp(17px,3.6vw,50px);bottom:clamp(17px,3.6vh,40px);z-index:13;
+ min-height:44px;min-width:154px;border:1px solid rgba(230,208,171,.43);
+ border-radius:2px;background:rgba(6,12,14,.84);color:#f4e1c4;
+ font:700 .56rem/1.3 ui-monospace,monospace;letter-spacing:.1em;
+ cursor:pointer;transition:background .2s,border .2s,transform .2s}
+.skip span{display:inline-block;margin-left:8px}
+.skip:hover,.skip:focus-visible{border-color:#f7d6a4;background:#3d352a;transform:translateY(-2px)}
+.skip:focus-visible{outline:3px solid #ffdc96;outline-offset:4px}
+@keyframes woodDoorSwing{
+ 0%,11%{transform:rotateY(0deg);filter:brightness(.52)}
+ 22%{filter:brightness(.88)}
+ 77%,100%{transform:rotateY(-81deg);filter:brightness(.61)}
+}
+@keyframes thresholdArch{0%,14%{opacity:1}88%,100%{opacity:.55;filter:brightness(.7)}}
+@keyframes thresholdAperture{from{opacity:.55}60%{opacity:.43}to{opacity:0}}
+@keyframes lightBehindDoor{0%,22%{opacity:0}42%{opacity:.28}76%{opacity:.86}100%{opacity:.21}}
+@keyframes thresholdZoom{0%,12%{transform:scale(1.09);filter:brightness(.2) saturate(.51)}74%{filter:brightness(.68) saturate(.69)}100%{transform:scale(1.012);filter:brightness(.89) saturate(.88)}}
+@keyframes thresholdCopy{from{opacity:0;transform:translate(-50%,25px)}22%{opacity:0}65%{opacity:1}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes thresholdGrain{0%{transform:translate(0,0)}25%{transform:translate(1.2%,.8%)}50%{transform:translate(-1%,.5%)}75%{transform:translate(.7%,-.8%)}}
+@media(max-width:700px){
+ .arch{width:min(79vw,450px);height:min(76dvh,640px)}
+ .aperture{width:min(80vw,460px);height:min(79dvh,655px)}
+ .copy{bottom:clamp(115px,18dvh,190px);width:calc(100% - 30px)}
+ .copy h2{font-size:clamp(2.25rem,10vw,3.6rem);max-width:420px}
+ .copy p{font-size:clamp(.9rem,3.7vw,1.04rem);max-width:345px;margin-left:auto;margin-right:auto}
+ .eyebrow{font-size:.47rem;letter-spacing:.17em}
+ .signal{font-size:.47rem}
+ .hardware{transform:translateY(-50%) scale(.75);transform-origin:top right}
+ .doorNumber{font-size:2rem}
+ .skip{bottom:26px;right:50%;transform:translateX(50%);min-width:165px}
+ .skip:hover{transform:translateX(50%)}
+ .floorMark{bottom:19px;left:11px;font-size:.44rem}
+ .letterboxTop,.letterboxBottom{height:16px}
+}
+@media(max-height:590px){
+ .arch{height:90dvh}
+ .aperture{height:93dvh}
+ .copy{bottom:62px}
+ .copy h2{font-size:clamp(1.8rem,5vw,2.7rem)}
+ .copy p{display:none}
+ .signal{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .sequence *,.sequence *::before,.sequence *::after{animation:none!important;transition:none!important}
+ .door{transform:rotateY(-78deg);filter:brightness(.55)}
+ .nextRoom{transform:none;filter:brightness(.86)}
+ .copy{opacity:1;transform:translateX(-50%)}
+ .lightSpill,.filmGrain{display:none}
+ .skip{visibility:visible}
+}

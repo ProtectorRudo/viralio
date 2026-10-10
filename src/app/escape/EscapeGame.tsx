@@ -7,6 +7,7 @@ import DiegeticFocus from "./DiegeticFocus";
 import CinematicAtmosphere from "./CinematicAtmosphere";
 import HouseListening from "./HouseListening";
 import EvaMirror from "./EvaMirror";
+import ThresholdSequence from "./ThresholdSequence";
 import LockTumblers from "./LockTumblers";
 import ClockMechanism from "./ClockMechanism";
 import PhysicalLetter from "./PhysicalLetter";
@@ -140,6 +141,8 @@ type Spot = { id: string; text: string; x: number; y: number; act: () => void; a
 
 export default function EscapeGame() {
   const [phase, setPhase] = useState<Phase>("intro");
+  const [entering, setEntering] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
   const [room, setRoom] = useState(0);
   const [seconds, setSeconds] = useState(TOTAL);
   const [difficulty,setDifficulty] = useState<Difficulty>("story");
@@ -171,7 +174,7 @@ export default function EscapeGame() {
     return ()=>{nextScenePrefetch.current=null;};
   },[phase,room]);
 
-  const cinematicPause=modal==="tape" || scareStage!=="off";
+  const cinematicPause=modal==="tape" || scareStage!=="off" || transitioning;
   const scoreDuck=cinematicPause || dollSpeaking || Boolean(modal);
   const scoreTier=tensionTier(seconds);
   const [pin, setPin] = useState("");
@@ -179,7 +182,7 @@ export default function EscapeGame() {
   const [ready, setReady] = useState(false);
   const deadlineRef = useRef<number | null>(null);
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
-  const [transitioning, setTransitioning] = useState(false);
+
   const [apparition, setApparition] = useState(false);
   const [flashlight, setFlashlight] = useState(false);
   const [jolt, setJolt] = useState(false);
@@ -347,8 +350,8 @@ export default function EscapeGame() {
   },[phase,paused,modal,scareStage,room,sound,cinematicScares]);
 
   useEffect(()=>{
-    updateAdaptiveScore({remaining:seconds,room,active:phase==="playing"&&!paused,silent:!sound||!musicEnabled,duck:scoreDuck});
-  },[seconds,room,phase,paused,sound,musicEnabled,scoreDuck]);
+    updateAdaptiveScore({remaining:seconds,room,active:phase==="playing"&&!paused&&!transitioning,silent:!sound||!musicEnabled,duck:scoreDuck});
+  },[seconds,room,phase,paused,transitioning,sound,musicEnabled,scoreDuck]);
   useEffect(()=>()=>stopAdaptiveScore(),[]);
 
   const lateDanger=seconds<=300, finalDanger=seconds<=60;
@@ -462,6 +465,7 @@ export default function EscapeGame() {
   function message(t:string){setToast(t);}
   function begin() {
     unlockHorrorAudio();
+    setEntering(false);
     startAdaptiveScore({remaining:difficulty==="nightmare"?720:TOTAL,room:0,active:true,silent:!sound||!musicEnabled,duck:false});
     scareAlreadyPlayed.current=false;
     setScareStage("off");
@@ -469,13 +473,27 @@ export default function EscapeGame() {
     if(typeof window!=="undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
     deadlineRef.current=null;setDollSpeaking(false);setTransitioning(false);setFlashlight(false);setJolt(false);setRoom(0);setSeconds(difficulty==="nightmare"?12*60:TOTAL);setPuzzles(INITIAL);setHints([0,0,0,0]);setMistakes(0);setPhase("playing");setPaused(false);setModal(null);setPin("");sfx("step");
   }
+  function approachHouse() {
+    if(entering) return;
+    // Both the door sound and the Web Audio unlock belong to a real user tap.
+    // The 25/12-minute countdown will not start until the cinematic finishes.
+    unlockHorrorAudio();
+    if(sound)playHorror("door",{pan:-.48,intensity:cinematicScares?.72:.31});
+    setEntering(true);
+  }
   function nextRoom() {
     if(transitioning) return;
-    sfx("success");playHorror("door",{pan:room%2===0?.65:-.7});setModal(null);setTransitioning(true);
-    window.setTimeout(()=>{
-      setRoom(v=>Math.min(3,v+1));setPin("");setTransitioning(false);
-      setToast("CAPÍTULO DESBLOQUEADO · Escuchaste pasos detrás de vos.");
-    },1050);
+    sfx("success");
+    if(sound)playHorror("door",{pan:room%2===0?.65:-.7,intensity:cinematicScares?.78:.36});
+    setModal(null);
+    setTransitioning(true);
+  }
+  function finishRoomThreshold(){
+    if(!transitioning) return;
+    setRoom(v=>Math.min(3,v+1));
+    setPin("");
+    setTransitioning(false);
+    setToast("CAPÍTULO DESBLOQUEADO · Escuchaste pasos detrás de vos.");
   }
   function portrait(i:number) {
     sfx();setPuzzles(p=>({...p,portraits:Array.from(new Set([...p.portraits,i]))}));setModal("portrait"+i);
@@ -587,7 +605,7 @@ export default function EscapeGame() {
         <p className={styles.story}>Hace diez años Eva desapareció en esta casa. Hoy recibiste una carta anónima. La puerta se cerró a tus espaldas. <strong>Tenés {difficulty==="nightmare"?"12":"25"} minutos</strong> para descubrir qué ocurrió con Eva. Pero hay algo que la casa nunca te contó: no todos los que escapan realmente salen.</p>
         <div className={styles.introSpecs}><span>◷ CONTRARRELOJ</span><span>✦ 4 CAPÍTULOS</span><span>◈ 2 FINALES</span></div>
         <fieldset className={styles.difficulty}><legend>ELEGÍ CUÁNTO SE ACERCA LA OSCURIDAD</legend><button type="button" aria-pressed={difficulty==="story"} className={difficulty==="story"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("story")}><b>25 MIN</b><small>MODO HISTORIA</small></button><button type="button" aria-pressed={difficulty==="nightmare"} className={difficulty==="nightmare"?styles.selectedDifficulty:""} onClick={()=>setDifficulty("nightmare")}><b>12 MIN</b><small>MODO PESADILLA</small></button></fieldset>
-        <button className={styles.primary} onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
+        <button className={styles.primary} onClick={approachHouse} disabled={entering}>ENTRAR A LA CASA <span>↗</span></button>
         <div className={styles.introOptions} aria-label="Preferencias de la experiencia">
           <button className={styles.soundIntro} onClick={()=>setSound(v=>!v)} aria-pressed={sound}>{sound?"◉ SONIDO ACTIVADO":"◎ JUGAR SIN SONIDO"}</button>
           <button className={styles.scoreChoice} type="button" aria-pressed={musicEnabled} onClick={()=>setMusicEnabled(v=>!v)}>{musicEnabled?"♫ BANDA SONORA DINÁMICA ACTIVADA":"♫ BANDA SONORA DESACTIVADA"}</button>
@@ -595,6 +613,7 @@ export default function EscapeGame() {
         </div>
         <p className={styles.introFine}>Auriculares recomendados · Jugable en celular y computadora · Sin descargas</p>
       </div>
+      {entering&&<ThresholdSequence toRoom={0} arrival onComplete={begin}/>}
       <div className={styles.chapterRail} aria-label="Las cuatro habitaciones del escape room">{ROOM_NAMES.map((name,i)=><div key={name} className={styles.chapterCard} style={{backgroundImage:`linear-gradient(180deg,transparent 40%,rgba(0,0,0,.92) 100%),image-set(url("/escape/images/room-${i}.webp") 1x,url("/escape/images/retina/room-${i}.webp") 2x)`}}><span className={styles.chapterNumber}>{i+1}</span><div><strong>{name}</strong><small>{chapterTaglines[i]}</small></div></div>)}</div>
     </section> : phase==="playing" ? <>
       <header className={styles.hud}>
@@ -652,7 +671,7 @@ export default function EscapeGame() {
         <div className={styles.blackoutPulse} aria-hidden="true"/>
         <button className={styles.blackoutSkip} onClick={skipScare}>OMITIR SUSTO ↗</button>
       </div>}
-      {transitioning&&<div className={styles.transition} aria-live="polite"><span>LA CASA CAMBIA</span><div className={styles.transitionDoor}/><strong>UNA PUERTA SE CIERRA DETRÁS DE VOS</strong></div>}
+      {transitioning&&<ThresholdSequence toRoom={Math.min(room+1,3)} arrival={false} onComplete={finishRoomThreshold}/>}
       {toast&&<div role="status" className={styles.toast}>{toast}</div>}
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget || (focusKind && e.target instanceof Element && e.target.closest("[data-focus-object]")))setModal(null);}}>
