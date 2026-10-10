@@ -318,6 +318,44 @@ function scene(opened:boolean){
  g.tube([0,4.00,-1.65],[0,3.23,-1.65],.055,"#89837a");
  g.box(0,3.20,-1.65,.61,.18,.55,"#c2a47c");
  g.box(0,3.08,-1.65,.4,.032,.31,"#ffd9a2","emissive");
+ // Story-driven environmental dressing, kept light for phone GPUs.
+ // Recorder desk: cold coffee, marked paper and coiled signal cable.
+ g.tube([-3.18,1.08,-3.10],[-3.18,1.24,-3.10],.105,"#d6bf9e");
+ g.tube([-3.18,1.24,-3.10],[-3.18,1.255,-3.10],.094,"#604436");
+ g.box(-3.02,1.002,-3.21,.29,.014,.17,"#e0c8a5");
+ g.box(-3.02,1.018,-3.19,.19,.011,.014,"#655a4c");
+ for(let i=0;i<8;i++){const t=i/7*Math.PI*1.8;
+  g.tube([-2.16+.14*Math.cos(t),1.02,-2.71+.13*Math.sin(t)],
+         [-2.16+.14*Math.cos(t+.37),1.02,-2.71+.13*Math.sin(t+.37)],.012,"#292b29");}
+ // Contact sheets from surveillance on the right workstation.
+ for(let i=0;i<4;i++){
+  const x=2.93+(i%2)*.16,z=-3.08+Math.floor(i/2)*.18;
+  g.box(x,1.013,z,.15,.009,.13,"#c9b69a");
+  g.box(x,1.023,z,.083,.008,.062,i%2===0?"#465352":"#655f56");
+ }
+ // Torn witness reports, visually low but clearly resting on the floor.
+ for(let i=0;i<12;i++){
+  const x=-.6+.33*(i%4),z=-4.5+.21*Math.floor(i/4);
+  g.box(x,.032,z,.22+.04*(i%2),.015,.12,"#8e8470");
+  g.box(x+.02,.041,z,.15,.006,.011,"#373c3a");
+ }
+ // Bolts and worn enamel border on the lock station.
+ for(const x of [-1.55,1.55]){
+  g.box(x,.985,-2.62,.035,.022,1.56,"#cab18a");
+  for(const z of [-3.22,-2.14])g.box(x,.99,z,.063,.018,.064,"#756753");
+ }
+ // Patchy repairs and conduit on side walls.
+ for(let j=0;j<7;j++){
+  const z=-4.45+j*1.29,y=1.18+j%3*.59;
+  g.box(-4.79,y,z,.028,.20,.69,j%2?"#4a4644":"#414247");
+  g.box(4.79,y+.24,z,.025,.26,.55,j%2?"#524942":"#41444a");
+ }
+ g.tube([3.85,3.65,-5.53],[3.88,2.8,-5.55],.032,"#262b2c");
+ g.tube([3.88,2.8,-5.55],[4.70,2.39,-4.20],.025,"#242829");
+ // Hanging coat almost melts into darkness: the eye reads it as a person.
+ g.box(-4.28,2.65,.9,.39,.082,.095,"#796b5d");
+ g.tube([-4.28,2.64,.88],[-4.28,2.42,.88],.022,"#958270");
+ g.ellipsoid(-4.28,1.87,.98,.35,.66,.13,"#212629","scene");
  // 12 metal scraps on floor: atmospheric, not all puzzle relevant.
  for(let i=0;i<15;i++){
   const x=Math.sin(i*7.13)*4.07,z=Math.cos(i*5.17)*4.15-.35;
