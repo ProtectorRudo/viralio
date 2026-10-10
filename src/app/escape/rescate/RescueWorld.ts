@@ -129,18 +129,18 @@ function scene(opened:boolean){
  // Tall hooded intruder: sculpted shoulders, face recess, clothing folds
  // and staggered legs, all shaded as a true 3-D volume rather than Minecraft blocks.
  g.ellipsoid(.32,2.58,6.28,.315,.37,.295,"#111821");
- g.ellipsoid(.32,2.55,6.00,.235,.29,.075,"#080d12"); // under the hood
- g.ellipsoid(.32,2.56,5.912,.194,.255,.068,"#bdb0a0"); // theatrical weathered mask
- g.ellipsoid(.228,2.61,5.842,.062,.045,.021,"#0a0d11"); // sunken dark eyes
- g.ellipsoid(.413,2.61,5.842,.062,.045,.021,"#0a0d11");
- g.ellipsoid(.32,2.475,5.836,.070,.024,.015,"#303037"); // silent mouth
+ g.ellipsoid(.32,2.55,6.00,.215,.275,.084,"#060a0e"); // under the hood
+ g.ellipsoid(.32,2.56,5.912,.164,.233,.047,"#3f3b37"); // dark half-masked face only briefly revealed
+ g.ellipsoid(.250,2.62,5.856,.044,.023,.012,"#0a0c0d"); // shadowed left eye socket
+ g.ellipsoid(.391,2.62,5.856,.044,.023,.012,"#0a0c0d");
+ g.ellipsoid(.32,2.49,5.855,.060,.008,.006,"#171718"); // subtle mask seam
  g.box(.32,2.445,5.827,.015,.073,.013,"#6d574d"); // cracked surface
 
- g.ellipsoid(.30,2.94,6.31,.33,.14,.27,"#222b32"); // folded hood rim
- g.ellipsoid(.32,2.07,6.29,.61,.29,.36,"#1a2028"); // broad, soft shoulders
- g.limb([.32,2.12,6.28],[.32,1.25,6.28],.47,.35,"#171d25"); // tailored coat
- g.limb([.32,1.31,6.28],[.32,.90,6.28],.39,.52,"#111821"); // coat flare
- g.ellipsoid(.32,1.24,6.27,.48,.18,.30,"#25272a"); // belt/fold
+ g.ellipsoid(.30,2.94,6.31,.29,.12,.29,"#171b20"); // narrow hood rim
+ g.ellipsoid(.32,2.07,6.29,.48,.25,.31,"#171c21"); // believable shoulder shape
+ g.limb([.32,2.12,6.28],[.32,1.25,6.28],.40,.33,"#161b20"); // tailored coat
+ g.limb([.32,1.31,6.28],[.32,.90,6.28],.34,.40,"#12171d"); // coat flare
+ g.ellipsoid(.32,1.24,6.27,.34,.12,.25,"#242426"); // belt/fold
  g.limb([.27,2.36,6.02],[.32,1.21,6.01],.063,.10,"#384048"); // coat lapel
  g.limb([.05,2.30,5.97],[.24,1.14,5.98],.034,.025,"#4a4d4e"); // first coat seam
  g.limb([.57,2.30,5.97],[.42,1.14,5.98],.034,.025,"#4a4d4e"); // second seam
@@ -148,11 +148,11 @@ function scene(opened:boolean){
  g.box(.06,1.35,5.961,.29,.035,.021,"#41464a");
  g.box(.56,1.35,5.961,.29,.035,.021,"#41464a");
 
- g.limb([-.26,2.12,6.29],[-.39,1.58,6.23],.24,.195,"#171d25"); // left sleeve
- g.limb([-.39,1.58,6.23],[-.32,1.06,6.12],.195,.13,"#1a1c22");
+ g.limb([-.22,2.12,6.29],[-.31,1.58,6.23],.20,.157,"#181d23"); // left sleeve
+ g.limb([-.31,1.58,6.23],[-.28,1.06,6.12],.152,.116,"#191c20");
  g.ellipsoid(-.32,1.06,6.10,.14,.15,.12,"#26272a"); // gloved hand
- g.limb([.86,2.10,6.30],[.99,1.59,6.23],.25,.19,"#181f27");
- g.limb([.99,1.59,6.23],[.89,1.01,6.08],.19,.125,"#1d2229"); // knife arm
+ g.limb([.82,2.10,6.30],[.92,1.59,6.23],.21,.161,"#191d20");
+ g.limb([.92,1.59,6.23],[.89,1.01,6.08],.16,.116,"#1d2024"); // knife arm
  g.ellipsoid(.89,.98,6.06,.145,.16,.14,"#343435");
  g.limb([.03,1.03,6.33],[-.07,.33,6.32],.195,.145,"#131820","figure-leg");
  g.limb([.62,1.03,6.34],[.73,.33,6.32],.195,.145,"#10151c","figure-leg");
@@ -380,7 +380,11 @@ void main(){
  // Side/back light separates coat and face from the doorway without revealing
  // the identity of the figure.
  float rim=pow(1.0-abs(dot(normalize(vNorm),normalize(eye-vPos))),2.2);
- outColor+=characterRim*vec3(.10,.19,.24)*(.13+rim*1.7)*(1.0+.17*sin(time*2.1));
+ // Keep the intruder a shape in darkness: disclose only edges in red/amber
+  // light, preventing the low-poly model from becoming a giant visible doll.
+  float breathing=.72+.25*sin(time*2.0);
+  outColor= mix(outColor,outColor*.33,characterRim*.75);
+  outColor+=characterRim*vec3(.14,.09,.07)*(.04+rim*.70)*breathing;
  // A single brief cold highlight on the blade; nothing bright before it enters.
  outColor+=vec3(.72,.86,.96)*bladeFlash;
  gl_FragColor=vec4(pow(outColor,vec3(.9)),1.0);
@@ -516,8 +520,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
   // Door first; shadow at 00:55, intruder at ~00:50, blade glint at ~00:47.
-  const approachLimit=Math.max(.5,Math.min(4.3,6.28-pose.z-1.65));
-  const approach=intruderStarted?Math.max(0,Math.min(approachLimit,(elapsed-9)*.14)):0;
+  const approachLimit=Math.max(.5,Math.min(2.55,6.28-pose.z-2.2));
+  const approach=intruderStarted?Math.max(0,Math.min(approachLimit,(elapsed-9)*.075)):0;
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,Math.max(0,elapsed-9)*5.2);
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
