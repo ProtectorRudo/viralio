@@ -11,7 +11,86 @@ async function visualAudit(page:Page,file:string){
   }
 }
 
+/** Every new investigator must accept the diegetic pledge before the door. */
+async function startSignedGame(page:Page){
+  await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+  await expect(page.getByTestId("umbral-oath")).toHaveAttribute("data-stage","envelope");
+  await page.getByRole("button",{name:"Abrir el sobre sellado"}).click();
+  await expect(page.getByTestId("umbral-oath")).toHaveAttribute("data-stage","letter");
+  await page.getByRole("button",{name:"⌨ USAR NOMBRE"}).click();
+  await page.getByRole("textbox",{name:"Firma por nombre"}).fill("Investigador/a de Eva");
+  await page.getByRole("checkbox",{name:/Me comprometo a intentar salvar a Eva/}).check();
+  await page.getByRole("button",{name:/SELLAR MI COMPROMISO Y ENTRAR/}).click();
+}
+async function jumpToLandmark(page:Page,label:string){
+  const group=page.locator('details[class*="landmarks"]');
+  if(!(await group.evaluate(el=>(el as HTMLDetailsElement).open)))await group.locator("summary").click();
+  await page.getByRole("button",{name:"Ir a "+label}).click();
+}
+
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("carta de Eva: apertura, firma manuscrita y resguardo en el expediente", async ({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/escape");
+    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    const pledge=page.getByTestId("umbral-oath");
+    await expect(pledge).toHaveAttribute("data-stage","envelope");
+    await page.getByRole("button",{name:"Abrir el sobre sellado"}).click();
+    await expect(pledge).toHaveAttribute("data-stage","letter");
+    const continueButton=page.getByRole("button",{name:/SELLAR MI COMPROMISO Y ENTRAR/});
+    await expect(continueButton).toBeDisabled();
+    const pad=page.getByTestId("umbral-signature");
+    const box=await pad.boundingBox();
+    expect(box).toBeTruthy();if(!box)throw Error("signature pad not measured");
+    await page.mouse.move(box.x+32,box.y+62);
+    await page.mouse.down();
+    for(let i=0;i<16;i++)await page.mouse.move(box.x+34+i*16,box.y+48+Math.sin(i*.9)*19);
+    await page.mouse.up();
+    await page.getByRole("checkbox",{name:/Me comprometo a intentar salvar a Eva/}).check();
+    await expect(continueButton).toBeEnabled();
+    await visualAudit(page,"umbral-carta-compromiso-firmada.png");
+    await continueButton.click();
+    await expect(page.getByTestId("umbral-threshold")).toBeVisible();
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    await page.getByRole("button",{name:/Abrir expediente/}).click();
+    const recovered=page.getByTestId("umbral-signed-pledge");
+    await expect(recovered).toBeVisible();
+    await expect(recovered.getByRole("img",{name:"Firma manuscrita del jugador"})).toBeVisible();
+    await page.getByRole("button",{name:"Cerrar"}).click();
+    await page.reload();
+    await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
+    await page.getByRole("button",{name:/Abrir expediente/}).click();
+    await expect(page.getByTestId("umbral-signed-pledge").getByRole("img",{name:"Firma manuscrita del jugador"})).toBeVisible();
+  });
+
+  test("cámara libre: arrastrar para recorrer la habitación y acercarse físicamente", async ({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/escape");
+    await startSignedGame(page);
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    await page.getByRole("button",{name:"Recorrer habitación y manipular objetos"}).click();
+    const explorer=page.getByTestId("umbral-explorer");
+    await expect(explorer).toHaveAttribute("data-navigation","free-look");
+    const view=page.getByTestId("umbral-explorer-view");
+    await expect(view).toHaveAttribute("data-camera","150");
+    const bounds=await view.boundingBox();expect(bounds).toBeTruthy();
+    if(!bounds)throw Error("camera bounds missing");
+    await page.mouse.move(bounds.x+bounds.width*.53,bounds.y+bounds.height*.58);
+    await page.mouse.down();
+    await page.mouse.move(bounds.x+bounds.width*.10,bounds.y+bounds.height*.48,{steps:13});
+    await page.mouse.up();
+    const newCamera=Number(await view.getAttribute("data-camera"));
+    expect(newCamera).toBeGreaterThan(195);
+    await page.getByRole("button",{name:"Acercarse a la escena"}).click();
+    expect(Number(await view.getAttribute("data-distance"))).toBeGreaterThan(.12);
+    await page.getByRole("button",{name:"Caminar hacia la izquierda"}).click();
+    expect(Number(await view.getAttribute("data-camera"))).toBeLessThan(newCamera);
+    await visualAudit(page,"umbral-camara-libre-recorrido-390.png");
+    await view.focus();
+    await page.keyboard.press("ArrowUp");
+    expect(Number(await view.getAttribute("data-distance"))).toBeGreaterThan(.28);
+  });
+
   test("exploración: 12 objetos por escena, tres puntos de vista y mecanismos físicos", async ({page})=>{
     test.setTimeout(100_000);
     await page.setViewportSize({width:390,height:844});
@@ -36,7 +115,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       await expect(explorer).toHaveAttribute("data-room",String(scene.room));
       await expect(page.getByTestId("umbral-explorer-view")).toBeVisible();
 
-      await page.getByRole("button",{name:"Ir a "+["Entrada","Escritorio","Zona de juegos","Caldera"][scene.room]}).click();
+      await jumpToLandmark(page,["Entrada","Escritorio","Zona de juegos","Caldera"][scene.room]);
       await expect(explorer.locator('[class*="node"]')).toHaveCount(4);
       await page.getByRole("button",{name:"Examinar "+scene.drawer}).click();
       const sheet=page.getByTestId("umbral-object-inspection");
@@ -48,7 +127,8 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       await expect(sheet.locator('[class*="revelation"]')).toBeVisible();
       await sheet.getByRole("button",{name:/RECOGER/}).click();
       await expect(page.getByTestId("umbral-inventory")).toContainText(scene.tool);
-      await page.getByRole("button",{name:"Ir a "+["Escalera","Escritorio","Armario","Panel central"][scene.room]}).click();
+      await sheet.getByRole("button",{name:"Guardar objeto y volver a la habitación"}).click();
+      await jumpToLandmark(page,["Escalera","Escritorio","Armario","Panel central"][scene.room]);
       await page.getByRole("button",{name:"Examinar "+scene.lock}).click();
       await expect(sheet).toBeVisible();
       await sheet.getByRole("button",{name:new RegExp("SELECCIONAR "+scene.tool,"i")}).click();
@@ -65,10 +145,10 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("exploración: inventario y posición mecánica sobreviven al guardado", async ({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/escape");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
     await page.getByRole("button",{name:"Recorrer habitación y manipular objetos"}).click();
-    await page.getByRole("button",{name:"Ir a Entrada"}).click();
+    await jumpToLandmark(page,"Entrada");
     await page.getByRole("button",{name:"Examinar Cajón de la consola"}).click();
     const slider=page.getByRole("slider",{name:/CORRER EL CAJÓN/});
     await slider.focus();await slider.press("End");
@@ -79,7 +159,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.getByRole("button",{name:/SEGUIR INVESTIGANDO/}).click();
     await page.getByRole("button",{name:"Recorrer habitación y manipular objetos"}).click();
     await expect(page.getByTestId("umbral-inventory")).toContainText("Llave de bronce");
-    await page.getByRole("button",{name:"Ir a Entrada"}).click();
+    await jumpToLandmark(page,"Entrada");
     await page.getByRole("button",{name:"Examinar Cajón de la consola"}).click();
     await expect(page.getByRole("slider",{name:/CORRER EL CAJÓN/})).toHaveValue("100");
     await expect(page.getByRole("button",{name:/EN EL INVENTARIO/})).toBeDisabled();
@@ -104,7 +184,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
         expect(actual,id+" "+folder).toEqual(folder==="characters"?[280,353]:[420,530]);
       }
     }
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
     const foundPaths=new Set<string>();
     for(const [id,name,year] of [["elias","Elías","1891"],["mara","Mara","1902"],["nora","Nora","1918"]]){
@@ -147,7 +227,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       Object.defineProperty(window,"AudioContext",{configurable:true,value:TrackedAudioContext});
     });
     await page.goto("/escape");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await expect(page.getByTestId("umbral-threshold")).toBeVisible();
     await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
     await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
@@ -166,7 +246,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
   test("umbral de entrada: puerta física, salto accesible y reloj sin tiempo perdido", async ({page})=>{
     await page.goto("/escape");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     const passage=page.getByTestId("umbral-threshold");
     await expect(passage).toHaveAttribute("data-type","arrival");
     await expect(passage).toHaveAttribute("data-to","0");
@@ -185,7 +265,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("escuchar la casa: pista ambiental accesible con o sin sonido, sin bloquear los acertijos", async ({ page }) => {
     await page.goto("/escape");
     await page.getByRole("button", { name: /SONIDO ACTIVADO/ }).click();
-    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
+    await startSignedGame(page);
     const station=page.getByTestId("umbral-listening");
     await expect(station).toHaveAttribute("data-room","0");
     await expect(station).toHaveAttribute("data-stage","ready");
@@ -245,7 +325,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       expect((await recording.body()).byteLength).toBeGreaterThan(9000);
     }
         await page.screenshot({path:"visual-qa-evidence/umbral-intro-desktop.png",fullPage:true,animations:"disabled"});
-    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
+    await startSignedGame(page);
     await expect(page.getByRole("heading", { name: "El vestíbulo", exact: true })).toBeVisible();
     await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-mood","foyer");
     await expect(page.getByTestId("umbral-atmosphere")).toHaveAttribute("data-powered","no");
@@ -420,7 +500,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       // investigation auto-resume and hide the entrance button on reload.
       await page.evaluate(()=>window.localStorage.removeItem("umbral-casa-13-v1"));
       await page.reload();
-      await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+      await startSignedGame(page);
       await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
       await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
 
@@ -476,7 +556,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await expect(page.getByRole("button",{name:/BANDA SONORA DINÁMICA ACTIVADA/})).toBeVisible();
     await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toBeVisible();
     await visualAudit(page,"umbral-intro-mobile-audit.png");
-    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
+    await startSignedGame(page);
     await expect(page.getByRole("navigation", { name: "Objetos para investigar" })).toBeVisible();
     await visualAudit(page,"umbral-vestibulo-mobile-sin-linterna.png");
     const torch=page.getByRole("button",{name:"☼ LINTERNA"});
@@ -543,7 +623,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await expect(page.getByRole("heading",{name:/UMBRAL/})).toBeVisible();
     await visualAudit(page,"umbral-mansion-retina-mobile.png");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
     const roomBackdrop=page.locator('[data-room="0"]').first();
     const roomCss=await roomBackdrop.evaluate(el=>getComputedStyle(el).backgroundImage);
@@ -563,7 +643,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("cerradura física: tres tambores metálicos resuelven el código sin teclado",async ({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/escape");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await page.getByRole("navigation",{name:"Objetos para investigar"}).getByRole("button",{name:"Abrir cerradura"}).click();
     await expect(page.locator('[data-focus-object="lock"]')).toBeVisible();
     await expect(page.locator('[data-lock-dials]')).toBeVisible();
@@ -578,7 +658,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
   test("código incorrecto no abre la puerta", async ({ page }) => {
     await page.goto("/escape");
-    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
+    await startSignedGame(page);
     await page.getByRole("button", { name: "Abrir cerradura" }).first().click();
     await page.getByText(/USAR TECLADO NUMÉRICO/).click();
     await page.getByRole("textbox", { name: "Código de tres cifras" }).fill("123");
@@ -589,7 +669,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("el reloj respeta tiempo real, segundo plano y pausa", async ({ page }) => {
     await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
     await page.goto("/escape");
-    await page.getByRole("button", { name: /ENTRAR A LA CASA/ }).click();
+    await startSignedGame(page);
     await expect(page.getByText("25:00")).toBeVisible();
     await page.clock.fastForward(15000);
     await expect(page.getByText("24:45")).toBeVisible();
@@ -604,7 +684,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await page.getByRole("button",{name:/12 MIN/}).click();
     await expect(page.getByText("Tenés 12 minutos")).toBeVisible();
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await expect(page.getByText("12:00")).toBeVisible();
     await page.getByRole("button",{name:"Pausar partida"}).click();
     await page.reload();
@@ -617,7 +697,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
     await page.goto("/escape");
     await expect(page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/})).toHaveAttribute("aria-pressed","true");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await page.getByRole("button",{name:"Abrir cerradura"}).first().click();
     await page.getByText(/USAR TECLADO NUMÉRICO/).click();
     await page.getByRole("textbox",{name:"Código de tres cifras"}).fill("427");
@@ -642,7 +722,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await page.goto("/escape");
     await page.getByRole("button",{name:/EXPERIENCIA DE TERROR CINEMATOGRÁFICO/}).click();
     await expect(page.getByRole("button",{name:/TERROR SUAVE/})).toHaveAttribute("aria-pressed","false");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
     await expect(page.getByRole("dialog",{name:"Apagón inesperado en la casa"})).toHaveCount(0);
     await page.getByRole("button",{name:"Pausar partida"}).click();
@@ -659,7 +739,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     await soundtrack.click();
     await expect(page.getByRole("button",{name:/BANDA SONORA DESACTIVADA/})).toHaveAttribute("aria-pressed","false");
     await page.getByRole("button",{name:/12 MIN/}).click();
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     const musicButton=page.getByRole("button",{name:"Activar música"});
     await expect(musicButton).toHaveAttribute("aria-pressed","false");
     await musicButton.click();
@@ -682,7 +762,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   test("la música se atenúa cuando se pausa y vuelve con la partida",async ({page})=>{
     await page.clock.install({time:new Date("2026-10-09T21:00:00Z")});
     await page.goto("/escape");
-    await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+    await startSignedGame(page);
     await expect(page.getByRole("button",{name:"Silenciar música"})).toBeVisible();
     await page.getByRole("button",{name:"Pausar partida"}).click();
     await expect(page.getByRole("heading",{name:/Hasta la casa guarda silencio/})).toBeVisible();
