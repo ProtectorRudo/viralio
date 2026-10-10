@@ -570,3 +570,8 @@
 @media(prefers-reduced-motion:reduce){
  .cinematicRoom,.roomArt .cinematicRoom{animation:none!important;transform:none!important;will-change:auto!important}
 }
+
+/* Eva's fogged-glass memory: an optional ninth object, not part of the eight
+   required archival pieces. Its inner canvas handles its own DPR. */
+.mirrorDialog{width:min(100%,660px)!important;max-height:calc(100dvh - 18px);padding:clamp(23px,3.8vw,38px)!important;background:radial-gradient(ellipse at 49% 29%,#2a3435,#111718 62%,#080d0f)!important}
+@media(max-width:650px){.mirrorDialog{padding:20px 15px!important;max-height:calc(100dvh - 12px)}}
