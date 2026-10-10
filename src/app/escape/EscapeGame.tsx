@@ -17,6 +17,7 @@ import {unlockHorrorAudio,playHorror,playFootstepsAcrossRoom,playInterfaceCue,se
 import {startRoomTone,stopRoomTone} from "./RoomTone";
 import EvidenceArchive from "./EvidenceArchive";
 import RoomExplorer,{EMPTY_EXPLORATION,type ExplorationState} from "./RoomExplorer";
+import Foyer3D,{type Foyer3DProgress} from "./Foyer3D";
 import EvaPledge,{type EvaPledgeRecord} from "./EvaPledge";
 import {startAdaptiveScore,resumeAdaptiveScore,updateAdaptiveScore,finishAdaptiveScore,stopAdaptiveScore,tensionTier,TENSION_TITLES} from "./AdaptiveScore";
 
@@ -558,6 +559,23 @@ export default function EscapeGame() {
     ...[2,3,4,5].map((n,i)=>({id:"fuse"+n,text:"Fusible "+n,x:31.7+i*10.4,y:50,glyph:String(n),active:puzzles.fuses.includes(n),act:()=>fuse(n)})),
     {id:"lever",text:"Bajar palanca",x:83.6,y:57,glyph:"⏚",act:lever},
   ];
+  const foyer3dProgress:Foyer3DProgress={
+    drawer:Boolean(exploration.mechanisms?.["foyer-3d-drawer"]),
+    key:exploration.collected.includes("Llave de bronce"),
+    box:Boolean(exploration.mechanisms?.["foyer-3d-box"]),
+    clock:Boolean(exploration.mechanisms?.["foyer-3d-clock"]),
+  };
+  function storeFoyer3D(next:Foyer3DProgress){
+    setExploration(prev=>({
+      ...prev,
+      collected:[...new Set([...(prev.collected??[]),...(next.key?["Llave de bronce"]:[]),...(next.box?["Placa familiar"]:[])])],
+      mechanisms:{...prev.mechanisms,
+        "foyer-3d-drawer":next.drawer?100:0,
+        "foyer-3d-box":next.box?100:0,
+        "foyer-3d-clock":next.clock?100:0,
+      },
+    }));
+  }
   const subtitle=["Algo detrás de esos retratos todavía observa.","Los libros saben más de lo que deberían.","Una caja musical lleva años sonando sola.","Solo la electricidad puede abrir la salida."][room];
   const chapterTaglines=["Todo comienza con una puerta cerrada.","Las pistas siempre estuvieron ahí.","Los recuerdos también esconden secretos.","La verdad siempre deja una salida."];
   const focusKind = modal?.startsWith("portrait") ? "portrait" : modal==="pin" ? "lock"
@@ -638,6 +656,7 @@ export default function EscapeGame() {
           }}
         />}
 
+        {room===0&&<button type="button" className={styles.foyer3DLaunch} data-testid="umbral-3d-launch" onClick={()=>{sfx("step");setModal("3d");}}>◈ ENTRAR AL VESTÍBULO 3D <span>CAMINAR · GIRAR · INTERACTUAR</span></button>}
         <button type="button" className={styles.exploreSceneButton} data-testid="umbral-explore-launch" onClick={()=>{sfx("step");setModal("explore");}}>⌖ RECORRER LA ESCENA <span>12 OBJETOS POR ZONAS</span></button>
         <button className={styles.caseButton} onClick={()=>{sfx("click");setModal("journal");}} aria-label={"Abrir expediente. "+recoveredCount+" pruebas encontradas de 8"}>▤ EXPEDIENTE <span>{recoveredCount}/8</span></button>
         <div className={styles.roomProgress}><span>INVESTIGACIÓN</span><div>{ROOM_NAMES.map((n,i)=><i key={n} className={i<=room?styles.done:""}/>)}</div></div>
@@ -647,6 +666,7 @@ export default function EscapeGame() {
         <span>OBJETOS PARA INVESTIGAR · {String(hotspots.length).padStart(2,"0")}</span>
         <div>{hotspots.map(spot=><button type="button" key={spot.id} onClick={spot.act} disabled={transitioning} aria-pressed={spot.active ? true : undefined}><b aria-hidden="true">{spot.glyph}</b>{spot.text}</button>)}</div>
       </nav>
+      {room===0&&<button type="button" className={styles.foyer3DMobile} data-testid="umbral-3d-mobile-launch" onClick={()=>{sfx("step");setModal("3d");}} aria-label="Entrar al vestíbulo tridimensional jugable">◈ ENTRAR AL VESTÍBULO 3D <span>JOYSTICK · CÁMARA LIBRE · OBJETOS FÍSICOS →</span></button>}
       <button type="button" className={styles.exploreMobileButton} onClick={()=>{sfx("step");setModal("explore");}} aria-label="Recorrer habitación y manipular objetos">⌖ EXPLORAR LA HABITACIÓN <span>12 OBJETOS · 3 ZONAS · INVENTARIO →</span></button>
       <div className={styles.bottomBar}>
         <div className={styles.bottomIntro}><span className={styles.pulseCircle}>✧</span><div><strong>TOCÁ LOS OBJETOS PARA INVESTIGAR</strong><small>Las pistas están en la habitación. No hay objetos decorativos marcados.</small></div></div>
@@ -665,7 +685,7 @@ export default function EscapeGame() {
       {paused&&<div className={styles.overlay}><div className={styles.pauseCard}><span className={styles.eyebrow}>EXPEDIENTE EN ESPERA</span><h2>Hasta la casa guarda silencio.</h2><p>El cronómetro se detuvo. Tus descubrimientos están guardados en este navegador.</p><button className={styles.primary} onClick={()=>{unlockHorrorAudio();resumeAdaptiveScore({remaining:seconds,room,active:true,silent:!sound||!musicEnabled,duck:scoreDuck});setPaused(false);sfx("step");}}>SEGUIR INVESTIGANDO →</button><button className={styles.ghost} onClick={()=>{stopAdaptiveScore();setPaused(false);setPhase("intro");setModal(null);setPledge(null);}}>ABANDONAR LA PARTIDA</button></div></div>}
       {modal&&!paused&&<div className={styles.overlay+" "+(focusKind?styles.focusOverlay:"")} onMouseDown={e=>{if(e.target===e.currentTarget || (focusKind && e.target instanceof Element && e.target.closest("[data-focus-object]")))setModal(null);}}>
         {focusKind&&<DiegeticFocus room={room} kind={focusKind} mark={focusYear} character={focusPerson} origin={focusSpot?{x:focusSpot.x,y:focusSpot.y}:undefined}/>}
-        {modal==="explore"?<RoomExplorer room={room} state={exploration} onChange={setExploration} onClose={()=>setModal(null)} onSound={success=>sfx(success?"success":"step")}/>:<section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
+        {modal==="3d"&&room===0?<Foyer3D progress={foyer3dProgress} onChange={storeFoyer3D} onClose={()=>setModal(null)} onSound={success=>sfx(success?"success":"step")}/>:modal==="explore"?<RoomExplorer room={room} state={exploration} onChange={setExploration} onClose={()=>setModal(null)} onSound={success=>sfx(success?"success":"step")}/>:<section role="dialog" aria-modal="true" aria-label={modal==="journal"?"Expediente de Eva":modal==="pin"?"Candado numérico":"Objeto investigado"} className={styles.dialog+" "+(focusKind?styles.focusDialog:"")+" "+(modal==="journal"?styles.journalDialog:modal==="mirror"?styles.mirrorDialog:modal==="pin"?styles.pinDialog:modal==="clock"?styles.clockDialog:modal==="letter"||modal==="eva"?styles.letterDialog:modal==="tape"?styles.memoryDialog:"")}>
           <button className={styles.close} onClick={()=>setModal(null)} aria-label="Cerrar">✕</button>
           {modal!=="journal" && modal!=="tape" && modal!=="mirror" &&<span className={styles.eyebrow}>◈ OBJETO INVESTIGADO</span>}
           {modal==="tape"&&<EvaMemory onClose={()=>setModal(null)}/>}
