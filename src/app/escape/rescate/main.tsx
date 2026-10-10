@@ -114,13 +114,14 @@ function App(){
   threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
   setDoorWarning(true);setShowNear(false);setToast("RUIDO EN EL PASILLO · ¡LA PUERTA SE ESTÁ ABRIENDO!");
   sound("door");navigator.vibrate?.([140,100,260]);
-  window.setTimeout(()=>sound("step"),1700);
-  window.setTimeout(()=>sound("step"),3100);
-  window.setTimeout(()=>sound("step"),4500);
-  window.setTimeout(()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);},10000);
-  window.setTimeout(()=>sound("metal"),12900);
-  window.setTimeout(()=>setFigureWarning(false),16500);
-  window.setTimeout(()=>setDoorWarning(false),8500);
+  const schedule=(ms:number,cb:()=>void)=>threatTimers.current.push(window.setTimeout(cb,ms));
+  schedule(1700,()=>sound("step"));
+  schedule(3100,()=>sound("step"));
+  schedule(4500,()=>sound("step"));
+  schedule(10000,()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);});
+  schedule(12900,()=>sound("metal"));
+  schedule(16500,()=>setFigureWarning(false));
+  schedule(8500,()=>setDoorWarning(false));
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
