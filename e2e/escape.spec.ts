@@ -62,6 +62,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
   });
 
   test("exploración: inventario y posición mecánica sobreviven al guardado", async ({page})=>{
+    await page.setViewportSize({width:390,height:844});
     await page.goto("/escape");
     await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
     await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
