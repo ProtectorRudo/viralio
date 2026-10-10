@@ -55,6 +55,17 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
  await page.screenshot({path:`visual-qa-evidence/rescate-mauro-3d-${testInfo.project.name}.png`,fullPage:true});
 });
 
+test("CASO M · toque directo sobre el cajón abre el candado",async({page},testInfo)=>{
+ await start(page);
+ const canvas=page.getByTestId("rescate-webgl");
+ const bounds=await canvas.boundingBox();
+ expect(bounds).not.toBeNull();
+ const x=bounds!.x+bounds!.width*.5,y=bounds!.y+bounds!.height*.598;
+ if(testInfo.project.use.hasTouch)await page.touchscreen.tap(x,y);
+ else await page.mouse.click(x,y);
+ await expect(page.getByRole("dialog",{name:/Candado de seis cifras/})).toBeVisible();
+});
+
 test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:00",async({page})=>{
  test.setTimeout(95000);
  await start(page);
@@ -62,7 +73,7 @@ test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:
  const help=page.getByTestId("rescate-hint-panel");
  await expect(help).toBeVisible();
  await expect(help).toContainText("PISTA 1/5");
- await expect(help).toContainText("calendario");
+ await expect(help).toContainText("fotografía");
  await help.getByRole("button",{name:/PEDIR OTRA PISTA/}).click();
  await expect(help).toContainText("PISTA 2/5");
  await help.getByRole("button",{name:"Cerrar pista"}).click();
@@ -96,8 +107,9 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await walkTo(page,"a","x",-2.13);
  await walkTo(page,"w","z",-2.35);
- await examineNearby(page,"Calendario arrancado");
- await expect(page.getByRole("dialog")).toContainText("13");
+ await examineNearby(page,"Fotografía dañada");
+ await page.getByTestId("rescate-photo").getByRole("button",{name:/DAR VUELTA/}).click();
+ await expect(page.getByRole("dialog")).toContainText("XIII");
  await page.getByRole("button",{name:/GUARDAR EVIDENCIA/}).click();
  await expect(page.getByText(/PRUEBAS 3\/3/)).toBeVisible();
  // Go around the front of the physical table (collision volumes prevent

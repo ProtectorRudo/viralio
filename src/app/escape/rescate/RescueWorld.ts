@@ -7,7 +7,7 @@ export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"pho
 export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
- {id:"calendar",label:"Calendario arrancado",pos:[-2.7,2.1,-5.16],reach:3.4,hint:"La fecha parece marcada con demasiada insistencia."},
+ {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
  {id:"cassette",label:"Grabador de voz",pos:[-2.8,1.03,-2.53],reach:2.9,hint:"La cinta está atascada en una grabación."},
  {id:"memo",label:"Informe confidencial",pos:[2.45,1.02,-2.55],reach:2.9,hint:"Un informe arrugado con instrucciones."},
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
@@ -135,24 +135,19 @@ function scene(opened:boolean){
  g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
  g.box(1.7,1.58,.18,1.5,1.28,.14,"#4e3d34");
  for(let y=1.2;y<2.01;y+=.18)g.box(1.7,y,.28,1.31,.045,.06,"#79634d");
- // Actually legible calendar, with an inked date in its month grid.
- g.box(-2.75,2.14,-5.59,1.75,1.98,.17,"#a79b87");
- g.box(-2.75,2.15,-5.47,1.58,1.80,.035,"#ecdfc9","calendar");
- g.box(-2.75,2.92,-5.42,1.60,.28,.075,"#8c3b38");
- for(let col=0;col<8;col++)g.box(-3.46+col*.202,2.03,-5.432,.008,1.17,.015,"#8c8578");
- for(let row=0;row<6;row++)g.box(-2.75,2.60-row*.232,-5.432,1.42,.009,.015,"#8c8578");
- g.box(-3.15,2.25,-5.411,.195,.18,.027,"#b8554b");
- const digit=(n:number,x:number,y:number)=>{
-  const segments=n===1?[1,2]:[0,1,6,2,3];
-  for(const k of segments){
-   const horizontal=[0,3,6].includes(k),dx=k===1||k===2?.075:k===4||k===5?-.075:0;
-   const dy=k===0?.113:k===3?-.113:k===6?0:k===1||k===5?.058:-.058;
-   g.box(x+dx,y+dy,-5.375,horizontal?.13:.022,horizontal?.022:.10,.024,"#5d2529");
-  }
- };
- digit(1,-3.22,2.23);digit(3,-3.04,2.23);
- for(let i=0;i<16;i++){const a=i*Math.PI/8;g.box(-3.13+Math.cos(a)*.235,2.23+Math.sin(a)*.23,-5.365,.058,.024,.018,"#a83734");}
- g.box(-2.75,1.19,-5.43,1.64,.045,.08,"#928370");
+ // Evidence photograph on the wall. Nothing displays the solution on its front.
+ // Cream paper frame, dark developed photograph, aged tape and damaged corners.
+ g.box(-2.75,2.12,-5.59,1.65,1.94,.10,"#6e6254");
+ g.box(-2.75,2.12,-5.49,1.54,1.82,.039,"#d9c8aa","calendar");
+ g.box(-2.75,2.27,-5.449,1.36,1.32,.024,"#323b43","calendar");
+ g.box(-2.74,2.16,-5.424,1.12,.93,.021,"#28343e");
+ g.box(-2.74,2.48,-5.402,.74,.27,.021,"#4f5250");
+ g.box(-2.65,1.97,-5.40,.40,.22,.022,"#6b5d55");
+ g.box(-3.1,2.96,-5.425,.38,.14,.037,"#aa9270");
+ g.box(-2.38,2.98,-5.425,.38,.14,.037,"#aa9270");
+ g.box(-2.75,1.33,-5.431,.90,.035,.022,"#786856");
+ // Rough tear / crack across developed picture.
+ for(let i=0;i<6;i++)g.box(-3.24+i*.17,2.32+(i%2)*.04,-5.391,.22,.014,.012,"#8f8171");
  // Clock with real WebGL hands that animate around a shared spindle.
  const cx=3.73,cy=2.14,cz=-5.43;
  g.box(cx,cy,cz,1.46,1.46,.15,"#65503f");
@@ -300,19 +295,33 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   return targets().filter(t=>Math.hypot(t.pos[0]-pose.x,t.pos[2]-pose.z)<3.25)
   .sort((a,b)=>Math.hypot(a.pos[0]-pose.x,a.pos[2]-pose.z)-Math.hypot(b.pos[0]-pose.x,b.pos[2]-pose.z));
  }
+ // Screen-space hit areas match the actual model dimensions. Taps on a
+ // visible object should work even before the player walks within "E" reach.
+ // The old picker rejected all taps beyond target.reach, frustrating mobiles.
  function pick(x:number,y:number,w:number,h:number):Target|null{
-  const {forward,right,up}=basis(),ratio=w/Math.max(1,h),nx=2*x/w-1,ny=1-2*y/h;
-  let selected:Target|null=null,score=Infinity;
+  if(w<=0||h<=0||x<0||y<0||x>w||y>h)return null;
+  const {forward,right,up}=basis(),ratio=w/h;
+  const extents:Record<ClueId,[number,number]> = {
+   calendar:[1.65,1.94],cassette:[1.1,.62],memo:[.91,.64],
+   clock:[1.54,1.55],drawer:[1.6,.95],envelope:[.43,.32],
+   phone:[.85,.58],camera:[.62,.40],locker:[1.7,3.05],
+   lamp:[.72,.66],pipe:[1.18,1.45]
+  };
+  let selected:Target|null=null,rank=Infinity;
   for(const target of targets()){
    const v:V=[target.pos[0]-pose.x,target.pos[1]-pose.y,target.pos[2]-pose.z];
    const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
-   if(depth<.25||Math.hypot(...v)>target.reach)continue;
-   const px=(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth);
-   const py=(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth;
-   const err=Math.hypot((nx-px)*w/2,(ny-py)*h/2);
-   const radius=target.id==="calendar"||target.id==="clock"?Math.min(115,w*.23):Math.min(84,w*.20);
-   const rank=err+depth*4;
-   if(err<=radius&&rank<score){score=rank;selected=target;}
+   if(depth<=.2)continue;
+   const projectedX=w/2+(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth)*w/2;
+   const projectedY=h/2-(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth*h/2;
+   const [width,height]=extents[target.id];
+   // 24px minimum half-size makes narrow controls reachable with a finger.
+   const halfW=Math.max(26,width*1.46/depth*h/4+10);
+   const halfH=Math.max(26,height*1.46/depth*h/4+10);
+   const dx=(x-projectedX)/halfW,dy=(y-projectedY)/halfH;
+   if(Math.abs(dx)>1||Math.abs(dy)>1)continue;
+   const score=depth+Math.hypot(dx,dy)*1.9;
+   if(score<rank){rank=score;selected=target;}
   }
   return selected;
  }
