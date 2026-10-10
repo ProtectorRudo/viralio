@@ -53,7 +53,7 @@ class Room {
   }
  }
 }
-const WALL="#383c42",FLOOR="#2d3033",IRON="#586267",WOOD="#644735",GOLD="#bd946b";
+const WALL="#383c42",FLOOR="#2d3033",WOOD="#644735";
 function scene(opened:boolean){
  const g=new Room();
  // A believable, limited navigable room, roughly 10 × 11 m.
@@ -76,7 +76,7 @@ function scene(opened:boolean){
  for(let z=-5;z<5.1;z+=2.3)g.box(0,3.94,z,9.7,.20,.19,"#4f5154");
  // Rusty door, sealed from outside.
  g.box(0,1.65,5.12,2.24,3.22,.19,"#404749");
- for(let x of [-.99,.99])g.box(x,1.65,5.00,.07,3.4,.09,"#93938b");
+ for(const x of [-.99,.99])g.box(x,1.65,5.00,.07,3.4,.09,"#93938b");
  g.box(0,3.29,4.99,2.1,.09,.12,"#8e928c");
  for(let y=.35;y<2.9;y+=.51)g.box(0,y,4.98,1.85,.03,.06,"#606d70");
  g.box(.87,1.4,4.89,.19,.09,.18,"#b1a279");
