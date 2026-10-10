@@ -32,6 +32,9 @@ test.describe("UMBRAL · el juego puede completarse", () => {
 
   test("espejo: alternativa por teclado y recuerdo persistente en partida guardada", async ({ page }) => {
     await page.addInitScript(() => {
+      // Init scripts run again on reload: seed just once to test real persistence.
+      if(window.sessionStorage.getItem("umbral-mirror-seeded")==="yes")return;
+      window.sessionStorage.setItem("umbral-mirror-seeded","yes");
       window.localStorage.setItem("umbral-casa-13-v1", JSON.stringify({
         phase:"playing", room:2, seconds:950, hints:[0,0,0,0], mistakes:0, difficulty:"story",
         puzzles:{clockWound:false,mirrorRead:false,portraits:[],candles:[],studyOpen:true,notesRead:true,evaRead:false,melody:[],nurseryOpen:false,keepsake:false,fuses:[],power:false,ending:null},
