@@ -66,6 +66,21 @@ test("CASO M · toque directo sobre el cajón abre el candado",async({page},test
  await expect(page.getByRole("dialog",{name:/Candado de seis cifras/})).toBeVisible();
 });
 
+
+test("CASO M · al minuto final aparece la advertencia y luego el intruso",async({page},testInfo)=>{
+ test.setTimeout(150000);
+ await page.clock.install();
+ await start(page);
+ // Run the in-game clock deterministically rather than actually waiting two minutes.
+ await page.clock.runFor(120000);
+ await expect(page.getByTestId("rescate-timer")).toContainText("01:00");
+ await expect(page.getByTestId("rescate-intruder-alert")).toBeVisible();
+ await page.clock.runFor(10000);
+ await expect(page.getByTestId("rescate-knife-alert")).toBeVisible();
+ await expect(page.getByTestId("rescate-knife-alert")).toContainText("NO ESTÁS SOLO");
+ await page.screenshot({path:`visual-qa-evidence/rescate-intruso-${testInfo.project.name}.png`,fullPage:true});
+});
+
 test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:00",async({page})=>{
  test.setTimeout(95000);
  await start(page);
