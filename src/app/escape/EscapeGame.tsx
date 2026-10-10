@@ -142,6 +142,7 @@ type Spot = { id: string; text: string; x: number; y: number; act: () => void; a
 export default function EscapeGame() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [entering, setEntering] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
   const [room, setRoom] = useState(0);
   const [seconds, setSeconds] = useState(TOTAL);
   const [difficulty,setDifficulty] = useState<Difficulty>("story");
@@ -181,7 +182,7 @@ export default function EscapeGame() {
   const [ready, setReady] = useState(false);
   const deadlineRef = useRef<number | null>(null);
   const ambient = useRef<{ noise: AudioBufferSourceNode; rumble: OscillatorNode } | null>(null);
-  const [transitioning, setTransitioning] = useState(false);
+
   const [apparition, setApparition] = useState(false);
   const [flashlight, setFlashlight] = useState(false);
   const [jolt, setJolt] = useState(false);
