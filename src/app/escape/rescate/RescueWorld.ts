@@ -114,10 +114,10 @@ function scene(opened:boolean){
  g.box(-.76,.98,-2.8,.81,.031,.42,"#8c765d");
  g.box(-.88,1.001,-2.8,.52,.007,.31,"#d5c4aa");
  // Chair legs and backrest. Touch of world context beyond clues.
- for(const x of [-.7,.7])for(const z of [-.73,.06])g.box(x,.44,z,.11,.85,.11,"#414449");
- g.box(0,.85,-.3,1.53,.17,1.03,"#515252");
- g.box(0,1.58,.18,1.5,1.28,.14,"#4e3d34");
- for(let y=1.2;y<2.01;y+=.18)g.box(0,y,.28,1.31,.045,.06,"#79634d");
+ for(const x of [1.0,2.4])for(const z of [-.73,.06])g.box(x,.44,z,.11,.85,.11,"#414449");
+ g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
+ g.box(1.7,1.58,.18,1.5,1.28,.14,"#4e3d34");
+ for(let y=1.2;y<2.01;y+=.18)g.box(1.7,y,.28,1.31,.045,.06,"#79634d");
  // Giant clock and calendar are actual wall-mounted polygon surfaces.
  g.box(-2.75,2.14,-5.59,1.55,1.74,.17,"#a79b87");
  g.box(-2.75,2.15,-5.47,1.39,1.59,.027,"#d4c5ac","calendar");
@@ -259,7 +259,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   return best;
  }
- const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13}];
+ const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13},{x:1.7,z:0,w:1.64,d:1.3}];
  function collides(x:number,z:number){
   if(x< -4.48||x>4.48||z< -5.17||z>4.79)return true;
   return obstacles.some(o=>Math.abs(o.x-x)<o.w/2+.23&&Math.abs(o.z-z)<o.d/2+.23);
@@ -288,7 +288,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  return {
   move:(f:number,s:number,dt:number)=>{
    if(Math.abs(f)+Math.abs(s)<.02)return;
-   const {forward,right}=basis(),length=Math.max(1,Math.hypot(f,s)),d=2.65*Math.min(dt,.065);
+   const {forward,right}=basis(),length=Math.max(1,Math.hypot(f,s)),d=2.75*Math.min(dt,.22);
    const dx=(f*forward[0]+s*right[0])/length*d,dz=(f*forward[2]+s*right[2])/length*d;
    if(!collides(pose.x+dx,pose.z))pose.x+=dx;
    if(!collides(pose.x,pose.z+dz))pose.z+=dz;
