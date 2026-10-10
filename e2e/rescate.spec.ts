@@ -72,10 +72,10 @@ test("CASO M · al minuto final aparece la advertencia y luego el intruso",async
  await page.clock.install();
  await start(page);
  // Run the in-game clock deterministically rather than actually waiting two minutes.
- await page.clock.runFor(120000);
+ for(let j=0;j<120;j++)await page.clock.fastForward(1000);
  await expect(page.getByTestId("rescate-timer")).toContainText("01:00");
  await expect(page.getByTestId("rescate-intruder-alert")).toBeVisible();
- await page.clock.runFor(10000);
+ for(let j=0;j<10;j++)await page.clock.fastForward(1000);
  await expect(page.getByTestId("rescate-knife-alert")).toBeVisible();
  await expect(page.getByTestId("rescate-knife-alert")).toContainText("NO ESTÁS SOLO");
  await page.screenshot({path:`visual-qa-evidence/rescate-intruso-${testInfo.project.name}.png`,fullPage:true});
