@@ -180,6 +180,9 @@ function App(){
  }
  function wheel(index:number,step:number){setDigits(old=>old.map((v,i)=>i===index?(v+step+10)%10:v));sound("click")}
  function dialStart(e:ReactPointerEvent<HTMLDivElement>,i:number){
+  // A pointer capture on the wheel container would steal release/click from
+  // its arrow buttons. Only capture gestures starting on the central digit.
+  if((e.target as HTMLElement).closest("button"))return;
   if(e.pointerType==="mouse"&&e.button!==0)return;
   dialDrag.current={id:e.pointerId,index:i,y:e.clientY};e.currentTarget.setPointerCapture(e.pointerId);
  }
