@@ -148,7 +148,7 @@ function App(){
   if(!player||player.error){fallbackVoice();return;}
   player.pause();player.currentTime=0;player.volume=1;
   void player.play().then(()=>{setTapeStatus("playing");
-   if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(.10,audio.current.currentTime,.14);
+   if(musicAudio.current)musicAudio.current.volume=.22;
   }).catch(()=>fallbackVoice());
  }
  function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"){
@@ -192,15 +192,15 @@ function App(){
   if(screen!=="intro")return;
   try{
    const ctx=new AudioContext();audio.current=ctx;audioRef.current=true;void ctx.resume();
-   // Real soundtrack, started synchronously from the trusted user click.
-   const recording=musicAudio.current;
-   if(recording){
-    recording.volume=.65;
-    void recording.play().then(()=>setMusicPlaying(true)).catch(()=>{
-     setMusicPlaying(false);setToast("TOCÁ «ACTIVAR MÚSICA» PARA ESCUCHAR LA BANDA SONORA");
-    });
-   }
-  }catch{/* Game still works silently */}
+  }catch{/* Audio effects are optional; music still plays */}
+  // Real soundtrack must not depend on AudioContext support.
+  const recording=musicAudio.current;
+  if(recording){
+   recording.volume=.65;
+   void recording.play().then(()=>setMusicPlaying(true)).catch(()=>{
+    setMusicPlaying(false);setToast("TOCÁ «ACTIVAR MÚSICA» PARA ESCUCHAR LA BANDA SONORA");
+   });
+  }
   setScreen("game");
  }
  function toggleMute(){
@@ -265,7 +265,7 @@ function App(){
   setOverlay(t.id==="drawer"?"lock":t.id==="envelope"?"letter":"inspect");
   setShowNear(false);sound("click");
  }
- function closeInspect(){tapeAudio.current?.pause();window.speechSynthesis?.cancel();if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.2);setTapeStatus("idle");setOverlay("none");setFocus(null);setWrong(false);}
+ function closeInspect(){tapeAudio.current?.pause();window.speechSynthesis?.cancel();if(musicAudio.current)musicAudio.current.volume=.65;setTapeStatus("idle");setOverlay("none");setFocus(null);setWrong(false);}
  function touchObject(){
   const obj=world.current?.aim()||active;
   if(obj)examine(obj);
@@ -321,7 +321,7 @@ function App(){
  function envelope(){
   setOpenedLetter(true);sound("clue");
  }
- function finish(){for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
+ function finish(){musicAudio.current?.pause();for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
  function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
  const HINTS=["Las tres pruebas están en objetos distintos. La fotografía parece ocultar algo más en su reverso."];
  function hint(){
@@ -337,8 +337,11 @@ function App(){
  }
  const canContinue=seen.length===3;
  return <main className={styles.app} data-stage={screen} data-testid="rescate-mauro-app">
+   <audio data-testid="rescate-music-audio" ref={musicAudio} src="./audio/suspense.wav" preload="auto" loop
+     onPlaying={()=>setMusicPlaying(true)} onPause={()=>setMusicPlaying(false)}
+     onError={()=>{setMusicPlaying(false);setToast("MÚSICA NO DISPONIBLE · REINTENTÁ SONIDO");}}/>
    <audio data-testid="rescate-tape-audio" ref={tapeAudio} src="./audio/rescue-message.mp3" preload="auto"
-     onEnded={()=>{setTapeStatus("ended");if(droneGain.current&&audio.current)droneGain.current.gain.setTargetAtTime(muted?0:.38,audio.current.currentTime,.18)}}
+     onEnded={()=>{setTapeStatus("ended");if(musicAudio.current)musicAudio.current.volume=.65}}
      onError={()=>setTapeStatus("error")}/>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
@@ -368,7 +371,7 @@ function App(){
     <div className={styles.topHints}>
       <span>PRUEBAS {seen.length}/3</span>
       <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ {hintLevel?"VER MI PISTA":"RECIBIR UNA PISTA"}</button>
-      <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":"SONIDO ON"}</button>
+      <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":musicPlaying?"MÚSICA ON":"ACTIVAR MÚSICA"}</button>
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
     {!available&&!error&&<div className={styles.load}>INICIANDO RECONSTRUCCIÓN TRIDIMENSIONAL...</div>}
@@ -463,7 +466,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
