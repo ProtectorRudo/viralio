@@ -36,7 +36,7 @@ test.describe("UMBRAL · el juego puede completarse", () => {
       await expect(explorer).toHaveAttribute("data-room",String(scene.room));
       await expect(page.getByTestId("umbral-explorer-view")).toBeVisible();
 
-      await page.getByRole("button",{name:"Ir a "+["Entrada","Biblioteca","Zona de juegos","Caldera"][scene.room]}).click();
+      await page.getByRole("button",{name:"Ir a "+["Entrada","Escritorio","Zona de juegos","Caldera"][scene.room]}).click();
       await expect(explorer.locator('[class*="node"]')).toHaveCount(4);
       await page.getByRole("button",{name:"Examinar "+scene.drawer}).click();
       const sheet=page.getByTestId("umbral-object-inspection");
