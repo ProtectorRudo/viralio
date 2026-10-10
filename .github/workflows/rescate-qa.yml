@@ -1,0 +1,65 @@
+name: CASO M 3D invitation QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/app/escape/rescate/**"
+      - "scripts/build-escape-standalone.mjs"
+      - "e2e/rescate.spec.ts"
+      - "e2e/rescate.playwright.config.ts"
+      - ".github/workflows/rescate-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: caso-m-3d-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adventure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install reproducible dependencies
+        run: |
+          npm ci
+          npm install --no-save --no-package-lock esbuild@0.25.12
+      - name: Lint rescue gameplay
+        run: npx eslint src/app/escape/rescate --max-warnings=0
+      - name: Build isolated public game
+        run: |
+          node scripts/build-escape-standalone.mjs
+          test -s showcase/rescate-mauro/index.html
+          test -s showcase/rescate-mauro/app.js
+          test -s showcase/rescate-mauro/app.css
+          node --check showcase/rescate-mauro/app.js
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Play complete mobile and desktop rescue
+        run: npx playwright test --config e2e/rescate.playwright.config.ts
+      - name: Upload browser traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: caso-m-failed-traces
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Preserve game screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: caso-m-visual-audit
+          path: visual-qa-evidence/rescate*
+          if-no-files-found: ignore
+          retention-days: 14
