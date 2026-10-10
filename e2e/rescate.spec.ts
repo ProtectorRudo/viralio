@@ -40,6 +40,17 @@ async function examineNearby(page:Page,name:string){
  await expect(page.getByRole("dialog")).toBeVisible();
 }
 
+test("CASO M · introducción cinematográfica y expediente plegable",async({page})=>{
+ await page.goto("/rescate-mauro/");
+ await expect(page.getByRole("button",{name:/INICIAR RESCATE/})).toBeVisible();
+ await page.getByRole("button",{name:/INICIAR RESCATE/}).click();
+ await expect(page.getByTestId("rescate-mauro-app")).toHaveAttribute("data-stage","game",{timeout:9000});
+ const dossier=page.getByTestId("rescate-dossier-toggle");
+ await expect(dossier).toHaveAttribute("aria-expanded","false");
+ await dossier.click();
+ await expect(dossier).toHaveAttribute("aria-expanded","true");
+});
+
 test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",async({page},testInfo)=>{
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
