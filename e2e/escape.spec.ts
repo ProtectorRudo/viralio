@@ -14,6 +14,7 @@ async function visualAudit(page:Page,file:string){
 test.describe("UMBRAL · el juego puede completarse", () => {
   test("exploración: 12 objetos por escena, tres puntos de vista y mecanismos físicos", async ({page})=>{
     test.setTimeout(100_000);
+    await page.setViewportSize({width:390,height:844});
     const rooms=[
       {room:0,drawer:"Cajón de la consola",tool:"Llave de bronce",lock:"Caja de caoba"},
       {room:1,drawer:"Cajón del escritorio",tool:"Disco de latón",lock:"Archivador con cerradura"},
