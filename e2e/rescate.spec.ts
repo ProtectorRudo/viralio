@@ -5,7 +5,7 @@ mkdirSync("visual-qa-evidence",{recursive:true});
 async function start(page:Page){
  await page.goto("/rescate-mauro/");
  await expect(page.getByRole("heading",{name:/SECUESTRARON/})).toBeVisible();
- await page.getByRole("button",{name:/ACEPTAR MISIÓN/}).click();
+ await page.getByRole("button",{name:/INICIAR RESCATE/}).click();
  await expect(page.getByTestId("rescate-mauro-app")).toHaveAttribute("data-stage","game");
  await expect(page.getByTestId("rescate-timer")).toContainText(/0[23]:[0-5][0-9]/);
  const canvas=page.getByTestId("rescate-webgl");
@@ -145,7 +145,7 @@ test("CASO M · ayuda gradual visible y reloj 3D accionable se detiene a las 17:
 test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cumpleaños",async({page})=>{
  test.setTimeout(140000);
  await page.goto("/rescate-mauro/?fecha=13%20de%20octubre&hora=20%3A00&lugar=La%20Plata");
- await page.getByRole("button",{name:/ACEPTAR MISIÓN/}).click();
+ await page.getByRole("button",{name:/INICIAR RESCATE/}).click();
  await expect(page.getByTestId("rescate-webgl")).toBeVisible();
  await walkTo(page,"w","z",-1.03);
  await examineNearby(page,"Grabador de voz");
@@ -186,12 +186,12 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await expect(beacon).toHaveAttribute("data-world-distance",/^[0-9]+\.[0-9]{2}$/);
  await expect(beacon).toContainText("AHÍ ESTÁ EL SOBRE");
  await beacon.click();
- await page.getByRole("button",{name:/ROMPER EL SELLO/}).click();
+ await page.getByRole("button",{name:/ROMPER EL LACRE/}).click();
  await expect(page.getByText(/TENÉS UNA INVITACIÓN/)).toBeVisible();
- await page.getByRole("button",{name:/ABRIR LA INVITACIÓN/}).click();
+ await page.getByRole("button",{name:/REVELAR MI INVITACIÓN/}).click();
  const finale=page.getByTestId("rescate-invite-final");
  await expect(finale).toBeVisible();
- await expect(finale).toContainText("Mauro cumple años");
+ await expect(finale).toContainText("Una noche para celebrar");
  await expect(finale).toContainText("13 de octubre");
  await expect(finale).toContainText("20:00");
  await expect(finale).toContainText("La Plata");
