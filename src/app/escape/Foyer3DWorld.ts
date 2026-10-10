@@ -52,7 +52,7 @@ class Geometry {
   panel(x:number,y:number,z:number,w:number,h:number,color:string,texture:string){
     this.quad(texture,[[x+w/2,y-h/2,z],[x+w/2,y+h/2,z],[x-w/2,y+h/2,z],[x-w/2,y-h/2,z]],[0,0,1],color);
   }
-  cylinder(x:number,y:number,z,r:number,h:number,color:string,segments=11){
+  cylinder(x:number,y:number,z:number,r:number,h:number,color:string,segments=11){
     for(let i=0;i<segments;i++){
       const a=i*Math.PI*2/segments,b=(i+1)*Math.PI*2/segments;
       const x1=x+Math.cos(a)*r,z1=z+Math.sin(a)*r,x2=x+Math.cos(b)*r,z2=z+Math.sin(b)*r;
@@ -288,8 +288,9 @@ export type FoyerWorld={
   available:boolean;
 };
 export function createFoyerWorld(canvas:HTMLCanvasElement,flags:FoyerFlags,onFrame?:(pose:Pose,target:FoyerTarget|null)=>void):FoyerWorld {
-  const gl=canvas.getContext("webgl",{alpha:false,antialias:false,depth:true,stencil:false,powerPreference:"high-performance"});
-  if(!gl)throw Error("Tu dispositivo no permite WebGL en este navegador.");
+  const context=canvas.getContext("webgl",{alpha:false,antialias:false,depth:true,stencil:false,powerPreference:"high-performance"});
+  if(!context)throw Error("Tu dispositivo no permite WebGL en este navegador.");
+  const gl:WebGLRenderingContext=context;
   const program=compileProgram(gl);gl.useProgram(program);
   const att=(n:string)=>gl.getAttribLocation(program,n);
   const pos=att("aPosition"),norm=att("aNormal"),uv=att("aUv"),col=att("aColor");
