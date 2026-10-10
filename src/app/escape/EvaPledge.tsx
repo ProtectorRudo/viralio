@@ -13,6 +13,8 @@ type Props = {onConfirm:(record:EvaPledgeRecord)=>void;onBack:()=>void;onPaperSo
 
 export default function EvaPledge({onConfirm,onBack,onPaperSound}:Props){
   const [opened,setOpened]=useState(false);
+  const [opening,setOpening]=useState(false);
+  const openingClock=useRef<number|null>(null);
   const [written,setWritten]=useState(false);
   const [typedName,setTypedName]=useState("");
   const [alternative,setAlternative]=useState(false);
@@ -22,6 +24,13 @@ export default function EvaPledge({onConfirm,onBack,onPaperSound}:Props){
   const last=useRef<{x:number;y:number}|null>(null);
   const distance=useRef(0);
 
+  useEffect(()=>()=>{if(openingClock.current!==null)window.clearTimeout(openingClock.current);},[]);
+  function openEnvelope(){
+    if(opened||opening)return;
+    onPaperSound?.();
+    setOpening(true);
+    openingClock.current=window.setTimeout(()=>setOpened(true),860);
+  }
   useEffect(()=>{
     if(!opened||alternative)return;
     const el=canvas.current;
@@ -88,15 +97,16 @@ export default function EvaPledge({onConfirm,onBack,onPaperSound}:Props){
     if(!alternative && !signature)return;
     onConfirm({signature,name,signedAt:new Date().toISOString()});
   }
-  return <div className={styles.backdrop} role="dialog" aria-modal="true" aria-label="Carta de compromiso para salvar a Eva" data-testid="umbral-oath" data-stage={opened?"letter":"envelope"}>
+  return <div className={styles.backdrop} role="dialog" aria-modal="true" aria-label="Carta de compromiso para salvar a Eva" data-testid="umbral-oath" data-stage={opened?"letter":opening?"opening":"envelope"}>
     <div className={styles.haze} aria-hidden="true"/>
     {!opened?
-      <div className={styles.envelopeScene}>
+      <div className={styles.envelopeScene} data-opening={opening?"true":"false"}>
         <span className={styles.folio}>EXPEDIENTE CONFIDENCIAL · 013</span>
         <h2>Te llegó una carta.</h2>
         <p>Está dirigida a vos. No tiene remitente.</p>
-        <button type="button" className={styles.envelope} onClick={()=>{onPaperSound?.();setOpened(true)}} aria-label="Abrir el sobre sellado">
+        <button type="button" className={styles.envelope} onClick={openEnvelope} disabled={opening} aria-label="Abrir el sobre sellado">
           <span className={styles.envelopeBack} aria-hidden="true"/>
+          <span className={styles.emergingLetter} aria-hidden="true"><i>CASO 013</i><b>¿DÓNDE ESTÁ EVA?</b></span>
           <span className={styles.flap} aria-hidden="true"/>
           <span className={styles.wax} aria-hidden="true">E</span>
           <span className={styles.envelopeFace} aria-hidden="true"><i>PARA QUIEN TODAVÍA ESCUCHA</i><b>ABRIR ↗</b></span>
