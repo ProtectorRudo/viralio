@@ -58,10 +58,13 @@ function App(){
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
+ const [tensionCue,setTensionCue]=useState<""|"signal"|"flicker"|"knock">("");
+ const finalMinute=seconds<=60;
+ const cuesFired=useRef(new Set<number>()),cueTimer=useRef<number|null>(null);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
- useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);},[]);
+ useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
   config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
@@ -123,6 +126,28 @@ function App(){
   return()=>clearInterval(id);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,muted,expired,drawerOpen,seconds<=48,seconds<=105]);
+ // Sparingly placed environmental beats, not looping pop-ups.
+ useEffect(()=>{
+  if(screen!=="game"||expired||drawerOpen)return;
+  const beats:{at:number;style:"signal"|"flicker"|"knock";caption:string;foley:"static"|"step"|"door"}[]=[
+   {at:146,style:"signal",caption:"INTERFERENCIA EN LA TRANSMISIÓN…",foley:"static"},
+   {at:109,style:"flicker",caption:"LA LUZ FALLÓ POR UN INSTANTE.",foley:"static"},
+   {at:78,style:"knock",caption:"TRES GOLPES DEL OTRO LADO.",foley:"door"},
+   {at:31,style:"flicker",caption:"LA HABITACIÓN SE ESTÁ QUEDANDO A OSCURAS.",foley:"static"}
+  ];
+  const beat=beats.find(b=>seconds===b.at&&!cuesFired.current.has(b.at));
+  if(!beat)return;
+  cuesFired.current.add(beat.at);setTensionCue(beat.style);setToast(beat.caption);
+  sound(beat.foley);
+  if(beat.style==="knock")navigator.vibrate?.([35,110,45,110,75]);
+  if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);
+  cueTimer.current=window.setTimeout(()=>setTensionCue(""),1300);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[screen,seconds,expired,drawerOpen]);
+ useEffect(()=>{
+  if(screen!=="game"||!musicAudio.current||muted||tapeStatus==="playing")return;
+  musicAudio.current.volume=finalMinute?.83:.65;
+ },[screen,muted,finalMinute,tapeStatus]);
  useEffect(()=>{
   if(screen!=="game"||expired||seconds>60||threatFired.current)return;
   threatFired.current=true;flags.current.intruder=true;world.current?.setFlags({...flags.current});
@@ -134,8 +159,9 @@ function App(){
   schedule(4500,()=>sound("step"));
   schedule(10000,()=>{setFigureWarning(true);setToast("NO ESTÁS SOLO.");sound("step");navigator.vibrate?.([120,60,120]);});
   schedule(12900,()=>sound("metal"));
-  schedule(16500,()=>setFigureWarning(false));
-  schedule(8500,()=>setDoorWarning(false));
+   for(const at of [14200,19100,23700,28600,32700])schedule(at,()=>sound("step"));
+  schedule(12800,()=>setFigureWarning(false));
+  schedule(3100,()=>setDoorWarning(false));
  // Audio/event is intentionally triggered exactly once.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[screen,expired,seconds]);
@@ -162,12 +188,24 @@ function App(){
    if(musicAudio.current)musicAudio.current.volume=.22;
   }).catch(()=>fallbackVoice());
  }
- function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"|"paper"){
+ function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"|"paper"|"static"){
   if(muted||!audioRef.current)return;
   const a=audio.current;if(!a)return;
   try{
    if(a.state==="suspended")void a.resume();
    const now=a.currentTime,osc=a.createOscillator(),gain=a.createGain();
+    if(type==="static"){
+     const len=Math.round(a.sampleRate*.78),buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
+     let seed=71926,low=0;for(let i=0;i<len;i++){
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const v=seed/2147483648-1;low=low*.88+v*.12;
+      const t=i/a.sampleRate;
+      samples[i]=(v*.36+low*.44)*Math.sin(Math.PI*Math.min(1,t/.78))*(.45+.5*Math.sin(t*96));
+     }
+     const noise=a.createBufferSource(),filter=a.createBiquadFilter(),amp=a.createGain();
+     noise.buffer=buffer;filter.type="bandpass";filter.frequency.value=1200;filter.Q.value=.7;
+     amp.gain.value=.22;noise.connect(filter);filter.connect(amp);amp.connect(a.destination);noise.start(now);return;
+    }
     if(type==="paper"){
      const len=Math.round(a.sampleRate*.75),buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
      let seed=29013;for(let i=0;i<len;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;
@@ -309,7 +347,7 @@ function App(){
   else{setNear(world.current?.nearby()||[]);setShowNear(true);setToast("Acercate y apuntá a un objeto, o elegilo entre los cercanos.");}
  }
  function discover(k:Ev){
-  setSeen(old=>old.includes(k)?old:[...old,k]);sound("clue");
+  setSeen(old=>old.includes(k)?old:[...old,k]);setEvidenceExpanded(true);sound("clue");
   setToast("EVIDENCIA RECUPERADA · "+EVIDENCE[k].title);
  }
  function activate(){
@@ -412,6 +450,7 @@ function App(){
     <div className={styles.film} aria-hidden="true"/>
     <div className={styles.sceneGrain} aria-hidden="true"/>
     {seconds<=60&&!drawerOpen&&<div className={styles.pulseFrame} aria-hidden="true"/>}
+    {tensionCue&&<div className={styles.tensionCue} data-effect={tensionCue} aria-hidden="true"/>}
     <div className={styles.threatVignette} data-threat={flags.current.intruder?"yes":"no"} aria-hidden="true"/>
     {figureWarning&&<div className={styles.knifeAlert} data-testid="rescate-knife-alert" role="alert"><span>ADVERTENCIA · PRESENCIA DETECTADA</span><strong>NO ESTÁS SOLO.</strong><small>¡APURATE, EL TIEMPO SE AGOTA!</small></div>}
     {doorWarning&&<div className={styles.doorAlert} data-testid="rescate-intruder-alert" role="alert"><span>¡ESCUCHASTE ESO!</span><strong>ALGUIEN ESTÁ ABRIENDO LA PUERTA.</strong><small>NO TE DETENGAS · QUEDA 1 MINUTO</small></div>}
@@ -433,8 +472,13 @@ function App(){
        aria-expanded={evidenceExpanded} data-testid="rescate-dossier-toggle">
        <span>◈ EXPEDIENTE · {seen.length}/3 INDICIOS</span><b>{evidenceExpanded?"−":"+"}</b></button>
      <div className={styles.dossierContents}><span>INDICIOS RECUPERADOS</span>
-      {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
-      {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
+      {seen.map((k)=><div key={k} data-testid="rescate-evidence-slip" data-found="yes" className={styles.evidenceSlip}>
+        <span className={styles.evidenceMark}>◆</span>
+        <div className={styles.evidenceLabel}><strong>{EVIDENCE[k].title}</strong><small>{k==="cassette"?"CINTA Nº 10":k==="memo"?"ARCHIVO DE VIDEO":"REVERSO DE FOTOGRAFÍA"}</small></div>
+        <span className={styles.evidenceNumber}>{EVIDENCE[k].value}</span>
+       </div>)}
+      {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} className={styles.evidenceEmpty} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
+       {seen.length===3&&<p className={styles.evidenceAdvice}>Las cifras se encuentran en documentos distintos. ¿Cómo las ordenarías para abrir el candado?</p>}
      </div>
     </div>
     {drawerOpen&&overlay==="none"&&<button ref={envelopeMarker} type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
@@ -472,7 +516,33 @@ function App(){
       </div>}
       {focus.id==="calendar"&&<div className={styles.photoInspection} data-testid="rescate-photo" data-flipped={photoFlipped?"yes":"no"}>
        <div className={styles.polaroidCard}><div className={styles.polaroidVisual}>
-         {!photoFlipped?<><i className={styles.photoShadow}/><i className={styles.photoScratch}/></>:<div className={styles.photoMark}><small>ESCRITO EN EL REVERSO</small><strong>XIII</strong><span>¿QUÉ SIGNIFICA?</span></div>}
+         {!photoFlipped?<div className={styles.archivalPhoto} aria-label="Fotografía nocturna en blanco y negro de un pasillo y una silueta anónima">
+         <svg viewBox="0 0 320 370" role="img" aria-label="Pasillo de vigilancia con una figura entre las sombras" preserveAspectRatio="xMidYMid slice">
+          <defs>
+           <linearGradient id="m013corridor" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#9fa8a1"/><stop offset=".5" stopColor="#4f5a57"/><stop offset="1" stopColor="#101718"/></linearGradient>
+           <radialGradient id="m013beam" cx="47%" cy="39%" r="60%"><stop stopColor="#d5d3b6" stopOpacity=".82"/><stop offset=".57" stopColor="#9da69b" stopOpacity=".23"/><stop offset="1" stopColor="#000" stopOpacity=".55"/></radialGradient>
+           <filter id="m013grain"><feTurbulence type="fractalNoise" baseFrequency=".27" numOctaves="2" seed="13" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".18"/></feComponentTransfer></filter>
+           <filter id="m013soft"><feGaussianBlur stdDeviation="2.2"/></filter>
+          </defs>
+          <rect width="320" height="370" fill="url(#m013corridor)"/>
+          <path d="M0 0 L98 70 L103 282 L0 370Z" fill="#333d3a"/><path d="M320 0 L224 66 L219 286 L320 370Z" fill="#242f30"/>
+          <path d="M100 66 L223 66 L220 286 L103 286Z" fill="#46514d"/>
+          <path d="M0 370L103 282L220 282L320 370Z" fill="#6a746b"/>
+          <path d="M100 66L0 0L320 0L223 66Z" fill="#626960"/>
+          <path d="M129 101H201V278H129Z" fill="#242e2d"/><path d="M135 109H195V277H135Z" fill="#49544d"/>
+          <path d="M157 105L164 105L163 282H158Z" fill="#b6b9a4" opacity=".37"/>
+          <path d="M23 60L94 89V110L23 79Z" fill="#b3b6ab" opacity=".4"/>
+          <path d="M228 86L303 48V67L229 102Z" fill="#d0ccaa" opacity=".34"/>
+          <path d="M0 370L116 294M320 370L206 294M0 326H320" stroke="#d8d5c0" strokeWidth="2" opacity=".20"/>
+          <ellipse cx="166" cy="290" rx="49" ry="13" fill="#020608" opacity=".63" filter="url(#m013soft)"/>
+          <g filter="url(#m013soft)" fill="#0c1616"><ellipse cx="168" cy="156" rx="23" ry="30"/><path d="M147 175Q133 182 127 226L123 296Q165 312 208 294L203 219Q198 183 186 175Z"/><path d="M132 205L116 267L133 272L155 215ZM195 207L214 265L198 271L177 218Z"/><path d="M146 284L145 350L164 350L174 287ZM175 283L179 350L198 350L201 285Z"/></g>
+          <rect width="320" height="370" fill="url(#m013beam)"/>
+          <rect width="320" height="370" filter="url(#m013grain)"/>
+          <path d="M33 30L40 340M287 7L279 359" stroke="#fff3cc" strokeWidth=".7" opacity=".28"/>
+          <path d="M20 312L300 43" stroke="#d6d1ba" strokeWidth=".9" opacity=".30"/>
+         </svg>
+         <span className={styles.photoStamp}>CÁMARA 02 · SIN IDENTIFICAR</span>
+        </div>:<div className={styles.photoMark}><small>ESCRITO EN EL REVERSO</small><strong>XIII</strong><span>¿QUÉ SIGNIFICA?</span></div>}
        </div><span>{photoFlipped?"EVIDENCIA / ENCONTRADA":"ARCHIVO FOTOGRÁFICO SIN FECHA"}</span></div>
        <button type="button" className={styles.photoFlipButton} onClick={()=>{setPhotoFlipped(v=>!v);sound("click")}}>{photoFlipped?"↶ VOLVER A MIRAR EL FRENTE":"↻ DAR VUELTA LA FOTOGRAFÍA"}</button>
       </div>}
@@ -544,7 +614,7 @@ function App(){
      <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
