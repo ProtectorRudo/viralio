@@ -4,7 +4,7 @@ import {createRoot} from "react-dom/client";
 import {createWorld,TARGETS,type Target,type ClueId,type World} from "./RescueWorld";
 import styles from "./Rescue.module.css";
 
-type Screen="intro"|"game"|"final";
+type Screen="intro"|"connecting"|"game"|"final";
 type Overlay="none"|"inspect"|"lock"|"letter";
 type Ev="calendar"|"cassette"|"memo";
 type Config={fecha:string;hora:string;lugar:string};
@@ -43,7 +43,7 @@ function App(){
  const [clockState,setClockState]=useState<"idle"|"running"|"done">("idle");
  const clockTimeout=useRef<number|null>(null);
  const [hintOpen,setHintOpen]=useState(false),[hintLevel,setHintLevel]=useState(0);
- const [openedLetter,setOpenedLetter]=useState(false);
+ const [openedLetter,setOpenedLetter]=useState(false),[sealBreaking,setSealBreaking]=useState(false),[evidenceExpanded,setEvidenceExpanded]=useState(false);
  const [muted,setMuted]=useState(false),[toast,setToast]=useState("");
  const [error,setError]=useState(""),[available,setAvailable]=useState(false);
  const overlayState=useRef<Overlay>("none"),expiredState=useRef(false);
@@ -58,10 +58,10 @@ function App(){
  const dialDrag=useRef<{id:number;index:number;y:number}|null>(null);
  const flags=useRef({unlocked:false,clockActivated:false,intruder:false});
  const [doorWarning,setDoorWarning]=useState(false),[figureWarning,setFigureWarning]=useState(false);
- const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]);
+ const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
- useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);},[]);
+ useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
   config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
@@ -162,12 +162,20 @@ function App(){
    if(musicAudio.current)musicAudio.current.volume=.22;
   }).catch(()=>fallbackVoice());
  }
- function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"){
+ function sound(type:"start"|"click"|"clue"|"wrong"|"unlock"|"beat"|"tick"|"celebrate"|"door"|"step"|"metal"|"paper"){
   if(muted||!audioRef.current)return;
   const a=audio.current;if(!a)return;
   try{
    if(a.state==="suspended")void a.resume();
    const now=a.currentTime,osc=a.createOscillator(),gain=a.createGain();
+    if(type==="paper"){
+     const len=Math.round(a.sampleRate*.75),buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
+     let seed=29013;for(let i=0;i<len;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      samples[i]=((seed/4294967296)*2-1)*(.24+.19*Math.sin(i/71))*Math.exp(-i/(len*.40));}
+     const source=a.createBufferSource(),eq=a.createBiquadFilter(),amp=a.createGain();
+     source.buffer=buffer;eq.type="bandpass";eq.frequency.value=1780;eq.Q.value=.64; amp.gain.value=.29;
+     source.connect(eq);eq.connect(amp);amp.connect(a.destination);source.start(now);return;
+    }
     if(type==="metal"){
      osc.type="sawtooth";osc.frequency.setValueAtTime(760,now);
      osc.frequency.exponentialRampToValueAtTime(1360,now+.16);
@@ -180,15 +188,33 @@ function App(){
      osc.start(now);osc.stop(now+.74);return;
     }
     if(type==="door"||type==="step"){
-     osc.type=type==="door"?"sawtooth":"sine";
-     osc.frequency.setValueAtTime(type==="door"?92:76,now);
-     osc.frequency.exponentialRampToValueAtTime(type==="door"?24:43,now+(type==="door"?1.4:.23));
-     gain.gain.setValueAtTime(.0001,now);
-     gain.gain.exponentialRampToValueAtTime(type==="door"?.14:.19,now+.035);
-     gain.gain.exponentialRampToValueAtTime(.0001,now+(type==="door"?1.48:.33));
-     const filter=a.createBiquadFilter();filter.type="lowpass";filter.frequency.value=type==="door"?370:160;
-     osc.connect(filter);filter.connect(gain);gain.connect(a.destination);
-     osc.start(now);osc.stop(now+(type==="door"?1.5:.35));return;
+     // Layer real filtered texture under impacts, never a simple sine beep.
+     const len=Math.round(a.sampleRate*(type==="door"?1.65:.43));
+     const buffer=a.createBuffer(1,len,a.sampleRate),samples=buffer.getChannelData(0);
+     let seed=type==="door"?554903:10388,low=0;
+     for(let i=0;i<len;i++){
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const white=seed/2147483648-1;
+      low=low*.91+white*.09;
+      const t=i/a.sampleRate;
+      const env=type==="door"?
+       Math.min(1,t/.12)*Math.exp(-t*.8)*(1+.24*Math.sin(t*39)):
+       Math.min(1,t/.018)*Math.exp(-t*15);
+      samples[i]=(low*.64+white*.08)*env;
+     }
+     const source=a.createBufferSource(),filter=a.createBiquadFilter(),body=a.createGain();
+     source.buffer=buffer;filter.type="lowpass";filter.frequency.value=type==="door"?830:440;
+     filter.Q.value=type==="door"?1.15:.50;body.gain.value=type==="door"?.52:.47;
+     source.connect(filter);filter.connect(body);body.connect(a.destination);
+     source.start(now);
+     // Dull structural thump makes the footstep physical, not electronic.
+     osc.type="triangle";
+     osc.frequency.setValueAtTime(type==="door"?94:63,now);
+     osc.frequency.exponentialRampToValueAtTime(type==="door"?31:39,now+(type==="door"?.83:.21));
+     gain.gain.setValueAtTime(.001,now);gain.gain.exponentialRampToValueAtTime(type==="door"?.085:.11,now+.026);
+     gain.gain.exponentialRampToValueAtTime(.0001,now+(type==="door"?.86:.23));
+     osc.connect(gain);gain.connect(a.destination);osc.start(now);osc.stop(now+(type==="door"?.9:.24));
+     return;
     }
    osc.type=type==="wrong"||type==="beat"?"sine":type==="celebrate"?"triangle":"sawtooth";
    const freq={start:93,click:270,clue:390,wrong:64,unlock:490,beat:48,tick:890,celebrate:600}[type];
@@ -212,7 +238,7 @@ function App(){
     setMusicPlaying(false);setToast("TOCÁ «ACTIVAR MÚSICA» PARA ESCUCHAR LA BANDA SONORA");
    });
   }
-  setScreen("game");
+  setScreen("connecting");transitionTimer.current=window.setTimeout(()=>setScreen("game"),1450);
  }
  function toggleMute(){
   const player=musicAudio.current;
@@ -330,7 +356,9 @@ function App(){
   setToast("¡ABRISTE EL CAJÓN! EL SOBRE ESTÁ FRENTE A VOS.");
  }
  function envelope(){
-  setOpenedLetter(true);sound("clue");
+  if(sealBreaking||openedLetter)return;
+  setSealBreaking(true);sound("paper");navigator.vibrate?.([25,35,90]);
+  sealTimer.current=window.setTimeout(()=>{setOpenedLetter(true);setSealBreaking(false);sound("unlock");},1260);
  }
  function finish(){musicAudio.current?.pause();for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
  function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
@@ -356,22 +384,34 @@ function App(){
      onError={()=>setTapeStatus("error")}/>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
-    <span className={styles.classified}>EXPEDIENTE M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
+    <span className={styles.classified}>CANAL 09 / M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
     <span className={styles.radar} aria-hidden="true"><i/><i/><i/></span>
     <div className={styles.introText}>
-      <span className={styles.red}>◉ PRIORIDAD MÁXIMA · MISIÓN FICTICIA</span>
-      <h1>SECUESTRARON<br/><em>A MAURO.</em></h1>
-      <p>Una habitación abandonada. Un mensaje de auxilio. Tenés tres minutos antes de que regresen.</p>
-      <div className={styles.introCard}><span>ÚLTIMO MENSAJE RECIBIDO</span><p>«Si querés saber dónde está Mauro... abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p></div>
+      <span className={styles.red}>◉ ACCESO CONFIDENCIAL · OPERACIÓN M</span>
+      <h1>SECUESTRARON<br/><em>A MAURO.</em></h1><span className={styles.introSubline}>LA ÚLTIMA TRANSMISIÓN SIGUE ABIERTA.</span>
+      <p>Una habitación abandonada. Una voz que pide ayuda. <strong>Tres minutos</strong> antes de que vuelvan.</p>
+      <div className={styles.introCard}>
+        <span><i className={styles.recDot}/> CINTA N.º 013 · MENSAJE INTERCEPTADO</span>
+        <div className={styles.waveform} aria-hidden="true">{Array.from({length:39},(_,i)=><i key={i} style={{height:(8+(i*17%30))+"px"}}/>)}</div>
+        <p>«Si querés saber dónde está Mauro… abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p>
+       </div>
       <div className={styles.introTimer}>03<span>:</span>00 <small>PARA RESOLVER EL CASO</small></div>
-      <button type="button" className={styles.start} onClick={start}>ACEPTAR MISIÓN <span>↗</span></button>
+      <button type="button" className={styles.start} onClick={start}>INICIAR RESCATE <span>↗</span></button>
       <small className={styles.disclaimer}>Experiencia de ficción y entretenimiento · No se trata de una emergencia real</small>
     </div>
-    <div className={styles.introFooter}>OPERACIÓN RESCATE · EXPERIENCIA 3D PARA CELULAR</div>
+    <div className={styles.introFooter}>CASO M · CINE INTERACTIVO · MISIÓN PERSONALIZADA</div>
+   </section>}
+  {screen==="connecting"&&<section className={styles.connecting} data-testid="rescate-connecting" aria-live="polite">
+    <div className={styles.connectingFrame}><i className={styles.recDot}/> CANAL INTERCEPTADO / M-013
+      <div className={styles.connectionBars}>{Array.from({length:23},(_,i)=><b key={i} style={{height:(11+i*11%42)+"px"}}/>)}</div>
+      <strong>RESTABLECIENDO SEÑAL...</strong><span>NO HAGAS RUIDO. YA ESTÁS ADENTRO.</span>
+    </div>
    </section>}
   {screen==="game"&&<>
     <canvas ref={canvas} className={styles.canvas} data-testid="rescate-webgl" onPointerDown={viewDown} onPointerMove={viewMove} onPointerUp={viewUp} onPointerCancel={cancelView} onLostPointerCapture={cancelView} onClick={viewClick} aria-label="Habitación 3D: tocá objetos para abrirlos y deslizá para mirar"/>
     <div className={styles.film} aria-hidden="true"/>
+    <div className={styles.sceneGrain} aria-hidden="true"/>
+    {seconds<=60&&!drawerOpen&&<div className={styles.pulseFrame} aria-hidden="true"/>}
     <div className={styles.threatVignette} data-threat={flags.current.intruder?"yes":"no"} aria-hidden="true"/>
     {figureWarning&&<div className={styles.knifeAlert} data-testid="rescate-knife-alert" role="alert"><span>ADVERTENCIA · PRESENCIA DETECTADA</span><strong>NO ESTÁS SOLO.</strong><small>¡APURATE, EL TIEMPO SE AGOTA!</small></div>}
     {doorWarning&&<div className={styles.doorAlert} data-testid="rescate-intruder-alert" role="alert"><span>¡ESCUCHASTE ESO!</span><strong>ALGUIEN ESTÁ ABRIENDO LA PUERTA.</strong><small>NO TE DETENGAS · QUEDA 1 MINUTO</small></div>}
@@ -386,11 +426,16 @@ function App(){
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
     {!available&&!error&&<div className={styles.load}>INICIANDO RECONSTRUCCIÓN TRIDIMENSIONAL...</div>}
-    <div className={styles.reticle} data-has-target={active?"yes":"no"}><span>+</span></div>
-    {active&&overlay==="none"&&<div className={styles.target}><span>OBJETO DETECTADO</span><strong>{active.label}</strong></div>}
-    <div className={styles.objectives}><span>EXPEDIENTE · INDICIOS RECUPERADOS</span>
+    <div className={styles.reticle} data-has-target={active?"yes":"no"}><span>{active?"◇":"·"}</span></div>
+    {active&&overlay==="none"&&<div className={styles.target}><span>TOCÁ PARA INVESTIGAR</span><strong>{active.label}</strong></div>}
+    <div className={styles.objectives} data-collapsed={!evidenceExpanded?"yes":"no"}>
+     <button type="button" className={styles.dossierToggle} onClick={()=>setEvidenceExpanded(v=>!v)}
+       aria-expanded={evidenceExpanded} data-testid="rescate-dossier-toggle">
+       <span>◈ EXPEDIENTE · {seen.length}/3 INDICIOS</span><b>{evidenceExpanded?"−":"+"}</b></button>
+     <div className={styles.dossierContents}><span>INDICIOS RECUPERADOS</span>
       {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
+     </div>
     </div>
     {drawerOpen&&overlay==="none"&&<button ref={envelopeMarker} type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
        <span className={styles.beaconArrow}>↙</span><strong>¡AHÍ ESTÁ EL SOBRE!</strong><small>TOCÁ PARA ABRIRLO</small>
@@ -402,8 +447,8 @@ function App(){
        </div><span>CAMINAR</span>
       </div>
       <div className={styles.actions}>
-       <button className={styles.actionButton} type="button" onClick={touchObject}>◎ EXAMINAR</button>
-       <button className={styles.scanButton} type="button" onClick={()=>{setNear(world.current?.nearby()||[]);setShowNear(x=>!x)}} aria-expanded={showNear}>⌕ EXPLORAR ALREDEDOR</button>
+       <button className={styles.actionButton} type="button" onClick={touchObject}>◎ INVESTIGAR</button>
+       <button className={styles.scanButton} type="button" onClick={()=>{setNear(world.current?.nearby()||[]);setShowNear(x=>!x)}} aria-expanded={showNear}>⌕ OBJETOS CERCANOS</button>
        <span>TOCÁ UN OBJETO O DESLIZÁ PARA MIRAR</span>
       </div>
     </div>
@@ -463,10 +508,19 @@ function App(){
       <button type="button" className={styles.confirm} onClick={unlock}>⛓ PROBAR COMBINACIÓN</button>
       <button type="button" className={styles.secondary} onClick={closeInspect}>VOLVER A BUSCAR PISTAS {canContinue?"· TENÉS TODO":""}</button>
     </div></div>}
-    {overlay==="letter"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Sobre del cajón"><div className={styles.letterCard} data-open={openedLetter?"yes":"no"}>
-      {!openedLetter?<><span className={styles.letterCaption}>OBJETO RECUPERADO · ÚLTIMA PRUEBA</span><button className={styles.envelope} type="button" onClick={envelope} aria-label="Romper el sello del sobre y abrirlo"><i className={styles.flap}/><b>M</b><small>CONFIDENCIAL</small></button><p>El sobre está dirigido a vos. ¿Querés saber qué había dentro del cajón?</p></>
-       :<><span className={styles.letterCaption}>EXPEDIENTE 013 · RESUELTO</span><h2>¿EN SERIO PENSASTE<br/>QUE HABÍA UN SECUESTRO?</h2><p>Tu misión no era encontrar a Mauro... era encontrar esta carta.</p><p className={styles.letterReveal}>¡TENÉS UNA INVITACIÓN!</p></>}
-      <button className={styles.confirm} onClick={openedLetter?finish:envelope}>{openedLetter?"ABRIR LA INVITACIÓN DE CUMPLEAÑOS 🎉":"ROMPER EL SELLO ↗"}</button>
+    {overlay==="letter"&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label="Sobre del cajón"><div className={styles.letterCard} data-open={openedLetter?"yes":"no"} data-breaking={sealBreaking?"yes":"no"}>
+      {!openedLetter?<><span className={styles.letterCaption}>EVIDENCIA FINAL · UN MENSAJE PARA VOS</span>
+       <span className={styles.sealInstruction}>{sealBreaking?"EL SELLO SE ESTÁ ROMPIENDO…":"ESTABA ESPERANDO A QUE LO ENCONTRARAS."}</span>
+       <button className={styles.envelope} type="button" onClick={envelope} disabled={sealBreaking} aria-label="Romper el sello del sobre y abrirlo">
+        <i className={styles.envelopeSeam}/><i className={styles.flap}/><b>M</b><small>PERSONAL · CONFIDENCIAL</small>
+       </button><p>Hay algo escrito adentro. Pero antes tenés que romper el sello.</p></>
+       :<><span className={styles.letterCaption}>EXPEDIENTE M-013 · EL SECRETO</span>
+        <div className={styles.letterInside} data-testid="rescate-letter-inside"><small>CONFIDENCIAL / PARA VOS</small>
+          <h2>ESTA VEZ,<br/>LA MISIÓN ES OTRA.</h2>
+          <p>Nunca tuviste que rescatar a Mauro. <strong>Tenías que encontrar la invitación.</strong></p>
+          <p className={styles.letterReveal}>TE ESPERAMOS PARA CELEBRAR.</p>
+        </div></>}
+      <button className={styles.confirm} disabled={sealBreaking} onClick={openedLetter?finish:envelope}>{openedLetter?"REVELAR MI INVITACIÓN →":sealBreaking?"ROMPIENDO EL LACRE…":"ROMPER EL LACRE →"}</button>
     </div></div>}
     {expired&&<div className={styles.timeout} role="dialog" aria-modal="true" aria-label="Tiempo agotado">
       <span>00:00 · CONEXIÓN PERDIDA</span><h2>SE TERMINÓ EL TIEMPO.</h2><p>Pero Mauro dejó una última oportunidad. La puerta sigue entreabierta...</p>
@@ -476,21 +530,21 @@ function App(){
    </>}
   {screen==="final"&&<section className={styles.finale} data-testid="rescate-invite-final">
     <div className={styles.confetti} aria-hidden="true">{particles.map((p,i)=><i key={i} style={{left:p.left,animationDelay:p.delay,animationDuration:p.duration,background:p.color}}/>)}</div>
-    <span className={styles.finalKicker}>CASO 013 · RESUELTO CON ÉXITO</span>
-    <h1>¡SORPRESA!<em>¡ESTÁS INVITADO!</em></h1>
+    <span className={styles.finalKicker}>MISIÓN CUMPLIDA · EXPEDIENTE M-013 CERRADO</span>
+    <h1>NO ERA UN SECUESTRO.<em>ERA UNA INVITACIÓN.</em></h1>
     <div className={styles.invitationPaper}>
-      <span>OPERACIÓN RESCATE · INFORME FINAL</span>
-      <div className={styles.partyIcon}>✦</div>
-      <h2>Mauro cumple años.</h2>
-      <p>El secuestro era una excusa. La verdadera misión era conseguir que vengas a festejar conmigo.</p>
+      <span className={styles.inviteEyebrow}>INVITACIÓN PRIVADA · CELEBRACIÓN 2026</span>
+      <div className={styles.partyIcon}>✳</div><div className={styles.inviteMonogram}>M<span>·</span>013</div>
+      <h2>Una noche para celebrar.</h2>
+      <p>Seguiste las pistas, desafiaste al reloj y abriste el último sobre. <strong>Ahora sólo falta una cosa: que estés ahí.</strong></p>
       <div className={styles.details}><div><small>FECHA</small><strong>{config.current.fecha}</strong></div><div><small>HORA</small><strong>{config.current.hora}</strong></div><div><small>LUGAR</small><strong>{config.current.lugar}</strong></div></div>
-      <p className={styles.secret}>Queda prohibido revelar los códigos de esta misión. 🤫</p>
+      <p className={styles.secret}>La mejor parte del caso comienza cuando llegues.</p>
     </div>
     <div className={styles.finalActions}>
-     <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
+     <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
