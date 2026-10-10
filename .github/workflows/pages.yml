@@ -56,6 +56,7 @@ jobs:
           test -s showcase/rescate-mauro/app.js
           test -s showcase/rescate-mauro/app.css
           test -s showcase/rescate-mauro/audio/rescue-message.mp3
+          test -s showcase/rescate-mauro/audio/mauro-voice.webm
           test -s showcase/rescate-mauro/audio/suspense.wav
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -65,6 +66,7 @@ jobs:
           test -f showcase/rescate-mauro/app.js
           test -f showcase/rescate-mauro/app.css
           test -s showcase/rescate-mauro/audio/rescue-message.mp3
+          test -s showcase/rescate-mauro/audio/mauro-voice.webm
           test -s showcase/rescate-mauro/audio/suspense.wav
           node --check showcase/rescate-mauro/app.js
           test -f showcase/index.html
@@ -128,10 +130,12 @@ jobs:
           curl -fsSL --max-time 20 "$rescue/app.js" -o /tmp/rescate-mauro.js
           curl -fsSL --max-time 20 "$rescue/app.css" -o /tmp/rescate-mauro.css
           curl -fsSL --max-time 20 "$rescue/audio/rescue-message.mp3" -o /tmp/rescate-mauro-message.mp3
+          curl -fsSL --max-time 20 "$rescue/audio/mauro-voice.webm" -o /tmp/rescate-mauro-original.webm
           curl -fsSL --max-time 20 "$rescue/audio/suspense.wav" -o /tmp/rescate-mauro-suspense.wav
           test "$(wc -c </tmp/rescate-mauro.js)" -gt 20000
           test "$(wc -c </tmp/rescate-mauro.css)" -gt 5000
           test "$(wc -c </tmp/rescate-mauro-message.mp3)" -gt 2000
+          test "$(wc -c </tmp/rescate-mauro-original.webm)" -gt 4000
           test "$(wc -c </tmp/rescate-mauro-suspense.wav)" -gt 100000
           echo "PASS: Rescate Mauro 3D invite is publicly served at $rescue/"
 
