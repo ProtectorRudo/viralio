@@ -12,17 +12,18 @@ const CODE="131026";
 const EVIDENCE:Record<Ev,{title:string;value:string;body:string}>={
  calendar:{title:"Fotografía intervenida",value:"XIII",body:"Al dorso alguien escribió «XIII». Parece un número romano. No hay ninguna fecha escrita."},
  cassette:{title:"Cinta recuperada",value:"10",body:"La etiqueta de la cinta tiene escrito «10». El audio advierte que alguien está por regresar."},
- memo:{title:"Documento de operación",value:"2026",body:"Informe confidencial de la operación fechado en 2026. Una nota advierte que solo importan las dos últimas cifras del año."},
+ memo:{title:"Grabación vigilada",value:"2026",body:"Registro de seguridad: operación archivada en 2026. Para la clave solo importan las últimas dos cifras del año."},
 };
 const DESCRIPTIONS:Record<ClueId,string>={
  calendar:"Una vieja fotografía adherida a la pared. La parte de atrás podría esconder algo importante.",
  cassette:"El grabador está conectado, a pesar de que la habitación parece abandonada.",
- memo:"Un documento confidencial fechado en el año de la operación. Alguien quiso que lo encontraras.",
+ memo:"Un monitor de vigilancia conectado a la cámara. Su archivo contiene el año en que prepararon el operativo.",
  clock:"Un reloj viejo cuyas agujas quedaron detenidas. El mecanismo sigue conectado a alguna parte de la casa.",
  drawer:"Un cajón pesado, asegurado con un candado de seis ruedas. El sobre está adentro.",
  envelope:"Un sobre oscuro, con un lacre que lleva una letra M.",
  phone:"La línea está cortada. Al levantar el tubo se escucha el eco de una respiración.",
- camera:"La luz roja de REC se enciende. Alguien sigue tu recorrido desde otra habitación.",
+ camera:"La luz roja de REC se enciende. El monitor sobre la mesa derecha permite revisar las grabaciones.",
+ board:"El tablero está cubierto de horarios, fotos y rutas. Estuvieron estudiando los movimientos de Mauro.",
  locker:"El armario contiene un abrigo mojado y botas demasiado grandes. No hay ninguna clave.",
  lamp:"La luz oscila y proyecta una silueta sobre la silla. Cuando volvés a mirar, desaparece.",
  pipe:"Del otro lado del conducto se oyen tres golpes. No forman parte del código.",
@@ -47,6 +48,7 @@ function App(){
  const [error,setError]=useState(""),[available,setAvailable]=useState(false);
  const overlayState=useRef<Overlay>("none"),expiredState=useRef(false);
  const world=useRef<World|null>(null),canvas=useRef<HTMLCanvasElement|null>(null),activeRef=useRef<Target|null>(null);
+ const envelopeMarker=useRef<HTMLButtonElement|null>(null),unlockedRef=useRef(false);
  const joystick=useRef({x:0,y:0}),joyId=useRef<number|null>(null),joyBox=useRef<HTMLDivElement|null>(null);
  const pointer=useRef<{id:number;x:number;y:number;originX:number;originY:number;dragged:boolean}|null>(null),buttons=useRef(new Set<string>());
  const lastCanvasTap=useRef(0),raf=useRef(0),frameLast=useRef(0),audio=useRef<AudioContext|null>(null),drone=useRef<OscillatorNode|null>(null),audioRef=useRef(false);
@@ -79,6 +81,15 @@ function App(){
     // World-space telemetry is also useful for joystick accessibility tests.
     el.dataset.cameraX=pos.x.toFixed(2);
     el.dataset.cameraZ=pos.z.toFixed(2);
+     const marker=envelopeMarker.current;
+     if(marker&&unlockedRef.current){
+      const point=world.current?.project([.02,.79,-1.48]);
+      if(point){marker.style.left=point.x+"px";marker.style.top=point.y+"px";
+       marker.style.visibility=point.visible?"visible":"hidden";
+       marker.dataset.anchorVisible=point.visible?"yes":"no";
+       marker.dataset.worldDistance=point.distance.toFixed(2);
+      }
+     }
     if(activeRef.current?.id!==target?.id){activeRef.current=target;setActive(target);}
     // re-render of position deliberately throttled in engine.
    });
@@ -313,7 +324,7 @@ function App(){
  }
  function unlock(){
   if(digits.join("")!==CODE){setWrong(true);sound("wrong");setToast("CLAVE INCORRECTA · REVISÁ LAS PISTAS");navigator.vibrate?.([50,70,50]);return;}
-  setWrong(false);setDrawerOpen(true);flags.current.unlocked=true;world.current?.setFlags({...flags.current});
+  setWrong(false);setDrawerOpen(true);unlockedRef.current=true;flags.current.unlocked=true;world.current?.setFlags({...flags.current});
   sound("unlock");navigator.vibrate?.([80,40,130]);closeInspect();
   const envelopeTarget=TARGETS.find(t=>t.id==="envelope");if(envelopeTarget)world.current?.lookAt(envelopeTarget);
   setToast("¡ABRISTE EL CAJÓN! EL SOBRE ESTÁ FRENTE A VOS.");
@@ -381,7 +392,7 @@ function App(){
       {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
     </div>
-    {drawerOpen&&overlay==="none"&&<button type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
+    {drawerOpen&&overlay==="none"&&<button ref={envelopeMarker} type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
        <span className={styles.beaconArrow}>↙</span><strong>¡AHÍ ESTÁ EL SOBRE!</strong><small>TOCÁ PARA ABRIRLO</small>
      </button>}
     <div className={styles.controlBar}>
@@ -420,7 +431,20 @@ function App(){
        </div><span>{photoFlipped?"EVIDENCIA / ENCONTRADA":"ARCHIVO FOTOGRÁFICO SIN FECHA"}</span></div>
        <button type="button" className={styles.photoFlipButton} onClick={()=>{setPhotoFlipped(v=>!v);sound("click")}}>{photoFlipped?"↶ VOLVER A MIRAR EL FRENTE":"↻ DAR VUELTA LA FOTOGRAFÍA"}</button>
       </div>}
-      {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>MENSAJE RECONSTRUIDO · VOZ PROVISIONAL, NO ES LA VOZ ORIGINAL</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
+      {focus.id==="memo"&&<div className={styles.surveillanceScreen} data-testid="rescate-surveillance">
+        <div className={styles.surveillanceHeader}><span>● REC · CÁMARA 03</span><span>ARCHIVO 2026</span></div>
+        <div className={styles.surveillanceFootage}><span>OBJETIVO / M</span><i/><i/><div className={styles.surveillanceCross}>+</div><small>SEGUIMIENTO ARCHIVADO</small></div>
+        <p>REGISTRO OPERATIVO: <strong>2026</strong></p><small>SOLO IMPORTAN LAS DOS ÚLTIMAS CIFRAS DEL AÑO</small>
+       </div>}
+       {focus.id==="board"&&<div className={styles.investigationBoard} data-testid="rescate-investigation-board">
+        <strong>OPERACIÓN M · PLAN DE SEGUIMIENTO</strong>
+        <div><span>07:10</span> INICIO DE RUTINA / OBSERVADO</div>
+        <div><span>12:40</span> TRAYECTO EN LA CIUDAD / CONFIRMADO</div>
+        <div><span>17:00</span> ÚLTIMO MOVIMIENTO / SIN VERIFICAR</div>
+        <div><span>ARCH.</span> FOTOGRAFÍAS, HORARIOS Y RECORTES</div>
+        <small>NO TODAS LAS NOTAS SON CLAVES DEL CANDADO.</small>
+       </div>}
+       {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>MENSAJE RECONSTRUIDO · VOZ PROVISIONAL, NO ES LA VOZ ORIGINAL</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
       {focus.id in EVIDENCE&&(focus.id!=="calendar"||photoFlipped)?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
       {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate} disabled={focus.id==="calendar"&&!photoFlipped}>{focus.id==="calendar"&&!photoFlipped?"PRIMERO REVISÁ EL REVERSO":focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>
@@ -466,7 +490,7 @@ function App(){
      <button onClick={copyInvite}>▣ COPIAR INVITACIÓN</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
+    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ REPETIR MISIÓN</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;

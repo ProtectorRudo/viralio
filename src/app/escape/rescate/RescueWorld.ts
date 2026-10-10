@@ -3,18 +3,19 @@
  * Original mesh-based 3D geometry (not a moving photograph).
  * Supports WebGL1 mobiles without any third-party runtime or CDN.
  */
-export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"locker"|"lamp"|"pipe";
+export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"board"|"locker"|"lamp"|"pipe";
 export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
  {id:"cassette",label:"Grabador de voz",pos:[-2.8,1.03,-2.53],reach:2.9,hint:"La cinta está atascada en una grabación."},
- {id:"memo",label:"Informe confidencial",pos:[2.45,1.02,-2.55],reach:2.9,hint:"Un informe arrugado con instrucciones."},
+ {id:"memo",label:"Archivo de vigilancia",pos:[2.48,1.47,-2.87],reach:3.1,hint:"Un monitor conserva una grabación de seguridad."},
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
  {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
- {id:"envelope",label:"Sobre encontrado",pos:[.15,1.11,-1.73],reach:2.9,hint:"El papel lleva un sello rojo. Por fin llegaste."},
- {id:"phone",label:"Teléfono desconectado",pos:[2.4,1.18,-3.14],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
+ {id:"envelope",label:"Sobre encontrado",pos:[.02,.79,-1.48],reach:3.3,hint:"El papel lleva un sello rojo. Por fin llegaste."},
+ {id:"phone",label:"Teléfono desconectado",pos:[2.38,1.12,-2.30],reach:2.6,hint:"No hay tono de llamada. ¿Quién cortó el cable?"},
  {id:"camera",label:"Cámara de seguridad",pos:[3.6,3.35,-5.06],reach:4.7,hint:"La luz roja se enciende cuando te movés."},
+ {id:"board",label:"Tablero de seguimiento",pos:[1.55,2.2,-5.27],reach:4.0,hint:"Planos, fotos y horarios de los movimientos de Mauro."},
  {id:"locker",label:"Armario oxidado",pos:[-3.72,1.56,-3.4],reach:2.85,hint:"Tiene marcas de dedos en el polvo."},
  {id:"lamp",label:"Luz de interrogatorio",pos:[-.2,3.43,-1.8],reach:4.2,hint:"El foco emite un zumbido intermitente."},
  {id:"pipe",label:"Tubería de ventilación",pos:[3.8,2.15,-.1],reach:3.5,hint:"Algo golpea una tubería al otro lado."},
@@ -88,7 +89,7 @@ class Room {
   }
  }
 }
-const WALL="#383c42",FLOOR="#2d3033",WOOD="#644735";
+const WALL="#383c42",FLOOR="#2d3033";
 function scene(opened:boolean){
  const g=new Room();
  // A believable, limited navigable room, roughly 10 × 11 m.
@@ -153,10 +154,10 @@ function scene(opened:boolean){
  g.limb([.86,2.10,6.30],[.99,1.59,6.23],.25,.19,"#181f27");
  g.limb([.99,1.59,6.23],[.89,1.01,6.08],.19,.125,"#1d2229"); // knife arm
  g.ellipsoid(.89,.98,6.06,.145,.16,.14,"#343435");
- g.limb([.03,1.03,6.33],[-.07,.47,6.32],.23,.155,"#131820");
- g.limb([.62,1.03,6.34],[.73,.48,6.32],.23,.155,"#10151c");
- g.ellipsoid(-.08,.40,6.20,.21,.14,.32,"#24252a"); // leather boots
- g.ellipsoid(.72,.40,6.18,.22,.14,.33,"#202227");
+ g.limb([.03,1.03,6.33],[-.07,.33,6.32],.195,.145,"#131820","figure-leg");
+ g.limb([.62,1.03,6.34],[.73,.33,6.32],.195,.145,"#10151c","figure-leg");
+ g.ellipsoid(-.08,.11,6.20,.18,.106,.28,"#24252a","figure-leg"); // leather boots
+ g.ellipsoid(.72,.11,6.18,.18,.106,.29,"#202227","figure-leg");
  g.limb([.87,.93,6.04],[.87,.70,6.03],.08,.064,"#322920"); // knife handle
  g.box(.87,.68,6.03,.21,.05,.14,"#84837b","figure"); // small guard
  g.limb([.87,.64,6.03],[.87,.32,6.03],.070,.038,"#7d8d95","knife-blade");
@@ -176,38 +177,67 @@ function scene(opened:boolean){
   g.box(0,4.02,z,1.1,.15,.53,"#a69d82");
   g.box(0,3.92,z,.83,.035,.32,"#c6ac81","emissive");
  }
- // Central interrogation table, visible 3D unlocked drawer.
- g.box(0,.85,-2.65,3.18,.15,1.65,WOOD);
- for(const x of [-1.4,1.4])for(const z of [-3.25,-2.1])g.box(x,.40,z,.15,.83,.16,"#6d5a4b");
- g.box(0,.52,-2.63,2.84,.52,1.29,"#463e3a");
- g.box(0,.68,-1.79,1.46,.43,.09,"#8c7158");
- for(let i=-1;i<=1;i++)g.box(i*.43,.68,-1.729,.28,.24,.027,"#64554c");
- // The drawer emerges into the room after unlocking.
+ // Workstations directly beneath side props (previously suspended in air).
+ for(const x of [-2.68,2.58]){
+  g.box(x,.825,-2.78,1.62,.17,1.35,"#505357");
+  g.box(x,.929,-2.78,1.67,.04,1.40,"#987654");
+  for(const dx of [-.68,.68])for(const dz of [-.54,.54]){
+   g.box(x+dx,.414,-2.78+dz,.12,.828,.12,"#495256");
+   g.box(x+dx,.04,-2.78+dz,.16,.075,.16,"#353b3d");
+  }
+  g.box(x,.40,-3.35,1.35,.07,.065,"#6b6760");
+  g.box(x,.015,-2.78,1.70,.016,1.47,"#181b1e");
+ }
+ // Heavy six-wheel combination-lock cabinet: readable goal from spawn.
+ g.box(0,.83,-2.65,3.24,.22,1.76,"#3e4449");
+ g.box(0,.957,-2.65,3.30,.061,1.82,"#a17c57");
+ for(const x of [-1.43,1.43])for(const z of [-3.31,-2.04]){
+  g.box(x,.40,z,.16,.79,.16,"#65676a");
+  g.box(x,.038,z,.20,.074,.20,"#33373b");
+ }
+ g.box(0,.02,-2.62,3.2,.02,1.82,"#16191b");
+ g.box(0,.53,-2.61,2.88,.49,1.36,"#30373e");
+ g.box(0,.67,-1.75,2.55,.42,.13,"#8a6d52");
+ g.box(0,.79,-1.66,2.34,.30,.07,"#202b33");
+ g.box(0,.79,-1.612,2.27,.25,.029,"#a69b86");
+ g.box(0,1.012,-1.97,1.26,.080,.063,"#d4b787");
+ for(const x of [-1.22,1.22])for(const y of [.56,.83])g.tube([x,y,-1.58],[x,y,-1.53],.051,"#dabd8e");
  if(opened){
-  g.box(.02,.62,-1.23,1.5,.13,.97,"#aa8b69","drawer");
-  g.box(.02,.70,-.73,1.52,.26,.09,"#6b5140","drawer");
-  g.box(.02,.72,-1.50,.25,.037,.19,"#e5d1a9","envelope");
+  g.box(0,.66,-1.22,1.58,.066,1.12,"#bba078","drawer");
+  for(const x of [-.76,.76])g.box(x,.73,-1.22,.075,.19,1.09,"#846850","drawer");
+  g.box(0,.73,-.67,1.65,.20,.10,"#866448","drawer");
+  g.box(0,.706,-1.48,.43,.021,.27,"#e5d4b1","envelope");
+  g.box(0,.72,-1.445,.10,.022,.10,"#983f32","envelope");
  }else{
-  g.box(0,.65,-1.724,.27,.28,.09,"#b6ad92");
-  g.box(0,.64,-1.672,.075,.11,.05,"#1c2021");
+  g.box(0,.75,-1.55,.34,.22,.12,"#b5a885");
+  g.box(0,.75,-1.49,.14,.12,.05,"#222a30");
+  for(let i=0;i<6;i++){
+   const x=-.82+i*.326;
+   g.box(x,.79,-1.56,.282,.246,.068,"#354047");
+   g.tube([x,.79,-1.529],[x,.79,-1.44],.11,"#c4b7a0");
+   g.box(x,.79,-1.422,.11,.09,.026,"#39474c");
+   g.box(x,.876,-1.410,.065,.027,.023,"#f2d8ab");
+  }
  }
- // Four-digit lock physically attached to drawer.
- if(!opened){for(let i=0;i<6;i++){const x=-.66+i*.255;g.box(x,.86,-1.685,.20,.26,.12,"#aaa293");g.box(x,.86,-1.612,.165,.14,.024,"#343b3d");}}
- // Cassette recorder with tape reels and a glowing REC lamp.
- g.box(-2.7,1.05,-2.68,1.02,.28,.64,"#343d40");
- g.box(-2.7,1.199,-2.57,.83,.016,.36,"#c8b795");
- g.box(-2.7,1.215,-2.57,.68,.016,.25,"#303b3d");
- for(const x of [-2.92,-2.48]){
-  g.box(x,1.23,-2.56,.19,.025,.19,"#c0baa8");
-  g.box(x,1.249,-2.56,.065,.014,.065,"#414347");
- }
- g.box(-2.99,1.08,-2.34,.10,.09,.07,"#b94b42","emissive");
- for(let x=-2.8;x<=-2.37;x+=.13)g.box(x,1.08,-2.34,.10,.055,.07,"#b4a68d");
- // Files and a stamped investigative memo.
- g.box(2.32,1.0,-2.8,.7,.024,.42,"#cfbb9d","memo");
- g.box(2.51,1.024,-2.61,.14,.005,.04,"#663f39");
- g.box(-.76,.98,-2.8,.81,.031,.42,"#8c765d");
- g.box(-.88,1.001,-2.8,.52,.007,.31,"#d5c4aa");
+ // Recorder grounded to the LEFT bench.
+ g.box(-2.70,1.07,-2.68,1.04,.25,.64,"#343d40");
+ g.box(-2.70,1.213,-2.57,.82,.017,.36,"#cbb997");
+ g.box(-2.70,1.23,-2.57,.69,.016,.25,"#303b3d");
+ for(const x of [-2.92,-2.48]){g.box(x,1.246,-2.56,.19,.022,.19,"#c0baa8");g.box(x,1.261,-2.56,.065,.014,.065,"#414347");}
+ g.box(-2.99,1.09,-2.34,.10,.09,.07,"#b94b42","emissive");
+ // Right table has a surveillance playback monitor — its footage reveals 2026.
+ g.box(2.49,1.43,-3.04,1.12,.88,.16,"#222b31");
+ g.box(2.49,1.43,-2.945,.94,.67,.031,"#415a64","memo");
+ g.box(2.49,1.69,-2.924,.90,.12,.021,"#202f39");
+ for(let i=0;i<5;i++)g.box(2.13+i*.17,1.70,-2.906,.09,.025,.02,"#bbac91");
+ g.box(2.32,1.34,-2.917,.21,.18,.019,"#829091");
+ g.box(2.62,1.38,-2.914,.28,.21,.018,"#263c46");
+ g.box(2.49,.970,-3.05,.11,.10,.13,"#626a6d");
+ g.box(2.49,.950,-3.05,.43,.035,.29,"#767b72");
+ // Handset sits on table too.
+ g.box(2.38,1.025,-2.31,.56,.13,.33,"#374148");
+ g.tube([2.18,1.14,-2.33],[2.61,1.14,-2.33],.08,"#797e78");
+ g.tube([2.65,1.02,-2.27],[2.84,.92,-2.28],.026,"#9c9180");
  // Chair legs and backrest. Touch of world context beyond clues.
  for(const x of [1.0,2.4])for(const z of [-.73,.06])g.box(x,.44,z,.11,.85,.11,"#414449");
  g.box(1.7,.85,-.3,1.53,.17,1.03,"#515252");
@@ -237,22 +267,43 @@ function scene(opened:boolean){
  g.box(cx,cy+.205,cz+.17,.07,.45,.045,"#262b2b","clock-hour");
  g.box(cx,cy+.315,cz+.19,.038,.66,.042,"#5b3329","clock-minute");
  g.box(cx,cy,cz+.23,.11,.11,.06,"#c9aa74");
- // Evidence board, family photographs and other false leads on the back wall.
- g.box(1.55,2.11,-5.66,2.5,1.65,.17,"#69463c");
- g.box(1.55,2.12,-5.54,2.33,1.49,.01,"#ae8660");
- for(const [x,y,shade] of [[.71,2.49,"#c5b6a1"],[1.74,2.57,"#bbb3a6"],[2.2,1.65,"#cec2a9"],[.82,1.72,"#bfb59d"]] as const){
-  g.box(x,y,-5.51,.63,.48,.014,shade);
-  g.box(x,y+.15,-5.495,.34,.14,.012,"#786d66");
-  g.box(x,y-.11,-5.495,.43,.025,.014,"#6e6053");
+ // A real conspiracy board: layered images, routes, schedules and red thread.
+ g.box(1.51,2.15,-5.68,2.76,1.94,.15,"#5d3e33");
+ g.box(1.51,2.15,-5.573,2.59,1.78,.023,"#9e8061");
+ const notes=[
+  [.54,2.66,.53,.45,"#d5c4a9"],[1.12,2.74,.44,.44,"#ead7b8"],
+  [1.78,2.70,.51,.51,"#c6b499"],[2.36,2.61,.51,.43,"#e1d0b3"],
+  [.51,2.12,.49,.52,"#cec1a7"],[1.10,2.18,.49,.46,"#efe2c6"],
+  [1.70,2.14,.58,.48,"#bda585"],[2.34,2.13,.48,.49,"#d5c0a2"],
+  [.55,1.66,.52,.43,"#ddc8aa"],[1.15,1.62,.42,.39,"#bba78d"],
+  [1.71,1.63,.49,.44,"#dbceb4"],[2.36,1.65,.55,.38,"#c4b69b"]
+ ] as const;
+ for(let i=0;i<notes.length;i++){
+  const [x,y,w,h,shade]=notes[i],z=-5.549+(i%3)*.006;
+  g.box(x,y,z,w,h,.014,shade);
+  if(i%3===0){
+   g.box(x,y+.07,z+.017,w*.66,h*.53,.016,"#465960");
+   g.ellipsoid(x,y+.12,z+.036,.06,.07,.012,"#a5a193","scene");
+   g.box(x,y-.13,z+.017,w*.69,.024,.012,"#5d5147");
+  }else{
+   for(let row=0;row<4;row++){
+    const lineW=w*(.69-.055*row),lineY=y+h*.31-row*.087;
+    g.box(x-.025,lineY,z+.018,lineW,.013,.013,row===0?"#574e49":"#817468");
+   }
+  }
+  g.box(x-.11,y+h/2,z+.027,.22,.047,.012,"#c0ae8c"); // tape
+  g.box(x,y+h/2-.033,z+.036,.036,.036,.019,i%2?"#a74a3e":"#566963"); // pin
  }
+ const nodes:V[]=[[.54,2.66,-5.491],[1.12,2.74,-5.487],[2.36,2.61,-5.481],
+  [1.70,2.14,-5.483],[.55,1.66,-5.482],[1.71,1.63,-5.477],[2.34,2.13,-5.478]];
+ for(const [i,j] of [[0,3],[3,2],[0,4],[4,5],[1,6],[6,2],[5,3]] as const)
+  g.tube(nodes[i],nodes[j],.011,"#9b312d");
+ // Broad strip of security-camera timeline under the observation notes.
+ for(let i=0;i<5;i++)g.box(.77+i*.36,1.42,-5.532,.30,.040,.012,i%2?"#52463b":"#8c513e");
  // Armario, fake lead, beside the wall.
  g.box(-3.75,1.51,-3.65,1.54,2.98,.90,"#414d50");
  g.box(-3.35,1.65,-3.18,.08,.41,.08,"#d1b380");
  for(const y of [.65,1.16,2.15,2.67])g.box(-3.74,y,-3.185,1.28,.035,.06,"#666f73");
- // Telephone with angular volumetric mouthpiece.
- g.box(2.44,1.10,-2.85,.6,.23,.54,"#39434b");
- g.tube([2.25,1.25,-2.92],[2.67,1.25,-2.92],.085,"#797e78");
- g.tube([2.75,1.06,-2.81],[2.95,.88,-2.82],.037,"#9c9180");
  // Security camera, red recording indicator.
  g.box(3.48,3.41,-5.32,.53,.24,.51,"#87918f");
  g.box(3.48,3.44,-5.03,.26,.17,.06,"#222831");
@@ -280,7 +331,7 @@ uniform mediump vec3 eye;
 uniform vec3 right,up,forward;
 uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
 uniform vec2 doorPivot;
-uniform float doorGroup,figureGroup;
+uniform float doorGroup,figureGroup,legGroup;
 uniform vec2 clockPivot;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 void main(){
@@ -296,7 +347,7 @@ void main(){
    float phase=figureMarch;
    float leg=step(.33,p.x);
    float stride=sin(phase+leg*3.14159265);
-   if(w.y<1.17){
+   if(legGroup>.5){
      w.z+=.20*stride*walking;
      w.y+=.056*max(0.,stride)*walking;
    }else{
@@ -346,6 +397,7 @@ export type World={
  look:(dx:number,dy:number)=>void;
  pick:(x:number,y:number,w:number,h:number)=>Target|null;
  lookAt:(target:Target)=>void;
+ project:(position:V)=>{x:number;y:number;visible:boolean;distance:number};
  aim:()=>Target|null;
  nearby:()=>Target[];
  getPose:()=>Pose;
@@ -364,7 +416,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -401,7 +453,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   if(w<=0||h<=0||x<0||y<0||x>w||y>h)return null;
   const {forward,right,up}=basis(),ratio=w/h;
   const extents:Record<ClueId,[number,number]> = {
-   calendar:[1.65,1.94],cassette:[1.1,.62],memo:[.91,.64],
+   calendar:[1.65,1.94],cassette:[1.1,.62],memo:[1.1,.89],board:[2.65,1.9],
    clock:[1.54,1.55],drawer:[1.6,.95],envelope:[.43,.32],
    phone:[.85,.58],camera:[.62,.40],locker:[1.7,3.05],
    lamp:[.72,.66],pipe:[1.18,1.45]
@@ -423,6 +475,16 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    if(score<rank){rank=score;selected=target;}
   }
   return selected;
+ }
+ function project(position:V){
+  const {forward,right,up}=basis();
+  const v:V=[position[0]-pose.x,position[1]-pose.y,position[2]-pose.z];
+  const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
+  const width=canvas.clientWidth,height=canvas.clientHeight,ratio=width/Math.max(1,height);
+  if(depth<=.12||!width||!height)return {x:-1000,y:-1000,visible:false,distance:depth};
+  const x=width*.5+(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth)*width*.5;
+  const y=height*.5-(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth*height*.5;
+  return {x,y,visible:x>60&&x<width-60&&y>170&&y<height-150,distance:depth};
  }
  function aim(){
   const {forward}=basis();let best:Target|null=null,score=1e6;
@@ -462,7 +524,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){
-   const figurePart=m.id==="figure"||m.id==="knife-blade";
+   const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
    if(figurePart&&(!intruderStarted||elapsed<9))continue;
    if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
@@ -471,7 +533,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"?1:0);
-   gl.uniform1f(ufg,m.id==="figure"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
    gl.uniform1f(urim,m.id==="figure"?1:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?Math.max(0,1-Math.abs(elapsed-13)/1.15)*.90:0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
@@ -492,7 +555,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    if(!collides(pose.x+dx,pose.z))pose.x+=dx;
    if(!collides(pose.x,pose.z+dz))pose.z+=dz;
   },
-  pick,
+  pick,project,
   look:(dx:number,dy:number)=>{pose.yaw=(pose.yaw-dx*.0048+Math.PI*4)%(Math.PI*2);pose.pitch=Math.max(-1.05,Math.min(1.05,pose.pitch-dy*.0038));},
   lookAt:(target:Target)=>{
     const dx=target.pos[0]-pose.x,dy=target.pos[1]-pose.y,dz=target.pos[2]-pose.z;
