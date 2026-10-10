@@ -383,9 +383,17 @@ function App(){
     </div>
     <div className={styles.introFooter}>CASO M · CINE INTERACTIVO · MISIÓN PERSONALIZADA</div>
    </section>}
+  {screen==="connecting"&&<section className={styles.connecting} data-testid="rescate-connecting" aria-live="polite">
+    <div className={styles.connectingFrame}><i className={styles.recDot}/> CANAL INTERCEPTADO / M-013
+      <div className={styles.connectionBars}>{Array.from({length:23},(_,i)=><b key={i} style={{height:(11+i*11%42)+"px"}}/>)}</div>
+      <strong>RESTABLECIENDO SEÑAL...</strong><span>NO HAGAS RUIDO. YA ESTÁS ADENTRO.</span>
+    </div>
+   </section>}
   {screen==="game"&&<>
     <canvas ref={canvas} className={styles.canvas} data-testid="rescate-webgl" onPointerDown={viewDown} onPointerMove={viewMove} onPointerUp={viewUp} onPointerCancel={cancelView} onLostPointerCapture={cancelView} onClick={viewClick} aria-label="Habitación 3D: tocá objetos para abrirlos y deslizá para mirar"/>
     <div className={styles.film} aria-hidden="true"/>
+    <div className={styles.sceneGrain} aria-hidden="true"/>
+    {seconds<=60&&!drawerOpen&&<div className={styles.pulseFrame} aria-hidden="true"/>}
     <div className={styles.threatVignette} data-threat={flags.current.intruder?"yes":"no"} aria-hidden="true"/>
     {figureWarning&&<div className={styles.knifeAlert} data-testid="rescate-knife-alert" role="alert"><span>ADVERTENCIA · PRESENCIA DETECTADA</span><strong>NO ESTÁS SOLO.</strong><small>¡APURATE, EL TIEMPO SE AGOTA!</small></div>}
     {doorWarning&&<div className={styles.doorAlert} data-testid="rescate-intruder-alert" role="alert"><span>¡ESCUCHASTE ESO!</span><strong>ALGUIEN ESTÁ ABRIENDO LA PUERTA.</strong><small>NO TE DETENGAS · QUEDA 1 MINUTO</small></div>}
@@ -400,11 +408,16 @@ function App(){
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
     {!available&&!error&&<div className={styles.load}>INICIANDO RECONSTRUCCIÓN TRIDIMENSIONAL...</div>}
-    <div className={styles.reticle} data-has-target={active?"yes":"no"}><span>+</span></div>
-    {active&&overlay==="none"&&<div className={styles.target}><span>OBJETO DETECTADO</span><strong>{active.label}</strong></div>}
-    <div className={styles.objectives}><span>EXPEDIENTE · INDICIOS RECUPERADOS</span>
+    <div className={styles.reticle} data-has-target={active?"yes":"no"}><span>{active?"◇":"·"}</span></div>
+    {active&&overlay==="none"&&<div className={styles.target}><span>TOCÁ PARA INVESTIGAR</span><strong>{active.label}</strong></div>}
+    <div className={styles.objectives} data-collapsed={!evidenceExpanded?"yes":"no"}>
+     <button type="button" className={styles.dossierToggle} onClick={()=>setEvidenceExpanded(v=>!v)}
+       aria-expanded={evidenceExpanded} data-testid="rescate-dossier-toggle">
+       <span>◈ EXPEDIENTE · {seen.length}/3 INDICIOS</span><b>{evidenceExpanded?"−":"+"}</b></button>
+     <div className={styles.dossierContents}><span>INDICIOS RECUPERADOS</span>
       {seen.map((k,i)=><div key={k} data-found="yes" className={styles.evidenceSlip} style={{transform:`rotate(${[-3,2,-1][i]}deg)`}}>◆ <span>{EVIDENCE[k].title} · {EVIDENCE[k].value}</span></div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
+     </div>
     </div>
     {drawerOpen&&overlay==="none"&&<button ref={envelopeMarker} type="button" className={styles.envelopeBeacon} data-testid="rescate-envelope-beacon" onClick={()=>{const target=TARGETS.find(t=>t.id==="envelope");if(target)examine(target);}}>
        <span className={styles.beaconArrow}>↙</span><strong>¡AHÍ ESTÁ EL SOBRE!</strong><small>TOCÁ PARA ABRIRLO</small>
@@ -416,8 +429,8 @@ function App(){
        </div><span>CAMINAR</span>
       </div>
       <div className={styles.actions}>
-       <button className={styles.actionButton} type="button" onClick={touchObject}>◎ EXAMINAR</button>
-       <button className={styles.scanButton} type="button" onClick={()=>{setNear(world.current?.nearby()||[]);setShowNear(x=>!x)}} aria-expanded={showNear}>⌕ EXPLORAR ALREDEDOR</button>
+       <button className={styles.actionButton} type="button" onClick={touchObject}>◎ INVESTIGAR</button>
+       <button className={styles.scanButton} type="button" onClick={()=>{setNear(world.current?.nearby()||[]);setShowNear(x=>!x)}} aria-expanded={showNear}>⌕ OBJETOS CERCANOS</button>
        <span>TOCÁ UN OBJETO O DESLIZÁ PARA MIRAR</span>
       </div>
     </div>
