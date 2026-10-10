@@ -736,3 +736,15 @@
  .app[data-stage="game"] .pulseFrame{animation:none;opacity:.33}
  .app[data-stage="game"] .reticle[data-has-target="yes"]{box-shadow:0 0 8px #e3ae7355}
 }
+
+/* Accessibility / regression fix: this dossier was historically a read-only
+ * overlay with pointer-events:none. Now its button must receive taps rather
+ * than sending them through to the underlying 3D canvas. */
+.app[data-stage="game"] .objectives{pointer-events:auto!important}
+.app[data-stage="game"] .dossierToggle,
+.app[data-stage="game"] .dossierContents,
+.app[data-stage="game"] .dossierContents button{pointer-events:auto!important}
+.app[data-stage="game"] .canvas{z-index:0}
+.app[data-stage="game"] .topHints{z-index:8}
+.app[data-stage="game"] .controlBar{z-index:8}
+.app[data-stage="game"] .nearby{z-index:15;pointer-events:auto}
