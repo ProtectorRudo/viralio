@@ -25,7 +25,7 @@ const TEXT={
 export default function PhysicalLetter({kind}: {kind:LetterKind}){
   const [flipped,setFlipped]=useState(false);
   const t=TEXT[kind];
-  return <div className={styles.wrapper}>
+  return <div className={styles.wrapper} data-letter-owner={kind}>
     <div className={styles.caption}><span>◈ PAPEL ENVEJECIDO · ORIGINAL RECUPERADO</span><span>UMB/013</span></div>
     <button type="button" className={styles.folio} aria-label={flipped?"Volver al frente de la carta":"Dar vuelta la carta"} aria-pressed={flipped} onClick={()=>setFlipped(v=>!v)} data-side={flipped?"reverse":"front"}>
       <span className={styles.front}>

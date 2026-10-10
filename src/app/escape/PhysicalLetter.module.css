@@ -21,3 +21,33 @@
 .prompt{text-align:center!important;margin:13px 0 5px!important;color:#dcc29a!important;font:700 .59rem ui-monospace,monospace!important;letter-spacing:.14em}
 @media(max-width:650px){.folio{height:322px}.top{font-size:.48rem;padding:17px 19px 7px}.salutation{margin:13px 20px 4px;font-size:1.03rem}.letterText{margin:0 20px;gap:6px;font-size:clamp(.84rem,3.6vw,1.03rem);line-height:1.25}.signature{font-size:1.1rem;margin:9px 26px 10px auto}.wax{width:43px;height:43px;right:11px;bottom:25px}.pageNumber{left:16px;bottom:10px;font-size:.45rem}.backNote{margin:33px 21px 0;font-size:.94rem;line-height:1.58}.prompt{font-size:.49rem!important;letter-spacing:.07em}}
 @media(prefers-reduced-motion:reduce){.front,.back{transition:none}}
+
+/* An evidence sheet in Elías' smoke-soaked study does not look like a letter
+   discovered next to Eva's toys. Same readable folding mechanism, separate
+   paper fibers, ink, stamps and handling. */
+.wrapper[data-letter-owner="study"] .front{
+ background:radial-gradient(ellipse at 18% 0%,rgba(255,222,163,.38),transparent 52%),repeating-linear-gradient(8deg,rgba(42,28,15,.045) 0 1px,transparent 1px 7px),linear-gradient(136deg,#aa916d,#d5b98a 46%,#a08761 100%);
+ box-shadow:inset 0 0 39px 6px rgba(72,35,17,.45),0 17px 31px rgba(0,0,0,.61);
+}
+.wrapper[data-letter-owner="study"] .back{
+ background:linear-gradient(128deg,rgba(49,37,27,.16),transparent 20%,rgba(65,39,22,.24) 97%),repeating-linear-gradient(0deg,rgba(64,44,26,.029) 0 1px,transparent 2px 8px),linear-gradient(120deg,#ae906b,#cfb28d 65%,#95764d);
+}
+.wrapper[data-letter-owner="study"] .wax{background:radial-gradient(circle at 23% 22%,#845037,#482418 75%,#190f0c);border-color:#68402d}
+.wrapper[data-letter-owner="study"] .top{border-bottom:2px solid rgba(65,49,33,.29);color:#483526}
+.wrapper[data-letter-owner="study"] .stamp{border-color:rgba(79,51,27,.72);color:rgba(70,44,29,.7)}
+.wrapper[data-letter-owner="eva"] .front{
+ background:
+  radial-gradient(ellipse at 82% 24%,rgba(240,214,220,.34),transparent 43%),
+  repeating-linear-gradient(0deg,transparent 0 21px,rgba(97,105,133,.15) 22px,transparent 23px),
+  linear-gradient(115deg,#e9dccf,#e4d4c5 48%,#c4aeb0 100%);
+ box-shadow:inset 0 0 26px rgba(122,93,96,.21),0 17px 32px rgba(0,0,0,.61);
+}
+.wrapper[data-letter-owner="eva"] .back{
+ background:repeating-linear-gradient(0deg,transparent 0 23px,rgba(88,110,142,.13) 24px,transparent 25px),linear-gradient(118deg,#e3d9ca,#d7c4c0 65%,#bda5ac);
+}
+.wrapper[data-letter-owner="eva"] .top{color:#795f6b;border-color:rgba(128,97,115,.26)}
+.wrapper[data-letter-owner="eva"] .salutation,.wrapper[data-letter-owner="eva"] .letterText{color:#483844}
+.wrapper[data-letter-owner="eva"] .signature{color:#855c75}
+.wrapper[data-letter-owner="eva"] .wax{background:radial-gradient(circle at 32% 22%,#c58d9a,#824b63 65%,#493340);border-color:#926276}
+.wrapper[data-letter-owner="eva"] .stamp{color:rgba(117,77,108,.76);border-color:rgba(117,77,108,.55)}
+@media(prefers-reduced-motion:reduce){.wrapper .front,.wrapper .back{transition:none}}

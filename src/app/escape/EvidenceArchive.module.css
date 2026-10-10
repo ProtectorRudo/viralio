@@ -7,3 +7,24 @@
 .bonusMemory span{display:block;color:#aec4af;font:700 .59rem/1.6 ui-monospace,monospace;letter-spacing:.18em}
 .bonusMemory strong{display:block;margin:8px 0;color:#e5e4d9;font:italic 400 clamp(1.14rem,2.5vw,1.58rem) Georgia,serif}
 .bonusMemory p{margin:0;color:#b9c8c0;font:italic .81rem/1.55 Georgia,serif}
+
+/* Identifiable photos replace identical cipher symbols in discovered records.
+   Hidden records never leak the identity or photograph. */
+.portraitPhoto{
+ flex:none;align-self:center;margin:7px auto 3px;
+ width:min(100%,116px);height:128px;
+ background-size:cover;background-position:center 30%;background-repeat:no-repeat;
+ border:5px solid #4e3a26;outline:1px solid rgba(107,74,41,.55);
+ box-shadow:2px 6px 12px rgba(47,32,20,.33),inset 0 0 14px rgba(0,0,0,.45);
+ transform:rotate(-1.5deg);filter:sepia(.19) contrast(.95) saturate(.72);
+}
+.portraitPhoto[data-archive-person="mara"]{border-radius:48% 48% 4% 4% / 27% 27% 2% 2%;border-color:#867052;transform:rotate(1.6deg)}
+.portraitPhoto[data-archive-person="nora"]{border-color:#917959;transform:rotate(-2deg);filter:sepia(.25) saturate(.67)}
+.portraitPhoto[data-archive-person="eva"]{border-color:#66533f;transform:rotate(2deg);filter:grayscale(.27) sepia(.18)}
+.clipping:has(.portraitPhoto) h3{text-align:center;margin:4px 0 2px}
+.clipping:has(.portraitPhoto) p{max-width:100%}
+.clipping[data-record="elias"]{background:linear-gradient(125deg,#d9c8a4,#a89a7e)}
+.clipping[data-record="mara"]{background:linear-gradient(130deg,#eee3c5,#c5b38d)}
+.clipping[data-record="nora"]{background:linear-gradient(123deg,#e8dbc6,#c8bdaa)}
+.clipping[data-record="eva"]{background:linear-gradient(130deg,#e5dac8,#c4b4a6)}
+@media(max-width:650px){.portraitPhoto{height:99px;width:83px;border-width:4px}.clipping:has(.portraitPhoto){min-height:228px}}
