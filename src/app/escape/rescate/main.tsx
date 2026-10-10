@@ -177,9 +177,9 @@ function App(){
   if(screen!=="intro")return;
   try{
    const ctx=new AudioContext();audio.current=ctx;audioRef.current=true;void ctx.resume();
-   const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sawtooth";oscillator.frequency.value=48;
-   const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=95;
-   gain.gain.value=muted?0:.012;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
+   const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sawtooth";oscillator.frequency.value=110;
+   const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=840;
+   gain.gain.value=muted?0:.38;oscillator.connect(filter);filter.connect(gain);gain.connect(ctx.destination);oscillator.start();
    drone.current=oscillator;droneGain.current=gain;
    // Three detuned suspense tones create a continuous, low-volume cinematic bed.
    const layerA=ctx.createOscillator(),layerB=ctx.createOscillator(),layerC=ctx.createOscillator();
@@ -195,7 +195,7 @@ function App(){
   }catch{/* Game still works silently */}
   sound("start");setScreen("game");
  }
- function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.012;if(!v)window.speechSynthesis?.cancel();return !v});}
+ function toggleMute(){setMuted(v=>{if(droneGain.current)droneGain.current.gain.value=!v?0:.38;if(!v)window.speechSynthesis?.cancel();return !v});}
  function viewDown(e:ReactPointerEvent<HTMLCanvasElement>){
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointer.current={id:e.pointerId,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,dragged:false};e.currentTarget.setPointerCapture(e.pointerId);
