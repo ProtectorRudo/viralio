@@ -451,3 +451,45 @@
  border-color:#fff9e7}}
 @media(max-width:670px){.envelopeBeacon{top:48%;max-width:78vw;padding:11px 13px}}
 @media(prefers-reduced-motion:reduce){.envelopeBeacon{animation:none}}
+
+/* Case M 3D anchored envelope marker. Its actual left/top is recomputed from
+ * 3D projection each camera frame, so it cannot follow the player's HUD. */
+.envelopeBeacon{visibility:hidden;top:0;left:0;width:min(225px,55vw);min-height:62px;
+ transform:translate(-50%,calc(-100% - 29px));padding:9px 10px 8px;
+ box-shadow:0 0 35px #eec486b5,0 6px 30px #000a;will-change:left,top}
+.envelopeBeacon strong{font-size:clamp(.62rem,2.75vw,.90rem)}
+.envelopeBeacon small{font-size:.49rem}
+.envelopeBeacon:active{transform:translate(-50%,calc(-100% - 29px)) scale(.98)}
+@media(max-width:670px){.envelopeBeacon{width:min(216px,57vw);top:0;max-width:57vw}}
+/* Physical surveillance archive connected to CCTV feeds. */
+.surveillanceScreen{background:#17282e;padding:13px;margin:15px 0 11px;
+ border:7px solid #363b3d;box-shadow:inset 0 0 36px #020607,0 14px 35px #0009}
+.surveillanceHeader{display:flex;justify-content:space-between;gap:7px;color:#d0d9d4;
+ font:800 .59rem ui-monospace,monospace;letter-spacing:.045em}
+.surveillanceHeader span:first-child{color:#e86c69}
+.surveillanceFootage{position:relative;isolation:isolate;overflow:hidden;height:155px;
+ background:linear-gradient(175deg,#324b4d,#101b21 78%);
+ border:1px solid #607074;margin:11px 0;box-shadow:inset 0 0 35px #010305}
+.surveillanceFootage:before{content:"";position:absolute;inset:0;
+ background:repeating-linear-gradient(0deg,transparent 0 3px,#fff2 4px,transparent 5px);opacity:.22}
+.surveillanceFootage>span{position:absolute;left:12px;top:12px;color:#b4cec8;
+ font:700 .65rem ui-monospace,monospace;letter-spacing:.1em}
+.surveillanceFootage i{position:absolute;left:44%;top:44%;width:22px;height:52px;
+ background:#111a1e;border-radius:40% 40% 10% 10%;transform:translate(-50%,-10%);
+ box-shadow:0 0 9px #0009}
+.surveillanceFootage i:nth-of-type(2){left:46%;top:35%;width:23px;height:24px;border-radius:50%}
+.surveillanceCross{position:absolute;left:49%;top:52%;transform:translate(-50%,-50%);
+ color:#a3d0c0;font-size:2.1rem;opacity:.43}
+.surveillanceFootage small{position:absolute;bottom:10px;left:9px;color:#b9d6c9;font:800 .54rem ui-monospace,monospace}
+.surveillanceScreen p{margin:12px 0;color:#e1e7dd;font:700 .7rem ui-monospace,monospace}
+.surveillanceScreen p strong{font-size:1.13rem;color:#fcddab}
+.surveillanceScreen>small{color:#b7d3c8;font:700 .54rem/1.5 ui-monospace,monospace}
+.investigationBoard{background:#bda383;padding:17px 13px;margin:13px 0;color:#3d2a20;
+ border:8px solid #614534;box-shadow:0 12px 27px #000b}
+.investigationBoard>strong{display:block;color:#552f2b;font:900 .8rem/1.4 ui-monospace,monospace;
+ border-bottom:2px dashed #705248;padding-bottom:7px;margin-bottom:8px}
+.investigationBoard>div{padding:7px 6px;background:#e9ddc8;margin:7px 0;transform:rotate(-1deg);
+ border-left:3px solid #9b5441;font:700 .64rem/1.5 ui-monospace,monospace}
+.investigationBoard>div:nth-child(odd){transform:rotate(1.1deg);background:#e4cdb4}
+.investigationBoard>div span{color:#902f2e;margin-right:5px}
+.investigationBoard>small{font:700 .55rem/1.5 ui-monospace,monospace;color:#4e4036}
