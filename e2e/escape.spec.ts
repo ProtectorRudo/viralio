@@ -29,6 +29,54 @@ async function jumpToLandmark(page:Page,label:string){
 }
 
 test.describe("UMBRAL · el juego puede completarse", () => {
+  test("vestíbulo WebGL tridimensional real: geometría iluminada, joystick, cámara, inspección y retorno", async ({page})=>{
+    test.setTimeout(90_000);
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/escape");
+    await startSignedGame(page);
+    await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
+    await page.getByRole("button",{name:"Entrar al vestíbulo tridimensional jugable"}).click();
+    const stage=page.getByTestId("umbral-real-3d");
+    await expect(stage).toBeVisible();
+    const canvas=page.getByTestId("umbral-webgl-canvas");
+    await expect(canvas).toBeVisible();
+    await expect(page.getByText("No se pudo iniciar la escena WebGL.")).toHaveCount(0);
+    await expect.poll(async()=>canvas.evaluate((el)=>{
+      const c=el as HTMLCanvasElement;
+      const gl=c.getContext("webgl");
+      return !!gl&&c.width>100&&c.height>180&&gl.getParameter(gl.VERSION).includes("WebGL");
+    })).toBe(true);
+    await page.waitForTimeout(700);
+    const pixel=await canvas.evaluate(el=>{
+      const c=el as HTMLCanvasElement;
+      const gl=c.getContext("webgl")!;
+      const sample=new Uint8Array(4);
+      gl.readPixels(Math.floor(c.width*.52),Math.floor(c.height*.48),1,1,gl.RGBA,gl.UNSIGNED_BYTE,sample);
+      return Array.from(sample);
+    });
+    expect(pixel[3]).toBe(255);
+    await expect(page.getByTestId("umbral-3d-inventory")).toContainText("Sin objetos");
+    await page.getByRole("button",{name:/OBJETOS CERCANOS/}).click();
+    await expect(page.getByRole("button",{name:/Puerta de entrada/})).toBeVisible();
+    await page.getByRole("button",{name:/Puerta de entrada/}).click();
+    await expect(page.getByTestId("umbral-3d-inspection")).toHaveAttribute("data-object","door");
+    await page.getByRole("button",{name:/VOLVER A EXPLORAR/}).click();
+    const startPos=await page.locator('[class*="status"]').last().innerText();
+    await page.keyboard.down("w");
+    await page.waitForTimeout(1000);
+    await page.keyboard.up("w");
+    await expect.poll(async()=>page.locator('[class*="status"]').last().innerText()).not.toBe(startPos);
+    const bbox=await canvas.boundingBox();expect(bbox).toBeTruthy();
+    if(!bbox)throw Error("No canvas box");
+    await page.mouse.move(bbox.x+bbox.width*.50,bbox.y+bbox.height*.47);
+    await page.mouse.down();
+    await page.mouse.move(bbox.x+bbox.width*.77,bbox.y+bbox.height*.47,{steps:12});
+    await page.mouse.up();
+    await visualAudit(page,"umbral-vestibulo-webgl-3d-movil.png");
+    await page.getByRole("button",{name:"Salir del vestíbulo 3D"}).click();
+    await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
+  });
+
   test("carta de Eva: apertura, firma manuscrita y resguardo en el expediente", async ({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/escape");
