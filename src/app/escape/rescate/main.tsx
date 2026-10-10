@@ -64,6 +64,9 @@ function App(){
   try{
    engine=createWorld(el,flags.current,(pos,target)=>{
     if(disposed)return;
+    // World-space telemetry is also useful for joystick accessibility tests.
+    el.dataset.cameraX=pos.x.toFixed(2);
+    el.dataset.cameraZ=pos.z.toFixed(2);
     if(activeRef.current?.id!==target?.id){activeRef.current=target;setActive(target);}
     // re-render of position deliberately throttled in engine.
    });
@@ -80,7 +83,7 @@ function App(){
   const move=(now:number)=>{
    if(disposed)return;
    raf.current=requestAnimationFrame(move);
-   const dt=Math.min(.058,(now-(frameLast.current||now))/1000);frameLast.current=now;
+   const dt=Math.min(.22,(now-(frameLast.current||now))/1000);frameLast.current=now;
    if(overlayState.current!=="none"||expiredState.current)return;
    const k=held,f=(k.has("w")||k.has("arrowup")?1:0)-(k.has("s")||k.has("arrowdown")?1:0);
    const side=(k.has("d")||k.has("arrowright")?1:0)-(k.has("a")||k.has("arrowleft")?1:0);
