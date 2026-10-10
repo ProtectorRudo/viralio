@@ -295,6 +295,10 @@ test.describe("UMBRAL · el juego puede completarse", () => {
     for(const width of [360,390,430]){
       await page.setViewportSize({width,height:844});
       await page.goto("/escape");
+      // Each width represents a fresh player: do not let the previous saved
+      // investigation auto-resume and hide the entrance button on reload.
+      await page.evaluate(()=>window.localStorage.removeItem("umbral-casa-13-v1"));
+      await page.reload();
       await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
       await page.getByRole("button",{name:"Omitir secuencia cinematográfica"}).click();
       await expect(page.getByRole("heading",{name:"El vestíbulo",exact:true})).toBeVisible();
