@@ -366,18 +366,22 @@ function App(){
      onError={()=>setTapeStatus("error")}/>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
-    <span className={styles.classified}>EXPEDIENTE M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
+    <span className={styles.classified}>CANAL 09 / M·013 <i>◉</i> TRANSMISIÓN INTERCEPTADA</span>
     <span className={styles.radar} aria-hidden="true"><i/><i/><i/></span>
     <div className={styles.introText}>
-      <span className={styles.red}>◉ PRIORIDAD MÁXIMA · MISIÓN FICTICIA</span>
-      <h1>SECUESTRARON<br/><em>A MAURO.</em></h1>
-      <p>Una habitación abandonada. Un mensaje de auxilio. Tenés tres minutos antes de que regresen.</p>
-      <div className={styles.introCard}><span>ÚLTIMO MENSAJE RECIBIDO</span><p>«Si querés saber dónde está Mauro... abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p></div>
+      <span className={styles.red}>◉ ACCESO CONFIDENCIAL · OPERACIÓN M</span>
+      <h1>SECUESTRARON<br/><em>A MAURO.</em></h1><span className={styles.introSubline}>LA ÚLTIMA TRANSMISIÓN SIGUE ABIERTA.</span>
+      <p>Una habitación abandonada. Una voz que pide ayuda. <strong>Tres minutos</strong> antes de que vuelvan.</p>
+      <div className={styles.introCard}>
+        <span><i className={styles.recDot}/> CINTA N.º 013 · MENSAJE INTERCEPTADO</span>
+        <div className={styles.waveform} aria-hidden="true">{Array.from({length:39},(_,i)=><i key={i} style={{height:(8+(i*17%30))+"px"}}/>)}</div>
+        <p>«Si querés saber dónde está Mauro… abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p>
+       </div>
       <div className={styles.introTimer}>03<span>:</span>00 <small>PARA RESOLVER EL CASO</small></div>
-      <button type="button" className={styles.start} onClick={start}>ACEPTAR MISIÓN <span>↗</span></button>
+      <button type="button" className={styles.start} onClick={start}>INICIAR RESCATE <span>↗</span></button>
       <small className={styles.disclaimer}>Experiencia de ficción y entretenimiento · No se trata de una emergencia real</small>
     </div>
-    <div className={styles.introFooter}>OPERACIÓN RESCATE · EXPERIENCIA 3D PARA CELULAR</div>
+    <div className={styles.introFooter}>CASO M · CINE INTERACTIVO · MISIÓN PERSONALIZADA</div>
    </section>}
   {screen==="game"&&<>
     <canvas ref={canvas} className={styles.canvas} data-testid="rescate-webgl" onPointerDown={viewDown} onPointerMove={viewMove} onPointerUp={viewUp} onPointerCancel={cancelView} onLostPointerCapture={cancelView} onClick={viewClick} aria-label="Habitación 3D: tocá objetos para abrirlos y deslizá para mirar"/>
