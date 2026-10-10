@@ -178,7 +178,7 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await expect(lock.locator('strong[aria-label^="Cifra "]')).toHaveText(["1","3","1","0","2","6"]);
  await page.getByRole("button",{name:/PROBAR COMBINACIÓN/}).click();
  await expect(lock).not.toBeVisible();
- await expect(page.getByText(/EL CANDADO SE ABRIÓ/)).toBeVisible();
+ await expect(page.getByText(/ABRISTE EL CAJÓN/)).toBeVisible();
  const beacon=page.getByTestId("rescate-envelope-beacon");
  await expect(beacon).toBeVisible();
  await expect(beacon).toContainText("AHÍ ESTÁ EL SOBRE");
