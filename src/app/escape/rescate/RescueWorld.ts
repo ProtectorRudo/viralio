@@ -63,7 +63,7 @@ function scene(opened:boolean){
  g.box(0,2,-5.85,10,4.1,.35,WALL);
  g.box(-5,2,-.5,.34,4.1,11.6,"#31383d");
  g.box(5,2,-.5,.34,4.1,11.6,"#3d3d41");
- g.box(0,2,5.3,10,4.1,.34,"#292e34");
+ // The main doorway remains open behind its animated door leaf.
  // Floor tiles, grimy checkerboard, concrete cracks.
  for(let x=-4.62;x<=4.65;x+=.72)for(let z=-5.35;z<=4.85;z+=.72){
   const shade=(Math.round(x*100)+Math.round(z*90))%4===0?"#414347":"#333639";
@@ -204,13 +204,20 @@ function scene(opened:boolean){
 }
 const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;
 uniform vec3 eye,right,up,forward;
-uniform float ratio,clockAngle;
+uniform float ratio,clockAngle,doorAngle,figureStep;
+uniform vec2 doorPivot;
+uniform float doorGroup,figureGroup;
 uniform vec2 clockPivot;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 void main(){
  vec3 w=p;
  float ss=sin(clockAngle),cc=cos(clockAngle);
  w.xy=clockPivot+vec2((p.x-clockPivot.x)*cc+(p.y-clockPivot.y)*ss,-(p.x-clockPivot.x)*ss+(p.y-clockPivot.y)*cc);
+ if(doorGroup>.5){
+  float da=sin(doorAngle),dc=cos(doorAngle);
+  w.xz=doorPivot+vec2((p.x-doorPivot.x)*dc+(p.z-doorPivot.y)*da,-(p.x-doorPivot.x)*da+(p.z-doorPivot.y)*dc);
+ }
+ if(figureGroup>.5)w.z-=figureStep;
  vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
@@ -218,14 +225,14 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
-uniform float time,emission;
+uniform float time,emission,threat;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
  float d=distance(vPos,overhead);
  vec3 toL=normalize(overhead-vPos);
  float lam=max(.0,dot(normalize(vNorm),toL));
  float lamp=(.31+lam*3.05/(1.0+d*.29+d*d*.055))*(.94+.055*sin(time*12.0)+.025*sin(time*27.0));
- float redGlow=.48/(1.0+length(vPos-red)*.18);
+ float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-red)*.18);
  vec3 outColor=vColor*lamp + vColor*vec3(.19,.06,.05)*redGlow;
  outColor+=vColor*vec3(.02,.04,.055)*max(.0,dot(vNorm,vec3(1.,.2,0.)));
  float fog=clamp((vDistance-5.8)/15.0,0.,.69);
@@ -243,6 +250,7 @@ export type Pose={x:number;y:number;z:number;yaw:number;pitch:number};
 export type World={
  move:(f:number,s:number,dt:number)=>void;
  look:(dx:number,dy:number)=>void;
+ pick:(x:number,y:number,w:number,h:number)=>Target|null;
  lookAt:(target:Target)=>void;
  aim:()=>Target|null;
  nearby:()=>Target[];
@@ -262,7 +270,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ufs=uniform("figureStep"),uth=uniform("threat");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -277,7 +285,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  };
  let current={...flags};rebuild(current.unlocked);
  const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
- let active=true,raf=0,lastHud=0,clockStarted=flags.clockActivated?performance.now()-3100:0;
+ let active=true,raf=0,lastHud=0,clockStarted=flags.clockActivated?performance.now()-3100:0,intruderStarted=flags.intruder?performance.now()-1500:0;
  function basis(){
   const cp=Math.cos(pose.pitch);
   const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
@@ -291,6 +299,22 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  function nearby(){
   return targets().filter(t=>Math.hypot(t.pos[0]-pose.x,t.pos[2]-pose.z)<3.25)
   .sort((a,b)=>Math.hypot(a.pos[0]-pose.x,a.pos[2]-pose.z)-Math.hypot(b.pos[0]-pose.x,b.pos[2]-pose.z));
+ }
+ function pick(x:number,y:number,w:number,h:number):Target|null{
+  const {forward,right,up}=basis(),ratio=w/Math.max(1,h),nx=2*x/w-1,ny=1-2*y/h;
+  let selected:Target|null=null,score=Infinity;
+  for(const target of targets()){
+   const v:V=[target.pos[0]-pose.x,target.pos[1]-pose.y,target.pos[2]-pose.z];
+   const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
+   if(depth<.25||Math.hypot(...v)>target.reach)continue;
+   const px=(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth);
+   const py=(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth;
+   const err=Math.hypot((nx-px)*w/2,(ny-py)*h/2);
+   const radius=target.id==="calendar"||target.id==="clock"?Math.min(115,w*.23):Math.min(84,w*.20);
+   const rank=err+depth*4;
+   if(err<=radius&&rank<score){score=rank;selected=target;}
+  }
+  return selected;
  }
  function aim(){
   const {forward}=basis();let best:Target|null=null,score=1e6;
@@ -318,6 +342,11 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.useProgram(program);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
+  const elapsed=Math.max(0,(now-intruderStarted)/1000),progress=intruderStarted?Math.min(1,elapsed/4):0;
+  const smooth=progress*progress*(3-2*progress);
+  gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
+  gl.uniform1f(ufs,intruderStarted?Math.max(0,Math.min(1.38,(elapsed-3)*.21)):0);
+  gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
@@ -325,6 +354,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
+   gl.uniform1f(udg,m.id==="door"?1:0);
+   gl.uniform1f(ufg,m.id==="figure"?1:0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
    gl.uniform2f(upiv,3.73,2.14);
@@ -343,13 +374,14 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    if(!collides(pose.x+dx,pose.z))pose.x+=dx;
    if(!collides(pose.x,pose.z+dz))pose.z+=dz;
   },
+  pick,
   look:(dx:number,dy:number)=>{pose.yaw=(pose.yaw-dx*.0048+Math.PI*4)%(Math.PI*2);pose.pitch=Math.max(-1.05,Math.min(1.05,pose.pitch-dy*.0038));},
   lookAt:(target:Target)=>{
     const dx=target.pos[0]-pose.x,dy=target.pos[1]-pose.y,dz=target.pos[2]-pose.z;
     pose.yaw=Math.atan2(-dx,-dz);pose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
   },
   aim,nearby,getPose:()=>({...pose}),
-  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
+  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
   dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);gl.deleteProgram(program);gl.flush()},
  };
 }
