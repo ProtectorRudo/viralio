@@ -37,6 +37,7 @@ function App(){
  const [seconds,setSeconds]=useState(180),[expired,setExpired]=useState(false);
  // A player can claim precisely one 60-second extension per run.
  const extraMinuteUsed=useRef(false);
+ const extraMinuteDeadline=useRef<number|null>(null);
  const [seen,setSeen]=useState<Ev[]>([]);
  const [photoFlipped,setPhotoFlipped]=useState(false);
  const [active,setActive]=useState<Target|null>(null),[focus,setFocus]=useState<Target|null>(null);
@@ -82,7 +83,17 @@ function App(){
  },[]);
  useEffect(()=>{
   if(screen!=="game"||expired||overlay==="letter"||drawerOpen)return;
-  const clock=window.setInterval(()=>setSeconds(t=>{if(t<=1){setExpired(true);return 0;}return t-1;}),1000);
+  const clock=window.setInterval(()=>{
+   // The added minute is a real 60-second allowance, not another 60
+   // potentially delayed setInterval ticks on an overloaded phone.
+   if(extraMinuteUsed.current&&extraMinuteDeadline.current!==null){
+    const remaining=Math.max(0,Math.ceil((extraMinuteDeadline.current-Date.now())/1000));
+    setSeconds(remaining);
+    if(remaining===0)setExpired(true);
+    return;
+   }
+   setSeconds(t=>{if(t<=1){setExpired(true);return 0;}return t-1;});
+  },1000);
   return()=>clearInterval(clock);
  },[screen,expired,overlay,drawerOpen]);
  useEffect(()=>{
@@ -449,12 +460,13 @@ function App(){
   sealTimer.current=window.setTimeout(()=>{setOpenedLetter(true);setSealBreaking(false);sound("unlock");},1260);
  }
  function finish(){musicAudio.current?.pause();for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
- function restart(){setScreen("intro");setSeconds(180);setExpired(false);extraMinuteUsed.current=false;setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);blackoutTriggered.current=false;for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];
+ function restart(){setScreen("intro");setSeconds(180);setExpired(false);extraMinuteUsed.current=false;extraMinuteDeadline.current=null;setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);blackoutTriggered.current=false;for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];
  setBlackout(false);setGraffiti(false);setGraffitiReveal(false);flags.current.remaining=180;
  cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}
  function extend(){
   if(extraMinuteUsed.current)return;
   extraMinuteUsed.current=true;
+  extraMinuteDeadline.current=Date.now()+60000;
   setSeconds(60);setExpired(false);
   setToast("ÚLTIMO MINUTO · NO HABRÁ MÁS PRÓRROGAS");sound("start");
  }
