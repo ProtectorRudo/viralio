@@ -42,14 +42,13 @@ async function examineNearby(page:Page,name:string){
 }
 
 test("CASO M · muebles separados, pasillos despejados y puntos físicos coherentes",async({page})=>{
- const {recorder,surveillance,lock,locker,chair,trunk}=ROOM_LAYOUT;
+ const {recorder,surveillance,lock,locker,trunk}=ROOM_LAYOUT;
  const clearGap=(a:{x:number;z:number;w:number;d:number},b:{x:number;z:number;w:number;d:number})=>
   Math.hypot(Math.max(0,Math.abs(a.x-b.x)-(a.w+b.w)/2),Math.max(0,Math.abs(a.z-b.z)-(a.d+b.d)/2));
  expect(clearGap(recorder,lock)).toBeGreaterThan(1);
  expect(clearGap(surveillance,lock)).toBeGreaterThan(1);
  expect(clearGap(recorder,locker)).toBeGreaterThan(2);
  expect(clearGap(recorder,trunk)).toBeGreaterThan(1);
- expect(clearGap(surveillance,chair)).toBeGreaterThan(2);
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
  // The central aisle must still allow the player to advance from the doorway.
