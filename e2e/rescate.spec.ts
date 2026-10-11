@@ -111,7 +111,9 @@ test("CASO M · toque directo sobre el cajón abre el candado",async({page},test
 
 
 test("CASO M · al minuto final aparece la advertencia y luego el intruso",async({page},testInfo)=>{
- test.setTimeout(150000);
+ // Software WebGL at 1280px can make the 27 virtual clock ticks slow.
+ // Keep all 27 simulated ticks and game assertions instead of skipping any.
+ test.setTimeout(300000);
  await page.clock.install();
  await start(page);
  // Freeze the wall clock first: real browser rendering must not consume time
