@@ -57,7 +57,7 @@ jobs:
           test -s showcase/rescate-mauro/app.css
           test -s showcase/rescate-mauro/audio/rescue-message.mp3
           test -s showcase/rescate-mauro/audio/mauro-voice.webm
-          test -s showcase/rescate-mauro/models/masked-raider.glb
+          test -s showcase/rescate-mauro/models/stalker-skeletal.glb
           test -s showcase/rescate-mauro/audio/suspense.wav
       - name: Configure Pages
         uses: actions/configure-pages@v5
