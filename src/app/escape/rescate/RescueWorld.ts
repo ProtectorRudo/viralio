@@ -995,7 +995,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   canvas.dataset.intruderAppearance=rig?.skinned?"worn-coat-porcelain-mask":"fallback";
   canvas.dataset.intruderMood=paused?"watching":elapsed>11?"stalking":"waiting";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
-  canvas.dataset.roomProps="beveled-webgl-v2";
+  canvas.dataset.roomProps="complete-hd-props-v3";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
