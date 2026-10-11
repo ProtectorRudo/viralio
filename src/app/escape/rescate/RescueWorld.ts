@@ -93,6 +93,20 @@ class Room {
    if(inner>.001)this.quad(kind,[p(inner,b,back),p(inner,b,front),p(inner,a,front),p(inner,a,back)],[-n[0],-n[1],0],color);
   }
  }
+ // Rotated hardbacks are true 3D objects. Because the bookcase runs
+ // along Z, lean each spine into its neighbour around the local X axis.
+ tiltedBox(x:number,y:number,z:number,w:number,h:number,d:number,angle:number,color:string,kind="book"){
+  const co=Math.cos(angle),si=Math.sin(angle);
+  const pt=(u:number,v:number,depth:number):V=>[x+u,y+v*co-depth*si,z+v*si+depth*co];
+  const norm=(u:number,v:number,depth:number):V=>[u,v*co-depth*si,v*si+depth*co];
+  const l=-w/2,r=w/2,b=-h/2,t=h/2,f=-d/2,a=d/2;
+  this.quad(kind,[pt(r,b,a),pt(r,t,a),pt(l,t,a),pt(l,b,a)],norm(0,0,1),color);
+  this.quad(kind,[pt(l,b,f),pt(l,t,f),pt(r,t,f),pt(r,b,f)],norm(0,0,-1),color);
+  this.quad(kind,[pt(l,t,a),pt(r,t,a),pt(r,t,f),pt(l,t,f)],norm(0,1,0),color);
+  this.quad(kind,[pt(l,b,f),pt(r,b,f),pt(r,b,a),pt(l,b,a)],norm(0,-1,0),color);
+  this.quad(kind,[pt(r,b,f),pt(r,t,f),pt(r,t,a),pt(r,b,a)],norm(1,0,0),color);
+  this.quad(kind,[pt(l,b,a),pt(l,t,a),pt(l,t,f),pt(l,b,f)],norm(-1,0,0),color);
+ }
  panel(x:number,y:number,z:number,w:number,h:number,color:string,kind:string){
   this.quad(kind,[[x+w/2,y-h/2,z],[x+w/2,y+h/2,z],[x-w/2,y+h/2,z],[x-w/2,y-h/2,z]],[0,0,1],color);
  }
@@ -166,6 +180,14 @@ function scene(opened:boolean){
   for(let z=-5;z<4.85;z+=1.35)g.box(x,1.73,z,.06,3.46,.14,"#66686a");
  }
  for(let z=-5;z<5.1;z+=2.3)g.box(0,3.94,z,9.7,.20,.19,"#4f5154");
+ // Broken tile seams, patchy grout and stained baseboard on all 4 walls.
+ for(let x=-4.52;x<4.6;x+=1.35){
+  g.box(x,.020,-5.48,.39,.006,.060,"#4f4b48","concrete");
+  g.box(x,.023,4.84,.56,.007,.043,"#5d5451","concrete");
+ }
+ for(const z of [-5.36,-3.98,-2.58,-1.18,.22,1.62,3.02,4.42]){
+  for(const x of [-4.68,4.68])g.box(x,.39,z,.08,.72,.032,"#55504c","concrete");
+ }
  // A restrained layer of age, mortar repairs and fine surface geometry.
  for(let i=0;i<16;i++){
   const x=-4.45+(i%8)*1.22,y=.57+Math.floor(i/8)*2.05;
@@ -306,9 +328,12 @@ function scene(opened:boolean){
   g.bevelBox(0,.73,-.67,1.65,.20,.10,.012,"#866448","drawer");
   g.box(0,.69,-1.20,1.38,.009,.88,"#514132","drawer");
   for(const x of [-.55,.55])g.tube([x,.74,-.66],[x,.74,-.58],.039,"#c0ab84","metal");
-  g.box(0,.706,-1.48,.43,.021,.27,"#e5d4b1","envelope");
-  g.box(0,.72,-1.445,.10,.022,.10,"#983f32","envelope");
-  g.box(0,.720,-1.445,.34,.014,.010,"#d4ba91","envelope");
+  // Folded envelope of stiff paper, visible triangular flap and wax seal.
+  g.bevelBox(0,.707,-1.48,.43,.017,.27,.004,"#e5d4b1","envelope");
+  g.quad("envelope",[[-.21,.720,-1.575],[0,.724,-1.43],[.21,.720,-1.575],[.0,.723,-1.47]],[0,1,0],"#c8b18e");
+  g.quad("envelope",[[-.20,.719,-1.382],[0,.722,-1.44],[.20,.719,-1.382],[0,.720,-1.39]],[0,1,0],"#efe0c5");
+  g.reelY(0,.732,-1.445,.055,.006,.009,"#8a302a","envelope",18);
+  g.ellipsoid(0,.738,-1.445,.027,.004,.023,"#b65045","envelope",5,10);
  }else{
   // Bronze lock casing, faceplate and six individual metal number wheels.
   g.bevelBox(0,.75,-1.55,.42,.23,.135,.018,"#857b6e","metal");
@@ -357,64 +382,134 @@ function scene(opened:boolean){
   g.reelZ(x,1.12,rz+.401,.027,.008,.018,"#9e988b","metal",12);
  }
  g.box(rx-.35,1.091,rz+.432,.071,.058,.030,"#b94a40","emissive");
- // Surveillance monitor occupies right-side workspace; its screen is readable.
- g.box(3.68,1.42,-3.54,1.07,.87,.18,"#1c2429");
- g.box(3.68,1.43,-3.433,.88,.65,.030,"#46616c","memo");
- g.box(3.68,1.688,-3.414,.85,.105,.020,"#20333c");
- for(let i=0;i<5;i++)g.box(3.36+i*.16,1.685,-3.401,.085,.024,.016,"#beb19a");
- g.box(3.56,1.30,-3.400,.22,.17,.022,"#809598");
- g.box(3.83,1.39,-3.400,.26,.19,.022,"#2a414d");
- g.box(3.68,.974,-3.53,.12,.11,.13,"#777b79");
- g.box(3.68,.947,-3.53,.41,.037,.33,"#6f7978");
- // Telephone lies beneath surveillance monitor, slightly toward player.
- g.box(3.67,1.028,-2.82,.51,.14,.31,"#303b40");
- g.tube([3.47,1.148,-2.84],[3.87,1.148,-2.84],.076,"#92938b");
- g.tube([3.92,1.04,-2.85],[4.07,.95,-2.87],.025,"#b1a28e");
+ // Surveillance station: recessed CRT-inspired housing, vents,
+ // glass inset, OSD lines, status LEDs, real stalk & die-cast foot.
+ const mx=ROOM_LAYOUT.surveillance.x,mz=ROOM_LAYOUT.surveillance.z;
+ g.bevelBox(mx,1.42,mz-.24,1.10,.89,.24,.045,"#273238","metal");
+ g.bevelBox(mx,1.43,mz-.107,.964,.728,.045,.025,"#121b20","metal");
+ g.bevelBox(mx,1.43,mz-.078,.872,.637,.015,.006,"#2f5360","memo");
+ g.box(mx,1.58,mz-.060,.70,.018,.007,"#6a9899","memo");
+ for(let i=0;i<8;i++){
+  g.box(mx,1.19+i*.064,mz-.064,.79,.0035,.0045,i%3===0?"#507b7d":"#365964","memo");
+ }
+ // Surveillance silhouettes, date/time bars, tiny recording dot.
+ for(let i=0;i<5;i++){
+  const x=mx-.30+i*.142;
+  g.box(x,1.43+(i%2)*.13,mz-.047,.12,.064,.007,i%2?"#56777c":"#31424a","memo");
+ }
+ g.box(mx,1.132,mz-.043,.72,.052,.008,"#17252c","memo");
+ g.ellipsoid(mx+.358,1.735,mz-.046,.014,.014,.008,"#cd443d","emissive",5,8);
+ for(let i=0;i<12;i++)g.box(mx-.52+i*.095,1.80,mz-.23,.049,.009,.020,"#10191b","metal");
+ for(const x of [mx-.45,mx+.45])for(const y of [1.10,1.76])
+  g.reelZ(x,y,mz-.070,.016,.006,.008,"#9b9b8e","metal",10);
+ g.bevelBox(mx,.960,mz-.30,.115,.18,.13,.016,"#676d69","metal");
+ g.bevelBox(mx,.862,mz-.30,.42,.045,.34,.016,"#545e5c","metal");
+ for(let i=0;i<6;i++)g.box(mx-.34+i*.14,1.05,mz-.071,.044,.030,.017,i===5?"#ae473d":"#879390","metal");
+ // Keyboard, rows of independent angled raised keys; mouse + cord.
+ g.bevelBox(mx,1.016,mz+.31,.87,.046,.23,.016,"#30373b","metal");
+ for(let row=0;row<3;row++)for(let col=0;col<10;col++){
+  const x=mx-.35+col*.077,z=mz+.244+row*.064;
+  g.bevelBox(x,1.046,z,.060,.019,.046,.004,row===2&&col>3&&col<8?"#626f6d":"#83908b","metal");
+ }
+ g.ellipsoid(mx+.53,1.032,mz+.22,.076,.047,.108,"#4e5b5d","metal",8,12);
+ g.tube([mx+.58,1.036,mz+.16],[mx+.69,1.034,mz-.10],.009,"#353b3a","cable");
+ // Analogue telephone: cradle, rounded handset, keypad, cord and jack.
+ const tx=3.67,tz=-2.82;
+ g.bevelBox(tx,1.025,tz,.54,.14,.34,.043,"#303b40","metal");
+ g.box(tx,1.106,tz+.038,.32,.032,.18,"#151f23","metal");
+ for(let row=0;row<3;row++)for(let col=0;col<3;col++)
+  g.bevelBox(tx-.105+col*.105,1.131,tz-.015+row*.058,.058,.017,.043,.004,"#8c9290","metal");
+ g.ellipsoid(tx-.22,1.184,tz,.060,.060,.092,"#737a76","metal",8,10);
+ g.ellipsoid(tx+.22,1.184,tz,.060,.060,.092,"#737a76","metal",8,10);
+ g.tube([tx-.21,1.205,tz],[tx+.21,1.205,tz],.049,"#8b938e","metal");
+ g.tube([tx+.245,1.168,tz+.03],[tx+.35,1.115,tz+.12],.014,"#2b3335","cable");
+ for(let i=0;i<9;i++){
+  const t=i/9*Math.PI*2,z=tz+.12+Math.sin(t)*.026,x=tx+.35+i*.023;
+  g.tube([x,1.109,z],[x+.02,1.104,z+.01],.012,"#3b4241","cable");
+ }
  // The right-side lane must remain completely open to the security monitor
  // and wall clock. Removed the decorative chair that blocked navigation.
- // Shelved files occupy the far-left utility alcove, away from the lock.
- for(const y of [.58,1.23,1.90])g.box(-4.48,y,3.27,.58,.072,1.55,"#63584c");
- for(let i=0;i<12;i++){const z=2.60+i*.125;
-  g.box(-4.42,1.57,z,.12,.48,.085,i%3?"#766a58":"#3d5556");
+ // Full-height utilitarian shelf: brackets, warped wooden shelves,
+ // staggered books, printed labels, file boxes, folders and fallen paper.
+ for(const x of [-4.67,-4.23])g.bevelBox(x,1.48,3.25,.068,2.65,1.62,.014,"#51534f","metal");
+ for(const y of [.53,1.18,1.83,2.48]){
+  g.bevelBox(-4.48,y,3.27,.63,.072,1.60,.016,"#74604a","wood");
+  for(const z of [2.55,4.01]){
+   g.bevelBox(-4.47,y-.12,z,.46,.044,.037,.010,"#6f736e","metal");
+   g.tube([-4.59,y-.11,z],[-4.67,y-.33,z],.023,"#8f8779","metal");
+  }
  }
- // A low evidence trunk fills the LEFT side-wall midpoint, leaving
- // an obvious walkable gap between the tape desk and the rear locker.
+ const spinePalette=["#414e4c","#776a58","#5b514a","#354c54","#7a554c","#6d6957","#3b454d","#977d60","#59443e"];
+ for(let shelf=0;shelf<3;shelf++){
+  const z0=2.62,baseY=.57+shelf*.65;
+  for(let i=0;i<12;i++){
+   const z=z0+i*.114+(i%3)*.004;
+   const h=.29+(i*7+shelf*5)%5*.049,w=.11+(i%4)*.009;
+   const angle=(i===3||i===10)?.14:(i===7?-.11:0);
+   const cy=baseY+h/2-.018;
+   g.tiltedBox(-4.41,cy,z,w,h,.080,angle,spinePalette[(i+shelf*3)%spinePalette.length],"book");
+   g.box(-4.338,cy+.028,z,.007,.065,.047,"#ad9b78","book");
+   for(let mark=0;mark<2;mark++)g.box(-4.331,cy-.083+mark*.033,z,.007,.007,.056,"#c2b394","book");
+  }
+  // A leaning dossier and a cardboard case disrupt the repetitive rhythm.
+  g.bevelBox(-4.45,baseY+.075,3.89,.31,.16,.11,.011,"#7d6b56","wood");
+  g.box(-4.283,baseY+.09,3.89,.009,.065,.078,"#d1bc8f","paper");
+ }
+ for(let i=0;i<4;i++)g.box(-4.39,2.57+i*.018,2.73+i*.036,.24,.009,.18,i%2?"#b5a184":"#dad0b2","paper");
+ // Evidence trunk: battered steel edges, leather straps, rivets and latch.
  const trunk=ROOM_LAYOUT.trunk;
- g.box(trunk.x,.33,trunk.z,1.08,.58,.74,"#4b4e4b");
- g.box(trunk.x,.66,trunk.z,1.12,.08,.78,"#7c715c");
- g.box(trunk.x,.41,trunk.z-.41,.29,.14,.047,"#a29073");
+ g.bevelBox(trunk.x,.33,trunk.z,1.08,.58,.74,.06,"#414643","metal");
+ g.bevelBox(trunk.x,.65,trunk.z,1.12,.086,.78,.028,"#6f6658","wood");
+ for(const dx of [-.46,.46]){
+  g.box(trunk.x+dx,.38,trunk.z,.052,.53,.76,"#877862","metal");
+  for(const dz of [-.31,.31])for(const y of [.16,.48,.65])
+   g.reelZ(trunk.x+dx,y,trunk.z+dz,.020,.007,.014,"#b6a07a","metal",10);
+ }
+ for(const dz of [-.28,.28])g.box(trunk.x,.343,trunk.z+dz,1.04,.042,.049,"#77766a","metal");
+ g.bevelBox(trunk.x,.405,trunk.z-.393,.31,.15,.064,.013,"#baa37d","metal");
+ g.bevelBox(trunk.x,.414,trunk.z-.436,.17,.059,.023,.006,"#4a453b","metal");
+ g.tube([trunk.x-.065,.400,trunk.z-.447],[trunk.x+.065,.400,trunk.z-.447],.018,"#c8af86","metal");
  for(let i=0;i<7;i++){
   const t=i/6*Math.PI*1.6;
   g.tube([trunk.x+.58+.14*Math.cos(t),.028,trunk.z+.23+.12*Math.sin(t)],
-         [trunk.x+.58+.14*Math.cos(t+.31),.028,trunk.z+.23+.12*Math.sin(t+.31)],.014,"#242b2c");
+         [trunk.x+.58+.14*Math.cos(t+.31),.028,trunk.z+.23+.12*Math.sin(t+.31)],.014,"#242b2c","cable");
  }
- // Evidence photograph on the wall. Nothing displays the solution on its front.
- // Cream paper frame, dark developed photograph, aged tape and damaged corners.
- g.box(-2.75,2.12,-5.59,1.65,1.94,.10,"#6e6254");
- g.box(-2.75,2.12,-5.49,1.54,1.82,.039,"#d9c8aa","calendar");
- g.box(-2.75,2.27,-5.449,1.36,1.32,.024,"#323b43","calendar");
- g.box(-2.74,2.16,-5.424,1.12,.93,.021,"#28343e");
- g.box(-2.74,2.48,-5.402,.74,.27,.021,"#4f5250");
- g.box(-2.65,1.97,-5.40,.40,.22,.022,"#6b5d55");
- g.box(-3.1,2.96,-5.425,.38,.14,.037,"#aa9270");
- g.box(-2.38,2.98,-5.425,.38,.14,.037,"#aa9270");
- g.box(-2.75,1.33,-5.431,.90,.035,.022,"#786856");
- // Rough tear / crack across developed picture.
- for(let i=0;i<6;i++)g.box(-3.24+i*.17,2.32+(i%2)*.04,-5.391,.22,.014,.012,"#8f8171");
- // Clock with real WebGL hands that animate around a shared spindle.
+ // Damaged evidence photograph, raised double frame, beveled glass,
+ // torn corners, physical paper under tape, and emulsion scratches.
+ g.bevelBox(-2.75,2.12,-5.59,1.65,1.94,.105,.021,"#62574b","wood");
+ g.bevelBox(-2.75,2.12,-5.491,1.54,1.82,.047,.016,"#c8b79b","paper");
+ g.bevelBox(-2.75,2.27,-5.449,1.36,1.32,.024,.010,"#253a42","calendar");
+ g.box(-2.74,2.16,-5.424,1.12,.93,.021,"#28343e","calendar");
+ g.box(-2.74,2.48,-5.402,.74,.27,.021,"#556367","calendar");
+ g.box(-2.65,1.97,-5.40,.40,.22,.022,"#756458","calendar");
+ for(const [x,y] of [[-3.1,2.96],[-2.38,2.98],[-3.05,1.37]]){
+  g.bevelBox(x,y,-5.418,.38,.14,.027,.004,"#ad9571","paper");
+  g.box(x,y,-5.399,.32,.006,.008,"#e3d1ac","paper");
+ }
+ for(let i=0;i<7;i++){
+  const x=-3.25+i*.165,y=2.32+(i%3)*.041;
+  g.box(x,y,-5.390,.16,.008,.008,i%2?"#8c806d":"#c7b79a","paper");
+ }
+ // The wall clock retains its same spindle animation and clickable target.
  const cx=3.73,cy=2.14,cz=-5.43;
- g.box(cx,cy,cz,1.46,1.46,.15,"#65503f");
- g.box(cx,cy,cz+.09,1.23,1.24,.07,"#b3a891");
- for(let i=0;i<12;i++){
-  const a=i*Math.PI/6,x=cx+Math.sin(a)*.48,y=cy+Math.cos(a)*.48;
-  g.box(x,y,cz+.147,.055,.072,.031,"#443930");
+ g.bevelBox(cx,cy,cz,1.46,1.46,.15,.040,"#51483d","wood");
+ g.bevelBox(cx,cy,cz+.083,1.23,1.24,.071,.034,"#b0a28c","wood");
+ g.bevelBox(cx,cy,cz+.128,1.07,1.07,.021,.009,"#d4c9ac","paper");
+ for(let i=0;i<60;i++){
+  const t=i*Math.PI/30,x=cx+Math.sin(t)*(i%5===0?.476:.50),y=cy+Math.cos(t)*(i%5===0?.476:.50);
+  g.box(x,y,cz+.151,i%5===0?.037:.009,i%5===0?.072:.022,.011,i%5===0?"#403c35":"#827a69","metal");
  }
- g.box(cx,cy+.205,cz+.17,.07,.45,.045,"#262b2b","clock-hour");
- g.box(cx,cy+.315,cz+.19,.038,.66,.042,"#5b3329","clock-minute");
- g.box(cx,cy,cz+.23,.11,.11,.06,"#c9aa74");
+ g.reelZ(cx,cy,cz+.173,.052,.014,.018,"#806747","metal",18);
+ g.bevelBox(cx,cy+.205,cz+.17,.07,.45,.045,.009,"#262b2b","clock-hour");
+ g.bevelBox(cx,cy+.315,cz+.19,.038,.66,.042,.006,"#5b3329","clock-minute");
+ g.ellipsoid(cx,cy,cz+.23,.054,.054,.032,"#c9aa74","metal",8,14);
  // A real conspiracy board: layered images, routes, schedules and red thread.
- g.box(1.51,2.15,-5.68,2.76,1.94,.15,"#5d3e33");
- g.box(1.51,2.15,-5.573,2.59,1.78,.023,"#9e8061");
+ g.bevelBox(1.51,2.15,-5.68,2.76,1.94,.15,.024,"#5d3e33","wood");
+ g.bevelBox(1.51,2.15,-5.573,2.59,1.78,.023,.010,"#8f795e","paper");
+ for(const x of [.175,2.845])g.bevelBox(x,2.15,-5.535,.070,1.93,.040,.010,"#6d5140","wood");
+ for(const y of [1.22,3.09])g.bevelBox(1.51,y,-5.535,2.74,.070,.040,.010,"#6d5140","wood");
+ for(const x of [.31,2.71])for(const y of [1.34,2.94])
+  g.reelZ(x,y,-5.496,.022,.009,.016,"#b7a384","metal",10);
  const notes=[
   [.54,2.66,.53,.45,"#d5c4a9"],[1.12,2.74,.44,.44,"#ead7b8"],
   [1.78,2.70,.51,.51,"#c6b499"],[2.36,2.61,.51,.43,"#e1d0b3"],
@@ -425,7 +520,8 @@ function scene(opened:boolean){
  ] as const;
  for(let i=0;i<notes.length;i++){
   const [x,y,w,h,shade]=notes[i],z=-5.549+(i%3)*.006;
-  g.box(x,y,z,w,h,.014,shade);
+  g.bevelBox(x,y,z,w,h,.014,.003,shade,"paper");
+  g.box(x+.016,y-.012,z+.012,w-.08,.003,.006,"#8f806b","paper");
   if(i%3===0){
    g.box(x,y+.07,z+.017,w*.66,h*.53,.016,"#465960");
    g.ellipsoid(x,y+.12,z+.036,.06,.07,.012,"#a5a193","scene");
@@ -436,47 +532,118 @@ function scene(opened:boolean){
     g.box(x-.025,lineY,z+.018,lineW,.013,.013,row===0?"#574e49":"#817468");
    }
   }
-  g.box(x-.11,y+h/2,z+.027,.22,.047,.012,"#c0ae8c"); // tape
-  g.box(x,y+h/2-.033,z+.036,.036,.036,.019,i%2?"#a74a3e":"#566963"); // pin
+  g.bevelBox(x-.11,y+h/2,z+.027,.22,.047,.012,.004,"#c0ae8c","paper"); // physical tape
+  g.reelZ(x,y+h/2-.033,z+.045,.022,.004,.020,i%2?"#a74a3e":"#566963","metal",10); // actual pin
+  if(i%4===2){
+   for(let k=0;k<3;k++)g.box(x+w*.26,y-h*.26+k*.028,z+.021,.12,.010,.010,"#7b6b57","paper");
+  }
  }
  const nodes:V[]=[[.54,2.66,-5.491],[1.12,2.74,-5.487],[2.36,2.61,-5.481],
   [1.70,2.14,-5.483],[.55,1.66,-5.482],[1.71,1.63,-5.477],[2.34,2.13,-5.478]];
  for(const [i,j] of [[0,3],[3,2],[0,4],[4,5],[1,6],[6,2],[5,3]] as const)
   g.tube(nodes[i],nodes[j],.011,"#9b312d");
  // Broad strip of security-camera timeline under the observation notes.
- for(let i=0;i<5;i++)g.box(.77+i*.36,1.42,-5.532,.30,.040,.012,i%2?"#52463b":"#8c513e");
- // Armario, fake lead, beside the wall.
- g.box(-3.75,1.51,-3.65,1.54,2.98,.90,"#414d50");
- g.box(-3.35,1.65,-3.18,.08,.41,.08,"#d1b380");
- for(const y of [.65,1.16,2.15,2.67])g.box(-3.74,y,-3.185,1.28,.035,.06,"#666f73");
- // Security camera, red recording indicator.
- g.box(3.48,3.41,-5.32,.53,.24,.51,"#87918f");
- g.box(3.48,3.44,-5.03,.26,.17,.06,"#222831");
- g.box(3.25,3.44,-5.02,.07,.09,.08,"#c6463c","emissive");
- g.tube([3.46,3.54,-5.52],[3.83,3.82,-5.58],.07,"#8e968e");
- // Pipes, rusty utility panel and warning labels.
- for(const x of [4.45,4.25,4.05])g.tube([x,.25,3.4],[x,3.75,3.4],.072,"#67615a");
- for(const y of [.75,1.65,2.67])g.tube([4.45,y,3.4],[4.45,y,-.44],.055,"#83776c");
- g.box(4.66,2.0,-1.3,.13,1.21,1.0,"#9b8569");
- g.box(4.54,2,-1.3,.13,.66,.65,"#343d40");
- // Spotlight; unique highlight falls on the drawer and empty chair.
- g.tube([0,4.00,-1.65],[0,3.23,-1.65],.055,"#89837a");
- g.box(0,3.20,-1.65,.61,.18,.55,"#c2a47c");
- g.box(0,3.08,-1.65,.4,.032,.31,"#ffd9a2","emissive");
- // Documents, coffee and evidence prints physically REST ON the new desks.
- g.tube([rx-.48,1.05,rz-.31],[rx-.48,1.25,rz-.31],.09,"#d3bea0");
- g.tube([rx-.48,1.25,rz-.31],[rx-.48,1.267,rz-.31],.082,"#554539");
- g.box(rx+.15,1.000,rz-.41,.31,.015,.19,"#dbc5a6");
+ for(let i=0;i<5;i++){
+  const x=.77+i*.36;
+  g.bevelBox(x,1.42,-5.532,.30,.040,.012,.005,i%2?"#52463b":"#8c513e","paper");
+  g.box(x,1.417,-5.520,.22,.008,.005,"#d1c0a5","paper");
+ }
+ for(let i=0;i<3;i++){
+  const x=.73+i*.72,y=1.31,z=-5.518;
+  g.box(x,y,z,.53,.045,.009,"#3b4543","paper");
+  g.box(x+.08,y+.015,z+.014,.31,.010,.009,"#b7a188","paper");
+ }
+ // Worn steel locker: inset double doors, rolled corners, vent slits,
+ // individual rivets, rust patina, hinge barrels and latch handle.
+ const lx=ROOM_LAYOUT.locker.x,lz=ROOM_LAYOUT.locker.z;
+ g.bevelBox(lx,1.51,lz,1.54,2.98,.90,.042,"#414b4d","metal");
+ for(const x of [lx-.365,lx+.365]){
+  g.bevelBox(x,1.54,lz+.466,.693,2.78,.050,.020,"#4f5c5e","metal");
+  g.box(x,1.54,lz+.503,.55,2.58,.007,"#465254","metal");
+  for(const y of [.60,1.18,2.04,2.65]){
+   g.box(x,y,lz+.509,.44,.025,.012,"#747d7b","metal");
+   g.box(x,y+.044,lz+.510,.44,.008,.012,"#283337","metal");
+  }
+  for(const hy of [.30,1.45,2.70]){
+   const hx=x+(x<lx?-.322:.322);
+   g.tube([hx,hy-.08,lz+.475],[hx,hy+.08,lz+.475],.023,"#a9a398","metal");
+   g.reelY(hx,hy+.083,lz+.475,.031,.013,.026,"#766f63","metal",12);
+  }
+  for(const vy of [.75,1.90,2.44])for(let i=0;i<7;i++){
+   g.box(x-.21+i*.068,vy,lz+.522,.036,.014,.012,"#293338","metal");
+  }
+ }
+ g.bevelBox(lx+.37,1.65,lz+.535,.082,.39,.077,.013,"#d0b88e","metal");
+ g.reelZ(lx+.37,1.63,lz+.579,.034,.011,.014,"#615a50","metal",12);
+ for(let i=0;i<10;i++){
+  const y=.42+i*.24;
+  g.box(lx-.757,y,lz+.15,.007,.10,.115,i%4===0?"#74675a":"#555652","metal");
+ }
+ // Ceiling camera: body, lens housing, glass, infrared ring, pan mount,
+ // bracket, exposed cable and recording indicator.
+ const camX=3.48,camY=3.41,camZ=-5.32;
+ g.bevelBox(camX,camY,camZ,.55,.26,.51,.034,"#828987","metal");
+ g.bevelBox(camX,camY+.015,camZ+.245,.40,.214,.065,.016,"#343b3e","metal");
+ g.reelZ(camX,camY,camZ+.30,.112,.066,.040,"#afb6ad","metal",20);
+ g.reelZ(camX,camY,camZ+.323,.068,.032,.022,"#111a21","metal",18);
+ g.ellipsoid(camX,camY,camZ+.337,.033,.034,.011,"#273b4b","metal",8,12);
+ for(let i=0;i<8;i++){
+  const t=i*Math.PI/4;
+  g.ellipsoid(camX+.159*Math.cos(t),camY+.159*Math.sin(t),camZ+.280,.015,.015,.010,"#a3aba0","metal",6,8);
+ }
+ g.box(3.24,3.45,-5.019,.070,.08,.060,"#c6463c","emissive");
+ g.tube([3.46,3.54,-5.52],[3.83,3.82,-5.58],.070,"#8e968e","metal");
+ g.bevelBox(3.85,3.81,-5.62,.24,.12,.14,.019,"#767f80","metal");
+ g.tube([3.81,3.78,-5.58],[4.15,3.67,-5.59],.012,"#252d2d","cable");
+ // Exposed utility ducts: bolted flanges, clamped elbows, rusty inspection
+ // panel, slotted ventilation grille and grounding wire.
+ for(const x of [4.45,4.25,4.05]){
+  g.tube([x,.25,3.4],[x,3.75,3.4],.070,"#67615a","metal");
+  for(const y of [.42,1.60,2.95,3.56]){
+   g.tube([x,y-.043,3.40],[x,y+.043,3.40],.083,"#988575","metal");
+   g.box(x+.02,y,3.48,.07,.065,.027,"#4f5554","metal");
+  }
+ }
+ for(const y of [.75,1.65,2.67]){
+  g.tube([4.45,y,3.4],[4.45,y,-.44],.055,"#83776c","metal");
+  for(const z of [-.18,1.22,2.77])g.tube([4.45,y,z-.037],[4.45,y,z+.037],.075,"#9d8771","metal");
+ }
+ g.bevelBox(4.66,2.0,-1.3,.13,1.21,1.0,.025,"#907d65","metal");
+ g.box(4.585,2,-1.3,.028,.84,.70,"#20292c","metal");
+ for(let i=0;i<10;i++){
+  const y=1.64+i*.078;
+  g.box(4.556,y,-1.3,.016,.023,.58,"#777f78","metal");
+ }
+ for(const y of [1.48,2.52])for(const z of [-1.70,-.91])
+  g.bevelBox(4.553,y,z,.014,.026,.028,.003,"#c5ab83","metal");
+ g.tube([4.54,2.40,-1.0],[4.53,2.82,-.63],.012,"#77634c","cable");
+ // Ceiling luminaire: enamel shade, recessed diffuser, four fasteners,
+ // protected cable and heat-darkened reflector.
+ g.tube([0,4.00,-1.65],[0,3.23,-1.65],.055,"#89837a","metal");
+ g.bevelBox(0,3.20,-1.65,.65,.20,.59,.030,"#ae9b80","metal");
+ g.bevelBox(0,3.077,-1.65,.46,.038,.37,.011,"#d6b68d","metal");
+ g.box(0,3.052,-1.65,.39,.012,.30,"#ffe2ad","emissive");
+ for(const dx of [-.23,.23])for(const dz of [-.19,.19])
+  g.reelY(dx,3.110,-1.65+dz,.028,.008,.012,"#8d8373","metal",10);
+ g.tube([-.25,3.20,-1.62],[-.32,3.46,-1.62],.014,"#3e4140","cable");
+ // Every tabletop accessory has real thickness, handle, paper and detail.
+ // Ringed mug with a visible interior and hooked handle.
+ g.reelY(rx-.48,1.13,rz-.31,.088,.063,.18,"#d3bea0","paper",18);
+ g.reelY(rx-.48,1.237,rz-.31,.092,.068,.019,"#6a5747","metal",18);
+ g.tube([rx-.40,1.11,rz-.31],[rx-.35,1.16,rz-.31],.015,"#ddd1b8","paper");
+ g.tube([rx-.40,1.16,rz-.31],[rx-.40,1.21,rz-.31],.015,"#ddd1b8","paper");
+ g.bevelBox(rx+.15,1.000,rz-.41,.31,.015,.19,.002,"#dbc5a6","paper");
+ for(let i=0;i<4;i++)g.box(rx+.09,1.011,rz-.49+i*.041,.19,.006,.011,"#635748","paper");
  g.box(rx+.15,1.02,rz-.41,.18,.010,.013,"#5d5551");
  for(let i=0;i<4;i++){
   const x=3.17+i%2*.18,z=-2.96+Math.floor(i/2)*.16;
-  g.box(x,1.0,z,.16,.015,.12,"#c6b698");
+  g.bevelBox(x,1.0,z,.16,.015,.12,.002,"#c6b698","paper");
   g.box(x,1.014,z,.096,.009,.071,i%2?"#435252":"#6a6159");
  }
  // Torn witness reports, visually low but clearly resting on the floor.
  for(let i=0;i<12;i++){
   const x=-.6+.33*(i%4),z=-4.5+.21*Math.floor(i/4);
-  g.box(x,.032,z,.22+.04*(i%2),.015,.12,"#8e8470");
+  g.tiltedBox(x,.032,z,.22+.04*(i%2),.015,.12,(i%3-1)*.10,"#8e8470","paper");
   g.box(x+.02,.041,z,.15,.006,.011,"#373c3a");
  }
  // Bolts and worn enamel border on the lock station.
@@ -583,7 +750,10 @@ void main(){
   if(surfaceKind<1.5)baseColor*=wood*wear;
   else if(surfaceKind<2.5)baseColor*=brush*(.97+.07*noise);
   else if(surfaceKind<3.5)baseColor*=.90+.14*noise;
-  else baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
+  else if(surfaceKind<4.5)baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
+  else if(surfaceKind<5.5)baseColor*=.93+.07*fract(sin(dot(floor(vPos.xy*108.0),vec2(29.8,14.4)))*1871.8);
+  else if(surfaceKind<6.5)baseColor*=.95+.05*fract(sin(dot(floor(vPos.xy*88.0),vec2(49.8,24.4)))*2118.3);
+  else baseColor*=.96+.04*sin(vPos.z*90.0);
  }
  if(enemyCloth>.5){
   // Dark weathered fabric using the real human's original texture details.
@@ -825,7 +995,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   canvas.dataset.intruderAppearance=rig?.skinned?"worn-coat-porcelain-mask":"fallback";
   canvas.dataset.intruderMood=paused?"watching":elapsed>11?"stalking":"waiting";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
-  canvas.dataset.roomProps="beveled-webgl-v2";
+  canvas.dataset.roomProps="complete-hd-props-v3";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
@@ -846,7 +1016,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(umask,0);
    gl.uniform1f(usurface,m.id==="door"||m.id==="wood"||m.id==="drawer"?1:
-    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:0);
+    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:m.id==="book"?5:m.id==="paper"?6:m.id==="cable"?7:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
