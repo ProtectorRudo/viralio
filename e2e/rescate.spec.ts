@@ -1,4 +1,5 @@
 import {test,expect,type Page} from "@playwright/test";
+import {ROOM_LAYOUT} from "../src/app/escape/rescate/RescueWorld";
 import {mkdirSync} from "node:fs";
 
 mkdirSync("visual-qa-evidence",{recursive:true});
@@ -40,6 +41,23 @@ async function examineNearby(page:Page,name:string){
  await expect(page.getByRole("dialog")).toBeVisible();
 }
 
+test("CASO M · muebles separados, pasillos despejados y puntos físicos coherentes",async({page})=>{
+ const {recorder,surveillance,lock,locker,trunk}=ROOM_LAYOUT;
+ const clearGap=(a:{x:number;z:number;w:number;d:number},b:{x:number;z:number;w:number;d:number})=>
+  Math.hypot(Math.max(0,Math.abs(a.x-b.x)-(a.w+b.w)/2),Math.max(0,Math.abs(a.z-b.z)-(a.d+b.d)/2));
+ expect(clearGap(recorder,lock)).toBeGreaterThan(1);
+ expect(clearGap(surveillance,lock)).toBeGreaterThan(1);
+ expect(clearGap(recorder,locker)).toBeGreaterThan(2);
+ expect(clearGap(recorder,trunk)).toBeGreaterThan(1);
+ await start(page);
+ const canvas=page.getByTestId("rescate-webgl");
+ // The central aisle must still allow the player to advance from the doorway.
+ await walkTo(page,"w","z",-1.03);
+ expect(Number(await canvas.getAttribute("data-camera-x"))).toBeCloseTo(0,1);
+ await examineNearby(page,"Grabador de voz");
+ await expect(page.getByTestId("rescate-voice")).toBeVisible();
+});
+ 
 test("CASO M · introducción cinematográfica y expediente plegable",async({page})=>{
  await page.goto("/rescate-mauro/");
  await expect(page.getByRole("button",{name:/INICIAR RESCATE/})).toBeVisible();
