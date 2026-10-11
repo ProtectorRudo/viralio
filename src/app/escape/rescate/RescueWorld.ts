@@ -567,7 +567,16 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   return best;
  }
- const obstacles=[{x:0,z:-2.65,w:3.52,d:1.92},{x:-3.72,z:-3.65,w:1.76,d:1.13},{x:1.7,z:0,w:1.64,d:1.3},{x:-3.68,z:-1.91,w:1.60,d:1.37},{x:3.68,z:-3.30,w:1.60,d:1.37}];
+ // Contact boundaries are generated from the very same footprints that
+ // position the visual models. No invisible table remains at the old position.
+ const obstacles=[
+  {x:ROOM_LAYOUT.lock.x,z:ROOM_LAYOUT.lock.z,w:3.28,d:1.92},
+  {x:ROOM_LAYOUT.locker.x,z:ROOM_LAYOUT.locker.z,w:ROOM_LAYOUT.locker.w+.22,d:ROOM_LAYOUT.locker.d+.23},
+  {x:ROOM_LAYOUT.recorder.x,z:ROOM_LAYOUT.recorder.z,w:ROOM_LAYOUT.recorder.w+.04,d:ROOM_LAYOUT.recorder.d+.05},
+  {x:ROOM_LAYOUT.surveillance.x,z:ROOM_LAYOUT.surveillance.z,w:ROOM_LAYOUT.surveillance.w+.04,d:ROOM_LAYOUT.surveillance.d+.05},
+  {x:ROOM_LAYOUT.chair.x,z:ROOM_LAYOUT.chair.z,w:ROOM_LAYOUT.chair.w,d:ROOM_LAYOUT.chair.d},
+  {x:ROOM_LAYOUT.trunk.x,z:ROOM_LAYOUT.trunk.z,w:ROOM_LAYOUT.trunk.w,d:ROOM_LAYOUT.trunk.d}
+ ];
  function collides(x:number,z:number){
   if(x< -4.48||x>4.48||z< -5.17||z>4.79)return true;
   return obstacles.some(o=>Math.abs(o.x-x)<o.w/2+.23&&Math.abs(o.z-z)<o.d/2+.23);
