@@ -3,6 +3,7 @@
  * Original mesh-based 3D geometry (not a moving photograph).
  * Supports WebGL1 mobiles without any third-party runtime or CDN.
  */
+import {loadRig,type Rig} from "./IntruderGLB";
 export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"board"|"locker"|"lamp"|"pipe";
 export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean;remaining?:number};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
@@ -31,6 +32,7 @@ export const TARGETS:Target[]=[
 ];
 type V=[number,number,number];
 const stride=9; // pos3 normal3 color3
+const IDENTITY=new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 const hex=(x:string):V=>[0,2,4].map(i=>parseInt(x.slice(i+1,i+3),16)/255) as V;
 class Room {
  groups=new Map<string,number[]>();
@@ -389,13 +391,14 @@ function scene(opened:boolean){
 const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;
 uniform mediump vec3 eye;
 uniform vec3 right,up,forward;
+uniform mat4 rigMatrix;
 uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
 uniform vec2 doorPivot;
 uniform float doorGroup,figureGroup,legGroup;
 uniform vec2 clockPivot;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
 void main(){
- vec3 w=p;
+ vec3 w=(rigMatrix*vec4(p,1.0)).xyz;
  float ss=sin(clockAngle),cc=cos(clockAngle);
  w.xy=clockPivot+vec2((p.x-clockPivot.x)*cc+(p.y-clockPivot.y)*ss,-(p.x-clockPivot.x)*ss+(p.y-clockPivot.y)*cc);
  if(doorGroup>.5){
@@ -419,7 +422,7 @@ void main(){
  vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
- vPos=w;vNorm=n;vColor=c;vDistance=z;
+ vPos=w;vNorm=normalize(mat3(rigMatrix)*n);vColor=c;vDistance=z;
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying float vDistance;
@@ -480,7 +483,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
@@ -494,6 +497,14 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
  };
  let current={...flags};rebuild(current.unlocked);
+ let rig:Rig|null=null;
+ void loadRig(gl,"./models/masked-raider.glb").then(model=>{
+  if(!active){model.dispose();return;}
+  rig=model;canvas.dataset.intruderModel="glb";
+ }).catch(err=>{
+  console.warn("CASO M: modelo GLB inaccesible. Manteniendo respaldo 3D.",err);
+  canvas.dataset.intruderModel="fallback";
+ });
  const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
  let active=true,raf=0,lastHud=0,lastDraw=0,clockStarted=flags.clockActivated?performance.now()-3100:0,intruderStarted=flags.intruder?performance.now()-1500:0;
  function basis(){
@@ -584,6 +595,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   const {forward,right,up}=basis();
   gl.useProgram(program);
+  gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
   const elapsed=current.intruder?Math.max(0,60-(current.remaining??60)):0;
@@ -604,6 +616,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){
    const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
+   if(figurePart&&rig)continue;
    if(figurePart&&(!intruderStarted||elapsed<9))continue;
    if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
@@ -622,6 +635,22 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.uniform1f(ua,m.id==="clock-hour"?eased*(Math.PI*6+Math.PI*5/6):
       m.id==="clock-minute"?eased*Math.PI*8:0);
    gl.drawArrays(gl.TRIANGLES,0,m.count);
+  }
+  // This shares the room's depth-buffer and camera: no second renderer.
+  if(rig&&intruderStarted&&elapsed>=9){
+   rig.animate(elapsed);
+   gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
+   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);
+   gl.uniform1f(ua,0);
+   for(const part of rig.parts){
+    gl.uniformMatrix4fv(uglm,false,rig.matrices[part.node]);
+    gl.bindBuffer(gl.ARRAY_BUFFER,part.buffer);
+    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,stride*4,0);
+    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
+    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
+    gl.drawArrays(gl.TRIANGLES,0,part.count);
+   }
+   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   }
   if(onFrame&&now-lastHud>125){lastHud=now;onFrame({...pose},aim());}
  }
@@ -650,6 +679,6 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   },
   aim,nearby,getPose:()=>({...pose}),
   setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
-  dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);gl.deleteProgram(program);gl.flush()},
+  dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);rig?.dispose();gl.deleteProgram(program);gl.flush()},
  };
 }
