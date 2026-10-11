@@ -282,9 +282,18 @@ function App(){
       samples[i]=(low*.64+white*.08)*env;
      }
      const source=a.createBufferSource(),filter=a.createBiquadFilter(),body=a.createGain();
+     // A world-positioned source at the corridor door. Real pan changes as
+     // the player walks or turns, while the low-pass thump keeps its body.
+     const listener=world.current?.getPose();
+     const yaw=listener?.yaw??0,px=listener?.x??0,pz=listener?.z??3.6;
+     const dx=.32-px,dz=5.04-pz,dist=Math.max(.5,Math.hypot(dx,dz));
+     const pan=Math.max(-.9,Math.min(.9,(dx*Math.cos(yaw)-dz*Math.sin(yaw))/dist));
+     const stereo=a.createStereoPanner();
+     stereo.pan.setValueAtTime(pan,now);
      source.buffer=buffer;filter.type="lowpass";filter.frequency.value=type==="door"?830:440;
-     filter.Q.value=type==="door"?1.15:.50;body.gain.value=type==="door"?.52:.47;
-     source.connect(filter);filter.connect(body);body.connect(a.destination);
+     filter.Q.value=type==="door"?1.15:.50;
+     body.gain.value=(type==="door"?.52:.47)/(1+dist*.11);
+     source.connect(filter);filter.connect(body);body.connect(stereo);stereo.connect(a.destination);
      source.start(now);
      // Dull structural thump makes the footstep physical, not electronic.
      osc.type="triangle";
@@ -292,7 +301,7 @@ function App(){
      osc.frequency.exponentialRampToValueAtTime(type==="door"?31:39,now+(type==="door"?.83:.21));
      gain.gain.setValueAtTime(.001,now);gain.gain.exponentialRampToValueAtTime(type==="door"?.085:.11,now+.026);
      gain.gain.exponentialRampToValueAtTime(.0001,now+(type==="door"?.86:.23));
-     osc.connect(gain);gain.connect(a.destination);osc.start(now);osc.stop(now+(type==="door"?.9:.24));
+     osc.connect(gain);gain.connect(stereo);osc.start(now);osc.stop(now+(type==="door"?.9:.24));
      return;
     }
    osc.type=type==="wrong"||type==="beat"?"sine":type==="celebrate"?"triangle":"sawtooth";
