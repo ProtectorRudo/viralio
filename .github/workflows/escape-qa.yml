@@ -44,10 +44,12 @@ jobs:
         run: npx playwright test --config e2e/escape.playwright.config.ts
       - name: Bundle isolated invitation game
         run: |
-          npm install --no-save --no-package-lock esbuild@0.25.12
+          npm install --no-save --no-package-lock esbuild@0.25.12 three@0.180.0
           node scripts/build-escape-standalone.mjs
           test -s showcase/rescate-mauro/index.html
           test -s showcase/rescate-mauro/app.js
+          test -s showcase/rescate-mauro/intruder3d.js
+          test -s showcase/rescate-mauro/models/intruder.glb
           test -s showcase/rescate-mauro/app.css
       - name: Play full 3D kidnapping-to-birthday journey
         run: npx playwright test --config e2e/rescate.playwright.config.ts
