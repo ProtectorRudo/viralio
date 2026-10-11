@@ -400,7 +400,7 @@ function scene(opened:boolean){
  g.box(mx,1.132,mz-.043,.72,.052,.008,"#17252c","memo");
  g.ellipsoid(mx+.358,1.735,mz-.046,.014,.014,.008,"#cd443d","emissive",5,8);
  for(let i=0;i<12;i++)g.box(mx-.52+i*.095,1.80,mz-.23,.049,.009,.020,"#10191b","metal");
- for(let x of [mx-.45,mx+.45])for(let y of [1.10,1.76])
+ for(const x of [mx-.45,mx+.45])for(const y of [1.10,1.76])
   g.reelZ(x,y,mz-.070,.016,.006,.008,"#9b9b8e","metal",10);
  g.bevelBox(mx,.960,mz-.30,.115,.18,.13,.016,"#676d69","metal");
  g.bevelBox(mx,.862,mz-.30,.42,.045,.34,.016,"#545e5c","metal");
