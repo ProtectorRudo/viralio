@@ -388,15 +388,15 @@ function scene(opened:boolean){
  }
  return g;
 }
-const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;
+const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;attribute vec2 uv;
 uniform mediump vec3 eye;
 uniform vec3 right,up,forward;
 uniform mat4 rigMatrix;
 uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
 uniform vec2 doorPivot;
-uniform float doorGroup,figureGroup,legGroup;
+uniform float doorGroup,figureGroup,legGroup,glbGroup;
 uniform vec2 clockPivot;
-varying vec3 vPos,vNorm,vColor;varying float vDistance;
+varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
 void main(){
  vec3 w=(rigMatrix*vec4(p,1.0)).xyz;
  float ss=sin(clockAngle),cc=cos(clockAngle);
@@ -416,17 +416,25 @@ void main(){
    }else{
      w.y+=.025*abs(sin(phase))*walking;
    }
+   if(glbGroup>.5){
+     float side=step(.32,w.x);
+     float legMask=1.0-smoothstep(.18,1.20,w.y);
+     float phase2=sin(phase+side*3.14159265);
+     w.z+=legMask*.105*phase2*walking;
+     w.y+=legMask*.045*max(0.0,phase2)*walking;
+   }
    w.z-=figureStep;
    w.x+=figureAim*walking+.035*sin(phase*.5)*walking;
  }
  vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
- vPos=w;vNorm=normalize(mat3(rigMatrix)*n);vColor=c;vDistance=z;
+ vPos=w;vNorm=normalize(mat3(rigMatrix)*n);vColor=c;vUV=uv;vDistance=z;
 }`;
 const FS=`precision mediump float;
-varying vec3 vPos,vNorm,vColor;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim;
+varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
+uniform float time,emission,threat,bladeFlash,characterRim,useTex;
+uniform sampler2D albedo;
 uniform mediump vec3 eye;
 void main(){
  vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
@@ -435,8 +443,9 @@ void main(){
  float lam=max(.0,dot(normalize(vNorm),toL));
  float lamp=(.31+lam*3.05/(1.0+d*.29+d*d*.055))*(.94+.055*sin(time*12.0)+.025*sin(time*27.0));
  float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-red)*.18);
- vec3 outColor=vColor*lamp + vColor*vec3(.19,.06,.05)*redGlow;
- outColor+=vColor*vec3(.02,.04,.055)*max(.0,dot(vNorm,vec3(1.,.2,0.)));
+ vec3 baseColor=vColor*mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
+ vec3 outColor=baseColor*lamp + baseColor*vec3(.19,.06,.05)*redGlow;
+ outColor+=baseColor*vec3(.02,.04,.055)*max(.0,dot(vNorm,vec3(1.,.2,0.)));
  float fog=clamp((vDistance-5.8)/15.0,0.,.69);
  outColor=mix(outColor,vec3(.028,.037,.050),fog);
  if(emission>.5)outColor+=vColor*vec3(.32,.21,.11);
@@ -482,9 +491,15 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program)||"Error de WebGL");
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
- const ap=attrib("p"),an=attrib("n"),ac=attrib("c");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim");
+ const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
+ const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
+ const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
+ gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([255,255,255,255]));
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+ gl.uniform1i(ualbedo,0);
  type Buf={id:string;buffer:WebGLBuffer;count:number};
  let mesh:Buf[]=[];
  const rebuild=(opened:boolean)=>{
