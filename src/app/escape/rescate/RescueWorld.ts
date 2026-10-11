@@ -1,9 +1,8 @@
-/**
- * RESCATE MAURO — standalone, genuine WebGL room.
- * Original mesh-based 3D geometry (not a moving photograph).
- * Supports WebGL1 mobiles without any third-party runtime or CDN.
- */
-import {loadRig,type Rig} from "./IntruderGLB";
+/** CASO M — full Three.js rendering engine and professional PBR scene.
+ * Original authored meshes and puzzle coordinates are unchanged; all visuals,
+ * GLB skeletal animation, lighting, tone mapping and shadows use Three.js. */
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"board"|"locker"|"lamp"|"pipe";
 export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean;remaining?:number};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
@@ -31,8 +30,6 @@ export const TARGETS:Target[]=[
  {id:"pipe",label:"Tubería de ventilación",pos:[3.8,2.15,-.1],reach:3.5,hint:"Algo golpea una tubería al otro lado."},
 ];
 type V=[number,number,number];
-const stride=9; // pos3 normal3 color3
-const IDENTITY=new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 const hex=(x:string):V=>[0,2,4].map(i=>parseInt(x.slice(i+1,i+3),16)/255) as V;
 class Room {
  groups=new Map<string,number[]>();
@@ -671,207 +668,6 @@ function scene(opened:boolean){
  }
  return g;
 }
-const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;attribute vec2 uv;
-uniform mediump vec3 eye;
-uniform vec3 right,up,forward;
-uniform mat4 rigMatrix;
-uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim,drawerProgress,drawerGroup;
-uniform vec2 doorPivot;
-uniform float doorGroup,figureGroup,legGroup,glbGroup;
-uniform vec2 clockPivot;
-varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-void main(){
- vec3 w=(rigMatrix*vec4(p,1.0)).xyz;
- float ss=sin(clockAngle),cc=cos(clockAngle);
- w.xy=clockPivot+vec2((w.x-clockPivot.x)*cc+(w.y-clockPivot.y)*ss,-(w.x-clockPivot.x)*ss+(w.y-clockPivot.y)*cc);
- if(doorGroup>.5){
-  float da=sin(doorAngle),dc=cos(doorAngle);
-  w.xz=doorPivot+vec2((p.x-doorPivot.x)*dc+(p.z-doorPivot.y)*da,-(p.x-doorPivot.x)*da+(p.z-doorPivot.y)*dc);
- }
- if(drawerGroup>.5){
-  // The actual drawer travels along its own rails, bringing the envelope.
-  w.z-=.52*(1.0-drawerProgress);
- }
- if(figureGroup>.5){
-   float walking=smoothstep(.15,.95,figureStep);
-   float phase=figureMarch;
-   float leg=step(.33,p.x);
-   float stride=sin(phase+leg*3.14159265);
-   if(legGroup>.5){
-     w.z+=.20*stride*walking;
-     w.y+=.056*max(0.,stride)*walking;
-   }else{
-     w.y+=.025*abs(sin(phase))*walking;
-   }
-   if(glbGroup>.5){
-     float side=step(.32,w.x);
-     float legMask=1.0-smoothstep(.18,1.20,w.y);
-     float phase2=sin(phase+side*3.14159265);
-     w.z+=legMask*.105*phase2*walking;
-     w.y+=legMask*.045*max(0.0,phase2)*walking;
-   }
-   w.z-=figureStep;
-   w.x+=figureAim*walking+.035*sin(phase*.5)*walking;
- }
- vec3 d=w-eye;
- float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
- gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
- vPos=w;
- vec3 normal=mat3(rigMatrix)*n;
- if(doorGroup>.5){
-  float sn=sin(doorAngle),cs=cos(doorAngle);
-  normal.xz=vec2(normal.x*cs+normal.z*sn,-normal.x*sn+normal.z*cs);
- }
- vNorm=normalize(normal);vColor=c;vUV=uv;vDistance=z;
-}`;
-const FS=`precision mediump float;
-varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal,surfaceKind,flashlightPower,focusActive;
-uniform sampler2D albedo;
-uniform mediump vec3 eye,torchDirection,focusPoint;
-void main(){
- vec3 N=normalize(vNorm);
- vec3 overhead=vec3(0.0,3.05,-1.7), emergency=vec3(1.75,2.65,5.14);
- float d=distance(vPos,overhead);
- float lam=max(0.0,dot(N,normalize(overhead-vPos)));
- float flicker=.96+.035*sin(time*11.0)+.02*sin(time*25.0);
- float lamp=(.31+lam*3.05/(1.0+d*.29+d*d*.055))*flicker;
- float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-emergency)*.18);
- vec3 textureColor=mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
- vec3 baseColor=vColor*textureColor;
- if(surfaceKind>.5&&enemyCloth<.5){
-  // Material microstructure is computed on existing real 3D coordinates:
-  // timber fibers, brushed metal and aged concrete, not flat photo overlays.
-  float veins=sin(vPos.x*66.0+vPos.z*12.0+sin(vPos.y*8.0)*2.8);
-  float wood=.92+.065*veins+.023*sin(vPos.x*139.0);
-  float brush=.95+.032*sin(vPos.y*190.0+vPos.z*22.0);
-  float noise=fract(sin(dot(floor(vPos.xz*49.0+vPos.yy*31.0),vec2(12.9898,78.233)))*43758.5453);
-  float wear=.93+.12*noise;
-  if(surfaceKind<1.5)baseColor*=wood*wear;
-  else if(surfaceKind<2.5)baseColor*=brush*(.97+.07*noise);
-  else if(surfaceKind<3.5)baseColor*=.90+.14*noise;
-  else if(surfaceKind<4.5)baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
-  else if(surfaceKind<5.5)baseColor*=.93+.07*fract(sin(dot(floor(vPos.xy*108.0),vec2(29.8,14.4)))*1871.8);
-  else if(surfaceKind<6.5)baseColor*=.95+.05*fract(sin(dot(floor(vPos.xy*88.0),vec2(49.8,24.4)))*2118.3);
-  else baseColor*=.96+.04*sin(vPos.z*90.0);
- }
- if(enemyCloth>.5){
-  // Dark weathered fabric using the real human's original texture details.
-  float luminance=dot(textureColor,vec3(.26,.59,.15));
-  float skin=smoothstep(.04,.19,textureColor.r-textureColor.g)
-            *smoothstep(.07,.23,textureColor.r-textureColor.b);
-  float shirt=smoothstep(1.00,1.39,vPos.y)*(1.0-smoothstep(2.24,2.47,vPos.y));
-  float trousers=smoothstep(.20,.39,vPos.y)*(1.0-smoothstep(1.32,1.58,vPos.y));
-  float shoes=1.0-smoothstep(.08,.27,vPos.y);
-  float weave=fract(sin(dot(floor(vUV*220.0),vec2(12.9898,78.233)))*43758.5453);
-  float stain=.84+.16*fract(sin(dot(floor(vUV*17.0),vec2(87.12,21.38)))*15382.614);
-  float folds=.94+.06*sin(vUV.y*58.0+vPos.x*12.0);
-  float grain=stain*folds*(.94+.09*weave);
-  vec3 canvasDark=vec3(.115,.142,.128)*(.75+luminance*.73)*grain;
-  vec3 wornPants=vec3(.115,.118,.106)*(.78+luminance*.80)*grain;
-  vec3 leatherBoot=vec3(.126,.108,.091)*(.7+luminance*.58)*grain;
-  float fabricMask=1.0-skin*.95;
-  baseColor=mix(baseColor,canvasDark,shirt*fabricMask*.97);
-  baseColor=mix(baseColor,wornPants,trousers*fabricMask*.92);
-  baseColor=mix(baseColor,leatherBoot,shoes*.92);
- }
- // CASO M 2.0 — physically-inspired material response: separate diffuse
- // energy, dielectric Fresnel, microfacet highlights and roughness by object.
- // Uses only WebGL1/GLSL ES 1.00 so older Androids keep the same experience.
- float roughness=surfaceKind<.5?.82:surfaceKind<1.5?.68:
-   surfaceKind<2.5?.33:surfaceKind<3.5?.97:surfaceKind<4.5?.52:
-   surfaceKind<5.5?.84:surfaceKind<6.5?.92:.59;
- float metalness=surfaceKind>1.5&&surfaceKind<2.5?.86:
-   surfaceKind>6.5?.34:0.0;
- if(maskGroup>.5){metalness=0.0;roughness=.72;}
- vec3 view=normalize(eye-vPos);
- vec3 overheadDir=normalize(overhead-vPos),emergencyDir=normalize(emergency-vPos);
- float ndotV=max(.045,dot(N,view));
- vec3 F0=mix(vec3(.045),baseColor,metalness);
- // Cook-Torrance (Schlick Fresnel + GGX distribution + Smith geometry).
- // This is a lightweight PBR shading pass, not a fake albedo highlight.
- vec3 pbrOverhead=vec3(0.0),pbrRed=vec3(0.0),pbrTorch=vec3(0.0);
- for(int source=0;source<3;source++){
-  vec3 L=source==0?overheadDir:source==1?emergencyDir:normalize(eye-vPos);
-  vec3 H=normalize(L+view);
-  float NdotL=max(0.0,dot(N,L)),NdotH=max(0.0,dot(N,H)),VdotH=max(0.0,dot(view,H));
-  float alpha=max(.05,roughness*roughness),a2=alpha*alpha;
-  float denom=(NdotH*NdotH*(a2-1.0)+1.0);
-  float D=a2/max(.003,3.14159*denom*denom);
-  float k=(roughness+1.0)*(roughness+1.0)/8.0;
-  float Gv=ndotV/(ndotV*(1.0-k)+k);
-  float Gl=NdotL/(NdotL*(1.0-k)+k);
-  vec3 F=F0+(vec3(1.0)-F0)*pow(1.0-VdotH,5.0);
-  vec3 spec=(D*Gv*Gl*F)/max(.10,4.0*ndotV*NdotL);
-  vec3 diffuse=(vec3(1.0)-F)*(1.0-metalness)*baseColor*.3183;
-  vec3 reflectance=(diffuse+spec)*NdotL;
-  if(source==0)pbrOverhead=reflectance;
-  if(source==1)pbrRed=reflectance;
-  if(source==2)pbrTorch=reflectance;
- }
- vec3 overheadI=vec3(3.25,2.95,2.45)*(2.4/(1.0+d*.33+d*d*.065))*flicker;
- float redPulse=.45+.55*sin(time*5.1);
- vec3 redI=vec3(3.25,.41,.32)*redGlow*(.68+.32*redPulse);
- // Lens has a soft-edged cone at screen centre. The light genuinely follows
- // the camera's forward vector as the player swipes / turns.
- vec3 toSurface=normalize(vPos-eye);
- float cone=dot(toSurface,normalize(torchDirection));
- float beam=smoothstep(.88,.976,cone);
- float beamDist=1.0/(1.0+distance(eye,vPos)*.16+pow(distance(eye,vPos),2.0)*.055);
- float beamNoise=.98+.02*sin(time*31.0);
- vec3 torchI=vec3(5.4,5.05,4.32)*flashlightPower*beam*beamDist*beamNoise;
- // Grazing contact occlusion at corners and near the floor: intentionally
- // subtle so evidence stays readable. Not billed as cast-shadow rendering.
- float floorContact=1.0-.095*(1.0-smoothstep(.08,.38,vPos.y));
- float wallContact=1.0-.055*(1.0-smoothstep(.13,.55,5.65-abs(vPos.x)));
- float ao=floorContact*wallContact;
- vec3 outColor=(baseColor*vec3(.27,.31,.35)*(1.0-metalness*.7)
-                +pbrOverhead*overheadI+pbrRed*redI+pbrTorch*torchI)*ao;
- outColor+=baseColor*vec3(.014,.022,.040)*max(0.0,dot(N,vec3(1.,.2,0.)));
- float fog=clamp((vDistance-5.8)/15.0,0.0,.69);
- outColor=mix(outColor,vec3(.028,.037,.050),fog);
- if(emission>.5)outColor+=vColor*vec3(.32,.21,.11);
- if(characterRim>.5){
-  // Two cinematic key lights: warm emergency beacon and cold reflected light.
-  // Never multiply the character by 0.22 as the former shader did.
-  vec3 view=normalize(eye-vPos);
-  float facing=max(0.0,dot(N,view));
-  float rim=pow(1.0-facing,2.1);
-  float redKey=max(0.0,dot(N,normalize(vec3(1.0,.42,-.64))));
-  float blueKey=max(0.0,dot(N,normalize(vec3(-.78,.34,-.55))));
-  float pulse=.87+.13*sin(time*4.0);
-  vec3 surface=pow(max(baseColor,vec3(.001)),vec3(.80));
-  vec3 fill=vec3(.35,.38,.41)+redKey*vec3(.96,.26,.22)*pulse
-                  +blueKey*vec3(.15,.27,.39);
-  // Keep material colors visible even in the dark on an average mobile display.
-  outColor=surface*fill+rim*(vec3(.58,.16,.13)*redKey+vec3(.11,.26,.43)*blueKey)*.75;
-  if(maskGroup>.5){
-   // Bone ceramic remains legible without a flat, glowing face.
-   outColor=surface*(vec3(.64,.63,.57)+redKey*vec3(.62,.24,.18)
-                    +blueKey*vec3(.16,.22,.33))
-                    +rim*vec3(.32,.16,.14);
-  }
-  // First silhouette, then intermittent emergency-light revelation.
-  outColor*=mix(.30,1.0,clamp(enemyReveal,0.0,1.0));
-  outColor=mix(outColor,vec3(.035,.040,.053),clamp(fog*.48,0.0,.34));
- }
- // Contextual evidence glint is rendered on the actual mesh, not a 2D label.
- // Keep the brightening restrained and suppress it on the humanoid.
- if(focusActive>.5&&characterRim<.5){
-  float proximity=1.0-smoothstep(.14,.91,distance(vPos,focusPoint));
-  float grazing=pow(1.0-max(0.0,dot(N,normalize(eye-vPos))),2.0);
-  outColor+=vec3(.24,.18,.10)*proximity*(.10+.30*grazing)
-            *(.87+.13*sin(time*2.3));
- }
- outColor+=vec3(.60,.77,.86)*bladeFlash;
- gl_FragColor=vec4(pow(clamp(outColor,0.0,1.0),vec3(.88)),1.0);
-}`;
-function compile(gl:WebGLRenderingContext,type:number,code:string){
- const sh=gl.createShader(type);if(!sh)throw Error("No se pudo crear el shader");
- gl.shaderSource(sh,code);gl.compileShader(sh);
- if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh)||"Error del shader");
- return sh;
-}
 export type Pose={x:number;y:number;z:number;yaw:number;pitch:number};
 export type World={
  move:(f:number,s:number,dt:number)=>void;
@@ -886,114 +682,244 @@ export type World={
  setFlashlight:(on:boolean)=>void;
  dispose:()=>void;
 };
-export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(p:Pose,aim:Target|null)=>void):World{
- const raw=canvas.getContext("webgl",{alpha:false,antialias:true,depth:true,powerPreference:"high-performance"});
- if(!raw)throw Error("Este navegador no permite gráficos WebGL. Activá la aceleración de hardware o probá otro navegador.");
- const gl:WebGLRenderingContext=raw;
- const program=gl.createProgram();if(!program)throw Error("No se pudo crear WebGL");
- const a=compile(gl,gl.VERTEX_SHADER,VS),b=compile(gl,gl.FRAGMENT_SHADER,FS);
- gl.attachShader(program,a);gl.attachShader(program,b);gl.linkProgram(program);
- gl.deleteShader(a);gl.deleteShader(b);
- if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program)||"Error de WebGL");
- gl.useProgram(program);
- const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
- const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const ufocus=uniform("focusActive"),ufocusPoint=uniform("focusPoint"),uflash=uniform("flashlightPower"),utorch=uniform("torchDirection"),udrawer=uniform("drawerProgress"),udrawergroup=uniform("drawerGroup"),usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
- gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
- const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
- gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
- gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([255,255,255,255]));
- gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
- gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
- gl.uniform1i(ualbedo,0);
- type Buf={id:string;buffer:WebGLBuffer;count:number};
- let mesh:Buf[]=[];
- const rebuild=(opened:boolean)=>{
-  mesh.forEach(x=>gl.deleteBuffer(x.buffer));mesh=[];
-  for(const [id,data] of scene(opened).groups){
-   const buffer=gl.createBuffer();if(!buffer)continue;
-   gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
-   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
-   mesh.push({id,buffer,count:data.length/stride});
-  }
- };
- let current={...flags};rebuild(current.unlocked);
- let flashlight=false;
- let rig:Rig|null=null;
- void loadRig(gl,"./models/stalker-skeletal.glb").then(model=>{
-  if(!active){model.dispose();return;}
-  rig=model;canvas.dataset.intruderModel=model.skinned?"skinned-glb":"fallback";
-  canvas.dataset.intruderBones=String(model.bones);
- }).catch(err=>{
-  console.warn("CASO M: modelo GLB inaccesible. Manteniendo respaldo 3D.",err);
-  canvas.dataset.intruderModel="fallback";
+
+/** The visual model data is authored once above, keeping all story and
+ * collision coordinates stable while the complete renderer is Three.js. */
+const shadowCasterIds=new Set(["door","door-metal","wood","metal","book","drawer","recorder","envelope","paper","clock-hour","clock-minute","scene"]);
+function makePBR(kind:string):THREE.Material{
+ if(kind==="emissive")return new THREE.MeshBasicMaterial({vertexColors:true,color:0xffd1a7,side:THREE.DoubleSide});
+ const metal=kind==="metal"||kind==="door-metal";
+ const wood=kind==="wood"||kind==="door"||kind==="drawer";
+ const paper=kind==="paper"||kind==="book"||kind==="envelope";
+ return new THREE.MeshStandardMaterial({
+  vertexColors:true,
+  side:THREE.DoubleSide,
+  metalness:metal?.68:kind==="cable"?.14:0,
+  roughness:wood?.79:metal?.46:paper?.93:kind==="concrete"?.99:.86,
+  envMapIntensity:.5
  });
- const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
- let active=true,raf=0,lastHud=0,lastDraw=0,clockStarted=flags.clockActivated?performance.now()-3100:0,intruderStarted=flags.intruder?performance.now()-1500:0;
- let drawerOpenedAt=flags.unlocked?performance.now()-1100:0;
- // Preserve the upgraded PBR lighting on budget Android GPUs. This adaptive
- // resolution changes only render pixels — never coordinates, touch targets or
- // how fast the 3-minute mission proceeds.
- let renderScale=1,slowFrames=0,fastFrames=0;
- let focusTarget:Target|null=null;
+}
+const clamp=(v:number,lo:number,hi:number)=>Math.min(hi,Math.max(lo,v));
+const linear=(x:number)=>x<.04045?x/12.92:Math.pow((x+.055)/1.055,2.4);
+const extents:Record<ClueId,[number,number]>={
+ calendar:[1.65,1.94],cassette:[1.1,.62],memo:[1.1,.89],board:[2.65,1.9],
+ clock:[1.54,1.55],drawer:[1.6,.95],envelope:[.43,.32],
+ phone:[.85,.58],camera:[.62,.4],locker:[1.7,3.05],lamp:[.72,.66],pipe:[1.18,1.45]
+};
+export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(p:Pose,aim:Target|null)=>void):World{
+ // r180+ is WebGL2-only. Avoid claiming WebGL1 support after this migration.
+ const gl=canvas.getContext("webgl2",{alpha:false,antialias:false,depth:true,powerPreference:"high-performance"});
+ if(!gl)throw Error("CASO M 2.0 necesita WebGL2. Actualizá Chrome o activá la aceleración gráfica.");
+ const renderer=new THREE.WebGLRenderer({canvas,context:gl,alpha:false,antialias:false,powerPreference:"high-performance"});
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=1.24;
+ renderer.setClearColor(0x080b10,1);
+ renderer.shadowMap.enabled=true;
+ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ const room=new THREE.Scene();
+ room.background=new THREE.Color(0x091018);
+ room.fog=new THREE.FogExp2(0x0b1119,.023);
+ const camera=new THREE.PerspectiveCamera(68.86,1,.075,75);
+ camera.rotation.order="YXZ";
+ const cameraPose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
+ const cameraLight=new THREE.SpotLight(0xffebc5,16,10,Math.PI*.19,.68,1.7);
+ cameraLight.position.set(0,-.02,0);
+ cameraLight.target.position.set(0,0,-5);
+ cameraLight.castShadow=false;cameraLight.visible=false;
+ camera.add(cameraLight,cameraLight.target);
+ room.add(camera);
+ room.add(new THREE.HemisphereLight(0x9bb1c6,0x19130f,1.05));
+ const ambient=new THREE.AmbientLight(0x9caabd,.34);room.add(ambient);
+ const overhead=new THREE.PointLight(0xffcfaa,29,12,2);
+ overhead.position.set(0,3.07,-1.65);overhead.castShadow=true;
+ overhead.shadow.mapSize.set(512,512);overhead.shadow.bias=-.00036;
+ overhead.shadow.normalBias=.035;
+ overhead.shadow.camera.near=.15;overhead.shadow.camera.far=12;
+ room.add(overhead);
+ const emergency=new THREE.PointLight(0xee3530,12,12,2);
+ emergency.position.set(1.7,2.55,4.9);room.add(emergency);
+ const farFill=new THREE.PointLight(0x6c96bd,7,13,2);
+ farFill.position.set(-3.8,2.7,-4.35);room.add(farFill);
+ const focusLight=new THREE.PointLight(0xffd49a,.9,2.6,2);
+ focusLight.visible=false;room.add(focusLight);
+ let objects=new Map<string,THREE.Mesh>(),current={...flags},flashlight=false;
+ let active=true,raf=0,lastDraw=0,lastHud=0,renderScale=1,slowFrames=0,fastFrames=0;
+ let drawerOpenedAt=flags.unlocked?performance.now()-1200:0;
+ let clockStarted=flags.clockActivated?performance.now()-3100:0;
+ let intruderStarted=flags.intruder?performance.now()-1500:0;
+ let actor:THREE.Group|null=null,mixer:THREE.AnimationMixer|null=null;
+ let walkAction:THREE.AnimationAction|null=null,idleAction:THREE.AnimationAction|null=null;
+ let headBone:THREE.Bone|null=null,shoulders:THREE.Bone[]=[];
+ let lastAnimate=performance.now(),rigLoaded=false;
+ const ambientContacts:THREE.Mesh[]=[];
+ const contactMaterial=new THREE.MeshBasicMaterial({color:0x090b0e,transparent:true,opacity:.29,depthWrite:false,side:THREE.DoubleSide});
+ function addContact(x:number,z:number,rx:number,rz:number){
+  const geometry=new THREE.CircleGeometry(1,24);
+  geometry.rotateX(-Math.PI/2);geometry.scale(rx,rz,1);
+  const shadow=new THREE.Mesh(geometry,contactMaterial);
+  shadow.position.set(x,.014,z);shadow.rotation.y=.14;
+  room.add(shadow);ambientContacts.push(shadow);
+ }
+ addContact(ROOM_LAYOUT.recorder.x,ROOM_LAYOUT.recorder.z,1.05,.91);
+ addContact(ROOM_LAYOUT.surveillance.x,ROOM_LAYOUT.surveillance.z,1.05,.91);
+ addContact(ROOM_LAYOUT.lock.x,ROOM_LAYOUT.lock.z,1.63,1.00);
+ addContact(ROOM_LAYOUT.locker.x,ROOM_LAYOUT.locker.z,.87,.62);
+ addContact(ROOM_LAYOUT.trunk.x,ROOM_LAYOUT.trunk.z,.76,.55);
+ function makeGeometry(data:number[]):THREE.BufferGeometry{
+  const count=Math.floor(data.length/9);
+  const p=new Float32Array(count*3),n=new Float32Array(count*3),c=new Float32Array(count*3);
+  for(let i=0;i<count;i++){
+   const source=i*9,target=i*3;
+   for(let j=0;j<3;j++){
+    p[target+j]=data[source+j];n[target+j]=data[source+3+j];
+    c[target+j]=linear(data[source+6+j]);
+   }
+  }
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute("position",new THREE.BufferAttribute(p,3));
+  geometry.setAttribute("normal",new THREE.BufferAttribute(n,3));
+  geometry.setAttribute("color",new THREE.BufferAttribute(c,3));
+  geometry.computeBoundingSphere();
+  return geometry;
+ }
+ const materials=new Map<string,THREE.Material>();
+ function removeMeshes(){
+  objects.forEach(mesh=>{room.remove(mesh);mesh.geometry.dispose();});
+  objects.clear();
+ }
+ function build(opened:boolean){
+  removeMeshes();
+  for(const [id,data] of scene(opened).groups){
+   const geometry=makeGeometry(data);
+   if(id==="door"||id==="door-metal")geometry.translate(-1.07,0,-5.04);
+   if(id==="clock-hour"||id==="clock-minute")geometry.translate(-3.73,-2.14,0);
+   let material=materials.get(id);
+   if(!material){material=makePBR(id);materials.set(id,material);}
+   const mesh=new THREE.Mesh(geometry,material);
+   mesh.name=id;mesh.frustumCulled=false;
+   mesh.castShadow=shadowCasterIds.has(id)&&id!=="scene";
+   mesh.receiveShadow=id!=="emissive";
+   if(id==="door"||id==="door-metal")mesh.position.set(1.07,0,5.04);
+   if(id==="clock-hour"||id==="clock-minute")mesh.position.set(3.73,2.14,0);
+   if(["figure","figure-leg","knife-blade","knife-shadow"].includes(id))mesh.visible=false;
+   objects.set(id,mesh);room.add(mesh);
+  }
+ }
+ build(current.unlocked);
+ // The existing, detailed humanoid GLB is loaded by Three's GPU skinned
+ // renderer. No manual CPU-bone palette or second WebGL context is needed.
+ const loader=new GLTFLoader();
+ void loader.loadAsync("./models/stalker-skeletal.glb").then(gltf=>{
+  if(!active){gltf.scene.traverse(n=>{if(n instanceof THREE.Mesh){n.geometry.dispose();}});return;}
+  const figure=gltf.scene;
+  figure.updateMatrixWorld(true);
+  const bbox=new THREE.Box3().setFromObject(figure),min=bbox.min,max=bbox.max;
+  const height=Math.max(.1,max.y-min.y),scale=Math.min(2.2,2.85/height);
+  const cx=(min.x+max.x)/2,cz=(min.z+max.z)/2;
+  figure.scale.setScalar(scale);
+  figure.rotation.y=Math.PI;
+  figure.position.set(.32+cx*scale,-min.y*scale,6.28+cz*scale);
+  figure.traverse(node=>{
+   if(node instanceof THREE.Mesh){
+    node.castShadow=true;node.receiveShadow=true;node.frustumCulled=false;
+    const src=Array.isArray(node.material)?node.material:[node.material];
+    const upgraded=src.map(m=>{
+     const cloned=m.clone();
+     if(cloned instanceof THREE.MeshStandardMaterial){
+      cloned.roughness=Math.max(.64,cloned.roughness);
+      cloned.metalness=Math.min(.12,cloned.metalness);
+      if(/cloth|shirt|jacket|pants|trouser|hood|fabric/i.test(m.name+" "+node.name)){
+       cloned.color.multiplyScalar(.36);
+      }
+      cloned.side=THREE.DoubleSide;
+     }
+     return cloned;
+    });
+    node.material=Array.isArray(node.material)?upgraded:upgraded[0];
+   }
+   if(node instanceof THREE.Bone){
+    if(!headBone&&/(^|[._:| ])head($|[._:| ])/i.test(node.name))headBone=node;
+    if(/spine|chest|clavicle|shoulder/i.test(node.name))shoulders.push(node);
+   }
+  });
+  // Lightweight sculpted porcelain face and worn fabric hood, parented
+  // to the actual head bone. Eyes use deep slots rather than a cartoon disc.
+  if(headBone){
+   const mask=new THREE.Mesh(new THREE.SphereGeometry(1,22,16),
+      new THREE.MeshStandardMaterial({color:0x9c9180,roughness:.86,metalness:.0,side:THREE.DoubleSide}));
+   mask.scale.set(.118,.178,.045);mask.position.set(0,.077,.15);
+   mask.castShadow=true;headBone.add(mask);
+   const hood=new THREE.Mesh(new THREE.TorusGeometry(.170,.034,8,28),
+      new THREE.MeshStandardMaterial({color:0x131c1d,roughness:1,side:THREE.DoubleSide}));
+   hood.position.set(0,.070,.097);hood.scale.set(.91,1.23,.67);
+   headBone.add(hood);
+   for(const side of [-1,1]){
+    const slit=new THREE.Mesh(new THREE.BoxGeometry(.054,.016,.012),
+      new THREE.MeshBasicMaterial({color:0x07090d}));
+    slit.position.set(side*.051,.119,.194);slit.rotation.z=side*.12;
+    headBone.add(slit);
+   }
+  }
+  // Carry the threatening blade on the animated right hand.
+  const rightHand=figure.getObjectByName("RightHand")??figure.getObjectByName("hand_r")??figure.getObjectByName("Hand.R");
+  if(rightHand){
+   const steel=new THREE.Mesh(new THREE.BoxGeometry(.105,.56,.019),
+      new THREE.MeshStandardMaterial({color:0x8b908b,metalness:.92,roughness:.31}));
+   steel.position.set(.012,-.37,.085);steel.rotation.z=.05;
+   steel.castShadow=true;rightHand.add(steel);
+   const grip=new THREE.Mesh(new THREE.CylinderGeometry(.026,.03,.18,8),
+      new THREE.MeshStandardMaterial({color:0x271e1a,roughness:.96}));
+   grip.position.set(0,-.03,.085);rightHand.add(grip);
+  }
+  const figureHolder=new THREE.Group();figureHolder.name="skeletal-antagonist";
+  figureHolder.add(figure);room.add(figureHolder);
+  actor=figureHolder;
+  const skinCount=figure.getObjectsByProperty("type","SkinnedMesh").length;
+  const bones=figure.getObjectsByProperty("type","Bone").length;
+  rigLoaded=skinCount>0&&bones>20;
+  canvas.dataset.intruderModel=rigLoaded?"skinned-glb":"fallback";
+  canvas.dataset.intruderBones=String(bones);
+  canvas.dataset.intruderFinish=rigLoaded?"skeletal-human":"glb-no-skin";
+  canvas.dataset.intruderAppearance="worn-coat-porcelain-mask";
+  mixer=new THREE.AnimationMixer(figure);
+  const walk=gltf.animations.find(c=>/walk/i.test(c.name))??gltf.animations[0];
+  const idle=gltf.animations.find(c=>/idle/i.test(c.name));
+  if(walk){walkAction=mixer.clipAction(walk);walkAction.play();walkAction.timeScale=.72;}
+  if(idle){idleAction=mixer.clipAction(idle);idleAction.play();idleAction.enabled=false;}
+ }).catch(err=>{
+  console.warn("CASO M: glTF humano inaccesible, respaldo 3D activado",err);
+  canvas.dataset.intruderModel="fallback";
+  canvas.dataset.intruderBones="0";
+  canvas.dataset.intruderFinish="fallback";
+ });
  function basis(){
-  const cp=Math.cos(pose.pitch);
-  const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
-  const right:V=[Math.cos(pose.yaw),0,-Math.sin(pose.yaw)];
-  const up:V=[-right[2]*Math.sin(pose.pitch),cp,right[0]*Math.sin(pose.pitch)];
+  const cp=Math.cos(cameraPose.pitch);
+  const forward:V=[-Math.sin(cameraPose.yaw)*cp,Math.sin(cameraPose.pitch),-Math.cos(cameraPose.yaw)*cp];
+  const right:V=[Math.cos(cameraPose.yaw),0,-Math.sin(cameraPose.yaw)];
+  const up:V=[-right[2]*Math.sin(cameraPose.pitch),cp,right[0]*Math.sin(cameraPose.pitch)];
   return {forward,right,up};
  }
- function targets(){
-  return TARGETS.filter(t=>current.unlocked||t.id!=="envelope");
- }
+ function targets(){return TARGETS.filter(t=>current.unlocked||t.id!=="envelope");}
  function nearby(){
-  return targets().filter(t=>Math.hypot(t.pos[0]-pose.x,t.pos[2]-pose.z)<4.6)
-  .sort((a,b)=>Math.hypot(a.pos[0]-pose.x,a.pos[2]-pose.z)-Math.hypot(b.pos[0]-pose.x,b.pos[2]-pose.z));
- }
- // Screen-space hit areas match the actual model dimensions. Taps on a
- // visible object should work even before the player walks within "E" reach.
- // The old picker rejected all taps beyond target.reach, frustrating mobiles.
- function pick(x:number,y:number,w:number,h:number):Target|null{
-  if(w<=0||h<=0||x<0||y<0||x>w||y>h)return null;
-  const {forward,right,up}=basis(),ratio=w/h;
-  const extents:Record<ClueId,[number,number]> = {
-   calendar:[1.65,1.94],cassette:[1.1,.62],memo:[1.1,.89],board:[2.65,1.9],
-   clock:[1.54,1.55],drawer:[1.6,.95],envelope:[.43,.32],
-   phone:[.85,.58],camera:[.62,.40],locker:[1.7,3.05],
-   lamp:[.72,.66],pipe:[1.18,1.45]
-  };
-  let selected:Target|null=null,rank=Infinity;
-  for(const target of targets()){
-   const v:V=[target.pos[0]-pose.x,target.pos[1]-pose.y,target.pos[2]-pose.z];
-   const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
-   if(depth<=.2)continue;
-   const projectedX=w/2+(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth)*w/2;
-   const projectedY=h/2-(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth*h/2;
-   const [width,height]=extents[target.id];
-   // 24px minimum half-size makes narrow controls reachable with a finger.
-   const halfW=Math.max(26,width*1.46/depth*h/4+10);
-   const halfH=Math.max(26,height*1.46/depth*h/4+10);
-   const dx=(x-projectedX)/halfW,dy=(y-projectedY)/halfH;
-   if(Math.abs(dx)>1||Math.abs(dy)>1)continue;
-   const score=depth+Math.hypot(dx,dy)*1.9;
-   if(score<rank){rank=score;selected=target;}
-  }
-  return selected;
+  return targets().filter(t=>Math.hypot(t.pos[0]-cameraPose.x,t.pos[2]-cameraPose.z)<4.6)
+   .sort((a,b)=>Math.hypot(a.pos[0]-cameraPose.x,a.pos[2]-cameraPose.z)-Math.hypot(b.pos[0]-cameraPose.x,b.pos[2]-cameraPose.z));
  }
  function project(position:V){
-  const {forward,right,up}=basis();
-  const v:V=[position[0]-pose.x,position[1]-pose.y,position[2]-pose.z];
-  const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
-  const width=canvas.clientWidth,height=canvas.clientHeight,ratio=width/Math.max(1,height);
-  if(depth<=.12||!width||!height)return {x:-1000,y:-1000,visible:false,distance:depth};
-  const x=width*.5+(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth)*width*.5;
-  const y=height*.5-(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth*height*.5;
-  return {x,y,visible:x>60&&x<width-60&&y>170&&y<height-150,distance:depth};
+  const width=canvas.clientWidth,height=canvas.clientHeight;
+  camera.position.set(cameraPose.x,cameraPose.y,cameraPose.z);
+  camera.rotation.set(cameraPose.pitch,cameraPose.yaw,0,"YXZ");
+  camera.updateMatrixWorld();
+  const v=new THREE.Vector3(...position);
+  const dist=v.distanceTo(camera.position);
+  v.project(camera);
+  const x=(v.x+1)*width*.5,y=(1-v.y)*height*.5;
+  return {x,y,visible:v.z>=-1&&v.z<1&&x>60&&x<width-60&&y>170&&y<height-150,distance:dist};
  }
  function aim(){
   const {forward}=basis();let best:Target|null=null,score=1e6;
   for(const target of targets()){
-   const v:V=[target.pos[0]-pose.x,target.pos[1]-pose.y,target.pos[2]-pose.z];
+   const v:V=[target.pos[0]-cameraPose.x,target.pos[1]-cameraPose.y,target.pos[2]-cameraPose.z];
    const dist=Math.hypot(...v),front=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
    if(front<.25||dist>target.reach)continue;
    const miss=Math.sqrt(Math.max(0,dist*dist-front*front));
@@ -1002,8 +928,26 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   return best;
  }
- // Contact boundaries are generated from the very same footprints that
- // position the visual models. No invisible table remains at the old position.
+ function pick(x:number,y:number,w:number,h:number):Target|null{
+  if(w<=0||h<=0||x<0||y<0||x>w||y>h)return null;
+  const {forward,right,up}=basis(),ratio=w/h;
+  let selected:Target|null=null,rank=Infinity;
+  for(const target of targets()){
+   const v:V=[target.pos[0]-cameraPose.x,target.pos[1]-cameraPose.y,target.pos[2]-cameraPose.z];
+   const depth=v[0]*forward[0]+v[1]*forward[1]+v[2]*forward[2];
+   if(depth<=.2)continue;
+   const px=w/2+(v[0]*right[0]+v[1]*right[1]+v[2]*right[2])*1.46/(ratio*depth)*w/2;
+   const py=h/2-(v[0]*up[0]+v[1]*up[1]+v[2]*up[2])*1.46/depth*h/2;
+   const [width,height]=extents[target.id];
+   const halfW=Math.max(26,width*1.46/depth*h/4+10);
+   const halfH=Math.max(26,height*1.46/depth*h/4+10);
+   const dx=(x-px)/halfW,dy=(y-py)/halfH;
+   if(Math.abs(dx)>1||Math.abs(dy)>1)continue;
+   const score=depth+Math.hypot(dx,dy)*1.9;
+   if(score<rank){rank=score;selected=target;}
+  }
+  return selected;
+ }
  const obstacles=[
   {x:ROOM_LAYOUT.lock.x,z:ROOM_LAYOUT.lock.z,w:3.28,d:1.92},
   {x:ROOM_LAYOUT.locker.x,z:ROOM_LAYOUT.locker.z,w:ROOM_LAYOUT.locker.w+.22,d:ROOM_LAYOUT.locker.d+.23},
@@ -1017,148 +961,127 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  }
  function frame(now:number){
   if(!active)return;raf=requestAnimationFrame(frame);
-  // Mobile-friendly frame pacing: preserve CPU time for interactive controls.
-  const frameGap=now-lastDraw;
-  if(frameGap<32)return;
+  const delta=now-lastDraw;
+  if(delta<32)return;
   lastDraw=now;
-  if(frameGap>48){slowFrames++;fastFrames=0;}
-  else if(frameGap<38){fastFrames++;slowFrames=Math.max(0,slowFrames-2);}
-  if(slowFrames>24&&renderScale>.77){renderScale=.76;slowFrames=0;}
-  if(fastFrames>220&&renderScale<1){renderScale=1;fastFrames=0;}
-  const ratio=Math.min(window.devicePixelRatio||1,1.6)*renderScale;
-  canvas.dataset.renderQuality=renderScale<1?"battery-friendly":"high";
-  const w=Math.round(canvas.clientWidth*ratio),h=Math.round(canvas.clientHeight*ratio);
-  if(w>0&&h>0&&(canvas.width!==w||canvas.height!==h)){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
-  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-  const {forward,right,up}=basis();
-  gl.useProgram(program);
-  gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
-  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
-  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);gl.uniform1f(usurface,0);
-  gl.uniformMatrix4fv(uglm,false,IDENTITY);
-  gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
-  gl.uniform3fv(utorch,forward);gl.uniform1f(uflash,flashlight?1:0);
-  gl.uniform1f(ufocus,focusTarget?1:0);
-  gl.uniform3fv(ufocusPoint,focusTarget?.pos??[0,-10,0]);
-  canvas.dataset.flashlight=flashlight?"on":"off";canvas.dataset.renderVersion="cinematic-materials-v2";
-  gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
+  if(delta>51){slowFrames++;fastFrames=0;}else if(delta<39){fastFrames++;slowFrames=Math.max(0,slowFrames-2);}
+  if(slowFrames>22&&renderScale>.8){renderScale=.76;slowFrames=0;}
+  if(fastFrames>170&&renderScale<1){renderScale=1;fastFrames=0;}
+  const pixelRatio=Math.min(window.devicePixelRatio||1,1.45)*renderScale;
+  const width=Math.max(2,canvas.clientWidth),height=Math.max(2,canvas.clientHeight);
+  const targetWidth=Math.floor(width*pixelRatio),targetHeight=Math.floor(height*pixelRatio);
+  if(canvas.width!==targetWidth||canvas.height!==targetHeight){
+   renderer.setPixelRatio(pixelRatio);renderer.setSize(width,height,false);
+   camera.aspect=width/height;camera.updateProjectionMatrix();
+  }
+  camera.position.set(cameraPose.x,cameraPose.y,cameraPose.z);
+  camera.rotation.set(cameraPose.pitch,cameraPose.yaw,0,"YXZ");
   const elapsed=current.intruder?Math.max(0,60-(current.remaining??60)):0;
-  const progress=intruderStarted?Math.min(1,(now-intruderStarted)/4000):0;
+  const progress=intruderStarted?clamp((now-intruderStarted)/4000,0,1):0;
   const smooth=progress*progress*(3-2*progress);
-  gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
-  const drawerT=current.unlocked?Math.min(1,Math.max(0,(now-drawerOpenedAt)/900)):0;
-  const drawerEase=drawerT*drawerT*(3-2*drawerT);
-  gl.uniform1f(udrawer,drawerEase);
+  for(const name of ["door","door-metal"]){const m=objects.get(name);if(m)m.rotation.y=-1.15*smooth;}
+  const drawerT=current.unlocked?clamp((now-drawerOpenedAt)/900,0,1):0;
+  const easedDrawer=drawerT*drawerT*(3-2*drawerT);
+  for(const name of ["drawer","envelope"]){const m=objects.get(name);if(m)m.position.z=-.52*(1-easedDrawer);}
   canvas.dataset.drawerMotion=current.unlocked?(drawerT>=1?"open":"sliding"):"locked";
-  // Cross the threshold progressively and stop safely in front of the player.
+  const clockT=clockStarted?clamp((now-clockStarted)/3000,0,1):0;
+  const clockEase=clockT*clockT*(3-2*clockT);
+  const hour=objects.get("clock-hour"),minute=objects.get("clock-minute");
+  if(hour)hour.rotation.z=-clockEase*(Math.PI*6+Math.PI*5/6);
+  if(minute)minute.rotation.z=-clockEase*Math.PI*8;
   const walk=Math.max(0,elapsed-9);
-  // A pursuer pauses to listen and watch; no endless mechanical march.
   const paused=(walk>=8.5&&walk<10.3)||(walk>=23.5&&walk<24.8)||(walk>=37.5&&walk<39.1);
   const stalk=Math.max(0,walk-Math.min(1.8,Math.max(0,walk-8.5))
                          -Math.min(1.3,Math.max(0,walk-23.5))
                          -Math.min(1.6,Math.max(0,walk-37.5)));
   const advance=stalk<=10?stalk*.038:stalk<=24?.38+(stalk-10)*.057:stalk<=37?1.178+(stalk-24)*.087:2.309+(stalk-37)*.09;
-  const safeAdvance=Math.max(0,6.28-(pose.z+.95));
+  const safeAdvance=Math.max(0,6.28-(cameraPose.z+.95));
   const approach=current.intruder?Math.min(2.85,safeAdvance,advance):0;
-  gl.uniform1f(ufs,approach);
-  gl.uniform1f(ufmarch,walk*4.9);
+  const seen=current.intruder&&elapsed>=9;
   canvas.dataset.intruderApproach=approach.toFixed(2);
-  canvas.dataset.intruderFinish=rig?.skinned?"skeletal-human":rig?"glb-no-skin":"fallback";
-  canvas.dataset.intruderAppearance=rig?.skinned?"worn-coat-porcelain-mask":"fallback";
+  canvas.dataset.intruderFinish=rigLoaded?"skeletal-human":actor?"glb-no-skin":"fallback";
+  canvas.dataset.intruderAppearance=rigLoaded?"worn-coat-porcelain-mask":"fallback";
   canvas.dataset.intruderMood=paused?"watching":elapsed>11?"stalking":"waiting";
-  canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
+  canvas.dataset.intruderVisible=seen?"yes":"no";
   canvas.dataset.roomProps="complete-hd-props-v3";
-  gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
-  gl.uniform1f(uth,intruderStarted?1:0);
-  gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
-  for(const m of mesh){
-   const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
-   if(figurePart&&rig)continue;
-   if(figurePart&&(!intruderStarted||elapsed<9))continue;
-   if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
-   gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
-   gl.vertexAttribPointer(ap,3,gl.FLOAT,false,stride*4,0);
-   gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
-   gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
-   gl.uniform1f(um,m.id==="emissive"?1:0);
-   gl.uniform1f(udg,m.id==="door"||m.id==="door-metal"?1:0);
-   gl.uniform1f(udrawergroup,m.id==="drawer"||m.id==="envelope"?1:0);
-   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
-   gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
-   gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
-   gl.uniform1f(umask,0);
-   gl.uniform1f(usurface,m.id==="door"||m.id==="wood"||m.id==="drawer"?1:
-    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:m.id==="book"?5:m.id==="paper"?6:m.id==="cable"?7:0);
-   gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
-   const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
-   const eased=t*t*(3-2*t);
-   gl.uniform2f(upiv,3.73,2.14);
-   gl.uniform1f(ua,m.id==="clock-hour"?eased*(Math.PI*6+Math.PI*5/6):
-      m.id==="clock-minute"?eased*Math.PI*8:0);
-   gl.drawArrays(gl.TRIANGLES,0,m.count);
-  }
-  // This shares the room's depth-buffer and camera: no second renderer.
-  if(rig&&intruderStarted&&elapsed>=9){
-   rig.animate(elapsed,elapsed>11&&!paused&&approach<2.82);
-   gl.uniform1f(usurface,0);gl.uniform1f(udrawergroup,0);
-   gl.uniform1f(ucloth,rig.skinned?1:0);
-   gl.uniform1f(ureveal,Math.min(1,Math.max(0,(elapsed-9)/3.2)));
-   gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
-   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
-   gl.enableVertexAttribArray(auv);
-   gl.uniform1f(ua,0);
-   for(const part of rig.parts){
-    gl.uniformMatrix4fv(uglm,false,rig.matrices[part.node]);
-    gl.bindBuffer(gl.ARRAY_BUFFER,part.buffer);
-    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,11*4,0);
-    gl.vertexAttribPointer(an,3,gl.FLOAT,false,11*4,12);
-    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,11*4,24);
-    gl.vertexAttribPointer(auv,2,gl.FLOAT,false,11*4,36);
-    gl.bindTexture(gl.TEXTURE_2D,part.texture??blank);
-    gl.uniform1f(utex,part.texture&&part.hasUV?1:0);
-    // Recolor only deforming human skin mesh: keep porcelain and steel materials intact.
-    gl.uniform1f(ucloth,part.skinCPU?1:0);
-    gl.uniform1f(umask,part.faceplate?1:0);
-    gl.uniform1f(ublade,part.weapon?Math.max(0,1.0-Math.abs(elapsed-25.2)/.9)*.16:0);
-    gl.drawArrays(gl.TRIANGLES,0,part.count);
+  canvas.dataset.renderVersion="threejs-pbr-migration-v1";
+  canvas.dataset.renderEngine="threejs";
+  canvas.dataset.flashlight=flashlight?"on":"off";
+  canvas.dataset.renderQuality=renderScale<1?"battery-friendly":"high";
+  cameraLight.visible=flashlight;
+  emergency.intensity=(current.intruder?10+6*Math.sin(now*.007):12);
+  overhead.intensity=(30+Math.sin(now*.011)*.6);
+  if(actor){
+   actor.visible=seen;
+   actor.position.z=-approach;
+   actor.position.x=(cameraPose.x-.32)*.19+.028*Math.sin(walk*2.5);
+   if(mixer&&seen){
+    const dt=clamp((now-lastAnimate)/1000,0,.08);
+    if(walkAction)walkAction.paused=paused||approach>=2.82;
+    if(idleAction&&walkAction){idleAction.enabled=paused;idleAction.paused=!paused;}
+    mixer.update(dt);
+    if(headBone)headBone.rotation.z+=.013*Math.sin(now*.0014);
    }
-   gl.uniformMatrix4fv(uglm,false,IDENTITY);
-   gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
-   gl.bindTexture(gl.TEXTURE_2D,blank);
-   gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);
   }
+  lastAnimate=now;
+  for(const name of ["figure","figure-leg","knife-blade","knife-shadow"]){
+   const model=objects.get(name);
+   if(model){
+    model.visible=!rigLoaded&&seen;
+    model.position.z=-approach;
+    model.position.x=(cameraPose.x-.32)*.19;
+   }
+  }
+  renderer.render(room,camera);
   if(now-lastHud>125){
-   lastHud=now;focusTarget=aim();
-   canvas.dataset.focusedObject=focusTarget?.id??"none";
-   onFrame?.({...pose},focusTarget);
+   lastHud=now;const aimed=aim();
+   focusLight.visible=!!aimed;focusLight.position.set(...(aimed?.pos??[0,-10,0]));
+   canvas.dataset.focusedObject=aimed?.id??"none";
+   onFrame?.({...cameraPose},aimed);
   }
  }
  raf=requestAnimationFrame(frame);
- return {
+ return{
   move:(f:number,s:number,dt:number)=>{
    if(Math.abs(f)+Math.abs(s)<.02)return;
-   const {forward,right}=basis(),length=Math.max(1,Math.hypot(f,s)),d=2.75*Math.min(dt,.22);
-   // Software WebGL/slow phones can yield a 0.6m frame displacement.
-   // Divide that displacement into <=7cm collision-safe microsteps;
-   // otherwise a free passage is rejected because a large jump overshoots
-   // the final 15-30cm before a piece of furniture.
-   const steps=Math.max(1,Math.ceil(d/.07));
-   const dx=(f*forward[0]+s*right[0])/length*d/steps;
-   const dz=(f*forward[2]+s*right[2])/length*d/steps;
-   for(let i=0;i<steps;i++){
-    if(!collides(pose.x+dx,pose.z))pose.x+=dx;
-    if(!collides(pose.x,pose.z+dz))pose.z+=dz;
+   const {forward,right}=basis(),length=Math.max(1,Math.hypot(f,s)),step=2.75*Math.min(dt,.22);
+   const count=Math.max(1,Math.ceil(step/.07));
+   const dx=(f*forward[0]+s*right[0])/length*step/count;
+   const dz=(f*forward[2]+s*right[2])/length*step/count;
+   for(let i=0;i<count;i++){
+    if(!collides(cameraPose.x+dx,cameraPose.z))cameraPose.x+=dx;
+    if(!collides(cameraPose.x,cameraPose.z+dz))cameraPose.z+=dz;
    }
   },
-  pick,project,
-  look:(dx:number,dy:number)=>{pose.yaw=(pose.yaw-dx*.0048+Math.PI*4)%(Math.PI*2);pose.pitch=Math.max(-1.05,Math.min(1.05,pose.pitch-dy*.0038));},
-  lookAt:(target:Target)=>{
-    const dx=target.pos[0]-pose.x,dy=target.pos[1]-pose.y,dz=target.pos[2]-pose.z;
-    pose.yaw=Math.atan2(-dx,-dz);pose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
+  look:(dx:number,dy:number)=>{
+   cameraPose.yaw=(cameraPose.yaw-dx*.0048+Math.PI*4)%(Math.PI*2);
+   cameraPose.pitch=clamp(cameraPose.pitch-dy*.0038,-1.05,1.05);
   },
-  aim,nearby,getPose:()=>({...pose}),
-  setFlashlight:(on:boolean)=>{flashlight=on;canvas.dataset.flashlight=on?"on":"off";},
-  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked){if(next.unlocked)drawerOpenedAt=performance.now();rebuild(next.unlocked)}current={...next}},
-  dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);rig?.dispose();gl.deleteTexture(blank);gl.deleteProgram(program);gl.flush()},
+  lookAt:(target:Target)=>{
+   const dx=target.pos[0]-cameraPose.x,dy=target.pos[1]-cameraPose.y,dz=target.pos[2]-cameraPose.z;
+   cameraPose.yaw=Math.atan2(-dx,-dz);
+   cameraPose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
+  },
+  project,pick,aim,nearby,getPose:()=>({...cameraPose}),
+  setFlashlight:(on:boolean)=>{flashlight=on;cameraLight.visible=on;canvas.dataset.flashlight=on?"on":"off";},
+  setFlags:(next:SceneFlags)=>{
+   if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();
+   if(next.intruder&&!current.intruder)intruderStarted=performance.now();
+   if(next.unlocked!==current.unlocked){if(next.unlocked)drawerOpenedAt=performance.now();build(next.unlocked);}
+   current={...next};
+  },
+  dispose:()=>{
+   active=false;cancelAnimationFrame(raf);
+   removeMeshes();materials.forEach(m=>m.dispose());
+   ambientContacts.forEach(m=>m.geometry.dispose());
+   contactMaterial.dispose();
+   actor?.traverse(n=>{
+    if(n instanceof THREE.Mesh){
+     n.geometry.dispose();
+     const mats=Array.isArray(n.material)?n.material:[n.material];mats.forEach(m=>m.dispose());
+    }
+   });
+   renderer.dispose();
+  }
  };
 }
