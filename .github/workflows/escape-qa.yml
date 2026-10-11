@@ -49,6 +49,8 @@ jobs:
           test -s showcase/rescate-mauro/index.html
           test -s showcase/rescate-mauro/app.js
           test -s showcase/rescate-mauro/intruder3d.js
+          grep -Fq "intruder3d.js" showcase/rescate-mauro/index.html
+          ! grep -Fq "intruder3d.js" showcase/escape/index.html
           test -s showcase/rescate-mauro/models/intruder.glb
           test -s showcase/rescate-mauro/app.css
       - name: Play full 3D kidnapping-to-birthday journey
