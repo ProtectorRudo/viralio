@@ -434,7 +434,7 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup;
+uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal;
 uniform sampler2D albedo;
 uniform mediump vec3 eye;
 void main(){
@@ -447,6 +447,26 @@ void main(){
  float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-emergency)*.18);
  vec3 textureColor=mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
  vec3 baseColor=vColor*textureColor;
+ if(enemyCloth>.5){
+  // Dark weathered fabric using the real human's original texture details.
+  float luminance=dot(textureColor,vec3(.26,.59,.15));
+  float skin=smoothstep(.04,.19,textureColor.r-textureColor.g)
+            *smoothstep(.07,.23,textureColor.r-textureColor.b);
+  float shirt=smoothstep(1.00,1.39,vPos.y)*(1.0-smoothstep(2.24,2.47,vPos.y));
+  float trousers=smoothstep(.20,.39,vPos.y)*(1.0-smoothstep(1.32,1.58,vPos.y));
+  float shoes=1.0-smoothstep(.08,.27,vPos.y);
+  float weave=fract(sin(dot(floor(vUV*220.0),vec2(12.9898,78.233)))*43758.5453);
+  float stain=.84+.16*fract(sin(dot(floor(vUV*17.0),vec2(87.12,21.38)))*15382.614);
+  float folds=.94+.06*sin(vUV.y*58.0+vPos.x*12.0);
+  float grain=stain*folds*(.94+.09*weave);
+  vec3 canvasDark=vec3(.115,.142,.128)*(.75+luminance*.73)*grain;
+  vec3 wornPants=vec3(.115,.118,.106)*(.78+luminance*.80)*grain;
+  vec3 leatherBoot=vec3(.126,.108,.091)*(.7+luminance*.58)*grain;
+  float fabricMask=1.0-skin*.95;
+  baseColor=mix(baseColor,canvasDark,shirt*fabricMask*.97);
+  baseColor=mix(baseColor,wornPants,trousers*fabricMask*.92);
+  baseColor=mix(baseColor,leatherBoot,shoes*.92);
+ }
  vec3 outColor=baseColor*lamp+baseColor*vec3(.19,.06,.05)*redGlow;
  outColor+=baseColor*vec3(.02,.04,.055)*max(0.0,dot(N,vec3(1.,.2,0.)));
  float fog=clamp((vDistance-5.8)/15.0,0.0,.69);
@@ -462,8 +482,8 @@ void main(){
   float blueKey=max(0.0,dot(N,normalize(vec3(-.78,.34,-.55))));
   float pulse=.87+.13*sin(time*4.0);
   vec3 surface=pow(max(baseColor,vec3(.001)),vec3(.80));
-  vec3 fill=vec3(.44,.47,.53)+redKey*vec3(1.12,.31,.25)*pulse
-                  +blueKey*vec3(.21,.47,.78);
+  vec3 fill=vec3(.35,.38,.41)+redKey*vec3(.96,.26,.22)*pulse
+                  +blueKey*vec3(.15,.27,.39);
   // Keep material colors visible even in the dark on an average mobile display.
   outColor=surface*fill+rim*(vec3(.58,.16,.13)*redKey+vec3(.11,.26,.43)*blueKey)*.75;
   if(maskGroup>.5){
@@ -472,6 +492,8 @@ void main(){
                     +blueKey*vec3(.16,.22,.33))
                     +rim*vec3(.32,.16,.14);
   }
+  // First silhouette, then intermittent emergency-light revelation.
+  outColor*=mix(.30,1.0,clamp(enemyReveal,0.0,1.0));
   outColor=mix(outColor,vec3(.035,.040,.053),clamp(fog*.48,0.0,.34));
  }
  outColor+=vec3(.60,.77,.86)*bladeFlash;
@@ -508,7 +530,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
+ const ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
@@ -629,7 +651,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.useProgram(program);
   gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
   gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
-  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
+  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);
   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
@@ -639,13 +661,20 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
   // Cross the threshold progressively and stop safely in front of the player.
   const walk=Math.max(0,elapsed-9);
-  const advance=walk<=10?walk*.038:walk<=24?.38+(walk-10)*.057:walk<=37?1.178+(walk-24)*.087:2.309+(walk-37)*.09;
+  // A pursuer pauses to listen and watch; no endless mechanical march.
+  const paused=(walk>=8.5&&walk<10.3)||(walk>=23.5&&walk<24.8)||(walk>=37.5&&walk<39.1);
+  const stalk=Math.max(0,walk-Math.min(1.8,Math.max(0,walk-8.5))
+                         -Math.min(1.3,Math.max(0,walk-23.5))
+                         -Math.min(1.6,Math.max(0,walk-37.5)));
+  const advance=stalk<=10?stalk*.038:stalk<=24?.38+(stalk-10)*.057:stalk<=37?1.178+(stalk-24)*.087:2.309+(stalk-37)*.09;
   const safeAdvance=Math.max(0,6.28-(pose.z+.95));
   const approach=current.intruder?Math.min(2.85,safeAdvance,advance):0;
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,walk*4.9);
   canvas.dataset.intruderApproach=approach.toFixed(2);
   canvas.dataset.intruderFinish=rig?.skinned?"skeletal-human":rig?"glb-no-skin":"fallback";
+  canvas.dataset.intruderAppearance=rig?.skinned?"worn-coat-porcelain-mask":"fallback";
+  canvas.dataset.intruderMood=paused?"watching":elapsed>11?"stalking":"waiting";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
@@ -675,7 +704,9 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   // This shares the room's depth-buffer and camera: no second renderer.
   if(rig&&intruderStarted&&elapsed>=9){
-   rig.animate(elapsed,elapsed>11&&approach<2.82);
+   rig.animate(elapsed,elapsed>11&&!paused&&approach<2.82);
+   gl.uniform1f(ucloth,rig.skinned?1:0);
+   gl.uniform1f(ureveal,Math.min(1,Math.max(0,(elapsed-9)/3.2)));
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
    gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
    gl.enableVertexAttribArray(auv);
@@ -690,12 +721,13 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
     gl.bindTexture(gl.TEXTURE_2D,part.texture??blank);
     gl.uniform1f(utex,part.texture&&part.hasUV?1:0);
     gl.uniform1f(umask,part.faceplate?1:0);
+    gl.uniform1f(ublade,part.weapon?Math.max(0,1.0-Math.abs(elapsed-25.2)/.9)*.16:0);
     gl.drawArrays(gl.TRIANGLES,0,part.count);
    }
    gl.uniformMatrix4fv(uglm,false,IDENTITY);
    gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
    gl.bindTexture(gl.TEXTURE_2D,blank);
-   gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
+   gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);
   }
   if(onFrame&&now-lastHud>125){lastHud=now;onFrame({...pose},aim());}
  }
