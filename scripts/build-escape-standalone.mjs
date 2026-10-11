@@ -43,7 +43,7 @@ for (const file of ["app.js", "app.css"]) {
 cpSync(resolve("public/escape/images"), join(output,"images"), {recursive:true});
 cpSync(resolve("public/escape/audio"), join(output,"audio"), {recursive:true});
 writeFileSync(join(output,"index.html"), 
-  '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070b0e"><title>UMBRAL · Viralio Escape</title><meta name="description" content="Cuatro capítulos de misterio. Encontrá las pistas y escapá de la casa."><link rel="preload" as="image" href="./images/retina/mansion.webp" media="(min-resolution: 2dppx)" fetchpriority="high"><link rel="stylesheet" href="./app.css"></head><body style="margin:0;background:#070b0e"><div id="escape-root"></div><script defer src="./app.js"></script></body></html>');
+  '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070b0e"><title>UMBRAL · Viralio Escape</title><meta name="description" content="Cuatro capítulos de misterio. Encontrá las pistas y escapá de la casa."><link rel="preload" as="image" href="./images/retina/mansion.webp" media="(min-resolution: 2dppx)" fetchpriority="high"><link rel="stylesheet" href="./app.css"></head><body style="margin:0;background:#070b0e"><div id="escape-root"></div><script defer src="./app.js"></script><script defer src="./intruder3d.js"></script></body></html>');
 console.log("UMBRAL standalone built:", readFileSync(join(output,"app.js")).length, "JS bytes,", readFileSync(join(output,"app.css")).length, "CSS bytes");
 
 /* Independent birthday-invitation game. Keep UMBRAL's shipped files intact. */
@@ -73,6 +73,23 @@ await build({
   }],
   logLevel:"warning",
 });
+// Self-host a licensed GLB and bundle the rigged PBR renderer. The model
+// is fetched at BUILD time only, never from a third-party domain in players'
+// browsers. Original room renderer remains a zero-network fallback.
+await build({
+ entryPoints:["src/app/escape/rescate/intruder3d.mjs"],
+ bundle:true,platform:"browser",format:"iife",target:["es2022"],minify:true,
+ legalComments:"none",outfile:join(rescueOutput,"intruder3d.js"),logLevel:"warning"
+});
+const modelsDir=join(rescueOutput,"models");mkdirSync(modelsDir,{recursive:true});
+const modelFile=join(modelsDir,"intruder.glb");
+if(!existsSync(modelFile)){
+ execFileSync("curl",["--fail","--location","--silent","--show-error","--retry","3","--connect-timeout","12","--max-time","75",
+  "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb","--output",modelFile],{timeout:100000,stdio:"inherit"});
+}
+const glb=readFileSync(modelFile);
+if(glb.length<10000||glb.toString("ascii",0,4)!=="glTF")throw Error("CASO M rigged model download was not a GLB");
+console.log("CASO M rigged PBR intruder:",glb.length,"GLB bytes");
 // Build a locally hosted recording, so mobile WebViews do not depend on
 // unreliable speechSynthesis. Prefer an expressive Argentine Spanish voice,
 // fall back to offline Latin-American Spanish if neural TTS is unavailable.
