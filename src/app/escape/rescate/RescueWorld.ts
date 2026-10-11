@@ -743,7 +743,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  farFill.position.set(-3.8,2.7,-4.35);room.add(farFill);
  const focusLight=new THREE.PointLight(0xffd49a,.9,2.6,2);
  focusLight.visible=false;room.add(focusLight);
- const objects=new Map<string,THREE.Mesh>(),current={...flags},flashlight=false;
+ const objects=new Map<string,THREE.Mesh>();
+ let current={...flags},flashlight=false;
  let active=true,raf=0,lastDraw=0,lastHud=0,renderScale=1,slowFrames=0,fastFrames=0;
  let drawerOpenedAt=flags.unlocked?performance.now()-1200:0;
  let clockStarted=flags.clockActivated?performance.now()-3100:0;
