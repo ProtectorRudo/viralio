@@ -47,6 +47,52 @@ class Room {
   this.quad(kind,[[r,b,f],[r,t,f],[r,t,a],[r,b,a]],[1,0,0],color);
   this.quad(kind,[[l,b,a],[l,t,a],[l,t,f],[l,b,f]],[-1,0,0],color);
  }
+ // Soft bevels on actual geometry, shared depth buffer and camera.
+ bevelBox(x:number,y:number,z:number,w:number,h:number,d:number,bevel:number,color:string,kind="scene"){
+  const half:V=[w/2,h/2,d/2],r=Math.max(.001,Math.min(bevel,...half)*.98),inner=half.map(v=>v-r) as V;
+  const origin:V=[x,y,z];
+  const corner=(axis:number,sign:number,u:number,v:number)=>{
+   const ui=(axis+1)%3,vi=(axis+2)%3,p:V=[0,0,0];p[axis]=sign*half[axis];p[ui]=u;p[vi]=v;
+   const core=p.map((n,i)=>Math.max(-inner[i],Math.min(inner[i],n))) as V;
+   const delta=p.map((n,i)=>n-core[i]) as V,length=Math.hypot(...delta)||1;
+   return {p:core.map((n,i)=>n+delta[i]*r/length+origin[i]) as V,n:delta.map(n=>n/length) as V};
+  };
+  const tri=(a:{p:V;n:V},b:{p:V;n:V},c:{p:V;n:V})=>{
+   this.add(kind,a.p,a.n,color);this.add(kind,b.p,b.n,color);this.add(kind,c.p,c.n,color);
+  };
+  for(let axis=0;axis<3;axis++)for(const sign of [-1,1]){
+   const ui=(axis+1)%3,vi=(axis+2)%3;
+   const U=[-half[ui],-inner[ui],inner[ui],half[ui]],V=[-half[vi],-inner[vi],inner[vi],half[vi]];
+   for(let a=0;a<3;a++)for(let b=0;b<3;b++){
+    const p=corner(axis,sign,U[a],V[b]),q=corner(axis,sign,U[a+1],V[b]);
+    const t=corner(axis,sign,U[a+1],V[b+1]),u=corner(axis,sign,U[a],V[b+1]);
+    tri(p,q,t);tri(p,t,u);
+   }
+  }
+ }
+ // Solid concentric metal/tape reel with exposed raised top and rim.
+ reelY(x:number,y:number,z:number,outer:number,inner:number,h:number,color:string,kind="metal",sides=16){
+  const top=y+h/2,bot=y-h/2,p=(r:number,t:number,yy:number):V=>[x+Math.cos(t)*r,yy,z+Math.sin(t)*r];
+  for(let i=0;i<sides;i++){
+   const a=i/sides*Math.PI*2,b=(i+1)/sides*Math.PI*2;
+   this.quad(kind,[p(outer,a,top),p(inner,a,top),p(inner,b,top),p(outer,b,top)],[0,1,0],color);
+   const n:V=[Math.cos((a+b)/2),0,Math.sin((a+b)/2)];
+   this.quad(kind,[p(outer,a,bot),p(outer,a,top),p(outer,b,top),p(outer,b,bot)],n,color);
+   if(inner>.001)this.quad(kind,[p(inner,b,bot),p(inner,b,top),p(inner,a,top),p(inner,a,bot)],[-n[0],0,-n[2]],color);
+  }
+ }
+ // Raised dial rings facing the player along +Z.
+ reelZ(x:number,y:number,z:number,outer:number,inner:number,depth:number,color:string,kind="metal",sides=18){
+  const front=z+depth/2,back=z-depth/2;
+  const p=(r:number,t:number,zz:number):V=>[x+r*Math.cos(t),y+r*Math.sin(t),zz];
+  for(let i=0;i<sides;i++){
+   const a=i/sides*Math.PI*2,b=(i+1)/sides*Math.PI*2;
+   this.quad(kind,[p(outer,a,front),p(inner,a,front),p(inner,b,front),p(outer,b,front)],[0,0,1],color);
+   const n:V=[Math.cos((a+b)/2),Math.sin((a+b)/2),0];
+   this.quad(kind,[p(outer,a,back),p(outer,a,front),p(outer,b,front),p(outer,b,back)],n,color);
+   if(inner>.001)this.quad(kind,[p(inner,b,back),p(inner,b,front),p(inner,a,front),p(inner,a,back)],[-n[0],-n[1],0],color);
+  }
+ }
  panel(x:number,y:number,z:number,w:number,h:number,color:string,kind:string){
   this.quad(kind,[[x+w/2,y-h/2,z],[x+w/2,y+h/2,z],[x-w/2,y+h/2,z],[x-w/2,y-h/2,z]],[0,0,1],color);
  }
@@ -103,11 +149,11 @@ const WALL="#383c42",FLOOR="#2d3033";
 function scene(opened:boolean){
  const g=new Room();
  // A believable, limited navigable room, roughly 10 × 11 m.
- g.box(0,-.19,-.5,10,.38,11.6,FLOOR);
- g.box(0,4.2,-.5,10,.27,11.6,"#34353b");
- g.box(0,2,-5.85,10,4.1,.35,WALL);
- g.box(-5,2,-.5,.34,4.1,11.6,"#31383d");
- g.box(5,2,-.5,.34,4.1,11.6,"#3d3d41");
+ g.box(0,-.19,-.5,10,.38,11.6,FLOOR,"concrete");
+ g.box(0,4.2,-.5,10,.27,11.6,"#34353b","concrete");
+ g.box(0,2,-5.85,10,4.1,.35,WALL,"concrete");
+ g.box(-5,2,-.5,.34,4.1,11.6,"#31383d","concrete");
+ g.box(5,2,-.5,.34,4.1,11.6,"#3d3d41","concrete");
  // The main doorway remains open behind its animated door leaf.
  // Floor tiles, grimy checkerboard, concrete cracks.
  for(let x=-4.62;x<=4.65;x+=.72)for(let z=-5.35;z<=4.85;z+=.72){
@@ -120,6 +166,17 @@ function scene(opened:boolean){
   for(let z=-5;z<4.85;z+=1.35)g.box(x,1.73,z,.06,3.46,.14,"#66686a");
  }
  for(let z=-5;z<5.1;z+=2.3)g.box(0,3.94,z,9.7,.20,.19,"#4f5154");
+ // A restrained layer of age, mortar repairs and fine surface geometry.
+ for(let i=0;i<16;i++){
+  const x=-4.45+(i%8)*1.22,y=.57+Math.floor(i/8)*2.05;
+  g.box(x,y,-5.639,.48+(i%3)*.13,.006,.007,i%4===0?"#66615e":"#30363a","concrete");
+ }
+ for(let i=0;i<12;i++){
+  const z=-5.1+(i%6)*1.76,y=.38+Math.floor(i/6)*2.7;
+  g.box(-4.813,y,z,.010,.65+(i%3)*.17,.026,i%3?"#3a3b3a":"#5a5350","concrete");
+ }
+ // The floor's worn enamel edging catches glancing light around each station.
+ for(const x of [-4.72,4.72])g.box(x,.015,-.50,.048,.020,11.08,"#64605b","metal");
  // Doorway, real swinging door and shadowy intruder.
  for(const [x,w] of [[-3.1,3.8],[3.1,3.8]])g.box(x,2,5.28,w,4.1,.35,"#30363b");
  g.box(0,3.75,5.28,2.4,.88,.35,"#33373d");
@@ -130,10 +187,30 @@ function scene(opened:boolean){
  g.box(0,3.47,6.28,1.5,.06,.13,"#b84039","emissive");
  for(const x of [-1.2,1.2])g.box(x,1.63,5.02,.12,3.35,.18,"#a88e79");
  g.box(0,3.30,5.02,2.5,.12,.2,"#a88e79");
- g.box(0,1.66,5.04,2.23,3.22,.18,"#43484b","door");
- for(let y=.38;y<2.95;y+=.57)g.box(0,y,4.92,1.94,.032,.067,"#7a7770","door");
- g.box(-.72,1.41,4.87,.17,.12,.16,"#dab880","door");
- g.box(-.64,1.41,4.78,.32,.055,.12,"#a99c85","door");
+ // Swinging timber leaf with physically recessed panels and hinges.
+ g.bevelBox(0,1.66,5.04,2.23,3.22,.15,.032,"#424243","door");
+ for(const x of [-.99,.99])g.bevelBox(x,1.68,4.942,.062,2.91,.072,.013,"#62534c","door");
+ for(const y of [.27,1.65,3.06])g.bevelBox(0,y,4.945,1.98,.065,.073,.014,"#62534c","door");
+ for(const y of [.94,2.40]){
+  g.bevelBox(0,y,4.937,1.75,1.04,.042,.023,"#262d30","door");
+  g.bevelBox(0,y,4.910,1.57,.85,.027,.017,"#525451","door");
+  g.box(0,y+.36,4.892,1.41,.018,.015,"#777069","door");
+  g.box(-.73,y,4.893,.018,.70,.016,"#6b6058","door");
+ }
+ for(const y of [.44,1.66,2.90]){
+  g.reelY(1.064,y,5.015,.071,.030,.041,"#706a61","door-metal",12);
+  g.box(1.05,y,4.932,.030,.14,.035,"#9d8971","door-metal");
+ }
+ g.bevelBox(-.73,1.42,4.899,.19,.30,.061,.020,"#343537","door-metal");
+ g.ellipsoid(-.73,1.42,4.833,.066,.068,.059,"#b99c73","door-metal",10,14);
+ g.tube([-.73,1.42,4.84],[-.50,1.40,4.79],.028,"#c7ae80","door-metal");
+ g.ellipsoid(-.48,1.4,4.79,.044,.025,.028,"#bd9e75","door-metal",8,12);
+ g.box(-.73,1.287,4.847,.026,.071,.022,"#998366","door-metal");
+ g.ellipsoid(.07,2.88,4.889,.046,.044,.021,"#b2a080","door-metal",8,12);
+ for(let i=0;i<8;i++){
+  const x=-.83+(i%4)*.49,y=.35+Math.floor(i/4)*2.68;
+  g.box(x,y,4.874,.16,.009,.014,i%2?"#7d7165":"#24282a","door");
+ }
  // The corridor stays EMPTY until the 60-second threat sequence.
  // A held knife appears only after its shadow has crossed the back wall.
  // Tall hooded intruder: sculpted shoulders, face recess, clothing folds
@@ -191,57 +268,95 @@ function scene(opened:boolean){
  // Isolated left/right investigation stations, away from combination lock.
  // The 1m central walkway is deliberately left clear.
  for(const {x,z} of [ROOM_LAYOUT.recorder,ROOM_LAYOUT.surveillance]){
-  g.box(x,.826,z,1.52,.17,1.29,"#454c51");
-  g.box(x,.933,z,1.56,.046,1.32,"#8b6b4c");
+  g.bevelBox(x,.828,z,1.52,.15,1.29,.025,"#454c51","metal");
+  g.bevelBox(x,.932,z,1.56,.060,1.32,.023,"#79644f","wood");
+  g.box(x,.971,z,1.39,.006,1.13,"#8c765f","wood");
   for(const dx of [-.62,.62])for(const dz of [-.48,.48]){
-   g.box(x+dx,.421,z+dz,.12,.84,.12,"#52585a");
-   g.box(x+dx,.04,z+dz,.17,.075,.17,"#2b3132");
+   g.bevelBox(x+dx,.420,z+dz,.105,.78,.105,.015,"#4c5457","metal");
+   g.bevelBox(x+dx,.065,z+dz,.178,.11,.173,.015,"#222a2e","metal");
+   g.reelY(x+dx,.982,z+dz,.028,.008,.012,"#b3a083","metal",10);
   }
-  g.box(x,.035,z,1.66,.018,1.43,"#151819");
-  g.box(x,.49,z-.57,1.28,.07,.055,"#535554");
+  for(const dz of [-.44,.43])g.box(x,.58,z+dz,1.26,.054,.064,"#444c4e","metal");
+  g.box(x,.025,z,1.64,.012,1.42,"#161a1b");
+  g.box(x,.50,z-.58,1.26,.068,.056,"#596164","metal");
+  for(let i=0;i<9;i++)g.box(x-.66+i*.16,.901,z+.648,.034,.011,.015,i%2?"#9d886d":"#5a4e43","wood");
  }
- // Heavy six-wheel combination-lock cabinet: readable goal from spawn.
- g.box(0,.83,-2.65,3.24,.22,1.76,"#3e4449");
- g.box(0,.957,-2.65,3.30,.061,1.82,"#a17c57");
+ // Heavy six-wheel combination lock on a real drawer cabinet.
+ g.bevelBox(0,.83,-2.65,3.24,.22,1.76,.034,"#414449","metal");
+ g.bevelBox(0,.957,-2.65,3.30,.061,1.82,.022,"#887158","wood");
  for(const x of [-1.43,1.43])for(const z of [-3.31,-2.04]){
-  g.box(x,.40,z,.16,.79,.16,"#65676a");
-  g.box(x,.038,z,.20,.074,.20,"#33373b");
+  g.bevelBox(x,.40,z,.16,.79,.16,.018,"#555d60","metal");
+  g.bevelBox(x,.038,z,.20,.074,.20,.016,"#303538","metal");
  }
  g.box(0,.02,-2.62,3.2,.02,1.82,"#16191b");
- g.box(0,.53,-2.61,2.88,.49,1.36,"#30373e");
- g.box(0,.67,-1.75,2.55,.42,.13,"#8a6d52");
- g.box(0,.79,-1.66,2.34,.30,.07,"#202b33");
- g.box(0,.79,-1.612,2.27,.25,.029,"#a69b86");
- g.box(0,1.012,-1.97,1.26,.080,.063,"#d4b787");
- for(const x of [-1.22,1.22])for(const y of [.56,.83])g.tube([x,y,-1.58],[x,y,-1.53],.051,"#dabd8e");
+ g.bevelBox(0,.53,-2.61,2.88,.49,1.36,.025,"#30373e","metal");
+ // Real inset drawer-front with oak trim, layered depth and brass pull handles.
+ g.bevelBox(0,.67,-1.75,2.55,.42,.13,.031,"#755d4b","wood");
+ g.bevelBox(0,.79,-1.66,2.34,.30,.070,.014,"#202b33","metal");
+ g.box(0,.79,-1.612,2.27,.25,.029,"#938978","metal");
+ g.bevelBox(0,1.012,-1.97,1.26,.080,.063,.016,"#b9a47e","wood");
+ for(const x of [-1.22,1.22])for(const y of [.56,.83]){
+  g.reelZ(x,y,-1.55,.061,.021,.026,"#a28f72","metal",12);
+  g.tube([x,y,-1.54],[x,y,-1.485],.020,"#d4b486","metal");
+ }
  if(opened){
-  g.box(0,.66,-1.22,1.58,.066,1.12,"#bba078","drawer");
-  for(const x of [-.76,.76])g.box(x,.73,-1.22,.075,.19,1.09,"#846850","drawer");
-  g.box(0,.73,-.67,1.65,.20,.10,"#866448","drawer");
+  // Open drawer body has walls, genuine inner cavity and wooden underside.
+  g.bevelBox(0,.66,-1.22,1.58,.066,1.12,.014,"#a38d70","drawer");
+  for(const x of [-.76,.76])g.bevelBox(x,.73,-1.22,.075,.19,1.09,.008,"#786148","drawer");
+  g.bevelBox(0,.73,-.67,1.65,.20,.10,.012,"#866448","drawer");
+  g.box(0,.69,-1.20,1.38,.009,.88,"#514132","drawer");
+  for(const x of [-.55,.55])g.tube([x,.74,-.66],[x,.74,-.58],.039,"#c0ab84","metal");
   g.box(0,.706,-1.48,.43,.021,.27,"#e5d4b1","envelope");
   g.box(0,.72,-1.445,.10,.022,.10,"#983f32","envelope");
+  g.box(0,.720,-1.445,.34,.014,.010,"#d4ba91","envelope");
  }else{
-  g.box(0,.75,-1.55,.34,.22,.12,"#b5a885");
-  g.box(0,.75,-1.49,.14,.12,.05,"#222a30");
+  // Bronze lock casing, faceplate and six individual metal number wheels.
+  g.bevelBox(0,.75,-1.55,.42,.23,.135,.018,"#857b6e","metal");
+  g.bevelBox(0,.75,-1.475,.25,.125,.036,.012,"#1e282c","metal");
   for(let i=0;i<6;i++){
    const x=-.82+i*.326;
-   g.box(x,.79,-1.56,.282,.246,.068,"#354047");
-   g.tube([x,.79,-1.529],[x,.79,-1.44],.11,"#c4b7a0");
-   g.box(x,.79,-1.422,.11,.09,.026,"#39474c");
-   g.box(x,.876,-1.410,.065,.027,.023,"#f2d8ab");
+   g.bevelBox(x,.79,-1.56,.280,.248,.072,.018,"#30383a","metal");
+   g.reelZ(x,.79,-1.499,.124,.072,.055,"#aa9c82","metal",18);
+   g.reelZ(x,.79,-1.462,.073,.029,.023,"#3d4548","metal",14);
+   // Three etched numeral notches remain readable without text textures.
+   for(let j=0;j<3;j++){
+    const t=(j-1)*.43;
+    g.box(x+Math.sin(t)*.059,.788+Math.cos(t)*.056,-1.432,.015,.020,.014,"#dfcba0","metal");
+   }
+   g.box(x,.906,-1.464,.044,.017,.022,"#d7be90","metal");
   }
+  for(const x of [-1.035,1.035])g.reelZ(x,.79,-1.473,.044,.009,.018,"#baa782","metal",12);
  }
- // Tape recorder is now in its own front-left zone, not pressed against
- // the central lock or the rusted locker. All reels are on the relocated desk.
+ // An actual analogue cassette recorder: beveled enclosure, twin tape
+ // reels, spindle holes, etched ruler, button bank, speaker grille and LED.
  const rx=ROOM_LAYOUT.recorder.x,rz=ROOM_LAYOUT.recorder.z;
- g.box(rx-.01,1.067,rz+.08,1.08,.22,.62,"#333f43");
- g.box(rx-.01,1.195,rz+.20,.89,.023,.40,"#c8b898");
- g.box(rx-.01,1.222,rz+.20,.70,.025,.27,"#30383b");
+ g.bevelBox(rx-.01,1.068,rz+.08,1.08,.226,.62,.038,"#2a3439","recorder");
+ g.bevelBox(rx-.01,1.188,rz+.20,.89,.034,.40,.012,"#b1a38d","metal");
+ g.bevelBox(rx-.01,1.216,rz+.20,.70,.027,.27,.011,"#252c30","recorder");
+ g.box(rx-.01,1.231,rz+.20,.53,.010,.215,"#151d22","recorder");
  for(const x of [rx-.21,rx+.19]){
-  g.tube([x,1.249,rz+.19],[x,1.265,rz+.19],.095,"#d9cbb0");
-  g.tube([x,1.270,rz+.19],[x,1.280,rz+.19],.04,"#393d40");
+  g.reelY(x,1.253,rz+.19,.111,.052,.030,"#b9b09b","metal",20);
+  g.reelY(x,1.273,rz+.19,.056,.029,.018,"#51585b","metal",16);
+  for(let k=0;k<5;k++){
+   const t=k/5*Math.PI*2;
+   g.box(x+.069*Math.cos(t),1.278,rz+.19+.069*Math.sin(t),.016,.012,.020,"#2c3336","metal");
+  }
+  g.tube([x,1.260,rz+.19],[x,1.300,rz+.19],.014,"#c3b8a3","metal");
  }
- g.box(rx-.35,1.092,rz+.43,.090,.081,.07,"#bd544a","emissive");
+ // Black magnetic tape passes over the heads between the reels.
+ g.box(rx-.01,1.253,rz+.20,.27,.012,.022,"#15191c","recorder");
+ for(let i=0;i<15;i++)g.box(rx-.46+i*.065,1.088,rz+.395,.025,.050,.015,"#798185","metal");
+ g.bevelBox(rx-.01,1.046,rz+.398,.45,.050,.032,.006,"#1b262b","recorder");
+ for(let i=0;i<7;i++)g.box(rx-.18+i*.060,1.047,rz+.420,.014,.011,.010,"#95a69f","metal");
+ for(let i=0;i<5;i++){
+  const x=rx-.39+i*.175;
+  g.bevelBox(x,.991,rz+.340,.100,.029,.110,.008,i===0?"#9b4b41":"#92968d","metal");
+  g.box(x,.975,rz+.402,.063,.009,.009,"#202528","metal");
+ }
+ for(const x of [rx-.49,rx+.47]){
+  g.reelZ(x,1.12,rz+.401,.027,.008,.018,"#9e988b","metal",12);
+ }
+ g.box(rx-.35,1.091,rz+.432,.071,.058,.030,"#b94a40","emissive");
  // Surveillance monitor occupies right-side workspace; its screen is readable.
  g.box(3.68,1.42,-3.54,1.07,.87,.18,"#1c2429");
  g.box(3.68,1.43,-3.433,.88,.65,.030,"#46616c","memo");
@@ -393,7 +508,7 @@ const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;attribute vec2 uv;
 uniform mediump vec3 eye;
 uniform vec3 right,up,forward;
 uniform mat4 rigMatrix;
-uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
+uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim,drawerProgress,drawerGroup;
 uniform vec2 doorPivot;
 uniform float doorGroup,figureGroup,legGroup,glbGroup;
 uniform vec2 clockPivot;
@@ -405,6 +520,10 @@ void main(){
  if(doorGroup>.5){
   float da=sin(doorAngle),dc=cos(doorAngle);
   w.xz=doorPivot+vec2((p.x-doorPivot.x)*dc+(p.z-doorPivot.y)*da,-(p.x-doorPivot.x)*da+(p.z-doorPivot.y)*dc);
+ }
+ if(drawerGroup>.5){
+  // The actual drawer travels along its own rails, bringing the envelope.
+  w.z-=.52*(1.0-drawerProgress);
  }
  if(figureGroup>.5){
    float walking=smoothstep(.15,.95,figureStep);
@@ -430,11 +549,17 @@ void main(){
  vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
- vPos=w;vNorm=normalize(mat3(rigMatrix)*n);vColor=c;vUV=uv;vDistance=z;
+ vPos=w;
+ vec3 normal=mat3(rigMatrix)*n;
+ if(doorGroup>.5){
+  float sn=sin(doorAngle),cs=cos(doorAngle);
+  normal.xz=vec2(normal.x*cs+normal.z*sn,-normal.x*sn+normal.z*cs);
+ }
+ vNorm=normalize(normal);vColor=c;vUV=uv;vDistance=z;
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal;
+uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal,surfaceKind;
 uniform sampler2D albedo;
 uniform mediump vec3 eye;
 void main(){
@@ -447,6 +572,19 @@ void main(){
  float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-emergency)*.18);
  vec3 textureColor=mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
  vec3 baseColor=vColor*textureColor;
+ if(surfaceKind>.5&&enemyCloth<.5){
+  // Material microstructure is computed on existing real 3D coordinates:
+  // timber fibers, brushed metal and aged concrete, not flat photo overlays.
+  float veins=sin(vPos.x*66.0+vPos.z*12.0+sin(vPos.y*8.0)*2.8);
+  float wood=.92+.065*veins+.023*sin(vPos.x*139.0);
+  float brush=.95+.032*sin(vPos.y*190.0+vPos.z*22.0);
+  float noise=fract(sin(dot(floor(vPos.xz*49.0+vPos.yy*31.0),vec2(12.9898,78.233)))*43758.5453);
+  float wear=.93+.12*noise;
+  if(surfaceKind<1.5)baseColor*=wood*wear;
+  else if(surfaceKind<2.5)baseColor*=brush*(.97+.07*noise);
+  else if(surfaceKind<3.5)baseColor*=.90+.14*noise;
+  else baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
+ }
  if(enemyCloth>.5){
   // Dark weathered fabric using the real human's original texture details.
   float luminance=dot(textureColor,vec3(.26,.59,.15));
@@ -468,6 +606,12 @@ void main(){
   baseColor=mix(baseColor,leatherBoot,shoes*.92);
  }
  vec3 outColor=baseColor*lamp+baseColor*vec3(.19,.06,.05)*redGlow;
+ if(surfaceKind>1.5&&surfaceKind<2.5){
+  vec3 view=normalize(eye-vPos),light=normalize(vec3(.23,.82,-.38));
+  vec3 reflection=reflect(-light,N);
+  float metalHighlight=pow(max(0.0,dot(view,reflection)),24.0);
+  outColor+=vec3(.28,.25,.19)*metalHighlight*.48;
+ }
  outColor+=baseColor*vec3(.02,.04,.055)*max(0.0,dot(N,vec3(1.,.2,0.)));
  float fog=clamp((vDistance-5.8)/15.0,0.0,.69);
  outColor=mix(outColor,vec3(.028,.037,.050),fog);
@@ -530,7 +674,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
+ const udrawer=uniform("drawerProgress"),udrawergroup=uniform("drawerGroup"),usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
@@ -561,6 +705,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  });
  const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
  let active=true,raf=0,lastHud=0,lastDraw=0,clockStarted=flags.clockActivated?performance.now()-3100:0,intruderStarted=flags.intruder?performance.now()-1500:0;
+ let drawerOpenedAt=flags.unlocked?performance.now()-1100:0;
  function basis(){
   const cp=Math.cos(pose.pitch);
   const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
@@ -651,7 +796,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.useProgram(program);
   gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
   gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
-  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);
+  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);gl.uniform1f(usurface,0);
   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
@@ -659,6 +804,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const progress=intruderStarted?Math.min(1,(now-intruderStarted)/4000):0;
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
+  const drawerT=current.unlocked?Math.min(1,Math.max(0,(now-drawerOpenedAt)/900)):0;
+  const drawerEase=drawerT*drawerT*(3-2*drawerT);
+  gl.uniform1f(udrawer,drawerEase);
+  canvas.dataset.drawerMotion=current.unlocked?(drawerT>=1?"open":"sliding"):"locked";
   // Cross the threshold progressively and stop safely in front of the player.
   const walk=Math.max(0,elapsed-9);
   // A pursuer pauses to listen and watch; no endless mechanical march.
@@ -676,6 +825,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   canvas.dataset.intruderAppearance=rig?.skinned?"worn-coat-porcelain-mask":"fallback";
   canvas.dataset.intruderMood=paused?"watching":elapsed>11?"stalking":"waiting";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
+  canvas.dataset.roomProps="beveled-webgl-v2";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
@@ -689,11 +839,14 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
-   gl.uniform1f(udg,m.id==="door"?1:0);
+   gl.uniform1f(udg,m.id==="door"||m.id==="door-metal"?1:0);
+   gl.uniform1f(udrawergroup,m.id==="drawer"||m.id==="envelope"?1:0);
    gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
    gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(umask,0);
+   gl.uniform1f(usurface,m.id==="door"||m.id==="wood"||m.id==="drawer"?1:
+    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
@@ -705,6 +858,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   // This shares the room's depth-buffer and camera: no second renderer.
   if(rig&&intruderStarted&&elapsed>=9){
    rig.animate(elapsed,elapsed>11&&!paused&&approach<2.82);
+   gl.uniform1f(usurface,0);gl.uniform1f(udrawergroup,0);
    gl.uniform1f(ucloth,rig.skinned?1:0);
    gl.uniform1f(ureveal,Math.min(1,Math.max(0,(elapsed-9)/3.2)));
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
@@ -757,7 +911,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
     pose.yaw=Math.atan2(-dx,-dz);pose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
   },
   aim,nearby,getPose:()=>({...pose}),
-  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
+  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked){if(next.unlocked)drawerOpenedAt=performance.now();rebuild(next.unlocked)}current={...next}},
   dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);rig?.dispose();gl.deleteTexture(blank);gl.deleteProgram(program);gl.flush()},
  };
 }
