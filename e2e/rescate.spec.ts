@@ -66,7 +66,7 @@ test("CASO M · usa un intruso GLB optimizado y animado en lugar del muñeco pri
  expect(bytes.toString("ascii",0,4)).toBe("glTF");
  await start(page);
  await expect(page.getByTestId("rescate-webgl")).toHaveAttribute("data-intruder-model","glb",{timeout:12000});
- await expect(page.getByTestId("rescate-webgl")).toHaveAttribute("data-intruder-finish","cinematic-mask-v2",{timeout:12000});
+ await expect(page.getByTestId("rescate-webgl")).toHaveAttribute("data-intruder-finish","mask-attached-to-rig",{timeout:12000});
 });
 
 test("CASO M · introducción cinematográfica y expediente plegable",async({page})=>{
