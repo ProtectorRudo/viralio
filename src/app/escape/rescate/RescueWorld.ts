@@ -93,6 +93,20 @@ class Room {
    if(inner>.001)this.quad(kind,[p(inner,b,back),p(inner,b,front),p(inner,a,front),p(inner,a,back)],[-n[0],-n[1],0],color);
   }
  }
+ // Rotated hardback volumes are actual 3D prisms, not a repetitive row
+ // of identical axis-aligned boxes. Rotation around local Z for leaning books.
+ tiltedBox(x:number,y:number,z:number,w:number,h:number,d:number,angle:number,color:string,kind="book"){
+  const co=Math.cos(angle),si=Math.sin(angle),rx=(u:number,v:number):V=>[x+u*co-v*si,y+u*si+v*co,z];
+  const pt=(u:number,v:number,zoff:number):V=>{const p=rx(u,v);return [p[0],p[1],z+zoff]};
+  const norm=(u:number,v:number,w:number):V=>[u*co-v*si,u*si+v*co,w];
+  const l=-w/2,r=w/2,b=-h/2,t=h/2,f=-d/2,a=d/2;
+  this.quad(kind,[pt(r,b,a),pt(r,t,a),pt(l,t,a),pt(l,b,a)],[0,0,1],color);
+  this.quad(kind,[pt(l,b,f),pt(l,t,f),pt(r,t,f),pt(r,b,f)],[0,0,-1],color);
+  this.quad(kind,[pt(l,t,a),pt(r,t,a),pt(r,t,f),pt(l,t,f)],norm(0,1,0),color);
+  this.quad(kind,[pt(l,b,f),pt(r,b,f),pt(r,b,a),pt(l,b,a)],norm(0,-1,0),color);
+  this.quad(kind,[pt(r,b,f),pt(r,t,f),pt(r,t,a),pt(r,b,a)],norm(1,0,0),color);
+  this.quad(kind,[pt(l,b,a),pt(l,t,a),pt(l,t,f),pt(l,b,f)],norm(-1,0,0),color);
+ }
  panel(x:number,y:number,z:number,w:number,h:number,color:string,kind:string){
   this.quad(kind,[[x+w/2,y-h/2,z],[x+w/2,y+h/2,z],[x-w/2,y+h/2,z],[x-w/2,y-h/2,z]],[0,0,1],color);
  }
@@ -372,11 +386,33 @@ function scene(opened:boolean){
  g.tube([3.92,1.04,-2.85],[4.07,.95,-2.87],.025,"#b1a28e");
  // The right-side lane must remain completely open to the security monitor
  // and wall clock. Removed the decorative chair that blocked navigation.
- // Shelved files occupy the far-left utility alcove, away from the lock.
- for(const y of [.58,1.23,1.90])g.box(-4.48,y,3.27,.58,.072,1.55,"#63584c");
- for(let i=0;i<12;i++){const z=2.60+i*.125;
-  g.box(-4.42,1.57,z,.12,.48,.085,i%3?"#766a58":"#3d5556");
+ // Full-height utilitarian shelf: brackets, warped wooden shelves,
+ // staggered books, printed labels, file boxes, folders and fallen paper.
+ for(const x of [-4.67,-4.23])g.bevelBox(x,1.48,3.25,.068,2.65,1.62,.014,"#51534f","metal");
+ for(const y of [.53,1.18,1.83,2.48]){
+  g.bevelBox(-4.48,y,3.27,.63,.072,1.60,.016,"#74604a","wood");
+  for(const z of [2.55,4.01]){
+   g.bevelBox(-4.47,y-.12,z,.46,.044,.037,.010,"#6f736e","metal");
+   g.tube([-4.59,y-.11,z],[-4.67,y-.33,z],.023,"#8f8779","metal");
+  }
  }
+ const spinePalette=["#414e4c","#776a58","#5b514a","#354c54","#7a554c","#6d6957","#3b454d","#977d60","#59443e"];
+ for(let shelf=0;shelf<3;shelf++){
+  const z0=2.62,baseY=.57+shelf*.65;
+  for(let i=0;i<12;i++){
+   const z=z0+i*.114+(i%3)*.004;
+   const h=.29+(i*7+shelf*5)%5*.049,w=.11+(i%4)*.009;
+   const angle=(i===3||i===10)?.14:(i===7?-.11:0);
+   const cy=baseY+h/2-.018;
+   g.tiltedBox(-4.41,cy,z,w,h,.080,angle,spinePalette[(i+shelf*3)%spinePalette.length],"book");
+   g.box(-4.338,cy+.028,z,.007,.065,.047,"#ad9b78","book");
+   for(let mark=0;mark<2;mark++)g.box(-4.331,cy-.083+mark*.033,z,.007,.007,.056,"#c2b394","book");
+  }
+  // A leaning dossier and a cardboard case disrupt the repetitive rhythm.
+  g.bevelBox(-4.45,baseY+.075,3.89,.31,.16,.11,.011,"#7d6b56","wood");
+  g.box(-4.283,baseY+.09,3.89,.009,.065,.078,"#d1bc8f","paper");
+ }
+ for(let i=0;i<4;i++)g.box(-4.39,2.57+i*.018,2.73+i*.036,.24,.009,.18,i%2?"#b5a184":"#dad0b2","paper");
  // A low evidence trunk fills the LEFT side-wall midpoint, leaving
  // an obvious walkable gap between the tape desk and the rear locker.
  const trunk=ROOM_LAYOUT.trunk;
