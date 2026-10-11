@@ -127,6 +127,36 @@ test("CASO M · toque directo sobre el cajón abre el candado",async({page},test
 });
 
 
+test("CASO M · una sola prórroga de 60 segundos y después sólo REINICIAR",async({page})=>{
+ test.setTimeout(300000);
+ await page.clock.install();
+ await start(page);
+ const startTime=await page.evaluate(()=>Date.now());
+ await page.clock.pauseAt(new Date(startTime+1000));
+ // Simulate the ordinary 3-minute countdown without waiting three real minutes.
+ for(let second=0;second<180;second++)await page.clock.fastForward(1000);
+ const timeout=page.getByTestId("rescate-timeout");
+ await expect(timeout).toBeVisible();
+ await expect(timeout).toHaveAttribute("data-extra-used","no");
+ await expect(page.getByTestId("rescate-extra-minute")).toHaveCount(1);
+ await expect(page.getByTestId("rescate-restart")).toHaveCount(0);
+ await page.getByTestId("rescate-extra-minute").click();
+ await expect(timeout).toHaveCount(0);
+ await expect(page.getByTestId("rescate-timer")).toContainText("01:00");
+ // The new allowance uses an absolute deadline, never a second extension.
+ await page.clock.fastForward(59000);
+ await expect(page.getByTestId("rescate-timer")).toContainText("00:01");
+ await page.clock.fastForward(1000);
+ await expect(timeout).toBeVisible();
+ await expect(timeout).toHaveAttribute("data-extra-used","yes");
+ await expect(page.getByTestId("rescate-extra-minute")).toHaveCount(0);
+ await expect(page.getByTestId("rescate-restart")).toHaveCount(1);
+ await expect(timeout).toContainText("no hay más prórrogas");
+ await page.getByTestId("rescate-restart").click();
+ await expect(page.getByRole("heading",{name:/SECUESTRARON/})).toBeVisible();
+ await expect(page.getByTestId("rescate-timeout")).toHaveCount(0);
+});
+
 test("CASO M · al minuto final aparece la advertencia y luego el intruso",async({page},testInfo)=>{
  // Software WebGL at 1280px can make the 27 virtual clock ticks slow.
  // Keep all 27 simulated ticks and game assertions instead of skipping any.
