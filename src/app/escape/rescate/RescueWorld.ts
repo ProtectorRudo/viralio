@@ -400,7 +400,7 @@ varying vec3 vPos,vNorm,vColor;varying float vDistance;
 void main(){
  vec3 w=(rigMatrix*vec4(p,1.0)).xyz;
  float ss=sin(clockAngle),cc=cos(clockAngle);
- w.xy=clockPivot+vec2((p.x-clockPivot.x)*cc+(p.y-clockPivot.y)*ss,-(p.x-clockPivot.x)*ss+(p.y-clockPivot.y)*cc);
+ w.xy=clockPivot+vec2((w.x-clockPivot.x)*cc+(w.y-clockPivot.y)*ss,-(w.x-clockPivot.x)*ss+(w.y-clockPivot.y)*cc);
  if(doorGroup>.5){
   float da=sin(doorAngle),dc=cos(doorAngle);
   w.xz=doorPivot+vec2((p.x-doorPivot.x)*dc+(p.z-doorPivot.y)*da,-(p.x-doorPivot.x)*da+(p.z-doorPivot.y)*dc);
