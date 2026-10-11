@@ -1,7 +1,7 @@
 /** Skinned CC0 human GLB model (MakeHuman / Innerscene). WebGL1 CPU skinning
  * shares the room renderer, camera, depth buffer and animation clock. */
 type M=Float32Array;
-type Node={name?:string;mesh?:number;children?:number[];matrix?:number[];translation?:number[];rotation?:number[];scale?:number[]};
+type Node={name?:string;mesh?:number;skin?:number;children?:number[];matrix?:number[];translation?:number[];rotation?:number[];scale?:number[]};
 type GLTF={nodes:Node[];meshes:{primitives:{attributes:{POSITION:number;NORMAL?:number;TEXCOORD_0?:number;JOINTS_0?:number;WEIGHTS_0?:number};indices?:number;material?:number;mode?:number}[]}[];materials?:{pbrMetallicRoughness?:{baseColorFactor?:number[];baseColorTexture?:{index:number}}}[];textures?:{source?:number;extensions?:{EXT_texture_webp?:{source:number}}}[];images?:{bufferView?:number;mimeType?:string}[];accessors:{bufferView?:number;byteOffset?:number;count:number;componentType:number;type:string;normalized?:boolean}[];bufferViews:{buffer:number;byteOffset?:number;byteStride?:number;byteLength:number}[];animations?:{name?:string;samplers:{input:number;output:number;interpolation?:string}[];channels:{sampler:number;target:{node?:number;path:string}}[]}[];skins?:{joints:number[];inverseBindMatrices?:number;skeleton?:number}[]};
 const eye=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 const mul=(a:M,b:M)=>{const r=new Float32Array(16);
