@@ -508,7 +508,7 @@ const VS=`attribute vec3 p;attribute vec3 n;attribute vec3 c;attribute vec2 uv;
 uniform mediump vec3 eye;
 uniform vec3 right,up,forward;
 uniform mat4 rigMatrix;
-uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim;
+uniform float ratio,clockAngle,doorAngle,figureStep,figureMarch,figureAim,drawerProgress,drawerGroup;
 uniform vec2 doorPivot;
 uniform float doorGroup,figureGroup,legGroup,glbGroup;
 uniform vec2 clockPivot;
@@ -520,6 +520,10 @@ void main(){
  if(doorGroup>.5){
   float da=sin(doorAngle),dc=cos(doorAngle);
   w.xz=doorPivot+vec2((p.x-doorPivot.x)*dc+(p.z-doorPivot.y)*da,-(p.x-doorPivot.x)*da+(p.z-doorPivot.y)*dc);
+ }
+ if(drawerGroup>.5){
+  // The actual drawer travels along its own rails, bringing the envelope.
+  w.z-=.52*(1.0-drawerProgress);
  }
  if(figureGroup>.5){
    float walking=smoothstep(.15,.95,figureStep);
@@ -545,7 +549,13 @@ void main(){
  vec3 d=w-eye;
  float x=dot(d,right),y=dot(d,up),z=dot(d,forward);
  gl_Position=vec4(x*1.46/ratio,y*1.46,z*1.002-.1201,z);
- vPos=w;vNorm=normalize(mat3(rigMatrix)*n);vColor=c;vUV=uv;vDistance=z;
+ vPos=w;
+ vec3 normal=mat3(rigMatrix)*n;
+ if(doorGroup>.5){
+  float sn=sin(doorAngle),cs=cos(doorAngle);
+  normal.xz=vec2(normal.x*cs+normal.z*sn,-normal.x*sn+normal.z*cs);
+ }
+ vNorm=normalize(normal);vColor=c;vUV=uv;vDistance=z;
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
@@ -664,7 +674,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
+ const udrawer=uniform("drawerProgress"),udrawergroup=uniform("drawerGroup"),usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
@@ -695,6 +705,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  });
  const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
  let active=true,raf=0,lastHud=0,lastDraw=0,clockStarted=flags.clockActivated?performance.now()-3100:0,intruderStarted=flags.intruder?performance.now()-1500:0;
+ let drawerOpenedAt=flags.unlocked?performance.now()-1100:0;
  function basis(){
   const cp=Math.cos(pose.pitch);
   const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
@@ -793,6 +804,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const progress=intruderStarted?Math.min(1,(now-intruderStarted)/4000):0;
   const smooth=progress*progress*(3-2*progress);
   gl.uniform2f(udp,1.07,5.04);gl.uniform1f(ud,-1.15*smooth);
+  const drawerT=current.unlocked?Math.min(1,Math.max(0,(now-drawerOpenedAt)/900)):0;
+  const drawerEase=drawerT*drawerT*(3-2*drawerT);
+  gl.uniform1f(udrawer,drawerEase);
+  canvas.dataset.drawerMotion=current.unlocked?(drawerT>=1?"open":"sliding"):"locked";
   // Cross the threshold progressively and stop safely in front of the player.
   const walk=Math.max(0,elapsed-9);
   // A pursuer pauses to listen and watch; no endless mechanical march.
@@ -825,6 +840,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"||m.id==="door-metal"?1:0);
+   gl.uniform1f(udrawergroup,m.id==="drawer"||m.id==="envelope"?1:0);
    gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
    gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
@@ -842,7 +858,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   // This shares the room's depth-buffer and camera: no second renderer.
   if(rig&&intruderStarted&&elapsed>=9){
    rig.animate(elapsed,elapsed>11&&!paused&&approach<2.82);
-   gl.uniform1f(usurface,0);
+   gl.uniform1f(usurface,0);gl.uniform1f(udrawergroup,0);
    gl.uniform1f(ucloth,rig.skinned?1:0);
    gl.uniform1f(ureveal,Math.min(1,Math.max(0,(elapsed-9)/3.2)));
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
@@ -895,7 +911,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
     pose.yaw=Math.atan2(-dx,-dz);pose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
   },
   aim,nearby,getPose:()=>({...pose}),
-  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
+  setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked){if(next.unlocked)drawerOpenedAt=performance.now();rebuild(next.unlocked)}current={...next}},
   dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);rig?.dispose();gl.deleteTexture(blank);gl.deleteProgram(program);gl.flush()},
  };
 }
