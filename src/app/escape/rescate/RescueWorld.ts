@@ -164,10 +164,30 @@ function scene(opened:boolean){
  g.box(0,3.47,6.28,1.5,.06,.13,"#b84039","emissive");
  for(const x of [-1.2,1.2])g.box(x,1.63,5.02,.12,3.35,.18,"#a88e79");
  g.box(0,3.30,5.02,2.5,.12,.2,"#a88e79");
- g.box(0,1.66,5.04,2.23,3.22,.18,"#43484b","door");
- for(let y=.38;y<2.95;y+=.57)g.box(0,y,4.92,1.94,.032,.067,"#7a7770","door");
- g.box(-.72,1.41,4.87,.17,.12,.16,"#dab880","door");
- g.box(-.64,1.41,4.78,.32,.055,.12,"#a99c85","door");
+ // Swinging timber leaf with physically recessed panels and hinges.
+ g.bevelBox(0,1.66,5.04,2.23,3.22,.15,.032,"#424243","door");
+ for(const x of [-.99,.99])g.bevelBox(x,1.68,4.942,.062,2.91,.072,.013,"#62534c","door");
+ for(const y of [.27,1.65,3.06])g.bevelBox(0,y,4.945,1.98,.065,.073,.014,"#62534c","door");
+ for(const y of [.94,2.40]){
+  g.bevelBox(0,y,4.937,1.75,1.04,.042,.023,"#262d30","door");
+  g.bevelBox(0,y,4.910,1.57,.85,.027,.017,"#525451","door");
+  g.box(0,y+.36,4.892,1.41,.018,.015,"#777069","door");
+  g.box(-.73,y,4.893,.018,.70,.016,"#6b6058","door");
+ }
+ for(const y of [.44,1.66,2.90]){
+  g.reelY(1.064,y,5.015,.071,.030,.041,"#706a61","door-metal",12);
+  g.box(1.05,y,4.932,.030,.14,.035,"#9d8971","door-metal");
+ }
+ g.bevelBox(-.73,1.42,4.899,.19,.30,.061,.020,"#343537","door-metal");
+ g.ellipsoid(-.73,1.42,4.833,.066,.068,.059,"#b99c73","door-metal",10,14);
+ g.tube([-.73,1.42,4.84],[-.50,1.40,4.79],.028,"#c7ae80","door-metal");
+ g.ellipsoid(-.48,1.4,4.79,.044,.025,.028,"#bd9e75","door-metal",8,12);
+ g.box(-.73,1.287,4.847,.026,.071,.022,"#998366","door-metal");
+ g.ellipsoid(.07,2.88,4.889,.046,.044,.021,"#b2a080","door-metal",8,12);
+ for(let i=0;i<8;i++){
+  const x=-.83+(i%4)*.49,y=.35+Math.floor(i/4)*2.68;
+  g.box(x,y,4.874,.16,.009,.014,i%2?"#7d7165":"#24282a","door");
+ }
  // The corridor stays EMPTY until the 60-second threat sequence.
  // A held knife appears only after its shadow has crossed the back wall.
  // Tall hooded intruder: sculpted shoulders, face recess, clothing folds
@@ -225,14 +245,18 @@ function scene(opened:boolean){
  // Isolated left/right investigation stations, away from combination lock.
  // The 1m central walkway is deliberately left clear.
  for(const {x,z} of [ROOM_LAYOUT.recorder,ROOM_LAYOUT.surveillance]){
-  g.box(x,.826,z,1.52,.17,1.29,"#454c51");
-  g.box(x,.933,z,1.56,.046,1.32,"#8b6b4c");
+  g.bevelBox(x,.828,z,1.52,.15,1.29,.025,"#454c51","metal");
+  g.bevelBox(x,.932,z,1.56,.060,1.32,.023,"#79644f","wood");
+  g.box(x,.971,z,1.39,.006,1.13,"#8c765f","wood");
   for(const dx of [-.62,.62])for(const dz of [-.48,.48]){
-   g.box(x+dx,.421,z+dz,.12,.84,.12,"#52585a");
-   g.box(x+dx,.04,z+dz,.17,.075,.17,"#2b3132");
+   g.bevelBox(x+dx,.420,z+dz,.105,.78,.105,.015,"#4c5457","metal");
+   g.bevelBox(x+dx,.065,z+dz,.178,.11,.173,.015,"#222a2e","metal");
+   g.reelY(x+dx,.982,z+dz,.028,.008,.012,"#b3a083","metal",10);
   }
-  g.box(x,.035,z,1.66,.018,1.43,"#151819");
-  g.box(x,.49,z-.57,1.28,.07,.055,"#535554");
+  for(const dz of [-.44,.43])g.box(x,.58,z+dz,1.26,.054,.064,"#444c4e","metal");
+  g.box(x,.025,z,1.64,.012,1.42,"#161a1b");
+  g.box(x,.50,z-.58,1.26,.068,.056,"#596164","metal");
+  for(let i=0;i<9;i++)g.box(x-.66+i*.16,.901,z+.648,.034,.011,.015,i%2?"#9d886d":"#5a4e43","wood");
  }
  // Heavy six-wheel combination-lock cabinet: readable goal from spawn.
  g.box(0,.83,-2.65,3.24,.22,1.76,"#3e4449");
