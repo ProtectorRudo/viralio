@@ -726,9 +726,9 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal,surfaceKind,flashlightPower;
+uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal,surfaceKind,flashlightPower,focusActive;
 uniform sampler2D albedo;
-uniform mediump vec3 eye,torchDirection;
+uniform mediump vec3 eye,torchDirection,focusPoint;
 void main(){
  vec3 N=normalize(vNorm);
  vec3 overhead=vec3(0.0,3.05,-1.7), emergency=vec3(1.75,2.65,5.14);
@@ -855,6 +855,14 @@ void main(){
   outColor*=mix(.30,1.0,clamp(enemyReveal,0.0,1.0));
   outColor=mix(outColor,vec3(.035,.040,.053),clamp(fog*.48,0.0,.34));
  }
+ // Contextual evidence glint is rendered on the actual mesh, not a 2D label.
+ // Keep the brightening restrained and suppress it on the humanoid.
+ if(focusActive>.5&&characterRim<.5){
+  float proximity=1.0-smoothstep(.14,.91,distance(vPos,focusPoint));
+  float grazing=pow(1.0-max(0.0,dot(N,normalize(eye-vPos))),2.0);
+  outColor+=vec3(.24,.18,.10)*proximity*(.10+.30*grazing)
+            *(.87+.13*sin(time*2.3));
+ }
  outColor+=vec3(.60,.77,.86)*bladeFlash;
  gl_FragColor=vec4(pow(clamp(outColor,0.0,1.0),vec3(.88)),1.0);
 }`;
@@ -890,7 +898,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const uflash=uniform("flashlightPower"),utorch=uniform("torchDirection"),udrawer=uniform("drawerProgress"),udrawergroup=uniform("drawerGroup"),usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
+ const ufocus=uniform("focusActive"),ufocusPoint=uniform("focusPoint"),uflash=uniform("flashlightPower"),utorch=uniform("torchDirection"),udrawer=uniform("drawerProgress"),udrawergroup=uniform("drawerGroup"),usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
@@ -927,6 +935,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  // resolution changes only render pixels — never coordinates, touch targets or
  // how fast the 3-minute mission proceeds.
  let renderScale=1,slowFrames=0,fastFrames=0;
+ let focusTarget:Target|null=null;
  function basis(){
   const cp=Math.cos(pose.pitch);
   const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
@@ -1029,6 +1038,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform3fv(utorch,forward);gl.uniform1f(uflash,flashlight?1:0);
+  gl.uniform1f(ufocus,focusTarget?1:0);
+  gl.uniform3fv(ufocusPoint,focusTarget?.pos??[0,-10,0]);
   canvas.dataset.flashlight=flashlight?"on":"off";canvas.dataset.renderVersion="cinematic-materials-v2";
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
   const elapsed=current.intruder?Math.max(0,60-(current.remaining??60)):0;
@@ -1116,7 +1127,11 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.bindTexture(gl.TEXTURE_2D,blank);
    gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);
   }
-  if(onFrame&&now-lastHud>125){lastHud=now;onFrame({...pose},aim());}
+  if(now-lastHud>125){
+   lastHud=now;focusTarget=aim();
+   canvas.dataset.focusedObject=focusTarget?.id??"none";
+   onFrame?.({...pose},focusTarget);
+  }
  }
  raf=requestAnimationFrame(frame);
  return {
