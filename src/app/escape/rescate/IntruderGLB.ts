@@ -55,7 +55,7 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   const visit=(i:number):M=>{if(seen.has(i))return world[i];const p=parents[i];world[i]=p<0?locals[i]:mul(visit(p),locals[i]);seen.add(i);return world[i];};
   json.nodes.forEach((_,i)=>visit(i));};
  derive(rest);
- const parts:RigPart[]=[];let lo=[Infinity,Infinity,Infinity],hi=[-Infinity,-Infinity,-Infinity];
+ const parts:RigPart[]=[],lo=[Infinity,Infinity,Infinity],hi=[-Infinity,-Infinity,-Infinity];
  try{for(let ni=0;ni<json.nodes.length;ni++){
   const mesh=json.nodes[ni].mesh;if(mesh===undefined)continue;
   for(const p of json.meshes[mesh].primitives){
