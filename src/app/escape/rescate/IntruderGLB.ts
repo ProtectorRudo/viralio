@@ -2,7 +2,7 @@
  * No extra renderer, no additional browser downloads after initial GLB. */
 type M=Float32Array;
 type Node={mesh?:number;children?:number[];matrix?:number[];translation?:number[];rotation?:number[];scale?:number[]};
-type GLTF={nodes:Node[];meshes:{primitives:{attributes:{POSITION:number;NORMAL?:number;TEXCOORD_0?:number};indices?:number;material?:number;mode?:number}[]}[];materials?:{pbrMetallicRoughness?:{baseColorFactor?:number[];baseColorTexture?:{index:number}}}[];textures?:{source?:number;extensions?:{EXT_texture_webp?:{source:number}}}[];images?:{bufferView?:number;mimeType?:string}[];accessors:{bufferView?:number;byteOffset?:number;count:number;componentType:number;type:string;normalized?:boolean}[];bufferViews:{buffer:number;byteOffset?:number;byteStride?:number}[];animations?:{name?:string;samplers:{input:number;output:number;interpolation?:string}[];channels:{sampler:number;target:{node?:number;path:string}}[]}[];skins?:unknown[]};
+type GLTF={nodes:Node[];meshes:{primitives:{attributes:{POSITION:number;NORMAL?:number;TEXCOORD_0?:number};indices?:number;material?:number;mode?:number}[]}[];materials?:{pbrMetallicRoughness?:{baseColorFactor?:number[];baseColorTexture?:{index:number}}}[];textures?:{source?:number;extensions?:{EXT_texture_webp?:{source:number}}}[];images?:{bufferView?:number;mimeType?:string}[];accessors:{bufferView?:number;byteOffset?:number;count:number;componentType:number;type:string;normalized?:boolean}[];bufferViews:{buffer:number;byteOffset?:number;byteStride?:number;byteLength:number}[];animations?:{name?:string;samplers:{input:number;output:number;interpolation?:string}[];channels:{sampler:number;target:{node?:number;path:string}}[]}[];skins?:unknown[]};
 const eye=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 const mul=(a:M,b:M)=>{const r=new Float32Array(16);
  for(let j=0;j<4;j++)for(let i=0;i<4;i++)for(let k=0;k<4;k++)r[j*4+i]+=a[k*4+i]*b[j*4+k];return r;};
@@ -62,7 +62,7 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   if(image.bufferView===undefined||!image.mimeType||typeof createImageBitmap!=="function"){imageTextures.push(null);continue;}
   try{
    const v=json.bufferViews[image.bufferView];
-   const bytes=new Uint8Array(bin,v.byteOffset??0,json.bufferViews[image.bufferView+0]&&((json as unknown as {bufferViews:{byteLength?:number}[]}).bufferViews[image.bufferView].byteLength??0));
+   const bytes=new Uint8Array(bin,v.byteOffset??0,v.byteLength);
    if(!bytes.byteLength){imageTextures.push(null);continue;}
    const bitmap=await createImageBitmap(new Blob([new Uint8Array(bytes)],{type:image.mimeType}),{colorSpaceConversion:"none"});
    const tex=gl.createTexture();if(!tex){bitmap.close();imageTextures.push(null);continue;}
