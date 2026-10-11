@@ -857,3 +857,24 @@
  .blackout,.graffitiCinematic{animation:none}
  .graffitiCinematic{opacity:1}
 }
+
+
+/* CASO M 2.0: diegetic flashlight. The beam is lit in WebGL on real geometry;
+ * this radial film overlay only controls peripheral contrast, never pointer hits. */
+.torchAtmosphere{position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:radial-gradient(ellipse 45% 40% at 50% 49%,transparent 4%,#04080d1c 63%,#04080d75 100%);
+ mix-blend-mode:multiply;animation:torchPower .28s ease-out both}
+.torchButton{border-color:#dfc89d!important;color:#f6e6c5!important;
+ background:linear-gradient(120deg,#313b39eb,#1a2429e8)!important}
+.torchButton[aria-pressed="true"]{background:linear-gradient(120deg,#af9062e8,#4a4b42e8)!important;
+ border-color:#f2d8ad!important;color:#fff5da!important;box-shadow:0 0 22px #e7cb9659}
+.reticle[data-flashlight="yes"]{border-color:#f6e1ab;box-shadow:0 0 14px #ecdba26e,0 0 40px #d3bf8544}
+@keyframes torchPower{from{opacity:0}to{opacity:1}}
+@media(max-width:670px){
+ .topHints{gap:4px 5px;justify-content:flex-start;align-content:flex-start;top:calc(91px + env(safe-area-inset-top,0px))}
+ .topHints>span{order:4;margin-left:auto;align-self:center}
+ .topHints button{font-size:.46rem;min-height:36px;padding:7px 8px}
+ .torchButton{order:3;white-space:nowrap}
+ .toast{max-width:80vw;bottom:205px;font-size:.58rem}
+}
+@media(prefers-reduced-motion:reduce){.torchAtmosphere{animation:none}}

@@ -98,6 +98,22 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
  await page.screenshot({path:`visual-qa-evidence/rescate-mauro-3d-${testInfo.project.name}.png`,fullPage:true});
 });
 
+test("CASO M 2.0 · PBR ligero y linterna 3D controlada por cámara en Android y desktop",async({page},testInfo)=>{
+ await start(page);
+ const canvas=page.getByTestId("rescate-webgl");
+ await expect(canvas).toHaveAttribute("data-render-version","cinematic-materials-v2",{timeout:12000});
+ await expect(canvas).toHaveAttribute("data-flashlight","off");
+ const torch=page.getByTestId("rescate-flashlight-toggle");
+ await expect(torch).toBeVisible();
+ await torch.click();
+ await expect(torch).toHaveAttribute("aria-pressed","true");
+ await expect(canvas).toHaveAttribute("data-flashlight","on");
+ await page.screenshot({path:`visual-qa-evidence/rescate-2-flashlight-${testInfo.project.name}.png`,fullPage:true});
+ await torch.click();
+ await expect(torch).toHaveAttribute("aria-pressed","false");
+ await expect(canvas).toHaveAttribute("data-flashlight","off");
+});
+
 test("CASO M · toque directo sobre el cajón abre el candado",async({page},testInfo)=>{
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
