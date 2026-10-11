@@ -175,30 +175,7 @@ function scene(opened:boolean){
  g.add("knife-blade",[.833,.34,5.955],[0,0,-1],"#9eacb2");
  g.add("knife-blade",[.916,.34,5.955],[0,0,-1],"#d0dbe0");
  g.add("knife-blade",[.869,.19,5.955],[0,0,-1],"#b6c7ce");
- // Premium 3D theatrical mask: genuine mesh geometry sharing depth, camera and motion
- // with the GLB stalker. No billboard or generated still. The cracked bone mask
- // remains identifiable on small screens under emergency lighting.
- g.ellipsoid(.32,2.625,5.753,.255,.322,.116,"#151a1b","intruder-mask",14,24); // shadow under hood
- g.ellipsoid(.32,2.581,5.626,.190,.236,.069,"#aa987e","intruder-mask",18,28); // weathered ceramic
- g.ellipsoid(.32,2.566,5.576,.171,.208,.025,"#d3c3a9","intruder-mask",18,28); // raised front plate
- for(const x of [.251,.390]){
-  g.ellipsoid(x,2.649,5.548,.065,.041,.016,"#554238","intruder-mask",9,14);
-  g.ellipsoid(x,2.648,5.530,.051,.033,.015,"#0a0d0e","intruder-mask",10,18); // hollow eye
-  g.ellipsoid(x,2.652,5.515,.020,.011,.007,"#101f22","intruder-mask",7,12);
- }
- g.ellipsoid(.32,2.592,5.536,.033,.066,.027,"#a58d77","intruder-mask",10,14);
- g.ellipsoid(.32,2.495,5.545,.105,.013,.008,"#3e3030","intruder-mask",6,16);
- for(let i=0;i<5;i++)g.box(.32+(i-2)*.035,2.484,5.526,.009,.016,.008,"#a28d79","intruder-mask");
- // Irregular scratches, a blood-red slash and old metal fasteners.
- g.limb([.247,2.738,5.540],[.271,2.695,5.520],.004,.003,"#725e4f","intruder-mask");
- g.limb([.271,2.695,5.520],[.258,2.663,5.520],.003,.002,"#725e4f","intruder-mask");
- g.limb([.395,2.545,5.533],[.420,2.497,5.533],.007,.003,"#9b3832","intruder-mask");
- g.limb([.420,2.497,5.533],[.408,2.464,5.536],.003,.002,"#71312d","intruder-mask");
- for(const x of [.154,.486])for(const y of [2.548,2.704])
-  g.ellipsoid(x,y,5.588,.010,.010,.008,"#73675a","intruder-mask",5,8);
- // Chest markings and red identification tab: subtle color breaks up black tactical clothing.
- g.box(.32,1.94,5.953,.265,.075,.027,"#5b282b","intruder-mask");
- g.box(.32,1.94,5.933,.216,.012,.008,"#b88770","intruder-mask");
+ // Mask mesh is attached to the animated GLB head in IntruderGLB.ts.
  // A separate foreshadowing SHADOW on the corridor wall, shown first.
  g.box(.98,1.17,6.645,.12,.47,.018,"#251923","knife-shadow");
  g.box(.98,.86,6.645,.18,.07,.02,"#251923","knife-shadow");
@@ -667,7 +644,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,walk*4.9);
   canvas.dataset.intruderApproach=approach.toFixed(2);
-  canvas.dataset.intruderFinish=rig?"cinematic-mask-v2":"fallback";
+  canvas.dataset.intruderFinish=rig?.parts.some(p=>p.faceplate)?"mask-attached-to-rig":rig?"glb-no-faceplate":"fallback";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
@@ -676,7 +653,6 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
    if(figurePart&&rig)continue;
    if(figurePart&&(!intruderStarted||elapsed<9))continue;
-   if(m.id==="intruder-mask"&&(!rig||!intruderStarted||elapsed<9))continue;
    if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,stride*4,0);
@@ -684,10 +660,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"?1:0);
-   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"||m.id==="intruder-mask"?1:0);
+   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
-   gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"||m.id==="intruder-mask"?1:0);
-   gl.uniform1f(umask,m.id==="intruder-mask"?1:0);
+   gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(umask,0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
@@ -712,6 +688,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
     gl.vertexAttribPointer(auv,2,gl.FLOAT,false,11*4,36);
     gl.bindTexture(gl.TEXTURE_2D,part.texture??blank);
     gl.uniform1f(utex,part.texture&&part.hasUV?1:0);
+    gl.uniform1f(umask,part.faceplate?1:0);
     gl.drawArrays(gl.TRIANGLES,0,part.count);
    }
    gl.uniformMatrix4fv(uglm,false,IDENTITY);
