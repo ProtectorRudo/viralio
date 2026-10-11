@@ -597,6 +597,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   const approach=current.intruder?Math.min(2.85,safeAdvance,advance):0;
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,walk*4.9);
+  canvas.dataset.cameraX=pose.x.toFixed(3);canvas.dataset.cameraY=pose.y.toFixed(3);
+  canvas.dataset.cameraZ=pose.z.toFixed(3);canvas.dataset.cameraYaw=pose.yaw.toFixed(5);
+  canvas.dataset.cameraPitch=pose.pitch.toFixed(5);
+  canvas.dataset.missionSeconds=String(current.remaining??180);
   canvas.dataset.intruderApproach=approach.toFixed(2);
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
@@ -604,6 +608,9 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
   for(const m of mesh){
    const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
+   // Once the rigged GLB is drawn in the transparent pass, hide only the
+   // geometric fallback; keep the animated door and every puzzle object.
+   if(canvas.dataset.cinematicIntruder==="ready"&&(figurePart||m.id==="knife-shadow"))continue;
    if(figurePart&&(!intruderStarted||elapsed<9))continue;
    if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);

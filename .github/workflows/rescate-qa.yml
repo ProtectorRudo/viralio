@@ -33,7 +33,7 @@ jobs:
       - name: Install reproducible dependencies
         run: |
           npm ci
-          npm install --no-save --no-package-lock esbuild@0.25.12
+          npm install --no-save --no-package-lock esbuild@0.25.12 three@0.180.0
       - name: Install portable recorder voice renderer
         run: |
           sudo apt-get update -qq
@@ -45,6 +45,10 @@ jobs:
           node scripts/build-escape-standalone.mjs
           test -s showcase/rescate-mauro/index.html
           test -s showcase/rescate-mauro/app.js
+          test -s showcase/rescate-mauro/intruder3d.js
+          grep -Fq "intruder3d.js" showcase/rescate-mauro/index.html
+          ! grep -Fq "intruder3d.js" showcase/escape/index.html
+          test -s showcase/rescate-mauro/models/intruder.glb
           test -s showcase/rescate-mauro/app.css
           test -s showcase/rescate-mauro/audio/rescue-message.mp3
           test -s showcase/rescate-mauro/audio/suspense.wav

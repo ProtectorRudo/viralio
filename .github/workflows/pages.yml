@@ -38,7 +38,7 @@ jobs:
       - name: Install pinned app dependencies and bundler
         run: |
           npm ci
-          npm install --no-save --no-package-lock esbuild@0.25.12
+          npm install --no-save --no-package-lock esbuild@0.25.12 three@0.180.0
       - name: Prepare audio for CASO M
         run: |
           sudo apt-get update -qq
@@ -54,6 +54,8 @@ jobs:
           test -s showcase/escape/images/mansion.webp
           test -s showcase/rescate-mauro/index.html
           test -s showcase/rescate-mauro/app.js
+          test -s showcase/rescate-mauro/intruder3d.js
+          test -s showcase/rescate-mauro/models/intruder.glb
           test -s showcase/rescate-mauro/app.css
           test -s showcase/rescate-mauro/audio/rescue-message.mp3
           test -s showcase/rescate-mauro/audio/mauro-voice.webm
@@ -128,11 +130,15 @@ jobs:
           done
           test "$rescue_ok" -eq 1
           curl -fsSL --max-time 20 "$rescue/app.js" -o /tmp/rescate-mauro.js
+          curl -fsSL --max-time 25 "$rescue/intruder3d.js" -o /tmp/rescate-mauro-intruder.js
+          curl -fsSL --max-time 35 "$rescue/models/intruder.glb" -o /tmp/rescate-mauro-intruder.glb
           curl -fsSL --max-time 20 "$rescue/app.css" -o /tmp/rescate-mauro.css
           curl -fsSL --max-time 20 "$rescue/audio/rescue-message.mp3" -o /tmp/rescate-mauro-message.mp3
           curl -fsSL --max-time 20 "$rescue/audio/mauro-voice.webm" -o /tmp/rescate-mauro-original.webm
           curl -fsSL --max-time 20 "$rescue/audio/suspense.wav" -o /tmp/rescate-mauro-suspense.wav
           test "$(wc -c </tmp/rescate-mauro.js)" -gt 20000
+          test "$(wc -c </tmp/rescate-mauro-intruder.js)" -gt 100000
+          test "$(wc -c </tmp/rescate-mauro-intruder.glb)" -gt 100000
           test "$(wc -c </tmp/rescate-mauro.css)" -gt 5000
           test "$(wc -c </tmp/rescate-mauro-message.mp3)" -gt 2000
           test "$(wc -c </tmp/rescate-mauro-original.webm)" -gt 4000
