@@ -51,6 +51,7 @@ test("CASO M · muebles separados, pasillos despejados y puntos físicos coheren
  expect(clearGap(recorder,trunk)).toBeGreaterThan(1);
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
+ await expect(canvas).toHaveAttribute("data-room-props","beveled-webgl-v2");
  // The central aisle must still allow the player to advance from the doorway.
  await walkTo(page,"w","z",-1.03);
  expect(Number(await canvas.getAttribute("data-camera-x"))).toBeCloseTo(0,1);
@@ -248,6 +249,7 @@ test("CASO M · pistas físicas, combinación 131026, cajón y sobre revelan cum
  await page.getByRole("button",{name:/PROBAR COMBINACIÓN/}).click();
  await expect(lock).not.toBeVisible();
  await expect(page.getByText(/ABRISTE EL CAJÓN/)).toBeVisible();
+ await expect(page.getByTestId("rescate-webgl")).toHaveAttribute("data-drawer-motion","open",{timeout:4000});
  const beacon=page.getByTestId("rescate-envelope-beacon");
  await expect(beacon).toBeVisible();
  await expect(beacon).toHaveAttribute("data-anchor-visible","yes");
