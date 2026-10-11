@@ -113,7 +113,7 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  // bones. They follow every skeletal keyframe instead of floating in room space.
  const findBone=(rx:RegExp)=>json.nodes.findIndex(n=>rx.test((n.name??"").toLowerCase()));
  const head=findBone(/(^|[._:| ])head($|[._:| ])/),hand=findBone(/(^|[._:| ])(righthand|hand_r|hand\.r|r_hand)($|[._:| ])/);
- const addProp=(node:number,vertices:number[],faceplate=false,blade=false)=>{
+ const addProp=(node:number,vertices:number[],faceplate=false)=>{
   const buffer=gl.createBuffer();if(!buffer)return;
   const data=new Float32Array(vertices);
   gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
@@ -166,7 +166,7 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   propTri(prop,[-.055,-.58,.068],[.062,-.58,.068],[.032,-.63,.068],edge);
   propTri(prop,[-.035,.04,.075],[.035,.04,.075],[.035,-.13,.075],grip);
   propTri(prop,[-.035,.04,.075],[.035,-.13,.075],[-.035,-.13,.075],grip);
-  addProp(hand,prop,false,true);
+  addProp(hand,prop);
  }
  if(!parts.length)throw Error("GLB sin triángulos");
  const scale=Math.min(2.2,2.85/Math.max(.1,hi[1]-lo[1])),cx=(lo[0]+hi[0])/2,cz=(lo[2]+hi[2])/2;
