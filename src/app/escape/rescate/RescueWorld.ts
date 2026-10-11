@@ -610,6 +610,9 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   const {forward,right,up}=basis();
   gl.useProgram(program);
+  gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
+  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
+  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);
   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
@@ -655,17 +658,24 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   if(rig&&intruderStarted&&elapsed>=9){
    rig.animate(elapsed);
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
-   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);
+   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,1);
+   gl.enableVertexAttribArray(auv);
    gl.uniform1f(ua,0);
    for(const part of rig.parts){
     gl.uniformMatrix4fv(uglm,false,rig.matrices[part.node]);
     gl.bindBuffer(gl.ARRAY_BUFFER,part.buffer);
-    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,stride*4,0);
-    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
-    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
+    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,11*4,0);
+    gl.vertexAttribPointer(an,3,gl.FLOAT,false,11*4,12);
+    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,11*4,24);
+    gl.vertexAttribPointer(auv,2,gl.FLOAT,false,11*4,36);
+    gl.bindTexture(gl.TEXTURE_2D,part.texture??blank);
+    gl.uniform1f(utex,part.texture&&part.hasUV?1:0);
     gl.drawArrays(gl.TRIANGLES,0,part.count);
    }
    gl.uniformMatrix4fv(uglm,false,IDENTITY);
+   gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
+   gl.bindTexture(gl.TEXTURE_2D,blank);
+   gl.uniform1f(utex,0);gl.uniform1f(uglb,0);
   }
   if(onFrame&&now-lastHud>125){lastHud=now;onFrame({...pose},aim());}
  }
@@ -694,6 +704,6 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   },
   aim,nearby,getPose:()=>({...pose}),
   setFlags:(next:SceneFlags)=>{if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();if(next.intruder&&!current.intruder)intruderStarted=performance.now();if(next.unlocked!==current.unlocked)rebuild(next.unlocked);current={...next}},
-  dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);rig?.dispose();gl.deleteProgram(program);gl.flush()},
+  dispose:()=>{active=false;cancelAnimationFrame(raf);for(const m of mesh)gl.deleteBuffer(m.buffer);rig?.dispose();gl.deleteTexture(blank);gl.deleteProgram(program);gl.flush()},
  };
 }
