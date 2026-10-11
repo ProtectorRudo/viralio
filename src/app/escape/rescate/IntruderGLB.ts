@@ -174,12 +174,60 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  const anim=(json.animations??[]).map(a=>({name:(a.name??"").toLowerCase(),channels:a.channels.map(c=>{
   const s=a.samplers[c.sampler];return {node:c.target.node??-1,path:c.target.path,interpolation:s.interpolation??"LINEAR",
    times:acc(s.input).map(v=>v[0]),values:acc(s.output)};})}));
- const animate=(elapsed:number)=>{
-  const a=(elapsed>43?anim.find(c=>c.name.includes("weapon")):elapsed>17?anim.find(c=>c.name.includes("arm")):elapsed>8?anim.find(c=>c.name.includes("head")):undefined)??anim.find(c=>c.name.includes("idle"))??anim[0];
+ // Affine-safe inverse for skinning. Bone palettes are rebuilt per animation tick.
+ const inverse=(m:M):M=>{
+  const a=Array.from({length:4},(_,r)=>Array.from({length:8},(_,c)=>c<4?m[c*4+r]:Number(c-4===r)));
+  for(let p=0;p<4;p++){
+   let pivot=p;for(let r=p+1;r<4;r++)if(Math.abs(a[r][p])>Math.abs(a[pivot][p]))pivot=r;
+   if(Math.abs(a[pivot][p])<1e-10)return eye();
+   [a[p],a[pivot]]=[a[pivot],a[p]];const f=a[p][p];
+   for(let c=0;c<8;c++)a[p][c]/=f;
+   for(let r=0;r<4;r++)if(r!==p){const factor=a[r][p];for(let c=0;c<8;c++)a[r][c]-=factor*a[p][c];}
+  }
+  const out=new Float32Array(16);for(let row=0;row<4;row++)for(let col=0;col<4;col++)out[col*4+row]=a[row][col+4];
+  return out;
+ };
+ const ibms=json.skins?.map(s=>s.inverseBindMatrices===undefined?s.joints.map(()=>eye()):
+  acc(s.inverseBindMatrices).map(values=>new Float32Array(values)))??[];
+ let previousMotion=-1,holdTime=0;
+ const updateSkins=()=>{
+  for(const part of parts){
+   const cpu=part.skinCPU;if(!cpu)continue;
+   const skin=json.skins?.[cpu.skin];if(!skin)continue;
+   const inv=inverse(world[part.node]);
+   const palette=skin.joints.map((joint,i)=>mul(mul(inv,world[joint]),ibms[cpu.skin]?.[i]??eye()));
+   const src=cpu.bind,dst=cpu.output;
+   for(let i=0;i<part.count;i++){
+    const o=i*11,ix=i*4,px=src[o],py=src[o+1],pz=src[o+2],nx=src[o+3],ny=src[o+4],nz=src[o+5];
+    let sx=0,sy=0,sz=0,snx=0,sny=0,snz=0,total=0;
+    for(let j=0;j<4;j++){
+     const weight=cpu.weights[ix+j];if(weight<.0001)continue;
+     const bone=palette[cpu.joints[ix+j]];if(!bone)continue;
+     sx+=(bone[0]*px+bone[4]*py+bone[8]*pz+bone[12])*weight;
+     sy+=(bone[1]*px+bone[5]*py+bone[9]*pz+bone[13])*weight;
+     sz+=(bone[2]*px+bone[6]*py+bone[10]*pz+bone[14])*weight;
+     snx+=(bone[0]*nx+bone[4]*ny+bone[8]*nz)*weight;
+     sny+=(bone[1]*nx+bone[5]*ny+bone[9]*nz)*weight;
+     snz+=(bone[2]*nx+bone[6]*ny+bone[10]*nz)*weight;
+     total+=weight;
+    }
+    if(total<.001)continue;
+    const nlen=Math.hypot(snx,sny,snz)||1;
+    dst[o]=sx/total;dst[o+1]=sy/total;dst[o+2]=sz/total;
+    dst[o+3]=snx/nlen;dst[o+4]=sny/nlen;dst[o+5]=snz/nlen;
+   }
+   gl.bindBuffer(gl.ARRAY_BUFFER,part.buffer);
+   gl.bufferSubData(gl.ARRAY_BUFFER,0,dst);
+  }
+ };
+ const animate=(elapsed:number,moving=true)=>{
+  const a=(moving?anim.find(c=>c.name.includes("walk")):anim.find(c=>c.name.includes("idle")))??anim.find(c=>c.name.includes("walk"))??anim[0];
+  const motionId=anim.indexOf(a);
+  if(motionId!==previousMotion){holdTime=elapsed;previousMotion=motionId;}
   const transforms=base.map(b=>({t:[...b.t],q:[...b.q],s:[...b.s]}));
   if(a)for(const c of a.channels){
    if(c.node<0||!transforms[c.node]||!c.times.length)continue;
-   const duration=c.times[c.times.length-1],t=duration>0?elapsed%duration:0;let j=0;
+   const duration=c.times[c.times.length-1],t=duration>0?(moving?(elapsed-holdTime)%duration:0):0;let j=0;
    while(j<c.times.length-2&&c.times[j+1]<t)j++;
    const k=Math.min(j+1,c.times.length-1),diff=c.times[k]-c.times[j],f=c.interpolation==="STEP"||diff<=0?0:Math.max(0,Math.min(1,(t-c.times[j])/diff));
    const v=c.values[c.interpolation==="CUBICSPLINE"?j*3+1:j],w=c.values[c.interpolation==="CUBICSPLINE"?k*3+1:k];
@@ -190,7 +238,8 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   }
   derive(transforms.map((t,i)=>json.nodes[i].matrix?rest[i]:trs(t.t,t.q,t.s)));
   world.forEach((m,i)=>world[i]=mul(root,m));
+  updateSkins();
  };
  animate(0);
- return {parts,matrices:world,animate,dispose:()=>{parts.forEach(p=>gl.deleteBuffer(p.buffer));imageTextures.forEach(t=>{if(t)gl.deleteTexture(t);});}};
+ return {parts,matrices:world,animate,skinned:parts.some(p=>!!p.skinCPU),bones:json.skins?.[0]?.joints.length??0,dispose:()=>{parts.forEach(p=>gl.deleteBuffer(p.buffer));imageTextures.forEach(t=>{if(t)gl.deleteTexture(t);});}};
 }
