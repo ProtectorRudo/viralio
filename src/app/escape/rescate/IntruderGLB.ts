@@ -49,8 +49,8 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  const parents=new Array(json.nodes.length).fill(-1);
  json.nodes.forEach((n,i)=>(n.children??[]).forEach(c=>parents[c]=i));
  const base=json.nodes.map(n=>({t:n.translation??[0,0,0],q:n.rotation??[0,0,0,1],s:n.scale??[1,1,1]}));
- const rest=json.nodes.map((n,i)=>n.matrix?new Float32Array(n.matrix):trs(base[i].t,base[i].q,base[i].s));
- const world=json.nodes.map(()=>eye());
+ const rest:M[]=json.nodes.map((n,i)=>n.matrix?new Float32Array(n.matrix):trs(base[i].t,base[i].q,base[i].s));
+ const world:M[]=json.nodes.map(()=>eye());
  const derive=(locals:M[])=>{const seen=new Set<number>();
   const visit=(i:number):M=>{if(seen.has(i))return world[i];const p=parents[i];world[i]=p<0?locals[i]:mul(visit(p),locals[i]);seen.add(i);return world[i];};
   json.nodes.forEach((_,i)=>visit(i));};
