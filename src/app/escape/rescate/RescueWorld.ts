@@ -180,6 +180,14 @@ function scene(opened:boolean){
   for(let z=-5;z<4.85;z+=1.35)g.box(x,1.73,z,.06,3.46,.14,"#66686a");
  }
  for(let z=-5;z<5.1;z+=2.3)g.box(0,3.94,z,9.7,.20,.19,"#4f5154");
+ // Broken tile seams, patchy grout and stained baseboard on all 4 walls.
+ for(let x=-4.52;x<4.6;x+=1.35){
+  g.box(x,.020,-5.48,.39,.006,.060,"#4f4b48","concrete");
+  g.box(x,.023,4.84,.56,.007,.043,"#5d5451","concrete");
+ }
+ for(const z of [-5.36,-3.98,-2.58,-1.18,.22,1.62,3.02,4.42]){
+  for(const x of [-4.68,4.68])g.box(x,.39,z,.08,.72,.032,"#55504c","concrete");
+ }
  // A restrained layer of age, mortar repairs and fine surface geometry.
  for(let i=0;i<16;i++){
   const x=-4.45+(i%8)*1.22,y=.57+Math.floor(i/8)*2.05;
@@ -493,8 +501,12 @@ function scene(opened:boolean){
  g.bevelBox(cx,cy+.315,cz+.19,.038,.66,.042,.006,"#5b3329","clock-minute");
  g.ellipsoid(cx,cy,cz+.23,.054,.054,.032,"#c9aa74","metal",8,14);
  // A real conspiracy board: layered images, routes, schedules and red thread.
- g.box(1.51,2.15,-5.68,2.76,1.94,.15,"#5d3e33");
- g.box(1.51,2.15,-5.573,2.59,1.78,.023,"#9e8061");
+ g.bevelBox(1.51,2.15,-5.68,2.76,1.94,.15,.024,"#5d3e33","wood");
+ g.bevelBox(1.51,2.15,-5.573,2.59,1.78,.023,.010,"#8f795e","paper");
+ for(const x of [.175,2.845])g.bevelBox(x,2.15,-5.535,.070,1.93,.040,.010,"#6d5140","wood");
+ for(const y of [1.22,3.09])g.bevelBox(1.51,y,-5.535,2.74,.070,.040,.010,"#6d5140","wood");
+ for(const x of [.31,2.71])for(const y of [1.34,2.94])
+  g.reelZ(x,y,-5.496,.022,.009,.016,"#b7a384","metal",10);
  const notes=[
   [.54,2.66,.53,.45,"#d5c4a9"],[1.12,2.74,.44,.44,"#ead7b8"],
   [1.78,2.70,.51,.51,"#c6b499"],[2.36,2.61,.51,.43,"#e1d0b3"],
@@ -505,7 +517,8 @@ function scene(opened:boolean){
  ] as const;
  for(let i=0;i<notes.length;i++){
   const [x,y,w,h,shade]=notes[i],z=-5.549+(i%3)*.006;
-  g.box(x,y,z,w,h,.014,shade);
+  g.bevelBox(x,y,z,w,h,.014,.003,shade,"paper");
+  g.box(x+.016,y-.012,z+.012,w-.08,.003,.006,"#8f806b","paper");
   if(i%3===0){
    g.box(x,y+.07,z+.017,w*.66,h*.53,.016,"#465960");
    g.ellipsoid(x,y+.12,z+.036,.06,.07,.012,"#a5a193","scene");
@@ -516,15 +529,27 @@ function scene(opened:boolean){
     g.box(x-.025,lineY,z+.018,lineW,.013,.013,row===0?"#574e49":"#817468");
    }
   }
-  g.box(x-.11,y+h/2,z+.027,.22,.047,.012,"#c0ae8c"); // tape
-  g.box(x,y+h/2-.033,z+.036,.036,.036,.019,i%2?"#a74a3e":"#566963"); // pin
+  g.bevelBox(x-.11,y+h/2,z+.027,.22,.047,.012,.004,"#c0ae8c","paper"); // physical tape
+  g.reelZ(x,y+h/2-.033,z+.045,.022,.004,.020,i%2?"#a74a3e":"#566963","metal",10); // actual pin
+  if(i%4===2){
+   for(let k=0;k<3;k++)g.box(x+w*.26,y-h*.26+k*.028,z+.021,.12,.010,.010,"#7b6b57","paper");
+  }
  }
  const nodes:V[]=[[.54,2.66,-5.491],[1.12,2.74,-5.487],[2.36,2.61,-5.481],
   [1.70,2.14,-5.483],[.55,1.66,-5.482],[1.71,1.63,-5.477],[2.34,2.13,-5.478]];
  for(const [i,j] of [[0,3],[3,2],[0,4],[4,5],[1,6],[6,2],[5,3]] as const)
   g.tube(nodes[i],nodes[j],.011,"#9b312d");
  // Broad strip of security-camera timeline under the observation notes.
- for(let i=0;i<5;i++)g.box(.77+i*.36,1.42,-5.532,.30,.040,.012,i%2?"#52463b":"#8c513e");
+ for(let i=0;i<5;i++){
+  const x=.77+i*.36;
+  g.bevelBox(x,1.42,-5.532,.30,.040,.012,.005,i%2?"#52463b":"#8c513e","paper");
+  g.box(x,1.417,-5.520,.22,.008,.005,"#d1c0a5","paper");
+ }
+ for(let i=0;i<3;i++){
+  const x=.73+i*.72,y=1.31,z=-5.518;
+  g.box(x,y,z,.53,.045,.009,"#3b4543","paper");
+  g.box(x+.08,y+.015,z+.014,.31,.010,.009,"#b7a188","paper");
+ }
  // Worn steel locker: inset double doors, rolled corners, vent slits,
  // individual rivets, rust patina, hinge barrels and latch handle.
  const lx=ROOM_LAYOUT.locker.x,lz=ROOM_LAYOUT.locker.z;
