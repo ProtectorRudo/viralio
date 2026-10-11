@@ -18,7 +18,7 @@ const lerp=(a:number[],b:number[],f:number,quat=false)=>{let sign=1;
  const r=a.map((v,i)=>v*(1-f)+b[i]*f*sign),len=Math.hypot(...r)||1;
  return quat?r.map(x=>x/len):r;};
 type SkinCPU={skin:number;bind:Float32Array;output:Float32Array;joints:Uint16Array;weights:Float32Array};
-export type RigPart={buffer:WebGLBuffer;count:number;node:number;texture:WebGLTexture|null;hasUV:boolean;faceplate?:boolean;skinCPU?:SkinCPU};
+export type RigPart={buffer:WebGLBuffer;count:number;node:number;texture:WebGLTexture|null;hasUV:boolean;faceplate?:boolean;weapon?:boolean;skinCPU?:SkinCPU};
 export type Rig={parts:RigPart[];matrices:M[];animate:(elapsed:number,moving?:boolean)=>void;skinned:boolean;bones:number;dispose:()=>void};
 export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  const res=await fetch(url,{cache:"force-cache"});if(!res.ok)throw Error("GLB "+res.status);
@@ -113,47 +113,64 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  // bones. They follow every skeletal keyframe instead of floating in room space.
  const findBone=(rx:RegExp)=>json.nodes.findIndex(n=>rx.test((n.name??"").toLowerCase()));
  const head=findBone(/(^|[._:| ])head($|[._:| ])/),hand=findBone(/(^|[._:| ])(righthand|hand_r|hand\.r|r_hand)($|[._:| ])/);
- const addProp=(node:number,vertices:number[],faceplate=false)=>{
+ const addProp=(node:number,vertices:number[],faceplate=false,weapon=false)=>{
   const buffer=gl.createBuffer();if(!buffer)return;
   const data=new Float32Array(vertices);
   gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
-  parts.push({buffer,count:data.length/11,node,hasUV:false,texture:null,faceplate});
+  parts.push({buffer,count:data.length/11,node,hasUV:false,texture:null,faceplate,weapon});
  };
  const propVertex=(dest:number[],p:number[],color:number[],norm:number[]=[0,0,1])=>dest.push(...p,...norm,...color,0,0);
  const propTri=(dst:number[],a:number[],b:number[],c:number[],color:number[],norm:number[]=[0,0,1])=>{
   propVertex(dst,a,color,norm);propVertex(dst,b,color,norm);propVertex(dst,c,color,norm);
  };
  if(head>=0){
-  const headGeom:number[]=[];
-  const oval=(u:number,v:number,z=.13)=>[u*.145,v*.205+.09,z+.04*Math.max(0,1-u*u-v*v)];
-  // Weathered bone-colored face shell, with subtle unpainted ceramic pores.
-  for(let i=0;i<13;i++)for(let j=0;j<32;j++){
-   const lo=i/13,hi=(i+1)/13,t=j/32*Math.PI*2,q=(j+1)/32*Math.PI*2;
-   const a=oval(lo*Math.cos(t),lo*Math.sin(t)),b=oval(hi*Math.cos(t),hi*Math.sin(t));
-   const c=oval(hi*Math.cos(q),hi*Math.sin(q)),d=oval(lo*Math.cos(q),lo*Math.sin(q));
-   const dark=((i*17+j*7)%19)*.004,shade=[.66+dark,.60+dark,.52+dark];
-   propTri(headGeom,a,b,c,shade);propTri(headGeom,a,c,d,shade);
-  }
-  for(const side of [-1,1])for(let j=0;j<16;j++){
-   const t=j/16*Math.PI*2,q=(j+1)/16*Math.PI*2;
-   const slit=(ang:number)=>oval(side*.45+Math.cos(ang)*.245,.32+Math.sin(ang)*.094,.196);
-   propTri(headGeom,oval(side*.45,.32,.203),slit(t),slit(q),[.012,.016,.020]);
-  }
-  const scar=(a:number[],b:number[],color:number[])=>{
-   const p=oval(a[0],a[1],.198),q=oval(b[0],b[1],.198);
-   propTri(headGeom,p,q,[q[0]+.004,q[1],q[2]],color);
+  // CLOSE-FITTING human-shaped ceramic shell attached to the animated head.
+  const shell:number[]=[];
+  const contour=(u:number,v:number,raised=0)=>{
+   const width=.119*(.91+.13*v)*Math.sqrt(Math.max(0,1-v*v));
+   return [u*width,.077+v*.178,.119+.027*(1-u*u)+raised];
   };
-  scar([-.64,.68],[-.12,.38],[.20,.16,.13]);
-  scar([.35,-.12],[.61,-.65],[.36,.085,.075]);
-  addProp(head,headGeom,true);
-  // Hood folds: woven shadow under the face shell, dark cloth around the perimeter.
+  for(let row=0;row<18;row++)for(let col=0;col<26;col++){
+   const v0=-.995+row/18*1.99,v1=-.995+(row+1)/18*1.99;
+   const u0=-1+col/26*2,u1=-1+(col+1)/26*2;
+   const a=contour(u0,v0),b=contour(u1,v0),c=contour(u1,v1),d=contour(u0,v1);
+   const wear=(Math.sin(row*13.1+col*5.3)*.5+.5)*.043;
+   const baseColor=[.57+wear,.52+wear,.445+wear];
+   propTri(shell,a,b,c,baseColor);propTri(shell,a,c,d,baseColor);
+  }
+  // Narrow slashed eye holes, not two oversized doll eyes.
+  for(const side of [-1,1]){
+   const mid=side*.48;
+   const point=(dx:number,dy:number)=>contour(mid+side*dx,.29+dy,.014);
+   const eyeColor=[.007,.011,.015];
+   propTri(shell,point(-.26,.008),point(.30,.020),point(.18,-.10),eyeColor);
+   propTri(shell,point(-.26,.008),point(.18,-.10),point(-.05,-.13),eyeColor);
+  }
+  const line=(a:[number,number],b:[number,number],rgb:number[],w=.013)=>{
+   const A=contour(a[0],a[1],.022),B=contour(b[0],b[1],.022);
+   propTri(shell,A,B,[B[0]+w,B[1],B[2]],rgb);
+  };
+  line([-.42,.78],[-.19,.43],[.26,.21,.17],.002);
+  line([-.19,.43],[-.26,.29],[.26,.21,.17],.002);
+  line([.29,.03],[.47,-.25],[.38,.115,.100],.005);
+  line([.47,-.25],[.40,-.61],[.38,.115,.100],.003);
+  line([-.38,-.48],[.36,-.50],[.16,.105,.084],.002);
+  addProp(head,shell,true);
+  // The hood is slim, rough fabric around the face with hanging folds.
   const hood:number[]=[];
-  for(let j=0;j<32;j++){
-   const t=j/32*Math.PI*2,q=(j+1)/32*Math.PI*2;
-   const inner=(v:number)=>[Math.cos(v)*.151,Math.sin(v)*.213+.09,.10];
-   const outer=(v:number)=>[Math.cos(v)*.216,Math.sin(v)*.282+.10,.055];
-   const cloth=[.08,.095,.105];
-   propTri(hood,inner(t),outer(t),outer(q),cloth);propTri(hood,inner(t),outer(q),inner(q),cloth);
+  for(let j=0;j<30;j++){
+   const a=j/30*Math.PI*2,b=(j+1)/30*Math.PI*2;
+   const inner=(theta:number)=>[Math.cos(theta)*.125,Math.sin(theta)*.190+.078,.111];
+   const outer=(theta:number)=>[Math.cos(theta)*.171,Math.sin(theta)*.255+.075,.066];
+   const shadow=[.045,.059,.059];
+   propTri(hood,inner(a),outer(a),outer(b),shadow);
+   propTri(hood,inner(a),outer(b),inner(b),shadow);
+  }
+  for(const side of [-1,1]){
+   const fold=[.065,.079,.073];
+   const a=[side*.139,-.064,.065],b=[side*.183,-.116,.025];
+   const c=[side*.208,-.352,-.014],d=[side*.109,-.290,.052];
+   propTri(hood,a,b,c,fold);propTri(hood,a,c,d,fold);
   }
   addProp(head,hood);
  }
@@ -166,7 +183,7 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   propTri(prop,[-.055,-.58,.068],[.062,-.58,.068],[.032,-.63,.068],edge);
   propTri(prop,[-.035,.04,.075],[.035,.04,.075],[.035,-.13,.075],grip);
   propTri(prop,[-.035,.04,.075],[.035,-.13,.075],[-.035,-.13,.075],grip);
-  addProp(hand,prop);
+  addProp(hand,prop,false,true);
  }
  if(!parts.length)throw Error("GLB sin triángulos");
  const scale=Math.min(2.2,2.85/Math.max(.1,hi[1]-lo[1])),cx=(lo[0]+hi[0])/2,cz=(lo[2]+hi[2])/2;
@@ -190,6 +207,17 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  const ibms=json.skins?.map(s=>s.inverseBindMatrices===undefined?s.joints.map(()=>eye()):
   acc(s.inverseBindMatrices).map(values=>new Float32Array(values)))??[];
  let previousMotion=-1,holdTime=0;
+ // Layer natural breathing and restrained head motion over the captured walk.
+ const spineBone=findBone(/(^|[._:| ])(spine|chest|spine1|spine2)($|[._:| ])/);
+ const neckBone=findBone(/(^|[._:| ])neck($|[._:| ])/);
+ const shoulderBones=json.nodes.map((n,i)=>({i,name:(n.name??"").toLowerCase()}))
+  .filter(n=>/(clavicle|shoulder)/.test(n.name)).map(n=>n.i);
+ const qmul=(a:number[],b:number[])=>[
+  a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1],
+  a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],
+  a[3]*b[2]+a[0]*b[1]-a[1]*b[0]+a[2]*b[3],
+  a[3]*b[3]-a[0]*b[0]-a[1]*b[1]-a[2]*b[2]];
+
  const updateSkins=()=>{
   for(const part of parts){
    const cpu=part.skinCPU;if(!cpu)continue;
@@ -227,7 +255,7 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   const transforms=base.map(b=>({t:[...b.t],q:[...b.q],s:[...b.s]}));
   if(a)for(const c of a.channels){
    if(c.node<0||!transforms[c.node]||!c.times.length)continue;
-   const duration=c.times[c.times.length-1],t=duration>0?(moving?(elapsed-holdTime)%duration:0):0;let j=0;
+   const duration=c.times[c.times.length-1],t=duration>0?(moving?(elapsed-holdTime)*.72%duration:0):0;let j=0;
    while(j<c.times.length-2&&c.times[j+1]<t)j++;
    const k=Math.min(j+1,c.times.length-1),diff=c.times[k]-c.times[j],f=c.interpolation==="STEP"||diff<=0?0:Math.max(0,Math.min(1,(t-c.times[j])/diff));
    const v=c.values[c.interpolation==="CUBICSPLINE"?j*3+1:j],w=c.values[c.interpolation==="CUBICSPLINE"?k*3+1:k];
@@ -236,6 +264,20 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
    if(c.path==="rotation")transforms[c.node].q=value;
    if(c.path==="scale")transforms[c.node].s=value;
   }
+  // Human breathing, shoulder lift and deliberate sideways head tilts.
+  const inhale=Math.sin(elapsed*2.05)*.5+.5;
+  if(spineBone>=0){
+   transforms[spineBone].t[1]+=.008*inhale;
+   const lean=moving?.013:.022;
+   transforms[spineBone].q=qmul(transforms[spineBone].q,[Math.sin(lean/2),0,0,Math.cos(lean/2)]);
+  }
+  for(const i of shoulderBones)transforms[i].t[1]+=.0036*inhale;
+  if(head>=0){
+   const tilt=(moving?.055:.11)*Math.sin(elapsed*.66);
+   const turn=(moving?.055:.095)*Math.sin(elapsed*.33+.4);
+   transforms[head].q=qmul(transforms[head].q,[0,Math.sin(turn/2),Math.sin(tilt/2),Math.cos(turn/2)*Math.cos(tilt/2)]);
+  }
+  if(neckBone>=0)transforms[neckBone].t[1]+=.002*inhale;
   derive(transforms.map((t,i)=>json.nodes[i].matrix?rest[i]:trs(t.t,t.q,t.s)));
   world.forEach((m,i)=>world[i]=mul(root,m));
   updateSkins();
