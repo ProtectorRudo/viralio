@@ -328,9 +328,12 @@ function scene(opened:boolean){
   g.bevelBox(0,.73,-.67,1.65,.20,.10,.012,"#866448","drawer");
   g.box(0,.69,-1.20,1.38,.009,.88,"#514132","drawer");
   for(const x of [-.55,.55])g.tube([x,.74,-.66],[x,.74,-.58],.039,"#c0ab84","metal");
-  g.box(0,.706,-1.48,.43,.021,.27,"#e5d4b1","envelope");
-  g.box(0,.72,-1.445,.10,.022,.10,"#983f32","envelope");
-  g.box(0,.720,-1.445,.34,.014,.010,"#d4ba91","envelope");
+  // Folded envelope of stiff paper, visible triangular flap and wax seal.
+  g.bevelBox(0,.707,-1.48,.43,.017,.27,.004,"#e5d4b1","envelope");
+  g.quad("envelope",[[-.21,.720,-1.575],[0,.724,-1.43],[.21,.720,-1.575],[.0,.723,-1.47]],[0,1,0],"#c8b18e");
+  g.quad("envelope",[[-.20,.719,-1.382],[0,.722,-1.44],[.20,.719,-1.382],[0,.720,-1.39]],[0,1,0],"#efe0c5");
+  g.reelY(0,.732,-1.445,.055,.006,.009,"#8a302a","envelope",18);
+  g.ellipsoid(0,.738,-1.445,.027,.004,.023,"#b65045","envelope",5,10);
  }else{
   // Bronze lock casing, faceplate and six individual metal number wheels.
   g.bevelBox(0,.75,-1.55,.42,.23,.135,.018,"#857b6e","metal");
@@ -623,20 +626,24 @@ function scene(opened:boolean){
  for(const dx of [-.23,.23])for(const dz of [-.19,.19])
   g.reelY(dx,3.110,-1.65+dz,.028,.008,.012,"#8d8373","metal",10);
  g.tube([-.25,3.20,-1.62],[-.32,3.46,-1.62],.014,"#3e4140","cable");
- // Documents, coffee and evidence prints physically REST ON the new desks.
- g.tube([rx-.48,1.05,rz-.31],[rx-.48,1.25,rz-.31],.09,"#d3bea0");
- g.tube([rx-.48,1.25,rz-.31],[rx-.48,1.267,rz-.31],.082,"#554539");
- g.box(rx+.15,1.000,rz-.41,.31,.015,.19,"#dbc5a6");
+ // Every tabletop accessory has real thickness, handle, paper and detail.
+ // Ringed mug with a visible interior and hooked handle.
+ g.reelY(rx-.48,1.13,rz-.31,.088,.063,.18,"#d3bea0","paper",18);
+ g.reelY(rx-.48,1.237,rz-.31,.092,.068,.019,"#6a5747","metal",18);
+ g.tube([rx-.40,1.11,rz-.31],[rx-.35,1.16,rz-.31],.015,"#ddd1b8","paper");
+ g.tube([rx-.40,1.16,rz-.31],[rx-.40,1.21,rz-.31],.015,"#ddd1b8","paper");
+ g.bevelBox(rx+.15,1.000,rz-.41,.31,.015,.19,.002,"#dbc5a6","paper");
+ for(let i=0;i<4;i++)g.box(rx+.09,1.011,rz-.49+i*.041,.19,.006,.011,"#635748","paper");
  g.box(rx+.15,1.02,rz-.41,.18,.010,.013,"#5d5551");
  for(let i=0;i<4;i++){
   const x=3.17+i%2*.18,z=-2.96+Math.floor(i/2)*.16;
-  g.box(x,1.0,z,.16,.015,.12,"#c6b698");
+  g.bevelBox(x,1.0,z,.16,.015,.12,.002,"#c6b698","paper");
   g.box(x,1.014,z,.096,.009,.071,i%2?"#435252":"#6a6159");
  }
  // Torn witness reports, visually low but clearly resting on the floor.
  for(let i=0;i<12;i++){
   const x=-.6+.33*(i%4),z=-4.5+.21*Math.floor(i/4);
-  g.box(x,.032,z,.22+.04*(i%2),.015,.12,"#8e8470");
+  g.tiltedBox(x,.032,z,.22+.04*(i%2),.015,.12,(i%3-1)*.10,"#8e8470","paper");
   g.box(x+.02,.041,z,.15,.006,.011,"#373c3a");
  }
  // Bolts and worn enamel border on the lock station.
@@ -743,7 +750,10 @@ void main(){
   if(surfaceKind<1.5)baseColor*=wood*wear;
   else if(surfaceKind<2.5)baseColor*=brush*(.97+.07*noise);
   else if(surfaceKind<3.5)baseColor*=.90+.14*noise;
-  else baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
+  else if(surfaceKind<4.5)baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
+  else if(surfaceKind<5.5)baseColor*=.93+.07*fract(sin(dot(floor(vPos.xy*108.0),vec2(29.8,14.4)))*1871.8);
+  else if(surfaceKind<6.5)baseColor*=.95+.05*fract(sin(dot(floor(vPos.xy*88.0),vec2(49.8,24.4)))*2118.3);
+  else baseColor*=.96+.04*sin(vPos.z*90.0);
  }
  if(enemyCloth>.5){
   // Dark weathered fabric using the real human's original texture details.
@@ -1006,7 +1016,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(umask,0);
    gl.uniform1f(usurface,m.id==="door"||m.id==="wood"||m.id==="drawer"?1:
-    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:0);
+    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:m.id==="book"?5:m.id==="paper"?6:m.id==="cable"?7:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
