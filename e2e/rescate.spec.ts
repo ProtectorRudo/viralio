@@ -13,8 +13,8 @@ async function start(page:Page){
  await expect(canvas).toBeVisible();
  await expect.poll(()=>canvas.evaluate((n)=>{
   const c=n as HTMLCanvasElement;
-  const gl=c.getContext("webgl");
-  return Boolean(gl&&c.width>200&&c.height>200&&gl.getParameter(gl.VERSION).includes("WebGL"));
+  const gl=c.getContext("webgl2");
+  return Boolean(gl&&c.width>200&&c.height>200&&gl.getParameter(gl.VERSION).includes("WebGL 2"));
  })).toBe(true);
 }
 async function walk(page:Page,key:string,ms:number){
@@ -88,7 +88,7 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
  const canvas=page.getByTestId("rescate-webgl");
  await page.waitForTimeout(500);
  const sample=await canvas.evaluate(node=>{
-  const c=node as HTMLCanvasElement,gl=c.getContext("webgl")!,rgba=new Uint8Array(4);
+  const c=node as HTMLCanvasElement,gl=c.getContext("webgl2")!,rgba=new Uint8Array(4);
   gl.readPixels(Math.floor(c.width*.5),Math.floor(c.height*.5),1,1,gl.RGBA,gl.UNSIGNED_BYTE,rgba);
   return Array.from(rgba);
  });
@@ -98,10 +98,17 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
  await page.screenshot({path:`visual-qa-evidence/rescate-mauro-3d-${testInfo.project.name}.png`,fullPage:true});
 });
 
-test("CASO M 2.0 · PBR ligero y linterna 3D controlada por cámara en Android y desktop",async({page},testInfo)=>{
+test("CASO M 2.0 · renderer Three.js, GPU skinning, PBR y linterna jugable en Android y desktop",async({page},testInfo)=>{
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
- await expect(canvas).toHaveAttribute("data-render-version","cinematic-materials-v2",{timeout:12000});
+ await expect(canvas).toHaveAttribute("data-render-version","threejs-pbr-migration-v1",{timeout:12000});
+ await expect(canvas).toHaveAttribute("data-render-engine","threejs");
+ const threeCheck=await canvas.evaluate(node=>{
+  const c=node as HTMLCanvasElement;
+  const gl=c.getContext("webgl2");
+  return Boolean(gl&&gl.getParameter(gl.VERSION).includes("WebGL 2"));
+ });
+ expect(threeCheck).toBe(true);
  await expect(canvas).toHaveAttribute("data-flashlight","off");
  const torch=page.getByTestId("rescate-flashlight-toggle");
  await expect(torch).toBeVisible();
