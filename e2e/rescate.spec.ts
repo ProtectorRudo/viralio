@@ -41,6 +41,21 @@ async function examineNearby(page:Page,name:string){
  await expect(page.getByRole("dialog")).toBeVisible();
 }
 
+test("CASO M · intruso 3D rigged con materiales PBR y animación al caminar",async({page})=>{
+ await start(page);
+ const canvas=page.getByTestId("rescate-webgl");
+ await expect.poll(()=>canvas.getAttribute("data-cinematic-intruder"),{timeout:18000}).toBe("ready");
+ await expect(canvas).toHaveAttribute("data-cinematic-model","skinned-glb");
+ const cinematic=page.locator('[data-testid="rescate-cinematic-canvas"]');
+ await expect(cinematic).toBeVisible();
+ await page.clock.fastForward(135000);
+ await expect.poll(()=>canvas.getAttribute("data-intruder-visible"),{timeout:8000}).toBe("yes");
+ await expect.poll(()=>canvas.getAttribute("data-intruder-animation"),{timeout:8000}).toBe("walk");
+ await expect.poll(()=>canvas.getAttribute("data-intruder-approach").then(Number),{timeout:8000}).toBeGreaterThan(.14);
+ // A single GPU model must replace (not overlay) the old polygonal figure.
+ await expect(page.locator('[data-testid="rescate-cinematic-canvas"]')).toHaveCount(1);
+});
+
 test("CASO M · muebles separados, pasillos despejados y puntos físicos coherentes",async({page})=>{
  const {recorder,surveillance,lock,locker,trunk}=ROOM_LAYOUT;
  const clearGap=(a:{x:number;z:number;w:number;d:number},b:{x:number;z:number;w:number;d:number})=>
