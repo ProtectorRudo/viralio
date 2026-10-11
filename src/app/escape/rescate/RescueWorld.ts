@@ -679,7 +679,6 @@ export type World={
  nearby:()=>Target[];
  getPose:()=>Pose;
  setFlags:(v:SceneFlags)=>void;
- setFlashlight:(on:boolean)=>void;
  dispose:()=>void;
 };
 
@@ -694,7 +693,8 @@ function makePBR(kind:string):THREE.Material{
  return new THREE.MeshStandardMaterial({
   vertexColors:true,
   side:THREE.DoubleSide,
-  metalness:metal?.68:kind==="cable"?.14:0,
+  // Indoor metals remain readable without a reflection environment map.
+  metalness:metal?.34:kind==="cable"?.11:0,
   roughness:wood?.79:metal?.46:paper?.93:kind==="concrete"?.99:.86,
   envMapIntensity:.5
  });
@@ -713,30 +713,27 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  const renderer=new THREE.WebGLRenderer({canvas,context:gl,alpha:false,antialias:false,powerPreference:"high-performance"});
  renderer.outputColorSpace=THREE.SRGBColorSpace;
  renderer.toneMapping=THREE.ACESFilmicToneMapping;
- renderer.toneMappingExposure=1.24;
+ renderer.toneMappingExposure=1.47;
  renderer.setClearColor(0x080b10,1);
  renderer.shadowMap.enabled=true;
  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  const room=new THREE.Scene();
  room.background=new THREE.Color(0x091018);
- room.fog=new THREE.FogExp2(0x0b1119,.023);
+ room.fog=new THREE.FogExp2(0x101820,.017);
  const camera=new THREE.PerspectiveCamera(68.86,1,.075,75);
  camera.rotation.order="YXZ";
  const cameraPose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
- const cameraLight=new THREE.SpotLight(0xffebc5,16,10,Math.PI*.19,.68,1.7);
- cameraLight.position.set(0,-.02,0);
- cameraLight.target.position.set(0,0,-5);
- cameraLight.castShadow=false;cameraLight.visible=false;
- camera.add(cameraLight,cameraLight.target);
+ // CASO M is now lit as a room, not with a light carried by the player.
+ // Fixed sources preserve legible evidence and directional horror shadows.
  room.add(camera);
- room.add(new THREE.HemisphereLight(0x9bb1c6,0x19130f,1.05));
- const ambient=new THREE.AmbientLight(0x9caabd,.34);room.add(ambient);
- const overhead=new THREE.PointLight(0xffcfaa,29,12,2);
+ room.add(new THREE.HemisphereLight(0xb3c5d2,0x30241e,1.75));
+ const ambient=new THREE.AmbientLight(0xb5c0c9,.68);room.add(ambient);
+ const overhead=new THREE.PointLight(0xffdfbd,38,13,2);
  overhead.position.set(0,3.07,-1.65);overhead.castShadow=false;
  room.add(overhead);
  // Directional shadows require a single pass, avoiding the six-face
  // shadow cubemap required by a shadow-casting point light.
- const shadowSource=new THREE.DirectionalLight(0xffddb6,3.2);
+ const shadowSource=new THREE.DirectionalLight(0xffddb6,3.6);
  shadowSource.position.set(-1.5,4.8,-1.3);shadowSource.target.position.set(0,0,-.5);
  shadowSource.castShadow=true;shadowSource.shadow.mapSize.set(512,512);
  shadowSource.shadow.bias=-.0004;shadowSource.shadow.normalBias=.047;
@@ -744,14 +741,24 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  shadowSource.shadow.camera.top=6;shadowSource.shadow.camera.bottom=-6;
  shadowSource.shadow.camera.near=.2;shadowSource.shadow.camera.far=15;
  room.add(shadowSource,shadowSource.target);
- const emergency=new THREE.PointLight(0xee3530,12,12,2);
+ const emergency=new THREE.PointLight(0xee3530,8,12,2);
  emergency.position.set(1.7,2.55,4.9);room.add(emergency);
- const farFill=new THREE.PointLight(0x6c96bd,7,13,2);
+ const farFill=new THREE.PointLight(0x9bb8d1,13,14,2);
  farFill.position.set(-3.8,2.7,-4.35);room.add(farFill);
+ // Soft utility-workstation bounce light means tables, clues and dials are
+ // visible even when the overhead fixture pulses in the scare sequence.
+ const deskFill=new THREE.PointLight(0xffdbbb,10,6.8,2);
+ deskFill.position.set(ROOM_LAYOUT.recorder.x+.45,2.7,ROOM_LAYOUT.recorder.z-.45);
+ room.add(deskFill);
+ const surveillanceFill=new THREE.PointLight(0xb8d6e5,9,7.5,2);
+ surveillanceFill.position.set(ROOM_LAYOUT.surveillance.x-.5,2.9,ROOM_LAYOUT.surveillance.z+.3);
+ room.add(surveillanceFill);
+ const lockFill=new THREE.PointLight(0xe6d2ad,8,6.2,2);
+ lockFill.position.set(.1,2.75,-2.5);room.add(lockFill);
  const focusLight=new THREE.PointLight(0xffd49a,.9,2.6,2);
  focusLight.visible=false;room.add(focusLight);
  const objects=new Map<string,THREE.Mesh>();
- let current={...flags},flashlight=false;
+ let current={...flags};
  let active=true,raf=0,lastDraw=0,lastHud=0,renderScale=1,slowFrames=0,fastFrames=0;
  let drawerOpenedAt=flags.unlocked?performance.now()-1200:0;
  let clockStarted=flags.clockActivated?performance.now()-3100:0;
@@ -1014,11 +1021,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   canvas.dataset.roomProps="complete-hd-props-v3";
   canvas.dataset.renderVersion="threejs-pbr-migration-v1";
   canvas.dataset.renderEngine="threejs";
-  canvas.dataset.flashlight=flashlight?"on":"off";
+  canvas.dataset.roomLighting="balanced-no-flashlight";
   canvas.dataset.renderQuality=renderScale<1?"battery-friendly":"high";
-  cameraLight.visible=flashlight;
-  emergency.intensity=(current.intruder?10+6*Math.sin(now*.007):12);
-  overhead.intensity=(30+Math.sin(now*.011)*.6);
+  emergency.intensity=(current.intruder?7+3*Math.sin(now*.007):8);
+  overhead.intensity=(38+Math.sin(now*.011)*.8);
   if(actor){
    actor.visible=seen;
    actor.position.z=-approach;
@@ -1071,7 +1077,6 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    cameraPose.pitch=Math.atan2(dy,Math.hypot(dx,dz));
   },
   project,pick,aim,nearby,getPose:()=>({...cameraPose}),
-  setFlashlight:(on:boolean)=>{flashlight=on;cameraLight.visible=on;canvas.dataset.flashlight=on?"on":"off";},
   setFlags:(next:SceneFlags)=>{
    if(next.clockActivated&&!current.clockActivated)clockStarted=performance.now();
    if(next.intruder&&!current.intruder)intruderStarted=performance.now();
