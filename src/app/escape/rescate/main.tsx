@@ -45,6 +45,7 @@ function App(){
  const [hintOpen,setHintOpen]=useState(false),[hintLevel,setHintLevel]=useState(0);
  const [openedLetter,setOpenedLetter]=useState(false),[sealBreaking,setSealBreaking]=useState(false),[evidenceExpanded,setEvidenceExpanded]=useState(false);
  const [muted,setMuted]=useState(false),[toast,setToast]=useState("");
+ const [flashlightOn,setFlashlightOn]=useState(false);
  const [error,setError]=useState(""),[available,setAvailable]=useState(false);
  const overlayState=useRef<Overlay>("none"),expiredState=useRef(false);
  const world=useRef<World|null>(null),canvas=useRef<HTMLCanvasElement|null>(null),activeRef=useRef<Target|null>(null);
@@ -66,6 +67,13 @@ function App(){
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
  const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
+ // Environmental status cards are transient. Do not leave a stale warning
+ // over the room after its lights recover or a short sound cue finishes.
+ useEffect(()=>{
+  if(!toast)return;
+  const id=window.setTimeout(()=>setToast(current=>current===toast?"":current),4700);
+  return()=>window.clearTimeout(id);
+ },[toast]);
  useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
  useEffect(()=>{const q=new URLSearchParams(location.search);
@@ -112,6 +120,7 @@ function App(){
   const onKeyDown=(e:KeyboardEvent)=>{const key=e.key.toLowerCase();
    if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(key)){buttons.current.add(key);if(overlayState.current==="none")e.preventDefault();}
    if(key==="e"&&overlayState.current==="none"&&!e.repeat){const t=world.current?.aim();if(t)examine(t);}
+   if(key==="f"&&overlayState.current==="none"&&!e.repeat)toggleFlashlight();
    if(key==="escape"&&overlayState.current!=="none"){setOverlay("none");}
   };
   const onKeyUp=(e:KeyboardEvent)=>buttons.current.delete(e.key.toLowerCase());
@@ -310,6 +319,14 @@ function App(){
   }
   setScreen("connecting");transitionTimer.current=window.setTimeout(()=>setScreen("game"),1450);
  }
+ function toggleFlashlight(){
+  setFlashlightOn(on=>{
+   const next=!on;
+   world.current?.setFlashlight(next);
+   return next;
+  });
+  sound("click");
+ }
  function toggleMute(){
   const player=musicAudio.current;
   if(!muted&&!musicPlaying){
@@ -484,6 +501,7 @@ function App(){
     <canvas ref={canvas} className={styles.canvas} data-testid="rescate-webgl" onPointerDown={viewDown} onPointerMove={viewMove} onPointerUp={viewUp} onPointerCancel={cancelView} onLostPointerCapture={cancelView} onClick={viewClick} aria-label="Habitación 3D: tocá objetos para abrirlos y deslizá para mirar"/>
     <div className={styles.film} aria-hidden="true"/>
     <div className={styles.sceneGrain} aria-hidden="true"/>
+    {flashlightOn&&<div className={styles.torchAtmosphere} aria-hidden="true"/>}
     {seconds<=60&&!drawerOpen&&<div className={styles.pulseFrame} aria-hidden="true"/>}
     {tensionCue&&<div className={styles.tensionCue} data-effect={tensionCue} aria-hidden="true"/>}
     {graffiti&&<div ref={graffitiMarker} data-testid="rescate-graffiti-wall" className={styles.graffitiWall} aria-label="Pintada roja en la pared: SEGUÍS VOS."><span>SEGUÍS</span><strong>VOS.</strong></div>}
@@ -500,10 +518,14 @@ function App(){
       <span>PRUEBAS {seen.length}/3</span>
       <button type="button" onClick={hint} data-testid="rescate-hint-button">◈ {hintLevel?"VER MI PISTA":"RECIBIR UNA PISTA"}</button>
       <button type="button" onClick={toggleMute}>{muted?"SONIDO OFF":musicPlaying?"MÚSICA ON":"ACTIVAR MÚSICA"}</button>
+      <button type="button" className={styles.torchButton} data-testid="rescate-flashlight-toggle"
+       aria-pressed={flashlightOn} onClick={toggleFlashlight}>
+       {flashlightOn?"◉ LINTERNA ON":"◌ LINTERNA"}
+      </button>
     </div>
     {error&&<div className={styles.fallback}><h2>Modo 3D no disponible</h2><p>{error}</p><button onClick={()=>{setError("");setAvailable(false);setScreen("intro")}}>VOLVER</button><small>Podemos adaptar esta experiencia a 2.5D si tu teléfono no admite WebGL.</small></div>}
     {!available&&!error&&<div className={styles.load}>INICIANDO RECONSTRUCCIÓN TRIDIMENSIONAL...</div>}
-    <div className={styles.reticle} data-has-target={active?"yes":"no"}><span>{active?"◇":"·"}</span></div>
+    <div className={styles.reticle} data-has-target={active?"yes":"no"} data-flashlight={flashlightOn?"yes":"no"}><span>{active?"◇":"·"}</span></div>
     {active&&overlay==="none"&&<div className={styles.target}><span>TOCÁ PARA INVESTIGAR</span><strong>{active.label}</strong></div>}
     <div className={styles.objectives} data-collapsed={!evidenceExpanded?"yes":"no"}>
      <button type="button" className={styles.dossierToggle} onClick={()=>setEvidenceExpanded(v=>!v)}
@@ -541,7 +563,7 @@ function App(){
       <div className={styles.hintHead}><span>AYUDA CONFIDENCIAL · PISTA ÚNICA</span><button type="button" aria-label="Cerrar pista" onClick={()=>setHintOpen(false)}>✕</button></div>
       <p>{HINTS[Math.max(0,hintLevel-1)]}</p>
     </aside>}
-    {toast&&<div className={styles.toast} role="status" onClick={()=>setToast("")}>{toast} <button type="button" aria-label="Cerrar aviso" onClick={()=>setToast("")}>✕</button></div>}
+    {toast&&<div className={styles.toast} role="status">{toast} <button type="button" aria-label="Cerrar aviso" onClick={()=>setToast("")}>✕</button></div>}
     {overlay==="inspect"&&focus&&<div className={styles.modalShade} role="dialog" aria-modal="true" aria-label={"Examinar "+focus.label}><div className={styles.inspectCard}>
       <span>ARCHIVO / INSPECCIÓN</span><h2>{focus.label}</h2><p>{DESCRIPTIONS[focus.id]}</p>
       {focus.id==="clock"&&<div className={styles.clockInteraction} data-testid="rescate-clock" data-clock={clockState}>
