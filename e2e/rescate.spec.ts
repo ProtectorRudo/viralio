@@ -98,27 +98,21 @@ test("CASO M · verdadera escena WebGL 3D, joystick y contador de tres minutos",
  await page.screenshot({path:`visual-qa-evidence/rescate-mauro-3d-${testInfo.project.name}.png`,fullPage:true});
 });
 
-test("CASO M 2.0 · renderer Three.js, GPU skinning, PBR y linterna jugable en Android y desktop",async({page},testInfo)=>{
+test("CASO M 2.0 · Three.js PBR y habitación iluminada sin linterna en celular y escritorio",async({page},testInfo)=>{
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
  await expect(canvas).toHaveAttribute("data-render-version","threejs-pbr-migration-v1",{timeout:12000});
  await expect(canvas).toHaveAttribute("data-render-engine","threejs");
+ await expect(canvas).toHaveAttribute("data-room-lighting","balanced-no-flashlight");
  const threeCheck=await canvas.evaluate(node=>{
   const c=node as HTMLCanvasElement;
   const gl=c.getContext("webgl2");
   return Boolean(gl&&gl.getParameter(gl.VERSION).includes("WebGL 2"));
  });
  expect(threeCheck).toBe(true);
- await expect(canvas).toHaveAttribute("data-flashlight","off");
- const torch=page.getByTestId("rescate-flashlight-toggle");
- await expect(torch).toBeVisible();
- await torch.click();
- await expect(torch).toHaveAttribute("aria-pressed","true");
- await expect(canvas).toHaveAttribute("data-flashlight","on");
- await page.screenshot({path:`visual-qa-evidence/rescate-2-flashlight-${testInfo.project.name}.png`,fullPage:true});
- await torch.click();
- await expect(torch).toHaveAttribute("aria-pressed","false");
- await expect(canvas).toHaveAttribute("data-flashlight","off");
+ await expect(page.getByTestId("rescate-flashlight-toggle")).toHaveCount(0);
+ await expect(canvas).not.toHaveAttribute("data-flashlight",/on|off/);
+ await page.screenshot({path:`visual-qa-evidence/rescate-permanently-lit-${testInfo.project.name}.png`,fullPage:true});
 });
 
 test("CASO M · toque directo sobre el cajón abre el candado",async({page},testInfo)=>{
