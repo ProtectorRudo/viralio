@@ -6,9 +6,19 @@
 export type ClueId="calendar"|"cassette"|"memo"|"clock"|"drawer"|"envelope"|"phone"|"camera"|"board"|"locker"|"lamp"|"pipe";
 export type SceneFlags={unlocked:boolean;clockActivated:boolean;intruder:boolean;remaining?:number};
 export type Target={id:ClueId;label:string;pos:[number,number,number];reach:number;hint:string};
+// Spatial blueprint: different corners, open approach to the lock and at least
+// a metre of clear circulation between the three main puzzle stations.
+export const ROOM_LAYOUT={
+ recorder:{x:-3.68,z:.82,w:1.56,d:1.32},
+ surveillance:{x:3.68,z:-3.30,w:1.56,d:1.32},
+ lock:{x:0,z:-2.65,w:3.06,d:1.82},
+ locker:{x:-3.75,z:-3.65,w:1.54,d:.90},
+ chair:{x:3.79,z:1.10,w:1.0,d:.84},
+ trunk:{x:-3.85,z:-1.85,w:1.12,d:.82}
+} as const;
 export const TARGETS:Target[]=[
  {id:"calendar",label:"Fotografía dañada",pos:[-2.75,2.14,-5.16],reach:3.4,hint:"Alguien ocultó algo detrás de la fotografía."},
- {id:"cassette",label:"Grabador de voz",pos:[-3.72,1.15,-1.65],reach:3.1,hint:"La cinta está atascada en una grabación."},
+ {id:"cassette",label:"Grabador de voz",pos:[ROOM_LAYOUT.recorder.x-.04,1.15,ROOM_LAYOUT.recorder.z+.26],reach:3.1,hint:"La cinta está atascada en una grabación."},
  {id:"memo",label:"Archivo de vigilancia",pos:[3.70,1.47,-3.31],reach:3.2,hint:"Un monitor conserva una grabación de seguridad."},
  {id:"clock",label:"Reloj del interrogatorio",pos:[3.73,2.14,-5.20],reach:3.9,hint:"Las agujas se mueven, aunque el reloj está desconectado."},
  {id:"drawer",label:"Candado del cajón",pos:[.15,.91,-2.04],reach:2.9,hint:"Seis pequeñas ruedas numéricas protegen el cajón."},
@@ -178,7 +188,7 @@ function scene(opened:boolean){
  }
  // Isolated left/right investigation stations, away from combination lock.
  // The 1m central walkway is deliberately left clear.
- for(const [x,z] of [[-3.68,-1.91],[3.68,-3.30]] as const){
+ for(const {x,z} of [ROOM_LAYOUT.recorder,ROOM_LAYOUT.surveillance]){
   g.box(x,.826,z,1.52,.17,1.29,"#454c51");
   g.box(x,.933,z,1.56,.046,1.32,"#8b6b4c");
   for(const dx of [-.62,.62])for(const dz of [-.48,.48]){
@@ -219,15 +229,17 @@ function scene(opened:boolean){
    g.box(x,.876,-1.410,.065,.027,.023,"#f2d8ab");
   }
  }
- // Left: tape interrogation station with two real reels, indication lamp.
- g.box(-3.69,1.067,-1.83,1.08,.22,.62,"#333f43");
- g.box(-3.69,1.195,-1.71,.89,.023,.40,"#c8b898");
- g.box(-3.69,1.222,-1.71,.70,.025,.27,"#30383b");
- for(const x of [-3.89,-3.49]){
-  g.tube([x,1.249,-1.72],[x,1.265,-1.72],.095,"#d9cbb0");
-  g.tube([x,1.270,-1.72],[x,1.280,-1.72],.04,"#393d40");
+ // Tape recorder is now in its own front-left zone, not pressed against
+ // the central lock or the rusted locker. All reels are on the relocated desk.
+ const rx=ROOM_LAYOUT.recorder.x,rz=ROOM_LAYOUT.recorder.z;
+ g.box(rx-.01,1.067,rz+.08,1.08,.22,.62,"#333f43");
+ g.box(rx-.01,1.195,rz+.20,.89,.023,.40,"#c8b898");
+ g.box(rx-.01,1.222,rz+.20,.70,.025,.27,"#30383b");
+ for(const x of [rx-.21,rx+.19]){
+  g.tube([x,1.249,rz+.19],[x,1.265,rz+.19],.095,"#d9cbb0");
+  g.tube([x,1.270,rz+.19],[x,1.280,rz+.19],.04,"#393d40");
  }
- g.box(-4.03,1.092,-1.48,.090,.081,.07,"#bd544a","emissive");
+ g.box(rx-.35,1.092,rz+.43,.090,.081,.07,"#bd544a","emissive");
  // Surveillance monitor occupies right-side workspace; its screen is readable.
  g.box(3.68,1.42,-3.54,1.07,.87,.18,"#1c2429");
  g.box(3.68,1.43,-3.433,.88,.65,.030,"#46616c","memo");
@@ -248,18 +260,20 @@ function scene(opened:boolean){
  g.box(4.12,1.13,1.31,.13,.82,.72,"#403b36");
  for(const y of [.89,1.12,1.34])g.box(4.07,y,1.33,.060,.046,.58,"#756253");
  // Shelved files occupy the far-left utility alcove, away from the lock.
- for(const y of [.58,1.23,1.90])g.box(-4.48,y,1.13,.58,.072,1.55,"#63584c");
- for(let i=0;i<12;i++){const z=.47+i*.125;
+ for(const y of [.58,1.23,1.90])g.box(-4.48,y,3.27,.58,.072,1.55,"#63584c");
+ for(let i=0;i<12;i++){const z=2.60+i*.125;
   g.box(-4.42,1.57,z,.12,.48,.085,i%3?"#766a58":"#3d5556");
  }
- // Low equipment trunk and loose cable: background storytelling only.
- g.box(-3.86,.33,2.53,1.08,.58,.74,"#4b4e4b");
- g.box(-3.86,.66,2.53,1.12,.08,.78,"#7c715c");
- g.box(-3.86,.41,2.12,.29,.14,.047,"#a29073");
+ // A low evidence trunk fills the LEFT side-wall midpoint, leaving
+ // an obvious walkable gap between the tape desk and the rear locker.
+ const trunk=ROOM_LAYOUT.trunk;
+ g.box(trunk.x,.33,trunk.z,1.08,.58,.74,"#4b4e4b");
+ g.box(trunk.x,.66,trunk.z,1.12,.08,.78,"#7c715c");
+ g.box(trunk.x,.41,trunk.z-.41,.29,.14,.047,"#a29073");
  for(let i=0;i<7;i++){
   const t=i/6*Math.PI*1.6;
-  g.tube([-3.28+.14*Math.cos(t),.028,2.76+.12*Math.sin(t)],
-         [-3.28+.14*Math.cos(t+.31),.028,2.76+.12*Math.sin(t+.31)],.014,"#242b2c");
+  g.tube([trunk.x+.58+.14*Math.cos(t),.028,trunk.z+.23+.12*Math.sin(t)],
+         [trunk.x+.58+.14*Math.cos(t+.31),.028,trunk.z+.23+.12*Math.sin(t+.31)],.014,"#242b2c");
  }
  // Evidence photograph on the wall. Nothing displays the solution on its front.
  // Cream paper frame, dark developed photograph, aged tape and damaged corners.
@@ -337,10 +351,10 @@ function scene(opened:boolean){
  g.box(0,3.20,-1.65,.61,.18,.55,"#c2a47c");
  g.box(0,3.08,-1.65,.4,.032,.31,"#ffd9a2","emissive");
  // Documents, coffee and evidence prints physically REST ON the new desks.
- g.tube([-4.16,1.05,-2.22],[-4.16,1.25,-2.22],.09,"#d3bea0");
- g.tube([-4.16,1.25,-2.22],[-4.16,1.267,-2.22],.082,"#554539");
- g.box(-3.53,1.000,-2.32,.31,.015,.19,"#dbc5a6");
- g.box(-3.53,1.02,-2.32,.18,.010,.013,"#5d5551");
+ g.tube([rx-.48,1.05,rz-.31],[rx-.48,1.25,rz-.31],.09,"#d3bea0");
+ g.tube([rx-.48,1.25,rz-.31],[rx-.48,1.267,rz-.31],.082,"#554539");
+ g.box(rx+.15,1.000,rz-.41,.31,.015,.19,"#dbc5a6");
+ g.box(rx+.15,1.02,rz-.41,.18,.010,.013,"#5d5551");
  for(let i=0;i<4;i++){
   const x=3.17+i%2*.18,z=-2.96+Math.floor(i/2)*.16;
   g.box(x,1.0,z,.16,.015,.12,"#c6b698");
@@ -366,9 +380,9 @@ function scene(opened:boolean){
  g.tube([3.85,3.65,-5.53],[3.88,2.8,-5.55],.032,"#262b2c");
  g.tube([3.88,2.8,-5.55],[4.70,2.39,-4.20],.025,"#242829");
  // Hanging coat almost melts into darkness: the eye reads it as a person.
- g.box(-4.28,2.65,.9,.39,.082,.095,"#796b5d");
- g.tube([-4.28,2.64,.88],[-4.28,2.42,.88],.022,"#958270");
- g.ellipsoid(-4.28,1.87,.98,.35,.66,.13,"#212629","scene");
+ g.box(-4.28,2.65,-1.0,.39,.082,.095,"#796b5d");
+ g.tube([-4.28,2.64,-1.02],[-4.28,2.42,-1.02],.022,"#958270");
+ g.ellipsoid(-4.28,1.87,-.92,.35,.66,.13,"#212629","scene");
  // 12 metal scraps on floor: atmospheric, not all puzzle relevant.
  for(let i=0;i<15;i++){
   const x=Math.sin(i*7.13)*4.07,z=Math.cos(i*5.17)*4.15-.35;
