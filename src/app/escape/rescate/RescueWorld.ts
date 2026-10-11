@@ -529,9 +529,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  };
  let current={...flags};rebuild(current.unlocked);
  let rig:Rig|null=null;
- void loadRig(gl,"./models/masked-raider.glb").then(model=>{
+ void loadRig(gl,"./models/stalker-skeletal.glb").then(model=>{
   if(!active){model.dispose();return;}
-  rig=model;canvas.dataset.intruderModel="glb";
+  rig=model;canvas.dataset.intruderModel=model.skinned?"skinned-glb":"fallback";
+  canvas.dataset.intruderBones=String(model.bones);
  }).catch(err=>{
   console.warn("CASO M: modelo GLB inaccesible. Manteniendo respaldo 3D.",err);
   canvas.dataset.intruderModel="fallback";
@@ -644,7 +645,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,walk*4.9);
   canvas.dataset.intruderApproach=approach.toFixed(2);
-  canvas.dataset.intruderFinish=rig?.parts.some(p=>p.faceplate)?"mask-attached-to-rig":rig?"glb-no-faceplate":"fallback";
+  canvas.dataset.intruderFinish=rig?.skinned?"skeletal-human":rig?"glb-no-skin":"fallback";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
@@ -674,9 +675,9 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   }
   // This shares the room's depth-buffer and camera: no second renderer.
   if(rig&&intruderStarted&&elapsed>=9){
-   rig.animate(elapsed);
+   rig.animate(elapsed,elapsed>11&&approach<2.82);
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
-   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,1);gl.uniform1f(umask,0);
+   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
    gl.enableVertexAttribArray(auv);
    gl.uniform1f(ua,0);
    for(const part of rig.parts){
