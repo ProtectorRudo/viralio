@@ -639,9 +639,17 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   move:(f:number,s:number,dt:number)=>{
    if(Math.abs(f)+Math.abs(s)<.02)return;
    const {forward,right}=basis(),length=Math.max(1,Math.hypot(f,s)),d=2.75*Math.min(dt,.22);
-   const dx=(f*forward[0]+s*right[0])/length*d,dz=(f*forward[2]+s*right[2])/length*d;
-   if(!collides(pose.x+dx,pose.z))pose.x+=dx;
-   if(!collides(pose.x,pose.z+dz))pose.z+=dz;
+   // Software WebGL/slow phones can yield a 0.6m frame displacement.
+   // Divide that displacement into <=7cm collision-safe microsteps;
+   // otherwise a free passage is rejected because a large jump overshoots
+   // the final 15-30cm before a piece of furniture.
+   const steps=Math.max(1,Math.ceil(d/.07));
+   const dx=(f*forward[0]+s*right[0])/length*d/steps;
+   const dz=(f*forward[2]+s*right[2])/length*d/steps;
+   for(let i=0;i<steps;i++){
+    if(!collides(pose.x+dx,pose.z))pose.x+=dx;
+    if(!collides(pose.x,pose.z+dz))pose.z+=dz;
+   }
   },
   pick,project,
   look:(dx:number,dy:number)=>{pose.yaw=(pose.yaw-dx*.0048+Math.PI*4)%(Math.PI*2);pose.pitch=Math.max(-1.05,Math.min(1.05,pose.pitch-dy*.0038));},
