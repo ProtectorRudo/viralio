@@ -1,8 +1,8 @@
-/** CC0 raider model from 3dassets.dev asset 32700. Tiny WebGL1 glTF 2 reader.
- * No extra renderer, no additional browser downloads after initial GLB. */
+/** Skinned CC0 human GLB model (MakeHuman / Innerscene). WebGL1 CPU skinning
+ * shares the room renderer, camera, depth buffer and animation clock. */
 type M=Float32Array;
 type Node={name?:string;mesh?:number;children?:number[];matrix?:number[];translation?:number[];rotation?:number[];scale?:number[]};
-type GLTF={nodes:Node[];meshes:{primitives:{attributes:{POSITION:number;NORMAL?:number;TEXCOORD_0?:number};indices?:number;material?:number;mode?:number}[]}[];materials?:{pbrMetallicRoughness?:{baseColorFactor?:number[];baseColorTexture?:{index:number}}}[];textures?:{source?:number;extensions?:{EXT_texture_webp?:{source:number}}}[];images?:{bufferView?:number;mimeType?:string}[];accessors:{bufferView?:number;byteOffset?:number;count:number;componentType:number;type:string;normalized?:boolean}[];bufferViews:{buffer:number;byteOffset?:number;byteStride?:number;byteLength:number}[];animations?:{name?:string;samplers:{input:number;output:number;interpolation?:string}[];channels:{sampler:number;target:{node?:number;path:string}}[]}[];skins?:unknown[]};
+type GLTF={nodes:Node[];meshes:{primitives:{attributes:{POSITION:number;NORMAL?:number;TEXCOORD_0?:number;JOINTS_0?:number;WEIGHTS_0?:number};indices?:number;material?:number;mode?:number}[]}[];materials?:{pbrMetallicRoughness?:{baseColorFactor?:number[];baseColorTexture?:{index:number}}}[];textures?:{source?:number;extensions?:{EXT_texture_webp?:{source:number}}}[];images?:{bufferView?:number;mimeType?:string}[];accessors:{bufferView?:number;byteOffset?:number;count:number;componentType:number;type:string;normalized?:boolean}[];bufferViews:{buffer:number;byteOffset?:number;byteStride?:number;byteLength:number}[];animations?:{name?:string;samplers:{input:number;output:number;interpolation?:string}[];channels:{sampler:number;target:{node?:number;path:string}}[]}[];skins?:{joints:number[];inverseBindMatrices?:number;skeleton?:number}[]};
 const eye=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 const mul=(a:M,b:M)=>{const r=new Float32Array(16);
  for(let j=0;j<4;j++)for(let i=0;i<4;i++)for(let k=0;k<4;k++)r[j*4+i]+=a[k*4+i]*b[j*4+k];return r;};
@@ -17,12 +17,13 @@ const lerp=(a:number[],b:number[],f:number,quat=false)=>{let sign=1;
  if(quat&&a.reduce((z,v,i)=>z+v*b[i],0)<0)sign=-1;
  const r=a.map((v,i)=>v*(1-f)+b[i]*f*sign),len=Math.hypot(...r)||1;
  return quat?r.map(x=>x/len):r;};
-export type RigPart={buffer:WebGLBuffer;count:number;node:number;texture:WebGLTexture|null;hasUV:boolean;faceplate?:boolean};
-export type Rig={parts:RigPart[];matrices:M[];animate:(elapsed:number)=>void;dispose:()=>void};
+type SkinCPU={skin:number;bind:Float32Array;output:Float32Array;joints:Uint16Array;weights:Float32Array};
+export type RigPart={buffer:WebGLBuffer;count:number;node:number;texture:WebGLTexture|null;hasUV:boolean;faceplate?:boolean;skinCPU?:SkinCPU};
+export type Rig={parts:RigPart[];matrices:M[];animate:(elapsed:number,moving?:boolean)=>void;skinned:boolean;bones:number;dispose:()=>void};
 export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  const res=await fetch(url,{cache:"force-cache"});if(!res.ok)throw Error("GLB "+res.status);
  const file=await res.arrayBuffer(),dv=new DataView(file);
- if(file.byteLength<100||file.byteLength>4e6||dv.getUint32(0,true)!==0x46546c67)throw Error("GLB corrupto");
+ if(file.byteLength<100||file.byteLength>45000000||dv.getUint32(0,true)!==0x46546c67)throw Error("GLB corrupto");
  let off=12,doc:GLTF|null=null,bin:ArrayBuffer|null=null;
  while(off+8<=file.byteLength){const len=dv.getUint32(off,true),type=dv.getUint32(off+4,true);off+=8;
   if(off+len>file.byteLength)throw Error("GLB truncado");
@@ -30,10 +31,10 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   if(type===0x004e4942)bin=file.slice(off,off+len);off+=len;
  }
  if(!doc||!bin||!doc.meshes?.length)throw Error("GLB sin mallas");
- if(doc.skins?.length)throw Error("GLB skinned: se mantiene modelo de respaldo");
- const json=doc,raw=new DataView(bin),sizes:Record<string,number>={SCALAR:1,VEC2:2,VEC3:3,VEC4:4};
+ if(!doc.skins?.length)throw Error("CASO M: expected real skinned human rig");
+ const json=doc,raw=new DataView(bin),sizes:Record<string,number>={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16};
  const acc=(id:number):number[][]=>{
-  const a=json.accessors[id],v=json.bufferViews[a?.bufferView??-1];if(!a||!v||v.buffer!==0||!sizes[a.type]||a.count>150000)throw Error("Accessor invalid");
+  const a=json.accessors[id],v=json.bufferViews[a?.bufferView??-1];if(!a||!v||v.buffer!==0||!sizes[a.type]||a.count>700000)throw Error("Accessor invalid");
   const unit=({5120:1,5121:1,5122:2,5123:2,5125:4,5126:4} as Record<number,number>)[a.componentType];if(!unit)throw Error("GLB component");
   const n=sizes[a.type],stride=v.byteStride??n*unit,start=(v.byteOffset??0)+(a.byteOffset??0);
   const sample=(p:number)=>{if(p+unit>raw.byteLength)throw Error("GLB range");switch(a.componentType){
@@ -82,8 +83,11 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
   for(const p of json.meshes[mesh].primitives){
    if(p.mode!==undefined&&p.mode!==4)continue;
    const vertices=acc(p.attributes.POSITION),normals=p.attributes.NORMAL===undefined?[]:acc(p.attributes.NORMAL),uvs=p.attributes.TEXCOORD_0===undefined?[]:acc(p.attributes.TEXCOORD_0);
+   const jointValues=p.attributes.JOINTS_0===undefined?[]:acc(p.attributes.JOINTS_0);
+   const weightValues=p.attributes.WEIGHTS_0===undefined?[]:acc(p.attributes.WEIGHTS_0);
+   const skinned=json.nodes[ni].skin!==undefined&&!!jointValues.length&&!!weightValues.length;
    const ids=p.indices===undefined?vertices.map((_,i)=>i):acc(p.indices).map(row=>row[0]);
-   if(ids.length>250000)throw Error("GLB demasiado grande");
+   if(ids.length>700000)throw Error("GLB demasiado grande");
    // glTF 2.0 defaults to WHITE (1,1,1,1), not gray; texture and factor
    // are multiplied in the shader. Never clamp a material into muddy gray.
    const factor=json.materials?.[p.material??-1]?.pbrMetallicRoughness?.baseColorFactor??[1,1,1,1];
@@ -93,85 +97,77 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
     data.set([P[0],P[1],P[2],N[0],N[1],N[2],...color,...(uvs[v]??[0,0])],i*11);});
    vertices.forEach(v=>vpos(world[ni],v).forEach((x,k)=>{lo[k]=Math.min(lo[k],x);hi[k]=Math.max(hi[k],x);}));
    const buffer=gl.createBuffer();if(!buffer)throw Error("WebGL buffer");
-   gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+   gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,skinned?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);
    const textureIndex=json.materials?.[p.material??-1]?.pbrMetallicRoughness?.baseColorTexture?.index;
    const textureRef=textureIndex===undefined?undefined:json.textures?.[textureIndex];
    const imageId=textureRef?.extensions?.EXT_texture_webp?.source??textureRef?.source;
-   parts.push({buffer,count:ids.length,node:ni,hasUV:!!uvs.length,texture:imageId===undefined?null:(imageTextures[imageId]??null)});
+   const skinCPU:SkinCPU|undefined=skinned?{
+    skin:json.nodes[ni].skin!,bind:data,output:new Float32Array(data),
+    joints:new Uint16Array(ids.length*4),weights:new Float32Array(ids.length*4)
+   }:undefined;
+   if(skinCPU)ids.forEach((v,i)=>{for(let j=0;j<4;j++){skinCPU.joints[i*4+j]=(jointValues[v]?.[j]??0);skinCPU.weights[i*4+j]=weightValues[v]?.[j]??0;}});
+   parts.push({buffer,count:ids.length,node:ni,hasUV:!!uvs.length,texture:imageId===undefined?null:(imageTextures[imageId]??null),skinCPU});
   }
  }}catch(e){parts.forEach(p=>gl.deleteBuffer(p.buffer));throw e;}
-  // Build the porcelain faceplate in the SAME local space as the GLB head.
- // The old room-level oval was detached because it never followed the model's
- // 180-degree rotation, mesh offsets or the animated head pivot.
- const headCandidates:{node:number;verts:number[][];score:number}[]=[];
- for(let ni=0;ni<json.nodes.length;ni++){
-  const meshIndex=json.nodes[ni].mesh;if(meshIndex===undefined)continue;
-  const verts=json.meshes[meshIndex].primitives.flatMap(p=>acc(p.attributes.POSITION));
-  if(!verts.length)continue;
-  const x=verts.map(v=>vpos(world[ni],v));
-  const high=Math.max(...x.map(v=>v[1])),low=Math.min(...x.map(v=>v[1]));
-  const left=Math.min(...x.map(v=>v[0])),right=Math.max(...x.map(v=>v[0]));
-  const name=(json.nodes[ni].name??"").toLowerCase();
-  const nameScore=/head|skull|face|hood|mask|respirat|visor|helmet/.test(name)?10:0;
-  // Require at least part of this mesh to live in the top quarter of the body.
-  const topScore=high>lo[1]+(hi[1]-lo[1])*.71?5:0;
-  const narrowScore=right-left<.8?2:0;
-  if((nameScore||topScore)&&low>lo[1]+(hi[1]-lo[1])*.56)
-   headCandidates.push({node:ni,verts,score:nameScore+topScore+narrowScore+Math.min(1,x.length/500)});
- }
- headCandidates.sort((a,b)=>b.score-a.score);
- const head=headCandidates[0];
- if(head){
-  const X=head.verts.map(v=>v[0]),Y=head.verts.map(v=>v[1]),Z=head.verts.map(v=>v[2]);
-  const minX=Math.min(...X),maxX=Math.max(...X),minY=Math.min(...Y),maxY=Math.max(...Y),front=Math.max(...Z);
-  const localW=maxX-minX,localH=maxY-minY;
-  // Head geometry differs across assets; cap offsets to natural human dimensions.
-  const cx=(minX+maxX)*.5,cy=minY+localH*.50;
-  const rx=Math.min(.16,Math.max(.095,localW*.37));
-  const ry=Math.min(.215,Math.max(.14,localH*.44));
-  const verts:number[]=[];
-  const vertex=(p:number[],normal:number[],col:number[])=>verts.push(...p,...normal,...col,0,0);
-  const tri=(a:number[],b:number[],c:number[],normal:number[],color:number[])=>{vertex(a,normal,color);vertex(b,normal,color);vertex(c,normal,color);};
-  const zAt=(u:number,v:number)=>front+.018+.039*(1-Math.min(1,u*u+v*v));
-  const pos=(u:number,v:number)=>[cx+u*rx,cy+v*ry,zAt(u,v)];
-  // Continuous curved sculpt, not a flat billboard: 12 rings x 28 segments.
-  for(let i=0;i<12;i++)for(let j=0;j<28;j++){
-   const a=i/12,b=(i+1)/12,t=j/28*Math.PI*2,q=(j+1)/28*Math.PI*2;
-   const p0=pos(a*Math.cos(t),a*Math.sin(t)),p1=pos(b*Math.cos(t),b*Math.sin(t));
-   const p2=pos(b*Math.cos(q),b*Math.sin(q)),p3=pos(a*Math.cos(q),a*Math.sin(q));
-   const u=Math.cos((t+q)/2)*b,v=Math.sin((t+q)/2)*b;
-   const norm=[u*.32,v*.25,1];
-   const len=Math.hypot(...norm),n=norm.map(x=>x/len);
-   const variant=((i*7+j*11)%13)*.004;
-   const shade=[.68+variant,.605+variant,.50+variant];
-   tri(p0,p1,p2,n,shade);tri(p0,p2,p3,n,shade);
+ // The mask and blade are actual geometry parented to the Head and RightHand
+ // bones. They follow every skeletal keyframe instead of floating in room space.
+ const findBone=(rx:RegExp)=>json.nodes.findIndex(n=>rx.test((n.name??"").toLowerCase()));
+ const head=findBone(/(^|[._:| ])head($|[._:| ])/),hand=findBone(/(^|[._:| ])(righthand|hand_r|hand\.r|r_hand)($|[._:| ])/);
+ const addProp=(node:number,vertices:number[],faceplate=false,blade=false)=>{
+  const buffer=gl.createBuffer();if(!buffer)return;
+  const data=new Float32Array(vertices);
+  gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+  parts.push({buffer,count:data.length/11,node,hasUV:false,texture:null,faceplate});
+ };
+ const propVertex=(dest:number[],p:number[],color:number[],norm:number[]=[0,0,1])=>dest.push(...p,...norm,...color,0,0);
+ const propTri=(dst:number[],a:number[],b:number[],c:number[],color:number[],norm:number[]=[0,0,1])=>{
+  propVertex(dst,a,color,norm);propVertex(dst,b,color,norm);propVertex(dst,c,color,norm);
+ };
+ if(head>=0){
+  const headGeom:number[]=[];
+  const oval=(u:number,v:number,z=.13)=>[u*.145,v*.205+.09,z+.04*Math.max(0,1-u*u-v*v)];
+  // Weathered bone-colored face shell, with subtle unpainted ceramic pores.
+  for(let i=0;i<13;i++)for(let j=0;j<32;j++){
+   const lo=i/13,hi=(i+1)/13,t=j/32*Math.PI*2,q=(j+1)/32*Math.PI*2;
+   const a=oval(lo*Math.cos(t),lo*Math.sin(t)),b=oval(hi*Math.cos(t),hi*Math.sin(t));
+   const c=oval(hi*Math.cos(q),hi*Math.sin(q)),d=oval(lo*Math.cos(q),lo*Math.sin(q));
+   const dark=((i*17+j*7)%19)*.004,shade=[.66+dark,.60+dark,.52+dark];
+   propTri(headGeom,a,b,c,shade);propTri(headGeom,a,c,d,shade);
   }
-  // Eye cavities follow the curvature: angled narrow openings, never doll eyes.
-  for(const sign of [-1,1]){
-   const u=sign*.42,v=.21,ring=14;
-   const center=pos(u,v);center[2]+=.010;
-   const dark=[.012,.015,.018],N=[0,0,1];
-   for(let k=0;k<ring;k++){
-    const t=k/ring*Math.PI*2,q=(k+1)/ring*Math.PI*2;
-    const eye=(r:number)=>{const p=pos(u+Math.cos(r)*.26,v+Math.sin(r)*.105);p[2]+=.012;return p;};
-    tri(center,eye(t),eye(q),N,dark);
-   }
+  for(const side of [-1,1])for(let j=0;j<16;j++){
+   const t=j/16*Math.PI*2,q=(j+1)/16*Math.PI*2;
+   const slit=(ang:number)=>oval(side*.45+Math.cos(ang)*.245,.32+Math.sin(ang)*.094,.196);
+   propTri(headGeom,oval(side*.45,.32,.203),slit(t),slit(q),[.012,.016,.020]);
   }
-  // Scored diagonal cracks over the ceramic face.
-  const trace=(a:[number,number],b:[number,number],color:number[])=>{
-   const P=pos(a[0],a[1]),Q=pos(b[0],b[1]);P[2]+=.014;Q[2]+=.014;
-   const dx=Q[0]-P[0],dy=Q[1]-P[1],len=Math.hypot(dx,dy)||1,ox=-dy/len*.002,oy=dx/len*.002;
-   tri([P[0]-ox,P[1]-oy,P[2]],[Q[0]-ox,Q[1]-oy,Q[2]],[Q[0]+ox,Q[1]+oy,Q[2]],[0,0,1],color);
-   tri([P[0]-ox,P[1]-oy,P[2]],[Q[0]+ox,Q[1]+oy,Q[2]],[P[0]+ox,P[1]+oy,P[2]],[0,0,1],color);
+  const scar=(a:number[],b:number[],color:number[])=>{
+   const p=oval(a[0],a[1],.198),q=oval(b[0],b[1],.198);
+   propTri(headGeom,p,q,[q[0]+.004,q[1],q[2]],color);
   };
-  trace([-.52,.77],[-.21,.45],[.27,.19,.16]);trace([-.21,.45],[-.37,.29],[.27,.19,.16]);
-  trace([.33,-.08],[.59,-.54],[.47,.11,.10]);trace([.59,-.54],[.48,-.77],[.36,.13,.13]);
-  const buffer=gl.createBuffer();if(buffer){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
-   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
-   parts.push({buffer,count:verts.length/11,node:head.node,hasUV:false,texture:null,faceplate:true});
+  scar([-.64,.68],[-.12,.38],[.20,.16,.13]);
+  scar([.35,-.12],[.61,-.65],[.36,.085,.075]);
+  addProp(head,headGeom,true);
+  // Hood folds: woven shadow under the face shell, dark cloth around the perimeter.
+  const hood:number[]=[];
+  for(let j=0;j<32;j++){
+   const t=j/32*Math.PI*2,q=(j+1)/32*Math.PI*2;
+   const inner=(v:number)=>[Math.cos(v)*.151,Math.sin(v)*.213+.09,.10];
+   const outer=(v:number)=>[Math.cos(v)*.216,Math.sin(v)*.282+.10,.055];
+   const cloth=[.08,.095,.105];
+   propTri(hood,inner(t),outer(t),outer(q),cloth);propTri(hood,inner(t),outer(q),inner(q),cloth);
   }
+  addProp(head,hood);
  }
-
+ if(hand>=0){
+  const prop:number[]=[];
+  // Real tapered steel machete and compact dark grip, positioned along hand axis.
+  const metal=[.46,.49,.47],edge=[.68,.71,.69],grip=[.12,.095,.085];
+  const a=[-.035,-.11,.065],b=[.035,-.11,.065],c=[.062,-.58,.065],d=[-.055,-.58,.065];
+  propTri(prop,a,b,c,metal);propTri(prop,a,c,d,metal);
+  propTri(prop,[-.055,-.58,.068],[.062,-.58,.068],[.032,-.63,.068],edge);
+  propTri(prop,[-.035,.04,.075],[.035,.04,.075],[.035,-.13,.075],grip);
+  propTri(prop,[-.035,.04,.075],[.035,-.13,.075],[-.035,-.13,.075],grip);
+  addProp(hand,prop,false,true);
+ }
  if(!parts.length)throw Error("GLB sin triángulos");
  const scale=Math.min(2.2,2.85/Math.max(.1,hi[1]-lo[1])),cx=(lo[0]+hi[0])/2,cz=(lo[2]+hi[2])/2;
  const root=mul(trs([.32,-lo[1]*scale,6.28],[0,1,0,0],[scale,scale,scale]),trs([-cx,0,-cz],[0,0,0,1],[1,1,1]));
