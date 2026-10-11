@@ -371,19 +371,51 @@ function scene(opened:boolean){
   g.reelZ(x,1.12,rz+.401,.027,.008,.018,"#9e988b","metal",12);
  }
  g.box(rx-.35,1.091,rz+.432,.071,.058,.030,"#b94a40","emissive");
- // Surveillance monitor occupies right-side workspace; its screen is readable.
- g.box(3.68,1.42,-3.54,1.07,.87,.18,"#1c2429");
- g.box(3.68,1.43,-3.433,.88,.65,.030,"#46616c","memo");
- g.box(3.68,1.688,-3.414,.85,.105,.020,"#20333c");
- for(let i=0;i<5;i++)g.box(3.36+i*.16,1.685,-3.401,.085,.024,.016,"#beb19a");
- g.box(3.56,1.30,-3.400,.22,.17,.022,"#809598");
- g.box(3.83,1.39,-3.400,.26,.19,.022,"#2a414d");
- g.box(3.68,.974,-3.53,.12,.11,.13,"#777b79");
- g.box(3.68,.947,-3.53,.41,.037,.33,"#6f7978");
- // Telephone lies beneath surveillance monitor, slightly toward player.
- g.box(3.67,1.028,-2.82,.51,.14,.31,"#303b40");
- g.tube([3.47,1.148,-2.84],[3.87,1.148,-2.84],.076,"#92938b");
- g.tube([3.92,1.04,-2.85],[4.07,.95,-2.87],.025,"#b1a28e");
+ // Surveillance station: recessed CRT-inspired housing, vents,
+ // glass inset, OSD lines, status LEDs, real stalk & die-cast foot.
+ const mx=ROOM_LAYOUT.surveillance.x,mz=ROOM_LAYOUT.surveillance.z;
+ g.bevelBox(mx,1.42,mz-.24,1.10,.89,.24,.045,"#273238","metal");
+ g.bevelBox(mx,1.43,mz-.107,.964,.728,.045,.025,"#121b20","metal");
+ g.bevelBox(mx,1.43,mz-.078,.872,.637,.015,.006,"#2f5360","memo");
+ g.box(mx,1.58,mz-.060,.70,.018,.007,"#6a9899","memo");
+ for(let i=0;i<8;i++){
+  g.box(mx,1.19+i*.064,mz-.064,.79,.0035,.0045,i%3===0?"#507b7d":"#365964","memo");
+ }
+ // Surveillance silhouettes, date/time bars, tiny recording dot.
+ for(let i=0;i<5;i++){
+  const x=mx-.30+i*.142;
+  g.box(x,1.43+(i%2)*.13,mz-.047,.12,.064,.007,i%2?"#56777c":"#31424a","memo");
+ }
+ g.box(mx,1.132,mz-.043,.72,.052,.008,"#17252c","memo");
+ g.ellipsoid(mx+.358,1.735,mz-.046,.014,.014,.008,"#cd443d","emissive",5,8);
+ for(let i=0;i<12;i++)g.box(mx-.52+i*.095,1.80,mz-.23,.049,.009,.020,"#10191b","metal");
+ for(let x of [mx-.45,mx+.45])for(let y of [1.10,1.76])
+  g.reelZ(x,y,mz-.070,.016,.006,.008,"#9b9b8e","metal",10);
+ g.bevelBox(mx,.960,mz-.30,.115,.18,.13,.016,"#676d69","metal");
+ g.bevelBox(mx,.862,mz-.30,.42,.045,.34,.016,"#545e5c","metal");
+ for(let i=0;i<6;i++)g.box(mx-.34+i*.14,1.05,mz-.071,.044,.030,.017,i===5?"#ae473d":"#879390","metal");
+ // Keyboard, rows of independent angled raised keys; mouse + cord.
+ g.bevelBox(mx,1.016,mz+.31,.87,.046,.23,.016,"#30373b","metal");
+ for(let row=0;row<3;row++)for(let col=0;col<10;col++){
+  const x=mx-.35+col*.077,z=mz+.244+row*.064;
+  g.bevelBox(x,1.046,z,.060,.019,.046,.004,row===2&&col>3&&col<8?"#626f6d":"#83908b","metal");
+ }
+ g.ellipsoid(mx+.53,1.032,mz+.22,.076,.047,.108,"#4e5b5d","metal",8,12);
+ g.tube([mx+.58,1.036,mz+.16],[mx+.69,1.034,mz-.10],.009,"#353b3a","cable");
+ // Analogue telephone: cradle, rounded handset, keypad, cord and jack.
+ const tx=3.67,tz=-2.82;
+ g.bevelBox(tx,1.025,tz,.54,.14,.34,.043,"#303b40","metal");
+ g.box(tx,1.106,tz+.038,.32,.032,.18,"#151f23","metal");
+ for(let row=0;row<3;row++)for(let col=0;col<3;col++)
+  g.bevelBox(tx-.105+col*.105,1.131,tz-.015+row*.058,.058,.017,.043,.004,"#8c9290","metal");
+ g.ellipsoid(tx-.22,1.184,tz,.060,.060,.092,"#737a76","metal",8,10);
+ g.ellipsoid(tx+.22,1.184,tz,.060,.060,.092,"#737a76","metal",8,10);
+ g.tube([tx-.21,1.205,tz],[tx+.21,1.205,tz],.049,"#8b938e","metal");
+ g.tube([tx+.245,1.168,tz+.03],[tx+.35,1.115,tz+.12],.014,"#2b3335","cable");
+ for(let i=0;i<9;i++){
+  const t=i/9*Math.PI*2,z=tz+.12+Math.sin(t)*.026,x=tx+.35+i*.023;
+  g.tube([x,1.109,z],[x+.02,1.104,z+.01],.012,"#3b4241","cable");
+ }
  // The right-side lane must remain completely open to the security monitor
  // and wall clock. Removed the decorative chair that blocked navigation.
  // Full-height utilitarian shelf: brackets, warped wooden shelves,
