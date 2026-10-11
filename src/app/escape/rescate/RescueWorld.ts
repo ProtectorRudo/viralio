@@ -720,6 +720,8 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
     gl.vertexAttribPointer(auv,2,gl.FLOAT,false,11*4,36);
     gl.bindTexture(gl.TEXTURE_2D,part.texture??blank);
     gl.uniform1f(utex,part.texture&&part.hasUV?1:0);
+    // Recolor only deforming human skin mesh: keep porcelain and steel materials intact.
+    gl.uniform1f(ucloth,part.skinCPU?1:0);
     gl.uniform1f(umask,part.faceplate?1:0);
     gl.uniform1f(ublade,part.weapon?Math.max(0,1.0-Math.abs(elapsed-25.2)/.9)*.16:0);
     gl.drawArrays(gl.TRIANGLES,0,part.count);
