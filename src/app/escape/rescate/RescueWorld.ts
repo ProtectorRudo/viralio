@@ -525,24 +525,79 @@ function scene(opened:boolean){
   g.tube(nodes[i],nodes[j],.011,"#9b312d");
  // Broad strip of security-camera timeline under the observation notes.
  for(let i=0;i<5;i++)g.box(.77+i*.36,1.42,-5.532,.30,.040,.012,i%2?"#52463b":"#8c513e");
- // Armario, fake lead, beside the wall.
- g.box(-3.75,1.51,-3.65,1.54,2.98,.90,"#414d50");
- g.box(-3.35,1.65,-3.18,.08,.41,.08,"#d1b380");
- for(const y of [.65,1.16,2.15,2.67])g.box(-3.74,y,-3.185,1.28,.035,.06,"#666f73");
- // Security camera, red recording indicator.
- g.box(3.48,3.41,-5.32,.53,.24,.51,"#87918f");
- g.box(3.48,3.44,-5.03,.26,.17,.06,"#222831");
- g.box(3.25,3.44,-5.02,.07,.09,.08,"#c6463c","emissive");
- g.tube([3.46,3.54,-5.52],[3.83,3.82,-5.58],.07,"#8e968e");
- // Pipes, rusty utility panel and warning labels.
- for(const x of [4.45,4.25,4.05])g.tube([x,.25,3.4],[x,3.75,3.4],.072,"#67615a");
- for(const y of [.75,1.65,2.67])g.tube([4.45,y,3.4],[4.45,y,-.44],.055,"#83776c");
- g.box(4.66,2.0,-1.3,.13,1.21,1.0,"#9b8569");
- g.box(4.54,2,-1.3,.13,.66,.65,"#343d40");
- // Spotlight; unique highlight falls on the drawer and empty chair.
- g.tube([0,4.00,-1.65],[0,3.23,-1.65],.055,"#89837a");
- g.box(0,3.20,-1.65,.61,.18,.55,"#c2a47c");
- g.box(0,3.08,-1.65,.4,.032,.31,"#ffd9a2","emissive");
+ // Worn steel locker: inset double doors, rolled corners, vent slits,
+ // individual rivets, rust patina, hinge barrels and latch handle.
+ const lx=ROOM_LAYOUT.locker.x,lz=ROOM_LAYOUT.locker.z;
+ g.bevelBox(lx,1.51,lz,1.54,2.98,.90,.042,"#414b4d","metal");
+ for(const x of [lx-.365,lx+.365]){
+  g.bevelBox(x,1.54,lz+.466,.693,2.78,.050,.020,"#4f5c5e","metal");
+  g.box(x,1.54,lz+.503,.55,2.58,.007,"#465254","metal");
+  for(const y of [.60,1.18,2.04,2.65]){
+   g.box(x,y,lz+.509,.44,.025,.012,"#747d7b","metal");
+   g.box(x,y+.044,lz+.510,.44,.008,.012,"#283337","metal");
+  }
+  for(const hy of [.30,1.45,2.70]){
+   const hx=x+(x<lx?-.322:.322);
+   g.tube([hx,hy-.08,lz+.475],[hx,hy+.08,lz+.475],.023,"#a9a398","metal");
+   g.reelY(hx,hy+.083,lz+.475,.031,.013,.026,"#766f63","metal",12);
+  }
+  for(const vy of [.75,1.90,2.44])for(let i=0;i<7;i++){
+   g.box(x-.21+i*.068,vy,lz+.522,.036,.014,.012,"#293338","metal");
+  }
+ }
+ g.bevelBox(lx+.37,1.65,lz+.535,.082,.39,.077,.013,"#d0b88e","metal");
+ g.reelZ(lx+.37,1.63,lz+.579,.034,.011,.014,"#615a50","metal",12);
+ for(let i=0;i<10;i++){
+  const y=.42+i*.24;
+  g.box(lx-.757,y,lz+.15,.007,.10,.115,i%4===0?"#74675a":"#555652","metal");
+ }
+ // Ceiling camera: body, lens housing, glass, infrared ring, pan mount,
+ // bracket, exposed cable and recording indicator.
+ const camX=3.48,camY=3.41,camZ=-5.32;
+ g.bevelBox(camX,camY,camZ,.55,.26,.51,.034,"#828987","metal");
+ g.bevelBox(camX,camY+.015,camZ+.245,.40,.214,.065,.016,"#343b3e","metal");
+ g.reelZ(camX,camY,camZ+.30,.112,.066,.040,"#afb6ad","metal",20);
+ g.reelZ(camX,camY,camZ+.323,.068,.032,.022,"#111a21","metal",18);
+ g.ellipsoid(camX,camY,camZ+.337,.033,.034,.011,"#273b4b","metal",8,12);
+ for(let i=0;i<8;i++){
+  const t=i*Math.PI/4;
+  g.ellipsoid(camX+.159*Math.cos(t),camY+.159*Math.sin(t),camZ+.280,.015,.015,.010,"#a3aba0","metal",6,8);
+ }
+ g.box(3.24,3.45,-5.019,.070,.08,.060,"#c6463c","emissive");
+ g.tube([3.46,3.54,-5.52],[3.83,3.82,-5.58],.070,"#8e968e","metal");
+ g.bevelBox(3.85,3.81,-5.62,.24,.12,.14,.019,"#767f80","metal");
+ g.tube([3.81,3.78,-5.58],[4.15,3.67,-5.59],.012,"#252d2d","cable");
+ // Exposed utility ducts: bolted flanges, clamped elbows, rusty inspection
+ // panel, slotted ventilation grille and grounding wire.
+ for(const x of [4.45,4.25,4.05]){
+  g.tube([x,.25,3.4],[x,3.75,3.4],.070,"#67615a","metal");
+  for(const y of [.42,1.60,2.95,3.56]){
+   g.tube([x,y-.043,3.40],[x,y+.043,3.40],.083,"#988575","metal");
+   g.box(x+.02,y,3.48,.07,.065,.027,"#4f5554","metal");
+  }
+ }
+ for(const y of [.75,1.65,2.67]){
+  g.tube([4.45,y,3.4],[4.45,y,-.44],.055,"#83776c","metal");
+  for(const z of [-.18,1.22,2.77])g.tube([4.45,y,z-.037],[4.45,y,z+.037],.075,"#9d8771","metal");
+ }
+ g.bevelBox(4.66,2.0,-1.3,.13,1.21,1.0,.025,"#907d65","metal");
+ g.box(4.585,2,-1.3,.028,.84,.70,"#20292c","metal");
+ for(let i=0;i<10;i++){
+  const y=1.64+i*.078;
+  g.box(4.556,y,-1.3,.016,.023,.58,"#777f78","metal");
+ }
+ for(const y of [1.48,2.52])for(const z of [-1.70,-.91])
+  g.bevelBox(4.553,y,z,.014,.026,.028,.003,"#c5ab83","metal");
+ g.tube([4.54,2.40,-1.0],[4.53,2.82,-.63],.012,"#77634c","cable");
+ // Ceiling luminaire: enamel shade, recessed diffuser, four fasteners,
+ // protected cable and heat-darkened reflector.
+ g.tube([0,4.00,-1.65],[0,3.23,-1.65],.055,"#89837a","metal");
+ g.bevelBox(0,3.20,-1.65,.65,.20,.59,.030,"#ae9b80","metal");
+ g.bevelBox(0,3.077,-1.65,.46,.038,.37,.011,"#d6b68d","metal");
+ g.box(0,3.052,-1.65,.39,.012,.30,"#ffe2ad","emissive");
+ for(const dx of [-.23,.23])for(const dz of [-.19,.19])
+  g.reelY(dx,3.110,-1.65+dz,.028,.008,.012,"#8d8373","metal",10);
+ g.tube([-.25,3.20,-1.62],[-.32,3.46,-1.62],.014,"#3e4140","cable");
  // Documents, coffee and evidence prints physically REST ON the new desks.
  g.tube([rx-.48,1.05,rz-.31],[rx-.48,1.25,rz-.31],.09,"#d3bea0");
  g.tube([rx-.48,1.25,rz-.31],[rx-.48,1.267,rz-.31],.082,"#554539");
