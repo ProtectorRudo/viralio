@@ -923,6 +923,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  const pose:Pose={x:0,y:1.67,z:3.6,yaw:0,pitch:0};
  let active=true,raf=0,lastHud=0,lastDraw=0,clockStarted=flags.clockActivated?performance.now()-3100:0,intruderStarted=flags.intruder?performance.now()-1500:0;
  let drawerOpenedAt=flags.unlocked?performance.now()-1100:0;
+ // Preserve the upgraded PBR lighting on budget Android GPUs. This adaptive
+ // resolution changes only render pixels — never coordinates, touch targets or
+ // how fast the 3-minute mission proceeds.
+ let renderScale=1,slowFrames=0,fastFrames=0;
  function basis(){
   const cp=Math.cos(pose.pitch);
   const forward:V=[-Math.sin(pose.yaw)*cp,Math.sin(pose.pitch),-Math.cos(pose.yaw)*cp];
@@ -1005,8 +1009,16 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  function frame(now:number){
   if(!active)return;raf=requestAnimationFrame(frame);
   // Mobile-friendly frame pacing: preserve CPU time for interactive controls.
-  if(now-lastDraw<32)return;lastDraw=now;
-  const ratio=Math.min(window.devicePixelRatio||1,1.6),w=Math.round(canvas.clientWidth*ratio),h=Math.round(canvas.clientHeight*ratio);
+  const frameGap=now-lastDraw;
+  if(frameGap<32)return;
+  lastDraw=now;
+  if(frameGap>48){slowFrames++;fastFrames=0;}
+  else if(frameGap<38){fastFrames++;slowFrames=Math.max(0,slowFrames-2);}
+  if(slowFrames>24&&renderScale>.77){renderScale=.76;slowFrames=0;}
+  if(fastFrames>220&&renderScale<1){renderScale=1;fastFrames=0;}
+  const ratio=Math.min(window.devicePixelRatio||1,1.6)*renderScale;
+  canvas.dataset.renderQuality=renderScale<1?"battery-friendly":"high";
+  const w=Math.round(canvas.clientWidth*ratio),h=Math.round(canvas.clientHeight*ratio);
   if(w>0&&h>0&&(canvas.width!==w||canvas.height!==h)){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   const {forward,right,up}=basis();
