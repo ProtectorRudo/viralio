@@ -93,15 +93,15 @@ class Room {
    if(inner>.001)this.quad(kind,[p(inner,b,back),p(inner,b,front),p(inner,a,front),p(inner,a,back)],[-n[0],-n[1],0],color);
   }
  }
- // Rotated hardback volumes are actual 3D prisms, not a repetitive row
- // of identical axis-aligned boxes. Rotation around local Z for leaning books.
+ // Rotated hardbacks are true 3D objects. Because the bookcase runs
+ // along Z, lean each spine into its neighbour around the local X axis.
  tiltedBox(x:number,y:number,z:number,w:number,h:number,d:number,angle:number,color:string,kind="book"){
-  const co=Math.cos(angle),si=Math.sin(angle),rx=(u:number,v:number):V=>[x+u*co-v*si,y+u*si+v*co,z];
-  const pt=(u:number,v:number,zoff:number):V=>{const p=rx(u,v);return [p[0],p[1],z+zoff]};
-  const norm=(u:number,v:number,w:number):V=>[u*co-v*si,u*si+v*co,w];
+  const co=Math.cos(angle),si=Math.sin(angle);
+  const pt=(u:number,v:number,depth:number):V=>[x+u,y+v*co-depth*si,z+v*si+depth*co];
+  const norm=(u:number,v:number,depth:number):V=>[u,v*co-depth*si,v*si+depth*co];
   const l=-w/2,r=w/2,b=-h/2,t=h/2,f=-d/2,a=d/2;
-  this.quad(kind,[pt(r,b,a),pt(r,t,a),pt(l,t,a),pt(l,b,a)],[0,0,1],color);
-  this.quad(kind,[pt(l,b,f),pt(l,t,f),pt(r,t,f),pt(r,b,f)],[0,0,-1],color);
+  this.quad(kind,[pt(r,b,a),pt(r,t,a),pt(l,t,a),pt(l,b,a)],norm(0,0,1),color);
+  this.quad(kind,[pt(l,b,f),pt(l,t,f),pt(r,t,f),pt(r,b,f)],norm(0,0,-1),color);
   this.quad(kind,[pt(l,t,a),pt(r,t,a),pt(r,t,f),pt(l,t,f)],norm(0,1,0),color);
   this.quad(kind,[pt(l,b,f),pt(r,b,f),pt(r,b,a),pt(l,b,a)],norm(0,-1,0),color);
   this.quad(kind,[pt(r,b,f),pt(r,t,f),pt(r,t,a),pt(r,b,a)],norm(1,0,0),color);
