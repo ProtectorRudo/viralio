@@ -82,7 +82,7 @@ class Room {
   }
  }
  // Raised dial rings facing the player along +Z.
- reelZ(x:number,y:number,z,outer:number,inner:number,depth:number,color:string,kind="metal",sides=18){
+ reelZ(x:number,y:number,z:number,outer:number,inner:number,depth:number,color:string,kind="metal",sides=18){
   const front=z+depth/2,back=z-depth/2;
   const p=(r:number,t:number,zz:number):V=>[x+r*Math.cos(t),y+r*Math.sin(t),zz];
   for(let i=0;i<sides;i++){
