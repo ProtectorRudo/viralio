@@ -47,6 +47,40 @@ class Room {
   this.quad(kind,[[r,b,f],[r,t,f],[r,t,a],[r,b,a]],[1,0,0],color);
   this.quad(kind,[[l,b,a],[l,t,a],[l,t,f],[l,b,f]],[-1,0,0],color);
  }
+ // Soft bevels on actual geometry, shared depth buffer and camera.
+ bevelBox(x:number,y:number,z:number,w:number,h:number,d:number,bevel:number,color:string,kind="scene"){
+  const half:V=[w/2,h/2,d/2],r=Math.max(.001,Math.min(bevel,...half)*.98),inner=half.map(v=>v-r) as V;
+  const origin:V=[x,y,z];
+  const corner=(axis:number,sign:number,u:number,v:number)=>{
+   const ui=(axis+1)%3,vi=(axis+2)%3,p:V=[0,0,0];p[axis]=sign*half[axis];p[ui]=u;p[vi]=v;
+   const core=p.map((n,i)=>Math.max(-inner[i],Math.min(inner[i],n))) as V;
+   const delta=p.map((n,i)=>n-core[i]) as V,length=Math.hypot(...delta)||1;
+   return {p:core.map((n,i)=>n+delta[i]*r/length+origin[i]) as V,n:delta.map(n=>n/length) as V};
+  };
+  const tri=(a:{p:V;n:V},b:{p:V;n:V},c:{p:V;n:V})=>{
+   this.add(kind,a.p,a.n,color);this.add(kind,b.p,b.n,color);this.add(kind,c.p,c.n,color);
+  };
+  for(let axis=0;axis<3;axis++)for(const sign of [-1,1]){
+   const ui=(axis+1)%3,vi=(axis+2)%3;
+   const U=[-half[ui],-inner[ui],inner[ui],half[ui]],V=[-half[vi],-inner[vi],inner[vi],half[vi]];
+   for(let a=0;a<3;a++)for(let b=0;b<3;b++){
+    const p=corner(axis,sign,U[a],V[b]),q=corner(axis,sign,U[a+1],V[b]);
+    const t=corner(axis,sign,U[a+1],V[b+1]),u=corner(axis,sign,U[a],V[b+1]);
+    tri(p,q,t);tri(p,t,u);
+   }
+  }
+ }
+ // Solid concentric metal/tape reel with exposed raised top and rim.
+ reelY(x:number,y:number,z:number,outer:number,inner:number,h:number,color:string,kind="metal",sides=16){
+  const top=y+h/2,bot=y-h/2,p=(r:number,t:number,yy:number):V=>[x+Math.cos(t)*r,yy,z+Math.sin(t)*r];
+  for(let i=0;i<sides;i++){
+   const a=i/sides*Math.PI*2,b=(i+1)/sides*Math.PI*2;
+   this.quad(kind,[p(outer,a,top),p(inner,a,top),p(inner,b,top),p(outer,b,top)],[0,1,0],color);
+   const n:V=[Math.cos((a+b)/2),0,Math.sin((a+b)/2)];
+   this.quad(kind,[p(outer,a,bot),p(outer,a,top),p(outer,b,top),p(outer,b,bot)],n,color);
+   if(inner>.001)this.quad(kind,[p(inner,b,bot),p(inner,b,top),p(inner,a,top),p(inner,a,bot)],[-n[0],0,-n[2]],color);
+  }
+ }
  panel(x:number,y:number,z:number,w:number,h:number,color:string,kind:string){
   this.quad(kind,[[x+w/2,y-h/2,z],[x+w/2,y+h/2,z],[x-w/2,y+h/2,z],[x-w/2,y-h/2,z]],[0,0,1],color);
  }
