@@ -76,24 +76,26 @@ await build({
 // Build a locally hosted recording, so mobile WebViews do not depend on
 // unreliable speechSynthesis. Prefer an expressive Argentine Spanish voice,
 // fall back to offline Latin-American Spanish if neural TTS is unavailable.
-// Lightweight, animated CC0 GLB masked raider by 3dassets.dev, asset 32700.
-// Source & license: https://3dassets.dev/assets/fps-survival-forest-outpost-figure-masked-raider-958f10e5
-// Keep an exact local copy on GitHub Pages: the game works without third-party
-// network requests once the static site is deployed. Downloaded only at build.
+// CASO M: realistic skinned clothed human, released under CC0 by Innerscene
+// (MakeHuman / MPFB). Replaces the hard-jointed raider with a continuous human
+// skin and a true walk animation; copied into GitHub Pages at build time.
+// Asset: https://www.innerscene.com/tools/library/3d-parts/brisk-walk-sam-3d-person-animated-bed03fa4
+// CC0 license: https://creativecommons.org/publicdomain/zero/1.0/
 const modelDir=join(rescueOutput,"models");mkdirSync(modelDir,{recursive:true});
-const glbFile=join(modelDir,"masked-raider.glb");
-const glbSource="https://cdn.3dassets.dev/assets/32700/v1/model.glb";
-const glbResponse=await fetch(glbSource,{signal:AbortSignal.timeout(30000)});
-if(!glbResponse.ok)throw Error("CASO M: no se pudo descargar modelo GLB CC0: "+glbResponse.status);
+const glbFile=join(modelDir,"stalker-skeletal.glb");
+const glbSource="https://www.innerscene.com/api/library/brisk-walk-sam-3d-person-animated-bed03fa4/download";
+const glbResponse=await fetch(glbSource,{signal:AbortSignal.timeout(90000),headers:{"user-agent":"CASO-M-static-CC0-game-build/1.0","accept":"application/octet-stream,*/*"}});
+if(!glbResponse.ok)throw Error("CASO M: no se pudo descargar personaje humano CC0: "+glbResponse.status);
 const glbBuffer=Buffer.from(await glbResponse.arrayBuffer());
-if(glbBuffer.length<100000||glbBuffer.length>4e6||glbBuffer.toString("ascii",0,4)!=="glTF")
- throw Error("CASO M: archivo 3D inválido o demasiado grande");
+if(glbBuffer.length<500000||glbBuffer.length>45000000||glbBuffer.toString("ascii",0,4)!=="glTF")
+ throw Error("CASO M: modelo humano GLB inválido");
 const jsize=glbBuffer.readUInt32LE(12),jkind=glbBuffer.readUInt32LE(16);
-if(jkind!==0x4e4f534a||jsize>glbBuffer.length-20)throw Error("CASO M: GLB JSON inválido");
+if(jkind!==0x4e4f534a||jsize>glbBuffer.length-20)throw Error("CASO M: JSON de GLB inválido");
 const glbJson=JSON.parse(glbBuffer.subarray(20,20+jsize).toString("utf8"));
-if(!glbJson.meshes?.length||!glbJson.nodes?.length)throw Error("CASO M: GLB sin personaje");
+if(!glbJson.meshes?.length||!glbJson.skins?.length||!glbJson.animations?.length)
+ throw Error("CASO M: se esperaba un humano con esqueleto y caminata real");
 writeFileSync(glbFile,glbBuffer);
-console.log("CASO M authentic 3D raider:",glbBuffer.length,"bytes",glbJson.meshes.length,"meshes",glbJson.nodes.length,"nodes",glbJson.animations?.map(a=>a.name),glbJson.skins?.length||0,"skins");
+console.log("CASO M humano esquelético CC0:",glbBuffer.length,"bytes, bones",glbJson.skins.map(s=>s.joints.length),"animations",glbJson.animations.map(a=>a.name));
 const audioDir=join(rescueOutput,"audio");mkdirSync(audioDir,{recursive:true});
 // Authentic four-second Mauro voice recording (not generated speech).
 const originalVoice=resolve("src/app/escape/rescate/audio/mauro-voice.webm");
