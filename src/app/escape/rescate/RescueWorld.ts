@@ -149,11 +149,11 @@ const WALL="#383c42",FLOOR="#2d3033";
 function scene(opened:boolean){
  const g=new Room();
  // A believable, limited navigable room, roughly 10 × 11 m.
- g.box(0,-.19,-.5,10,.38,11.6,FLOOR);
- g.box(0,4.2,-.5,10,.27,11.6,"#34353b");
- g.box(0,2,-5.85,10,4.1,.35,WALL);
- g.box(-5,2,-.5,.34,4.1,11.6,"#31383d");
- g.box(5,2,-.5,.34,4.1,11.6,"#3d3d41");
+ g.box(0,-.19,-.5,10,.38,11.6,FLOOR,"concrete");
+ g.box(0,4.2,-.5,10,.27,11.6,"#34353b","concrete");
+ g.box(0,2,-5.85,10,4.1,.35,WALL,"concrete");
+ g.box(-5,2,-.5,.34,4.1,11.6,"#31383d","concrete");
+ g.box(5,2,-.5,.34,4.1,11.6,"#3d3d41","concrete");
  // The main doorway remains open behind its animated door leaf.
  // Floor tiles, grimy checkerboard, concrete cracks.
  for(let x=-4.62;x<=4.65;x+=.72)for(let z=-5.35;z<=4.85;z+=.72){
@@ -166,6 +166,17 @@ function scene(opened:boolean){
   for(let z=-5;z<4.85;z+=1.35)g.box(x,1.73,z,.06,3.46,.14,"#66686a");
  }
  for(let z=-5;z<5.1;z+=2.3)g.box(0,3.94,z,9.7,.20,.19,"#4f5154");
+ // A restrained layer of age, mortar repairs and fine surface geometry.
+ for(let i=0;i<16;i++){
+  const x=-4.45+(i%8)*1.22,y=.57+Math.floor(i/8)*2.05;
+  g.box(x,y,-5.639,.48+(i%3)*.13,.006,.007,i%4===0?"#66615e":"#30363a","concrete");
+ }
+ for(let i=0;i<12;i++){
+  const z=-5.1+(i%6)*1.76,y=.38+Math.floor(i/6)*2.7;
+  g.box(-4.813,y,z,.010,.65+(i%3)*.17,.026,i%3?"#3a3b3a":"#5a5350","concrete");
+ }
+ // The floor's worn enamel edging catches glancing light around each station.
+ for(const x of [-4.72,4.72])g.box(x,.015,-.50,.048,.020,11.08,"#64605b","metal");
  // Doorway, real swinging door and shadowy intruder.
  for(const [x,w] of [[-3.1,3.8],[3.1,3.8]])g.box(x,2,5.28,w,4.1,.35,"#30363b");
  g.box(0,3.75,5.28,2.4,.88,.35,"#33373d");
@@ -297,7 +308,7 @@ function scene(opened:boolean){
   for(const x of [-.55,.55])g.tube([x,.74,-.66],[x,.74,-.58],.039,"#c0ab84","metal");
   g.box(0,.706,-1.48,.43,.021,.27,"#e5d4b1","envelope");
   g.box(0,.72,-1.445,.10,.022,.10,"#983f32","envelope");
-  g.panel(0,.707,-1.344,.35,.20,"#f0dfbd","envelope");
+  g.box(0,.720,-1.445,.34,.014,.010,"#d4ba91","envelope");
  }else{
   // Bronze lock casing, faceplate and six individual metal number wheels.
   g.bevelBox(0,.75,-1.55,.42,.23,.135,.018,"#857b6e","metal");
@@ -538,7 +549,7 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal;
+uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup,enemyCloth,enemyReveal,surfaceKind;
 uniform sampler2D albedo;
 uniform mediump vec3 eye;
 void main(){
@@ -551,6 +562,19 @@ void main(){
  float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-emergency)*.18);
  vec3 textureColor=mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
  vec3 baseColor=vColor*textureColor;
+ if(surfaceKind>.5&&enemyCloth<.5){
+  // Material microstructure is computed on existing real 3D coordinates:
+  // timber fibers, brushed metal and aged concrete, not flat photo overlays.
+  float veins=sin(vPos.x*66.0+vPos.z*12.0+sin(vPos.y*8.0)*2.8);
+  float wood=.92+.065*veins+.023*sin(vPos.x*139.0);
+  float brush=.95+.032*sin(vPos.y*190.0+vPos.z*22.0);
+  float noise=fract(sin(dot(floor(vPos.xz*49.0+vPos.yy*31.0),vec2(12.9898,78.233)))*43758.5453);
+  float wear=.93+.12*noise;
+  if(surfaceKind<1.5)baseColor*=wood*wear;
+  else if(surfaceKind<2.5)baseColor*=brush*(.97+.07*noise);
+  else if(surfaceKind<3.5)baseColor*=.90+.14*noise;
+  else baseColor*=.94+.075*sin(vPos.x*120.0)*sin(vPos.z*84.0);
+ }
  if(enemyCloth>.5){
   // Dark weathered fabric using the real human's original texture details.
   float luminance=dot(textureColor,vec3(.26,.59,.15));
@@ -572,6 +596,12 @@ void main(){
   baseColor=mix(baseColor,leatherBoot,shoes*.92);
  }
  vec3 outColor=baseColor*lamp+baseColor*vec3(.19,.06,.05)*redGlow;
+ if(surfaceKind>1.5&&surfaceKind<2.5){
+  vec3 view=normalize(eye-vPos),light=normalize(vec3(.23,.82,-.38));
+  vec3 reflection=reflect(-light,N);
+  float metalHighlight=pow(max(0.0,dot(view,reflection)),24.0);
+  outColor+=vec3(.28,.25,.19)*metalHighlight*.48;
+ }
  outColor+=baseColor*vec3(.02,.04,.055)*max(0.0,dot(N,vec3(1.,.2,0.)));
  float fog=clamp((vDistance-5.8)/15.0,0.0,.69);
  outColor=mix(outColor,vec3(.028,.037,.050),fog);
@@ -634,7 +664,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
+ const usurface=uniform("surfaceKind"),ucloth=uniform("enemyCloth"),ureveal=uniform("enemyReveal"),umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
@@ -755,7 +785,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.useProgram(program);
   gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
   gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
-  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);
+  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);gl.uniform1f(ucloth,0);gl.uniform1f(ureveal,1);gl.uniform1f(usurface,0);
   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
@@ -780,6 +810,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   canvas.dataset.intruderAppearance=rig?.skinned?"worn-coat-porcelain-mask":"fallback";
   canvas.dataset.intruderMood=paused?"watching":elapsed>11?"stalking":"waiting";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
+  canvas.dataset.roomProps="beveled-webgl-v2";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
   gl.enableVertexAttribArray(ap);gl.enableVertexAttribArray(an);gl.enableVertexAttribArray(ac);
@@ -793,11 +824,13 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(an,3,gl.FLOAT,false,stride*4,12);
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
-   gl.uniform1f(udg,m.id==="door"?1:0);
+   gl.uniform1f(udg,m.id==="door"||m.id==="door-metal"?1:0);
    gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
    gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
    gl.uniform1f(umask,0);
+   gl.uniform1f(usurface,m.id==="door"||m.id==="wood"||m.id==="drawer"?1:
+    m.id==="door-metal"||m.id==="metal"?2:m.id==="concrete"?3:m.id==="recorder"?4:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
@@ -809,6 +842,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   // This shares the room's depth-buffer and camera: no second renderer.
   if(rig&&intruderStarted&&elapsed>=9){
    rig.animate(elapsed,elapsed>11&&!paused&&approach<2.82);
+   gl.uniform1f(usurface,0);
    gl.uniform1f(ucloth,rig.skinned?1:0);
    gl.uniform1f(ureveal,Math.min(1,Math.max(0,(elapsed-9)/3.2)));
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
