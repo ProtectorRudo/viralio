@@ -50,7 +50,7 @@ test("CASO M · intruso 3D rigged con materiales PBR y animación al caminar",as
  await expect(canvas).toHaveAttribute("data-cinematic-model","skinned-glb");
  const cinematic=page.locator('[data-testid="rescate-cinematic-canvas"]');
  await expect(cinematic).toBeVisible();
- await page.clock.runFor(135000);
+ for(let i=0;i<135;i++)await page.clock.fastForward(1000);
  await expect.poll(()=>canvas.getAttribute("data-intruder-visible"),{timeout:8000}).toBe("yes");
  await expect.poll(()=>canvas.getAttribute("data-intruder-animation"),{timeout:8000}).toBe("walk");
  await expect.poll(()=>canvas.getAttribute("data-intruder-approach").then(Number),{timeout:8000}).toBeGreaterThan(.14);
