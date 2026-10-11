@@ -1,7 +1,7 @@
 /** CC0 raider model from 3dassets.dev asset 32700. Tiny WebGL1 glTF 2 reader.
  * No extra renderer, no additional browser downloads after initial GLB. */
 type M=Float32Array;
-type Node={mesh?:number;children?:number[];matrix?:number[];translation?:number[];rotation?:number[];scale?:number[]};
+type Node={name?:string;mesh?:number;children?:number[];matrix?:number[];translation?:number[];rotation?:number[];scale?:number[]};
 type GLTF={nodes:Node[];meshes:{primitives:{attributes:{POSITION:number;NORMAL?:number;TEXCOORD_0?:number};indices?:number;material?:number;mode?:number}[]}[];materials?:{pbrMetallicRoughness?:{baseColorFactor?:number[];baseColorTexture?:{index:number}}}[];textures?:{source?:number;extensions?:{EXT_texture_webp?:{source:number}}}[];images?:{bufferView?:number;mimeType?:string}[];accessors:{bufferView?:number;byteOffset?:number;count:number;componentType:number;type:string;normalized?:boolean}[];bufferViews:{buffer:number;byteOffset?:number;byteStride?:number;byteLength:number}[];animations?:{name?:string;samplers:{input:number;output:number;interpolation?:string}[];channels:{sampler:number;target:{node?:number;path:string}}[]}[];skins?:unknown[]};
 const eye=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
 const mul=(a:M,b:M)=>{const r=new Float32Array(16);
@@ -17,7 +17,7 @@ const lerp=(a:number[],b:number[],f:number,quat=false)=>{let sign=1;
  if(quat&&a.reduce((z,v,i)=>z+v*b[i],0)<0)sign=-1;
  const r=a.map((v,i)=>v*(1-f)+b[i]*f*sign),len=Math.hypot(...r)||1;
  return quat?r.map(x=>x/len):r;};
-export type RigPart={buffer:WebGLBuffer;count:number;node:number;texture:WebGLTexture|null;hasUV:boolean};
+export type RigPart={buffer:WebGLBuffer;count:number;node:number;texture:WebGLTexture|null;hasUV:boolean;faceplate?:boolean};
 export type Rig={parts:RigPart[];matrices:M[];animate:(elapsed:number)=>void;dispose:()=>void};
 export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
  const res=await fetch(url,{cache:"force-cache"});if(!res.ok)throw Error("GLB "+res.status);
@@ -100,6 +100,78 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
    parts.push({buffer,count:ids.length,node:ni,hasUV:!!uvs.length,texture:imageId===undefined?null:(imageTextures[imageId]??null)});
   }
  }}catch(e){parts.forEach(p=>gl.deleteBuffer(p.buffer));throw e;}
+  // Build the porcelain faceplate in the SAME local space as the GLB head.
+ // The old room-level oval was detached because it never followed the model's
+ // 180-degree rotation, mesh offsets or the animated head pivot.
+ const headCandidates:{node:number;verts:number[][];score:number}[]=[];
+ for(let ni=0;ni<json.nodes.length;ni++){
+  const meshIndex=json.nodes[ni].mesh;if(meshIndex===undefined)continue;
+  const verts=json.meshes[meshIndex].primitives.flatMap(p=>acc(p.attributes.POSITION));
+  if(!verts.length)continue;
+  const x=verts.map(v=>vpos(world[ni],v));
+  const high=Math.max(...x.map(v=>v[1])),low=Math.min(...x.map(v=>v[1]));
+  const left=Math.min(...x.map(v=>v[0])),right=Math.max(...x.map(v=>v[0]));
+  const name=(json.nodes[ni].name??"").toLowerCase();
+  const nameScore=/head|skull|face|hood|mask|respirat|visor|helmet/.test(name)?10:0;
+  // Require at least part of this mesh to live in the top quarter of the body.
+  const topScore=high>lo[1]+(hi[1]-lo[1])*.71?5:0;
+  const narrowScore=right-left<.8?2:0;
+  if((nameScore||topScore)&&low>lo[1]+(hi[1]-lo[1])*.56)
+   headCandidates.push({node:ni,verts,score:nameScore+topScore+narrowScore+Math.min(1,x.length/500)});
+ }
+ headCandidates.sort((a,b)=>b.score-a.score);
+ const head=headCandidates[0];
+ if(head){
+  const X=head.verts.map(v=>v[0]),Y=head.verts.map(v=>v[1]),Z=head.verts.map(v=>v[2]);
+  const minX=Math.min(...X),maxX=Math.max(...X),minY=Math.min(...Y),maxY=Math.max(...Y),front=Math.max(...Z);
+  const localW=maxX-minX,localH=maxY-minY;
+  // Head geometry differs across assets; cap offsets to natural human dimensions.
+  const cx=(minX+maxX)*.5,cy=minY+localH*.50;
+  const rx=Math.min(.16,Math.max(.095,localW*.37));
+  const ry=Math.min(.215,Math.max(.14,localH*.44));
+  const verts:number[]=[];
+  const vertex=(p:number[],normal:number[],col:number[])=>verts.push(...p,...normal,...col,0,0);
+  const tri=(a:number[],b:number[],c:number[],normal:number[],color:number[])=>{vertex(a,normal,color);vertex(b,normal,color);vertex(c,normal,color);};
+  const zAt=(u:number,v:number)=>front+.018+.039*(1-Math.min(1,u*u+v*v));
+  const pos=(u:number,v:number)=>[cx+u*rx,cy+v*ry,zAt(u,v)];
+  // Continuous curved sculpt, not a flat billboard: 12 rings x 28 segments.
+  for(let i=0;i<12;i++)for(let j=0;j<28;j++){
+   const a=i/12,b=(i+1)/12,t=j/28*Math.PI*2,q=(j+1)/28*Math.PI*2;
+   const p0=pos(a*Math.cos(t),a*Math.sin(t)),p1=pos(b*Math.cos(t),b*Math.sin(t));
+   const p2=pos(b*Math.cos(q),b*Math.sin(q)),p3=pos(a*Math.cos(q),a*Math.sin(q));
+   const u=Math.cos((t+q)/2)*b,v=Math.sin((t+q)/2)*b;
+   const norm=[u*.32,v*.25,1];
+   const len=Math.hypot(...norm),n=norm.map(x=>x/len);
+   const variant=((i*7+j*11)%13)*.004;
+   const shade=[.68+variant,.605+variant,.50+variant];
+   tri(p0,p1,p2,n,shade);tri(p0,p2,p3,n,shade);
+  }
+  // Eye cavities follow the curvature: angled narrow openings, never doll eyes.
+  for(const sign of [-1,1]){
+   const u=sign*.42,v=.21,ring=14;
+   const center=pos(u,v);center[2]+=.010;
+   const dark=[.012,.015,.018],N=[0,0,1];
+   for(let k=0;k<ring;k++){
+    const t=k/ring*Math.PI*2,q=(k+1)/ring*Math.PI*2;
+    const eye=(r:number)=>{const p=pos(u+Math.cos(r)*.26,v+Math.sin(r)*.105);p[2]+=.012;return p;};
+    tri(center,eye(t),eye(q),N,dark);
+   }
+  }
+  // Scored diagonal cracks over the ceramic face.
+  const trace=(a:[number,number],b:[number,number],color:number[])=>{
+   const P=pos(a[0],a[1]),Q=pos(b[0],b[1]);P[2]+=.014;Q[2]+=.014;
+   const dx=Q[0]-P[0],dy=Q[1]-P[1],len=Math.hypot(dx,dy)||1,ox=-dy/len*.002,oy=dx/len*.002;
+   tri([P[0]-ox,P[1]-oy,P[2]],[Q[0]-ox,Q[1]-oy,Q[2]],[Q[0]+ox,Q[1]+oy,Q[2]],[0,0,1],color);
+   tri([P[0]-ox,P[1]-oy,P[2]],[Q[0]+ox,Q[1]+oy,Q[2]],[P[0]+ox,P[1]+oy,P[2]],[0,0,1],color);
+  };
+  trace([-.52,.77],[-.21,.45],[.27,.19,.16]);trace([-.21,.45],[-.37,.29],[.27,.19,.16]);
+  trace([.33,-.08],[.59,-.54],[.47,.11,.10]);trace([.59,-.54],[.48,-.77],[.36,.13,.13]);
+  const buffer=gl.createBuffer();if(buffer){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
+   parts.push({buffer,count:verts.length/11,node:head.node,hasUV:false,texture:null,faceplate:true});
+  }
+ }
+
  if(!parts.length)throw Error("GLB sin triángulos");
  const scale=Math.min(2.2,2.85/Math.max(.1,hi[1]-lo[1])),cx=(lo[0]+hi[0])/2,cz=(lo[2]+hi[2])/2;
  const root=mul(trs([.32,-lo[1]*scale,6.28],[0,1,0,0],[scale,scale,scale]),trs([-cx,0,-cz],[0,0,0,1],[1,1,1]));
