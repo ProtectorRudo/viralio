@@ -445,41 +445,53 @@ function scene(opened:boolean){
   g.box(-4.283,baseY+.09,3.89,.009,.065,.078,"#d1bc8f","paper");
  }
  for(let i=0;i<4;i++)g.box(-4.39,2.57+i*.018,2.73+i*.036,.24,.009,.18,i%2?"#b5a184":"#dad0b2","paper");
- // A low evidence trunk fills the LEFT side-wall midpoint, leaving
- // an obvious walkable gap between the tape desk and the rear locker.
+ // Evidence trunk: battered steel edges, leather straps, rivets and latch.
  const trunk=ROOM_LAYOUT.trunk;
- g.box(trunk.x,.33,trunk.z,1.08,.58,.74,"#4b4e4b");
- g.box(trunk.x,.66,trunk.z,1.12,.08,.78,"#7c715c");
- g.box(trunk.x,.41,trunk.z-.41,.29,.14,.047,"#a29073");
+ g.bevelBox(trunk.x,.33,trunk.z,1.08,.58,.74,.06,"#414643","metal");
+ g.bevelBox(trunk.x,.65,trunk.z,1.12,.086,.78,.028,"#6f6658","wood");
+ for(const dx of [-.46,.46]){
+  g.box(trunk.x+dx,.38,trunk.z,.052,.53,.76,"#877862","metal");
+  for(const dz of [-.31,.31])for(const y of [.16,.48,.65])
+   g.reelZ(trunk.x+dx,y,trunk.z+dz,.020,.007,.014,"#b6a07a","metal",10);
+ }
+ for(const dz of [-.28,.28])g.box(trunk.x,.343,trunk.z+dz,1.04,.042,.049,"#77766a","metal");
+ g.bevelBox(trunk.x,.405,trunk.z-.393,.31,.15,.064,.013,"#baa37d","metal");
+ g.bevelBox(trunk.x,.414,trunk.z-.436,.17,.059,.023,.006,"#4a453b","metal");
+ g.tube([trunk.x-.065,.400,trunk.z-.447],[trunk.x+.065,.400,trunk.z-.447],.018,"#c8af86","metal");
  for(let i=0;i<7;i++){
   const t=i/6*Math.PI*1.6;
   g.tube([trunk.x+.58+.14*Math.cos(t),.028,trunk.z+.23+.12*Math.sin(t)],
-         [trunk.x+.58+.14*Math.cos(t+.31),.028,trunk.z+.23+.12*Math.sin(t+.31)],.014,"#242b2c");
+         [trunk.x+.58+.14*Math.cos(t+.31),.028,trunk.z+.23+.12*Math.sin(t+.31)],.014,"#242b2c","cable");
  }
- // Evidence photograph on the wall. Nothing displays the solution on its front.
- // Cream paper frame, dark developed photograph, aged tape and damaged corners.
- g.box(-2.75,2.12,-5.59,1.65,1.94,.10,"#6e6254");
- g.box(-2.75,2.12,-5.49,1.54,1.82,.039,"#d9c8aa","calendar");
- g.box(-2.75,2.27,-5.449,1.36,1.32,.024,"#323b43","calendar");
- g.box(-2.74,2.16,-5.424,1.12,.93,.021,"#28343e");
- g.box(-2.74,2.48,-5.402,.74,.27,.021,"#4f5250");
- g.box(-2.65,1.97,-5.40,.40,.22,.022,"#6b5d55");
- g.box(-3.1,2.96,-5.425,.38,.14,.037,"#aa9270");
- g.box(-2.38,2.98,-5.425,.38,.14,.037,"#aa9270");
- g.box(-2.75,1.33,-5.431,.90,.035,.022,"#786856");
- // Rough tear / crack across developed picture.
- for(let i=0;i<6;i++)g.box(-3.24+i*.17,2.32+(i%2)*.04,-5.391,.22,.014,.012,"#8f8171");
- // Clock with real WebGL hands that animate around a shared spindle.
+ // Damaged evidence photograph, raised double frame, beveled glass,
+ // torn corners, physical paper under tape, and emulsion scratches.
+ g.bevelBox(-2.75,2.12,-5.59,1.65,1.94,.105,.021,"#62574b","wood");
+ g.bevelBox(-2.75,2.12,-5.491,1.54,1.82,.047,.016,"#c8b79b","paper");
+ g.bevelBox(-2.75,2.27,-5.449,1.36,1.32,.024,.010,"#253a42","calendar");
+ g.box(-2.74,2.16,-5.424,1.12,.93,.021,"#28343e","calendar");
+ g.box(-2.74,2.48,-5.402,.74,.27,.021,"#556367","calendar");
+ g.box(-2.65,1.97,-5.40,.40,.22,.022,"#756458","calendar");
+ for(const [x,y] of [[-3.1,2.96],[-2.38,2.98],[-3.05,1.37]]){
+  g.bevelBox(x,y,-5.418,.38,.14,.027,.004,"#ad9571","paper");
+  g.box(x,y,-5.399,.32,.006,.008,"#e3d1ac","paper");
+ }
+ for(let i=0;i<7;i++){
+  const x=-3.25+i*.165,y=2.32+(i%3)*.041;
+  g.box(x,y,-5.390,.16,.008,.008,i%2?"#8c806d":"#c7b79a","paper");
+ }
+ // The wall clock retains its same spindle animation and clickable target.
  const cx=3.73,cy=2.14,cz=-5.43;
- g.box(cx,cy,cz,1.46,1.46,.15,"#65503f");
- g.box(cx,cy,cz+.09,1.23,1.24,.07,"#b3a891");
- for(let i=0;i<12;i++){
-  const a=i*Math.PI/6,x=cx+Math.sin(a)*.48,y=cy+Math.cos(a)*.48;
-  g.box(x,y,cz+.147,.055,.072,.031,"#443930");
+ g.bevelBox(cx,cy,cz,1.46,1.46,.15,.040,"#51483d","wood");
+ g.bevelBox(cx,cy,cz+.083,1.23,1.24,.071,.034,"#b0a28c","wood");
+ g.bevelBox(cx,cy,cz+.128,1.07,1.07,.021,.009,"#d4c9ac","paper");
+ for(let i=0;i<60;i++){
+  const t=i*Math.PI/30,x=cx+Math.sin(t)*(i%5===0?.476:.50),y=cy+Math.cos(t)*(i%5===0?.476:.50);
+  g.box(x,y,cz+.151,i%5===0?.037:.009,i%5===0?.072:.022,.011,i%5===0?"#403c35":"#827a69","metal");
  }
- g.box(cx,cy+.205,cz+.17,.07,.45,.045,"#262b2b","clock-hour");
- g.box(cx,cy+.315,cz+.19,.038,.66,.042,"#5b3329","clock-minute");
- g.box(cx,cy,cz+.23,.11,.11,.06,"#c9aa74");
+ g.reelZ(cx,cy,cz+.173,.052,.014,.018,"#806747","metal",18);
+ g.bevelBox(cx,cy+.205,cz+.17,.07,.45,.045,.009,"#262b2b","clock-hour");
+ g.bevelBox(cx,cy+.315,cz+.19,.038,.66,.042,.006,"#5b3329","clock-minute");
+ g.ellipsoid(cx,cy,cz+.23,.054,.054,.032,"#c9aa74","metal",8,14);
  // A real conspiracy board: layered images, routes, schedules and red thread.
  g.box(1.51,2.15,-5.68,2.76,1.94,.15,"#5d3e33");
  g.box(1.51,2.15,-5.573,2.59,1.78,.023,"#9e8061");
