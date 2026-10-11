@@ -13,7 +13,7 @@ export const ROOM_LAYOUT={
  surveillance:{x:3.68,z:-3.30,w:1.56,d:1.32},
  lock:{x:0,z:-2.65,w:3.06,d:1.82},
  locker:{x:-3.75,z:-3.65,w:1.54,d:.90},
- chair:{x:3.79,z:1.10,w:1.0,d:.84},
+ chair:{x:4.03,z:1.75,w:.90,d:.84},
  trunk:{x:-3.85,z:-1.85,w:1.12,d:.82}
 } as const;
 export const TARGETS:Target[]=[
@@ -253,12 +253,15 @@ function scene(opened:boolean){
  g.box(3.67,1.028,-2.82,.51,.14,.31,"#303b40");
  g.tube([3.47,1.148,-2.84],[3.87,1.148,-2.84],.076,"#92938b");
  g.tube([3.92,1.04,-2.85],[4.07,.95,-2.87],.025,"#b1a28e");
- // A deliberately overturned office chair in the right-rear corner,
- // no giant panel blocking the player's line of sight to the lock.
- for(const x of [3.47,4.11])for(const z of [.75,1.43])g.box(x,.34,z,.075,.68,.095,"#353d3e");
- g.box(3.79,.70,1.10,.81,.13,.74,"#4a4c4d");
- g.box(4.12,1.13,1.31,.13,.82,.72,"#403b36");
- for(const y of [.89,1.12,1.34])g.box(4.07,y,1.33,.060,.046,.58,"#756253");
+ // Chair is tucked toward the RIGHT wall, no longer blocking the walking
+ // corridor to the rear-wall clock from the default camera / joystick route.
+ const chair=ROOM_LAYOUT.chair;
+ for(const dx of [-.32,.32])for(const dz of [-.35,.33])
+  g.box(chair.x+dx,.34,chair.z+dz,.075,.68,.095,"#353d3e");
+ g.box(chair.x,.70,chair.z,.81,.13,.74,"#4a4c4d");
+ g.box(chair.x+.33,1.13,chair.z+.21,.13,.82,.72,"#403b36");
+ for(const y of [.89,1.12,1.34])
+  g.box(chair.x+.28,y,chair.z+.23,.060,.046,.58,"#756253");
  // Shelved files occupy the far-left utility alcove, away from the lock.
  for(const y of [.58,1.23,1.90])g.box(-4.48,y,3.27,.58,.072,1.55,"#63584c");
  for(let i=0;i<12;i++){const z=2.60+i*.125;
