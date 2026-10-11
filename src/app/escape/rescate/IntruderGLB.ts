@@ -84,8 +84,10 @@ export async function loadRig(gl:WebGLRenderingContext,url:string):Promise<Rig>{
    const vertices=acc(p.attributes.POSITION),normals=p.attributes.NORMAL===undefined?[]:acc(p.attributes.NORMAL),uvs=p.attributes.TEXCOORD_0===undefined?[]:acc(p.attributes.TEXCOORD_0);
    const ids=p.indices===undefined?vertices.map((_,i)=>i):acc(p.indices).map(row=>row[0]);
    if(ids.length>250000)throw Error("GLB demasiado grande");
-   const factor=json.materials?.[p.material??-1]?.pbrMetallicRoughness?.baseColorFactor??[.24,.29,.31];
-   const color=factor.slice(0,3).map((v,i)=>Math.min(.85,Math.max(.17+i*.015,v)));
+   // glTF 2.0 defaults to WHITE (1,1,1,1), not gray; texture and factor
+   // are multiplied in the shader. Never clamp a material into muddy gray.
+   const factor=json.materials?.[p.material??-1]?.pbrMetallicRoughness?.baseColorFactor??[1,1,1,1];
+   const color=factor.slice(0,3).map(v=>Math.min(1,Math.max(0,v)));
    const data=new Float32Array(ids.length*11);
    ids.forEach((v,i)=>{const P=vertices[v],N=normals[v]??[0,1,0];if(!P)throw Error("GLB index");
     data.set([P[0],P[1],P[2],N[0],N[1],N[2],...color,...(uvs[v]??[0,0])],i*11);});
