@@ -51,7 +51,7 @@ test("CASO M · muebles separados, pasillos despejados y puntos físicos coheren
  expect(clearGap(recorder,trunk)).toBeGreaterThan(1);
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
- await expect(canvas).toHaveAttribute("data-room-props","beveled-webgl-v2");
+ await expect(canvas).toHaveAttribute("data-room-props","complete-hd-props-v3");
  // The central aisle must still allow the player to advance from the doorway.
  await walkTo(page,"w","z",-1.03);
  expect(Number(await canvas.getAttribute("data-camera-x"))).toBeCloseTo(0,1);
