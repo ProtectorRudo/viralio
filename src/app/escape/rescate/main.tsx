@@ -35,6 +35,8 @@ const particles=confettiPieces();
 function App(){
  const [screen,setScreen]=useState<Screen>("intro"),[overlay,setOverlay]=useState<Overlay>("none");
  const [seconds,setSeconds]=useState(180),[expired,setExpired]=useState(false);
+ // A player can claim precisely one 60-second extension per run.
+ const extraMinuteUsed=useRef(false);
  const [seen,setSeen]=useState<Ev[]>([]);
  const [photoFlipped,setPhotoFlipped]=useState(false);
  const [active,setActive]=useState<Target|null>(null),[focus,setFocus]=useState<Target|null>(null);
@@ -447,7 +449,15 @@ function App(){
   sealTimer.current=window.setTimeout(()=>{setOpenedLetter(true);setSealBreaking(false);sound("unlock");},1260);
  }
  function finish(){musicAudio.current?.pause();for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];sound("celebrate");window.speechSynthesis?.cancel();setScreen("final");setOverlay("none");drone.current?.stop();drone.current=null;for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];}
- function extend(){setSeconds(60);setExpired(false);setToast("UNA ÚLTIMA OPORTUNIDAD · +01:00");sound("start")}
+ function restart(){setScreen("intro");setSeconds(180);setExpired(false);extraMinuteUsed.current=false;setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);blackoutTriggered.current=false;for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];
+ setBlackout(false);setGraffiti(false);setGraffitiReveal(false);flags.current.remaining=180;
+ cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}
+ function extend(){
+  if(extraMinuteUsed.current)return;
+  extraMinuteUsed.current=true;
+  setSeconds(60);setExpired(false);
+  setToast("ÚLTIMO MINUTO · NO HABRÁ MÁS PRÓRROGAS");sound("start");
+ }
  const HINTS=["Las tres pruebas están en objetos distintos. La fotografía parece ocultar algo más en su reverso."];
  function hint(){
   setHintOpen(true);setHintLevel(1);sound("click");
@@ -646,9 +656,15 @@ function App(){
         </div></>}
       <button className={styles.confirm} disabled={sealBreaking} onClick={openedLetter?finish:envelope}>{openedLetter?"REVELAR MI INVITACIÓN →":sealBreaking?"ROMPIENDO EL LACRE…":"ROMPER EL LACRE →"}</button>
     </div></div>}
-    {expired&&<div className={styles.timeout} role="dialog" aria-modal="true" aria-label="Tiempo agotado">
-      <span>00:00 · CONEXIÓN PERDIDA</span><h2>SE TERMINÓ EL TIEMPO.</h2><p>Pero Mauro dejó una última oportunidad. La puerta sigue entreabierta...</p>
-      <button onClick={extend}>RECIBIR 1 MINUTO EXTRA →</button>
+    {expired&&<div className={styles.timeout} role="dialog" aria-modal="true" aria-label="Tiempo agotado" data-testid="rescate-timeout" data-extra-used={extraMinuteUsed.current?"yes":"no"}>
+      <span>00:00 · CONEXIÓN PERDIDA</span><h2>SE TERMINÓ EL TIEMPO.</h2>
+      {extraMinuteUsed.current?<>
+       <p>Tu último minuto terminó. Esta vez no hay más prórrogas.</p>
+       <button type="button" data-testid="rescate-restart" onClick={restart}>↺ REINICIAR</button>
+      </>:<>
+       <p>Tenés una única oportunidad: 60 segundos más para resolver el caso.</p>
+       <button type="button" data-testid="rescate-extra-minute" onClick={extend}>RECIBIR 1 MINUTO EXTRA →</button>
+      </>}
     </div>}
     <footer className={styles.gameBottom}><span>WASD · JOYSTICK · ARRASTRÁ PARA MIRAR</span><span>EXPERIENCIA FICTICIA</span></footer>
    </>}
@@ -668,9 +684,7 @@ function App(){
      <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
-    <button className={styles.replay} onClick={()=>{setScreen("intro");setSeconds(180);setExpired(false);setSeen([]);setDigits([0,0,0,0,0,0]);setClockState("idle");setHintOpen(false);setHintLevel(0);if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);setDrawerOpen(false);unlockedRef.current=false;flags.current.unlocked=false;flags.current.clockActivated=false;flags.current.intruder=false;threatFired.current=false;setDoorWarning(false);setFigureWarning(false);for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];setPhotoFlipped(false);setOpenedLetter(false);setSealBreaking(false);setEvidenceExpanded(false);blackoutTriggered.current=false;for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];
- setBlackout(false);setGraffiti(false);setGraffitiReveal(false);flags.current.remaining=180;
- cuesFired.current.clear();setTensionCue("");setToast("");setOverlay("none");setAvailable(false);setError("");for(const osc of ambientOsc.current)osc.stop();ambientOsc.current=[];drone.current?.stop();drone.current=null;window.speechSynthesis?.cancel();musicAudio.current?.pause();setMusicPlaying(false);void audio.current?.close();audio.current=null;audioRef.current=false;}}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
+    <button className={styles.replay} onClick={restart}>↺ VOLVER A VIVIR LA EXPERIENCIA</button>
     {toast&&<p className={styles.finalToast} role="status">{toast}</p>}
    </section>}
  </main>;
