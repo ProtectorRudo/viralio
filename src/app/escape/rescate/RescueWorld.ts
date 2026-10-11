@@ -50,7 +50,7 @@ class Room {
  panel(x:number,y:number,z:number,w:number,h:number,color:string,kind:string){
   this.quad(kind,[[x+w/2,y-h/2,z],[x+w/2,y+h/2,z],[x-w/2,y+h/2,z],[x-w/2,y-h/2,z]],[0,0,1],color);
  }
- tube(a:V,b:V,r:number,color:string){
+ tube(a:V,b:V,r:number,color:string,kind="scene"){
   const vec:V=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];
   const len=Math.hypot(...vec)||1,axis=vec.map(x=>x/len) as V;
   const seed:V=Math.abs(axis[1])<.93?[0,1,0]:[1,0,0];
@@ -62,7 +62,7 @@ class Room {
   for(let i=0;i<sides;i++){
    const aa=i*Math.PI*2/sides,bb=(i+1)*Math.PI*2/sides;
    const norm=normalize(side.map((x,j)=>x*Math.cos((aa+bb)/2)+up[j]*Math.sin((aa+bb)/2)) as V);
-   this.quad("scene",[make(a,aa),make(b,aa),make(b,bb),make(a,bb)],norm,color);
+   this.quad(kind,[make(a,aa),make(b,aa),make(b,bb),make(a,bb)],norm,color);
   }
  }
  // Softly faceted anatomical volumes: lower poly count than a GLTF,
@@ -175,6 +175,30 @@ function scene(opened:boolean){
  g.add("knife-blade",[.833,.34,5.955],[0,0,-1],"#9eacb2");
  g.add("knife-blade",[.916,.34,5.955],[0,0,-1],"#d0dbe0");
  g.add("knife-blade",[.869,.19,5.955],[0,0,-1],"#b6c7ce");
+ // Premium 3D theatrical mask: genuine mesh geometry sharing depth, camera and motion
+ // with the GLB stalker. No billboard or generated still. The cracked bone mask
+ // remains identifiable on small screens under emergency lighting.
+ g.ellipsoid(.32,2.625,5.753,.255,.322,.116,"#151a1b","intruder-mask",14,24); // shadow under hood
+ g.ellipsoid(.32,2.581,5.626,.190,.236,.069,"#aa987e","intruder-mask",18,28); // weathered ceramic
+ g.ellipsoid(.32,2.566,5.576,.171,.208,.025,"#d3c3a9","intruder-mask",18,28); // raised front plate
+ for(const x of [.251,.390]){
+  g.ellipsoid(x,2.649,5.548,.065,.041,.016,"#554238","intruder-mask",9,14);
+  g.ellipsoid(x,2.648,5.530,.051,.033,.015,"#0a0d0e","intruder-mask",10,18); // hollow eye
+  g.ellipsoid(x,2.652,5.515,.020,.011,.007,"#101f22","intruder-mask",7,12);
+ }
+ g.ellipsoid(.32,2.592,5.536,.033,.066,.027,"#a58d77","intruder-mask",10,14);
+ g.ellipsoid(.32,2.495,5.545,.105,.013,.008,"#3e3030","intruder-mask",6,16);
+ for(let i=0;i<5;i++)g.box(.32+(i-2)*.035,2.484,5.526,.009,.016,.008,"#a28d79","intruder-mask");
+ // Irregular scratches, a blood-red slash and old metal fasteners.
+ g.limb([.247,2.738,5.540],[.271,2.695,5.520],.004,.003,"#725e4f","intruder-mask");
+ g.limb([.271,2.695,5.520],[.258,2.663,5.520],.003,.002,"#725e4f","intruder-mask");
+ g.limb([.395,2.545,5.533],[.420,2.497,5.533],.007,.003,"#9b3832","intruder-mask");
+ g.limb([.420,2.497,5.533],[.408,2.464,5.536],.003,.002,"#71312d","intruder-mask");
+ for(const x of [.154,.486])for(const y of [2.548,2.704])
+  g.ellipsoid(x,y,5.588,.010,.010,.008,"#73675a","intruder-mask",5,8);
+ // Chest markings and red identification tab: subtle color breaks up black tactical clothing.
+ g.box(.32,1.94,5.953,.265,.075,.027,"#5b282b","intruder-mask");
+ g.box(.32,1.94,5.933,.216,.012,.008,"#b88770","intruder-mask");
  // A separate foreshadowing SHADOW on the corridor wall, shown first.
  g.box(.98,1.17,6.645,.12,.47,.018,"#251923","knife-shadow");
  g.box(.98,.86,6.645,.18,.07,.02,"#251923","knife-shadow");
@@ -433,33 +457,48 @@ void main(){
 }`;
 const FS=`precision mediump float;
 varying vec3 vPos,vNorm,vColor;varying vec2 vUV;varying float vDistance;
-uniform float time,emission,threat,bladeFlash,characterRim,useTex;
+uniform float time,emission,threat,bladeFlash,characterRim,useTex,maskGroup;
 uniform sampler2D albedo;
 uniform mediump vec3 eye;
 void main(){
- vec3 overhead=vec3(0.0,3.05,-1.7),red=vec3(3.45,3.5,-5.1);
+ vec3 N=normalize(vNorm);
+ vec3 overhead=vec3(0.0,3.05,-1.7), emergency=vec3(1.75,2.65,5.14);
  float d=distance(vPos,overhead);
- vec3 toL=normalize(overhead-vPos);
- float lam=max(.0,dot(normalize(vNorm),toL));
- float lamp=(.31+lam*3.05/(1.0+d*.29+d*d*.055))*(.94+.055*sin(time*12.0)+.025*sin(time*27.0));
- float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-red)*.18);
- vec3 baseColor=vColor*mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
- vec3 outColor=baseColor*lamp + baseColor*vec3(.19,.06,.05)*redGlow;
- outColor+=baseColor*vec3(.02,.04,.055)*max(.0,dot(vNorm,vec3(1.,.2,0.)));
- float fog=clamp((vDistance-5.8)/15.0,0.,.69);
+ float lam=max(0.0,dot(N,normalize(overhead-vPos)));
+ float flicker=.96+.035*sin(time*11.0)+.02*sin(time*25.0);
+ float lamp=(.31+lam*3.05/(1.0+d*.29+d*d*.055))*flicker;
+ float redGlow=(.48+threat*.7*(.5+.5*sin(time*7.0)))/(1.0+length(vPos-emergency)*.18);
+ vec3 textureColor=mix(vec3(1.0),texture2D(albedo,vUV).rgb,useTex);
+ vec3 baseColor=vColor*textureColor;
+ vec3 outColor=baseColor*lamp+baseColor*vec3(.19,.06,.05)*redGlow;
+ outColor+=baseColor*vec3(.02,.04,.055)*max(0.0,dot(N,vec3(1.,.2,0.)));
+ float fog=clamp((vDistance-5.8)/15.0,0.0,.69);
  outColor=mix(outColor,vec3(.028,.037,.050),fog);
  if(emission>.5)outColor+=vColor*vec3(.32,.21,.11);
- // Side/back light separates coat and face from the doorway without revealing
- // the identity of the figure.
- float rim=pow(1.0-abs(dot(normalize(vNorm),normalize(eye-vPos))),2.2);
- // Keep the intruder a shape in darkness: disclose only edges in red/amber
-  // light, preventing the low-poly model from becoming a giant visible doll.
-  float breathing=.72+.25*sin(time*2.0);
-  outColor= mix(outColor,outColor*.22,characterRim*.88);
-  outColor+=characterRim*vec3(.14,.09,.07)*(.04+rim*.70)*breathing;
- // A single brief cold highlight on the blade; nothing bright before it enters.
- outColor+=vec3(.72,.86,.96)*bladeFlash;
- gl_FragColor=vec4(pow(outColor,vec3(.9)),1.0);
+ if(characterRim>.5){
+  // Two cinematic key lights: warm emergency beacon and cold reflected light.
+  // Never multiply the character by 0.22 as the former shader did.
+  vec3 view=normalize(eye-vPos);
+  float facing=max(0.0,dot(N,view));
+  float rim=pow(1.0-facing,2.1);
+  float redKey=max(0.0,dot(N,normalize(vec3(1.0,.42,-.64))));
+  float blueKey=max(0.0,dot(N,normalize(vec3(-.78,.34,-.55))));
+  float pulse=.87+.13*sin(time*4.0);
+  vec3 surface=pow(max(baseColor,vec3(.001)),vec3(.80));
+  vec3 fill=vec3(.44,.47,.53)+redKey*vec3(1.12,.31,.25)*pulse
+                  +blueKey*vec3(.21,.47,.78);
+  // Keep material colors visible even in the dark on an average mobile display.
+  outColor=surface*fill+rim*(vec3(.58,.16,.13)*redKey+vec3(.11,.26,.43)*blueKey)*.75;
+  if(maskGroup>.5){
+   // Bone ceramic remains legible without a flat, glowing face.
+   outColor=surface*(vec3(.64,.63,.57)+redKey*vec3(.62,.24,.18)
+                    +blueKey*vec3(.16,.22,.33))
+                    +rim*vec3(.32,.16,.14);
+  }
+  outColor=mix(outColor,vec3(.035,.040,.053),clamp(fog*.48,0.0,.34));
+ }
+ outColor+=vec3(.60,.77,.86)*bladeFlash;
+ gl_FragColor=vec4(pow(clamp(outColor,0.0,1.0),vec3(.88)),1.0);
 }`;
 function compile(gl:WebGLRenderingContext,type:number,code:string){
  const sh=gl.createShader(type);if(!sh)throw Error("No se pudo crear el shader");
@@ -492,7 +531,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  gl.useProgram(program);
  const attrib=(name:string)=>gl.getAttribLocation(program,name),uniform=(name:string)=>gl.getUniformLocation(program,name);
  const ap=attrib("p"),an=attrib("n"),ac=attrib("c"),auv=attrib("uv");
- const ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
+ const umask=uniform("maskGroup"),ue=uniform("eye"),ur=uniform("right"),uu=uniform("up"),uf=uniform("forward"),uglm=uniform("rigMatrix"),uq=uniform("ratio"),ut=uniform("time"),um=uniform("emission"),ua=uniform("clockAngle"),upiv=uniform("clockPivot"),ud=uniform("doorAngle"),udp=uniform("doorPivot"),udg=uniform("doorGroup"),ufg=uniform("figureGroup"),ulg=uniform("legGroup"),ufs=uniform("figureStep"),ufmarch=uniform("figureMarch"),ufaim=uniform("figureAim"),uth=uniform("threat"),ublade=uniform("bladeFlash"),urim=uniform("characterRim"),utex=uniform("useTex"),ualbedo=uniform("albedo"),uglb=uniform("glbGroup");
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearColor(.022,.029,.038,1);
  const blank=gl.createTexture();if(!blank)throw Error("No WebGL fallback texture");
  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
@@ -612,7 +651,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.useProgram(program);
   gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
   gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,blank);
-  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);
+  gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
   gl.uniformMatrix4fv(uglm,false,IDENTITY);
   gl.uniform3fv(ue,[pose.x,pose.y,pose.z]);gl.uniform3fv(ur,right);gl.uniform3fv(uu,up);gl.uniform3fv(uf,forward);
   gl.uniform1f(uq,canvas.width/Math.max(canvas.height,1));gl.uniform1f(ut,now*.001);
@@ -628,6 +667,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   gl.uniform1f(ufs,approach);
   gl.uniform1f(ufmarch,walk*4.9);
   canvas.dataset.intruderApproach=approach.toFixed(2);
+  canvas.dataset.intruderFinish=rig?"cinematic-mask-v2":"fallback";
   canvas.dataset.intruderVisible=current.intruder&&elapsed>=9?"yes":"no";
   gl.uniform1f(ufaim,Math.max(-.65,Math.min(.65,(pose.x-.32)*.29)));
   gl.uniform1f(uth,intruderStarted?1:0);
@@ -636,6 +676,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    const figurePart=m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade";
    if(figurePart&&rig)continue;
    if(figurePart&&(!intruderStarted||elapsed<9))continue;
+   if(m.id==="intruder-mask"&&(!rig||!intruderStarted||elapsed<9))continue;
    if(m.id==="knife-shadow"&&(!intruderStarted||elapsed<4))continue;
    gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);
    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,stride*4,0);
@@ -643,9 +684,10 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.vertexAttribPointer(ac,3,gl.FLOAT,false,stride*4,24);
    gl.uniform1f(um,m.id==="emissive"?1:0);
    gl.uniform1f(udg,m.id==="door"?1:0);
-   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"?1:0);
+   gl.uniform1f(ufg,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"||m.id==="intruder-mask"?1:0);
    gl.uniform1f(ulg,m.id==="figure-leg"?1:0);
-   gl.uniform1f(urim,m.id==="figure"?1:0);
+   gl.uniform1f(urim,m.id==="figure"||m.id==="figure-leg"||m.id==="knife-blade"||m.id==="intruder-mask"?1:0);
+   gl.uniform1f(umask,m.id==="intruder-mask"?1:0);
    gl.uniform1f(ublade,m.id==="knife-blade"&&intruderStarted?(Math.max(0,1-Math.abs(elapsed-13)/1.15)*.70+(elapsed>46?.25:0)):0);
    const t=clockStarted?Math.min(1,Math.max(0,(now-clockStarted)/3000)):0;
    const eased=t*t*(3-2*t);
@@ -658,7 +700,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   if(rig&&intruderStarted&&elapsed>=9){
    rig.animate(elapsed);
    gl.uniform1f(um,0);gl.uniform1f(udg,0);gl.uniform1f(ufg,1);
-   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,1);
+   gl.uniform1f(ulg,0);gl.uniform1f(urim,1);gl.uniform1f(ublade,0);gl.uniform1f(uglb,1);gl.uniform1f(umask,0);
    gl.enableVertexAttribArray(auv);
    gl.uniform1f(ua,0);
    for(const part of rig.parts){
@@ -675,7 +717,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
    gl.uniformMatrix4fv(uglm,false,IDENTITY);
    gl.disableVertexAttribArray(auv);gl.vertexAttrib2f(auv,0,0);
    gl.bindTexture(gl.TEXTURE_2D,blank);
-   gl.uniform1f(utex,0);gl.uniform1f(uglb,0);
+   gl.uniform1f(utex,0);gl.uniform1f(uglb,0);gl.uniform1f(umask,0);
   }
   if(onFrame&&now-lastHud>125){lastHud=now;onFrame({...pose},aim());}
  }
