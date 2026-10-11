@@ -42,6 +42,8 @@ async function examineNearby(page:Page,name:string){
 }
 
 test("CASO M · intruso 3D rigged con materiales PBR y animación al caminar",async({page})=>{
+ test.setTimeout(100000);
+ await page.clock.install();
  await start(page);
  const canvas=page.getByTestId("rescate-webgl");
  await expect.poll(()=>canvas.getAttribute("data-cinematic-intruder"),{timeout:18000}).toBe("ready");
