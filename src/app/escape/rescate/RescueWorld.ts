@@ -743,14 +743,14 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  farFill.position.set(-3.8,2.7,-4.35);room.add(farFill);
  const focusLight=new THREE.PointLight(0xffd49a,.9,2.6,2);
  focusLight.visible=false;room.add(focusLight);
- let objects=new Map<string,THREE.Mesh>(),current={...flags},flashlight=false;
+ const objects=new Map<string,THREE.Mesh>(),current={...flags},flashlight=false;
  let active=true,raf=0,lastDraw=0,lastHud=0,renderScale=1,slowFrames=0,fastFrames=0;
  let drawerOpenedAt=flags.unlocked?performance.now()-1200:0;
  let clockStarted=flags.clockActivated?performance.now()-3100:0;
  let intruderStarted=flags.intruder?performance.now()-1500:0;
  let actor:THREE.Group|null=null,mixer:THREE.AnimationMixer|null=null;
  let walkAction:THREE.AnimationAction|null=null,idleAction:THREE.AnimationAction|null=null;
- let headBone:THREE.Bone|null=null,shoulders:THREE.Bone[]=[];
+ let headBone:THREE.Bone|null=null;const shoulders:THREE.Bone[]=[];
  let lastAnimate=performance.now(),rigLoaded=false;
  const ambientContacts:THREE.Mesh[]=[];
  const contactMaterial=new THREE.MeshBasicMaterial({color:0x090b0e,transparent:true,opacity:.29,depthWrite:false,side:THREE.DoubleSide});
@@ -1035,7 +1035,7 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
   renderer.render(room,camera);
   if(now-lastHud>125){
    lastHud=now;const aimed=aim();
-   focusLight.visible=!!aimed;focusLight.position.set(...(aimed?.pos??[0,-10,0]));
+   focusLight.visible=!!aimed;const fp=aimed?.pos??[0,-10,0];focusLight.position.set(fp[0],fp[1],fp[2]);
    canvas.dataset.focusedObject=aimed?.id??"none";
    onFrame?.({...cameraPose},aimed);
   }
