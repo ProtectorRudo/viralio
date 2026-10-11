@@ -58,6 +58,16 @@ test("CASO M · muebles separados, pasillos despejados y puntos físicos coheren
  await expect(page.getByTestId("rescate-voice")).toBeVisible();
 });
  
+test("CASO M · usa un intruso GLB optimizado y animado en lugar del muñeco primitivo",async({page})=>{
+ await page.goto("/rescate-mauro/");
+ const glb=await page.request.get("/rescate-mauro/models/masked-raider.glb");
+ expect(glb.ok()).toBeTruthy();
+ const bytes=await glb.body();expect(bytes.byteLength).toBeGreaterThan(100000);
+ expect(bytes.toString("ascii",0,4)).toBe("glTF");
+ await start(page);
+ await expect(page.getByTestId("rescate-webgl")).toHaveAttribute("data-intruder-model","glb",{timeout:12000});
+});
+
 test("CASO M · introducción cinematográfica y expediente plegable",async({page})=>{
  await page.goto("/rescate-mauro/");
  await expect(page.getByRole("button",{name:/INICIAR RESCATE/})).toBeVisible();
