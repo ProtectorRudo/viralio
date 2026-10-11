@@ -732,11 +732,18 @@ export function createWorld(canvas:HTMLCanvasElement,flags:SceneFlags,onFrame?:(
  room.add(new THREE.HemisphereLight(0x9bb1c6,0x19130f,1.05));
  const ambient=new THREE.AmbientLight(0x9caabd,.34);room.add(ambient);
  const overhead=new THREE.PointLight(0xffcfaa,29,12,2);
- overhead.position.set(0,3.07,-1.65);overhead.castShadow=true;
- overhead.shadow.mapSize.set(512,512);overhead.shadow.bias=-.00036;
- overhead.shadow.normalBias=.035;
- overhead.shadow.camera.near=.15;overhead.shadow.camera.far=12;
+ overhead.position.set(0,3.07,-1.65);overhead.castShadow=false;
  room.add(overhead);
+ // Directional shadows require a single pass, avoiding the six-face
+ // shadow cubemap required by a shadow-casting point light.
+ const shadowSource=new THREE.DirectionalLight(0xffddb6,3.2);
+ shadowSource.position.set(-1.5,4.8,-1.3);shadowSource.target.position.set(0,0,-.5);
+ shadowSource.castShadow=true;shadowSource.shadow.mapSize.set(512,512);
+ shadowSource.shadow.bias=-.0004;shadowSource.shadow.normalBias=.047;
+ shadowSource.shadow.camera.left=-6;shadowSource.shadow.camera.right=6;
+ shadowSource.shadow.camera.top=6;shadowSource.shadow.camera.bottom=-6;
+ shadowSource.shadow.camera.near=.2;shadowSource.shadow.camera.far=15;
+ room.add(shadowSource,shadowSource.target);
  const emergency=new THREE.PointLight(0xee3530,12,12,2);
  emergency.position.set(1.7,2.55,4.9);room.add(emergency);
  const farFill=new THREE.PointLight(0x6c96bd,7,13,2);
