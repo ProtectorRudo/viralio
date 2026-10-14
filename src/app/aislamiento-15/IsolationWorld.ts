@@ -681,7 +681,20 @@ export class IsolationWorld {
   }
   rotateRelay(id: string) {
     const node = this.rotators.get(id);
-    if (node) node.rotation.z = node.rotation.z ? 0 : -.44;
+    if (node) node.rotation.z = -.44;
+  }
+  resetRelays() {
+    for (const id of ["relay-0", "relay-1", "relay-2"]) {
+      const node = this.rotators.get(id);
+      if (node) node.rotation.z = 0;
+    }
+  }
+  private panelSafetyCooldown = -100;
+  holdAtPanel(seconds = 10) {
+    if (this.room === 0 || this.elapsed - this.panelSafetyCooldown < 22) return;
+    this.panelSafetyCooldown = this.elapsed;
+    this.eventAt = this.elapsed + Math.min(12, seconds);
+    this.enemy.position.set(4.45, 0, CENTER[this.room] - 4.8);
   }
   updateBreaker(index: number, on: boolean) {
     const node = this.breakerNodes[index];
