@@ -117,3 +117,23 @@
 @media(prefers-reduced-motion:reduce){
   .thi-purchase-page .thi-simple-escape-image svg{transition:none!important;transform:none!important}
 }
+/* Clear discovery shortcut above regular gifts: visitors should not need to
+   scroll past nine templates to know the escape-room collection exists. */
+.thi-purchase-page .thi-simple-escape-jump{
+ display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px;
+ margin-top:15px;padding:11px 15px;border:1px solid #cda99c;
+ border-radius:10px;background:#fff5ed;color:#714957!important;
+ text-decoration:none!important;font-size:12px;font-weight:500;
+ box-shadow:0 6px 16px #86543b0a;
+ transition:background .2s,border-color .2s;
+}
+.thi-purchase-page .thi-simple-escape-jump strong{font-weight:800}
+.thi-purchase-page .thi-simple-escape-jump:hover{background:#f4e7e0;border-color:#b98683}
+.thi-purchase-page #salas-de-escape{scroll-margin-top:24px}
+.thi-purchase-page .thi-simple-escape-jump:focus-visible{outline:3px solid #a34e66;outline-offset:3px}
+@media(max-width:580px){
+ .thi-purchase-page .thi-simple-escape-jump{width:100%;justify-content:center;text-align:center;line-height:1.5}
+}
+@media(prefers-reduced-motion:reduce){
+ .thi-purchase-page .thi-simple-escape-jump{transition:none!important}
+}
