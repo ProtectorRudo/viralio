@@ -30,6 +30,7 @@ function privateTeHiceEstoPath(pathname: string) {
       : pathname;
 
   return normalized.startsWith("/r/") ||
+    normalized.startsWith("/escape-r/") ||
     normalized.startsWith("/pedido/") ||
     normalized.startsWith("/editar/") ||
     normalized === "/mis-regalos" ||
@@ -48,6 +49,7 @@ function teHiceEstoRobots() {
       "Disallow: /admin",
       "Disallow: /afiliados",
       "Disallow: /r/",
+      "Disallow: /escape-r/",
       "Disallow: /pedido/",
       "Disallow: /editar/",
       "Disallow: /mis-regalos",
