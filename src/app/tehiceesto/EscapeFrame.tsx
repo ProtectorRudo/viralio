@@ -9,7 +9,7 @@ export default function EscapeFrame({room,config={},customer=false}:{
   {!customer&&<div className={styles.playerHeader}>
    <Link href="/escapes" className={styles.back}>← Volver a las experiencias</Link>
    <span>DEMO INTERACTIVA · TE HICE ESTO</span>
-   <a className={styles.order} href={"https://wa.me/5492215653163?text="+encodeURIComponent("Hola! Quiero personalizar "+room.title+" para regalar. ¿Cómo seguimos?")} target="_blank" rel="noopener noreferrer">QUIERO REGALAR ESTA SALA ↗</a>
+   <Link className={styles.order} href={"/escapes/"+room.slug+"/comprar"}>QUIERO REGALAR ESTA SALA ↗</Link>
   </div>}
   <div className={styles.frameWrap}>
    {room.slug==="caso-m"?
