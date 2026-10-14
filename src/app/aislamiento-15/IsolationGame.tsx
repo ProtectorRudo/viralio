@@ -6,7 +6,7 @@ import { IsolationSound } from "./IsolationSound";
 import "./isolation.css";
 
 type Mode = "intro" | "playing" | "failed" | "won";
-type Panel = null | "terminal" | "record" | "voice" | "help";
+type Panel = null | "terminal" | "triage" | "record" | "voice" | "help";
 const SECONDS = 900;
 const PHASES = [
   { name: "URGENCIAS", subtitle: "Restaurá la seguridad", quote: "El edificio está vacío. Eso dice el registro." },
@@ -23,12 +23,16 @@ function hintText(w: IsolationWorld | null, chamber: Chamber) {
   if (chamber === 0) {
     if (!w.hasFuse) return "El panel auxiliar requiere un fusible. Buscá en el mostrador.";
     if (!w.fusePlaced) return "Instalá el fusible F-08 en el tablero lateral.";
-    if (!w.hasBadge) return "La consola necesita una tarjeta del personal médico.";
-    if (!w.firstDoor) return "La clave está escrita en la pizarra de triaje: P1, P2, P3.";
+    if (!w.hasBadge) return "La consola requiere una credencial. Revisá la camilla derecha.";
+    if (!w.readTriage) return "Encontrá el archivo de triaje junto a la camilla: las tres prioridades dan la clave.";
+    if (w.relays.length < 3) return "Hay tres relés sobre la pared derecha. La pizarra del fondo indica el orden 2, 1, 3.";
+    if (!w.firstDoor) return "Las prioridades P1, P2 y P3 del archivo clínico forman la clave de la terminal." ;
     return "La puerta está abierta. Entrá al pasillo de aislamiento.";
   }
   if (chamber === 1) {
-    if (w.valves.length < 3) return "Leé la secuencia de purga en la pared. Girá las válvulas en ese orden.";
+    if (w.oxygenCells.length < 2) return "Recuperá las dos celdas de oxígeno cerca de los módulos de aislamiento.";
+    if (!w.oxygenInstalled) return "Insertá las celdas en el regulador situado junto a la puerta.";
+    if (w.valves.length < 3) return "Leé la secuencia de purga en el panel del fondo. Girá las válvulas azul, verde y roja.";
     if (!w.secondDoor) return "La purga está lista: accioná el extractor al fondo.";
     return "Se abrió el acceso a contención. No te detengas.";
   }
@@ -57,7 +61,10 @@ export default function IsolationGame() {
   const [code, setCode] = useState("");
   const [notice, setNotice] = useState("PROTOCOLO DE AISLAMIENTO ACTIVADO");
   const [flash, setFlash] = useState(false);
-  const [progress, setProgress] = useState<boolean[]>([false, false, false]);
+  const [progress, setProgress] = useState<boolean[]>([false, false, false, false]);
+  const [objective, setObjective] = useState("Buscá el fusible F-08");
+  const [dangerLevel, setDangerLevel] = useState(0);
+  const [briefAlert, setBriefAlert] = useState(false);
   const [helpCopy, setHelpCopy] = useState("");
   const [hints, setHints] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
@@ -74,10 +81,15 @@ export default function IsolationGame() {
   const refresh = () => {
     const w = worldRef.current;
     if (!w) return;
-    const next = w.room === 0 ? [w.hasFuse, w.fusePlaced, w.firstDoor]
-      : w.room === 1 ? [w.valves.length > 0, w.valves.length === 3, w.secondDoor]
-      : [w.foundLog, w.breakers.join(",") === "true,false,true", hasVoiceRef.current];
+    const next = w.room === 0 ? [w.hasFuse && w.fusePlaced, w.hasBadge && w.readTriage, w.relays.length === 3, w.firstDoor]
+      : w.room === 1 ? [w.oxygenCells.length === 2, w.oxygenInstalled, w.valves.length === 3, w.secondDoor]
+      : [w.foundLog, w.breakers.join(",") === "true,false,true", hasVoiceRef.current, w.won];
     setProgress(next);
+    setObjective(w.room === 0
+      ? (!w.hasFuse ? "Buscá el fusible F-08" : !w.fusePlaced ? "Alimentá el tablero auxiliar" : !w.hasBadge ? "Recuperá la credencial" : !w.readTriage ? "Examiná el archivo de triaje" : w.relays.length < 3 ? "Sincronizá los tres relés" : !w.firstDoor ? "Descifrá el código de seguridad" : "Atravesá la primera compuerta")
+      : w.room === 1
+        ? (w.oxygenCells.length < 2 ? "Recuperá las celdas de oxígeno" : !w.oxygenInstalled ? "Restaurá el regulador" : w.valves.length < 3 ? "Ejecutá la purga de presión" : !w.secondDoor ? "Activá el extractor" : "Ingresá a Contención")
+        : (!w.foundLog ? "Encontrá el expediente 015" : w.breakers.join(",") !== "true,false,true" ? "Configurá los interruptores" : !hasVoiceRef.current ? "Identificá la voz que te llama" : "Activá la evacuación"));
   };
   const closePanel = () => setPanel(null);
 
@@ -91,13 +103,14 @@ export default function IsolationGame() {
       world = new IsolationWorld(canvas, {
         onChamber: (next) => {
           setChamber(next);
-          setProgress([false, false, false]);
+          setProgress([false, false, false, false]);
+          setObjective(next === 1 ? "Recuperá las celdas de oxígeno" : "Encontrá el expediente 015");
           sound.door();
           notify(next === 1 ? "ACCESO A AISLAMIENTO. NO ESTÁS SOLO." : "SECTOR FINAL. LA VOZ CONOCE TU NOMBRE.", true);
         },
         onCaught: () => {
-          penaltyRef.current += 22;
-          notify("TE ENCONTRÓ. PERDISTE 22 SEGUNDOS. ESCAPÁ.", true);
+          penaltyRef.current += 16;
+          notify("TE ALCANZÓ. PERDISTE 16 SEGUNDOS. ESCAPÁ.", true);
           sound.scare();
         },
         onThreat: (s) => { notify(s, true); sound.scare(); }
@@ -126,7 +139,10 @@ export default function IsolationGame() {
         }
         if (elapsed > 61 && spokenAtRef.current < 1) {
           spokenAtRef.current = 1;
-          notify("FALLO DE ENERGÍA. LA ENTIDAD ESTÁ DENTRO.", true);
+          notify("CORTE GENERAL. ALGO APARECIÓ ESCRITO EN EL MURO.", true);
+          world.setAlert(1.45);
+          setBriefAlert(true);
+          window.setTimeout(() => setBriefAlert(false), 1450);
           sound.scare();
         }
         if (elapsed > 280 && spokenAtRef.current < 2) {
@@ -142,8 +158,10 @@ export default function IsolationGame() {
       }
       world.tick(dt, SECONDS - left, 1 - left / SECONDS);
       if (playing) {
-        const dist = world.room > 0 ? Math.hypot(world.player.x - 4.5, world.player.z - (world.roomCenters[world.room] - 4)) : 99;
-        sound.update(left, dist, SECONDS - left);
+        const dist = world.room > 0 ? Math.hypot(world.player.x - world.enemy.position.x, world.player.z - world.enemy.position.z) : 99;
+        const lateral = Math.sin(world.yaw) * (world.enemy.position.z - world.player.z) + Math.cos(world.yaw) * (world.enemy.position.x - world.player.x);
+        sound.update(left, dist, SECONDS - left, Math.max(-1, Math.min(1, lateral / Math.max(dist, 1))));
+        if (now - lastUI > 130) setDangerLevel(world.room === 0 ? 0 : Math.max(0, 100 * (1 - Math.min(dist, 8) / 8)));
       }
       if (now - lastUI > 130) {
         lastUI = now;
@@ -199,6 +217,26 @@ export default function IsolationGame() {
       case "fuse":
         if (!w.hasFuse) { w.hasFuse = true; w.markTaken(id); notify("FUSIBLE F-08 ADQUIRIDO. BUSCÁ EL TABLERO."); sound?.success(); }
         break;
+      case "triage":
+        w.readTriage = true;
+        setPanel("triage"); sound?.message(); break;
+      case "relay-0":
+      case "relay-1":
+      case "relay-2": {
+        const n = Number(id.slice(-1));
+        if (!w.fusePlaced) { notify("LOS RELÉS NO TIENEN ENERGÍA. INSTALÁ EL FUSIBLE."); break; }
+        if (w.relays.length === 3) { notify("RED DE SEGURIDAD ESTABLE. VOLVÉ A LA TERMINAL."); break; }
+        if (w.relays.includes(n)) { notify("ESTE RELÉ YA FUE ACCIONADO."); break; }
+        if (n !== [1, 0, 2][w.relays.length]) {
+          w.relays = []; penaltyRef.current += 5; w.setAlert(.75);
+          for (const key of ["relay-0", "relay-1", "relay-2"]) { /* levers reset with future actuation */ void key; }
+          notify("ERROR DE SINCRONIZACIÓN. REINICIO AUTOMÁTICO. -5 SEGUNDOS.", true); sound?.mistake();
+        } else {
+          w.relays.push(n); w.rotateRelay(id);
+          notify("RELÉ " + w.relays.length + "/3 EN SERVICIO."); sound?.success();
+        }
+        break;
+      }
       case "badge":
         if (!w.hasBadge) { w.hasBadge = true; w.markTaken(id); notify("CREDENCIAL ADQUIRIDA. NIVEL: SEGURIDAD."); sound?.success(); }
         break;
@@ -210,13 +248,30 @@ export default function IsolationGame() {
       case "terminal":
         if (!w.fusePlaced) notify("TERMINAL APAGADA. RESTAURÁ LA ENERGÍA.");
         else if (!w.hasBadge) notify("ACCESO DENEGADO. NECESITÁS UNA CREDENCIAL.");
+        else if (!w.readTriage) notify("FALTAN LAS PRIORIDADES DE TRIAJE. REVISÁ LOS EXPEDIENTES.");
+        else if (w.relays.length !== 3) notify("SINCRONIZACIÓN INCOMPLETA. ACCIONÁ LOS RELÉS EN ORDEN.");
         else if (!w.firstDoor) { setCode(""); setPanel("terminal"); }
         else notify("PUERTA 01 DESBLOQUEADA. AVANZÁ.");
+        break;
+      case "cell-alpha":
+      case "cell-beta": {
+        const cell = id.split("-")[1];
+        if (!w.oxygenCells.includes(cell)) {
+          w.oxygenCells.push(cell); w.markTaken(id);
+          notify("CELDA DE OXÍGENO " + w.oxygenCells.length + "/2 RECUPERADA."); sound?.success();
+        }
+        break;
+      }
+      case "regulator":
+        if (w.oxygenCells.length < 2) notify("EL REGULADOR NECESITA DOS CELDAS CRIOGÉNICAS.");
+        else if (!w.oxygenInstalled) { w.oxygenInstalled = true; notify("OXÍGENO ESTABLE. AHORA EJECUTÁ LA PURGA.", true); sound?.door(); }
+        else notify("OXÍGENO ESTABLE. PURGA MANUAL DISPONIBLE.");
         break;
       case "valve-blue":
       case "valve-green":
       case "valve-red": {
         const key = id.split("-")[1];
+        if (!w.oxygenInstalled) { notify("ALERTA DE PRESIÓN. PRIMERO INSTALÁ LAS CELDAS DE OXÍGENO."); break; }
         if (w.valves.length === 3) { notify("PURGA COMPLETADA. ACTIVÁ EL EXTRACTOR."); break; }
         if (w.valves.includes(key)) { notify("ESTA VÁLVULA YA FUE ACCIONADA."); break; }
         const expected = ["blue", "green", "red"][w.valves.length];
@@ -227,6 +282,7 @@ export default function IsolationGame() {
           w.enemy.position.set(2.8, 0, w.roomCenters[w.room] - 2.5);
         } else {
           w.valves.push(key);
+          w.rotateValve(id);
           notify("VÁLVULA " + w.valves.length + "/3 CONFIRMADA.");
           sound?.success();
         }
@@ -246,6 +302,7 @@ export default function IsolationGame() {
       case "breaker-2": {
         const n = Number(id.slice(-1));
         w.breakers[n] = !w.breakers[n];
+        w.updateBreaker(n, w.breakers[n]);
         notify("INTERRUPTOR " + ["A", "B", "C"][n] + ": " + (w.breakers[n] ? "ENCENDIDO" : "APAGADO"));
         break;
       }
@@ -372,10 +429,12 @@ export default function IsolationGame() {
       </div>
       <div className="iso-objective">
         <span>OBJETIVO ACTUAL <i>●</i></span>
-        <strong>{PHASES[chamber].subtitle}</strong>
+        <strong>{objective}</strong>
         <div className="iso-checks">{progress.map((done, i) => <span key={i} className={done ? "done" : ""} />)}</div>
       </div>
       <div className="iso-crosshair" aria-hidden="true"><i /></div>
+      {briefAlert && <div className="iso-blackout" aria-hidden="true"><span>SIN SEÑAL · PROTOCOLO 015</span></div>}
+      {chamber > 0 && <div className="iso-threat-meter" aria-label={"Proximidad de amenaza " + Math.round(dangerLevel) + " por ciento"}><span>◉ PRESENCIA DETECTADA</span><div><i style={{ width: dangerLevel + "%" }} /></div></div>}
       {notice && <div className="iso-broadcast" role="status"><span>■ TRANSMISIÓN DE EMERGENCIA</span><strong>{notice}</strong></div>}
       {focus && !panel && <div className="iso-focus" aria-live="off"><span>OBJETO INTERACTIVO</span><strong>{focus.label}</strong><small>TOCÁ EL OBJETO O PULSÁ INTERACTUAR</small></div>}
       <div className="iso-bottom">
@@ -439,6 +498,14 @@ export default function IsolationGame() {
         <p>Ingresá las tres cifras correspondientes a las prioridades P1, P2 y P3 del registro de triaje.</p>
         <div className="iso-display" aria-label={"Código ingresado: " + code}>{code.padEnd(3, "•")}</div>
         <div className="iso-keypad">{["1","2","3","4","5","6","7","8","9","BORRAR","0","CONFIRMAR"].map(key => <button key={key} onClick={() => key === "BORRAR" ? setCode("") : key === "CONFIRMAR" ? sendCode() : setCode(c => (c + key).slice(0, 3))}>{key}</button>)}</div>
+      </>}
+      {panel === "triage" && <>
+        <span className="iso-panel-sub">HOSPITAL / ARCHIVO DE CLASIFICACIÓN</span>
+        <h2>FICHAS DE TRIAJE</h2>
+        <p>Las prioridades de emergencia se registran en orden P1, P2 y P3. Usá sus cifras para ingresar a la terminal de seguridad.</p>
+        <div className="iso-transcript"><p><b>P1 · PRIORIDAD CRÍTICA</b> — Habitación 4, paciente sin identificar.</p><p><b>P2 · PRIORIDAD URGENTE</b> — Habitación 2, identificación anulada.</p><p><b>P3 · PRIORIDAD CONTROLADA</b> — Habitación 7, expediente «015».</p></div>
+        <p className="iso-panel-warning">Nota manuscrita: «El registro fue falsificado. La voz sigue llamándose doctor».</p>
+        <button className="iso-confirm" onClick={closePanel}>MEMORIZAR PRIORIDADES ↗</button>
       </>}
       {panel === "record" && <>
         <span className="iso-panel-sub">TRANSCRIPCIÓN · ARCHIVO 015</span><h2>REGISTRO DE IDENTIDAD</h2>
