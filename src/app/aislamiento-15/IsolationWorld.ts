@@ -695,12 +695,30 @@ export class IsolationWorld {
       // Studio GLB supplies the skeletal walk; an original medical mask gives
       // the antagonist a unique silhouette without flattening the 3D character.
       if (this.creatureIdentity) {
-        // Rig unit scales may vary wildly (some GLBs are centimeters). The mask
-        // is authored in real metres and must NOT inherit the imported mesh
-        // scale. Mount it at actor root and match the rig's facing direction.
-        this.creatureIdentity.root.position.set(0, 1.68, .16);
-        this.creatureIdentity.root.rotation.y = Math.PI;
-        this.enemy.add(this.creatureIdentity.root);
+        // Bind the bespoke faceplate to the actual animated Head bone. A mask
+        // fixed to the actor root visibly drifts away during walk and chase.
+        let headBone: THREE.Bone | undefined;
+        rig.traverse(node => {
+          if (node instanceof THREE.Bone && /(^|[._:| ])head($|[._:| ])/i.test(node.name)) {
+            headBone = node;
+          }
+        });
+        if (headBone) {
+          const identity = this.creatureIdentity.root;
+          // Normalize for the imported character's metre conversion. Rigid
+          // local geometry inherits the head's animated translation/rotation.
+          identity.scale.setScalar(1 / rig.scale.x);
+          identity.position.set(0, -.18, -.06);
+          identity.rotation.set(0, Math.PI, 0);
+          headBone.add(identity);
+          this.enemy.userData.headAnchored = true;
+        } else {
+          // Tertiary fallback for non-skeletal public sample assets.
+          this.creatureIdentity.root.position.set(0, 1.68, .16);
+          this.creatureIdentity.root.rotation.y = Math.PI;
+          this.enemy.add(this.creatureIdentity.root);
+          this.enemy.userData.headAnchored = false;
+        }
       }
       this.enemy.add(rig); this.enemyBase = rig;
       const fallback = this.enemy.userData.fallback as THREE.Group;
