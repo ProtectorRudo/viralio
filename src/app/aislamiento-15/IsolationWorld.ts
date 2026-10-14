@@ -684,7 +684,7 @@ export class IsolationWorld {
           const updated = baseMaterial.map(m => {
             if (!(m instanceof THREE.MeshStandardMaterial)) return m;
             const clone = m.clone();
-            clone.color.multiply(new THREE.Color(0x344d49));
+            clone.color.multiply(new THREE.Color(0x657970));
             clone.roughness = Math.max(.76, clone.roughness);
             clone.metalness = Math.min(.16, clone.metalness);
             return clone;
@@ -698,7 +698,7 @@ export class IsolationWorld {
         // Rig unit scales may vary wildly (some GLBs are centimeters). The mask
         // is authored in real metres and must NOT inherit the imported mesh
         // scale. Mount it at actor root and match the rig's facing direction.
-        this.creatureIdentity.root.position.set(0, 1.68, .04);
+        this.creatureIdentity.root.position.set(0, 1.68, .16);
         this.creatureIdentity.root.rotation.y = Math.PI;
         this.enemy.add(this.creatureIdentity.root);
       }
