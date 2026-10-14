@@ -1,0 +1,42 @@
+name: Te Hice Esto playable escape audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-escape-runtime-audit.yml"
+      - "scripts/tehiceesto-escapes-runtime-audit.mjs"
+      - "src/app/tehiceesto/EscapeFrame.tsx"
+      - "src/app/tehiceesto/escape-rooms.ts"
+      - "src/app/tehiceesto/escapes/**"
+      - "src/proxy.ts"
+concurrency:
+  group: tehiceesto-escape-runtime-audit
+  cancel-in-progress: true
+permissions:
+  contents: read
+  statuses: write
+jobs:
+  playable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install runtime and browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Wait for live commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in {1..65}; do
+            if curl -fsSL https://tehiceesto.com/api/version | grep -Fq "\"commit\":\"$GITHUB_SHA\""; then exit 0; fi
+            sleep 8
+          done
+          exit 1
+      - name: Diagnose actual game launch
+        run: node scripts/tehiceesto-escapes-runtime-audit.mjs
