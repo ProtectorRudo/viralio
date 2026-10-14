@@ -24,7 +24,7 @@ function part(p:THREE.Group,name:string,x:number,y:number,z:number,w:number,h:nu
   m.name=name;m.position.set(x,y,z);m.scale.set(w,h,d);
   m.castShadow=false;m.receiveShadow=true;p.add(m);return m;
 }
-function knob(p:THREE.Group,name:string,x:number,y:number,z:number,r:number,mat:THREE.Material,axis:"x"|"z"="z"){
+function knob(p:THREE.Group,name:string,x:number,y:number,z:number,r:number,mat:THREE.Material,axis:"x"|"z"="x"){
   const m=new THREE.Mesh(cylinder,mat);
   m.name=name;m.position.set(x,y,z);m.scale.set(r,.07,r);
   m.rotation[axis]=Math.PI/2;p.add(m);return m;
@@ -109,6 +109,7 @@ function oxygen(scene:THREE.Scene,t:THREE.Texture[]){
 }
 function fuse(scene:THREE.Scene,t:THREE.Texture[]){
   const p=at(scene,0,"Control de fusibles HÉLIX",-5.03,1.42,-1.5);
+  p.rotation.y=Math.PI/2;
   part(p,"Caja de fusibles",-.025,0,0,.38,1.13,.93,dark);
   part(p,"Bisel empotrado",-.02,0,.48,.34,1.05,.034,brushed);
   part(p,"Carcasa sellada",-.025,.15,.50,.27,.65,.02,rubber);
@@ -132,6 +133,7 @@ function recording(scene:THREE.Scene,t:THREE.Texture[]){
 function relay(scene:THREE.Scene,n:number,t:THREE.Texture[]){
   const z=-3.6+n*1.3;
   const p=at(scene,0,"Relé de aislamiento "+(n+1),5.02,1.47,z);
+  p.rotation.y=-Math.PI/2;
   part(p,"Chasis del relé",0,0,.02,.29,.74,.58,dark);
   part(p,"Bisel relé",-.08,0,.325,.11,.58,.43,brushed);
   for(let i=0;i<3;i++)part(p,"Indicador circuito",-.09,.15-i*.13,.37,.04,.031,.23,i===n?warning:signal);
