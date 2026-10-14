@@ -48,7 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           body="$(curl -fsSL --max-time 25 https://tehiceesto.com/)"
-          printf '%s' "$body" | grep -Fq "Un regalo que la emociona"
+          printf '%s' "$body" | grep -Fq "Hay regalos que se abren."
           printf '%s' "$body" | grep -Fq "¿Para quién querés hacerlo?"
           printf '%s' "$body" | grep -Fq "No recibe solo un regalo"
           printf '%s' "$body" | grep -Fq "Pago seguro con Mercado Pago"
