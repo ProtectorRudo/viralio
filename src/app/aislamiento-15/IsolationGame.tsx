@@ -119,7 +119,11 @@ export default function IsolationGame() {
           notify("TE ALCANZÓ. PERDISTE 16 SEGUNDOS. ESCAPÁ.", true);
           sound.scare();
         },
-        onThreat: (s) => { notify(s, true); sound.scare(); }
+        onThreat: (s) => { notify(s, true); sound.scare(); },
+        onMoment: (kind, message) => {
+          notify(message, kind === "lights" || kind === "reactor");
+          sound.cinematic(kind);
+        }
       });
     } catch {
       window.requestAnimationFrame(() => notify("No se pudo iniciar WebGL2. Probá con otro navegador o dispositivo."));
