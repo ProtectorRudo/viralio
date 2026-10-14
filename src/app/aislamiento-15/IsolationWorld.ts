@@ -92,6 +92,9 @@ export class IsolationWorld {
   hasFuse = false;
   fusePlaced = false;
   hasBadge = false;
+  readonly triageDigits = [[4, 2, 7], [5, 8, 3], [3, 1, 6], [7, 4, 9]][Math.floor(Math.random() * 4)];
+  readonly relayPattern = [[1, 0, 2], [2, 1, 0], [0, 2, 1], [1, 2, 0]][Math.floor(Math.random() * 4)];
+  readonly valvePattern = [["blue", "green", "red"], ["green", "red", "blue"], ["red", "blue", "green"]][Math.floor(Math.random() * 3)];
   relays: number[] = [];
   oxygenCells: string[] = [];
   oxygenInstalled = false;
@@ -340,7 +343,7 @@ export class IsolationWorld {
     this.panel(["REGISTRO DE TRIAJE", "CLAVE = PRIORIDADES P1 P2 P3", "CONSULTAR ARCHIVO CLÍNICO"], -3.38, 2.03, z - 6.24, 2.26, 1.15);
     const triage = this.block("Archivo de triaje", 3.92, 1.1, z + 1.8, .37, .035, .28, mats.linen);
     this.target("triage", "Consultar historias de triaje", triage, 0, 2.3);
-    this.panel(["TABLERO DE RELÉS", "ORDEN: R2 → R1 → R3", "LIBERAR CONSOLA DE SEGURIDAD"], 2.98, 1.57, z - 6.24, 2.22, .8, "#f2cf92");
+    this.panel(["TABLERO DE RELÉS", "ORDEN: " + this.relayPattern.map(i => "R" + (i + 1)).join(" > "), "LIBERAR CONSOLA DE SEGURIDAD"], 2.98, 1.57, z - 6.24, 2.22, .8, "#f2cf92");
     for (let n = 0; n < 3; n++) {
       const zRelay = z - 3.6 + n * 1.3;
       this.block("Panel de relé", 5.16, 1.47, zRelay, .29, .61, .52, mats.dark);
@@ -380,7 +383,7 @@ export class IsolationWorld {
       this.block("Tuberías de cámara", x - .68, 2.62, z + .92, .075, .34, .075, mats.steel);
       this.pipe("Cartucho de suspensión", x + .72, 2.29, z + .9, .11, .65, mats.steel);
     }
-    this.panel(["SECUENCIA DE PURGA", "AZUL  >  VERDE  >  ROJO", "EXTRACTOR: ACTIVAR AL FINAL"], 0, 2.31, z - 6.25, 4.17, 1.34, "#cbe1b7");
+    this.panel(["SECUENCIA DE PURGA", this.valvePattern.map(c => ({ blue: "AZUL", green: "VERDE", red: "ROJO" }[c] || c.toUpperCase())).join(" > "), "EXTRACTOR: ACTIVAR AL FINAL"], 0, 2.31, z - 6.25, 4.17, 1.34, "#cbe1b7");
     this.cabinet(-4.45, z - 2.7, true);
     this.panel(["REGULADOR DE OXÍGENO", "DOS CELDAS ANTES DE PURGAR", "SOLO DESPUÉS: ABRIR VÁLVULAS"], 2.8, 1.55, z - 6.24, 2.52, .98, "#c5eee2");
     for (const [key, x, zz] of [["alpha", -3.85, z + 3.1], ["beta", 3.72, z + 3.25]] as const) {
