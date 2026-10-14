@@ -46,7 +46,7 @@ const DESCRIPTIONS:Record<ClueId,string>={
  envelope:"Un sobre oscuro, con un lacre que lleva una letra M.",
  phone:"La línea está cortada. Al levantar el tubo se escucha el eco de una respiración.",
  camera:"La luz roja de REC se enciende. El monitor sobre la mesa derecha permite revisar las grabaciones.",
- board:"El tablero está cubierto de horarios, fotos y rutas. Estuvieron estudiando los movimientos de Mauro.",
+ board:"El tablero está cubierto de horarios, fotos y rutas. Estuvieron estudiando los movimientos de la persona desaparecida.",
  locker:"El armario contiene un abrigo mojado y botas demasiado grandes. No hay ninguna clave.",
  lamp:"La luz oscila y proyecta una silueta sobre la silla. Cuando volvés a mirar, desaparece.",
  pipe:"Del otro lado del conducto se oyen tres golpes. No forman parte del código.",
