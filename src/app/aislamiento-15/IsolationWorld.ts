@@ -115,6 +115,10 @@ export class IsolationWorld {
   private clinicalBeds: THREE.Group[] = [];
   private loadedAssets: THREE.Object3D[] = [];
   private doorDressing: THREE.Group[] = [];
+  private keySpot?: THREE.SpotLight;
+  private avgFrame = 0;
+  private frameCount = 0;
+  private scalePixelRatio = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 1.4);
   private signals: GameSignals;
 
   constructor(canvas: HTMLCanvasElement, signals: GameSignals) {
@@ -125,7 +129,7 @@ export class IsolationWorld {
     this.renderer.toneMappingExposure = 1.69;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.55));
+    this.renderer.setPixelRatio(this.scalePixelRatio);
     this.scene.background = new THREE.Color("#12191a");
     this.scene.fog = new THREE.FogExp2(0x10191b, .022);
     this.scene.add(new THREE.HemisphereLight(0xb5c9bc, 0x202123, 1.28));
@@ -134,6 +138,7 @@ export class IsolationWorld {
     if (floor) mats.tile.map = floor;
     for (let i = 0; i < 3; i++) this.buildRoom(i as Chamber);
     this.art = installHospitalPremiumArt(this.scene, mats);
+    this.indexPremiumArt();
     void this.loadClinicalAssets();
     void this.loadMedicalSetPieces();
     this.enemy = this.makeEnemy();
@@ -141,13 +146,23 @@ export class IsolationWorld {
     this.loadRig();
     this.enemy.position.set(2.5, 0, -16.5);
     this.camera.position.copy(this.player);
+    // One shadowed spotlight rather than the extremely expensive six-pass
+    // cubemap shadow for every point light. Only current-room geometry is active.
+    this.keySpot = new THREE.SpotLight(0xc3e4d7, 19, 14, .87, .78, 1.7);
+    this.keySpot.position.set(-2.65, 3.66, 2.6);
+    this.keySpot.target.position.set(0, 1.2, -1.8);
+    this.keySpot.castShadow = true;
+    this.keySpot.shadow.mapSize.set(512, 512);
+    this.keySpot.shadow.bias = -.0007;
+    this.scene.add(this.keySpot, this.keySpot.target);
+    this.showRoom();
     this.resize();
   }
 
   private block(name: string, x: number, y: number, z: number, w: number, h: number, d: number, mat = mats.steel, parent: THREE.Object3D = this.scene) {
     const m = new THREE.Mesh(boxGeo, mat);
     m.name = name; m.position.set(x, y, z); m.scale.set(w, h, d);
-    m.castShadow = h < 2.9 && w < 3.3; m.receiveShadow = true;
+    m.castShadow = h > .22 && h < 3 && w > .14 && w < 3 && d < 3; m.receiveShadow = true;
     parent.add(m); return m;
   }
 
@@ -222,12 +237,14 @@ export class IsolationWorld {
     this.block("Caja luminaria", 0, 0, 0, 1.52, .12, .47, mats.steel, g);
     this.block("Difusor", 0, -.075, 0, 1.32, .017, .33, red ? mats.red : new THREE.MeshStandardMaterial({ color: 0xc5d9d0, emissive: 0x9ab5b6, emissiveIntensity: 1.25 }), g);
     const light = new THREE.PointLight(red ? 0xff4840 : 0xb8d5c7, red ? 14 : 18, 10, 2);
-    light.position.set(x, 3.3, z); light.castShadow = this.lights.length % 3 === 0;
-    if (light.castShadow) { light.shadow.mapSize.set(512, 512); light.shadow.bias = -.0006; }
+    light.position.set(x, 3.3, z);
+    // The shared spotlight supplies optimized shadows; these illuminate only.
+    light.castShadow = false;
     this.scene.add(light); this.lights.push(light);
   }
 
   private buildRoom(index: Chamber) {
+    const rootStart = this.scene.children.length;
     const z = CENTER[index];
     const dark = index === 2;
     // Distinct contiguous 13-metre chambers with physically traversable door thresholds.
@@ -288,6 +305,7 @@ export class IsolationWorld {
     if (index === 0) this.buildEmergency(z);
     if (index === 1) this.buildIsolation(z);
     if (index === 2) this.buildContainment(z);
+    for (const object of this.scene.children.slice(rootStart)) object.userData.chamber = index;
   }
 
   private buildEmergency(z: number) {
@@ -401,6 +419,29 @@ export class IsolationWorld {
     return group;
   }
 
+  private indexPremiumArt() {
+    for (const object of this.scene.children) {
+      if (object.userData.chamber !== undefined || object instanceof THREE.Light || object instanceof THREE.InstancedMesh) continue;
+      // The premium art kit intentionally uses top-level world-space placements.
+      // Dust particles tag their own chamber. Shared instanced trim spans all rooms.
+      const z = object.position.z;
+      const chamber = Math.max(0, Math.min(2, Math.round(-z / 13))) as Chamber;
+      object.userData.chamber = chamber;
+    }
+  }
+
+  private showRoom() {
+    for (const object of this.scene.children) {
+      const ch = object.userData.chamber as number | undefined;
+      if (ch !== undefined) object.visible = ch === this.room;
+    }
+    if (this.keySpot) {
+      const z = CENTER[this.room];
+      this.keySpot.position.set(-2.65, 3.66, z + 2.65);
+      this.keySpot.target.position.set(0, 1.2, z - 1.9);
+    }
+  }
+
   private async loadClinicalAssets() {
     // Original Innerscene medical GLBs, CC0; downloaded and bundled by Pages CI.
     // Non-blocking: full physical fallback geometry remains if a file is missing.
@@ -433,6 +474,8 @@ export class IsolationWorld {
         sceneWrapper.position.copy(fallback.position);
         sceneWrapper.rotation.copy(fallback.rotation);
         sceneWrapper.add(model);
+        sceneWrapper.userData.chamber = 0;
+        sceneWrapper.visible = this.room === 0;
         this.scene.add(sceneWrapper); this.loadedAssets.push(sceneWrapper);
       } catch { /* Keep detailed fallback stretcher in place. */ }
     }
@@ -449,6 +492,8 @@ export class IsolationWorld {
       fixture.position.set(5.08, 1.04, 2.30);
       fixture.add(unit);
       fixture.name = "GLB Medical Headwall CC0";
+      fixture.userData.chamber = 0;
+      fixture.visible = this.room === 0;
       this.scene.add(fixture); this.loadedAssets.push(fixture);
     } catch { /* Architectural fixtures remain if offline. */ }
   }
@@ -487,7 +532,10 @@ export class IsolationWorld {
             }
           });
           group.position.set(x, 0, z);
-          group.add(node); this.scene.add(group); this.loadedAssets.push(group);
+          group.add(node);
+          group.userData.chamber = Math.max(0, Math.min(2, Math.round(-z / 13)));
+          group.visible = group.userData.chamber === this.room;
+          this.scene.add(group); this.loadedAssets.push(group);
         }
       } catch { /* The illustrated fixture already present remains as fallback. */ }
     }
@@ -624,6 +672,7 @@ export class IsolationWorld {
         this.player.x = 0;
         this.enemyMode = this.room === 1 ? "roaming" : "hunting";
         this.enemy.position.set(3.7, 0, CENTER[this.room] - 4.5);
+        this.showRoom();
         this.signals.onChamber(this.room);
       } else this.player.z = boundary + .15;
     } else {
@@ -684,6 +733,24 @@ export class IsolationWorld {
     });
     if (this.running) this.updateEnemy(dt);
     this.art?.update(this.elapsed, danger);
+    // Adaptive internal resolution: preserve input/HUD responsiveness on
+    // middle-range phones while never exceeding device-native resolution.
+    if (this.running && !document.hidden && dt < .065) {
+      this.avgFrame += dt;
+      this.frameCount++;
+      if (this.frameCount >= 180) {
+        const average = this.avgFrame / this.frameCount;
+        const max = Math.min(window.devicePixelRatio || 1, 1.4);
+        const next = average > .038 ? Math.max(.8, this.scalePixelRatio - .13)
+          : average < .022 ? Math.min(max, this.scalePixelRatio + .06) : this.scalePixelRatio;
+        if (Math.abs(next - this.scalePixelRatio) > .015) {
+          this.scalePixelRatio = next;
+          this.renderer.setPixelRatio(next);
+          this.resize();
+        }
+        this.avgFrame = 0; this.frameCount = 0;
+      }
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
