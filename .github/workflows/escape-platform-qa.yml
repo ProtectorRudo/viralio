@@ -1,0 +1,90 @@
+name: Viralio Escape QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app/page.tsx'
+      - 'src/app/comercios/**'
+      - 'src/app/salas/**'
+      - 'src/app/escape-platform/**'
+      - 'e2e/viralio-escape-home.spec.ts'
+      - '.github/workflows/escape-platform-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/page.tsx'
+      - 'src/app/comercios/**'
+      - 'src/app/salas/**'
+      - 'src/app/escape-platform/**'
+      - 'e2e/viralio-escape-home.spec.ts'
+      - '.github/workflows/escape-platform-qa.yml'
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint changed escape platform
+        run: npx eslint src/app/page.tsx src/app/comercios src/app/salas src/app/escape-platform e2e/viralio-escape-home.spec.ts --max-warnings=0
+      - name: Check types
+        run: npm run typecheck
+      - name: Build complete shared app
+        run: npm run build
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: viralio
+          POSTGRES_PASSWORD: viralio
+          POSTGRES_DB: viralio_escape_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U viralio -d viralio_escape_e2e"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://viralio:viralio@127.0.0.1:5432/viralio_escape_e2e
+      VIRALIO_PERSISTENCE: postgres
+      VIRALIO_AUTH_SECRET: ci-viralio-escape-platform-auth-secret-32-chars-min
+      VIRALIO_ONBOARDING_KEY: ci-viralio-escape-platform-onboarding-key
+      VIRALIO_MERCHANT_PINS: '{"moka":"246810","atlas-barber":"135790"}'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Apply test database migrations
+        run: npm run migrate
+      - name: Build application
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Escape platform browser and responsive QA
+        run: npx playwright test e2e/viralio-escape-home.spec.ts
+      - name: Preserve homepage screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: viralio-escape-home-visual
+          path: visual-qa-evidence/viralio-escape-*.png
+          if-no-files-found: warn
