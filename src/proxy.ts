@@ -31,6 +31,7 @@ function privateTeHiceEstoPath(pathname: string) {
 
   return normalized.startsWith("/r/") ||
     normalized.startsWith("/escape-r/") ||
+    normalized.startsWith("/escape-play/caso-m") ||
     normalized.startsWith("/pedido/") ||
     normalized.startsWith("/editar/") ||
     normalized === "/mis-regalos" ||
@@ -50,6 +51,7 @@ function teHiceEstoRobots() {
       "Disallow: /afiliados",
       "Disallow: /r/",
       "Disallow: /escape-r/",
+      "Disallow: /escape-play/",
       "Disallow: /pedido/",
       "Disallow: /editar/",
       "Disallow: /mis-regalos",
@@ -128,6 +130,15 @@ export function proxy(request: NextRequest) {
   // /tehiceesto/mama-voz-web.mp3, which does not exist in /public.
   if (pathname === "/mama-voz-web.mp3" || pathname === "/mama-voz-web.opus" || pathname === "/tehiceesto-pareja-demo-v1.m4a") {
     return NextResponse.next();
+  }
+
+  // Te Hice Esto's CASO M is served from its published static 3D model.
+  // Keep game HTML and all relative JS/CSS/audio/models on the gift domain
+  // without exposing Viralio's other pages or application APIs.
+  if (pathname === "/escape-play/caso-m" || pathname.startsWith("/escape-play/caso-m/")) {
+    const rest=pathname.slice("/escape-play/caso-m".length).replace(/^\/+/, "");
+    const upstream=new URL("https://protectorrudo.github.io/viralio/rescate-mauro/"+rest+search);
+    return applyPrivateHeaders(NextResponse.rewrite(upstream),pathname);
   }
 
   // A non-sensitive deployment marker is exposed so CI can verify
