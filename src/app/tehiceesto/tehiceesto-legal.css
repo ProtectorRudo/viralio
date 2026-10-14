@@ -46,3 +46,7 @@
 .thi-legal-admin-controls :is(select,textarea){display:block;box-sizing:border-box;width:100%;margin-top:6px;padding:10px 12px;border:1px solid #cbb5ad;border-radius:8px;background:#fff9f3;color:#342b30;font:inherit}
 .thi-legal-admin-controls button:disabled{opacity:.5}
 @media(max-width:760px){.thi-legal-admin-list{grid-template-columns:1fr}.thi-legal-admin-head{align-items:flex-start}}
+
+.thi-privacy-terms h2{font:400 27px Georgia,serif;margin:17px 0 9px;color:#43303b}
+.thi-privacy-terms p{line-height:1.7;color:#6f6168;font-size:13px;margin:0 0 20px}
+.thi-privacy-terms a{color:#8b4b60;text-decoration:underline;text-underline-offset:3px}
