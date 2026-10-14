@@ -116,6 +116,7 @@ export class IsolationWorld {
   private loadedAssets: THREE.Object3D[] = [];
   private doorDressing: THREE.Group[] = [];
   private keySpot?: THREE.SpotLight;
+  private softwareRenderer = false;
   private avgFrame = 0;
   private frameCount = 0;
   private scalePixelRatio = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 1.4);
@@ -124,10 +125,17 @@ export class IsolationWorld {
   constructor(canvas: HTMLCanvasElement, signals: GameSignals) {
     this.signals = signals;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", alpha: false });
+    // CI, virtual machines and older browsers may provide a software GPU.
+    // Reduced render scale and no realtime shadow maps prevent stalls.
+    const context = this.renderer.getContext();
+    const info = context.getExtension("WEBGL_debug_renderer_info");
+    const gpu = info ? String(context.getParameter(info.UNMASKED_RENDERER_WEBGL)) : "";
+    this.softwareRenderer = /swiftshader|llvmpipe|software rasterizer/i.test(gpu);
+    if (this.softwareRenderer) this.scalePixelRatio = .78;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.69;
-    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.enabled = !this.softwareRenderer;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setPixelRatio(this.scalePixelRatio);
     this.scene.background = new THREE.Color("#12191a");
@@ -151,7 +159,7 @@ export class IsolationWorld {
     this.keySpot = new THREE.SpotLight(0xc3e4d7, 19, 14, .87, .78, 1.7);
     this.keySpot.position.set(-2.65, 3.66, 2.6);
     this.keySpot.target.position.set(0, 1.2, -1.8);
-    this.keySpot.castShadow = true;
+    this.keySpot.castShadow = !this.softwareRenderer;
     this.keySpot.shadow.mapSize.set(512, 512);
     this.keySpot.shadow.bias = -.0007;
     this.scene.add(this.keySpot, this.keySpot.target);
@@ -740,8 +748,8 @@ export class IsolationWorld {
       this.frameCount++;
       if (this.frameCount >= 180) {
         const average = this.avgFrame / this.frameCount;
-        const max = Math.min(window.devicePixelRatio || 1, 1.4);
-        const next = average > .038 ? Math.max(.8, this.scalePixelRatio - .13)
+        const max = Math.min(window.devicePixelRatio || 1, this.softwareRenderer ? .85 : 1.4);
+        const next = average > .038 ? Math.max(this.softwareRenderer ? .6 : .8, this.scalePixelRatio - .13)
           : average < .022 ? Math.min(max, this.scalePixelRatio + .06) : this.scalePixelRatio;
         if (Math.abs(next - this.scalePixelRatio) > .015) {
           this.scalePixelRatio = next;
