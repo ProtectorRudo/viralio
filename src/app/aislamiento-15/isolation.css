@@ -188,3 +188,20 @@
 }
 @media (max-height:650px){.iso-intro-content{transform:scale(.85);transform-origin:left center}.iso-intro h1{font-size:55px}.iso-letter p{margin:8px 0}.iso-intro-meta{margin:12px 0}.iso-bottom{bottom:8px}.iso-objective{top:105px}}
 @media (prefers-reduced-motion:reduce){.isolation *{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Live suspense director, designed to stay clear of the player reticle. */
+.iso-blackout{position:absolute;inset:0;z-index:19;pointer-events:none;background:rgba(0,0,0,.93);display:grid;place-items:center;animation:iso-blackout 1.5s ease-in-out forwards}
+.iso-blackout span{font:700 10px monospace;letter-spacing:.24em;color:#ce5147;animation:iso-blink .28s linear infinite}
+@keyframes iso-blackout{0%{opacity:.1}12%{opacity:1}70%{opacity:.98}100%{opacity:0}}
+.iso-threat-meter{position:absolute;right:clamp(16px,3vw,48px);top:166px;z-index:9;padding:11px 13px;width:175px;background:rgba(7,18,19,.74);border:1px solid rgba(162,101,88,.36);backdrop-filter:blur(6px)}
+.iso-threat-meter span{font:9px monospace;letter-spacing:.09em;color:#d4a195}
+.iso-threat-meter>div{margin-top:10px;width:100%;height:3px;background:#293537}
+.iso-threat-meter>div i{display:block;height:100%;background:#d96b51;box-shadow:0 0 8px #bb4431;transition:width .16s linear}
+.iso-panel-warning{font-size:12px!important;font-style:italic;color:#d69e90!important;border-left:2px solid #ae6856;padding-left:12px;margin:18px 0}
+.iso-checks span{transition:background .3s,box-shadow .3s}
+.iso-checks span.done{box-shadow:0 0 12px rgba(122,205,171,.36)}
+@media(max-width:750px){
+  .iso-threat-meter{top:calc(env(safe-area-inset-top) + 131px);right:12px;padding:8px 9px;width:125px}
+  .iso-threat-meter span{font-size:7px;letter-spacing:0}
+  .iso-threat-meter>div{margin-top:5px}
+}
