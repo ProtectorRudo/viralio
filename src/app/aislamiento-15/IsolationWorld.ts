@@ -135,6 +135,7 @@ export class IsolationWorld {
     for (let i = 0; i < 3; i++) this.buildRoom(i as Chamber);
     this.art = installHospitalPremiumArt(this.scene, mats);
     void this.loadClinicalAssets();
+    void this.loadMedicalSetPieces();
     this.enemy = this.makeEnemy();
     this.scene.add(this.enemy);
     this.loadRig();
@@ -450,6 +451,46 @@ export class IsolationWorld {
       fixture.name = "GLB Medical Headwall CC0";
       this.scene.add(fixture); this.loadedAssets.push(fixture);
     } catch { /* Architectural fixtures remain if offline. */ }
+  }
+
+  private async loadMedicalSetPieces() {
+    // All models are CC0 original Innerscene medical equipment and are placed
+    // in corners or against walls, away from core puzzle interaction zones.
+    // Explicitly asynchronous: the hospital and gameplay are already usable.
+    const loader = new GLTFLoader();
+    const entries = [
+      { file: "supply-cart.glb", placements: [[-4.56, 4.35, .28], [4.55, -30.1, -1.1]] },
+      { file: "vital-monitor.glb", placements: [[4.53, -.04, -.32], [4.36, -16.35, 1.4]] },
+      { file: "exam-light.glb", placements: [[4.51, -9.3, -.45]] },
+      { file: "privacy-curtain.glb", placements: [[-4.1, -9.15, Math.PI / 2]] },
+      { file: "transport-stretcher.glb", placements: [[3.44, -4.63, 1.43]] }
+    ] as const;
+    for (const entry of entries) {
+      try {
+        const gltf = await loader.loadAsync("/aislamiento-15/models/" + entry.file);
+        if (this.disposed) return;
+        for (const [x, z, yaw] of entry.placements) {
+          const node = gltf.scene.clone(true);
+          const group = new THREE.Group();
+          group.name = "Premium CC0 " + entry.file;
+          // Physical scale and local pivot are kept consistent with room geometry.
+          node.rotation.y = yaw;
+          node.updateMatrixWorld(true);
+          const bounds = new THREE.Box3().setFromObject(node);
+          const center = bounds.getCenter(new THREE.Vector3());
+          node.position.x -= center.x;
+          node.position.y -= bounds.min.y;
+          node.position.z -= center.z;
+          node.traverse(object => {
+            if (object instanceof THREE.Mesh) {
+              object.castShadow = true; object.receiveShadow = true;
+            }
+          });
+          group.position.set(x, 0, z);
+          group.add(node); this.scene.add(group); this.loadedAssets.push(group);
+        }
+      } catch { /* The illustrated fixture already present remains as fallback. */ }
+    }
   }
 
   private loadRig() {
