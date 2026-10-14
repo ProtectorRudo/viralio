@@ -698,7 +698,10 @@ export class IsolationWorld {
   }
   updateBreaker(index: number, on: boolean) {
     const node = this.breakerNodes[index];
-    if (node) { node.rotation.x = on ? -.33 : 0; (node.material as THREE.MeshStandardMaterial).emissiveIntensity = on ? .8 : .2; }
+    if (node) node.rotation.x = on ? -.33 : 0;
+    if (node instanceof THREE.Mesh && node.material instanceof THREE.MeshStandardMaterial) {
+      node.material.emissiveIntensity = on ? .8 : .2;
+    }
   }
 
   openDoor(index: 0 | 1) {
