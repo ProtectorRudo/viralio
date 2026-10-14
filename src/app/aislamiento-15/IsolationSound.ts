@@ -70,6 +70,24 @@ export class IsolationSound {
     this.tone(78,.1,"triangle",gain*.65,49,pan);
   }
   heartbeat(){this.tone(64,.2,"sine",.28,38);this.tone(52,.16,"sine",.17,32);}
+  cinematic(kind:"glass"|"lights"|"reactor"|"knock"){
+    if(kind==="glass"){
+      this.tone(178,.38,"triangle",.28,86,-.7);
+      this.tone(1200,.52,"sawtooth",.035,420,-.7);
+      this.tone(69,.68,"sine",.22,41,.35);
+    } else if(kind==="lights"){
+      this.tone(52,1.25,"sawtooth",.29,26);
+      this.tone(840,.11,"square",.08,210);
+    } else if(kind==="reactor"){
+      this.tone(71,2.2,"sawtooth",.27,39,-.25);
+      this.tone(260,1.5,"triangle",.12,120,.42);
+      this.siren();
+    } else {
+      this.tone(83,.19,"triangle",.36,42,.8);
+      this.tone(68,.28,"triangle",.29,36,.8);
+      this.tone(54,.37,"triangle",.25,30,.8);
+    }
+  }
   message(){this.tone(430,.06,"sine",.1,330);this.tone(580,.09,"sine",.08,480,.55);}
   finale(){this.tone(240,1.3,"triangle",.19,480);this.tone(480,2.1,"sine",.12,720);}
   update(remaining:number,enemyDistance:number,elapsed:number,enemyPan=0) {
