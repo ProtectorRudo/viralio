@@ -421,8 +421,9 @@ export class IsolationWorld {
       const cartridge = this.pipe("Celda criogénica", x, 1.38, zz, .12, .42, mats.ceramic);
       this.target("cell-" + key, "Retirar celda de oxígeno " + key.toUpperCase(), cartridge, 1, 2.6);
     }
-    this.block("Regulador bipuerto", -.12, 1.34, z - 5.37, .95, .85, .4, mats.dark);
-    const regulator = this.block("Selector de regulador", -.12, 1.4, z - 5.12, .51, .36, .1, mats.blue);
+    // Offset left so evacuation corridor retains an unobstructed sightline.
+    this.block("Regulador bipuerto", -2.9, 1.34, z - 4.0, .95, .85, .4, mats.dark);
+    const regulator = this.block("Selector de regulador", -2.9, 1.4, z - 3.75, .51, .36, .1, mats.blue);
     this.target("regulator", "Instalar dos celdas en el regulador", regulator, 1, 2.9);
     // Three industrial handwheels are bolted to the right-side gas network,
     // not hovering on poles in the middle of the escape corridor.
@@ -486,7 +487,15 @@ export class IsolationWorld {
       this.block("Armario eléctrico", x, 1.38, zz, 1.45, 2.25, .66, mats.dark);
       this.block("Frontal eléctrico", x, 1.53, zz + .35, 1.22, 1.52, .035, mats.steel);
       this.block("Amperímetro", x, 1.88, zz + .38, .67, .38, .032, mats.screen);
-      const breaker = this.block("Disyuntor", x, 1.22, zz + .48, .26, .35, .21, mats.amber);
+      // An electromechanical handle fits into the inset security panel.
+      this.block("Placa disyuntor", x, 1.22, zz + .48, .38, .48, .055, mats.dark);
+      const breaker = new THREE.Group();
+      breaker.name = "Palanca principal " + ["A", "B", "C"][i];
+      breaker.position.set(x, 1.22, zz + .55);
+      this.scene.add(breaker);
+      this.block("Tapa de palanca", 0, 0, .04, .16, .33, .085, mats.ceramic, breaker);
+      this.block("Indicador de posición", 0, .10, .10, .16, .07, .075, mats.amber, breaker);
+      this.block("Muelle mecánico", 0, -.12, .10, .13, .055, .055, mats.steel, breaker);
       this.target("breaker-" + i, "Interruptor principal " + ["A", "B", "C"][i], breaker, 2, 3.2);
       this.breakerNodes.push(breaker);
       this.pipe("Conducto reactor", x, 3.34, zz, .14, .85, mats.rust);
