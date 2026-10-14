@@ -37,6 +37,8 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
    const links=await page.locator("#escapes .thh-escape-demo").count();
    const buys=await page.locator("#escapes .thh-escape-buy").count();
    if(links!==3||buys!==3)throw Error("Home escapes missing: "+links+" / "+buys);
+   if(await page.locator('a[href="/arrepentimiento"]').count()<1)
+     throw Error("Consumer withdrawal link missing from home");
    for(const slug of escapes){
     if(await page.locator(`#escapes a.thh-escape-demo[href="/escapes/${slug}"]`).count()!==1
       ||await page.locator(`#escapes a.thh-escape-buy[href="/escapes/${slug}/comprar"]`).count()!==1)
@@ -63,6 +65,8 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
      }
    }
    if(await page.locator(".thi-simple-escape-card").count()!==3)throw Error("Missing escape cards");
+   if(await page.locator('a[href="/arrepentimiento"]').count()<1)
+     throw Error("Consumer rights shortcut missing from gift catalog");
  });
  for(const slug of live){
    await check(view.name+" playable gift card "+slug,async()=>{
@@ -165,7 +169,28 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
      }finally{await page.unroute("**/functions/v1/order-create")}
    });
  }
- await check(view.name+" checkout price and transparent delivery copy",async()=>{
+ await check(view.name+" consumer withdrawal form and immediate receipt",async()=>{
+   const response=await page.goto(base+"/arrepentimiento",{waitUntil:"domcontentloaded",timeout:45000});
+   if(response?.status()!==200)throw Error("Public withdrawal page HTTP "+response?.status());
+   const pageBody=await page.locator("body").innerText();
+   if(!pageBody.includes("Botón de arrepentimiento")||!pageBody.includes("No necesitás registrarte"))
+     throw Error("Consumer rights information missing");
+   const submitted=[];
+   await page.route("**/functions/v1/commerce-withdrawals",async route=>{
+      submitted.push(route.request().postDataJSON());
+      await route.fulfill({status:201,contentType:"application/json",
+        body:JSON.stringify({ok:true,ticketCode:"THI-AUDITORIA12",receivedAt:new Date().toISOString()})});
+   });
+   try{
+     await page.locator('input[autocomplete="name"]').fill("Auditoría Te Hice Esto");
+     await page.locator('input[type="email"]').fill("auditoria@example.com");
+     await page.getByRole("button",{name:/Registrar solicitud de arrepentimiento/}).click();
+     await page.getByText("THI-AUDITORIA12").waitFor({timeout:7500});
+     if(submitted.length!==1||submitted[0].action!=="submit"||submitted[0].email!=="auditoria@example.com")
+       throw Error("Withdrawal receipt flow did not submit properly");
+   }finally{await page.unroute("**/functions/v1/commerce-withdrawals")}
+ });
+  await check(view.name+" checkout price and transparent delivery copy",async()=>{
    const r=await page.goto(base+"/escapes/caso-m/comprar",{waitUntil:"domcontentloaded"});
    if(r?.status()!==200)throw Error("Not purchasable");
    const body=await page.locator("body").innerText();
@@ -192,6 +217,10 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
  if(jsErrors.length)failures.push({label:view.name+" uncaught browser exceptions",message:jsErrors.slice(0,8).join(" | ")});
  await context.close();
 }
+await check("commercial: withdrawal API exists and rejects anonymous missing key",async()=>{
+  const response=await fetch("https://efvvadfxuyieswdqnsjg.supabase.co/functions/v1/commerce-withdrawals",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"submit",name:"Test",email:"no@example.com"})});
+  if(response.status!==401)throw Error("Unexpected authorization response "+response.status);
+});
 await check("commercial: Mercado Pago public configuration health",async()=>{
  const req=await fetch("https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/tehiceesto-checkout-v2?status=1");
  if(!req.ok)throw Error("Checkout health HTTP "+req.status);
