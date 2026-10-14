@@ -160,6 +160,7 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
       </div>
       <p className="thi-simple-escape-note">✦ El precio es el mismo: {formatTeHiceEstoPrice()} por sala, sin suscripción. Después del pago coordinamos los nombres, el mensaje final y los detalles por WhatsApp. En CASO M también personalizamos el código del candado y sus pistas.</p>
     </section>
+    <p className="thi-commercial-rights"><Link href="/arrepentimiento">Botón de arrepentimiento ↗</Link></p>
     <p className="thi-simple-footer-note">♡ Cada regalo conserva su diseño y recorrido original. En las experiencias de recuerdos personalizás el contenido previsto; en las salas de escape nos encargamos nosotros.</p>
   </div>;
 }
