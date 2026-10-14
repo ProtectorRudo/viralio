@@ -57,10 +57,10 @@ export default function IsolationGame() {
   const [code, setCode] = useState("");
   const [notice, setNotice] = useState("PROTOCOLO DE AISLAMIENTO ACTIVADO");
   const [flash, setFlash] = useState(false);
-  const [revision, setRevision] = useState(0);
+  const [progress, setProgress] = useState<boolean[]>([false, false, false]);
+  const [helpCopy, setHelpCopy] = useState("");
   const [hints, setHints] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
-  const [expanded, setExpanded] = useState(false);
   const [joy, setJoy] = useState({ x: 0, y: 0 });
 
   const notify = useCallback((message: string, danger = false) => {
@@ -71,7 +71,14 @@ export default function IsolationGame() {
     }
     window.setTimeout(() => setNotice(current => current === message ? "" : current), 5700);
   }, []);
-  const refresh = () => setRevision(n => n + 1);
+  const refresh = () => {
+    const w = worldRef.current;
+    if (!w) return;
+    const next = w.room === 0 ? [w.hasFuse, w.fusePlaced, w.firstDoor]
+      : w.room === 1 ? [w.valves.length > 0, w.valves.length === 3, w.secondDoor]
+      : [w.foundLog, w.breakers.join(",") === "true,false,true", hasVoiceRef.current];
+    setProgress(next);
+  };
   const closePanel = () => setPanel(null);
 
   useEffect(() => {
@@ -84,6 +91,7 @@ export default function IsolationGame() {
       world = new IsolationWorld(canvas, {
         onChamber: (next) => {
           setChamber(next);
+          setProgress([false, false, false]);
           sound.door();
           notify(next === 1 ? "ACCESO A AISLAMIENTO. NO ESTÁS SOLO." : "SECTOR FINAL. LA VOZ CONOCE TU NOMBRE.", true);
         },
@@ -95,7 +103,7 @@ export default function IsolationGame() {
         onThreat: (s) => { notify(s, true); sound.scare(); }
       });
     } catch {
-      notify("No se pudo iniciar WebGL2. Probá con otro navegador o dispositivo.");
+      window.requestAnimationFrame(() => notify("No se pudo iniciar WebGL2. Probá con otro navegador o dispositivo."));
       return;
     }
     worldRef.current = world;
@@ -152,7 +160,7 @@ export default function IsolationGame() {
       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
       world.keys.add(e.code);
       if (e.code === "KeyE" || e.code === "Space") { e.preventDefault(); interactRef.current(); }
-      if (e.code === "KeyH") setPanel("help");
+      if (e.code === "KeyH") { setHelpCopy(hintText(world, world.room)); setPanel("help"); }
     };
     const onKeyUp = (e: KeyboardEvent) => world.keys.delete(e.code);
     window.addEventListener("resize", onResize);
@@ -265,7 +273,7 @@ export default function IsolationGame() {
     if (f) interactWith(f.id);
     else notify("APUNTÁ A UN OBJETO Y ACERCATE PARA INTERACTUAR.");
   }
-  interactRef.current = interact;
+  useEffect(() => { interactRef.current = interact; });
 
   function sendCode() {
     const w = worldRef.current;
@@ -319,6 +327,12 @@ export default function IsolationGame() {
     lookRef.current.delete(e.pointerId);
   }
 
+  function openHelp() {
+    const w = worldRef.current;
+    setHelpCopy(hintText(w, w?.room ?? chamber));
+    setPanel("help");
+  }
+
   function updateJoy(e: React.PointerEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
     const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
@@ -330,9 +344,6 @@ export default function IsolationGame() {
   function joyMove(e: React.PointerEvent<HTMLDivElement>) { if (e.currentTarget.hasPointerCapture(e.pointerId)) updateJoy(e); }
   function joyUp() { setJoy({ x: 0, y: 0 }); worldRef.current?.moveJoystick(0, 0); }
 
-  const progress = chamber === 0 ? [worldRef.current?.hasFuse, worldRef.current?.fusePlaced, worldRef.current?.firstDoor]
-    : chamber === 1 ? [!!worldRef.current?.valves.length, worldRef.current?.valves.length === 3, worldRef.current?.secondDoor]
-    : [worldRef.current?.foundLog, worldRef.current?.breakers.join(",") === "true,false,true", hasVoiceRef.current];
   const danger = remaining < 120;
   const elapsed = SECONDS - remaining;
   const rank = elapsed < 480 ? "S" : elapsed < 660 ? "A" : elapsed < 780 ? "B" : "C";
@@ -346,14 +357,14 @@ export default function IsolationGame() {
 
     {mode === "playing" && <>
       <header className="iso-hud" aria-label="Estado de la partida">
-        <div className="iso-brand"><a href="/" title="Volver a Viralio">V<span>.</span></a><div><strong>AISLAMIENTO <i>15</i></strong><small>VIRALIO / EXPERIMENT 004</small></div></div>
+        <div className="iso-brand"><a href="https://viralio.net/" title="Volver a Viralio">V<span>.</span></a><div><strong>AISLAMIENTO <i>15</i></strong><small>VIRALIO / EXPERIMENT 004</small></div></div>
         <div className="iso-timer" role="timer" aria-label={"Tiempo restante " + format(remaining)}>
           <span><i className="iso-led" /> SELLADO INMINENTE</span>
           <strong>{format(remaining)}</strong>
         </div>
         <div className="iso-hud-tools">
           <button onClick={() => { const next = !soundOn; setSoundOn(next); audioRef.current?.mute(!next); }} aria-label={soundOn ? "Silenciar sonido" : "Activar sonido"}>{soundOn ? "♫" : "♪̸"}</button>
-          <button onClick={() => setPanel("help")} title="Ayuda">?</button>
+          <button onClick={openHelp} title="Ayuda">?</button>
         </div>
       </header>
       <div className="iso-progress">
@@ -372,7 +383,7 @@ export default function IsolationGame() {
           <span className="iso-joystick-ring" /><span className="iso-joystick-knob" style={{ transform: "translate(" + joy.x * 34 + "px," + joy.y * 34 + "px)" }} />
         </div>
         <div className="iso-bottom-center">
-          <button className="iso-hint-button" onClick={() => { setHints(n => n + 1); setPanel("help"); }}>◈ PISTA <span>{hints > 0 ? "CONSULTADA" : "DISPONIBLE"}</span></button>
+          <button className="iso-hint-button" onClick={() => { setHints(n => n + 1); openHelp(); }}>◈ PISTA <span>{hints > 0 ? "CONSULTADA" : "DISPONIBLE"}</span></button>
           <small>MOVÉ: WASD / JOYSTICK · MIRÁ: ARRASTRÁ · INTERACTUÁ: E</small>
         </div>
         <button className={"iso-action " + (focus ? "iso-action--active" : "")} onClick={interact} disabled={!focus}><span>✋</span> INTERACTUAR</button>
@@ -407,7 +418,7 @@ export default function IsolationGame() {
       <p>Las compuertas de seguridad sellaron el edificio. La última voz que escuchaste fue la tuya.</p>
       <div className="iso-end-stat"><span>SUPERVIVENCIA</span><strong>15:00</strong></div>
       <button onClick={() => window.location.reload()} className="iso-start">VOLVER A INTENTARLO <b>↗</b></button>
-      <a href="/">Volver a Viralio</a>
+      <a href="https://viralio.net/">Volver a Viralio</a>
     </div>}
 
     {mode === "won" && <div className="iso-end iso-won">
@@ -418,7 +429,7 @@ export default function IsolationGame() {
       <p className="iso-replay-hook">¿Podés escapar más rápido? Los errores, la ruta y la persecución cambian tu resultado.</p>
       <button onClick={() => { if (navigator.share) { void navigator.share({ title: "AISLAMIENTO 15 · VIRALIO", text: "Escapé de AISLAMIENTO 15 en " + format(elapsed) + ". ¿Podés superarme?", url: location.href }); } else { void navigator.clipboard?.writeText(location.href); notify("ENLACE COPIADO"); } }} className="iso-start">DESAFIAR A UN AMIGO <b>↗</b></button>
       <button className="iso-again" onClick={() => window.location.reload()}>VOLVER A JUGAR ↻</button>
-      <a href="/">Explorar más salas Viralio</a>
+      <a href="https://viralio.net/">Explorar más salas Viralio</a>
     </div>}
 
     {panel && mode === "playing" && <div className="iso-panel-scrim" onClick={closePanel} role="presentation"><div className="iso-panel" role="dialog" aria-modal="true" aria-label="Interacción con objeto" onClick={e => e.stopPropagation()}>
@@ -441,7 +452,7 @@ export default function IsolationGame() {
       </>}
       {panel === "help" && <>
         <span className="iso-panel-sub">ASISTENCIA / {PHASES[chamber].name}</span><h2>REGISTRO DE PISTAS</h2>
-        <p>{hintText(worldRef.current, chamber)}</p>
+        <p>{helpCopy}</p>
         <div className="iso-help-controls"><b>DESPLAZAMIENTO</b><span>PC: WASD / flechas. Celular: círculo izquierdo.</span><b>CÁMARA</b><span>Arrastrá sobre la escena. Zoom: botones + y − o rueda.</span><b>OBJETOS</b><span>Apuntá y tocá INTERACTUAR, o tocá directamente el objeto en celular.</span><b>PERSECUCIÓN</b><span>Los escondites separan por unos segundos al perseguidor.</span></div>
         <button className="iso-confirm" onClick={closePanel}>VOLVER A LA SALA ↗</button>
       </>}
