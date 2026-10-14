@@ -33,6 +33,7 @@ export default async function TeHiceEstoHome() {
         </Link>
         <nav className="thh-nav thh-v2-nav" aria-label="Navegación principal">
           <a href="#recorrido">Qué recibe</a>
+          <a href="#escapes">Salas de escape</a>
           <a href="#proceso">Cómo funciona</a>
           <Link href={href("/mis-regalos")}>Mis regalos</Link>
           <a className="thh-nav-cta" href="#para-quien">Elegir para quién</a>
@@ -207,6 +208,20 @@ export default async function TeHiceEstoHome() {
               <div><strong>Recuerdos</strong><p>Detalles y escenas pensadas para emocionar de verdad.</p></div>
             </article>
           </div>
+        </section>
+
+        <section className="thh-escape-collection" id="escapes">
+          <div className="thh-escape-heading">
+            <span>UNA COLECCIÓN DISTINTA · REGALOS INTERACTIVOS</span>
+            <h2>No le digas que tenés una sorpresa.<em>Hacé que la descubra.</em></h2>
+            <p>Tres salas de escape tridimensionales con suspenso, pistas y una invitación o carta personalizada que aparece al final.</p>
+          </div>
+          <div className="thh-escape-cards">
+            <Link href={href("/escapes/caso-m")} className="thh-escape-card"><span>01 · MISIÓN DE RESCATE</span><strong>CASO M</strong><p>Una desaparición, un candado y seis cifras que podés personalizar junto con sus pistas.</p><b>EXPLORAR ESTA SALA ↗</b></Link>
+            <Link href={href("/escapes/ultima-funcion")} className="thh-escape-card"><span>02 · CINE DE TERROR</span><strong>La Última Función</strong><p>Un teatro abandonado, presencias inquietantes y una invitación detrás del telón.</p><b>EXPLORAR ESTA SALA ↗</b></Link>
+            <Link href={href("/escapes/ultima-campanada")} className="thh-escape-card"><span>03 · MISTERIO ROMÁNTICO</span><strong>La Última Campanada</strong><p>Un jardín que se apaga, acertijos y una sorpresa escrita para alguien especial.</p><b>EXPLORAR ESTA SALA ↗</b></Link>
+          </div>
+          <Link href={href("/escapes")} className="thh-escape-more">VER LAS TRES EXPERIENCIAS →</Link>
         </section>
 
         <section className="thh-v2-process" id="proceso">
