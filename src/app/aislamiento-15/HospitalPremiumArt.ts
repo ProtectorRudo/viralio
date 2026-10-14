@@ -8,7 +8,6 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 type MaterialBank = Record<string, THREE.MeshStandardMaterial>;
-type ArtPiece = THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
 
 const rust = new THREE.MeshStandardMaterial({ color: 0x79615a, metalness: .44, roughness: .76 });
 const steel = new THREE.MeshStandardMaterial({ color: 0x84908c, metalness: .76, roughness: .35 });
@@ -18,11 +17,9 @@ const enamel = new THREE.MeshStandardMaterial({ color: 0x7c9791, metalness: .17,
 const paper = new THREE.MeshStandardMaterial({ color: 0xb6ac92, metalness: 0, roughness: .91, side: THREE.DoubleSide });
 const glowRed = new THREE.MeshStandardMaterial({ color: 0xd06757, emissive: 0xc32b1b, emissiveIntensity: 1.3 });
 const glowGreen = new THREE.MeshStandardMaterial({ color: 0x82e2ac, emissive: 0x238b5e, emissiveIntensity: 1.2 });
-const bulb = new THREE.MeshStandardMaterial({ color: 0xecf8e4, emissive: 0xc8eddf, emissiveIntensity: 1.1 });
 const unit = new THREE.BoxGeometry(1, 1, 1);
 const circle = new THREE.CylinderGeometry(1, 1, 1, 14);
 const rounded = new RoundedBoxGeometry(1, 1, 1, 3, .07);
-const reusable = [unit, circle, rounded];
 
 function wearTexture(kind: "floor" | "wall" | "ceiling") {
   const c = document.createElement("canvas");
@@ -63,6 +60,40 @@ function wearTexture(kind: "floor" | "wall" | "ceiling") {
   tex.repeat.set(kind === "floor" ? 3 : 1.6, kind === "floor" ? 3 : 1.4);
   tex.anisotropy = 4;
   return tex;
+}
+
+function normalMapFrom(source: THREE.CanvasTexture) {
+  const sourceCanvas = source.image as HTMLCanvasElement;
+  const ctx = sourceCanvas.getContext("2d");
+  if (!ctx) return undefined;
+  const width = sourceCanvas.width, height = sourceCanvas.height;
+  const pixels = ctx.getImageData(0, 0, width, height).data;
+  const canvas = document.createElement("canvas");
+  canvas.width = width; canvas.height = height;
+  const dest = canvas.getContext("2d");
+  if (!dest) return undefined;
+  const data = dest.createImageData(width, height);
+  const brightness = (x: number, y: number) => {
+    const px = ((y + height) % height * width + (x + width) % width) * 4;
+    return (pixels[px] * .299 + pixels[px + 1] * .587 + pixels[px + 2] * .114) / 255;
+  };
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const dx = brightness(x + 1, y) - brightness(x - 1, y);
+    const dy = brightness(x, y + 1) - brightness(x, y - 1);
+    const nx = -dx * 5.2, ny = -dy * 5.2, nz = 1;
+    const inv = 1 / Math.hypot(nx, ny, nz);
+    const p = (y * width + x) * 4;
+    data.data[p] = (nx * inv * .5 + .5) * 255;
+    data.data[p + 1] = (ny * inv * .5 + .5) * 255;
+    data.data[p + 2] = (nz * inv * .5 + .5) * 255;
+    data.data[p + 3] = 255;
+  }
+  dest.putImageData(data, 0, 0);
+  const result = new THREE.CanvasTexture(canvas);
+  result.wrapS = result.wrapT = THREE.RepeatWrapping;
+  result.repeat.copy(source.repeat);
+  result.anisotropy = 4;
+  return result;
 }
 
 function signage(text: string, width = 768, height = 180, warning = false) {
@@ -210,17 +241,23 @@ export function installHospitalPremiumArt(scene: THREE.Scene, materials: Materia
   const floorTexture = wearTexture("floor");
   const wallTexture = wearTexture("wall");
   const ceilingTexture = wearTexture("ceiling");
+  const floorNormal = floorTexture && normalMapFrom(floorTexture);
+  const wallNormal = wallTexture && normalMapFrom(wallTexture);
   if (floorTexture) {
     mats.tile.map?.dispose();
     mats.tile.color.set(0xffffff);
     mats.tile.map = floorTexture;
-    mats.tile.bumpMap = floorTexture; mats.tile.bumpScale = .028;
+    mats.tile.normalMap = floorNormal || null;
+    mats.tile.normalScale = new THREE.Vector2(.33, .33);
+    mats.tile.bumpMap = floorTexture; mats.tile.bumpScale = .012;
     mats.tile.roughness = .64; mats.tile.metalness = .06; mats.tile.needsUpdate = true;
   }
   if (wallTexture) {
     for (const name of ["paint", "concrete"]) {
       mats[name].map = wallTexture;
       mats[name].color.set(name === "paint" ? 0xd4e4dc : 0x8b9e96);
+      mats[name].normalMap = wallNormal || null;
+      mats[name].normalScale = new THREE.Vector2(.13, .13);
       mats[name].bumpMap = wallTexture;
       mats[name].bumpScale = name === "paint" ? .025 : .063;
       mats[name].roughness = .89; mats[name].needsUpdate = true;
@@ -239,6 +276,21 @@ export function installHospitalPremiumArt(scene: THREE.Scene, materials: Materia
   decorateEquipment(scene, [0, -13, -26]);
 
   // Screwed-down floor drainage, signage brackets and fine seams: shared instanced mesh.
+  const dustClouds: THREE.Points[] = [];
+  for (let room = 0; room < 3; room++) {
+    const positions = new Float32Array(280 * 3);
+    for (let k = 0; k < 280; k++) {
+      const a = (k * 73.7 + room * 53.1) % 100;
+      const b = (k * 17.3 + room * 7.17) % 100;
+      positions[k * 3] = a / 100 * 10.3 - 5.15;
+      positions[k * 3 + 1] = .38 + ((k * 29.7) % 100) / 100 * 3.15;
+      positions[k * 3 + 2] = -13 * room + b / 100 * 11.7 - 5.85;
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const cloud = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xaec4b7, size: .023, transparent: true, opacity: .31, depthWrite: false, sizeAttenuation: true }));
+    cloud.frustumCulled = false;
+    scene.add(cloud); dustClouds.push(cloud);
+  }
   addInstanced(scene, circle, steel, 180, (i, obj) => {
     const room = Math.floor(i / 60);
     const n = i % 60, side = n % 2 ? -1 : 1;
@@ -271,6 +323,7 @@ export function installHospitalPremiumArt(scene: THREE.Scene, materials: Materia
   // Visual event support: no extra animation loop, state updated by existing game tick.
   return {
     update(elapsed: number, danger: number) {
+      for (let i = 0; i < dustClouds.length; i++) dustClouds[i].rotation.y = Math.sin(elapsed * .068 + i) * .003;
       for (let i = 0; i < emergency.length; i++) {
         const active = danger > .65 && Math.sin(elapsed * 6.4 + i * 1.7) > .73;
         const material = emergency[i].material as THREE.MeshStandardMaterial;
@@ -278,7 +331,8 @@ export function installHospitalPremiumArt(scene: THREE.Scene, materials: Materia
       }
     },
     dispose() {
-      [floorTexture, wallTexture, ceilingTexture].forEach(t => t?.dispose());
+      [floorTexture, wallTexture, ceilingTexture, floorNormal, wallNormal].forEach(t => t?.dispose());
+      for (const cloud of dustClouds) { cloud.geometry.dispose(); (cloud.material as THREE.PointsMaterial).dispose(); }
     }
   };
 }
