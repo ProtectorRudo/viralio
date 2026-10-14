@@ -169,6 +169,30 @@ for(const viewport of viewports){
     });
   }
 
+  // Premium escape-room collection, complete mobile/desktop demo and purchase routes.
+  for(const route of [
+    "/escapes",
+    "/escapes/caso-m",
+    "/escapes/ultima-funcion",
+    "/escapes/ultima-campanada",
+    "/escapes/caso-m/comprar",
+    "/escapes/ultima-funcion/comprar",
+    "/escapes/ultima-campanada/comprar",
+  ]){
+    await inspect(page,route,viewport.name,{fullPage:!route.includes("/escapes/")});
+  }
+
+  // CASO M is intentionally full-screen; its actual 3D JS must be available
+  // through the Te Hice Esto host rather than a stale Viralio redirect.
+  const rescueJs=await page.request.get(base+"/escape-play/caso-m/app.js",{timeout:30000});
+  if(rescueJs.status()!==200||(await rescueJs.body()).length<30000){
+    throw new Error("CASO M standalone JavaScript is not reachable from Te Hice Esto");
+  }
+  const rescueModel=await page.request.get(base+"/escape-play/caso-m/models/stalker-skeletal.glb",{timeout:30000});
+  if(rescueModel.status()!==200||(await rescueModel.body()).length<100000){
+    throw new Error("CASO M animated character GLB is unavailable from the gift domain");
+  }
+  console.log("PASS: CASO M 3D engine and GLB are served under tehiceesto.com ("+viewport.name+")");
   await context.close();
 }
 
