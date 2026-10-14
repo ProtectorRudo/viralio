@@ -278,7 +278,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                 <p>Todavía no se realizó ningún cobro. Revisá los datos e intentá nuevamente.</p>
                 <small>{errorMessage}</small>
               </div>}
-              <p className="thi-commercial-rights"><Link href="/arrepentimiento">Botón de arrepentimiento ↗</Link></p>
+              <p className="thi-commercial-rights"><Link href="/privacidad">Cómo usamos tus datos</Link> · <Link href="/arrepentimiento">Botón de arrepentimiento ↗</Link></p>
               <p className="thi-simple-pay-note">Pago único · sin suscripción · {selected.escape?"Nuestro equipo personaliza la sorpresa después del pago.":"Personalizás después de pagar."}</p>
             </form>
           </div>
