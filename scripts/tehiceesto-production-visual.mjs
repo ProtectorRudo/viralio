@@ -196,7 +196,14 @@ for(const viewport of viewports){
   console.log("PASS: CASO M 3D engine and GLB are served under tehiceesto.com ("+viewport.name+")");
   // A guessed gift URL must never reveal a draft or a customer's surprise.
   const privateGuess=await page.request.get(base+"/escape-r/000000000000000000",{timeout:30000});
-  if(privateGuess.status()!==404)throw new Error("Private escape authorization: expected HTTP 404 but got "+privateGuess.status()+"; response: "+(await privateGuess.text()).replace(/<[^>]*>/g," ").slice(0,240));
+  const privateHtml=await privateGuess.text();
+  const noIndex=String(privateGuess.headers()["x-robots-tag"]||"").includes("noindex");
+  const brandedNotFound=privateHtml.includes("Este lugar no existe.")||privateHtml.includes("Acá no hay una historia");
+  // Next.js streaming can return HTTP 200 even while correctly rendering notFound().
+  // The guest must see the branded missing-page state with no game or message.
+  if(privateGuess.status()!==404&&!(privateGuess.status()===200&&noIndex&&brandedNotFound)){
+    throw new Error("Private escape visibility failure: HTTP "+privateGuess.status()+" noindex="+noIndex+" notFound="+brandedNotFound+"; htmlTail: "+privateHtml.slice(-260).replace(/<[^>]*>/g," "));
+  }
   console.log("PASS: unpublished/unknown private gift stays hidden ("+viewport.name+")");
   await context.close();
 }
