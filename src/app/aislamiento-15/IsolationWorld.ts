@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { installHospitalPremiumArt } from "./HospitalPremiumArt";
 
 export type Chamber = 0 | 1 | 2;
 export type Focus = { id: string; label: string; distance: number };
@@ -110,6 +111,10 @@ export class IsolationWorld {
   private disposed = false;
   private pulse = 0;
   private walkPhase = 0;
+  private art?: ReturnType<typeof installHospitalPremiumArt>;
+  private clinicalBeds: THREE.Group[] = [];
+  private loadedAssets: THREE.Object3D[] = [];
+  private doorDressing: THREE.Group[] = [];
   private signals: GameSignals;
 
   constructor(canvas: HTMLCanvasElement, signals: GameSignals) {
@@ -117,17 +122,19 @@ export class IsolationWorld {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", alpha: false });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.55;
+    this.renderer.toneMappingExposure = 1.69;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.55));
     this.scene.background = new THREE.Color("#12191a");
-    this.scene.fog = new THREE.FogExp2(0x10191b, .031);
-    this.scene.add(new THREE.HemisphereLight(0xa0c5b9, 0x1c1e20, 1.48));
+    this.scene.fog = new THREE.FogExp2(0x10191b, .022);
+    this.scene.add(new THREE.HemisphereLight(0xb5c9bc, 0x202123, 1.28));
     this.camera.rotation.order = "YXZ";
     const floor = gridTexture();
     if (floor) mats.tile.map = floor;
     for (let i = 0; i < 3; i++) this.buildRoom(i as Chamber);
+    this.art = installHospitalPremiumArt(this.scene, mats);
+    void this.loadClinicalAssets();
     this.enemy = this.makeEnemy();
     this.scene.add(this.enemy);
     this.loadRig();
@@ -172,7 +179,8 @@ export class IsolationWorld {
   }
 
   private gurney(x: number, z: number, angle = 0) {
-    const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = angle; this.scene.add(g);
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = angle; g.name = "HospitalBedFallback"; this.scene.add(g);
+    this.clinicalBeds.push(g);
     this.block("Colchón clínico", 0, .9, 0, 1.07, .19, 2.23, mats.vinyl, g);
     this.block("Sábana", 0, 1.012, -.32, .98, .025, 1.48, mats.linen, g);
     this.block("Almohada", 0, 1.07, -.83, .86, .11, .38, mats.ceramic, g);
@@ -255,6 +263,27 @@ export class IsolationWorld {
     this.block("Emblema de compuerta", 0, 2.40, back + .29, 1.15, .075, .015, mats.red);
     this.doorPanels.push(door);
     this.doors.push(door);
+    // The raised face, gasket, hinges and bolt lines travel with the door.
+    const dressing = new THREE.Group();
+    dressing.position.z = back + .3;
+    dressing.name = "Puerta Blindada - Detalles";
+    this.scene.add(dressing);
+    this.doorDressing.push(dressing);
+    for (const y of [.35, 2.55]) {
+      this.block("Relieve transversal", 0, y, 0, 1.76, .11, .065, mats.steel, dressing);
+    }
+    for (const x of [-.8, .8]) {
+      this.block("Nervadura de acero", x, 1.45, .02, .14, 2.27, .07, mats.steel, dressing);
+      for (const y of [.47, .94, 1.45, 1.94, 2.43]) {
+        this.pipe("Perno hexagonal", x, y, .09, .065, .04, mats.rust, dressing).rotation.x = Math.PI / 2;
+      }
+    }
+    this.block("Ventana acero reforzado", 0, 1.86, .065, 1.13, .69, .055, mats.steel, dressing);
+    this.block("Visor blindado", 0, 1.86, .099, .97, .53, .035, mats.glass, dressing);
+    this.block("Junta de portillo", 0, 1.86, .131, .87, .035, .01, mats.dark, dressing);
+    this.block("Palanca de desbloqueo", .45, .87, .15, .39, .09, .11, mats.amber, dressing);
+    for (let slot = 0; slot < 7; slot++) this.block("Rejilla de presión", -.36 + slot * .12, 1.11, .12, .075, .22, .032, mats.dark, dressing);
+
     if (index === 0) this.buildEmergency(z);
     if (index === 1) this.buildIsolation(z);
     if (index === 2) this.buildContainment(z);
@@ -371,35 +400,115 @@ export class IsolationWorld {
     return group;
   }
 
+  private async loadClinicalAssets() {
+    // Original Innerscene medical GLBs, CC0; downloaded and bundled by Pages CI.
+    // Non-blocking: full physical fallback geometry remains if a file is missing.
+    const loader = new GLTFLoader();
+    const base = "/aislamiento-15/models/";
+    const selected = ["hospital-bed-flat.glb", "hospital-bed-raised.glb"];
+    for (let i = 0; i < selected.length; i++) {
+      try {
+        const gltf = await loader.loadAsync(base + selected[i]);
+        if (this.disposed) return;
+        const model = gltf.scene;
+        const originalBounds = new THREE.Box3().setFromObject(model);
+        const size = originalBounds.getSize(new THREE.Vector3());
+        if (!Number.isFinite(size.length()) || size.length() < .3) continue;
+        // Assets use real metres. Normalize only orientation and ground pivot.
+        if (size.x > size.z * 1.15) model.rotation.y = Math.PI / 2;
+        model.updateMatrixWorld(true);
+        const bounds = new THREE.Box3().setFromObject(model);
+        model.position.y -= bounds.min.y;
+        model.traverse(o => {
+          if (o instanceof THREE.Mesh) {
+            o.castShadow = true; o.receiveShadow = true;
+          }
+        });
+        const fallback = this.clinicalBeds[i];
+        if (!fallback) break;
+        fallback.visible = false;
+        const sceneWrapper = new THREE.Group();
+        sceneWrapper.name = "GLB Hospital Bed CC0";
+        sceneWrapper.position.copy(fallback.position);
+        sceneWrapper.rotation.copy(fallback.rotation);
+        sceneWrapper.add(model);
+        this.scene.add(sceneWrapper); this.loadedAssets.push(sceneWrapper);
+      } catch { /* Keep detailed fallback stretcher in place. */ }
+    }
+    try {
+      const headwall = await loader.loadAsync(base + "medical-headwall.glb");
+      if (this.disposed) return;
+      const unit = headwall.scene;
+      unit.traverse(o => { if (o instanceof THREE.Mesh) { o.castShadow = true; o.receiveShadow = true; } });
+      unit.updateMatrixWorld(true);
+      const bbox = new THREE.Box3().setFromObject(unit);
+      unit.position.y -= bbox.min.y;
+      unit.rotation.y = Math.PI / 2;
+      const fixture = new THREE.Group();
+      fixture.position.set(5.08, 1.04, 2.30);
+      fixture.add(unit);
+      fixture.name = "GLB Medical Headwall CC0";
+      this.scene.add(fixture); this.loadedAssets.push(fixture);
+    } catch { /* Architectural fixtures remain if offline. */ }
+  }
+
   private loadRig() {
-    // © Cesium 2017, CC BY 4.0, glTF Sample Assets / KhronosGroup.
-    // AnimationMixer drives the actual glTF skeletal animation.
-    const url = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb";
-    new GLTFLoader().load(url, (gltf) => {
+    // Existing animated model is from our own La Última Función project.
+    // Packaged locally by the deployment pipeline, avoiding cross-origin errors.
+    const url = "/aislamiento-15/models/warden.glb";
+    const loader = new GLTFLoader();
+    const attach = (gltf: Awaited<ReturnType<GLTFLoader["loadAsync"]>>) => {
       if (this.disposed) return;
       const rig = gltf.scene;
-      rig.scale.setScalar(1.82);
+      // Model dimensions and pivots are normalized without a character controller.
+      rig.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(rig);
+      const size = bounds.getSize(new THREE.Vector3());
+      if (!Number.isFinite(size.y) || size.y <= .1) return;
+      rig.scale.setScalar(Math.min(6, Math.max(.12, 2.20 / size.y)));
+      rig.updateMatrixWorld(true);
+      const fitted = new THREE.Box3().setFromObject(rig);
+      rig.position.set(-(fitted.min.x + fitted.max.x) / 2, -fitted.min.y, -(fitted.min.z + fitted.max.z) / 2);
       rig.rotation.y = Math.PI;
-      rig.traverse((o) => {
+      rig.traverse(o => {
         if (o instanceof THREE.Mesh) {
-          o.castShadow = true;
-          o.material = new THREE.MeshStandardMaterial({ color: 0x292b29, roughness: .82, metalness: .07, side: THREE.DoubleSide });
+          o.castShadow = true; o.receiveShadow = true;
+          // Respect professional textures and tailor dark hospital uniform.
+          const baseMaterial = Array.isArray(o.material) ? o.material : [o.material];
+          const updated = baseMaterial.map(m => {
+            if (!(m instanceof THREE.MeshStandardMaterial)) return m;
+            const clone = m.clone();
+            clone.color.multiply(new THREE.Color(0x94a49d));
+            clone.roughness = Math.max(.37, clone.roughness);
+            clone.metalness = Math.min(.25, clone.metalness);
+            return clone;
+          });
+          o.material = Array.isArray(o.material) ? updated : updated[0];
         }
       });
-      // The asset has a walking cycle and a real skinned mesh; augment its silhouette.
-      const veil = new THREE.Mesh(new THREE.ConeGeometry(.43, 1.62, 16, 6), new THREE.MeshStandardMaterial({ color: 0x161a19, roughness: 1, side: THREE.DoubleSide }));
-      veil.position.y = 1.03;
-      rig.add(veil);
-      rig.position.y = .02;
-      this.enemy.add(rig);
-      this.enemyBase = rig;
+      const mask = new THREE.Group();
+      mask.position.set(0, 1.93, -.09);
+      const shield = new THREE.Mesh(new THREE.SphereGeometry(.18, 18, 16),
+        new THREE.MeshStandardMaterial({ color: 0xb2b9ad, metalness: .16, roughness: .4 }));
+      shield.scale.set(.92, 1.12, .33); mask.add(shield);
+      for (const x of [-.076,.076]) {
+        const slit = new THREE.Mesh(new THREE.SphereGeometry(.025, 10, 8),
+          new THREE.MeshStandardMaterial({ color: 0x0d1819, roughness: .92 }));
+        slit.position.set(x, .04, -.073); mask.add(slit);
+      }
+      rig.add(mask);
+      this.enemy.add(rig); this.enemyBase = rig;
       const fallback = this.enemy.userData.fallback as THREE.Group;
       fallback.visible = false;
-      if (gltf.animations.length) {
+      if (gltf.animations.length > 0) {
         this.enemyMixer = new THREE.AnimationMixer(rig);
         this.enemyMixer.clipAction(gltf.animations[0]).play();
       }
-    }, undefined, () => { /* Graceful fallback remains visible if network is unavailable. */ });
+    };
+    void loader.loadAsync(url).then(attach).catch(() => {
+      // Keep earlier licensed Khronos animated GLB if the production model fails.
+      void loader.loadAsync("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb").then(attach).catch(() => {});
+    });
   }
 
   getFocus(): Focus | null { return this.hitAt(0, 0); }
@@ -526,12 +635,14 @@ export class IsolationWorld {
       const open = i === 0 ? this.firstDoor : i === 1 ? this.secondDoor : this.won;
       const targetY = open ? 4.6 : 1.43;
       door.position.y = THREE.MathUtils.lerp(door.position.y, targetY, Math.min(1, dt * 1.7));
+      if (this.doorDressing[i]) this.doorDressing[i].position.y = door.position.y - 1.43;
     });
     this.lights.forEach((light, i) => {
       const flicker = danger > .5 && Math.sin(this.pulse * 11 + i * 7) > .975 ? .35 : 1;
       light.intensity = (i % 2 === 1 ? 13 : 18) * flicker * (1 - danger * .22);
     });
     if (this.running) this.updateEnemy(dt);
+    this.art?.update(this.elapsed, danger);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -540,6 +651,7 @@ export class IsolationWorld {
     this.scene.traverse(o => {
       if (o instanceof THREE.Mesh && o.geometry !== boxGeo && o.geometry !== unitCylinder) o.geometry.dispose();
     });
+    this.art?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }
