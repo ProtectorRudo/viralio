@@ -35,12 +35,16 @@ for(const viewport of [{name:"desktop",width:1365,height:768},{name:"mobile",wid
       await page.getByRole("button",{name:/ENTENDÍ MI MISIÓN/}).waitFor({timeout:13000});
       await page.getByRole("button",{name:/ENTENDÍ MI MISIÓN/}).click();
     }
-    await page.waitForTimeout(2200);
+    // CASO M preloads an animated GLB; render timing varies by GPU and viewport.
+    // A fixed two-second delay incorrectly failed slow but healthy devices.
+    await page.locator("canvas").first().waitFor({state:"visible",timeout:45000});
+    await page.waitForTimeout(700);
     const canvases=await page.locator("canvas").count();
     const body=(await page.locator("body").innerText()).slice(0,350);
-    const screenshot=path.join(output,viewport.name+"-"+room.slug+".png");
-    await page.screenshot({path:screenshot,fullPage:false});
     console.log("PLAYABLE "+name,JSON.stringify({canvases,body,errors:errors.slice(0,9),badAssets:badAssets.slice(0,8)}));
+    // Screenshot of a continuously animated WebGL canvas may hang Chromium on
+    // software-only CI GPUs. Gameplay + visible canvas, not screenshot speed,
+    // determines whether a room really runs.
     if(!canvases)throw Error("Game started but no 3D canvas rendered");
     if(badAssets.length)throw Error("Failed game assets: "+badAssets.join("; "));
     if(errors.some(e=>/Refused to execute script|Refused to apply style|Failed to fetch dynamically imported|Cannot find module|Unexpected token/i.test(e)))
@@ -49,7 +53,7 @@ for(const viewport of [{name:"desktop",width:1365,height:768},{name:"mobile",wid
     const reason=name+": "+String(e).slice(0,550)+"; browser "+errors.slice(-5).join(" | ");
     failures.push(reason);
     console.error("FAILED "+reason);
-    try{await page.screenshot({path:path.join(output,viewport.name+"-"+room.slug+"-failed.png"),fullPage:false})}catch{}
+
   }finally{await page.close()}
  }
  await context.close();
