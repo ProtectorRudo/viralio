@@ -5,6 +5,8 @@ import { type CSSProperties } from "react";
 import { experiences, type Experience } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
 import { isComingSoon } from "./availability";
+import {escapeRooms} from "./escape-rooms";
+import {EscapeScene} from "./HomeEscapeCollection";
 
 /**
  * The catalogue is an immediate purchase choice, not an extra wizard.
@@ -51,7 +53,7 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
       <div>
         <span className="thi-buy-eyebrow">01 · ELEGÍ TU REGALO</span>
         <h1>¿A quién querés <em>sorprender?</em></h1>
-        <p>Elegí la experiencia que más te guste. La personalizás después de pagar.</p>
+        <p>Elegí entre historias emocionales y aventuras con una sorpresa final. Cada experiencia tiene una demo para probar antes de comprar.</p>
       </div>
       <div className="thi-simple-price" aria-label={`Cada experiencia cuesta ${formatTeHiceEstoPrice()} en un único pago`}>
         <span className="thi-simple-price-gift" aria-hidden="true">♡</span>
@@ -111,6 +113,52 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
         </article>;
       })}
     </div>
-    <p className="thi-simple-footer-note">♡ Cada regalo conserva sus efectos y su recorrido original. Personalizás fotos, audios y palabras después de pagar.</p>
+
+    <section className="thi-simple-escape-section" id="salas-de-escape" aria-labelledby="thi-simple-escape-heading">
+      <header className="thi-simple-escape-heading">
+        <div>
+          <span className="thi-buy-eyebrow">OTRA FORMA DE SORPRENDER · 3 AVENTURAS PARA REGALAR</span>
+          <h2 id="thi-simple-escape-heading">Que la sorpresa <em>se descubra jugando.</em></h2>
+          <p>La persona explora una sala, resuelve el misterio y al final encuentra tu invitación o carta. <strong>Nosotros personalizamos el desenlace para vos.</strong></p>
+        </div>
+        <Link href="/escapes" className="thi-simple-escape-seeall">Conocer las salas <span aria-hidden="true">↗</span></Link>
+      </header>
+      <div className="thi-simple-catalog thi-simple-escape-catalog" aria-label="Salas de escape disponibles para comprar">
+        {escapeRooms.map((room,i)=>{
+          const scene=room.slug==="caso-m"?"rescue" as const:room.slug==="ultima-funcion"?"cinema" as const:"garden" as const;
+          return <article key={room.slug} className={`thi-simple-card thi-simple-escape-card thi-simple-escape-${scene}`}
+            style={{
+              "--gift-accent":room.accent,
+              "--gift-tint":"#f9f1eb",
+              "--gift-line":"#bfaeac",
+              "--gift-ink":"#ffffff",
+            } as CSSProperties}>
+            <Link className="thi-simple-photo-link" href={`/escapes/${room.slug}`}
+              aria-label={`Probar demo de ${room.title}`}>
+              <div className="thi-simple-image thi-simple-escape-image">
+                <EscapeScene scene={scene}/>
+                <span className="thi-simple-image-number" aria-hidden="true">TH / {String(i+10).padStart(2,"0")}</span>
+                <span className="thi-simple-escape-visual-label">DEMO JUGABLE <b aria-hidden="true">↗</b></span>
+              </div>
+            </Link>
+            <div className="thi-simple-card-content">
+              <span className="thi-simple-card-label">SALA DE ESCAPE · {room.duration}</span>
+              <h2>{room.title}</h2>
+              <p>{room.subtitle} {room.description}</p>
+              <div className="thi-simple-actions">
+                <button type="button" className="thi-simple-choose" onClick={()=>onSelect("escape-"+room.slug)}>
+                  Elegir y continuar <span aria-hidden="true">→</span>
+                </button>
+                <Link href={`/escapes/${room.slug}`} className="thi-simple-preview">
+                  <span aria-hidden="true" className="thi-simple-preview-icon">◉</span> Probar demo <span aria-hidden="true">↗</span>
+                </Link>
+              </div>
+            </div>
+          </article>;
+        })}
+      </div>
+      <p className="thi-simple-escape-note">✦ El precio es el mismo: {formatTeHiceEstoPrice()} por sala, sin suscripción. Después del pago coordinamos los nombres, el mensaje final y los detalles por WhatsApp. En CASO M también personalizamos el código del candado y sus pistas.</p>
+    </section>
+    <p className="thi-simple-footer-note">♡ Cada regalo conserva su diseño y recorrido original. En las experiencias de recuerdos personalizás el contenido previsto; en las salas de escape nos encargamos nosotros.</p>
   </div>;
 }
