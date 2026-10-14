@@ -118,8 +118,9 @@ function buildRoom1(root: THREE.Group,textures: THREE.Texture[]) {
     plate(root,3.52,2.75,-19.24,2.15,.62,"OXÍGENO CRÍTICO","red")
   ]) if(t) textures.push(t);
   // Three real chamber glass enclosures rather than a glowing flat photo.
+  const podPositions=[[-4.04,-10.8],[4.04,-12.8],[-4.04,-13.55]] as const;
   for(let i=0;i<3;i++) {
-    const x=[-3.65,0,3.65][i], z=-12.06;
+    const [x,z]=podPositions[i];
     b(root,"Jaula cristal biológico",x,1.9,z+.50,2.27,1.7,.055,gasket);
     const window=b(root,"Cristal de contención",x,1.88,z+.54,1.98,1.46,.035,
       new THREE.MeshPhysicalMaterial({color:0x7faaa1,metalness:.13,roughness:.19,transparent:true,opacity:.15,depthWrite:false,side:THREE.DoubleSide}));
@@ -137,7 +138,7 @@ function buildRoom1(root: THREE.Group,textures: THREE.Texture[]) {
   }
   // Figure stays in an enclosed chamber, not a fake interactive enemy.
   const body = new THREE.Group();body.name="Paciente detrás del vidrio";
-  body.position.set(0,.1,-12.23);root.add(body);
+  body.position.set(4.04,.1,-12.80);root.add(body);
   const shadow=new THREE.MeshStandardMaterial({color:0x121a1b,roughness:.97});
   b(body,"Torso paciente",0,1.24,0,.36,.93,.27,shadow);
   cylinder(body,"Cabeza paciente",0,1.94,0,.16,.34,shadow);
@@ -162,7 +163,7 @@ function buildRoom2(root: THREE.Group, textures: THREE.Texture[]) {
     plate(root,3.34,2.8,-32.25,2.1,.7,"CIERRE AUTOMÁTICO","red")
   ]) if(t) textures.push(t);
   const reactor=new THREE.Group();
-  reactor.position.set(-4.10,0,-29.58);root.add(reactor);
+  reactor.position.set(-4.10,0,-26.95);root.add(reactor);
   // Detailed grounded cylinder with rotating solenoid and dark frame.
   cylinder(reactor,"Base reactor",0,.17,0,.78,.34,steel);
   cylinder(reactor,"Doble camisa",0,1.42,0,.63,2.18,gasket);
@@ -194,7 +195,7 @@ function buildRoom2(root: THREE.Group, textures: THREE.Texture[]) {
     cylinder(instrument,"Indicador",-.335,1.40,-.66+i*.32,.055,.014,i===4?crimson:cyan,true);
   }
   for(let i=0;i<4;i++) {
-    const strip=b(root,"Cinta roja aislamiento",3.7,.027,-25.2-i*.49,.47,.019,.12,crimson);
+    const strip=b(root,"Cinta roja aislamiento",3.7,.027,-29.3-i*.49,.47,.019,.12,crimson);
     strip.rotation.y=.15;
   }
   return {core};
