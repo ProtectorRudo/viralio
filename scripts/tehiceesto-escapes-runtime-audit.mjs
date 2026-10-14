@@ -1,52 +1,59 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import {chromium} from "playwright";
-const base="https://tehiceesto.com";
+
+const host="https://tehiceesto.com";
 const rooms=[
- {slug:"caso-m",source:"https://tehiceesto.com/escape-play/caso-m/",start:/INICIAR RESCATE|INICIAR OPERACIÓN RESCATE/i},
- {slug:"ultima-funcion",source:"https://la-ultima-funcion.vercel.app/",start:/ABRIR LAS PUERTAS/i},
- {slug:"ultima-campanada",source:"https://la-ultima-campanada-desafio-v6.vercel.app/",start:/Aceptar el misterio/i}
+ {slug:"caso-m",start:/INICIAR RESCATE/i},
+ {slug:"ultima-funcion",start:/ABRIR LAS PUERTAS/i},
+ {slug:"ultima-campanada",start:/Aceptar el misterio/i},
 ];
+const output=path.resolve("tehiceesto-escape-runtime-audit");
+await fs.mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,args:["--enable-webgl","--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"]});
+const failures=[];
 for(const viewport of [{name:"desktop",width:1365,height:768},{name:"mobile",width:390,height:844}]){
  const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},isMobile:viewport.name==="mobile",hasTouch:viewport.name==="mobile"});
  for(const room of rooms){
-  const page=await context.newPage();
-  const problems=[];
-  page.on("pageerror",e=>problems.push("PAGEERR "+e.message.slice(0,250)));
-  page.on("console",m=>{if(m.type()==="error")problems.push("CONSOLE "+m.text().slice(0,250));});
-  page.on("requestfailed",r=>{if(/\.(js|css|glb|gltf|wasm)(\?|$)/.test(r.url()))problems.push("REQFAIL "+r.url().slice(0,180)+" "+r.failure()?.errorText)});
-  let shell;
+  const page=await context.newPage(),errors=[],badAssets=[];
+  const name=viewport.name+" "+room.slug;
+  page.on("pageerror",e=>errors.push("JS "+e.message.slice(0,250)));
+  page.on("console",m=>{if(m.type()==="error")errors.push("console "+m.text().slice(0,240));});
+  page.on("requestfailed",r=>{if(/\.(js|css|glb|gltf|wasm)(\?|$)/.test(r.url()))badAssets.push(r.url()+" "+r.failure()?.errorText);});
   try{
-   shell=await page.goto(base+"/escapes/"+room.slug,{timeout:45000,waitUntil:"domcontentloaded"});
-   await page.waitForTimeout(4000);
-   const frames=page.frames().map(f=>({url:f.url(),txt:f.url().startsWith("http")?f.locator("body").innerText({timeout:2000}).catch(()=>"?"):Promise.resolve("-")}));
-   const frameDetails=await Promise.all(frames.map(async f=>({...f,txt:(await f.txt).slice(0,220)})));
-   console.log("SHELL",viewport.name,room.slug,JSON.stringify({status:shell?.status(),frames:frameDetails,errors:problems.slice(0,12)}));
-   if(room.slug==="caso-m"){
-    const a=page.getByRole("link",{name:/INICIAR OPERACIÓN RESCATE/}).first();
-    console.log("LAUNCH",await a.count(),await a.getAttribute("href"));
-    if(await a.count())await Promise.allSettled([page.waitForURL(/escape-play\/caso-m/,{timeout:18000}),a.click({timeout:10000})]);
-   }
-   await page.waitForTimeout(1800);
-   console.log("AFTER",viewport.name,room.slug,JSON.stringify({url:page.url(),frames:page.frames().map(f=>f.url()),body:(await page.locator("body").innerText()).slice(0,280),errors:problems.slice(-15)}));
-  }catch(e){console.log("ERROR",viewport.name,room.slug,String(e).slice(0,800));}
-  const dir=page.frames();
-  let fg=dir.find(f=>f.url().startsWith("https://la-ultima"))||page.mainFrame();
-  if(room.slug==="caso-m")fg=page.mainFrame();
-  const buttons=await fg.getByRole("button").allTextContents().catch(()=>[]);
-  console.log("BUTTONS",viewport.name,room.slug,JSON.stringify(buttons.slice(0,25)));
-  if(room.slug!=="caso-m"){
-   const target=room.slug==="ultima-funcion"?fg.getByRole("button",{name:/ABRIR LAS PUERTAS/}):fg.getByRole("button",{name:/Aceptar el misterio/});
-   try{if(await target.count())await target.first().click({timeout:8000});await page.waitForTimeout(1200);
-    console.log("START",viewport.name,room.slug,JSON.stringify({source:fg.url(),newButtons:(await fg.getByRole("button").allTextContents()).slice(0,15),errors:problems.slice(-10)}));
-   }catch(e){console.log("START_ERR",viewport.name,room.slug,String(e).slice(0,380));}
-  }else{
-   const target=fg.getByRole("button",{name:/INICIAR RESCATE/});
-   try{if(await target.count())await target.first().click({timeout:8000});await page.waitForTimeout(1200);
-    console.log("START",viewport.name,room.slug,JSON.stringify({url:page.url(),canvas:await page.locator("canvas").count(),errors:problems.slice(-10)}));
-   }catch(e){console.log("START_ERR",viewport.name,room.slug,String(e).slice(0,450));}
-  }
-  await page.close();
+    const landing=await page.goto(host+"/escapes/"+room.slug,{waitUntil:"domcontentloaded",timeout:45000});
+    if(landing?.status()!==200)throw Error("Demo landing HTTP "+landing?.status());
+    const button=page.getByRole("link",{name:"Iniciar partida de "+(room.slug==="caso-m"?"CASO M · Operación Rescate":room.slug==="ultima-funcion"?"La Última Función":"La Última Campanada")});
+    await button.waitFor({state:"visible",timeout:12000});
+    const href=await button.getAttribute("href");
+    if(!href?.startsWith("https://"))throw Error("Launcher has no public full-screen game URL");
+    await Promise.all([page.waitForURL(url=>!url.href.includes("/escapes/"),{timeout:25000}),button.click()]);
+    await page.getByRole("button",{name:room.start}).waitFor({state:"visible",timeout:35000});
+    console.log("ENTRY "+name,JSON.stringify({url:page.url(),title:await page.title(),startVisible:true}));
+    await page.getByRole("button",{name:room.start}).click({timeout:20000});
+    if(room.slug==="ultima-funcion"){
+      await page.getByRole("button",{name:/ENTENDÍ MI MISIÓN/}).waitFor({timeout:13000});
+      await page.getByRole("button",{name:/ENTENDÍ MI MISIÓN/}).click();
+    }
+    await page.waitForTimeout(2200);
+    const canvases=await page.locator("canvas").count();
+    const body=(await page.locator("body").innerText()).slice(0,350);
+    const screenshot=path.join(output,viewport.name+"-"+room.slug+".png");
+    await page.screenshot({path:screenshot,fullPage:false});
+    console.log("PLAYABLE "+name,JSON.stringify({canvases,body,errors:errors.slice(0,9),badAssets:badAssets.slice(0,8)}));
+    if(!canvases)throw Error("Game started but no 3D canvas rendered");
+    if(badAssets.length)throw Error("Failed game assets: "+badAssets.join("; "));
+    if(errors.some(e=>/Refused to execute script|Refused to apply style|Failed to fetch dynamically imported|Cannot find module|Unexpected token/i.test(e)))
+      throw Error("Fatal JS/CSS failure: "+errors.join("; "));
+  }catch(e){
+    const reason=name+": "+String(e).slice(0,550)+"; browser "+errors.slice(-5).join(" | ");
+    failures.push(reason);
+    console.error("FAILED "+reason);
+    try{await page.screenshot({path:path.join(output,viewport.name+"-"+room.slug+"-failed.png"),fullPage:false})}catch{}
+  }finally{await page.close()}
  }
  await context.close();
 }
 await browser.close();
+if(failures.length){console.error("Playable demo failures:\n"+failures.join("\n"));process.exit(1)}
+console.log("PASS: All three escape demos genuinely launch AND render a playable 3D scene on desktop and mobile");
