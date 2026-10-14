@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { installHospitalPremiumArt } from "./HospitalPremiumArt";
 import { installHospitalCinematics } from "./HospitalCinematics";
+import { constructOrderlyIdentity } from "./OrderlyCreature";
+import { canStand, clearSight, findPath, slide } from "./ChamberNavigation";
 
 export type Chamber = 0 | 1 | 2;
 export type Focus = { id: string; label: string; distance: number };
@@ -114,6 +116,12 @@ export class IsolationWorld {
   readonly enemy: THREE.Group;
   private enemyMixer?: THREE.AnimationMixer;
   private enemyBase?: THREE.Object3D;
+  private creatureIdentity?: ReturnType<typeof constructOrderlyIdentity>;
+  private enemyRoute: THREE.Vector3[] = [];
+  private enemyRouteAt = -99;
+  private preyMemory = -99;
+  private prevEnemyMode = "dormant";
+  private hitJolt = 0;
   private enemyLastAttack = -100;
   private eventAt = -1;
   private doorPanels: THREE.Mesh[] = [];
@@ -512,6 +520,9 @@ export class IsolationWorld {
       eye.position.set(x, 2.26, -.196); body.add(eye);
     }
     group.userData.fallback = body;
+    this.creatureIdentity = constructOrderlyIdentity();
+    this.creatureIdentity.root.position.set(0, 1.86, -.06);
+    body.add(this.creatureIdentity.root);
     return group;
   }
 
@@ -672,23 +683,18 @@ export class IsolationWorld {
           o.material = Array.isArray(o.material) ? updated : updated[0];
         }
       });
-      const mask = new THREE.Group();
-      mask.position.set(0, 1.93, -.09);
-      const shield = new THREE.Mesh(new THREE.SphereGeometry(.18, 18, 16),
-        new THREE.MeshStandardMaterial({ color: 0xb2b9ad, metalness: .16, roughness: .4 }));
-      shield.scale.set(.92, 1.12, .33); mask.add(shield);
-      for (const x of [-.076,.076]) {
-        const slit = new THREE.Mesh(new THREE.SphereGeometry(.025, 10, 8),
-          new THREE.MeshStandardMaterial({ color: 0x0d1819, roughness: .92 }));
-        slit.position.set(x, .04, -.073); mask.add(slit);
+      // Studio GLB supplies the skeletal walk; an original medical mask gives
+      // the antagonist a unique silhouette without flattening the 3D character.
+      if (this.creatureIdentity) {
+        this.creatureIdentity.root.position.set(0, 1.69, -.09);
+        rig.add(this.creatureIdentity.root);
       }
-      rig.add(mask);
       this.enemy.add(rig); this.enemyBase = rig;
       const fallback = this.enemy.userData.fallback as THREE.Group;
       fallback.visible = false;
       if (gltf.animations.length > 0) {
         this.enemyMixer = new THREE.AnimationMixer(rig);
-        this.enemyMixer.clipAction(gltf.animations[0]).play();
+        this.enemyMixer.clipAction(gltf.animations[0]).setLoop(THREE.LoopRepeat, Infinity).play();
       }
     };
     void loader.loadAsync(url).then(attach).catch(() => {
@@ -790,7 +796,9 @@ export class IsolationWorld {
     const sn = Math.sin(this.yaw), cs = Math.cos(this.yaw);
     const nx = this.player.x + (right * cs - forward * sn) * speed * dt;
     const nz = this.player.z + (-right * sn - forward * cs) * speed * dt;
-    this.player.x = THREE.MathUtils.clamp(nx, -MAX_X + .27, MAX_X - .27);
+    // Sliding collision: furniture does not become intangible when moving.
+    // The door threshold is handled by the existing chamber transition below.
+    slide(this.room, this.player, nx-this.player.x, 0, .30);
     const boundary = CENTER[this.room] - 6.5;
     const unlocked = this.room === 0 ? this.firstDoor : this.room === 1 ? this.secondDoor : this.won;
     if (nz < boundary + .15 && this.player.x > -1.04 && this.player.x < 1.04 && unlocked) {
@@ -802,44 +810,87 @@ export class IsolationWorld {
         this.player.x = 0;
         this.enemyMode = this.room === 1 ? "roaming" : "hunting";
         this.enemy.position.set(3.7, 0, CENTER[this.room] - 4.5);
+        this.enemyRoute = [];
+        this.enemyRouteAt = -99;
+        this.preyMemory = -99;
         this.showRoom();
         this.signals.onChamber(this.room);
       } else this.player.z = boundary + .15;
     } else {
       const nearDoor = nz < boundary + .68 && this.player.x > -1.04 && this.player.x < 1.04;
-      this.player.z = THREE.MathUtils.clamp(nz, boundary + (nearDoor && !unlocked ? .7 : .16), CENTER[this.room] + 5.75);
+      const limitedZ = THREE.MathUtils.clamp(nz, boundary + (nearDoor && !unlocked ? .7 : .16), CENTER[this.room] + 5.75);
+      slide(this.room, this.player, 0, limitedZ-this.player.z, .30);
     }
     this.walkPhase += dt * 10;
   }
 
-  private updateEnemy(dt: number) {
-    if (this.room === 0 || !this.running || this.won) { this.enemy.visible = false; return; }
-    this.enemy.visible = true;
-    const dist = Math.hypot(this.enemy.position.x - this.player.x, this.enemy.position.z - this.player.z);
-    if (this.elapsed > this.eventAt && this.eventAt > 0) this.eventAt = -1;
-    const hiding = this.eventAt > this.elapsed;
-    const grace = this.elapsed < this.nextThreatAt;
-    const hunting = !grace && (this.room === 2 || (this.room === 1 && (dist < 3.5 || Math.floor(this.elapsed / 27) % 3 === 2)));
-    this.enemyMode = hiding ? "roaming" : hunting ? "hunting" : "roaming";
-    const dest = hunting && !hiding
-      ? new THREE.Vector3(this.player.x, 0, this.player.z)
-      : new THREE.Vector3(Math.sin(this.elapsed * .24) * 3.9, 0, CENTER[this.room] - 2.6 + Math.cos(this.elapsed * .22) * 2.4);
-    const dir = dest.sub(this.enemy.position); dir.y = 0;
-    if (dir.length() > .1) {
-      const speed = hunting && !hiding ? (this.room === 2 ? 1.21 : .98) : .48;
-      const ang = Math.atan2(dir.x, dir.z);
-      this.enemy.rotation.y = THREE.MathUtils.lerp(this.enemy.rotation.y, ang, Math.min(1, dt * 2.8));
-      this.enemy.position.addScaledVector(dir.normalize(), Math.min(dir.length(), dt * speed));
+  private updateEnemy(dt:number) {
+    if(this.room===0 || !this.running || this.won){
+      this.enemy.visible=false;this.enemyMode="dormant";return;
     }
-    this.enemy.position.y = Math.sin(this.elapsed * 7) * .03;
-    if (this.enemyMixer) this.enemyMixer.update(dt * (hunting ? 1.2 : .7));
-    const fallback = this.enemy.userData.fallback as THREE.Group;
-    fallback.rotation.z = Math.sin(this.elapsed * 3.5) * .025;
-    if (dist < .97 && this.elapsed - this.enemyLastAttack > 12) {
-      this.enemyLastAttack = this.elapsed;
+    this.enemy.visible=true;
+    const target=new THREE.Vector3(this.player.x,0,this.player.z);
+    const self=new THREE.Vector3(this.enemy.position.x,0,this.enemy.position.z);
+    const dist=self.distanceTo(target);
+    if(this.elapsed>this.eventAt && this.eventAt>0)this.eventAt=-1;
+    const safe = this.eventAt>this.elapsed;
+    const grace = this.elapsed<this.nextThreatAt;
+    const visible=clearSight(this.room,self,target);
+    const recentlySeen=this.elapsed-this.preyMemory<7;
+    if(visible && dist<7 && !grace)this.preyMemory=this.elapsed;
+    const urgent=this.room===2 && this.elapsed>this.nextThreatAt;
+    const hunting=!safe && !grace && (urgent || (visible && dist<7) || recentlySeen);
+    this.enemyMode=hunting?"hunting":"roaming";
+    if(this.enemyMode!==this.prevEnemyMode){
+      if(this.enemyMode==="hunting" && this.elapsed>this.nextThreatAt+1){
+        this.setAlert(.35);
+        this.signals.onThreat("EL CELADOR TE HA VISTO. ¡SEGUÍ MOVIÉNDOTE!");
+      }
+      this.prevEnemyMode=this.enemyMode;
+    }
+    const center=CENTER[this.room];
+    const patrol = [
+      new THREE.Vector3(3.7,0,center-4.6),
+      new THREE.Vector3(-2.9,0,center-2.9),
+      new THREE.Vector3(2.45,0,center+2.8),
+      new THREE.Vector3(-3.0,0,center+3.3)
+    ];
+    const patrolIndex=Math.floor(this.elapsed/13)%patrol.length;
+    const goal=hunting?target:patrol[patrolIndex];
+    // Grid recomputation roughly once per second rather than per frame.
+    if(this.elapsed-this.enemyRouteAt>.83 || this.enemyRoute.length===0){
+      this.enemyRoute=findPath(this.room,self,goal);
+      this.enemyRouteAt=this.elapsed;
+    }
+    while(this.enemyRoute.length && self.distanceTo(this.enemyRoute[0])<.32)
+      this.enemyRoute.shift();
+    const waypoint=this.enemyRoute[0] ?? goal;
+    const direction=waypoint.clone().sub(self).setY(0);
+    const speed=hunting?(this.room===2?1.5:1.35):.78;
+    if(direction.lengthSq()>.03){
+      const angle=Math.atan2(direction.x,direction.z);
+      let yawDifference=angle-this.enemy.rotation.y;
+      yawDifference=Math.atan2(Math.sin(yawDifference),Math.cos(yawDifference));
+      this.enemy.rotation.y+=yawDifference*Math.min(1,dt*4.2);
+      direction.normalize();
+      // The pursuer uses the same solid footprints as the player.
+      slide(this.room,this.enemy.position,direction.x*speed*dt,direction.z*speed*dt,.35);
+    }
+    this.enemy.position.y=Math.sin(this.elapsed*(hunting?8.1:4.2))*.014;
+    if(this.enemyMixer)this.enemyMixer.update(dt*(hunting?1.34:.83));
+    const fallback=this.enemy.userData.fallback as THREE.Group;
+    fallback.rotation.z=Math.sin(this.elapsed*2.4)*.012;
+    if(this.enemyBase)this.enemyBase.rotation.z=Math.sin(this.elapsed*1.7)*.008;
+    this.creatureIdentity?.animate(this.elapsed,hunting,dist);
+    const collisionDist=Math.hypot(this.enemy.position.x-target.x,this.enemy.position.z-target.z);
+    if(!safe && !grace && collisionDist<.84 && this.elapsed-this.enemyLastAttack>13){
+      this.enemyLastAttack=this.elapsed;
+      this.hitJolt=1;
       this.signals.onCaught();
-      this.enemy.position.set(4.5, 0, CENTER[this.room] - 4.3);
-      this.eventAt = this.elapsed + 7;
+      this.enemy.position.set(4.45,0,center-4.65);
+      this.eventAt=this.elapsed+9;
+      this.enemyRoute=[];
+      this.preyMemory=-99;
     }
   }
 
@@ -851,7 +902,10 @@ export class IsolationWorld {
     if (this.running) this.walk(dt);
     const bob = this.running && (this.keys.size > 0 || Math.hypot(this.mobileVector.x, this.mobileVector.y) > .08) ? Math.sin(this.walkPhase) * .021 : 0;
     this.camera.position.copy(this.player); this.camera.position.y += bob;
-    this.camera.rotation.set(this.pitch, this.yaw, 0, "YXZ");
+    const trauma=this.hitJolt;
+    this.hitJolt=Math.max(0,trauma-dt*1.8);
+    this.camera.rotation.set(this.pitch+Math.sin(this.elapsed*23)*trauma*.018,
+      this.yaw+Math.sin(this.elapsed*17)*trauma*.013,trauma*Math.sin(this.elapsed*18)*.011,"YXZ");
     this.doorPanels.forEach((door, i) => {
       const open = i === 0 ? this.firstDoor : i === 1 ? this.secondDoor : this.won;
       const targetY = open ? 4.6 : 1.43;
@@ -908,6 +962,7 @@ export class IsolationWorld {
     });
     this.art?.dispose();
     this.director?.dispose();
+    this.creatureIdentity?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }
