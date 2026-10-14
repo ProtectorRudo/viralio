@@ -9,6 +9,7 @@ import "./tehiceesto-constellation-live.css";
 import "./tehiceesto-purchase.css";
 import "./tehiceesto-purchase-art.css";
 import "./tehiceesto-escape-picker.css";
+import "./tehiceesto-legal.css";
 import "./tehiceesto-postpayment-email.css";
 import "./tehiceesto-demo-cta.css";
 import "./tehiceesto-demo-viewport.css";
