@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CreatorWizard from "../CreatorWizard";
 import { getExperience } from "../data";
+import { getEscapeRoom } from "../escape-rooms";
 
 export const metadata: Metadata = {
   title: "Creá tu regalo",
@@ -15,7 +16,8 @@ export default async function CreatePage({
 }){
   const query=await searchParams;
   const requested=Array.isArray(query.experiencia)?query.experiencia[0]||"":query.experiencia||"";
-  const initialExperience=getExperience(requested)?.slug||"";
+  const escapeRoom=requested.startsWith("escape-")?getEscapeRoom(requested.slice(7)):undefined;
+  const initialExperience=getExperience(requested)?.slug||(escapeRoom?requested:"");
 
   return <main className="creator-page">
     <div className="creator-backdrop" />
