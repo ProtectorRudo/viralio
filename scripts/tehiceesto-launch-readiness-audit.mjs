@@ -138,6 +138,33 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
    await check(view.name+" no-charge simulated purchase "+slug,()=>purchaseAudit(slug,"single"));
    await check(view.name+" no-charge /crear purchase "+slug,()=>purchaseAudit(slug,"wizard"));
  }
+ for(const slug of live){
+   await check(view.name+" no-charge traditional gift purchase "+slug,async()=>{
+     const submitted=[];
+     await page.route("**/functions/v1/order-create",async route=>{
+       submitted.push(route.request().postDataJSON());
+       await route.fulfill({status:200,contentType:"application/json",
+         body:JSON.stringify({code:"abcdef123456789abc",checkoutUrl:null,checkoutReady:false,priceMinor:2500000,currency:"ARS"})});
+     });
+     try{
+       await page.goto(base+"/crear?experiencia="+slug,{waitUntil:"domcontentloaded",timeout:45000});
+       const name=await page.locator(".order-selected-template").innerText();
+       if(!name.includes("ELEGISTE"))throw Error("Gift deep link did not select "+slug);
+       await page.locator('input[autocomplete="name"]').fill("Auditoría Te Hice Esto");
+       await page.locator('input[autocomplete="tel"]').fill("5492215653163");
+       await page.locator('input[type="email"]').fill("auditoria@example.com");
+       await page.locator('input[type="checkbox"]').check();
+       await page.locator('button[type="submit"]').click();
+       await page.waitForTimeout(350);
+       if(submitted.length!==1)throw Error("Expected one order submission, got "+submitted.length);
+       const payload=submitted[0];
+       if(payload.experienceSlug!==slug||!payload.consent||!payload.clientRequestId
+           ||payload.whatsapp!=="5492215653163")throw Error("Invalid order for "+slug+": "+JSON.stringify(payload));
+       if(await page.locator('a[href$="/pedido/abcdef123456789abc"]').count()!==1)
+         throw Error("Missing private order tracking after checkout failover: "+slug);
+     }finally{await page.unroute("**/functions/v1/order-create")}
+   });
+ }
  await check(view.name+" checkout price and transparent delivery copy",async()=>{
    const r=await page.goto(base+"/escapes/caso-m/comprar",{waitUntil:"domcontentloaded"});
    if(r?.status()!==200)throw Error("Not purchasable");
