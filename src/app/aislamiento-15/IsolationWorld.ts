@@ -116,6 +116,10 @@ export class IsolationWorld {
   private pickupMeshes: THREE.Object3D[] = [];
   readonly enemy: THREE.Group;
   private enemyMixer?: THREE.AnimationMixer;
+  private enemyWalk?: THREE.AnimationAction;
+  private enemyChase?: THREE.AnimationAction;
+  private enemyIdle?: THREE.AnimationAction;
+  private enemyActiveAction?: THREE.AnimationAction;
   private enemyBase?: THREE.Object3D;
   private creatureIdentity?: ReturnType<typeof constructOrderlyIdentity>;
   private enemyRoute: THREE.Vector3[] = [];
@@ -654,9 +658,10 @@ export class IsolationWorld {
   }
 
   private loadRig() {
-    // Existing animated model is from our own La Última Función project.
-    // Packaged locally by the deployment pipeline, avoiding cross-origin errors.
-    const url = "/aislamiento-15/models/warden.glb";
+    // First choice: licensed CC0 adult human locomotion set (7 skeletal clips).
+    // Shipped locally and texture-optimized for mobile. The studio-owned model
+    // remains as a low-bandwidth fallback if the new asset cannot load.
+    const url = "/aislamiento-15/models/warden-human.glb";
     const loader = new GLTFLoader();
     const attach = (gltf: Awaited<ReturnType<GLTFLoader["loadAsync"]>>) => {
       if (this.disposed) return;
@@ -700,14 +705,23 @@ export class IsolationWorld {
       this.enemy.add(rig); this.enemyBase = rig;
       const fallback = this.enemy.userData.fallback as THREE.Group;
       fallback.visible = false;
-      if (gltf.animations.length > 0) {
+      if(gltf.animations.length){
         this.enemyMixer = new THREE.AnimationMixer(rig);
-        this.enemyMixer.clipAction(gltf.animations[0]).setLoop(THREE.LoopRepeat, Infinity).play();
+        const clips=gltf.animations;
+        const chosen=(pattern:RegExp)=>clips.find(clip=>pattern.test(clip.name.toLowerCase()));
+        this.enemyIdle = this.enemyMixer.clipAction(chosen(/idle/)??clips[0]);
+        this.enemyWalk = this.enemyMixer.clipAction(chosen(/relaxed.?walk|walking|walk/)??clips[0]);
+        this.enemyChase = this.enemyMixer.clipAction(chosen(/brisk.?walk|jog|run/)??clips[0]);
+        const initial=this.enemyWalk??this.enemyIdle;
+        initial.setLoop(THREE.LoopRepeat,Infinity).play();
+        this.enemyActiveAction=initial;
       }
     };
-    void loader.loadAsync(url).then(attach).catch(() => {
-      // Keep earlier licensed Khronos animated GLB if the production model fails.
-      void loader.loadAsync("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb").then(attach).catch(() => {});
+    void loader.loadAsync(url).then(attach).catch(()=>{
+      void loader.loadAsync("/aislamiento-15/models/warden.glb").then(attach).catch(()=>{
+        // Khronos CC BY 4.0 emergency model remains only when local assets fail.
+        void loader.loadAsync("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb").then(attach).catch(()=>{});
+      });
     });
   }
 
@@ -888,7 +902,15 @@ export class IsolationWorld {
       slide(this.room,this.enemy.position,direction.x*speed*dt,direction.z*speed*dt,.35);
     }
     this.enemy.position.y=Math.sin(this.elapsed*(hunting?8.1:4.2))*.014;
-    if(this.enemyMixer)this.enemyMixer.update(dt*(hunting?1.34:.83));
+    if(this.enemyMixer){
+      const desired=hunting?(this.enemyChase??this.enemyWalk):(this.enemyWalk??this.enemyIdle);
+      if(desired && desired!==this.enemyActiveAction){
+        this.enemyActiveAction?.fadeOut(.33);
+        desired.reset().setLoop(THREE.LoopRepeat,Infinity).fadeIn(.33).play();
+        this.enemyActiveAction=desired;
+      }
+      this.enemyMixer.update(dt*(hunting?1.04:.88));
+    }
     const fallback=this.enemy.userData.fallback as THREE.Group;
     fallback.rotation.z=Math.sin(this.elapsed*2.4)*.012;
     if(this.enemyBase)this.enemyBase.rotation.z=Math.sin(this.elapsed*1.7)*.008;
