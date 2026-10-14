@@ -196,7 +196,7 @@ for(const viewport of viewports){
   console.log("PASS: CASO M 3D engine and GLB are served under tehiceesto.com ("+viewport.name+")");
   // A guessed gift URL must never reveal a draft or a customer's surprise.
   const privateGuess=await page.request.get(base+"/escape-r/000000000000000000",{timeout:30000});
-  if(privateGuess.status()!==404)throw new Error("Private escape authorization: expected HTTP 404");
+  if(privateGuess.status()!==404)throw new Error("Private escape authorization: expected HTTP 404 but got "+privateGuess.status()+"; response: "+(await privateGuess.text()).replace(/<[^>]*>/g," ").slice(0,240));
   console.log("PASS: unpublished/unknown private gift stays hidden ("+viewport.name+")");
   await context.close();
 }
