@@ -11,7 +11,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://efvvadfxuyieswdqnsjg.supabase.co",
   "font-src 'self' data:",
-  `connect-src 'self' https://raw.githubusercontent.com https://efvvadfxuyieswdqnsjg.supabase.co${development ? " ws: wss:" : ""}`,
+  `connect-src 'self' blob: https://raw.githubusercontent.com https://efvvadfxuyieswdqnsjg.supabase.co${development ? " ws: wss:" : ""}`,
   "frame-src 'self' https://viralio.net https://la-ultima-funcion.vercel.app https://la-ultima-campanada-desafio-v6.vercel.app",
   "manifest-src 'self'",
   "media-src 'self' blob: https://efvvadfxuyieswdqnsjg.supabase.co",
