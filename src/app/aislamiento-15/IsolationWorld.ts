@@ -713,7 +713,7 @@ export class IsolationWorld {
   }
 
   tick(dt: number, elapsed: number, danger: number) {
-    if (this.disposed) return;
+    if (this.disposed || !this.running) return;
     dt = Math.min(dt, .055);
     this.elapsed = elapsed;
     this.pulse += dt;
