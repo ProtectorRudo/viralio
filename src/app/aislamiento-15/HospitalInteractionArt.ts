@@ -93,7 +93,7 @@ function electrical(scene:THREE.Scene,room:Room,x:number,z:number,i:number,t:THR
   const map=label(p,0,.66,.145,"CONTROL "+(i+1),true,.99,.16);if(map)t.push(map);
 }
 function oxygen(scene:THREE.Scene,t:THREE.Texture[]){
-  const p=at(scene,1,"Regulador bipuerto",-.12,1.34,-18.37);
+  const p=at(scene,1,"Regulador bipuerto",-2.9,1.34,-17);
   part(p,"Cuerpo del regulador",0,0,.04,1.04,.87,.35,dark);
   part(p,"Borde sellado",0,0,.23,.94,.77,.035,brushed);
   part(p,"Placa de gas",0,0,.254,.83,.65,.02,dark);
