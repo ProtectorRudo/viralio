@@ -54,6 +54,7 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
         <span className="thi-buy-eyebrow">01 · ELEGÍ TU REGALO</span>
         <h1>¿A quién querés <em>sorprender?</em></h1>
         <p>Elegí entre historias emocionales y aventuras con una sorpresa final. Cada experiencia tiene una demo para probar antes de comprar.</p>
+        <a className="thi-simple-escape-jump" href="#salas-de-escape"><span aria-hidden="true">✦</span> ¿Buscás algo diferente? <strong>Ver las 3 salas de escape</strong> <span aria-hidden="true">↘</span></a>
       </div>
       <div className="thi-simple-price" aria-label={`Cada experiencia cuesta ${formatTeHiceEstoPrice()} en un único pago`}>
         <span className="thi-simple-price-gift" aria-hidden="true">♡</span>
