@@ -190,6 +190,21 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
        throw Error("Withdrawal receipt flow did not submit properly");
    }finally{await page.unroute("**/functions/v1/commerce-withdrawals")}
  });
+  await check(view.name+" privacy notice and public consumer contact",async()=>{
+   const r=await page.goto(base+"/privacidad",{waitUntil:"domcontentloaded",timeout:45000});
+   if(r?.status()!==200)throw Error("Privacy page HTTP "+r?.status());
+   const text=await page.locator("main").innerText();
+   for(const phrase of ["Qué información utilizamos","Para qué se usa","Mercado Pago","Consultas, correcciones y eliminación"]){
+     if(!text.includes(phrase))throw Error("Missing privacy explanation: "+phrase);
+   }
+   if(await page.locator('a[href="/arrepentimiento"]').count()<1)throw Error("No withdrawal route from privacy notice");
+ });
+ await check(view.name+" admin consumer tickets require login",async()=>{
+   const r=await page.goto(base+"/admin/arrepentimientos",{waitUntil:"domcontentloaded",timeout:45000});
+   if(r?.status()!==200)throw Error("Admin ticket page HTTP "+r?.status());
+   const text=await page.locator("main").innerText();
+   if(!text.includes("Ingresá primero al"))throw Error("Consumer ticket list not protected in browser without login");
+ });
   await check(view.name+" checkout price and transparent delivery copy",async()=>{
    const r=await page.goto(base+"/escapes/caso-m/comprar",{waitUntil:"domcontentloaded"});
    if(r?.status()!==200)throw Error("Not purchasable");
