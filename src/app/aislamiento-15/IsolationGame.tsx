@@ -219,6 +219,7 @@ export default function IsolationGame() {
         break;
       case "triage":
         w.readTriage = true;
+        w.holdAtPanel(10);
         setPanel("triage"); sound?.message(); break;
       case "relay-0":
       case "relay-1":
@@ -229,7 +230,7 @@ export default function IsolationGame() {
         if (w.relays.includes(n)) { notify("ESTE RELÉ YA FUE ACCIONADO."); break; }
         if (n !== [1, 0, 2][w.relays.length]) {
           w.relays = []; penaltyRef.current += 5; w.setAlert(.75);
-          for (const key of ["relay-0", "relay-1", "relay-2"]) { /* levers reset with future actuation */ void key; }
+          w.resetRelays();
           notify("ERROR DE SINCRONIZACIÓN. REINICIO AUTOMÁTICO. -5 SEGUNDOS.", true); sound?.mistake();
         } else {
           w.relays.push(n); w.rotateRelay(id);
@@ -250,7 +251,7 @@ export default function IsolationGame() {
         else if (!w.hasBadge) notify("ACCESO DENEGADO. NECESITÁS UNA CREDENCIAL.");
         else if (!w.readTriage) notify("FALTAN LAS PRIORIDADES DE TRIAJE. REVISÁ LOS EXPEDIENTES.");
         else if (w.relays.length !== 3) notify("SINCRONIZACIÓN INCOMPLETA. ACCIONÁ LOS RELÉS EN ORDEN.");
-        else if (!w.firstDoor) { setCode(""); setPanel("terminal"); }
+        else if (!w.firstDoor) { w.holdAtPanel(10); setCode(""); setPanel("terminal"); }
         else notify("PUERTA 01 DESBLOQUEADA. AVANZÁ.");
         break;
       case "cell-alpha":
@@ -296,7 +297,7 @@ export default function IsolationGame() {
       case "hide":
         w.hide(); notify("TE OCULTASTE. LA ENTIDAD SE ALEJA DURANTE UNOS SEGUNDOS."); break;
       case "log":
-        w.foundLog = true; setPanel("record"); sound?.message(); break;
+        w.foundLog = true; w.holdAtPanel(12); setPanel("record"); sound?.message(); break;
       case "breaker-0":
       case "breaker-1":
       case "breaker-2": {
@@ -310,7 +311,7 @@ export default function IsolationGame() {
         if (!w.foundLog) { notify("IDENTIDAD DESCONOCIDA. LOCALIZÁ LA GRABACIÓN ORIGINAL."); break; }
         if (w.breakers.join(",") !== "true,false,true") { notify("SIN ENERGÍA DE EVACUACIÓN. AJUSTÁ LOS INTERRUPTORES."); break; }
         if (hasVoiceRef.current) notify("PROCEDIMIENTO CORRECTO. ACTIVÁ LA SALIDA.");
-        else setPanel("voice");
+        else { w.holdAtPanel(12); setPanel("voice"); }
         break;
       case "escape":
         if (!hasVoiceRef.current) notify("EVACUACIÓN NO AUTORIZADA. VERIFICÁ LA VOZ.");
