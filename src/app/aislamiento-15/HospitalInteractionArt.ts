@@ -35,7 +35,7 @@ function torus(p:THREE.Group,x:number,y:number,z:number,r:number,mat:THREE.Mater
 }
 function at(scene:THREE.Scene,room:Room,name:string,x:number,y:number,z:number){
   const p=new THREE.Group();p.name=name;p.userData.chamber=room;
-  p.position.set(x,y,z);scene.add(p);return p;
+  p.position.set(x,y,z);p.userData.helixInstrument=true;scene.add(p);return p;
 }
 function label(p:THREE.Group,x:number,y:number,z:number,word:string,red=false,w=.75,h=.23){
   const c=document.createElement("canvas");c.width=512;c.height=128;
@@ -139,6 +139,51 @@ function relay(scene:THREE.Scene,n:number,t:THREE.Texture[]){
   for(let i=0;i<3;i++)part(p,"Indicador circuito",-.09,.15-i*.13,.37,.04,.031,.23,i===n?warning:signal);
   const map=label(p,-.105,-.265,.35,"R"+(n+1),false,.15,.10);if(map)t.push(map);
 }
+/**
+ * Immutable 3D hardware is batched per room/material/geometry. We only batch
+ * the decorative surfaces, NEVER the original puzzle hit-targets. Labels and
+ * one-off screws stay separate. This preserves shading while cutting draw calls.
+ */
+function batchStaticInstruments(scene:THREE.Scene){
+  const roots=scene.children.filter((o):o is THREE.Group =>
+    o instanceof THREE.Group && o.userData.helixInstrument===true);
+  const pools=new Map<string,{
+    room:Room; geometry:THREE.BufferGeometry;material:THREE.Material;transforms:THREE.Matrix4[]
+  }>();
+  const removed:THREE.Mesh[]=[];
+  for(const root of roots){
+    root.updateWorldMatrix(true,true);
+    const room=root.userData.chamber as Room;
+    root.traverse(o=>{
+      if(!(o instanceof THREE.Mesh) || o instanceof THREE.InstancedMesh)return;
+      if(o.geometry!==box && o.geometry!==cylinder && o.geometry!==torusGeo)return;
+      if(Array.isArray(o.material))return;
+      const key=room+"-"+o.geometry.uuid+"-"+o.material.uuid;
+      let pool=pools.get(key);
+      if(!pool){
+        pool={room,geometry:o.geometry,material:o.material,transforms:[]};
+        pools.set(key,pool);
+      }
+      pool.transforms.push(o.matrixWorld.clone());
+      removed.push(o);
+    });
+  }
+  for(const object of removed)object.parent?.remove(object);
+  for(const pool of pools.values()){
+    const instance=new THREE.InstancedMesh(pool.geometry,pool.material,pool.transforms.length);
+    for(let i=0;i<pool.transforms.length;i++)
+      instance.setMatrixAt(i,pool.transforms[i]);
+    instance.instanceMatrix.needsUpdate=true;
+    instance.userData.chamber=pool.room;
+    instance.name="HÉLIX // hardware batch";
+    instance.castShadow=false;
+    instance.receiveShadow=true;
+    // All matrices are in world coordinates. Active-room culling is handled by
+    // IsolationWorld.showRoom() rather than an aggregate frustum sphere.
+    instance.frustumCulled=false;
+    scene.add(instance);
+  }
+}
 export function installHospitalInteractionArt(scene:THREE.Scene){
   const textures:THREE.Texture[]=[];
   consoleArt(scene,textures);
@@ -147,6 +192,7 @@ export function installHospitalInteractionArt(scene:THREE.Scene){
   recording(scene,textures);
   for(let i=0;i<3;i++)relay(scene,i,textures);
   for(let i=0;i<3;i++)electrical(scene,2,[-3.7,3.7,3.7][i],-26+[1.4,1.4,-1.35][i],i,textures);
+  batchStaticInstruments(scene);
   return {dispose(){
     for(const tex of textures)tex.dispose();
     for(const m of mats)m.dispose();
