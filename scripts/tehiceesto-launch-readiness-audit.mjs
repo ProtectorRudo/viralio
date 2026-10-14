@@ -177,8 +177,9 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
    await page.waitForTimeout(1100); // ensure client event handlers are interactive
    if(response?.status()!==200)throw Error("Public withdrawal page HTTP "+response?.status());
    const pageBody=await page.locator("body").innerText();
-   if(!pageBody.includes("Botón de arrepentimiento")||!pageBody.includes("No necesitás registrarte"))
-     throw Error("Consumer rights information missing");
+   const heading=(await page.locator(".thi-legal-intro h1").innerText()).replace(/\\s+/g," ").trim();
+   if(!heading.includes("Botón de arrepentimiento")||!pageBody.includes("No necesitás registrarte"))
+     throw Error("Consumer rights information missing; heading="+heading);
    const submitted=[];
    await page.route("**/functions/v1/commerce-withdrawals",async route=>{
       submitted.push(route.request().postDataJSON());
