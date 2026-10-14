@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { experiences } from "./data";
 import { formatTeHiceEstoPrice } from "./pricing";
 import HomeTrustMarquee from "./HomeTrustMarquee";
+import HomeEscapeCollection from "./HomeEscapeCollection";
 
 const RECIPIENTS = [
   { slug:"pareja", label:"Pareja", mark:"♡" },
@@ -45,13 +46,13 @@ export default async function TeHiceEstoHome() {
           <div className="thh-v2-hero-copy">
             <span className="thh-kicker">EXPERIENCIAS DIGITALES PERSONALIZADAS</span>
             <h1>
-              Un regalo que la emociona.
-              <em>La hace sonreír. Y le queda para siempre.</em>
+              Hay regalos que se abren.
+              <em>Y otros que se viven.</em>
             </h1>
 
             <p className="thh-v2-lead">
-              Elegís una experiencia que ya fue diseñada y probada para emocionar. Después del pago
-              la personalizás con tus fotos, audios y palabras siguiendo una guía simple, sin tocar el diseño.
+              Transformá sus recuerdos en una experiencia que se siente. Elegí un recorrido ya diseñado,
+              agregá tus fotos, audios y palabras, o regalá una aventura donde la sorpresa aparece al final.
             </p>
 
             <div className="thh-v2-meta" aria-label="Detalles de compra">
@@ -109,6 +110,7 @@ export default async function TeHiceEstoHome() {
                 <span className="thh-v2-mini-lock" aria-hidden="true"/>
                 Después elegís la experiencia y pagás de forma segura con <strong>Mercado Pago</strong>.
               </p>
+              <a className="thh-escape-hero-link" href="#escapes"><strong>NUEVO</strong> Salas de escape con un secreto al final <span aria-hidden="true">↗</span></a>
             </div>
           </div>
 
@@ -182,8 +184,8 @@ export default async function TeHiceEstoHome() {
             <span className="thh-kicker">MÁS QUE UN REGALO, UNA EMOCIÓN</span>
             <h2>No recibe solo un regalo.<em>Recibe ese momento que le queda en el corazón.</em></h2>
             <p>
-              Cada experiencia está pensada para emocionar de verdad: hacerla sonreír, sorprenderla,
-              recordarle cuánto la aman y dejarle un recuerdo que puede volver a abrir una y otra vez.
+              Cada experiencia está creada para despertar una emoción real: hacer sonreír, sorprender,
+              recordar cuánto importa alguien y dejar un recuerdo al que siempre se pueda volver.
             </p>
             <Link className="thh-v2-text-link" href={href("/experiencias/pareja")}>
               Ver cómo se siente <span>→</span>
@@ -210,19 +212,7 @@ export default async function TeHiceEstoHome() {
           </div>
         </section>
 
-        <section className="thh-escape-collection" id="escapes">
-          <div className="thh-escape-heading">
-            <span>UNA COLECCIÓN DISTINTA · REGALOS INTERACTIVOS</span>
-            <h2>No le digas que tenés una sorpresa.<em>Hacé que la descubra.</em></h2>
-            <p>Tres salas de escape tridimensionales con suspenso, pistas y una invitación o carta personalizada que aparece al final.</p>
-          </div>
-          <div className="thh-escape-cards">
-            <Link href={href("/escapes/caso-m")} className="thh-escape-card"><span>01 · MISIÓN DE RESCATE</span><strong>CASO M</strong><p>Una desaparición, un candado y seis cifras que podés personalizar junto con sus pistas.</p><b>EXPLORAR ESTA SALA ↗</b></Link>
-            <Link href={href("/escapes/ultima-funcion")} className="thh-escape-card"><span>02 · CINE DE TERROR</span><strong>La Última Función</strong><p>Un teatro abandonado, presencias inquietantes y una invitación detrás del telón.</p><b>EXPLORAR ESTA SALA ↗</b></Link>
-            <Link href={href("/escapes/ultima-campanada")} className="thh-escape-card"><span>03 · MISTERIO ROMÁNTICO</span><strong>La Última Campanada</strong><p>Un jardín que se apaga, acertijos y una sorpresa escrita para alguien especial.</p><b>EXPLORAR ESTA SALA ↗</b></Link>
-          </div>
-          <Link href={href("/escapes")} className="thh-escape-more">VER LAS TRES EXPERIENCIAS →</Link>
-        </section>
+        <HomeEscapeCollection prefix={prefix}/>
 
         <section className="thh-v2-process" id="proceso">
           <span className="thh-kicker">ASÍ DE SIMPLE</span>
@@ -230,22 +220,22 @@ export default async function TeHiceEstoHome() {
             <article>
               <span>01</span>
               <div>
-                <h3>Elegís para quién</h3>
-                <p>Seleccionás la persona y la experiencia que querés regalar.</p>
+                <h3>Elegís la experiencia</h3>
+                <p>Conocés las demos y elegís un regalo emocional o una aventura de escape.</p>
               </div>
             </article>
             <article>
               <span>02</span>
               <div>
-                <h3>La hacés de ustedes</h3>
-                <p>Subís fotos, audios, nombres y mensajes. Te guiamos paso a paso y el diseño se mantiene intacto.</p>
+                <h3>Hacemos única la historia</h3>
+                <p>En las experiencias de recuerdos personalizás el contenido con una guía; en las salas de escape, nuestro equipo prepara tu sorpresa.</p>
               </div>
             </article>
             <article>
               <span>03</span>
               <div>
-                <h3>La revisás y la publicás</h3>
-                <p>Vivís la vista previa completa, ajustás lo que quieras y recibís tu link privado al instante.</p>
+                <h3>La compartís</h3>
+                <p>Revisás la experiencia terminada, recibís un enlace privado y sorprendés a esa persona desde su celular.</p>
               </div>
             </article>
           </div>
@@ -257,7 +247,7 @@ export default async function TeHiceEstoHome() {
             <h2>No estás comprando una página.<em>Estás regalando un recuerdo que puede volver a sentir.</em></h2>
             <p className="thh-v2-price-story">
               Cada experiencia ya tiene el recorrido, los efectos y el ritmo resueltos de principio a fin.
-              Vos sólo reemplazás el contenido previsto con sus recuerdos para conservar toda la calidad del modelo.
+              En cada modelo sólo cambian los contenidos previstos. Las escenas, los desafíos y las animaciones mantienen su calidad original.
             </p>
             <div className="thh-v2-price">
               <strong>{formatTeHiceEstoPrice()}</strong>
@@ -268,8 +258,8 @@ export default async function TeHiceEstoHome() {
           <div className="thh-v2-price-value">
             <p className="thh-v2-price-intro">Todo lo necesario para convertir sus recuerdos en un regalo realmente inolvidable.</p>
             <ul>
-              <li><strong>Personalizada con su propia historia</strong><span>Fotos, audios, nombres y mensajes.</span></li>
-              <li><strong>El diseño ya viene resuelto</strong><span>No necesitás diseñar ni programar nada; sólo personalizás el contenido.</span></li>
+              <li><strong>Personalizada para esa persona</strong><span>Recuerdos, fotos, audios o una invitación final según el modelo.</span></li>
+              <li><strong>Diseño profesional, sin empezar de cero</strong><span>En las salas de escape, nuestro equipo se encarga de la personalización.</span></li>
               <li><strong>Lista para regalar</strong><span>Recibís un link privado y terminado.</span></li>
               <li><strong>Para volver a sentirlo</strong><span>Puede abrirla todas las veces que quiera.</span></li>
               <li><strong>Sin suscripciones</strong><span>Un único pago, sin cuotas mensuales del servicio.</span></li>
