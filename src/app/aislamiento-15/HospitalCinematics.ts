@@ -225,18 +225,25 @@ export function installHospitalCinematics(scene:THREE.Scene){
     lens.castShadow=false;
     b(roots[i],"Lente emergencia",lx,2.8,z+.11,.16,.08,.035,i===1?cyan:crimson).castShadow=false;
   }
+  let cueKind: "glass"|"lights"|"reactor"|"knock"|null=null;
+  let cueUntil=-100;
   return {
+    cue(kind:"glass"|"lights"|"reactor"|"knock",seconds:number){
+      cueKind=kind;
+      cueUntil=seconds+(kind==="reactor"?6.5:kind==="glass"?5:2.0);
+    },
     update({elapsed,danger,room,threat}:UpdateInput){
-      const podActive=room===1 && (elapsed%94>21 && elapsed%94<26);
+      const cueActive=elapsed<cueUntil;
+      const podActive=room===1 && ((elapsed%94>21 && elapsed%94<26)||(cueActive && cueKind==="glass"));
       isolation.body.visible=podActive;
       if(podActive) isolation.body.rotation.y=Math.sin(elapsed*1.4)*.065;
       isolation.cloud.position.z=Math.sin(elapsed*.14)*.12;
-      containment.core.rotation.y=elapsed*.15;
-      containment.core.position.y=Math.sin(elapsed*1.7)*.045;
+      containment.core.rotation.y=elapsed*(cueActive&&cueKind==="reactor"?.69:.15);
+      containment.core.position.y=Math.sin(elapsed*(cueActive&&cueKind==="reactor"?7.2:1.7))*(cueActive?.072:.045);
       for(let i=0;i<3;i++){
-        const active=room===i && (danger>.7 || (i===1 && podActive) || (i===2 && threat>.7));
+        const active=room===i && (danger>.7 || (i===1 && podActive) || (i===2 && threat>.7) || cueActive);
         const flash= i===1 ? .28+.2*Math.sin(elapsed*3.6) : Math.sin(elapsed*(danger>.8?11:4))>.52?1:0;
-        strobeLights[i].intensity=active ? (i===1? .45+Math.max(0,flash)*.65 : Math.max(0,flash)*2.1) : 0;
+        strobeLights[i].intensity=active ? (cueActive ? Math.max(0,.7+Math.sin(elapsed*11)*1.4) : (i===1? .45+Math.max(0,flash)*.65 : Math.max(0,flash)*2.1)) : 0;
       }
       crimson.emissiveIntensity=1.1+(danger>.85?Math.max(0,Math.sin(elapsed*5))*.7:0);
       cyan.emissiveIntensity=1.1+.14*Math.sin(elapsed*2.1);
