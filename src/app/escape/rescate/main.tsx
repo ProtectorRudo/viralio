@@ -7,12 +7,35 @@ import styles from "./Rescue.module.css";
 type Screen="intro"|"connecting"|"game"|"final";
 type Overlay="none"|"inspect"|"lock"|"letter";
 type Ev="calendar"|"cassette"|"memo";
-type Config={fecha:string;hora:string;lugar:string};
-const CODE="131026";
+type Config={fecha:string;hora:string;lugar:string;nombre:string;evento:string;mensaje:string;firma:string;codigo:string;rsvp:string;voz:string};
+function configFromUrl():Config {
+ const q=typeof window==="undefined"?new URLSearchParams():new URLSearchParams(window.location.search);
+ const val=(key:string,fallback:string,max=160)=>(q.get(key)?.trim()||fallback).slice(0,max);
+ const input=q.get("codigo")||q.get("clave")||"";
+ const codigo=/^\d{6}$/.test(input) ? input : "131026";
+ const voz=q.get("voz")?.trim()||"";
+ return {fecha:val("fecha","13 DE OCTUBRE DE 2026",80),hora:val("hora","17:00 HS",80),
+ lugar:val("lugar","CALLE 49 ENTRE 26 Y 27 · LA PLATA",125),nombre:val("nombre","Mauro",42),
+ evento:val("evento","Cumpleaños de Mauro",95),mensaje:val("mensaje","¡Te esperamos para celebrar!",320),
+ firma:val("firma","Con cariño, quienes te invitan",85),codigo,
+ rsvp:(q.get("rsvp")||"").replace(/\D/g,"").slice(0,18),
+ voz:/^https:\/\//.test(voz)?voz.slice(0,900):""};
+}
+const setup=configFromUrl();
+const CODE=setup.codigo;
+function roman(n:number):string{
+ if(n===0)return "00";
+ let result="";
+ for(const [v,s] of [[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]] as const){while(n>=v){result+=s;n-=v}}
+ return result;
+}
+const PHOTO=roman(Number(CODE.slice(0,2)));
+const TAPE=CODE.slice(2,4);
+const YEAR="20"+CODE.slice(4,6);
 const EVIDENCE:Record<Ev,{title:string;value:string;body:string}>={
- calendar:{title:"Fotografía intervenida",value:"XIII",body:"Al dorso alguien escribió «XIII». Parece un número romano. No hay ninguna fecha escrita."},
- cassette:{title:"Cinta recuperada",value:"10",body:"La etiqueta de la cinta tiene escrito «10». El audio advierte que alguien está por regresar."},
- memo:{title:"Grabación vigilada",value:"2026",body:"Registro de seguridad: operación archivada en 2026. Para la clave solo importan las últimas dos cifras del año."},
+ calendar:{title:"Fotografía intervenida",value:PHOTO,body:`Al dorso alguien escribió «${PHOTO}». ${PHOTO==="00"?"Estas dos cifras no son romanas.":"Parece un número romano."} Convertí el valor a dos cifras.`},
+ cassette:{title:"Cinta recuperada",value:TAPE,body:`La etiqueta de la cinta tiene escrito «${TAPE}». El audio advierte que alguien está por regresar.`},
+ memo:{title:"Grabación vigilada",value:YEAR,body:`Registro de seguridad: operación archivada en ${YEAR}. Para la clave sólo importan las últimas dos cifras del año.`},
 };
 const DESCRIPTIONS:Record<ClueId,string>={
  calendar:"Una vieja fotografía adherida a la pared. La parte de atrás podría esconder algo importante.",
@@ -67,7 +90,7 @@ function App(){
  const finalMinute=seconds<=60;
  const cuesFired=useRef(new Set<number>()),cueTimer=useRef<number|null>(null);
  const threatFired=useRef(false),ambientOsc=useRef<OscillatorNode[]>([]),threatTimers=useRef<number[]>([]),transitionTimer=useRef<number|null>(null),sealTimer=useRef<number|null>(null);
- const config=useRef<Config>({fecha:"13 DE OCTUBRE DE 2026",hora:"17:00 HS",lugar:"CALLE 49 ENTRE 26 Y 27 · LA PLATA"});
+ const config=useRef<Config>(setup);
  useEffect(()=>{overlayState.current=overlay;expiredState.current=expired;},[overlay,expired]);
  // Environmental status cards are transient. Do not leave a stale warning
  // over the room after its lights recover or a short sound cue finishes.
@@ -78,9 +101,7 @@ function App(){
  },[toast]);
  useEffect(()=>()=>{if(clockTimeout.current!==null)window.clearTimeout(clockTimeout.current);if(transitionTimer.current!==null)window.clearTimeout(transitionTimer.current);if(sealTimer.current!==null)window.clearTimeout(sealTimer.current);if(cueTimer.current!==null)window.clearTimeout(cueTimer.current);for(const id of blackoutTimers.current)window.clearTimeout(id);blackoutTimers.current=[];},[]);
  useEffect(()=>()=>{for(const id of threatTimers.current)window.clearTimeout(id);threatTimers.current=[];},[]);
- useEffect(()=>{const q=new URLSearchParams(location.search);
-  config.current={fecha:(q.get("fecha")||"13 DE OCTUBRE DE 2026").slice(0,80),hora:(q.get("hora")||"17:00 HS").slice(0,80),lugar:(q.get("lugar")||"CALLE 49 ENTRE 26 Y 27 · LA PLATA").slice(0,125)};
- },[]);
+ useEffect(()=>{config.current=setup;},[]);
  useEffect(()=>{
   if(screen!=="game"||expired||overlay==="letter"||drawerOpen)return;
   const clock=window.setInterval(()=>{
@@ -470,13 +491,13 @@ function App(){
   setSeconds(60);setExpired(false);
   setToast("ÚLTIMO MINUTO · NO HABRÁ MÁS PRÓRROGAS");sound("start");
  }
- const HINTS=["Las tres pruebas están en objetos distintos. La fotografía parece ocultar algo más en su reverso."];
+ const HINTS=["Las tres pruebas están en objetos distintos. La fotografía parece ocultar algo más en su reverso. Ordená fotografía, cinta y grabación para armar las seis cifras."];
  function hint(){
   setHintOpen(true);setHintLevel(1);sound("click");
  }
  function shareMessage(){
   const {fecha,hora,lugar}=config.current;
-  return `¡Rescaté a Mauro! 🎉 ¡Estás invitado al cumple de Mauro! 🥳 Fecha: ${fecha}. Hora: ${hora}. Lugar: ${lugar}.`;
+  return `¡Completé la misión para rescatar a ${config.current.nombre}! 🎉 ${config.current.evento}. ${config.current.mensaje} Fecha: ${fecha}. Hora: ${hora}. Lugar: ${lugar}.`;
  }
  async function copyInvite(){
   try{await navigator.clipboard.writeText(shareMessage());setToast("INVITACIÓN COPIADA");}
@@ -490,8 +511,8 @@ function App(){
    <audio data-testid="rescate-tape-audio" ref={tapeAudio} preload="auto"
      onEnded={()=>{setTapeStatus("ended");if(musicAudio.current)musicAudio.current.volume=.65}}
      onError={()=>setTapeStatus("error")}>
-     <source src="./audio/mauro-voice.webm" type="audio/webm; codecs=opus"/>
-     <source src="./audio/rescue-message.mp3" type="audio/mpeg"/>
+     <source src={setup.voz||"./audio/mauro-voice.webm"} type={setup.voz?"audio/mpeg":"audio/webm; codecs=opus"}/>
+     {!setup.voz&&<source src="./audio/rescue-message.mp3" type="audio/mpeg"/>}
     </audio>
   {screen==="intro"&&<section className={styles.intro}>
     <div className={styles.noise}/><div className={styles.introBackdrop} aria-hidden="true"><div className={styles.introDoor}><i/></div><div className={styles.introLight}/></div>
@@ -499,12 +520,12 @@ function App(){
     <span className={styles.radar} aria-hidden="true"><i/><i/><i/></span>
     <div className={styles.introText}>
       <span className={styles.red}>◉ ACCESO CONFIDENCIAL · OPERACIÓN M</span>
-      <h1>SECUESTRARON<br/><em>A MAURO.</em></h1><span className={styles.introSubline}>LA ÚLTIMA TRANSMISIÓN SIGUE ABIERTA.</span>
+      <h1>SECUESTRARON<br/><em>A {config.current.nombre.toUpperCase()}.</em></h1><span className={styles.introSubline}>LA ÚLTIMA TRANSMISIÓN SIGUE ABIERTA.</span>
       <p>Una habitación abandonada. Una voz que pide ayuda. <strong>Tres minutos</strong> antes de que vuelvan.</p>
       <div className={styles.introCard}>
         <span><i className={styles.recDot}/> CINTA N.º 013 · MENSAJE INTERCEPTADO</span>
         <div className={styles.waveform} aria-hidden="true">{Array.from({length:39},(_,i)=><i key={i} style={{height:(8+(i*17%30))+"px"}}/>)}</div>
-        <p>«Si querés saber dónde está Mauro… abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p>
+        <p>«Si querés saber dónde está {config.current.nombre}… abrí el cajón. Encontrá las seis cifras. El tiempo ya está corriendo».</p>
        </div>
       <div className={styles.introTimer}>03<span>:</span>00 <small>PARA RESOLVER EL CASO</small></div>
       <button type="button" className={styles.start} onClick={start}>INICIAR RESCATE <span>↗</span></button>
@@ -531,7 +552,7 @@ function App(){
     {figureWarning&&<div className={styles.knifeAlert} data-testid="rescate-knife-alert" role="alert"><span>ADVERTENCIA · PRESENCIA DETECTADA</span><strong>NO ESTÁS SOLO.</strong><small>¡APURATE, EL TIEMPO SE AGOTA!</small></div>}
     {doorWarning&&<div className={styles.doorAlert} data-testid="rescate-intruder-alert" role="alert"><span>¡ESCUCHASTE ESO!</span><strong>ALGUIEN ESTÁ ABRIENDO LA PUERTA.</strong><small>NO TE DETENGAS · QUEDA 1 MINUTO</small></div>}
     <header className={styles.hud}>
-      <div className={styles.hudTitle}><span>CASO 013 · OPERACIÓN RESCATE</span><strong>¿DÓNDE ESTÁ MAURO?</strong></div>
+      <div className={styles.hudTitle}><span>CASO 013 · OPERACIÓN RESCATE</span><strong>¿DÓNDE ESTÁ {config.current.nombre.toUpperCase()}?</strong></div>
       <div className={styles.countdown} data-critical={seconds<=35?"yes":"no"} data-testid="rescate-timer"><small>TIEMPO RESTANTE</small><strong>{fmtTime(seconds)}</strong></div>
     </header>
     <div className={styles.topHints}>
@@ -550,7 +571,7 @@ function App(){
      <div className={styles.dossierContents}><span>INDICIOS RECUPERADOS</span>
       {seen.map((k)=><div key={k} data-testid="rescate-evidence-slip" data-found="yes" className={styles.evidenceSlip}>
         <span className={styles.evidenceMark}>◆</span>
-        <div className={styles.evidenceLabel}><strong>{EVIDENCE[k].title}</strong><small>{k==="cassette"?"CINTA Nº 10":k==="memo"?"ARCHIVO DE VIDEO":"REVERSO DE FOTOGRAFÍA"}</small></div>
+        <div className={styles.evidenceLabel}><strong>{EVIDENCE[k].title}</strong><small>{k==="cassette"?`CINTA Nº ${EVIDENCE.cassette.value}`:k==="memo"?"ARCHIVO DE VIDEO":"REVERSO DE FOTOGRAFÍA"}</small></div>
         <span className={styles.evidenceNumber}>{EVIDENCE[k].value}</span>
        </div>)}
       {Array.from({length:3-seen.length},(_,i)=><div key={"empty"+i} className={styles.evidenceEmpty} data-found="no">◇ <span>INDICIO SIN RECUPERAR</span></div>)}
@@ -618,14 +639,14 @@ function App(){
           <path d="M20 312L300 43" stroke="#d6d1ba" strokeWidth=".9" opacity=".30"/>
          </svg>
          <span className={styles.photoStamp}>CÁMARA 02 · SIN IDENTIFICAR</span>
-        </div>:<div className={styles.photoMark}><small>ESCRITO EN EL REVERSO</small><strong>XIII</strong><span>¿QUÉ SIGNIFICA?</span></div>}
+        </div>:<div className={styles.photoMark}><small>ESCRITO EN EL REVERSO</small><strong>{EVIDENCE.calendar.value}</strong><span>¿QUÉ SIGNIFICA?</span></div>}
        </div><span>{photoFlipped?"EVIDENCIA / ENCONTRADA":"ARCHIVO FOTOGRÁFICO SIN FECHA"}</span></div>
        <button type="button" className={styles.photoFlipButton} onClick={()=>{setPhotoFlipped(v=>!v);sound("click")}}>{photoFlipped?"↶ VOLVER A MIRAR EL FRENTE":"↻ DAR VUELTA LA FOTOGRAFÍA"}</button>
       </div>}
       {focus.id==="memo"&&<div className={styles.surveillanceScreen} data-testid="rescate-surveillance">
-        <div className={styles.surveillanceHeader}><span>● REC · CÁMARA 03</span><span>ARCHIVO 2026</span></div>
+        <div className={styles.surveillanceHeader}><span>● REC · CÁMARA 03</span><span>ARCHIVO {YEAR}</span></div>
         <div className={styles.surveillanceFootage}><span>OBJETIVO / M</span><i/><i/><div className={styles.surveillanceCross}>+</div><small>SEGUIMIENTO ARCHIVADO</small></div>
-        <p>REGISTRO OPERATIVO: <strong>2026</strong></p><small>SOLO IMPORTAN LAS DOS ÚLTIMAS CIFRAS DEL AÑO</small>
+        <p>REGISTRO OPERATIVO: <strong>{YEAR}</strong></p><small>SOLO IMPORTAN LAS DOS ÚLTIMAS CIFRAS DEL AÑO</small>
        </div>}
        {focus.id==="board"&&<div className={styles.investigationBoard} data-testid="rescate-investigation-board">
         <strong>OPERACIÓN M · PLAN DE SEGUIMIENTO</strong>
@@ -635,7 +656,7 @@ function App(){
         <div><span>ARCH.</span> FOTOGRAFÍAS, HORARIOS Y RECORTES</div>
         <small>NO TODAS LAS NOTAS SON CLAVES DEL CANDADO.</small>
        </div>}
-       {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>GRABACIÓN ORIGINAL · VOZ DE MAURO</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
+       {focus.id==="cassette"&&<div className={styles.tapeControl} data-testid="rescate-voice"><span>● CINTA RECUPERADA · SEÑAL INTERCEPTADA</span><p>«Por favor, no pierdas tiempo… van a volver».</p><small>GRABACIÓN INTERCEPTADA · OPERACIÓN RESCATE</small><button type="button" data-testid="rescate-play-tape" onClick={playTape}>{tapeStatus==="playing"?"↻ VOLVER A ESCUCHAR":"▶ REPRODUCIR GRABACIÓN"}</button><small className={styles.tapeStatus} role="status">{tapeStatus==="playing"?"● REPRODUCIENDO":tapeStatus==="error"?"REPRODUCÍ CON EL BOTÓN · RESPALDO DE VOZ DISPONIBLE":tapeStatus==="ended"?"CINTA FINALIZADA":"PULSÁ PARA ESCUCHAR"}</small></div>}
       {focus.id in EVIDENCE&&(focus.id!=="calendar"||photoFlipped)?<div className={styles.evidence}><span>INDICIO ENCONTRADO</span><strong>{EVIDENCE[focus.id as Ev].value}</strong><p>{EVIDENCE[focus.id as Ev].body}</p></div>:<p className={styles.redHerring}>{focus.hint}</p>}
       {focus.id!=="clock"&&<button className={styles.confirm} onClick={activate} disabled={focus.id==="calendar"&&!photoFlipped}>{focus.id==="calendar"&&!photoFlipped?"PRIMERO REVISÁ EL REVERSO":focus.id in EVIDENCE?"GUARDAR EVIDENCIA EN EL EXPEDIENTE":"TERMINAR INSPECCIÓN"} →</button>}
       <button className={styles.secondary} onClick={closeInspect}>VOLVER A LA SALA</button>
@@ -663,8 +684,8 @@ function App(){
        :<><span className={styles.letterCaption}>EXPEDIENTE M-013 · EL SECRETO</span>
         <div className={styles.letterInside} data-testid="rescate-letter-inside"><small>CONFIDENCIAL / PARA VOS</small>
           <h2>ESTA VEZ,<br/>LA MISIÓN ES OTRA.</h2>
-          <p>Nunca tuviste que rescatar a Mauro. <strong>Tenías que encontrar la invitación.</strong></p>
-          <p className={styles.letterReveal}>TE ESPERAMOS PARA CELEBRAR.</p>
+          <p>Nunca tuviste que rescatar a {config.current.nombre}. <strong>Tenías que encontrar la invitación.</strong></p>
+          <p className={styles.letterReveal}>{config.current.mensaje}</p>
         </div></>}
       <button className={styles.confirm} disabled={sealBreaking} onClick={openedLetter?finish:envelope}>{openedLetter?"REVELAR MI INVITACIÓN →":sealBreaking?"ROMPIENDO EL LACRE…":"ROMPER EL LACRE →"}</button>
     </div></div>}
@@ -685,14 +706,15 @@ function App(){
     <span className={styles.finalKicker}>MISIÓN CUMPLIDA · EXPEDIENTE M-013 CERRADO</span>
     <h1>NO ERA UN SECUESTRO.<em>ERA UNA INVITACIÓN.</em></h1>
     <div className={styles.invitationPaper}>
-      <span className={styles.inviteEyebrow}>INVITACIÓN PRIVADA · CELEBRACIÓN 2026</span>
+      <span className={styles.inviteEyebrow}>INVITACIÓN PRIVADA · {config.current.evento.toUpperCase()}</span>
       <div className={styles.partyIcon}>✳</div><div className={styles.inviteMonogram}>M<span>·</span>013</div>
-      <h2>Una noche para celebrar.</h2>
+      <h2>{config.current.evento}</h2>
       <p>Seguiste las pistas, desafiaste al reloj y abriste el último sobre. <strong>Ahora sólo falta una cosa: que estés ahí.</strong></p>
       <div className={styles.details}><div><small>FECHA</small><strong>{config.current.fecha}</strong></div><div><small>HORA</small><strong>{config.current.hora}</strong></div><div><small>LUGAR</small><strong>{config.current.lugar}</strong></div></div>
-      <p className={styles.secret}>La mejor parte del caso comienza cuando llegues.</p>
+      <p className={styles.secret}>{config.current.firma}</p>
     </div>
     <div className={styles.finalActions}>
+     {config.current.rsvp&&<a href={"https://wa.me/"+config.current.rsvp+"?text="+encodeURIComponent("¡Confirmo mi asistencia a "+config.current.evento+"!")} target="_blank" rel="noopener noreferrer">CONFIRMAR ASISTENCIA ↗</a>}
      <button onClick={copyInvite}>✧ GUARDAR LOS DATOS</button>
      <a href={"https://api.whatsapp.com/send?text="+encodeURIComponent(shareMessage())} target="_blank" rel="noopener noreferrer">COMPARTIR POR WHATSAPP ↗</a>
     </div>
