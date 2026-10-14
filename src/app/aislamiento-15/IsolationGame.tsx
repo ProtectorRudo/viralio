@@ -65,6 +65,8 @@ export default function IsolationGame() {
   const [progress, setProgress] = useState<boolean[]>([false, false, false, false]);
   const [objective, setObjective] = useState("Buscá el fusible F-08");
   const [dangerLevel, setDangerLevel] = useState(0);
+  const [chapterCard,setChapterCard] = useState<Chamber | null>(null);
+  const [chapterKey,setChapterKey] = useState(0);
   const [briefAlert, setBriefAlert] = useState(false);
   const [helpCopy, setHelpCopy] = useState("");
   const [hints, setHints] = useState(0);
@@ -104,6 +106,9 @@ export default function IsolationGame() {
       world = new IsolationWorld(canvas, {
         onChamber: (next) => {
           setChamber(next);
+          setChapterCard(next);
+          setChapterKey(v => v+1);
+          window.setTimeout(()=>setChapterCard(null),2700);
           setProgress([false, false, false, false]);
           setObjective(next === 1 ? "Recuperá las celdas de oxígeno" : "Encontrá el expediente 015");
           sound.door();
@@ -437,6 +442,12 @@ export default function IsolationGame() {
       </div>
       <div className="iso-crosshair" aria-hidden="true"><i /></div>
       {briefAlert && <div className="iso-blackout" aria-hidden="true"><span>SIN SEÑAL · PROTOCOLO 015</span></div>}
+      {chapterCard !== null && <div className="iso-chapter-card" key={chapterKey} aria-live="polite">
+        <span className="iso-chapter-index">ESTACIÓN DE CONTENCIÓN // 0{chapterCard+1}</span>
+        <strong>{PHASES[chapterCard].name}</strong>
+        <small>{PHASES[chapterCard].quote}</small>
+      </div>}
+      {chamber>0 && <div className="iso-edge-threat" style={{opacity: Math.min(.44,Math.max(0,(dangerLevel-63)/95))}} aria-hidden="true" />}
       {chamber > 0 && <div className="iso-threat-meter" aria-label={"Proximidad de amenaza " + Math.round(dangerLevel) + " por ciento"}><span>◉ PRESENCIA DETECTADA</span><div><i style={{ width: dangerLevel + "%" }} /></div></div>}
       {notice && <div className="iso-broadcast" role="status"><span>■ TRANSMISIÓN DE EMERGENCIA</span><strong>{notice}</strong></div>}
       {focus && !panel && <div className="iso-focus" aria-live="off"><span>OBJETO INTERACTIVO</span><strong>{focus.label}</strong><small>TOCÁ EL OBJETO O PULSÁ INTERACTUAR</small></div>}
@@ -527,6 +538,6 @@ export default function IsolationGame() {
         <button className="iso-confirm" onClick={closePanel}>VOLVER A LA SALA ↗</button>
       </>}
     </div></div>}
-    <div className="iso-watermark">© VIRALIO ORIGINALS · PERSONAJE GLB: CESIUM / CC BY 4.0</div>
+    <div className="iso-watermark">VIRALIO ORIGINALS · HÉLIX 015 · MODELOS CLÍNICOS CC0</div>
   </main>;
 }
