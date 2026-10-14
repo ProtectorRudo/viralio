@@ -1,1 +1,108 @@
-.thh-escape-collection{background:#13101b;color:#f9ece8;padding:clamp(55px,7vw,110px) max(5vw,22px);overflow:hidden}.thh-escape-heading,.thh-escape-cards{max-width:1160px;margin:auto}.thh-escape-heading>span{color:#cfadab;font-size:.7rem;letter-spacing:.2em}.thh-escape-heading h2{font:normal clamp(2.5rem,5vw,5.3rem)/1.06 Georgia,serif;max-width:970px;margin:22px 0 15px}.thh-escape-heading h2 em{display:block;color:#f0c0b4;font-style:italic}.thh-escape-heading p{font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.6;max-width:700px;color:#cbc0c7}.thh-escape-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:32px auto}.thh-escape-card{min-height:340px;border:1px solid #fff3;border-radius:18px;padding:30px 26px;background:radial-gradient(ellipse at 100% 0%,#7848584f,transparent 75%),#231d2b;display:flex;flex-direction:column;color:#fff7f2!important;text-decoration:none!important;transition:transform .28s,border-color .28s}.thh-escape-card:hover{transform:translateY(-6px);border-color:#dbb5af}.thh-escape-card>span{color:#deb0a8;letter-spacing:.13em;font-size:.71rem}.thh-escape-card>strong{font:normal clamp(2rem,2.7vw,2.9rem)/1.1 Georgia,serif;margin:auto 0 15px}.thh-escape-card>p{color:#d0c5cf;line-height:1.6}.thh-escape-card>b{border-top:1px solid #fff3;margin-top:14px;padding-top:18px;font-size:.72rem;letter-spacing:.1em}.thh-escape-more{display:block;text-align:center;margin:20px auto 0;color:#edbfaf!important;text-decoration:none!important;font-size:.84rem;letter-spacing:.1em}.thh-escape-more:hover{text-decoration:underline!important}@media(max-width:850px){.thh-escape-cards{grid-template-columns:1fr}.thh-escape-card{min-height:265px}}
+/* TE HICE ESTO · Escape collection v3
+   Editorial warmth around three original, cinematic in-browser scenes.
+   Scoped to the home; game canvases, demos, checkout and editor stay untouched. */
+.thh-home-v2 .thh-escape-collection.thh-escape-v3{
+ --esc-ink:#2a2531;--esc-muted:#6a6064;--esc-paper:#fbf9f5;--esc-line:#ded5cd;
+ isolation:isolate;position:relative;overflow:hidden;
+ color:var(--esc-ink);background:radial-gradient(ellipse at 97% 4%,#fff8f1 0%,transparent 37%),linear-gradient(172deg,#f5eee8 0%,#f9f5ef 52%,#f0e8e1 100%);
+ padding:clamp(76px,8vw,122px) max(20px,5vw) clamp(70px,7.7vw,118px);
+}
+.thh-escape-v3::before{content:"";position:absolute;left:-170px;top:12%;width:440px;height:440px;border:1px solid #b39d911f;border-radius:50%;box-shadow:0 0 0 55px #b39d9107,0 0 0 125px #b39d9106;pointer-events:none}
+.thh-escape-v3 .thh-escape-shell{position:relative;z-index:1;max-width:1220px;margin:auto}
+.thh-escape-v3 .thh-escape-heading{max-width:none;margin:0;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.75fr);align-items:end;gap:clamp(28px,5vw,88px)}
+.thh-escape-v3 .thh-escape-eyebrow{display:flex;gap:12px;align-items:center;font-size:10px;font-weight:700;letter-spacing:.205em;color:#886351;line-height:1.5}
+.thh-escape-v3 .thh-escape-eyebrow i{display:inline-block;flex:none;width:22px;height:1px;background:#b68172}
+.thh-escape-v3 .thh-escape-heading h2{font-family:Georgia,"Times New Roman",serif;color:#29232b;font-size:clamp(43px,5.15vw,75px);line-height:1.04;letter-spacing:-.055em;font-weight:400;margin:22px 0 0;max-width:805px;text-wrap:balance}
+.thh-escape-v3 .thh-escape-heading h2 em{display:block;font-style:italic;font-weight:400;color:#b36566;margin-top:7px}
+.thh-escape-v3 .thh-escape-heading-side{padding-bottom:3px;border-left:1px solid #b9a39978;padding-left:27px}
+.thh-escape-v3 .thh-escape-heading-side p{color:#5e5559;font-size:clamp(15px,1.13vw,17px);line-height:1.72;max-width:385px;margin:0 0 23px}
+.thh-escape-v3 .thh-escape-heading-side p strong{font-weight:600;color:#302831}
+.thh-escape-v3 .thh-escape-heading-side>span{display:block;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#906f61}
+.thh-escape-v3 .thh-escape-how{margin:42px 0 26px;border-top:1px solid #bbad9d88;border-bottom:1px solid #bbad9d88;min-height:61px;display:flex;align-items:center;justify-content:space-between;gap:16px;color:#5b5052;font-size:12px;letter-spacing:.015em}
+.thh-escape-v3 .thh-escape-how span{display:flex;gap:12px;align-items:center}
+.thh-escape-v3 .thh-escape-how b{font:italic 19px Georgia,serif;color:#b57c72}
+.thh-escape-v3 .thh-escape-how i{flex:1;height:1px;max-width:70px;background:linear-gradient(90deg,transparent,#c9b3aa,transparent)}
+.thh-escape-v3 .thh-escape-cards{max-width:none;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.thh-escape-v3 .thh-escape-card{min-width:0;min-height:0;padding:0;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:0;border:1px solid #dacfc6;border-radius:14px;background:var(--esc-paper);color:var(--esc-ink)!important;box-shadow:0 18px 45px #41312611,0 2px 8px #41312608;transition:transform .45s cubic-bezier(.2,.8,.3,1),box-shadow .45s,border-color .45s}
+.thh-escape-v3 .thh-escape-card:hover{transform:translateY(-6px);border-color:#c9aeb0;box-shadow:0 29px 65px #41312624}
+.thh-escape-v3 .thh-escape-art{position:relative;display:block;aspect-ratio:1.54;overflow:hidden;background:#19131f;text-decoration:none}
+.thh-escape-v3 .thh-escape-scene-svg{display:block;width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.15,.7,.35,1),filter .7s;filter:saturate(.9)}
+.thh-escape-v3 .thh-escape-card:hover .thh-escape-scene-svg{transform:scale(1.07);filter:saturate(1.06) brightness(1.06)}
+.thh-escape-v3 .thh-escape-art-tint{position:absolute;inset:0;background:linear-gradient(180deg,#0d0b164d 0%,transparent 41%,#07071074 100%);pointer-events:none}
+.thh-escape-v3 .thh-escape-card--garden .thh-escape-art-tint{background:linear-gradient(180deg,#2d1c315e 0%,transparent 45%,#2f172d99 100%)}
+.thh-escape-v3 .thh-escape-art-top,.thh-escape-v3 .thh-escape-art-bottom{position:absolute;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;z-index:2;color:#fff4e7}
+.thh-escape-v3 .thh-escape-art-top{top:18px;gap:12px;font-size:10px;letter-spacing:.16em}
+.thh-escape-v3 .thh-escape-art-top b{font-weight:500;font-family:Georgia,serif;font-style:italic;font-size:16px;letter-spacing:0}
+.thh-escape-v3 .thh-escape-art-top>span{border:1px solid #ffecd466;padding:8px 10px;border-radius:2px;background:#130f1d4d;backdrop-filter:blur(7px);font-size:9px;white-space:nowrap}
+.thh-escape-v3 .thh-escape-art-bottom{bottom:20px;gap:10px}
+.thh-escape-v3 .thh-escape-art-bottom small{font-size:10px;letter-spacing:.16em;font-weight:700}
+.thh-escape-v3 .thh-escape-play{width:48px;height:48px;display:grid;place-items:center;border:1px solid #fff8f4b9;border-radius:50%;font-size:15px;background:#faf3ed33;backdrop-filter:blur(14px);padding-left:3px;transition:transform .32s,background .32s}
+.thh-escape-v3 .thh-escape-art:hover .thh-escape-play{transform:scale(1.1);background:#f5e7d964}
+.thh-escape-v3 .thh-escape-card-body{padding:25px 25px 22px;display:flex;flex-direction:column;flex:1;gap:0}
+.thh-escape-v3 .thh-escape-card-genre{color:#9d706c;letter-spacing:.165em;font-size:10px;font-weight:750}
+.thh-escape-v3 .thh-escape-card-body h3{font:normal clamp(30px,2.45vw,38px)/1.06 Georgia,"Times New Roman",serif;letter-spacing:-.032em;color:#302731;margin:15px 0 8px;min-height:2.15em}
+.thh-escape-v3 .thh-escape-card-body h3 a{color:inherit;text-decoration:none}
+.thh-escape-v3 .thh-escape-card-signature{display:block;font:italic 16px/1.4 Georgia,serif;font-weight:400;color:#a06970;margin:0 0 13px}
+.thh-escape-v3 .thh-escape-card-body>p{color:#675d61;line-height:1.65;font-size:13.5px;margin:0 0 18px;flex:1}
+.thh-escape-v3 .thh-escape-card-meta{border-top:1px solid #ded5ce;padding-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;letter-spacing:.055em;color:#766a69}
+.thh-escape-v3 .thh-escape-card-meta>span:last-child{font-size:15px;font-weight:700;letter-spacing:0;color:#423340;white-space:nowrap}
+.thh-escape-v3 .thh-escape-card-actions{display:grid;grid-template-columns:1.1fr .9fr;gap:8px;margin-top:19px}
+.thh-escape-v3 .thh-escape-demo,.thh-escape-v3 .thh-escape-buy{min-height:49px;display:flex;align-items:center;justify-content:center;gap:12px;padding:11px 14px;border-radius:7px;white-space:nowrap;font-size:12px;font-weight:700;letter-spacing:.015em;text-decoration:none!important;transition:background .28s,color .28s,transform .28s}
+.thh-escape-v3 .thh-escape-demo{background:#352a35;color:#fff9f5!important}
+.thh-escape-v3 .thh-escape-demo:hover{background:#594051;transform:translateY(-2px)}
+.thh-escape-v3 .thh-escape-buy{border:1px solid #b6908e;color:#694b52!important;background:#fff8f4}
+.thh-escape-v3 .thh-escape-buy:hover{background:#f5e4e1;transform:translateY(-2px)}
+.thh-escape-v3 .thh-escape-bottom{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-top:26px;padding-top:20px;border-top:1px solid #cfc0b4}
+.thh-escape-v3 .thh-escape-bottom>p{display:flex;align-items:flex-start;gap:11px;max-width:720px;margin:0;font-size:12px;color:#73676a;line-height:1.7}
+.thh-escape-v3 .thh-escape-bottom>p>span{color:#b37777;font-size:19px;line-height:1}
+.thh-escape-v3 .thh-escape-more{margin:0;color:#8b4c53!important;text-align:right;font-size:12px;font-weight:700;letter-spacing:.025em;white-space:nowrap;text-decoration:underline!important;text-decoration-color:#c8a9a8!important;text-underline-offset:5px}
+.thh-escape-v3 .thh-escape-more span{margin-left:6px}
+
+/* Home hero micro-conversion: introduce the new product without diluting the original gift selector. */
+.thh-home-v2 .thh-escape-hero-link{display:inline-flex;align-items:center;gap:12px;margin-top:19px;padding:10px 15px;border:1px solid #af888451;border-radius:50px;background:#fff8f4c9;color:#794f59!important;font-size:12px;font-weight:650;text-decoration:none!important;transition:background .25s,transform .25s}
+.thh-home-v2 .thh-escape-hero-link strong{background:#b65d69;color:#fff;font-size:9px;letter-spacing:.09em;padding:5px 8px;border-radius:50px}
+.thh-home-v2 .thh-escape-hero-link:hover{background:#f3e6e4;transform:translateY(-2px)}
+.thh-escape-v3 :is(a,button):focus-visible,.thh-home-v2 .thh-escape-hero-link:focus-visible{outline:3px solid #a34e66;outline-offset:4px}
+
+@media(max-width:1050px){
+ .thh-escape-v3 .thh-escape-heading{grid-template-columns:1.3fr 1fr;gap:26px}
+ .thh-escape-v3 .thh-escape-card-body{padding:21px 18px 19px}
+ .thh-escape-v3 .thh-escape-card-body h3{font-size:clamp(27px,3vw,33px)}
+ .thh-escape-v3 .thh-escape-card-actions{grid-template-columns:1fr 1fr}
+ .thh-escape-v3 .thh-escape-demo,.thh-escape-v3 .thh-escape-buy{font-size:11px;padding:10px 9px}
+}
+@media(max-width:800px){
+ .thh-escape-v3 .thh-escape-heading{grid-template-columns:1fr;gap:20px}
+ .thh-escape-v3 .thh-escape-heading h2{font-size:clamp(42px,8vw,61px);max-width:720px}
+ .thh-escape-v3 .thh-escape-heading-side{padding-left:19px}
+ .thh-escape-v3 .thh-escape-heading-side p{max-width:700px;margin-bottom:12px}
+ .thh-escape-v3 .thh-escape-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .thh-escape-v3 .thh-escape-how i{display:none}
+ .thh-escape-v3 .thh-escape-how{gap:10px;flex-wrap:wrap;padding:15px 0}
+ .thh-escape-v3 .thh-escape-how span{flex:1 1 30%;min-width:150px}
+ .thh-escape-v3 .thh-escape-card-body h3{min-height:0}
+ .thh-escape-v3 .thh-escape-bottom{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:580px){
+ .thh-home-v2 .thh-escape-collection.thh-escape-v3{padding:65px 17px 74px}
+ .thh-escape-v3 .thh-escape-eyebrow{font-size:9px;letter-spacing:.13em}
+ .thh-escape-v3 .thh-escape-heading h2{font-size:clamp(42px,10.6vw,57px);letter-spacing:-.05em;line-height:1.04;margin-top:17px}
+ .thh-escape-v3 .thh-escape-heading h2 em{margin-top:4px}
+ .thh-escape-v3 .thh-escape-heading-side{padding-left:15px}
+ .thh-escape-v3 .thh-escape-heading-side p{font-size:15px;line-height:1.65}
+ .thh-escape-v3 .thh-escape-how{margin:28px 0 22px;display:grid;grid-template-columns:1fr;gap:11px;padding:14px 0}
+ .thh-escape-v3 .thh-escape-how span{min-width:0;font-size:12px}
+ .thh-escape-v3 .thh-escape-cards{grid-template-columns:1fr;gap:17px}
+ .thh-escape-v3 .thh-escape-card{border-radius:13px}
+ .thh-escape-v3 .thh-escape-art{aspect-ratio:1.57}
+ .thh-escape-v3 .thh-escape-card-body{padding:22px 21px 20px}
+ .thh-escape-v3 .thh-escape-card-body h3{font-size:clamp(31px,8vw,40px);margin:13px 0 8px}
+ .thh-escape-v3 .thh-escape-card-body>p{font-size:14px}
+ .thh-escape-v3 .thh-escape-card-meta{font-size:10px}
+ .thh-escape-v3 .thh-escape-demo,.thh-escape-v3 .thh-escape-buy{font-size:13px}
+ .thh-escape-v3 .thh-escape-bottom{margin-top:23px;gap:15px}
+ .thh-escape-v3 .thh-escape-more{white-space:normal;text-align:left}
+}
+@media(prefers-reduced-motion:reduce){
+ .thh-escape-v3 .thh-escape-card,.thh-escape-v3 .thh-escape-scene-svg,.thh-escape-v3 .thh-escape-play,.thh-escape-v3 .thh-escape-demo,.thh-escape-v3 .thh-escape-buy,.thh-home-v2 .thh-escape-hero-link{transition:none!important;transform:none!important}
+}
