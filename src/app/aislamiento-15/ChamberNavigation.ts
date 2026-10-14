@@ -36,7 +36,9 @@ const originX= -((WIDTH-1)*GRID)/2;
 function localCellX(i:number){ return originX+i*GRID; }
 function localCellZ(room:RoomIndex,j:number){return Z[room]+HALF_DEPTH-j*GRID;}
 function footBlocked(room:RoomIndex,x:number,z:number,radius:number) {
-  if (Math.abs(x)>HALF_WIDTH-radius || z>Z[room]+HALF_DEPTH-radius || z<Z[room]-HALF_DEPTH+radius)return true;
+  const atExit=Math.abs(x)<.91 && z>=Z[room]-6.40;
+  if (Math.abs(x)>HALF_WIDTH-radius || z>Z[room]+HALF_DEPTH-radius ||
+      (z<Z[room]-HALF_DEPTH+radius && !atExit))return true;
   for(const f of solids[room]){
     if(Math.abs(x-f.x)<f.hw+radius && Math.abs(z-f.z)<f.hd+radius)return true;
   }
@@ -93,7 +95,7 @@ export function findPath(room:RoomIndex,from:THREE.Vector3,to:THREE.Vector3):THR
     const i=id%WIDTH,j=Math.floor(id/WIDTH);
     return Math.hypot(i-end.i,j-end.j);
   };
-  let last=startId,iterations=0;
+  let last=startId,iterations=0,bestScore=Infinity;
   while(open.size && iterations++<n){
     let current=-1,score=Infinity;
     for(const id of open){
@@ -101,6 +103,7 @@ export function findPath(room:RoomIndex,from:THREE.Vector3,to:THREE.Vector3):THR
       if(value<score){current=id;score=value;}
     }
     if(current<0)break;
+    if(distance(current)<bestScore){bestScore=distance(current);last=current;}
     if(current===targetId){last=current;break;}
     open.delete(current);closed[current]=1;
     const i=current%WIDTH,j=Math.floor(current/WIDTH);
