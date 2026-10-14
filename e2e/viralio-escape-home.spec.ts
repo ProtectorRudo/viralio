@@ -1,8 +1,11 @@
+import { mkdirSync } from "node:fs";
+mkdirSync("visual-qa-evidence",{recursive:true});
 import { test, expect } from "@playwright/test";
 
 test("Viralio Escape: catalogue exposes the three real rooms and clear navigation", async ({page}) => {
  await page.goto("/");
  await expect(page.getByRole("heading",{level:1,name:/La realidad termina/})).toBeVisible();
+ await page.screenshot({path:"visual-qa-evidence/viralio-escape-desktop.png",fullPage:true});
  for (const [slug,title] of [["caso-m","CASO M"],["la-ultima-funcion","LA ÚLTIMA FUNCIÓN"],["la-ultima-campanada","LA ÚLTIMA CAMPANADA"]]){
    await expect(page.getByRole("link",{name:new RegExp("Conocer la experiencia "+title)})).toHaveAttribute("href","/salas/"+slug);
  }
@@ -37,6 +40,7 @@ test("Viralio Escape: no horizontal scroll from narrow phone through desktop",as
   const {clientWidth,scrollWidth}=await page.evaluate(()=>({clientWidth:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth}));
   expect(scrollWidth, "horizontal overflow at "+width+"px").toBeLessThanOrEqual(clientWidth+1);
   await expect(page.getByRole("heading",{level:1})).toBeVisible();
+  if(width===390)await page.screenshot({path:"visual-qa-evidence/viralio-escape-mobile.png",fullPage:true});
  }
 });
 test("Legacy commerce landing remains in /comercios and QR merchant routes untouched",async({page})=>{
