@@ -11,6 +11,7 @@ export type GameSignals = {
   onChamber: (room: Chamber) => void;
   onCaught: () => void;
   onThreat: (text: string) => void;
+  onMoment?: (kind: "glass" | "lights" | "reactor" | "knock", text: string) => void;
 };
 type Target = { id: string; label: string; object: THREE.Object3D; room: Chamber; range: number };
 
@@ -121,6 +122,9 @@ export class IsolationWorld {
   private enemyRouteAt = -99;
   private preyMemory = -99;
   private prevEnemyMode = "dormant";
+  private lastHuntAlert = -99;
+  private roomEnteredAt = 0;
+  private momentSeen = new Set<string>();
   private hitJolt = 0;
   private enemyLastAttack = -100;
   private eventAt = -1;
@@ -746,7 +750,7 @@ export class IsolationWorld {
     if (this.room === 0 || this.elapsed - this.panelSafetyCooldown < 22) return;
     this.panelSafetyCooldown = this.elapsed;
     this.eventAt = this.elapsed + Math.min(12, seconds);
-    this.enemy.position.set(4.45, 0, CENTER[this.room] - 4.8);
+    this.enemy.position.set(2.8, 0, CENTER[this.room] - 4.8);
   }
   updateBreaker(index: number, on: boolean) {
     const node = this.breakerNodes[index];
@@ -806,10 +810,11 @@ export class IsolationWorld {
         this.room = (this.room + 1) as Chamber;
         this.oldChamber = this.room;
         this.nextThreatAt = this.elapsed + (this.room === 1 ? 24 : 14);
+        this.roomEnteredAt = this.elapsed;
         this.player.z = CENTER[this.room] + 5.95;
         this.player.x = 0;
         this.enemyMode = this.room === 1 ? "roaming" : "hunting";
-        this.enemy.position.set(3.7, 0, CENTER[this.room] - 4.5);
+        this.enemy.position.set(2.6, 0, CENTER[this.room] - 4.5);
         this.enemyRoute = [];
         this.enemyRouteAt = -99;
         this.preyMemory = -99;
@@ -842,7 +847,9 @@ export class IsolationWorld {
     const hunting=!safe && !grace && (urgent || (visible && dist<7) || recentlySeen);
     this.enemyMode=hunting?"hunting":"roaming";
     if(this.enemyMode!==this.prevEnemyMode){
-      if(this.enemyMode==="hunting" && this.elapsed>this.nextThreatAt+1){
+      if(this.enemyMode==="hunting" && this.elapsed>this.nextThreatAt+1
+          && this.elapsed-this.lastHuntAlert>27){
+        this.lastHuntAlert=this.elapsed;
         this.setAlert(.35);
         this.signals.onThreat("EL CELADOR TE HA VISTO. ¡SEGUÍ MOVIÉNDOTE!");
       }
@@ -887,10 +894,31 @@ export class IsolationWorld {
       this.enemyLastAttack=this.elapsed;
       this.hitJolt=1;
       this.signals.onCaught();
-      this.enemy.position.set(4.45,0,center-4.65);
+      this.enemy.position.set(2.4,0,center-4.65);
       this.eventAt=this.elapsed+9;
       this.enemyRoute=[];
       this.preyMemory=-99;
+    }
+  }
+
+  private runMoments() {
+    const timeInside = this.elapsed-this.roomEnteredAt;
+    const story = this.room===0
+      ? [{at:37,kind:"knock" as const,text:"TRES GOLPES DESDE LA COMPUERTA. NADIE RESPONDE."},
+         {at:78,kind:"lights" as const,text:"FALLA EN EL GENERADOR. ¿VISte ESA SOMBRA?".toUpperCase()}]
+      : this.room===1
+        ? [{at:23,kind:"glass" as const,text:"CRISTAL 02: IMPACTO DETECTADO DESDE ADENTRO."},
+           {at:56,kind:"lights" as const,text:"LA CÁMARA BIOLÓGICA 015 ESTÁ ABIERTA."}]
+        : [{at:13,kind:"reactor" as const,text:"REACTOR HÉLIX: FUGA DE CONTENCIÓN INMINENTE."},
+           {at:50,kind:"knock" as const,text:"LA COMPUERTA DE SALIDA RECIBE GOLPES DEL OTRO LADO."}];
+    for(let i=0;i<story.length;i++){
+      const beat=story[i],key=this.room+"-"+i;
+      if(timeInside>=beat.at && !this.momentSeen.has(key)){
+        this.momentSeen.add(key);
+        this.director?.cue(beat.kind,this.elapsed);
+        this.setAlert(beat.kind==="lights"?1.1:.30);
+        this.signals.onMoment?.(beat.kind,beat.text);
+      }
     }
   }
 
@@ -920,6 +948,7 @@ export class IsolationWorld {
       this.alertSign.visible = this.room === 0 && this.elapsed > 62 && this.elapsed < 86;
     }
     if (this.running) this.updateEnemy(dt);
+    if (this.running) this.runMoments();
     const threatDistance = this.room===0 ? 30 :
       Math.hypot(this.player.x-this.enemy.position.x,this.player.z-this.enemy.position.z);
     if (this.running && this.room>0 && this.elapsed>this.nextThreatAt+4 && !this.stagedThreats.has(this.room)) {
