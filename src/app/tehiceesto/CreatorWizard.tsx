@@ -74,7 +74,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
   const selected = useMemo(()=>{
     const experience=experiences.find((item)=>item.slug===selectedSlug&&!isComingSoon(item.slug));
-    if(experience)return {slug:experience.slug,title:experience.title,icon:experience.icon,escape:false,preview:"/tehiceesto/experiencias/"+experience.slug};
+    if(experience)return {slug:experience.slug,title:experience.title,icon:experience.icon,escape:false,preview:"/experiencias/"+experience.slug};
     const room=selectedSlug.startsWith("escape-")?getEscapeRoom(selectedSlug.slice(7)):undefined;
     return room?{slug:selectedSlug,title:room.title,icon:"✦",escape:true,preview:"/escapes/"+room.slug}:undefined;
   },[selectedSlug]);
@@ -164,7 +164,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
     <div className="order-flow thi-purchase-page" data-active-step={step}>
       <header className="thi-buy-topbar">
         <div className="thi-buy-topline">
-          <Link href="/tehiceesto" className="thi-buy-brand"><span aria-hidden="true">♡</span> TeHiceEsto<span className="thi-buy-brand-domain">.com</span></Link>
+          <Link href="/" className="thi-buy-brand"><span aria-hidden="true">♡</span> TeHiceEsto<span className="thi-buy-brand-domain">.com</span></Link>
           <span className="thi-buy-trust"><i aria-hidden="true">♧</i> Pago seguro</span>
         </div>
         <nav className="thi-buy-progress" aria-label="Pasos de compra">
