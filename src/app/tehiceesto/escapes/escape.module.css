@@ -55,3 +55,13 @@
 @media(prefers-reduced-motion:reduce){
  .launchRoom a.launchButton{transition:none!important;transform:none!important}
 }
+
+/* Production fulfillment: associate every paid order with its original reusable model. */
+.orderInfo{border:1px solid #dfbba45b;border-radius:15px;background:linear-gradient(145deg,#302432,#1a1823);
+ padding:20px 21px;margin:20px 0 26px;box-shadow:inset 0 1px #ffffff0b}
+.orderInfo>strong{display:block;color:#f4d5bb;font-size:15px;font-weight:700;margin-bottom:8px}
+.orderInfo>small{display:block;color:#c8abb3;letter-spacing:.055em;font-size:11px;line-height:1.6;margin-bottom:12px}
+.orderInfo>p{font-size:13px;line-height:1.58;color:#ebdee2;margin:5px 0;overflow-wrap:anywhere}
+.orderInfo>p>a{color:#f0cbb6;text-decoration:underline;text-underline-offset:4px}
+.orderInfo>.editDescription{color:#cbb8be;margin-top:17px;border-top:1px solid #ffffff20;padding-top:14px}
+.orderInfo>p[role="alert"]{color:#ffbeba;font-weight:700}
