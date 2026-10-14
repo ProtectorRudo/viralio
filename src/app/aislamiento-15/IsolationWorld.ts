@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { installHospitalPremiumArt } from "./HospitalPremiumArt";
 import { installHospitalCinematics } from "./HospitalCinematics";
+import { installHospitalInteractionArt } from "./HospitalInteractionArt";
 import { constructOrderlyIdentity } from "./OrderlyCreature";
 import { canStand, clearSight, findPath, slide } from "./ChamberNavigation";
 
@@ -138,6 +139,7 @@ export class IsolationWorld {
   private walkPhase = 0;
   private art?: ReturnType<typeof installHospitalPremiumArt>;
   private director?: ReturnType<typeof installHospitalCinematics>;
+  private interactionArt?: ReturnType<typeof installHospitalInteractionArt>;
   private stagedThreats=new Set<number>();
   private clinicalBeds: THREE.Group[] = [];
   private loadedAssets: THREE.Object3D[] = [];
@@ -181,6 +183,7 @@ export class IsolationWorld {
     for (let i = 0; i < 3; i++) this.buildRoom(i as Chamber);
     this.art = installHospitalPremiumArt(this.scene, mats);
     this.director = installHospitalCinematics(this.scene);
+    this.interactionArt = installHospitalInteractionArt(this.scene);
     this.indexPremiumArt();
     void this.loadClinicalAssets();
     void this.loadMedicalSetPieces();
@@ -1035,6 +1038,7 @@ export class IsolationWorld {
     });
     this.art?.dispose();
     this.director?.dispose();
+    this.interactionArt?.dispose();
     this.creatureIdentity?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
