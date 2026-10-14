@@ -174,6 +174,7 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
  }
  await check(view.name+" consumer withdrawal form and immediate receipt",async()=>{
    const response=await page.goto(base+"/arrepentimiento",{waitUntil:"domcontentloaded",timeout:45000});
+   await page.waitForTimeout(1100); // ensure client event handlers are interactive
    if(response?.status()!==200)throw Error("Public withdrawal page HTTP "+response?.status());
    const pageBody=await page.locator("body").innerText();
    if(!pageBody.includes("Botón de arrepentimiento")||!pageBody.includes("No necesitás registrarte"))
@@ -206,7 +207,8 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
    const r=await page.goto(base+"/admin/arrepentimientos",{waitUntil:"domcontentloaded",timeout:45000});
    if(r?.status()!==200)throw Error("Admin ticket page HTTP "+r?.status());
    const text=await page.locator("main").innerText();
-   if(!text.includes("Ingresá primero al"))throw Error("Consumer ticket list not protected in browser without login");
+   await page.getByText("Ingresá primero al").waitFor({state:"visible",timeout:12000});
+   if(!text.includes("Ingresá primero al")&&await page.locator("main").innerText().then(s=>!s.includes("Ingresá primero al")))throw Error("Consumer ticket list not protected in browser without login");
  });
   await check(view.name+" checkout price and transparent delivery copy",async()=>{
    const r=await page.goto(base+"/escapes/caso-m/comprar",{waitUntil:"domcontentloaded"});
