@@ -337,7 +337,7 @@ export class IsolationWorld {
     this.iv(4.5, z - 3.2);
     this.cabinet(-4.3, z - 2.3, true);
     // No obstructive floating kiosks: the terminal is mounted on the desk.
-    this.panel(["REGISTRO DE TRIAJE", "P1 = 4 · P2 = 2", "P3 = 7 / EDAD NO VÁLIDA"], -3.38, 2.03, z - 6.24, 2.26, 1.15);
+    this.panel(["REGISTRO DE TRIAJE", "CLAVE = PRIORIDADES P1 P2 P3", "CONSULTAR ARCHIVO CLÍNICO"], -3.38, 2.03, z - 6.24, 2.26, 1.15);
     const triage = this.block("Archivo de triaje", 3.92, 1.1, z + 1.8, .37, .035, .28, mats.linen);
     this.target("triage", "Consultar historias de triaje", triage, 0, 2.3);
     this.panel(["TABLERO DE RELÉS", "ORDEN: R2 → R1 → R3", "LIBERAR CONSOLA DE SEGURIDAD"], 2.98, 1.57, z - 6.24, 2.22, .8, "#f2cf92");
