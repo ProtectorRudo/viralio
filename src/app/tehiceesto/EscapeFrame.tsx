@@ -12,18 +12,24 @@ export default function EscapeFrame({room,config={},customer=false}:{
    <Link className={styles.order} href={"/escapes/"+room.slug+"/comprar"}>QUIERO REGALAR ESTA SALA ↗</Link>
   </div>}
   <div className={styles.frameWrap}>
-   {room.slug==="caso-m"?
-    <div className={styles.launchRoom}>
-      <span>CASO M · EXPERIENCIA INTERACTIVA 3D</span>
-      <h1>Tres minutos.<br/>Un secreto.</h1>
-      <p>La misión necesita la pantalla completa para que puedas recorrer la sala, encontrar pruebas y resolver el candado.</p>
-      <a href={src} target="_self">INICIAR OPERACIÓN RESCATE ↗</a>
-    </div>:
-    <iframe src={src} title={room.title} className={styles.frame} allow="autoplay; fullscreen" allowFullScreen loading="eager" referrerPolicy="strict-origin-when-cross-origin"/>}
+   <div className={`${styles.launchRoom} ${styles["launch"+room.slug.replace(/(^|-)([a-z])/g,(_,a,b)=>b.toUpperCase())]||""}`}>
+      <span className={styles.launchEyebrow}>{customer?"UNA EXPERIENCIA PREPARADA PARA VOS":"DEMO GRATUITA · ESCAPE ROOM INTERACTIVO"}</span>
+      <h1>{room.slug==="caso-m"?"Tres minutos. Un secreto.":room.slug==="ultima-funcion"?"El cine cerró. La historia no.":"El tiempo corre. La sorpresa espera."}</h1>
+      <p>{room.slug==="caso-m"
+        ?"Encontrá las evidencias, descifrá seis cifras y rescatá el sobre antes de que se agote el tiempo."
+        :room.slug==="ultima-funcion"
+          ?"Entrá al cine abandonado, descubrí qué pasó en la última función y resolvé el misterio."
+          :"Explorá un jardín que se apaga, resolvé sus mecanismos y encontrá la carta oculta."}</p>
+      <a href={src} className={styles.launchButton} aria-label={"Iniciar partida de "+room.title}>
+        <span aria-hidden="true">▶</span> {customer?"ABRIR MI EXPERIENCIA":"INICIAR DEMO Y JUGAR"} <b aria-hidden="true">↗</b>
+      </a>
+      <small>El juego se abre a pantalla completa para que los movimientos, el sonido y el táctil funcionen correctamente.</small>
+      {room.slug!=="caso-m"&&<small>Volvé con el botón Atrás de tu navegador cuando quieras conocer otra experiencia.</small>}
+   </div>
   </div>
   {!customer&&<div className={styles.playerFooter}>
     <p>El juego empieza en la pantalla. La sorpresa aparece cuando logran escapar.</p>
-    <a href={src} target="_blank" rel="noopener noreferrer">Abrir el juego en pantalla completa ↗</a>
+    <Link href={"/escapes/"+room.slug+"/comprar"}>Personalizar y regalar esta experiencia ↗</Link>
   </div>}
  </main>;
 }
