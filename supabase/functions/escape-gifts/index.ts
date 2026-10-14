@@ -13,7 +13,7 @@ type Room="caso-m"|"ultima-funcion"|"ultima-campanada";
 const rooms=new Set<Room>(["caso-m","ultima-funcion","ultima-campanada"]);
 type Field={key:string,max:number,mandatory?:boolean};
 const common:Field[]=[{key:"nombre",max:55,mandatory:true},{key:"evento",max:95,mandatory:true},{key:"fecha",max:80},{key:"hora",max:80},{key:"lugar",max:125},{key:"mensaje",max:650,mandatory:true},{key:"firma",max:90},{key:"rsvp",max:18}];
-const fieldList:Record<Room,Field[]>={"caso-m":[...common,{key:"codigo",max:6,mandatory:true},{key:"voz",max:950}],"ultima-funcion":common,"ultima-campanada":[{key:"nombre",max:55,mandatory:true},{key:"firma",max:90,mandatory:true},{key:"pregunta",max:190,mandatory:true},{key:"mensaje",max:650,mandatory:true},{key:"fecha",max:80},{key:"lugar",max:125},{key:"rsvp",max:18},{key:"voz",max:950}]};
+const fieldList:Record<Room,Field[]>={"caso-m":[...common,{key:"codigo",max:6,mandatory:true},{key:"voz",max:950}],"ultima-funcion":common,"ultima-campanada":[{key:"nombre",max:55,mandatory:true},{key:"firma",max:90,mandatory:true},{key:"pregunta",max:190,mandatory:true},{key:"mensaje",max:650,mandatory:true},{key:"carta",max:1200,mandatory:true},{key:"fecha",max:80},{key:"hora",max:80},{key:"lugar",max:125},{key:"rsvp",max:18},{key:"voz",max:950}]};
 function isRoom(slug:string):slug is Room{return rooms.has(slug as Room)}
 function validate(room:Room,values:unknown){
  if(!values||typeof values!=="object"||Array.isArray(values))throw Error("invalid_config");
@@ -72,13 +72,26 @@ Deno.serve(async(req:Request)=>{
   }
   if(action==="get"||action==="save"||action==="publish"||action==="unpublish"){
    const code=cleanCode(input.code);
-   const {data,error}=await supabase.from("gifts").select("public_code,experience_slug,status,story_data,recipient_name,giver_name,created_at").eq("public_code",code).maybeSingle();
+   const {data,error}=await supabase.from("gifts").select("id,public_code,experience_slug,status,story_data,recipient_name,giver_name,occasion,created_at").eq("public_code",code).maybeSingle();
    if(error)return json(origin,{error:"read_failed"},500);
    if(!data)return json(origin,{error:"not_found"},404);
    const room=roomOf(String(data.experience_slug||""));
    if(!room)return json(origin,{error:"not_found"},404);
-   if(action==="get")return json(origin,{gift:{...data,room}});
+   if(action==="get"){
+     const {data:order,error:orderError}=await supabase.from("orders").select("status,buyer_email,paid_at,checkout_url").eq("gift_id",data.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
+     if(orderError)return json(origin,{error:"order_read_failed"},500);
+     const info=data.story_data?.creator?.contact||{};
+     const safeContact={
+       name:typeof info.name==="string"?info.name:"",
+       email:typeof info.email==="string"?info.email:order?.buyer_email||"",
+       whatsapp:typeof info.whatsapp==="string"?info.whatsapp:"",
+     };
+     return json(origin,{gift:{...data,room,contact:safeContact,order:order?{status:order.status,paidAt:order.paid_at}:null}});
+   }
    if(action==="save"){
+    const {data:order,error:orderError}=await supabase.from("orders").select("status").eq("gift_id",data.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
+    if(orderError)return json(origin,{error:"order_read_failed"},500);
+    if(order&&order.status!=="approved")return json(origin,{error:"payment_required"},409);
     const values=validate(room,input.config);
     const {error:writeError}=await supabase.from("gifts").update({
      giver_name:values.firma||data.giver_name||"Alguien especial",recipient_name:values.nombre,occasion:values.evento||"Invitación especial",
@@ -88,7 +101,13 @@ Deno.serve(async(req:Request)=>{
     return writeError?json(origin,{error:"save_failed"},500):json(origin,{ok:true});
    }
    const publish=action==="publish";
-   if(publish&&data.status==="awaiting_payment")return json(origin,{error:"payment_required"},409);
+   if(publish){
+     const {data:order,error:orderError}=await supabase.from("orders").select("status").eq("gift_id",data.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
+     if(orderError)return json(origin,{error:"order_read_failed"},500);
+     if(order&&order.status!=="approved")return json(origin,{error:"payment_required"},409);
+     if(data.status==="awaiting_payment")return json(origin,{error:"payment_required"},409);
+     try{validate(room,data.story_data?.escapeConfig)}catch{return json(origin,{error:"complete_personalization_before_publishing"},409)}
+   }
    const {error:writeError}=await supabase.from("gifts").update({status:publish?"published":"draft",published_at:publish?new Date().toISOString():null}).eq("public_code",code);
    return writeError?json(origin,{error:"publish_failed"},500):json(origin,{ok:true});
   }
