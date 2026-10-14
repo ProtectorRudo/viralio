@@ -135,8 +135,17 @@ export function proxy(request: NextRequest) {
   // Te Hice Esto's CASO M is served from its published static 3D model.
   // Keep game HTML and all relative JS/CSS/audio/models on the gift domain
   // without exposing Viralio's other pages or application APIs.
-  if (pathname === "/escape-play/caso-m" || pathname.startsWith("/escape-play/caso-m/")) {
-    const rest=pathname.slice("/escape-play/caso-m".length).replace(/^\/+/, "");
+  if (pathname === "/escape-play/caso-m" || pathname.startsWith("/escape-play/caso-m/") || pathname.startsWith("/escape-play/")) {
+    // Vercel canonicalizes /escape-play/caso-m/ to /escape-play/caso-m.
+    // Relative asset paths on that slashless HTML then resolve to
+    // /escape-play/app.js, /escape-play/app.css and /escape-play/audio/*.
+    // They MUST map to the same published game, not our Next.js 404 HTML.
+    const rest=pathname === "/escape-play/caso-m" || pathname === "/escape-play/caso-m/"
+      ? ""
+      : pathname.startsWith("/escape-play/caso-m/")
+        ? pathname.slice("/escape-play/caso-m/".length)
+        : pathname.slice("/escape-play/".length);
+    if(rest.includes("..")||rest.includes("\\"))return new NextResponse("Not Found",{status:404});
     const upstream=new URL("https://protectorrudo.github.io/viralio/rescate-mauro/"+rest+search);
     return applyPrivateHeaders(NextResponse.rewrite(upstream),pathname);
   }
