@@ -9,6 +9,8 @@ export class IsolationSound {
   private noiseGain?: GainNode;
   private droneGain?: GainNode;
   private heartbeatAt = 0;
+  private footstepAt = 0;
+  private pulseAt = 0;
   private muted = false;
 
   start() {
@@ -59,10 +61,18 @@ export class IsolationSound {
   door(){this.tone(72,1.5,"sawtooth",.23,32);this.tone(160,.9,"triangle",.09,62,-.4);}
   scare(){this.tone(48,.8,"sawtooth",.41,35);this.tone(880,.35,"triangle",.19,110,-.25);}
   step(side:number){this.tone(62,.11,"triangle",.13,44,side);}
+  rattle(pan:number){ this.tone(126,.16,"sawtooth",.07,64,pan); this.tone(79,.28,"triangle",.09,35,pan); }
+  siren(pan=0){this.tone(436,.55,"triangle",.11,298,pan);this.tone(310,.42,"sawtooth",.08,462,pan);}
+  proximity(pan:number, distance:number) {
+    if (distance > 7) return;
+    const gain = Math.max(.06, .27 * (1-distance / 9));
+    this.tone(45,.19,"sine",gain,31,pan);
+    this.tone(78,.1,"triangle",gain*.65,49,pan);
+  }
   heartbeat(){this.tone(64,.2,"sine",.28,38);this.tone(52,.16,"sine",.17,32);}
   message(){this.tone(430,.06,"sine",.1,330);this.tone(580,.09,"sine",.08,480,.55);}
   finale(){this.tone(240,1.3,"triangle",.19,480);this.tone(480,2.1,"sine",.12,720);}
-  update(remaining:number,enemyDistance:number,elapsed:number) {
+  update(remaining:number,enemyDistance:number,elapsed:number,enemyPan=0) {
     if(!this.ctx||!this.droneGain||!this.noiseGain)return;
     const ctx=this.ctx,danger=Math.min(1,(900-remaining)/900);
     this.droneGain.gain.setTargetAtTime(.1+danger*.055,ctx.currentTime,.3);
@@ -71,6 +81,17 @@ export class IsolationSound {
     if(elapsed>this.heartbeatAt+interval) {
       this.heartbeatAt=elapsed;
       if(enemyDistance<5||remaining<120)this.heartbeat();
+    }
+    // Directional footsteps update from the real-world enemy/player transform,
+    // not an invented stationary point in the level.
+    if(enemyDistance<9 && elapsed>this.footstepAt+Math.max(.43,enemyDistance/7)) {
+      this.footstepAt=elapsed;
+      this.proximity(enemyPan,enemyDistance);
+      if(enemyDistance<4.5) this.rattle(enemyPan);
+    }
+    if(remaining<100 && elapsed>this.pulseAt+11) {
+      this.pulseAt=elapsed;
+      this.siren(enemyPan*.3);
     }
   }
   destroy(){
