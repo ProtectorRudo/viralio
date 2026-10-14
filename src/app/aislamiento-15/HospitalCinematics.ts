@@ -22,9 +22,8 @@ const cyan = new THREE.MeshStandardMaterial({ color: 0x8be8d7, emissive: 0x1b8e8
 const gold = new THREE.MeshStandardMaterial({ color: 0xffc68f, emissive: 0xc06a27, emissiveIntensity: 1.2, roughness: .35 });
 const insulated = new THREE.MeshStandardMaterial({ color: 0x242b2b, roughness: .91 });
 const dust = new THREE.MeshStandardMaterial({ color: 0x1d3333, roughness: .96 });
-const screenMat = new THREE.MeshBasicMaterial({ color: 0x67bead, toneMapped: false });
 const shared = [BOX, CYL, TUBE, PANEL];
-const mats = [steel, titanium, gasket, porcelain, bloody, crimson, cyan, gold, insulated, dust, screenMat];
+const mats = [steel, titanium, gasket, porcelain, bloody, crimson, cyan, gold, insulated, dust];
 
 function b(parent: THREE.Group, name: string, x: number, y: number, z: number, sx: number, sy: number, sz: number, mat: THREE.Material = steel) {
   const m = new THREE.Mesh(BOX, mat);
@@ -74,8 +73,10 @@ function warningStrips(group: THREE.Group, x: number, z: number, length: number)
 }
 function buildRoom0(root: THREE.Group, textures: THREE.Texture[]) {
   // Clear player centerline while making both lateral walls feel lived-in.
-  plate(root, -3.42, 2.82, -6.24, 2.15,.68,"ARCHIVO SANITARIO");
-  plate(root, 3.45, 2.83,-6.24, 2.08,.68,"SECTOR 015", "red");
+  for(const t of [
+    plate(root, -3.42, 2.82, -6.24, 2.15,.68,"ARCHIVO SANITARIO"),
+    plate(root, 3.45, 2.83,-6.24, 2.08,.68,"SECTOR 015", "red")
+  ]) if(t) textures.push(t);
   b(root,"Pantalla de fisiología",4.82,2.0,-3.8,.25,.81,1.15,gasket);
   b(root,"Chasis de pantalla",4.70,2.0,-3.8,.03,.62,.92,steel);
   // Subtle luminous monitor stripes.
@@ -112,8 +113,10 @@ function buildRoom0(root: THREE.Group, textures: THREE.Texture[]) {
   warningStrips(root, 3.98, -3.48, 2.6);
 }
 function buildRoom1(root: THREE.Group,textures: THREE.Texture[]) {
-  plate(root,-3.35,2.76,-19.24,2.15,.62,"PELIGRO BIOLÓGICO","red");
-  plate(root,3.52,2.75,-19.24,2.15,.62,"OXÍGENO CRÍTICO","red");
+  for(const t of [
+    plate(root,-3.35,2.76,-19.24,2.15,.62,"PELIGRO BIOLÓGICO","red"),
+    plate(root,3.52,2.75,-19.24,2.15,.62,"OXÍGENO CRÍTICO","red")
+  ]) if(t) textures.push(t);
   // Three real chamber glass enclosures rather than a glowing flat photo.
   for(let i=0;i<3;i++) {
     const x=[-3.65,0,3.65][i], z=-12.06;
@@ -153,9 +156,11 @@ function buildRoom1(root: THREE.Group,textures: THREE.Texture[]) {
   warningStrips(root,4.25,-17.2,2.8);
   return {body,cloud};
 }
-function buildRoom2(root: THREE.Group) {
-  plate(root,-3.4,2.8,-32.25,2.21,.7,"REACTOR HÉLIX","red");
-  plate(root,3.34,2.8,-32.25,2.1,.7,"CIERRE AUTOMÁTICO","red");
+function buildRoom2(root: THREE.Group, textures: THREE.Texture[]) {
+  for(const t of [
+    plate(root,-3.4,2.8,-32.25,2.21,.7,"REACTOR HÉLIX","red"),
+    plate(root,3.34,2.8,-32.25,2.1,.7,"CIERRE AUTOMÁTICO","red")
+  ]) if(t) textures.push(t);
   const reactor=new THREE.Group();
   reactor.position.set(-4.10,0,-29.58);root.add(reactor);
   // Detailed grounded cylinder with rotating solenoid and dark frame.
@@ -205,7 +210,7 @@ export function installHospitalCinematics(scene:THREE.Scene){
   }
   buildRoom0(roots[0],textures);
   const isolation = buildRoom1(roots[1],textures);
-  const containment=buildRoom2(roots[2]);
+  const containment=buildRoom2(roots[2],textures);
   const strobeLights:THREE.PointLight[]=[];
   const colors=[0xde755c,0x78c5ae,0xf05d4d];
   for(let i=0;i<3;i++){
@@ -219,7 +224,6 @@ export function installHospitalCinematics(scene:THREE.Scene){
     lens.castShadow=false;
     b(roots[i],"Lente emergencia",lx,2.8,z+.11,.16,.08,.035,i===1?cyan:crimson).castShadow=false;
   }
-  let oneShot = false;
   return {
     update({elapsed,danger,room,threat}:UpdateInput){
       const podActive=room===1 && (elapsed%94>21 && elapsed%94<26);
