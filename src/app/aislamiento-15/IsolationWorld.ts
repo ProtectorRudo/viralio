@@ -428,6 +428,14 @@ export class IsolationWorld {
       }
       const hub = this.pipe("Núcleo cromático", 0, 0, 0, .11, .13, valveColors[n], wheel);
       hub.rotation.z = Math.PI / 2;
+      // Generous invisible pick surface makes the wheel usable on a phone.
+      const touchSurface = new THREE.Mesh(
+        new THREE.CylinderGeometry(.37, .37, .062, 24),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, colorWrite: false })
+      );
+      touchSurface.name = "Zona táctil del volante";
+      touchSurface.rotation.z = Math.PI / 2;
+      wheel.add(touchSurface);
       const plate = this.block("Indicador de gas", 4.87, 1.94, zz, .11, .14, .38, valveColors[n]);
       plate.castShadow = false;
       const valveId = ["valve-blue", "valve-green", "valve-red"][n];
