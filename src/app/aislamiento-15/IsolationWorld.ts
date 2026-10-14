@@ -380,12 +380,19 @@ export class IsolationWorld {
 
   private buildIsolation(z: number) {
     this.panel(["AISLAMIENTO // NIVEL 02", "PRESIÓN NEGATIVA", "NO ABRIR EN PRESENCIA DE MOVIMIENTO"], 0, 2.83, z + 6.23, 4.4, 1.37);
-    for (let i = 0; i < 3; i++) {
-      const x = [-3.65, 0, 3.65][i];
-      this.block("Módulo biológico", x, 1.2, z + .9, 2.14, 2.35, .95, mats.dark);
-      this.block("Visor de cámara", x, 1.5, z + 1.42, 1.72, 1.25, .055, mats.glass);
-      this.block("Tuberías de cámara", x - .68, 2.62, z + .92, .075, .34, .075, mats.steel);
-      this.pipe("Cartucho de suspensión", x + .72, 2.29, z + .9, .11, .65, mats.steel);
+    // Biopods are staggered against the side walls. The central sightline
+    // stays open to the exit and the three puzzle valves.
+    const pods = [
+      { x: -4.04, offset: 2.2 },
+      { x: 4.04, offset: .2 },
+      { x: -4.04, offset: -.55 }
+    ];
+    for (const pod of pods) {
+      const x = pod.x, zz = z + pod.offset;
+      this.block("Módulo biológico", x, 1.2, zz, 2.14, 2.35, .95, mats.dark);
+      this.block("Visor de cámara", x, 1.5, zz + .52, 1.72, 1.25, .055, mats.glass);
+      this.block("Tuberías de cámara", x - .68, 2.62, zz + .02, .075, .34, .075, mats.steel);
+      this.pipe("Cartucho de suspensión", x + .72, 2.29, zz, .11, .65, mats.steel);
     }
     this.panel(["SECUENCIA DE PURGA", this.valvePattern.map(c => ({ blue: "AZUL", green: "VERDE", red: "ROJO" }[c] || c.toUpperCase())).join(" > "), "EXTRACTOR: ACTIVAR AL FINAL"], 0, 2.31, z - 6.25, 4.17, 1.34, "#cbe1b7");
     this.cabinet(-4.45, z - 2.7, true);
@@ -424,8 +431,16 @@ export class IsolationWorld {
 
   private buildContainment(z: number) {
     this.panel(["CONTENCIÓN // NIVEL 03", "REACTOR AUXILIAR", "CIERRE DEFINITIVO EN CURSO"], 0, 2.83, z + 6.23, 4.25, 1.42, "#e89d82");
+    // Never hide the final door behind a large central electrical cabinet.
+    // Physical distribution keeps switches reachable along the perimeter.
+    const breakerLocations = [
+      { x: -3.7, offset: 1.4 },
+      { x: 3.7, offset: 1.4 },
+      { x: 3.7, offset: -1.35 }
+    ];
     for (let i = 0; i < 3; i++) {
-      const x = -3.05 + i * 3.08, zz = z + 1.13;
+      const { x, offset } = breakerLocations[i];
+      const zz = z + offset;
       this.block("Armario eléctrico", x, 1.38, zz, 1.45, 2.25, .66, mats.dark);
       this.block("Frontal eléctrico", x, 1.53, zz + .35, 1.22, 1.52, .035, mats.steel);
       this.block("Amperímetro", x, 1.88, zz + .38, .67, .38, .032, mats.screen);
@@ -626,9 +641,9 @@ export class IsolationWorld {
           const updated = baseMaterial.map(m => {
             if (!(m instanceof THREE.MeshStandardMaterial)) return m;
             const clone = m.clone();
-            clone.color.multiply(new THREE.Color(0x94a49d));
-            clone.roughness = Math.max(.37, clone.roughness);
-            clone.metalness = Math.min(.25, clone.metalness);
+            clone.color.multiply(new THREE.Color(0x344d49));
+            clone.roughness = Math.max(.76, clone.roughness);
+            clone.metalness = Math.min(.16, clone.metalness);
             return clone;
           });
           o.material = Array.isArray(o.material) ? updated : updated[0];
