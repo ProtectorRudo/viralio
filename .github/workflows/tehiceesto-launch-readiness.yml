@@ -1,0 +1,70 @@
+name: Te Hice Esto commercial launch certification
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-launch-readiness.yml"
+      - "scripts/tehiceesto-launch-readiness-audit.mjs"
+      - "src/app/tehiceesto/**"
+      - "src/proxy.ts"
+      - "next.config.ts"
+  workflow_dispatch:
+
+concurrency:
+  group: tehiceesto-launch-readiness
+  cancel-in-progress: true
+permissions:
+  contents: read
+  statuses: write
+jobs:
+  launch-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install browser and exact dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Verify live domain deploy matches audited commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in {1..70}; do
+            if curl -fsSL --max-time 25 https://tehiceesto.com/api/version | grep -Fq "\"commit\":\"$GITHUB_SHA\""; then
+              echo "Ready: $GITHUB_SHA"
+              exit 0
+            fi
+            sleep 8
+          done
+          echo "ERROR: production is not serving the audited commit"
+          exit 1
+      - name: Audit full gift, escape and commercial conversion paths
+        run: node scripts/tehiceesto-launch-readiness-audit.mjs
+      - name: Report go/no-go evidence on production commit
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          state=failure
+          description="Launch readiness audit failed; see run and report"
+          if [ "${{ job.status }}" = "success" ]; then
+            state=success
+            description="Gift cards, demos and no-charge checkout dry runs passed"
+          fi
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$state" -f context="tehiceesto/commercial-launch-qa" \
+            -f description="$description" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+      - name: Upload launch audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tehiceesto-commercial-launch-audit
+          path: tehiceesto-launch-readiness/
+          retention-days: 14
