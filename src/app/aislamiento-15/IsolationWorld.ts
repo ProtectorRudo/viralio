@@ -92,6 +92,11 @@ export class IsolationWorld {
   hasFuse = false;
   fusePlaced = false;
   hasBadge = false;
+  relays: number[] = [];
+  oxygenCells: string[] = [];
+  oxygenInstalled = false;
+  readTriage = false;
+  recordingPlayed = false;
   firstDoor = false;
   secondDoor = false;
   valves: string[] = [];
@@ -115,6 +120,13 @@ export class IsolationWorld {
   private clinicalBeds: THREE.Group[] = [];
   private loadedAssets: THREE.Object3D[] = [];
   private doorDressing: THREE.Group[] = [];
+  private rotators = new Map<string, THREE.Object3D>();
+  private breakerNodes: THREE.Object3D[] = [];
+  private alertSign?: THREE.Mesh;
+  private alertLight?: THREE.PointLight;
+  private flickerUntil = -1;
+  private nextThreatAt = 58;
+  private oldChamber: Chamber = 0;
   private keySpot?: THREE.SpotLight;
   private softwareRenderer = false;
   private avgFrame = 0;
@@ -326,6 +338,16 @@ export class IsolationWorld {
     this.cabinet(-4.3, z - 2.3, true);
     // No obstructive floating kiosks: the terminal is mounted on the desk.
     this.panel(["REGISTRO DE TRIAJE", "P1 = 4 · P2 = 2", "P3 = 7 / EDAD NO VÁLIDA"], -3.38, 2.03, z - 6.24, 2.26, 1.15);
+    const triage = this.block("Archivo de triaje", 3.92, 1.1, z + 1.8, .37, .035, .28, mats.linen);
+    this.target("triage", "Consultar historias de triaje", triage, 0, 2.3);
+    this.panel(["TABLERO DE RELÉS", "ORDEN: R2 → R1 → R3", "LIBERAR CONSOLA DE SEGURIDAD"], 2.98, 1.57, z - 6.24, 2.22, .8, "#f2cf92");
+    for (let n = 0; n < 3; n++) {
+      const zRelay = z - 3.6 + n * 1.3;
+      this.block("Panel de relé", 5.16, 1.47, zRelay, .29, .61, .52, mats.dark);
+      const lever = this.block("Palanca del relé", 4.97, 1.44, zRelay, .22, .24, .15, mats.amber);
+      this.target("relay-" + n, "Relé R" + (n + 1), lever, 0, 2.6);
+      this.rotators.set("relay-" + n, lever);
+    }
     this.panel(["SALA 01", "ALIMENTACIÓN AUXILIAR", "USE FUSIBLE F-08"], 3.35, 2.66, z - 6.24, 2.28, .91);
     const fuse = this.block("Fusible F-08", -3.09, 1.16, z + 2.22, .14, .13, .26, mats.amber);
     this.target("fuse", "Retirar fusible F-08 del mostrador", fuse, 0, 2.55);
@@ -337,6 +359,13 @@ export class IsolationWorld {
     const keyboard = this.block("Terminal de acceso", -2.82, 1.4, z + 2.48, .56, .62, .13, mats.screen);
     this.block("Consola de botones", -2.82, 1.12, z + 2.75, .55, .036, .21, mats.dark);
     this.target("terminal", "Terminal de seguridad — código de tres dígitos", keyboard, 0, 2.8);
+    const emergencyMsg = signTexture(["PROHIBIDO EL ACCESO", "PACIENTE 015 IDENTIFICADO", "NO SALDRÁS DE AQUÍ"], 640, 255, "#f49a85");
+    if (emergencyMsg) {
+      this.alertSign = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 1.23), new THREE.MeshBasicMaterial({ map: emergencyMsg, side: THREE.DoubleSide }));
+      this.alertSign.position.set(.55, 2.5, z - 6.18);
+      this.alertSign.visible = false;
+      this.scene.add(this.alertSign);
+    }
     // Readable triage wall board replaces a floating screen-sized hint.
     // Directional floor strip lights are part of the world, not floating HUD markers.
     for (let k = 0; k < 4; k++) this.block("Camino luminiscente", 0, .01, z - 2.4 - k * .73, .28, .012, .17, mats.amber);
@@ -353,6 +382,15 @@ export class IsolationWorld {
     }
     this.panel(["SECUENCIA DE PURGA", "AZUL  >  VERDE  >  ROJO", "EXTRACTOR: ACTIVAR AL FINAL"], 0, 2.31, z - 6.25, 4.17, 1.34, "#cbe1b7");
     this.cabinet(-4.45, z - 2.7, true);
+    this.panel(["REGULADOR DE OXÍGENO", "DOS CELDAS ANTES DE PURGAR", "SOLO DESPUÉS: ABRIR VÁLVULAS"], 2.8, 1.55, z - 6.24, 2.52, .98, "#c5eee2");
+    for (const [key, x, zz] of [["alpha", -3.85, z + 3.1], ["beta", 3.72, z + 3.25]] as const) {
+      this.block("Soporte de celda de oxígeno", x, 1.06, zz, .72, .43, .36, mats.steel);
+      const cartridge = this.pipe("Celda criogénica", x, 1.38, zz, .12, .42, mats.ceramic);
+      this.target("cell-" + key, "Retirar celda de oxígeno " + key.toUpperCase(), cartridge, 1, 2.6);
+    }
+    this.block("Regulador bipuerto", -.12, 1.34, z - 5.37, .95, .85, .4, mats.dark);
+    const regulator = this.block("Selector de regulador", -.12, 1.4, z - 5.12, .51, .36, .1, mats.blue);
+    this.target("regulator", "Instalar dos celdas en el regulador", regulator, 1, 2.9);
     const valveColors = [mats.blue, mats.green, mats.red];
     for (let n = 0; n < 3; n++) {
       const xx = -2.65 + n * 2.65, zz = z - 2.85;
@@ -363,7 +401,9 @@ export class IsolationWorld {
         const a = p * Math.PI / 3;
         this.block("Radio de válvula", xx + Math.cos(a) * .18, 1.45 + Math.sin(a) * .18, zz + .18, .1, .043, .07, valveColors[n]);
       }
-      this.target(["valve-blue", "valve-green", "valve-red"][n], ["Válvula azul", "Válvula verde", "Válvula roja"][n], valve, 1, 3.05);
+      const valveId = ["valve-blue", "valve-green", "valve-red"][n];
+      this.target(valveId, ["Válvula azul", "Válvula verde", "Válvula roja"][n], valve, 1, 3.05);
+      this.rotators.set(valveId, valve);
     }
     this.block("Sistema de extracción", 4.13, 2.3, z - 4.2, 1.45, 1.55, .8, mats.dark);
     const extract = this.pipe("Ventilador", 4.13, 2.22, z - 3.77, .4, .08, mats.steel);
@@ -384,6 +424,7 @@ export class IsolationWorld {
       this.block("Amperímetro", x, 1.88, zz + .38, .67, .38, .032, mats.screen);
       const breaker = this.block("Disyuntor", x, 1.22, zz + .48, .26, .35, .21, mats.amber);
       this.target("breaker-" + i, "Interruptor principal " + ["A", "B", "C"][i], breaker, 2, 3.2);
+      this.breakerNodes.push(breaker);
       this.pipe("Conducto reactor", x, 3.34, zz, .14, .85, mats.rust);
     }
     this.panel(["APERTURA DE EMERGENCIA", "A = ENCENDIDO", "B = APAGADO", "C = ENCENDIDO"], 0, 2.6, z - 6.23, 3.5, 1.56, "#bddfc1");
@@ -632,6 +673,21 @@ export class IsolationWorld {
     if (target) { target.object.visible = false; target.object.userData.target = undefined; }
   }
 
+  setAlert(seconds = 1.35) { this.flickerUntil = Math.max(this.flickerUntil, this.elapsed + seconds); }
+
+  rotateValve(id: string) {
+    const node = this.rotators.get(id);
+    if (node) { node.rotation.z += Math.PI / 3; node.scale.multiplyScalar(1.07); }
+  }
+  rotateRelay(id: string) {
+    const node = this.rotators.get(id);
+    if (node) node.rotation.z = node.rotation.z ? 0 : -.44;
+  }
+  updateBreaker(index: number, on: boolean) {
+    const node = this.breakerNodes[index];
+    if (node) { node.rotation.x = on ? -.33 : 0; (node.material as THREE.MeshStandardMaterial).emissiveIntensity = on ? .8 : .2; }
+  }
+
   openDoor(index: 0 | 1) {
     if (index === 0) this.firstDoor = true; else this.secondDoor = true;
   }
@@ -678,6 +734,8 @@ export class IsolationWorld {
     if (nz < boundary + .15 && this.player.x > -1.04 && this.player.x < 1.04 && unlocked) {
       if (this.room < 2) {
         this.room = (this.room + 1) as Chamber;
+        this.oldChamber = this.room;
+        this.nextThreatAt = this.elapsed + (this.room === 1 ? 24 : 14);
         this.player.z = CENTER[this.room] + 5.95;
         this.player.x = 0;
         this.enemyMode = this.room === 1 ? "roaming" : "hunting";
@@ -698,7 +756,8 @@ export class IsolationWorld {
     const dist = Math.hypot(this.enemy.position.x - this.player.x, this.enemy.position.z - this.player.z);
     if (this.elapsed > this.eventAt && this.eventAt > 0) this.eventAt = -1;
     const hiding = this.eventAt > this.elapsed;
-    const hunting = this.room === 2 || (this.room === 1 && (dist < 3.5 || Math.floor(this.elapsed / 27) % 3 === 2));
+    const grace = this.elapsed < this.nextThreatAt;
+    const hunting = !grace && (this.room === 2 || (this.room === 1 && (dist < 3.5 || Math.floor(this.elapsed / 27) % 3 === 2)));
     this.enemyMode = hiding ? "roaming" : hunting ? "hunting" : "roaming";
     const dest = hunting && !hiding
       ? new THREE.Vector3(this.player.x, 0, this.player.z)
@@ -738,9 +797,12 @@ export class IsolationWorld {
       if (this.doorDressing[i]) this.doorDressing[i].position.y = door.position.y - 1.43;
     });
     this.lights.forEach((light, i) => {
-      const flicker = danger > .5 && Math.sin(this.pulse * 11 + i * 7) > .975 ? .35 : 1;
+      const flicker = this.elapsed < this.flickerUntil ? .08 : danger > .5 && Math.sin(this.pulse * 11 + i * 7) > .975 ? .35 : 1;
       light.intensity = (i % 2 === 1 ? 13 : 18) * flicker * (1 - danger * .22);
     });
+    if (this.alertSign) {
+      this.alertSign.visible = this.room === 0 && this.elapsed > 62 && this.elapsed < 86;
+    }
     if (this.running) this.updateEnemy(dt);
     this.art?.update(this.elapsed, danger);
     // Adaptive internal resolution: preserve input/HUD responsiveness on
