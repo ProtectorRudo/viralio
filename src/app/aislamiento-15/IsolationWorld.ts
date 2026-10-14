@@ -324,18 +324,20 @@ export class IsolationWorld {
     this.iv(4.12, z + 2.8);
     this.iv(4.5, z - 3.2);
     this.cabinet(-4.3, z - 2.3, true);
-    this.block("Tótem informativo", -.6, 1.2, z + 2.66, .16, 2.2, .18, mats.dark);
-    this.panel(["REGISTRO DE TRIAGE", "P1 = 4 · P2 = 2", "P3 = 7 / EDAD NO VÁLIDA"], -.4, 2.05, z - 6.24, 3.1, 1.1);
-    this.panel(["SALA 01", "ALIMENTACIÓN AUXILIAR", "USE FUSIBLE F-08"], -3.55, 2.8, z - 6.24, 2.6, 1.06);
+    // No obstructive floating kiosks: the terminal is mounted on the desk.
+    this.panel(["REGISTRO DE TRIAJE", "P1 = 4 · P2 = 2", "P3 = 7 / EDAD NO VÁLIDA"], -3.38, 2.03, z - 6.24, 2.26, 1.15);
+    this.panel(["SALA 01", "ALIMENTACIÓN AUXILIAR", "USE FUSIBLE F-08"], 3.35, 2.66, z - 6.24, 2.28, .91);
     const fuse = this.block("Fusible F-08", -3.09, 1.16, z + 2.22, .14, .13, .26, mats.amber);
     this.target("fuse", "Retirar fusible F-08 del mostrador", fuse, 0, 2.55);
     const fuseBox = this.block("Panel de fusibles", -5.16, 1.42, z - 1.5, .23, 1.0, .86, mats.dark);
     this.target("fusebox", "Restaurar alimentación de seguridad", fuseBox, 0, 2.4);
     const badge = this.block("Tarjeta identificatoria", 3.1, 1.07, z + 1.85, .26, .015, .14, mats.ceramic);
     this.target("badge", "Recoger tarjeta de personal", badge, 0, 2.2);
-    const keyboard = this.block("Terminal de acceso", -.72, 1.38, z + 2.62, .53, .65, .12, mats.screen);
+    this.block("Base de terminal", -2.82, 1.11, z + 2.49, .65, .12, .42, mats.steel);
+    const keyboard = this.block("Terminal de acceso", -2.82, 1.4, z + 2.48, .56, .62, .13, mats.screen);
+    this.block("Consola de botones", -2.82, 1.12, z + 2.75, .55, .036, .21, mats.dark);
     this.target("terminal", "Terminal de seguridad — código de tres dígitos", keyboard, 0, 2.8);
-    this.panel(["SISTEMA DE SEGURIDAD", "CLAVE = PRIORIDAD P1 P2 P3"], -1.18, 1.67, z + 2.71, 1.48, .7);
+    // Readable triage wall board replaces a floating screen-sized hint.
     // Directional floor strip lights are part of the world, not floating HUD markers.
     for (let k = 0; k < 4; k++) this.block("Camino luminiscente", 0, .01, z - 2.4 - k * .73, .28, .012, .17, mats.amber);
   }
