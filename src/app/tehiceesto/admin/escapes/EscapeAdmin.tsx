@@ -73,7 +73,7 @@ export default function EscapeAdmin({code}:{code?:string}){
     <span className={styles.eyebrow}>MODELO ORIGINAL · SIN CAMBIOS DE DISEÑO</span><h2>{room.title}</h2>
     <div className={styles.previewIllustration} style={{"--accent":room.accent} as React.CSSProperties}><span>✦</span><strong>{room.title}</strong><small>UNA SORPRESA EN EL FINAL</small></div>
     <button className={styles.subtle} onClick={()=>setPreview(p=>!p)}>{preview?"Cerrar vista previa":"Jugar vista previa →"}</button>
-    {preview&&<iframe title={"Vista previa "+room.title} className={styles.previewFrame} src={source} allow="autoplay; fullscreen" allowFullScreen/>}
+    {preview&&(room.slug==="caso-m"?<a className={styles.previewOpen} href={source} target="_blank" rel="noopener noreferrer">Abrir CASO M en pantalla completa ↗</a>:<iframe title={"Vista previa "+room.title} className={styles.previewFrame} src={source} allow="autoplay; fullscreen" allowFullScreen/>)}
     {code&&status==="published"&&<><p>Enlace privado para compartir</p><input value={publicUrl} readOnly onFocus={e=>e.currentTarget.select()}/><button onClick={()=>void navigator.clipboard.writeText(publicUrl)}>Copiar enlace</button></>}
     <p className={styles.previewNote}>Este editor es interno. La persona que recibe el regalo sólo ve la aventura y descubre el final.</p>
    </aside>
