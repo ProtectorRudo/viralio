@@ -87,7 +87,7 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
                 <span className="thi-simple-coming-overlay">Próximamente</span>
               </div>
             : <Link className="thi-simple-photo-link"
-                href={`/tehiceesto/experiencias/${gift.slug}`}
+                href={`/experiencias/${gift.slug}`}
                 target="_blank" rel="noopener noreferrer"
                 aria-label={`Ver muestra de ${gift.title} para ${design.recipient.toLowerCase()}`}>
                 <GiftImage gift={gift} recipient={design.badge} symbol={design.symbol}/>
@@ -103,7 +103,7 @@ export default function GiftPicker({onSelect}:{onSelect:(slug:string)=>void}){
                     <button type="button" className="thi-simple-choose" onClick={()=>onSelect(gift.slug)}>
                       Elegir y continuar <span aria-hidden="true">→</span>
                     </button>
-                    <Link href={`/tehiceesto/experiencias/${gift.slug}`}
+                    <Link href={`/experiencias/${gift.slug}`}
                       target="_blank" rel="noopener noreferrer"
                       className="thi-simple-preview">
                       <span aria-hidden="true" className="thi-simple-preview-icon">◉</span> Ver muestra <span aria-hidden="true">↗</span>
