@@ -26,8 +26,9 @@ export const escapeRooms:EscapeRoom[]=[
  {key:"nombre",label:"Nombre de la persona destinataria",max:55,required:true},
  {key:"firma",label:"Nombre de quien invita",max:90,required:true},
  {key:"pregunta",label:"Pregunta o titular final",max:190,required:true},
- {key:"mensaje",label:"Carta o mensaje personal",max:650,multiline:true,required:true},
- {key:"fecha",label:"Fecha",max:80},{key:"lugar",label:"Lugar",max:125},
+ {key:"mensaje",label:"Mensaje de la revelación final",max:650,multiline:true,required:true},
+ {key:"carta",label:"Carta personalizada dentro del sobre",max:1200,multiline:true,required:true,hint:"Aparece cuando se abre el sobre. Las pistas del juego se conservan antes de este texto."},
+ {key:"fecha",label:"Fecha",max:80},{key:"hora",label:"Horario del encuentro",max:80},{key:"lugar",label:"Lugar",max:125},
  {key:"rsvp",label:"WhatsApp para responder",max:18},
  {key:"voz",label:"Audio del desenlace (URL HTTPS, opcional)",max:950}
  ]}
