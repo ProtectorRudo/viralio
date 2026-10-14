@@ -6,7 +6,7 @@ import { getEscapeRoom } from "../escape-rooms";
 export const metadata: Metadata = {
   title: "Creá tu regalo",
   description:
-    "Elegí la experiencia, pagá y personalizá tu regalo paso a paso con fotos, audios y tus palabras.",
+    "Elegí tu regalo, probá la demo y pagá con Mercado Pago. Personalizá los recuerdos o recibí una sala de escape preparada por nuestro equipo.",
 };
 
 export default async function CreatePage({
