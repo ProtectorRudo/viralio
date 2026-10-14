@@ -690,8 +690,12 @@ export class IsolationWorld {
       // Studio GLB supplies the skeletal walk; an original medical mask gives
       // the antagonist a unique silhouette without flattening the 3D character.
       if (this.creatureIdentity) {
-        this.creatureIdentity.root.position.set(0, 1.69, -.09);
-        rig.add(this.creatureIdentity.root);
+        // Rig unit scales may vary wildly (some GLBs are centimeters). The mask
+        // is authored in real metres and must NOT inherit the imported mesh
+        // scale. Mount it at actor root and match the rig's facing direction.
+        this.creatureIdentity.root.position.set(0, 1.68, .04);
+        this.creatureIdentity.root.rotation.y = Math.PI;
+        this.enemy.add(this.creatureIdentity.root);
       }
       this.enemy.add(rig); this.enemyBase = rig;
       const fallback = this.enemy.userData.fallback as THREE.Group;
