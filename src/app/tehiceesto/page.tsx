@@ -292,6 +292,7 @@ export default async function TeHiceEstoHome() {
             <a href="#para-quien">Para quién</a>
             <a href="#recorrido">Qué recibe</a>
             <a href="#proceso">Cómo funciona</a>
+            <Link href={href("/privacidad")}>Privacidad</Link>
             <Link href={href("/arrepentimiento")}>Botón de arrepentimiento</Link>
           </nav>
           <span>ARGENTINA · 2026</span>
