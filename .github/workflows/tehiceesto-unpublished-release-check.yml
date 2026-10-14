@@ -1,0 +1,64 @@
+name: Te Hice Esto source release gate
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-unpublished-release-check.yml"
+      - "src/app/tehiceesto/**"
+      - "supabase/functions/commerce-withdrawals/**"
+      - "scripts/tehiceesto-launch-readiness-audit.mjs"
+  workflow_dispatch:
+concurrency:
+  group: tehiceesto-source-release
+  cancel-in-progress: true
+permissions:
+  contents: read
+  statuses: write
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check complete site
+        run: npm run typecheck
+      - name: Compile complete production application without Vercel
+        run: npm run build
+      - name: Confirm required buyer and administration routes exist in source
+        run: |
+          set -euo pipefail
+          for file in \
+            src/app/tehiceesto/arrepentimiento/page.tsx \
+            src/app/tehiceesto/privacidad/page.tsx \
+            src/app/tehiceesto/admin/arrepentimientos/page.tsx \
+            src/app/tehiceesto/crear/page.tsx \
+            src/app/tehiceesto/escape-r/'[code]'/page.tsx \
+            supabase/functions/commerce-withdrawals/index.ts; do
+            test -s "$file"
+          done
+          grep -Fq 'Botón de arrepentimiento' src/app/tehiceesto/page.tsx
+          grep -Fq 'commerce-withdrawals' src/app/tehiceesto/arrepentimiento/WithdrawalForm.tsx
+          grep -Fq 'withdrawal' scripts/tehiceesto-launch-readiness-audit.mjs
+          echo "PASS: source paths and buyer navigation available"
+      - name: Report independently checked source commit
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          state=failure
+          description="Source release gate failed: repair before next Vercel deployment"
+          if [ "${{ job.status }}" = "success" ]; then
+            state=success
+            description="Next.js source typechecked and built; deploy pending Vercel capacity"
+          fi
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$state" -f context="tehiceesto/source-release-build" \
+            -f description="$description" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
