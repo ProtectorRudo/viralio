@@ -9,6 +9,8 @@ export default function FloatingWhatsApp() {
 
   if (
     pathname.includes("/r/") ||
+    pathname.includes("/escape-r/") ||
+    pathname.includes("/escapes/") ||
     pathname.includes("/admin") ||
     pathname.endsWith("/afiliados") ||
     pathname.includes("/afiliados/") ||
