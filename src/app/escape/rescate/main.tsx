@@ -15,9 +15,9 @@ function configFromUrl():Config {
  const codigo=/^\d{6}$/.test(input) ? input : "131026";
  const voz=q.get("voz")?.trim()||"";
  return {fecha:val("fecha","13 DE OCTUBRE DE 2026",80),hora:val("hora","17:00 HS",80),
- lugar:val("lugar","CALLE 49 ENTRE 26 Y 27 · LA PLATA",125),nombre:val("nombre","Mauro",42),
- evento:val("evento","Cumpleaños de Mauro",95),mensaje:val("mensaje","¡Te esperamos para celebrar!",320),
- firma:val("firma","Con cariño, quienes te invitan",85),codigo,
+ lugar:val("lugar","CALLE 49 ENTRE 26 Y 27 · LA PLATA",125),nombre:val("nombre","Mauro",55),
+ evento:val("evento","Cumpleaños de Mauro",95),mensaje:val("mensaje","¡Te esperamos para celebrar!",650),
+ firma:val("firma","Con cariño, quienes te invitan",90),codigo,
  rsvp:(q.get("rsvp")||"").replace(/\D/g,"").slice(0,18),
  voz:/^https:\/\//.test(voz)?voz.slice(0,900):""};
 }
