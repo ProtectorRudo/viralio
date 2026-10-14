@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useRef, useState } from "react";
 import { experiences } from "./data";
+import {getEscapeRoom} from "./escape-rooms";
 import { isComingSoon } from "./availability";
 import GiftPicker from "./GiftPicker";
 import { formatTeHiceEstoPrice } from "./pricing";
@@ -61,7 +62,8 @@ function clearStoredOrderRequest(){
 }
 
 export default function CreatorWizard({initialExperience=""}:{initialExperience?:string}) {
-  const validInitial=experiences.some((experience)=>experience.slug===initialExperience&&!isComingSoon(experience.slug))?initialExperience:"";
+  const initialEscape=initialExperience.startsWith("escape-")?getEscapeRoom(initialExperience.slice(7)):undefined;
+  const validInitial=initialEscape||experiences.some((experience)=>experience.slug===initialExperience&&!isComingSoon(experience.slug))?initialExperience:"";
   const [step, setStep] = useState<Step>(validInitial?1:0);
   const [selectedSlug, setSelectedSlug] = useState(validInitial);
   const [contact, setContact] = useState(INITIAL_CONTACT);
@@ -70,10 +72,12 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
   const [orderCode, setOrderCode] = useState("");
   const orderRequestId = useRef("");
 
-  const selected = useMemo(
-    () => experiences.find((experience) => experience.slug === selectedSlug),
-    [selectedSlug],
-  );
+  const selected = useMemo(()=>{
+    const experience=experiences.find((item)=>item.slug===selectedSlug&&!isComingSoon(item.slug));
+    if(experience)return {slug:experience.slug,title:experience.title,icon:experience.icon,escape:false,preview:"/tehiceesto/experiencias/"+experience.slug};
+    const room=selectedSlug.startsWith("escape-")?getEscapeRoom(selectedSlug.slice(7)):undefined;
+    return room?{slug:selectedSlug,title:room.title,icon:"✦",escape:true,preview:"/escapes/"+room.slug}:undefined;
+  },[selectedSlug]);
 
   const contactValid =
     contact.name.trim().length >= 2 &&
@@ -83,6 +87,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
 
   function chooseTemplate(slug: string) {
     if(isComingSoon(slug))return;
+    if(!experiences.some(e=>e.slug===slug)&&!(slug.startsWith("escape-")&&getEscapeRoom(slug.slice(7))))return;
     orderRequestId.current="";
     clearStoredOrderRequest();
     setSelectedSlug(slug);
@@ -180,7 +185,9 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
               <button className="order-back" type="button" onClick={() => setStep(0)}>← Cambiar experiencia</button>
               <span className="eyebrow">02 · TUS DATOS Y PAGO</span>
               <h1>Último paso. <em>Ya casi es suyo.</em></h1>
-              <p>Dejá tus datos y pagá de forma segura con Mercado Pago. Personalizás el regalo después del pago, sin crear una cuenta.</p>
+              <p>{selected.escape
+                ?"Dejá tus datos y pagá de forma segura con Mercado Pago. Después de pagar, nuestro equipo se contacta para personalizar la invitación o carta final. Vos no necesitás editar el juego."
+                :"Dejá tus datos y pagá de forma segura con Mercado Pago. Personalizás el regalo después del pago, sin crear una cuenta."}</p>
             </header>
 
             <div className="order-selected-template">
@@ -189,7 +196,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                 <small>ELEGISTE</small>
                 <strong>{selected.title}</strong>
               </div>
-              <Link href={`/tehiceesto/experiencias/${selected.slug}`} target="_blank">Ver cómo se ve</Link>
+              <Link href={selected.preview} target="_blank" rel="noopener noreferrer">Ver cómo se ve</Link>
             </div>
 
             <form className="order-contact-form" onSubmit={submitPayment}>
@@ -245,7 +252,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                 />
                 <span>
                   Acepto que Te Hice Esto use estos datos para gestionar mi compra,
-                  habilitar mi edición y ayudarme a recuperar el acceso si lo necesito.
+                  {selected.escape?"coordinar la personalización y la entrega de la sala, y ayudarme con el pedido si lo necesito.":"habilitar mi edición y ayudarme a recuperar el acceso si lo necesito."}
                 </span>
               </label>
 
@@ -271,7 +278,7 @@ export default function CreatorWizard({initialExperience=""}:{initialExperience?
                 <p>Todavía no se realizó ningún cobro. Revisá los datos e intentá nuevamente.</p>
                 <small>{errorMessage}</small>
               </div>}
-              <p className="thi-simple-pay-note">Pago único · sin suscripción · Personalizás después de pagar.</p>
+              <p className="thi-simple-pay-note">Pago único · sin suscripción · {selected.escape?"Nuestro equipo personaliza la sorpresa después del pago.":"Personalizás después de pagar."}</p>
             </form>
           </div>
         )}
