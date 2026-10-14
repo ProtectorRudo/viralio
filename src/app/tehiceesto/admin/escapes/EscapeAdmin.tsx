@@ -4,7 +4,7 @@ import Link from "next/link";
 import {SESSION_KEY,SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from "../api";
 import {escapeRooms,getEscapeRoom,getEscapeSource} from "../../escape-rooms";
 import styles from "../../escapes/escape.module.css";
-type Gift={public_code:string;experience_slug:string;recipient_name:string;status:string;story_data?:{escapeConfig?:Record<string,string>}};
+type Gift={public_code:string;experience_slug:string;recipient_name:string;giver_name?:string;status:string;story_data?:{escapeConfig?:Record<string,string>};contact?:{name?:string;email?:string;whatsapp?:string};order?:{status:string;paidAt?:string|null}|null};
 const blank=(slug:string)=>Object.fromEntries((getEscapeRoom(slug)||escapeRooms[0]).fields.map(f=>[f.key,f.defaultValue||""])) as Record<string,string>;
 async function call<T>(action:string,options:Record<string,unknown>={}):Promise<T>{
  const token=sessionStorage.getItem(SESSION_KEY)||"";
@@ -15,6 +15,7 @@ export default function EscapeAdmin({code}:{code?:string}){
  const [ready,setReady]=useState(false),[authorized,setAuthorized]=useState(false);
  const [slug,setSlug]=useState("caso-m"),[values,setValues]=useState<Record<string,string>>(()=>blank("caso-m"));
  const [status,setStatus]=useState("draft"),[gifts,setGifts]=useState<Gift[]>([]);
+ const [contact,setContact]=useState<Gift["contact"]>({}),[orderStatus,setOrderStatus]=useState<string|null>(null);
  const [message,setMessage]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false),[preview,setPreview]=useState(false);
  const room=getEscapeRoom(slug)||escapeRooms[0];
  const prefix=typeof window==="undefined"?"":location.pathname.startsWith("/tehiceesto")?"/tehiceesto":"";
@@ -24,15 +25,23 @@ export default function EscapeAdmin({code}:{code?:string}){
   const task=code?call<{gift:Gift&{room:string}}>("get",{code}).then(({gift})=>{
    if(!active)return;
    const found=getEscapeRoom(gift.room);if(!found)throw Error("Sala no encontrada");
-   setSlug(found.slug);setValues({...blank(found.slug),...(gift.story_data?.escapeConfig||{})});setStatus(gift.status);
+   const config=gift.story_data?.escapeConfig||{};
+   setSlug(found.slug);setValues({...blank(found.slug),
+     ...(gift.giver_name&&gift.giver_name!=="Alguien especial"?{firma:gift.giver_name}:{}),
+     ...(gift.recipient_name&&gift.recipient_name!=="A definir"?{nombre:gift.recipient_name}:{}),
+     ...config});setStatus(gift.status);
+   setContact(gift.contact||{});setOrderStatus(gift.order?.status||null);
   }):call<{gifts:Gift[]}>("list").then(data=>{if(active)setGifts(data.gifts)});
   task.catch(e=>{if(active)setError(e instanceof Error?e.message:"No se pudo cargar")}).finally(()=>{if(active)setReady(true)});
   return()=>{active=false};
  },[code]);
  const setRoom=(next:string)=>{setSlug(next);setValues(blank(next));setMessage("");setPreview(false)};
+ const paymentPending=Boolean(orderStatus&&orderStatus!=="approved");
  async function perform(action:"create"|"save"|"publish"|"unpublish"){
   setBusy(true);setError("");setMessage("");
   try{
+   if(paymentPending&&action!=="unpublish")throw Error("Esperá la acreditación del pago antes de personalizar o publicar.");
+   if(action==="unpublish"&&code){await call(action,{code});setStatus("draft");setMessage("Experiencia despublicada.");return;}
    for(const f of room.fields){const v=(values[f.key]||"").trim();if(f.required&&!v)throw Error("Completá "+f.label);
     if(f.key==="codigo"&&!/^\d{6}$/.test(v))throw Error("El código del candado debe tener seis cifras.");
     if(f.key==="voz"&&v&&!/^https:\/\//.test(v))throw Error("La dirección del audio debe usar HTTPS.");
@@ -41,8 +50,8 @@ export default function EscapeAdmin({code}:{code?:string}){
     location.href=prefix+"/admin/escapes/"+result.code;return;}
    if(!code)throw Error("Invitación sin código");
    await call("save",{code,config:values});
-   if(action==="publish"||action==="unpublish"){await call(action,{code});setStatus(action==="publish"?"published":"draft")}
-   setMessage(action==="publish"?"¡Experiencia publicada! Compartí el enlace privado.":action==="unpublish"?"Experiencia despublicada.":"Cambios guardados.");
+   if(action==="publish"){await call(action,{code});setStatus("published")}
+   setMessage(action==="publish"?"¡Experiencia publicada! Compartí el enlace privado.":"Cambios guardados.");
   }catch(e){setError(e instanceof Error?e.message:"No se pudo completar la operación")}finally{setBusy(false)}
  }
  const source=getEscapeSource(room,values);
@@ -60,24 +69,33 @@ export default function EscapeAdmin({code}:{code?:string}){
     <label><span>Modelo de sala</span><select disabled={Boolean(code)} value={slug} onChange={e=>setRoom(e.target.value)}>
      {escapeRooms.map(r=><option key={r.slug} value={r.slug}>{r.title}</option>)}</select></label>
     <p className={styles.editDescription}>{room.description}</p>
+    {code&&<section className={styles.orderInfo} aria-label="Estado y contacto del comprador">
+      <strong>{orderStatus==="approved"?"✓ Pago confirmado":paymentPending?"○ Pago pendiente":"Invitación interna"}</strong>
+      <small>Pedido: {code.toUpperCase()} · {room.title}</small>
+      {contact?.name&&<p>Compró: <b>{contact.name}</b></p>}
+      {contact?.email&&<p>Email: <a href={"mailto:"+contact.email}>{contact.email}</a></p>}
+      {contact?.whatsapp&&<p>WhatsApp: <a href={"https://wa.me/"+contact.whatsapp.replace(/\D/g,"")} target="_blank" rel="noopener noreferrer">{contact.whatsapp}</a></p>}
+      <p className={styles.editDescription}>Completá los contenidos que el cliente te envíe. El diseño y los acertijos originales quedan intactos. Después guardá, probá el resultado y publicá.</p>
+      {paymentPending&&<p role="alert">Esta compra todavía no está acreditada. No podés publicarla.</p>}
+    </section>}
     {room.fields.map(f=><label key={f.key}><span>{f.label}{f.required?" *":""}</span>
       {f.hint&&<small>{f.hint}</small>}
       {f.multiline?<textarea rows={5} maxLength={f.max||650} value={values[f.key]||""} onChange={e=>setValues(old=>({...old,[f.key]:e.target.value}))}/>:<input value={values[f.key]||""} maxLength={f.max||160} inputMode={f.key==="codigo"||f.key==="rsvp"?"numeric":undefined} onChange={e=>setValues(old=>({...old,[f.key]:e.target.value}))}/>}
      </label>)}
     <div className={styles.editActions}>
-     <button disabled={busy||!ready} onClick={()=>void perform(code?"save":"create")}>{busy?"Guardando…":code?"Guardar cambios":"Crear invitación privada →"}</button>
-     {code&&<button className={styles.subtle} disabled={busy||!ready} onClick={()=>void perform(status==="published"?"unpublish":"publish")}>{status==="published"?"Despublicar":"Publicar"}</button>}
+     <button disabled={busy||!ready||paymentPending} onClick={()=>void perform(code?"save":"create")}>{busy?"Guardando…":code?"Guardar cambios":"Crear invitación privada →"}</button>
+     {code&&<button className={styles.subtle} disabled={busy||!ready||(paymentPending&&status!=="published")} onClick={()=>void perform(status==="published"?"unpublish":"publish")}>{status==="published"?"Despublicar":"Publicar"}</button>}
     </div>
    </section>
    <aside className={styles.previewCard}>
     <span className={styles.eyebrow}>MODELO ORIGINAL · SIN CAMBIOS DE DISEÑO</span><h2>{room.title}</h2>
     <div className={styles.previewIllustration} style={{"--accent":room.accent} as React.CSSProperties}><span>✦</span><strong>{room.title}</strong><small>UNA SORPRESA EN EL FINAL</small></div>
     <button className={styles.subtle} onClick={()=>setPreview(p=>!p)}>{preview?"Cerrar vista previa":"Jugar vista previa →"}</button>
-    {preview&&(room.slug==="caso-m"?<a className={styles.previewOpen} href={source} target="_blank" rel="noopener noreferrer">Abrir CASO M en pantalla completa ↗</a>:<iframe title={"Vista previa "+room.title} className={styles.previewFrame} src={source} allow="autoplay; fullscreen" allowFullScreen/>)}
+    {preview&&<a className={styles.previewOpen} href={source} target="_blank" rel="noopener noreferrer">Jugar la vista previa con estos datos ↗</a>}
     {code&&status==="published"&&<><p>Enlace privado para compartir</p><input value={publicUrl} readOnly onFocus={e=>e.currentTarget.select()}/><button onClick={()=>void navigator.clipboard.writeText(publicUrl)}>Copiar enlace</button></>}
     <p className={styles.previewNote}>Este editor es interno. La persona que recibe el regalo sólo ve la aventura y descubre el final.</p>
    </aside>
   </div>}
-  {authorized&&!code&&gifts.length>0&&<div className={styles.history}><h2>Regalos creados</h2>{gifts.map(g=><Link href={prefix+"/admin/escapes/"+g.public_code} key={g.public_code}>{g.recipient_name} · {g.experience_slug.replace("escape-","")} <small>{g.status} ↗</small></Link>)}</div>}
+  {authorized&&!code&&gifts.length>0&&<div className={styles.history}><h2>Regalos creados</h2>{gifts.map(g=><Link href={prefix+"/admin/escapes/"+g.public_code} key={g.public_code}>{g.recipient_name==="A definir"?g.giver_name||"Cliente sin destinatario":g.recipient_name} · {g.experience_slug.replace("escape-","")} <small>{g.status} ↗</small></Link>)}</div>}
  </main>;
 }
