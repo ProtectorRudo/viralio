@@ -238,3 +238,28 @@
 @media (prefers-reduced-motion:reduce){
   .iso-chapter-card{animation:none}
 }
+
+/* Screenshot audit correction: transmissions must NEVER obscure the reticle
+   or the medical wall evidence at the far end of the room. */
+.isolation .iso-broadcast{
+  top:166px;right:clamp(18px,3vw,46px);left:auto;
+  transform:none;width:min(365px,29vw);
+  padding:12px 15px;
+  background:rgba(17,13,16,.82);
+  border:1px solid rgba(227,116,91,.44);border-left:3px solid #d45c4c;
+  box-shadow:0 14px 28px rgba(0,0,0,.22);
+  animation:iso-radio-arrive .3s ease-out;
+  backdrop-filter:blur(5px);
+}
+.isolation .iso-broadcast span{font-size:8px;margin-bottom:6px;letter-spacing:.08em}
+.isolation .iso-broadcast strong{font-size:12px;line-height:1.35;letter-spacing:.012em;font-weight:600}
+@keyframes iso-radio-arrive{from{opacity:0;translate:0 -9px}to{opacity:1;translate:0 0}}
+@media(max-width:750px){
+  .isolation .iso-broadcast{
+    top:calc(env(safe-area-inset-top) + 202px);
+    right:12px;left:auto;width:min(260px,71vw);
+    padding:9px 10px;
+    background:rgba(13,16,18,.86);
+  }
+  .isolation .iso-broadcast strong{font-size:10px;line-height:1.3}
+}
