@@ -194,6 +194,10 @@ for(const viewport of viewports){
     throw new Error("CASO M animated character GLB is unavailable from the gift domain");
   }
   console.log("PASS: CASO M 3D engine and GLB are served under tehiceesto.com ("+viewport.name+")");
+  // A guessed gift URL must never reveal a draft or a customer's surprise.
+  const privateGuess=await page.request.get(base+"/escape-r/000000000000000000",{timeout:30000});
+  if(privateGuess.status()!==404)throw new Error("Private escape authorization: expected HTTP 404");
+  console.log("PASS: unpublished/unknown private gift stays hidden ("+viewport.name+")");
   await context.close();
 }
 
