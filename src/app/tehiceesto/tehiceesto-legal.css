@@ -1,0 +1,37 @@
+/* Premium consumer-assistance pages, discreet but directly accessible. */
+.thi-legal-page{min-height:100dvh;background:radial-gradient(ellipse at 20% 5%,#fffaf4 0%,transparent 47%),linear-gradient(145deg,#f8f1eb,#efe7e0);color:#342735;padding:clamp(30px,5vw,75px) 20px 100px}
+.thi-legal-shell{max-width:1110px;margin:auto}
+.thi-legal-nav{display:flex;justify-content:space-between;align-items:center;gap:15px;padding-bottom:35px;border-bottom:1px solid #cbbdb0;font-size:11px;letter-spacing:.13em;color:#826f72}
+.thi-legal-nav a{color:#513f4b;text-decoration:none;font-weight:800}
+.thi-legal-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(20px,5vw,70px);padding-top:clamp(36px,6vw,90px)}
+.thi-legal-eyebrow{display:block;font-size:10px;font-weight:750;letter-spacing:.175em;color:#a36570}
+.thi-legal-intro h1{font:400 clamp(42px,6vw,74px)/1.03 Georgia,serif;letter-spacing:-.047em;margin:18px 0 28px}
+.thi-legal-intro h1 em{display:block;color:#ab6872}
+.thi-legal-intro>p{max-width:520px;line-height:1.74;font-size:16px;color:#665961}
+.thi-legal-steps{margin:40px 0 29px;display:grid;gap:18px}
+.thi-legal-steps>div{display:flex;gap:17px;border-top:1px solid #d3c4b8;padding-top:15px;line-height:1.6;font-size:13px;color:#675760}
+.thi-legal-steps b{color:#ae6972;font:italic 20px Georgia,serif}
+.thi-legal-intro>p.thi-legal-aside{font-size:12px;line-height:1.7;color:#807076}
+.thi-legal-aside a{color:#8a4b59;text-decoration:underline;text-underline-offset:3px}
+.thi-legal-panel{border-radius:19px;background:#fffdf9;border:1px solid #d9c9bd;padding:clamp(23px,4vw,36px);box-shadow:0 16px 44px #6d555319}
+.thi-legal-panel h2{font:400 33px Georgia,serif;margin:0 0 27px}
+.thi-legal-panel label{display:block;margin:0 0 20px;color:#5a4651;font-size:12px;font-weight:750}
+.thi-legal-panel label small{font-weight:400;color:#81757a}
+.thi-legal-panel input,.thi-legal-panel textarea{display:block;width:100%;box-sizing:border-box;min-height:51px;border-radius:9px;border:1px solid #cdbfb6;background:#fffaf5;color:#2d2830;padding:12px 14px;margin-top:8px;font:400 15px/1.5 sans-serif}
+.thi-legal-panel textarea{resize:vertical}
+.thi-legal-panel :is(input,textarea,button):focus-visible{outline:3px solid #ae7680;outline-offset:3px}
+.thi-legal-submit{display:block;background:#483341;border:0;border-radius:10px;color:#fff5ec;padding:17px 18px;width:100%;min-height:54px;font-size:13px;font-weight:800;cursor:pointer}
+.thi-legal-submit:disabled{opacity:.6;cursor:wait}
+.thi-legal-footnote{display:block;font-size:11px;line-height:1.6;color:#77666f;margin-top:16px}
+.thi-legal-error{color:#a32e41;font-size:13px;font-weight:700}
+.thi-legal-ticket{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 14px;background:#f5e7dc;border:1px solid #d5b6a7;border-radius:10px;margin:20px 0;overflow-wrap:anywhere}
+.thi-legal-ticket strong{font:700 20px Georgia,serif;letter-spacing:.025em}
+.thi-legal-ticket button{border-radius:7px;border:1px solid #a27078;padding:9px 12px;color:#51303d;background:transparent;cursor:pointer;white-space:nowrap}
+.thi-legal-confirmation p{line-height:1.6;color:#6c5b62}
+.thi-legal-back{display:inline-block;margin-top:20px;color:#864c57;font-weight:700}
+.thi-legal-trap{position:absolute!important;left:-9999px;max-width:1px;max-height:1px;overflow:hidden}
+.thh-consumer-rights-link{display:inline-block;color:#81555d!important;text-decoration:underline!important;text-underline-offset:4px;font-size:12px;line-height:1.6;font-weight:650}
+.thh-consumer-rights-link:hover{color:#563640!important}
+.thi-purchase-page .thi-commercial-rights{padding:20px 12px 4px;text-align:center}
+.thi-purchase-page .thi-commercial-rights>a{color:#835061;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:760px){.thi-legal-grid{grid-template-columns:1fr}.thi-legal-steps{margin:23px 0}.thi-legal-page{padding:28px 16px 80px}.thi-legal-nav{padding-bottom:22px}.thi-legal-intro h1{font-size:clamp(43px,11vw,62px)}}
