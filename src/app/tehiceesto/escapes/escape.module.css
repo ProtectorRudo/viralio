@@ -13,3 +13,45 @@
 .purchaseGrid{display:grid;grid-template-columns:1fr .9fr;gap:clamp(25px,5vw,90px);align-items:start}.purchaseGrid h1{font:normal clamp(3.2rem,5.5vw,6rem)/1.03 Georgia,serif;margin:20px 0 28px;letter-spacing:-.04em}.purchaseGrid h1 em{display:block;color:#d4a7b0;font-style:italic}.purchaseGrid>section>p{max-width:590px;font-size:1.08rem;line-height:1.8;color:#cec1c8}
 .purchaseProduct{padding:25px 29px;margin-top:38px;border:1px solid #ffffff30;border-radius:20px;background:#ffffff0a}.purchaseProduct span,.purchaseProduct small{display:block;color:#bcaab8;font-size:.73rem;letter-spacing:.08em}.purchaseProduct h2{font:normal clamp(2rem,2.9vw,2.8rem) Georgia,serif;margin:17px 0 10px}.purchaseProduct p{font-size:.9rem;color:#c7b7c1}.purchaseProduct strong{display:block;font:normal 2.4rem Georgia,serif;margin-top:24px}.purchaseForm{border-radius:24px;border:1px solid #ffffff27;padding:clamp(24px,3vw,38px);background:#241c2b;box-shadow:0 23px 70px #0003}.purchaseForm h2{font:normal 2rem Georgia,serif;margin:0 0 26px}.purchaseForm label{display:block;margin-bottom:21px;font-weight:600}.purchaseForm input:not([type=checkbox]){display:block;width:100%;margin-top:8px;border-radius:10px;border:1px solid #d9b6c04d;background:#12101b;color:#fff;min-height:52px;padding:14px 16px;font-size:1rem}.purchaseForm .consent{display:flex;gap:12px;align-items:flex-start;font-weight:400;font-size:.83rem;color:#ddd1d4;line-height:1.6}.purchaseForm .consent input{margin-top:5px;width:17px;height:17px;accent-color:#e4c4b3}.purchaseForm button{display:block;width:100%;border:0;border-radius:999px;padding:18px 18px;background:#ebc5b4;color:#241c2b;font-size:1.05rem;font-weight:750;cursor:pointer}.purchaseForm button:disabled{opacity:.64;cursor:wait}.purchaseForm>small{display:block;color:#bcaeb7;line-height:1.6;margin-top:18px;text-align:center}.purchaseForm .tracking{display:block;text-align:center;color:#f1c8bb;margin-top:15px}
 @media(max-width:830px){.purchaseGrid{grid-template-columns:1fr}.purchaseNav>span{display:none}.checkout{padding:100px 18px 60px}.purchaseProduct{margin-top:24px}.purchaseGrid>section>p{font-size:.98rem}}
+
+/* Top-level 3D launcher: a real playable game must not be blocked by
+   cross-domain frame-ancestors, iframe focus or mobile WebGL restrictions. */
+.launchRoom{position:relative;isolation:isolate;overflow:hidden;min-height:min(680px,calc(100dvh - 150px));padding:60px 25px 66px}
+.launchRoom::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.55;pointer-events:none;
+ background:radial-gradient(circle at 50% 36%,rgba(245,207,154,.18),transparent 32%),
+ repeating-radial-gradient(ellipse at 50% 48%,transparent 0 76px,rgba(243,205,177,.07) 77px 78px,transparent 79px 122px)}
+.launchRoom::after{content:"";position:absolute;inset:18px;z-index:-1;border:1px solid rgba(232,200,173,.12);pointer-events:none}
+.launchCasoM{background:radial-gradient(ellipse at 48% 30%,#57422f 0%,#25232d 39%,#080a11 79%)}
+.launchUltimaFuncion{background:radial-gradient(ellipse at 49% 30%,#502c47 0%,#241a2d 39%,#080a11 79%)}
+.launchUltimaCampanada{background:radial-gradient(ellipse at 49% 30%,#684752 0%,#312532 39%,#0c1017 79%)}
+.launchEyebrow{border:1px solid rgba(239,200,168,.28);padding:10px 18px;border-radius:999px;max-width:100%;line-height:1.55;text-align:center}
+.launchRoom h1{max-width:810px;font-size:clamp(3rem,7vw,6rem);text-wrap:balance;color:#fff6ed}
+.launchRoom p{font-size:clamp(1rem,1.65vw,1.22rem);max-width:640px;color:#f4e3de;line-height:1.75;margin-bottom:12px}
+.launchRoom a.launchButton{display:flex;align-items:center;justify-content:center;gap:13px;
+ min-height:66px;padding:18px clamp(18px,4vw,36px);max-width:100%;border-radius:10px;
+ font-size:clamp(12px,1.1vw,15px);text-align:center;letter-spacing:.1em;
+ border:1px solid #fff2d088;background:linear-gradient(120deg,#f9ddc6,#e4b2ac);
+ color:#261823!important;box-shadow:0 14px 38px #05040a57;transition:transform .25s,box-shadow .25s,background .25s}
+.launchButton span{width:27px;height:27px;flex:none;display:grid;place-items:center;
+ border:1px solid #6e414c;border-radius:50%;font-size:10px;padding-left:2px}
+.launchButton b{font-weight:400;font-size:19px}
+.launchRoom a.launchButton:hover{background:linear-gradient(120deg,#fff0dc,#e8c0b9);
+ transform:translateY(-3px);box-shadow:0 20px 47px #04030982}
+.launchRoom a.launchButton:focus-visible{outline:3px solid #fff4b9;outline-offset:5px}
+.launchRoom>small{display:block;max-width:650px;text-align:center;margin-top:18px;font-size:12px;color:#c7bdc6;line-height:1.65}
+.launchRoom>small+small{margin-top:7px;font-size:11px;color:#a9a1ad}
+@media(max-width:650px){
+ .playerPage{padding-top:60px}
+ .playerHeader{min-height:70px;gap:9px}
+ .playerHeader .order{min-height:44px;display:flex;align-items:center}
+ .playerHeader+.frameWrap{height:auto;min-height:calc(100dvh - 225px)}
+ .frameWrap{height:auto;min-height:calc(100dvh - 90px)}
+ .launchRoom{min-height:calc(100dvh - 210px);padding:45px 18px 55px}
+ .launchRoom h1{font-size:clamp(37px,10vw,54px);margin:24px 0 16px}
+ .launchRoom p{font-size:15px;line-height:1.65}
+ .launchRoom a.launchButton{width:100%;min-height:62px;font-size:12px;letter-spacing:.07em}
+ .launchRoom::after{inset:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .launchRoom a.launchButton{transition:none!important;transform:none!important}
+}
