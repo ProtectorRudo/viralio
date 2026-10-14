@@ -13,7 +13,7 @@ const common=[
 export const escapeRooms:EscapeRoom[]=[
  {slug:"caso-m",title:"CASO M · Operación Rescate",eyebrow:"MISTERIO · ESCAPE 3D",subtitle:"Una desaparición. Seis cifras. Un sobre que cambia todo.",
  description:"Una misión contrarreloj, tres evidencias y un cajón cerrado. El mensaje personal aparece después del rescate.",
- accent:"#dcaa7b",url:"https://viralio.net/showcase/rescate-mauro/",duration:"3 minutos + un último intento",
+ accent:"#dcaa7b",url:"https://tehiceesto.com/escape-play/caso-m/",duration:"3 minutos + un último intento",
  fields:[...common,{key:"codigo",label:"Código del candado (6 dígitos)",max:6,required:true,hint:"Cambia también la fotografía, la cinta y el archivo de vigilancia.",defaultValue:"131026"},{key:"voz",label:"Audio de la misión (URL HTTPS MP3, opcional)",max:950}]},
  {slug:"ultima-funcion",title:"La Última Función",eyebrow:"CINE · TERROR 3D",subtitle:"El teatro cerró. Tu butaca sigue esperando.",
  description:"Explorá una sala de cine abandonada, resolvé sus acertijos y descubrí una entrada personalizada al final.",
