@@ -405,19 +405,34 @@ export class IsolationWorld {
     this.block("Regulador bipuerto", -.12, 1.34, z - 5.37, .95, .85, .4, mats.dark);
     const regulator = this.block("Selector de regulador", -.12, 1.4, z - 5.12, .51, .36, .1, mats.blue);
     this.target("regulator", "Instalar dos celdas en el regulador", regulator, 1, 2.9);
+    // Three industrial handwheels are bolted to the right-side gas network,
+    // not hovering on poles in the middle of the escape corridor.
     const valveColors = [mats.blue, mats.green, mats.red];
+    const valveOffsets = [3.85, 2.55, -2];
     for (let n = 0; n < 3; n++) {
-      const xx = -2.65 + n * 2.65, zz = z - 2.85;
-      this.pipe("Conducto vertical", xx, 1.5, zz - .15, .12, 1.98, mats.steel);
-      const valve = this.pipe("Válvula", xx, 1.45, zz + .13, .25, .08, valveColors[n]);
-      valve.rotation.x = Math.PI / 2;
-      for (let p = 0; p < 6; p++) {
-        const a = p * Math.PI / 3;
-        this.block("Radio de válvula", xx + Math.cos(a) * .18, 1.45 + Math.sin(a) * .18, zz + .18, .1, .043, .07, valveColors[n]);
+      const zz = z + valveOffsets[n];
+      this.block("Placa de montaje", 5.02, 1.48, zz, .17, .76, .78, mats.dark);
+      this.pipe("Línea de presión vertical", 5.06, 1.47, zz, .085, 1.82, mats.steel);
+      const spindle = this.pipe("Eje giratorio", 4.85, 1.48, zz, .085, .45, mats.steel);
+      spindle.rotation.z = Math.PI / 2;
+      const wheel = new THREE.Group();
+      wheel.name = "Volante de purga " + n;
+      wheel.position.set(4.63, 1.48, zz);
+      this.scene.add(wheel);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(.29, .044, 9, 28), mats.steel);
+      ring.name = "Corona metálica"; ring.rotation.y = Math.PI / 2;
+      wheel.add(ring);
+      for (let spoke = 0; spoke < 6; spoke++) {
+        const spokeMesh = this.block("Radio metálico", 0, 0, 0, .047, .047, .54, mats.rust, wheel);
+        spokeMesh.rotation.x = spoke * Math.PI / 6;
       }
+      const hub = this.pipe("Núcleo cromático", 0, 0, 0, .11, .13, valveColors[n], wheel);
+      hub.rotation.z = Math.PI / 2;
+      const plate = this.block("Indicador de gas", 4.87, 1.94, zz, .11, .14, .38, valveColors[n]);
+      plate.castShadow = false;
       const valveId = ["valve-blue", "valve-green", "valve-red"][n];
-      this.target(valveId, ["Válvula azul", "Válvula verde", "Válvula roja"][n], valve, 1, 3.05);
-      this.rotators.set(valveId, valve);
+      this.target(valveId, ["Válvula azul", "Válvula verde", "Válvula roja"][n], wheel, 1, 2.85);
+      this.rotators.set(valveId, wheel);
     }
     this.block("Sistema de extracción", 4.13, 2.3, z - 4.2, 1.45, 1.55, .8, mats.dark);
     const extract = this.pipe("Ventilador", 4.13, 2.22, z - 3.77, .4, .08, mats.steel);
@@ -700,7 +715,7 @@ export class IsolationWorld {
 
   rotateValve(id: string) {
     const node = this.rotators.get(id);
-    if (node) { node.rotation.z += Math.PI / 3; node.scale.multiplyScalar(1.07); }
+    if (node) node.rotation.x += Math.PI / 3;
   }
   rotateRelay(id: string) {
     const node = this.rotators.get(id);
