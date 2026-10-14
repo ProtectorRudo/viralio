@@ -115,6 +115,7 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
    try{
     if(mode==="single"){
       await page.goto(base+"/escapes/"+slug+"/comprar",{waitUntil:"domcontentloaded"});
+      await page.waitForTimeout(1100); // ensure interactive checkout handlers are hydrated
       await page.locator('input[autocomplete="name"]').fill("Auditoría Te Hice Esto");
       await page.locator('input[autocomplete="tel"]').fill("5492215653163");
       await page.locator('input[type="email"]').fill("auditoria@example.com");
@@ -122,6 +123,7 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
       await page.getByRole("button",{name:/Comprar con Mercado Pago/}).click();
     }else{
       await page.goto(base+"/crear?experiencia=escape-"+slug,{waitUntil:"domcontentloaded"});
+      await page.waitForTimeout(1100);
       await page.locator('input[autocomplete="name"]').fill("Auditoría Te Hice Esto");
       await page.locator('input[autocomplete="tel"]').fill("5492215653163");
       await page.locator('input[type="email"]').fill("auditoria@example.com");
@@ -152,6 +154,7 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
      });
      try{
        await page.goto(base+"/crear?experiencia="+slug,{waitUntil:"domcontentloaded",timeout:45000});
+       await page.waitForTimeout(1100); // wait for React hydration, not only server-rendered HTML
        const name=await page.locator(".order-selected-template").innerText();
        if(!name.includes("ELEGISTE"))throw Error("Gift deep link did not select "+slug);
        await page.locator('input[autocomplete="name"]').fill("Auditoría Te Hice Esto");
