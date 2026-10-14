@@ -189,6 +189,41 @@ for(const viewport of viewports){
   }
   console.log("PASS: premium home gallery with 3 cinematic scenes, separate demos/purchases, touch targets ("+viewport.name+")");
   await inspect(page,"/crear",viewport.name,{fullPage:true});
+  // A regression previously hid the escape collection from the actual purchase route.
+  // Verify the real selector, demo links, step-2 product and assisted-fulfillment copy.
+  const escapeNames=["CASO M","La Última Función","La Última Campanada"];
+  const escapeSlugs=["caso-m","ultima-funcion","ultima-campanada"];
+  if(await page.locator(".thi-simple-escape-card").count()!==3)
+    throw new Error("/crear must display all three escape products");
+  if(await page.locator(".thi-simple-card-pareja").count()!==1)
+    throw new Error("Existing gifts disappeared from /crear");
+  for(const [i,slug] of escapeSlugs.entries()){
+    const card=page.locator(".thi-simple-escape-card").nth(i);
+    const demo=card.locator("a.thi-simple-preview");
+    if((await demo.getAttribute("href"))!=="/escapes/"+slug)
+      throw new Error("Incorrect escape demo on /crear: "+slug);
+    const art=await card.locator("svg").boundingBox();
+    const action=await card.locator(".thi-simple-choose").boundingBox();
+    if(!art||!action||art.width<90||art.height<90||action.height<44)
+      throw new Error("Escape artwork or main CTA inaccessible on "+viewport.name+": "+slug);
+    await card.locator("button.thi-simple-choose").click();
+    const selection=(await page.locator(".order-selected-template").textContent())||"";
+    const explanation=(await page.locator(".order-step-head").textContent())||"";
+    if(!selection.includes(escapeNames[i])||!explanation.includes("nuestro equipo se contacta"))
+      throw new Error("Escape product selection or assisted text missing: "+slug);
+    if(i===0)await page.screenshot({path:path.join(outDir,"crear-escape-checkout-"+viewport.name+".png"),fullPage:true});
+    await page.locator("button.order-back").click();
+  }
+  // Direct links from campaigns and the storefront should preselect each room.
+  const deepLink=await page.goto(base+"/crear?experiencia=escape-caso-m",{waitUntil:"domcontentloaded",timeout:45000});
+  if(deepLink?.status()!==200 || !(await page.locator(".order-selected-template").textContent())?.includes("CASO M"))
+    throw new Error("Escape deep link must open the correct product at step 2");
+  // Ordinary gift flow must stay fully functional.
+  await page.locator("button.order-back").click();
+  await page.locator(".thi-simple-card-pareja button.thi-simple-choose").click();
+  if(!(await page.locator(".order-selected-template").textContent())?.includes("Nuestra historia"))
+    throw new Error("Original couple gift selection regressed");
+  console.log("PASS: /crear displays 3 escape rooms, working demos, correct checkout product and old gifts ("+viewport.name+")");
 
   for(const slug of demos){
     await inspect(page,`/experiencias/${slug}`,viewport.name,{
