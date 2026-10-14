@@ -129,6 +129,8 @@ async function assertStudioAccess(
     .maybeSingle();
 
   if (error || !gift) throw new Error("studio_not_found");
+  // Escape-room customers receive an assisted experience, not an editable template.
+  if (String(gift.experience_slug||"").startsWith("escape-")) throw new Error("studio_not_found");
 
   const story = storyObject(gift.story_data);
   const creator = storyObject(story.creator);
