@@ -101,8 +101,7 @@ export class IsolationWorld {
   enemyMode: "dormant" | "roaming" | "hunting" = "dormant";
   private raycaster = new THREE.Raycaster();
   private pickupMeshes: THREE.Object3D[] = [];
-  private clock = new THREE.Clock();
-  private enemy: THREE.Group;
+  readonly enemy: THREE.Group;
   private enemyMixer?: THREE.AnimationMixer;
   private enemyBase?: THREE.Object3D;
   private enemyLastAttack = -100;
@@ -111,7 +110,6 @@ export class IsolationWorld {
   private disposed = false;
   private pulse = 0;
   private walkPhase = 0;
-  private flash?: THREE.PointLight;
   private signals: GameSignals;
 
   constructor(canvas: HTMLCanvasElement, signals: GameSignals) {
@@ -254,7 +252,7 @@ export class IsolationWorld {
     this.light(-2.6, z + 2.4);
     this.light(2.2, z - 2.7, dark);
     const door = this.block("Puerta de contención", 0, 1.43, back + .16, 1.97, 2.78, .17, mats.dark);
-    this.block("Emblema de compuerta", 0, 2.43, back + .29, 1.15, .075, .015, mats.red, door);
+    this.block("Emblema de compuerta", 0, 2.40, back + .29, 1.15, .075, .015, mats.red);
     this.doorPanels.push(door);
     this.doors.push(door);
     if (index === 0) this.buildEmergency(z);
@@ -272,7 +270,7 @@ export class IsolationWorld {
     this.cabinet(-4.3, z - 2.3, true);
     this.block("Tótem informativo", -.6, 1.2, z + 2.66, .16, 2.2, .18, mats.dark);
     this.panel(["REGISTRO DE TRIAGE", "P1 = 4 · P2 = 2", "P3 = 7 / EDAD NO VÁLIDA"], -.4, 2.05, z - 6.24, 3.1, 1.1);
-    this.panel(["SALA 01", "ALIMENTACIÓN AUXILIAR", "USE FUSIBLE F-08"], -5.22, 2, z - 1.4, 2.6, 1.06);
+    this.panel(["SALA 01", "ALIMENTACIÓN AUXILIAR", "USE FUSIBLE F-08"], -3.55, 2.8, z - 6.24, 2.6, 1.06);
     const fuse = this.block("Fusible F-08", -3.09, 1.16, z + 2.22, .14, .13, .26, mats.amber);
     this.target("fuse", "Retirar fusible F-08 del mostrador", fuse, 0, 2.55);
     const fuseBox = this.block("Panel de fusibles", -5.16, 1.42, z - 1.5, .23, 1.0, .86, mats.dark);
@@ -313,7 +311,7 @@ export class IsolationWorld {
     const extract = this.pipe("Ventilador", 4.13, 2.22, z - 3.77, .4, .08, mats.steel);
     extract.rotation.x = Math.PI / 2;
     this.target("extractor", "Activar extracción — purga completa", extract, 1, 3.6);
-    this.panel(["ATENCIÓN", "SI ESCUCHÁS PASOS", "NO TE QUEDES QUIETO"], -4.79, 2.82, z + 4.35, 1.4, 1.2, "#efb18f");
+    this.panel(["ATENCIÓN", "SI ESCUCHÁS PASOS", "NO TE QUEDES QUIETO"], -3.74, 2.8, z - 6.24, 1.4, 1.2, "#efb18f");
     const hide = this.block("Cortina de aislamiento", -4.27, 1.53, z + 3.85, .12, 2.7, 1.3, mats.vinyl);
     this.target("hide", "Ocultarse detrás de la cortina", hide, 1, 2.3);
     for (const x of [-4.97, 4.97]) for (let i = 0; i < 5; i++) this.pipe("Red de presión", x, 3.65, z - 4 + i * 1.8, .047, 1.1, mats.steel).rotation.x = Math.PI / 2;
@@ -333,7 +331,7 @@ export class IsolationWorld {
     this.panel(["APERTURA DE EMERGENCIA", "A = ENCENDIDO", "B = APAGADO", "C = ENCENDIDO"], 0, 2.6, z - 6.23, 3.5, 1.56, "#bddfc1");
     const log = this.block("Registro audio #15", -4.28, 1.26, z - 2.8, .78, .18, .56, mats.dark);
     this.target("log", "Registro de identidad — expediente 15", log, 2, 3.4);
-    this.panel(["TRANSMISIÓN INTERCEPTADA", "LA VOZ NO ES HUMANA", "PROTOCOLO: DESCONFIAR"], -5.17, 2.61, z - 2.9, 1.7, 1.18, "#ebbf9f");
+    this.panel(["TRANSMISIÓN INTERCEPTADA", "LA VOZ NO ES HUMANA", "PROTOCOLO: DESCONFIAR"], -3.88, 2.61, z - 6.23, 1.7, 1.18, "#ebbf9f");
     this.block("Consola de control", 0, .97, z - 3.2, 2.35, .78, .95, mats.steel);
     const speaker = this.block("Intercomunicador", 0, 1.42, z - 3.3, .9, .65, .14, mats.screen);
     this.target("speaker", "Elegir comunicación de emergencia", speaker, 2, 3.1);
