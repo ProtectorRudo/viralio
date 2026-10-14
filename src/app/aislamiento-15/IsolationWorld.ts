@@ -404,8 +404,10 @@ export class IsolationWorld {
     }, undefined, () => { /* Graceful fallback remains visible if network is unavailable. */ });
   }
 
-  getFocus(): Focus | null {
-    this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
+  getFocus(): Focus | null { return this.hitAt(0, 0); }
+
+  hitAt(ndcX: number, ndcY: number): Focus | null {
+    this.raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), this.camera);
     const meshes = this.raycaster.intersectObjects(this.pickupMeshes, true);
     for (const hit of meshes) {
       let object: THREE.Object3D | null = hit.object;
