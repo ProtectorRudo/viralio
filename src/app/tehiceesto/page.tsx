@@ -110,6 +110,7 @@ export default async function TeHiceEstoHome() {
                 <span className="thh-v2-mini-lock" aria-hidden="true"/>
                 Después elegís la experiencia y pagás de forma segura con <strong>Mercado Pago</strong>.
               </p>
+              <p><Link className="thh-consumer-rights-link" href={href("/arrepentimiento")}>Botón de arrepentimiento ↗</Link></p>
               <a className="thh-escape-hero-link" href="#escapes"><strong>NUEVO</strong> Salas de escape con un secreto al final <span aria-hidden="true">↗</span></a>
             </div>
           </div>
@@ -291,6 +292,7 @@ export default async function TeHiceEstoHome() {
             <a href="#para-quien">Para quién</a>
             <a href="#recorrido">Qué recibe</a>
             <a href="#proceso">Cómo funciona</a>
+            <Link href={href("/arrepentimiento")}>Botón de arrepentimiento</Link>
           </nav>
           <span>ARGENTINA · 2026</span>
         </footer>
