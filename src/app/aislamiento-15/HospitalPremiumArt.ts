@@ -289,6 +289,7 @@ export function installHospitalPremiumArt(scene: THREE.Scene, materials: Materia
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     const cloud = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xaec4b7, size: .023, transparent: true, opacity: .31, depthWrite: false, sizeAttenuation: true }));
     cloud.frustumCulled = false;
+    cloud.userData.chamber = room;
     scene.add(cloud); dustClouds.push(cloud);
   }
   addInstanced(scene, circle, steel, 180, (i, obj) => {
