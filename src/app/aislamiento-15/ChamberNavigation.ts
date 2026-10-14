@@ -20,6 +20,7 @@ const solids: ReadonlyArray<ReadonlyArray<Footprint>> = [
     {x:4.04,z:-12.8,hw:1.05,hd:.53},
     {x:-4.04,z:-13.55,hw:1.05,hd:.53},
     {x:4.13,z:-17.2,hw:.78,hd:.47}, // extractor
+    {x:-2.9,z:-17.0,hw:.51,hd:.28}, // side-mounted oxygen station
     {x:-4.45,z:-15.7,hw:.49,hd:.84}, // cabinet
   ],
   [
