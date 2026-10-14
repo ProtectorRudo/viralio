@@ -105,7 +105,7 @@ Deno.serve(async(req:Request)=>{
      const {data:order,error:orderError}=await supabase.from("orders").select("status").eq("gift_id",data.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
      if(orderError)return json(origin,{error:"order_read_failed"},500);
      if(order&&order.status!=="approved")return json(origin,{error:"payment_required"},409);
-     if(data.status==="awaiting_payment")return json(origin,{error:"payment_required"},409);
+     if(data.status==="awaiting_payment"&&(!order||order.status!=="approved"))return json(origin,{error:"payment_required"},409);
      try{validate(room,data.story_data?.escapeConfig)}catch{return json(origin,{error:"complete_personalization_before_publishing"},409)}
    }
    const {error:writeError}=await supabase.from("gifts").update({status:publish?"published":"draft",published_at:publish?new Date().toISOString():null}).eq("public_code",code);
