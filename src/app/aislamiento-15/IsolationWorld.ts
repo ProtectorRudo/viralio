@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { installHospitalPremiumArt } from "./HospitalPremiumArt";
+import { installHospitalCinematics } from "./HospitalCinematics";
 
 export type Chamber = 0 | 1 | 2;
 export type Focus = { id: string; label: string; distance: number };
@@ -120,6 +121,8 @@ export class IsolationWorld {
   private pulse = 0;
   private walkPhase = 0;
   private art?: ReturnType<typeof installHospitalPremiumArt>;
+  private director?: ReturnType<typeof installHospitalCinematics>;
+  private stagedThreats=new Set<number>();
   private clinicalBeds: THREE.Group[] = [];
   private loadedAssets: THREE.Object3D[] = [];
   private doorDressing: THREE.Group[] = [];
@@ -149,18 +152,19 @@ export class IsolationWorld {
     if (this.softwareRenderer) this.scalePixelRatio = .78;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.69;
+    this.renderer.toneMappingExposure = 1.58;
     this.renderer.shadowMap.enabled = !this.softwareRenderer;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setPixelRatio(this.scalePixelRatio);
     this.scene.background = new THREE.Color("#12191a");
     this.scene.fog = new THREE.FogExp2(0x10191b, .022);
-    this.scene.add(new THREE.HemisphereLight(0xb5c9bc, 0x202123, 1.28));
+    this.scene.add(new THREE.HemisphereLight(0xb5c9bc, 0x202123, 1.06));
     this.camera.rotation.order = "YXZ";
     const floor = gridTexture();
     if (floor) mats.tile.map = floor;
     for (let i = 0; i < 3; i++) this.buildRoom(i as Chamber);
     this.art = installHospitalPremiumArt(this.scene, mats);
+    this.director = installHospitalCinematics(this.scene);
     this.indexPremiumArt();
     void this.loadClinicalAssets();
     void this.loadMedicalSetPieces();
@@ -171,7 +175,7 @@ export class IsolationWorld {
     this.camera.position.copy(this.player);
     // One shadowed spotlight rather than the extremely expensive six-pass
     // cubemap shadow for every point light. Only current-room geometry is active.
-    this.keySpot = new THREE.SpotLight(0xc3e4d7, 19, 14, .87, .78, 1.7);
+    this.keySpot = new THREE.SpotLight(0xc3e4d7, 22, 14, .83, .72, 1.7);
     this.keySpot.position.set(-2.65, 3.66, 2.6);
     this.keySpot.target.position.set(0, 1.2, -1.8);
     this.keySpot.castShadow = !this.softwareRenderer;
@@ -492,7 +496,8 @@ export class IsolationWorld {
     if (this.keySpot) {
       const z = CENTER[this.room];
       this.keySpot.position.set(-2.65, 3.66, z + 2.65);
-      this.keySpot.target.position.set(0, 1.2, z - 1.9);
+      this.keySpot.target.position.set(this.room===2?-.7:0, 1.36, z - 2.8);
+      this.keySpot.color.setHex(this.room===0?0xd6e9dc:this.room===1?0x9ad8d0:0xc6a7a0);
     }
   }
 
@@ -823,7 +828,20 @@ export class IsolationWorld {
       this.alertSign.visible = this.room === 0 && this.elapsed > 62 && this.elapsed < 86;
     }
     if (this.running) this.updateEnemy(dt);
+    const threatDistance = this.room===0 ? 30 :
+      Math.hypot(this.player.x-this.enemy.position.x,this.player.z-this.enemy.position.z);
+    if (this.running && this.room>0 && this.elapsed>this.nextThreatAt+4 && !this.stagedThreats.has(this.room)) {
+      this.stagedThreats.add(this.room);
+      this.signals.onThreat(this.room===1
+        ? "EL SENSOR DETECTA MOVIMIENTO DETRÁS DEL CRISTAL. NO TE DETENGAS."
+        : "PROTOCOLO ROJO: EL SISTEMA TE HA RECONOCIDO.");
+    }
+    if (this.keySpot){
+      const pulse = this.elapsed < this.flickerUntil ? .24 : 1;
+      this.keySpot.intensity = (this.room===0 ? 22 : this.room===1 ? 25 : 21) * pulse * (1-danger*.14);
+    }
     this.art?.update(this.elapsed, danger);
+    this.director?.update({elapsed:this.elapsed,danger,room:this.room,threat:Math.max(0,1-threatDistance/8)});
     // Adaptive internal resolution: preserve input/HUD responsiveness on
     // middle-range phones while never exceeding device-native resolution.
     if (this.running && !document.hidden && dt < .065) {
@@ -851,6 +869,7 @@ export class IsolationWorld {
       if (o instanceof THREE.Mesh && o.geometry !== boxGeo && o.geometry !== unitCylinder) o.geometry.dispose();
     });
     this.art?.dispose();
+    this.director?.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }
