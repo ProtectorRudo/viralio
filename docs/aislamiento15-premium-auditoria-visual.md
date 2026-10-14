@@ -40,3 +40,26 @@
 La verificación de compilación y de interacciones NO sustituye 30 FPS reales en equipos Android de gama media, pruebas de 15 minutos con jugadores no familiarizados, ni una certificación de premium comercial. Esas puertas de calidad siguen abiertas.
 
 **Próxima inversión artística:** priorizar (16) criatura única, (17) reemplazo de los últimos props de bloque, (18) mecanismos físicamente animados; luego medir (19) y (20) antes de comercializar.
+
+
+## Inspección de capturas reales — correcciones aplicadas
+
+La primera auditoría de las seis capturas reveló tres defectos que no aparecían en las pruebas de TypeScript: (a) un pod central ocultaba la escena de Aislamiento, (b) un armario bloqueaba la vista de Contención y (c) las transmisiones superpuestas ocupaban el centro de la pantalla. Los tres se corrigieron.
+
+La segunda inspección encontró que las ruedas de purga aún parecían discos de colores suspendidos delante de la puerta. Se sustituyeron por tres mecanismos metálicos con corona, radios, eje, placa de montaje e hitbox táctil discreta, instalados sobre la pared lateral.
+
+**Resultado de la última verificación automática:**
+
+- Fotografías de Urgencias, Aislamiento y Contención en escritorio 1280×720 y móvil vertical 390×844.
+- Nueve archivos GLB de equipamiento hospitalario y personaje con respuesta 200.
+- Ningún error JavaScript en las sesiones de captura.
+- Circuito lógico completo de tres sectores y evacuación final aprobado en Chromium.
+- Publicación de GitHub Pages completada.
+
+**Limitación de la evidencia:** el flujo de captura sitúa la cámara directamente en cada sala para auditar su composición. Por eso el HUD de esas seis imágenes puede conservar el título de Urgencias y un temporizador reciente, aunque el entorno sea de otra sala. El cambio real de HUD fue cubierto por el test independiente del recorrido completo. No usar esas seis capturas como prueba de una partida de 15 minutos.
+
+**Calidad pendiente:** el modelo del perseguidor sigue siendo un GLB propio reutilizado y, pese al oscurecimiento de sus materiales, no constituye un diseño de criatura nuevo. Parte del mobiliario secundario conserva formas simplificadas. Es imprescindible un personaje autoral, sustitución de props restantes y pruebas de FPS/duración con jugadores antes de venderlo como producto 3D premium definitivo.
+
+**Ver evidencias de QA:**
+- https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38639232956
+- https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38639238559
