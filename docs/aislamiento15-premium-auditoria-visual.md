@@ -23,7 +23,7 @@
 | 13 | Intertítulos de capítulo animados, tipografía del universo HÉLIX | Alto | Bajo | Integrado |
 | 14 | Peligro lateral discreto en móvil al acercarse el perseguidor | Alto | Bajo | Integrado |
 | 15 | PBR con diferencias claras entre cerámica, goma, metal, vidrio y textiles | Muy alto | Medio | Parcial |
-| 16 | Nuevo monstruo único con rostro y animaciones personalizadas | Muy alto | Alto | Pendiente |
+| 16 | Criatura HÉLIX con máscara propia sobre humano CC0, 7 clips esqueléticos y persecución física | Muy alto | Alto | Implementado parcialmente; faltan pruebas de acabado comercial |
 | 17 | Reemplazo de cada prop restante de blockout por GLB profesional | Muy alto | Alto | Parcial |
 | 18 | Animación física y colisiones de válvulas, relés, cajones y accesorios | Alto | Medio | Parcial |
 | 19 | Perfilado real de draw calls, transparencias y resolución en Android físico | Muy alto | Alto | Pendiente |
@@ -39,7 +39,7 @@
 
 La verificación de compilación y de interacciones NO sustituye 30 FPS reales en equipos Android de gama media, pruebas de 15 minutos con jugadores no familiarizados, ni una certificación de premium comercial. Esas puertas de calidad siguen abiertas.
 
-**Próxima inversión artística:** priorizar (16) criatura única, (17) reemplazo de los últimos props de bloque, (18) mecanismos físicamente animados; luego medir (19) y (20) antes de comercializar.
+**Progreso adicional (14/10/2026):** base humana animada CC0 de 7 clips comprimida a 6MB, geometría original del rostro, anclaje a hueso de la cabeza, 6 momentos de tensión con sonido sincronizado, persecución A* y colisiones para mobiliario fijo. Pruebas automatizadas: recorrido integral, ruta contra obstáculos, capturas en escritorio y celular vertical. **Próxima inversión:** pulir criatura (texturas y proporciones), sustituir los últimos props simples, perfilar teléfonos físicos y medir la partida completa con personas nuevas antes de comercializar.
 
 
 ## Inspección de capturas reales — correcciones aplicadas
