@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { getExperience } from "../../data";
+import { getEscapeRoom } from "../../escape-rooms";
 import OrderStatusAutoRefresh from "./OrderStatusAutoRefresh";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +78,45 @@ export default async function OrderStatusPage({
     ?new Intl.NumberFormat("es-AR",{style:"currency",currency:data.order.currency||"ARS",maximumFractionDigits:0}).format(data.order.amountMinor/100)
     :null;
   const waText=encodeURIComponent(`Hola! Quiero consultar por mi experiencia Te Hice Esto. Código: ${data.code.toUpperCase()}`);
+
+  // Sold escape rooms are an assisted-production product, not self-service scenes.
+  // Keep all standard gift journeys untouched.
+  const escapeRoom=data.experienceSlug.startsWith("escape-")
+    ?getEscapeRoom(data.experienceSlug.slice("escape-".length)):undefined;
+  if(escapeRoom){
+    const support="https://wa.me/5492215653163?text="+encodeURIComponent(
+      "Hola, compré "+escapeRoom.title+" en Te Hice Esto. Mi pedido es "+data.code.toUpperCase()+". Quiero coordinar la personalización de la invitación."
+    );
+    return <main className="order-status-shell">
+      <header className="order-status-top"><Link href={href("/")} className="order-status-brand">TE HICE ESTO</Link><span>EXPERIENCIA DE ESCAPE PRIVADA</span></header>
+      <section className="order-status-hero">
+        <span className="order-status-kicker">PEDIDO · {data.code.toUpperCase()}</span>
+        <h1>{ready?"La aventura está lista.":paid?"Tu aventura ya tiene dueño.":"Tu misterio quedó reservado."}</h1>
+        <p>{escapeRoom.title} · {data.giverName}</p>
+        <div className={`order-status-live ${ready?"ready":paid?"production":"payment"}`}>
+          <i/><span>{ready?"LISTO PARA SORPRENDER":paid?"PAGO CONFIRMADO · PERSONALIZACIÓN A CARGO DE NUESTRO EQUIPO":"ESPERANDO CONFIRMACIÓN DE PAGO"}</span>
+        </div>
+      </section>
+      <section className="order-status-waiting">
+        <div><span>{ready?"MISIÓN PREPARADA":paid?"SIGUIENTE PASO":"PAGO SEGURO"}</span>
+        <h2>{ready?"Compartí la sorpresa.":paid?"Ahora nosotros preparamos el secreto.":"Primero confirmamos tu compra."}</h2>
+        <p>{ready
+          ?"Tu juego está terminado y personalizado. Compartí exclusivamente el enlace privado con su destinatario."
+          :paid
+            ?"El pago está confirmado. Nos encargamos de personalizar los nombres, la invitación y la carta, sin cambiar el diseño original de la sala. Escribinos con el código del pedido para definir los detalles."
+            :"Conservamos tu pedido. Después del pago, coordinamos la personalización por WhatsApp y te entregamos una experiencia lista para regalar."}</p></div>
+        <div className="order-status-actions">
+          {ready&&<Link href={href("/escape-r/"+data.code)} className="order-status-pay">Abrir experiencia terminada ↗</Link>}
+          {!paid&&!ready&&data.order?.checkoutUrl&&<a href={data.order.checkoutUrl} className="order-status-pay" rel="nofollow">Ir a Mercado Pago ↗</a>}
+          <a href={support} target="_blank" rel="noreferrer noopener" className="order-status-whatsapp">{paid?"Coordinar personalización por WhatsApp":"Consultar por WhatsApp"} ↗</a>
+        </div>
+      </section>
+      <footer className="order-status-footer">
+        <Link href={href("/pedido/"+data.code)}>Actualizar estado ↻</Link>
+        <OrderStatusAutoRefresh active={!ready}/>
+      </footer>
+    </main>;
+  }
 
   return <main className="order-status-shell">
     <div className="order-status-aura aura-a" aria-hidden="true"/>
