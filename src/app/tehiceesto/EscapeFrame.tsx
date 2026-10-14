@@ -12,7 +12,14 @@ export default function EscapeFrame({room,config={},customer=false}:{
    <a className={styles.order} href={"https://wa.me/5492215653163?text="+encodeURIComponent("Hola! Quiero personalizar "+room.title+" para regalar. ¿Cómo seguimos?")} target="_blank" rel="noopener noreferrer">QUIERO REGALAR ESTA SALA ↗</a>
   </div>}
   <div className={styles.frameWrap}>
-   <iframe src={src} title={room.title} className={styles.frame} allow="autoplay; fullscreen" allowFullScreen loading="eager" referrerPolicy="strict-origin-when-cross-origin"/>
+   {room.slug==="caso-m"?
+    <div className={styles.launchRoom}>
+      <span>CASO M · EXPERIENCIA INTERACTIVA 3D</span>
+      <h1>Tres minutos.<br/>Un secreto.</h1>
+      <p>La misión necesita la pantalla completa para que puedas recorrer la sala, encontrar pruebas y resolver el candado.</p>
+      <a href={src} target="_self">INICIAR OPERACIÓN RESCATE ↗</a>
+    </div>:
+    <iframe src={src} title={room.title} className={styles.frame} allow="autoplay; fullscreen" allowFullScreen loading="eager" referrerPolicy="strict-origin-when-cross-origin"/>}
   </div>
   {!customer&&<div className={styles.playerFooter}>
     <p>El juego empieza en la pantalla. La sorpresa aparece cuando logran escapar.</p>
