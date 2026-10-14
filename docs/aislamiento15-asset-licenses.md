@@ -37,3 +37,13 @@ Files are obtained from the provider's dedicated download endpoints. The deploym
 3. Replace any remaining blockout equipment with fully authored professional glTF assets; verify original character art direction and skeletal clips.
 4. Confirm sound cues, illumination and props remain legible on a vertically held phone.
 5. Do not claim these goals have been met until verified.
+
+## Premium animated Celador character (October 2026)
+
+- Primary local asset: `warden-human.glb`, adapted from [Innerscene locomotion collection — Harper animated](https://www.innerscene.com/tools/library/3d-parts/locomotion-collection-harper-3d-person-animated-797e1e2a). The source declares **CC0** and contains seven original skeletal clips from MakeHuman/MPFB CC0 assets. Licensed for commercial reuse and derivative material.
+- Build downloads from `https://www.innerscene.com/api/library/locomotion-collection-harper-3d-person-animated-797e1e2a/download` and runs pinned glTF-Transform texture resize to 1024px plus WebP encoding. It rejects a bundle above 10MB or fewer than three animations. This is a human locomotion rig; it does **not** claim original mocap performances.
+- `OrderlyCreature.ts` supplies original 3D faceplate, breathing apparatus, worn steel components, and identity-specific medical restraints.
+- Existing studio `warden.glb` remains as a fallback; Khronos CesiumMan CC BY 4.0 is tertiary fallback.
+- Runtime uses `AnimationMixer` action crossfades. Loading is progressive, so the level can begin before the high-quality model has downloaded.
+
+**Asset source:** Innerscene, "Locomotion collection – Harper 3D Person, Animated," CC0, accessed 14/10/2026. The source's real-world body textures may require artistic review to suit the intended hospital threat; certification requires screenshots and real-device performance tests.
