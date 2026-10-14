@@ -143,7 +143,7 @@ for(const view of [{name:"desktop",width:1440,height:900},{name:"mobile",width:3
    if(r?.status()!==200)throw Error("Not purchasable");
    const body=await page.locator("body").innerText();
    if(!body.includes("25.000")||!body.includes("Nuestro equipo")||!body.includes("Mercado Pago"))throw Error("Price, assisted process or payment missing");
-   const c=await page.locator(".checkout").boundingBox();
+   const c=await page.locator('main[class*="checkout"]').boundingBox();
    if(!c||c.width>view.width+10)throw Error("Purchase overflow");
  });
  await check(view.name+" unknown gift/escape cannot be purchased",async()=>{
