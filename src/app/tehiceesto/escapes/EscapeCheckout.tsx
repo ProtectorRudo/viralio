@@ -61,7 +61,7 @@ export default function EscapeCheckout({room}:{room:EscapeRoom}){
     {error&&<p className={styles.error} role="alert">{error}</p>}
     <button disabled={busy} type="submit">{busy?"Preparando pago…":"Comprar con Mercado Pago →"}</button>
     {code&&<Link href={"/pedido/"+code} className={styles.tracking}>Consultar mi pedido ↗</Link>}
-    <small>El cobro se realiza exclusivamente en Mercado Pago. No se solicitan datos de tarjeta en esta página. <Link href="/arrepentimiento">Botón de arrepentimiento ↗</Link></small>
+    <small>El cobro se realiza exclusivamente en Mercado Pago. No se solicitan datos de tarjeta en esta página. <Link href="/privacidad">Cómo usamos tus datos</Link> · <Link href="/arrepentimiento">Botón de arrepentimiento ↗</Link></small>
    </form>
   </div>
  </main>;
