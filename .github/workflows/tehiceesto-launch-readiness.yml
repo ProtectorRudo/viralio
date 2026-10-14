@@ -1,4 +1,4 @@
-name: Te Hice Esto commercial launch certification
+name: Te Hice Esto commercial launch certification (post-deploy)
 on:
   push:
     branches: [main]
@@ -68,3 +68,6 @@ jobs:
           name: tehiceesto-commercial-launch-audit
           path: tehiceesto-launch-readiness/
           retention-days: 14
+
+# This live-production certification runs only after the commit is active on tehiceesto.com.
+# The audit mocks both order and withdrawal submissions; it must never charge a customer.
