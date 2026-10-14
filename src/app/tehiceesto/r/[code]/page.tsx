@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound,redirect } from "next/navigation";
 import ExperienceEngine from "../../ExperienceEngine";
 import PremiumV1Engine from "../../template-v1/ExperienceEngine";
 import PremiumV2Engine from "../../template-v2/ExperienceEngine";
@@ -49,7 +49,8 @@ export default async function PublishedGiftPage({
   }
   const response=await fetch(`${SUPABASE_URL}/functions/v1/gift-read?code=${encodeURIComponent(code)}`,{headers:{apikey:PUBLISHABLE_KEY,accept:"application/json"},cache:"no-store"});
   if(response.status===404)notFound();if(!response.ok)throw new Error("gift_read_failed");
-  const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const frozenV2=templateVersion==="premium-v2";const frozenV3=templateVersion==="premium-v3";const frozenV4=templateVersion==="premium-v4";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):frozenV2?getPremiumV2Experience(payload.gift.experience_slug):frozenV3?getPremiumV3Experience(payload.gift.experience_slug):frozenV4?getPremiumV4Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
+  const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};if(payload.gift.experience_slug.startsWith("escape-"))redirect("/escape-r/"+code);
+  const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const frozenV2=templateVersion==="premium-v2";const frozenV3=templateVersion==="premium-v3";const frozenV4=templateVersion==="premium-v4";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):frozenV2?getPremiumV2Experience(payload.gift.experience_slug):frozenV3?getPremiumV3Experience(payload.gift.experience_slug):frozenV4?getPremiumV4Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
   const ordered=[...(payload.media||[])].sort((a,b)=>a.sort_order-b.sort_order);
   const hasPhoto=ordered.some(item=>item.kind==="image"&&item.url);
   const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
