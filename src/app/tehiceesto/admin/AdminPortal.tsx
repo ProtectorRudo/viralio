@@ -438,7 +438,7 @@ export default function AdminPortal() {
                 {gifts.map((gift) => (
                   <tr key={gift.public_code}>
                     <td>
-                      <Link href={`/tehiceesto/admin/${gift.public_code}`} className="thi-admin-gift-link">
+                      <Link href={gift.experience_slug.startsWith("escape-")?`/tehiceesto/admin/escapes/${gift.public_code}`:`/tehiceesto/admin/${gift.public_code}`} className="thi-admin-gift-link">
                         <strong>{gift.recipient_name}</strong>
                         <span>Editar →</span>
                       </Link>
