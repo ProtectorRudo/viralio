@@ -6,7 +6,8 @@ const base="https://tehiceesto.com";
 const outDir=path.resolve("tehiceesto-production-visual");
 await fs.mkdir(outDir,{recursive:true});
 
-const demos=["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","papa","amistad"];
+// Auditable full journeys only: these three models are intentionally paused.
+const demos=["pareja","cumpleanos","hijos","mama","papa","amistad"];
 const viewports=[
   {name:"desktop",width:1440,height:1000},
   {name:"mobile",width:390,height:844},
