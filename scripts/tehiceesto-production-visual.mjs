@@ -161,6 +161,33 @@ for(const viewport of viewports){
   const page=await context.newPage();
 
   await inspect(page,"/",viewport.name,{fullPage:true});
+  const coverAudit=await page.evaluate(()=>{
+    const collection=document.querySelector("#escapes");
+    const cards=[...document.querySelectorAll("#escapes .thh-escape-card")];
+    const sceneSizes=cards.map(card=>{
+      const svg=card.querySelector("svg"),box=svg?.getBoundingClientRect();
+      const demo=card.querySelector(".thh-escape-demo"),buy=card.querySelector(".thh-escape-buy");
+      const d=demo?.getBoundingClientRect(),b=buy?.getBoundingClientRect();
+      return {
+        width:box?.width||0,height:box?.height||0,
+        demoHeight:d?.height||0,buyHeight:b?.height||0,
+        demoUrl:demo?.getAttribute("href")||"",buyUrl:buy?.getAttribute("href")||"",
+      };
+    });
+    const bg=collection?getComputedStyle(collection).backgroundImage:"";
+    return {count:cards.length,sceneSizes,bg,isHeader:Boolean(document.querySelector(".thh-v2-header"))};
+  });
+  if(coverAudit.count!==3||!coverAudit.bg.includes("linear-gradient")||!coverAudit.isHeader){
+    throw new Error("Home escape collection missing its 3 cinematic scenes: "+JSON.stringify(coverAudit));
+  }
+  for(const [i,item] of coverAudit.sceneSizes.entries()){
+    const slug=["caso-m","ultima-funcion","ultima-campanada"][i];
+    if(item.width<170||item.height<105||item.demoHeight<44||item.buyHeight<44||
+      !item.demoUrl.endsWith("/escapes/"+slug)||!item.buyUrl.endsWith("/escapes/"+slug+"/comprar")){
+      throw new Error("Invalid gallery scene or touch CTA for "+slug+": "+JSON.stringify(item));
+    }
+  }
+  console.log("PASS: premium home gallery with 3 cinematic scenes, separate demos/purchases, touch targets ("+viewport.name+")");
   await inspect(page,"/crear",viewport.name,{fullPage:true});
 
   for(const slug of demos){
