@@ -481,6 +481,7 @@ export class FootballWorld {
   const dy=target.position.y-this.camera.position.y;
   const dz=target.position.z-this.camera.position.z;
   this.yaw=Math.atan2(-dx,-dz);
+  this.renderer.domElement.dataset.aimTarget=id;
   this.pitch=THREE.MathUtils.clamp(Math.atan2(dy,Math.hypot(dx,dz)),-1.12,1.12);
   return true;
  }
@@ -520,7 +521,11 @@ export class FootballWorld {
   this.camera.position.y=1.68+this.headSway;
   this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
   this.focusElapsed+=dt;
-  if(this.focusElapsed>0.14){this.focusElapsed=0;this.handlers.position?.(this.camera.position.x,this.camera.position.y,this.camera.position.z,this.yaw);const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
+  if(this.focusElapsed>0.14){this.focusElapsed=0;
+   this.renderer.domElement.dataset.playerPosition=this.camera.position.x.toFixed(2)+","+this.camera.position.z.toFixed(2);
+   this.renderer.domElement.dataset.playerYaw=this.yaw.toFixed(2);
+   this.renderer.domElement.dataset.focusTarget=this.active||"";
+   this.handlers.position?.(this.camera.position.x,this.camera.position.y,this.camera.position.z,this.yaw);const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
  }
  resize(){
   const canvas=this.renderer.domElement;const parent=canvas.parentElement;
