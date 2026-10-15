@@ -185,3 +185,14 @@
 .lj-loading-scene:after{content:"";width:160px;height:3px;margin-top:14px;
  background:linear-gradient(90deg,transparent,#e2c389,transparent);animation:lj-scan-load 1s ease-in-out infinite alternate}
 @keyframes lj-scan-load{from{opacity:.3;transform:scaleX(.34)}to{opacity:1;transform:scaleX(1)}}
+
+/* The championship stays inside the 3D stadium instead of cutting to a flat page. */
+.lj-root-victory .lj-ending{
+ position:absolute;inset:0;z-index:12;min-height:100svh;overflow-y:auto;
+ background:linear-gradient(180deg,rgba(1,11,22,.77),rgba(2,16,28,.58) 42%,rgba(2,10,20,.90) 100%);
+ backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
+.lj-root-victory .lj-ending:before{opacity:.3;background:radial-gradient(ellipse at 50% 40%,transparent,rgba(0,5,14,.65))}
+.lj-root-victory .lj-end-score{background:#071b2ce6;box-shadow:0 10px 40px #0009;border-color:#d9c08e66}
+.lj-root-victory .lj-ending h1{text-shadow:0 12px 50px #000d}
+.lj-root-victory .lj-ending h2{text-shadow:0 7px 24px #000e}
