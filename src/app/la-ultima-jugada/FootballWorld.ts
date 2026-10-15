@@ -5,6 +5,7 @@ import {paintTacticalFeed,type ReplayCamera} from "./TacticSimulation";
 import {FinaleDirector} from "./FinaleDirector";
 import {buildStadiumSet} from "./StadiumSet";
 import {createCoach,createIntruder} from "./Actors";
+import {proceduralSurface} from "./MaterialLibrary";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
@@ -143,10 +144,15 @@ export class FootballWorld {
   box(w+.04,.04,.08,x,y-h/2,z+depth/2,trim,this.root);
  }
  private shell(chapter:Chapter) {
-  const concrete=mat(chapter===0?0x687681:0x64727a,.16,.89);
-  const deep=mat(0x334653,.3,.64);
+  const concreteTexture=proceduralSurface("concrete",this.mobile);
+  const flooringTexture=proceduralSurface("rubber",this.mobile);
+  const ceilingTexture=proceduralSurface("ceiling",this.mobile);
+  this.disposableTextures.push(...concreteTexture.textures,...flooringTexture.textures,...ceilingTexture.textures);
+  const concrete=concreteTexture.material;
+  const floorMat=flooringTexture.material;
+  const deep=ceilingTexture.material;
   const steel=mat(0x53616b,.83,.35);
-  box(13,.25,14,0,-.16,0,mat(palette.floor,.24,.83),this.root);
+  box(13,.25,14,0,-.16,0,floorMat,this.root);
   box(13,.25,14,0,4.24,0,deep,this.root);
   box(.28,4.35,14,-6.4,2.05,0,concrete,this.root);
   box(.28,4.35,14,6.4,2.05,0,concrete,this.root);
