@@ -436,6 +436,10 @@ export class FootballWorld {
    this.desk(-2.3,.65,2.9);
    this.panel(-2.25,1.87,1.43,2.32,1.36,"INFORME FINAL",["VERIFICAR LA PRUEBA","FUENTE ORIGINAL"],"prueba");
    this.actors.push(createCoach(this.root,()=>!this.destroyed));
+   // Treat the coach as a physical human. Before this collider was added,
+   // players could push the first-person camera inside his low-poly face and
+   // hair during the final handoff. Keep roughly one metre of separation.
+   this.obstacles.push({minX:-.08,maxX:1.04,minZ:-5.45,maxZ:-4.30});
    // Coach is fully INSIDE the safe tunnel: the stadium stands cannot pass
    // through his head. No character geometry overlaps the grandstand rings.
    this.label("CUERPO TÉCNICO",["ENTREGÁ EL INFORME"],.67,2.89,-5.71,2.2,.57,"#f8c57e");
