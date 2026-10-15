@@ -276,3 +276,79 @@
 @media(prefers-reduced-motion:reduce){
  .ve-site *, .ve-site *::before, .ve-site *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+
+/* SALA / PERFIL DE EXPERIENCIA — editorial ratings, not public reviews.
+   Slim premium instrumentation, intentionally integrated with image cards. */
+.ve-intensity{
+ --ve-meter-gold:#d6b78c;
+ margin:15px 0 18px;
+ padding:14px 0 13px;
+ border-top:1px solid rgba(242,225,200,.22);
+ border-bottom:1px solid rgba(242,225,200,.22);
+ color:#e8e0d4;
+}
+.ve-intensity-top{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ margin-bottom:14px;
+}
+.ve-intensity-heading{font:700 9px/1.2 Arial,sans-serif;letter-spacing:.19em;color:#ead1ab}
+.ve-intensity-range{font:500 9px/1.2 monospace;letter-spacing:.07em;color:#b7a89a}
+.ve-intensity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 19px}
+.ve-intensity-metric{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;
+ grid-template-areas:"label value" "meter meter";
+ align-items:center;gap:7px 6px;min-width:0;
+}
+.ve-intensity-metric-name{
+ grid-area:label;font:700 10px/1.3 Arial,sans-serif;
+ text-transform:uppercase;letter-spacing:.09em;color:#eee5d9;
+}
+.ve-intensity-value{grid-area:value;justify-self:end;font:650 12px/1 monospace;color:#f2e0c4}
+.ve-intensity-value small{font:400 9px/1 monospace;color:#a99f95;margin-left:2px}
+.ve-intensity-metric-track{grid-area:meter;display:flex;align-items:center;gap:4px;height:6px;min-width:0}
+.ve-intensity-segment{
+ flex:1;height:4px;max-width:100%;
+ background:rgba(235,223,204,.19);
+ border-radius:1px;
+}
+.ve-intensity-segment.is-filled{background:var(--ve-meter-gold);box-shadow:0 0 11px rgba(217,169,102,.12)}
+.ve-intensity-metric-scares .ve-intensity-segment.is-filled{background:#da8d7d;box-shadow:0 0 11px rgba(218,115,105,.15)}
+.ve-intensity-metric-surprise .ve-intensity-segment.is-filled{background:#c8bacf}
+.ve-intensity-metric-tension .ve-intensity-segment.is-filled{background:#8fb1b1}
+.ve-card{min-height:630px}
+.ve-card-content{background:linear-gradient(180deg,transparent,rgba(6,8,11,.48))}
+.ve-card-content p{margin-bottom:13px}
+.ve-card-bottom{border-top:none;padding-top:0}
+.ve-intensity-detail{margin:8px 0 22px;padding:20px 0 19px}
+.ve-intensity-detail .ve-intensity-top{margin-bottom:17px}
+.ve-intensity-detail .ve-intensity-grid{row-gap:18px;column-gap:24px}
+.ve-intensity-detail .ve-intensity-metric-track{height:9px;gap:5px}
+.ve-intensity-detail .ve-intensity-segment{height:6px}
+.ve-intensity-detail .ve-intensity-metric-name{font-size:10px}
+.ve-intensity-disclaimer{
+ margin:18px 0 0!important;
+ max-width:none!important;
+ font:11px/1.6 Arial,sans-serif!important;
+ color:#aaa399!important;
+}
+@media (max-width:1100px){
+ .ve-card{min-height:640px}
+ .ve-intensity-grid{gap:14px 12px}
+ .ve-intensity-metric-name{font-size:9px}
+}
+@media (max-width:580px){
+ .ve-card{min-height:650px}
+ .ve-card-content{padding:24px 22px 23px}
+ .ve-card-content p{margin:16px 0 10px}
+ .ve-intensity{margin:16px 0;padding:15px 0}
+ .ve-intensity-grid{gap:14px 17px}
+ .ve-intensity-metric-name{font-size:10px}
+ .ve-room-panel .ve-intensity-detail{margin-top:6px}
+}
+@media(max-width:360px){
+ .ve-card{min-height:670px}
+ .ve-intensity-range{font-size:8px}
+ .ve-intensity-grid{gap:13px 10px}
+ .ve-intensity-metric-name{font-size:9px}
+}
