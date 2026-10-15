@@ -139,6 +139,8 @@ test("full Argentina–England investigation physically reaches every room and t
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-gol-3d.png",fullPage:false});
  await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible({timeout:19000});
+ await expect(page.getByLabel("Resultado de la misión")).toBeVisible();
+ await expect(page.getByText("TIEMPO DE RESOLUCIÓN")).toBeVisible();
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-final-victoria.png",fullPage:false});
  const desktopTitle=await page.locator(".lj-root-victory .lj-ending h1").boundingBox();
  expect(desktopTitle?.y,"The winner's headline must not be clipped on desktop").toBeGreaterThanOrEqual(0);
