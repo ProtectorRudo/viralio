@@ -14,6 +14,12 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
  await page.screenshot({path:"test-results/la-ultima-jugada-mision-desktop.png",timeout:17000,fullPage:false});
+ const startButton=page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/});
+ await expect.poll(async()=>{
+  const rect=await startButton.boundingBox();
+  const viewport=page.viewportSize();
+  return !!rect&&!!viewport&&rect.y>=0&&rect.y+rect.height<=viewport.height-5;
+ },{message:"The briefing CTA must be fully visible without scrolling at 1280x720",timeout:4000}).toBe(true);
  await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0,{timeout:30_000});
