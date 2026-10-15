@@ -6,6 +6,7 @@ import {FinaleDirector} from "./FinaleDirector";
 import {buildStadiumSet} from "./StadiumSet";
 import {createCoach,createIntruder} from "./Actors";
 import {proceduralSurface} from "./MaterialLibrary";
+import {CrisisDirector} from "./CrisisDirector";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
@@ -79,6 +80,7 @@ export class FootballWorld {
  private mixers:THREE.AnimationMixer[]=[];
  private destroyed=false;
  private finale:FinaleDirector|null=null;
+ private crisis:CrisisDirector|null=null;
  private actors:Array<{update:(dt:number)=>void;dispose:()=>void}>=[];
  private stadiumAnimations:Array<(t:number)=>void>=[];
  private stadiumClock:((remaining:number)=>void)|null=null;
@@ -112,13 +114,15 @@ export class FootballWorld {
   this.camera=new THREE.PerspectiveCamera(69,1,.08,220);
   this.camera.position.set(0,1.68,4.2);
   this.scene.add(this.root);
-  this.scene.add(new THREE.HemisphereLight(0xbce4ff,0x48505e,2.25));
-  this.scene.add(new THREE.AmbientLight(0xcce8ff,.87));
+  const hemisphere=new THREE.HemisphereLight(0xbce4ff,0x48505e,2.25);
+  const ambient=new THREE.AmbientLight(0xcce8ff,.87);
+  this.scene.add(hemisphere,ambient);
   const key=new THREE.DirectionalLight(0xffe3b8,chapter===2?2.1:1.2);
   key.position.set(-3,8,-2);key.castShadow=true;key.shadow.mapSize.set(this.mobile?512:1024,this.mobile?512:1024);
   key.shadow.camera.left=-14;key.shadow.camera.right=14;key.shadow.camera.top=14;key.shadow.camera.bottom=-14;
   key.shadow.bias=-.0005;this.scene.add(key);
   this.makeRoom(chapter);
+  this.crisis=new CrisisDirector(this.root,hemisphere,ambient,key);
   this.resize();
   window.addEventListener("resize",this.boundResize);
   window.addEventListener("keydown",this.onKeyDown);
@@ -570,6 +574,7 @@ export class FootballWorld {
   this.stadiumAnimations.forEach(a=>a(this.lifetime));
   this.actors.forEach(a=>a.update(this.lifetime));
   this.finale?.update(dt);
+  this.crisis?.update(dt);
   this.fpsTime+=dt;this.fpsFrames++;
   if(this.fpsTime>4.5){
    const fps=this.fpsFrames/this.fpsTime;
@@ -615,13 +620,18 @@ export class FootballWorld {
   this.camera.aspect=w/Math.max(1,h);this.camera.updateProjectionMatrix();
   this.renderer.setSize(w,h,false);
  }
- setMatchTime(remaining:number){this.stadiumClock?.(remaining);}
+ setMatchTime(remaining:number){
+  this.stadiumClock?.(remaining);
+  this.crisis?.setPressure(remaining);
+ }
+ triggerCrisis(){this.crisis?.trigger();}
  startFinale(cue:(name:"apertura"|"pase"|"centro"|"gol")=>void,complete:()=>void){
   this.setGameplayActive(false);
   if(this.finale)this.finale.dispose();
   this.finale=new FinaleDirector(this.root,this.camera,{cue:(event)=>{if(event==="gol")this.stadiumGoal?.();cue(event);},complete},this.stadiumPlayers);
  }
  dispose(){
+  this.crisis?.dispose();this.crisis=null;
   this.finale?.dispose();this.finale=null;
   this.actors.forEach(a=>a.dispose());this.actors=[];
   this.destroyed=true;
