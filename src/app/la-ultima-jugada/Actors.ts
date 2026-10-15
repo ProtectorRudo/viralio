@@ -55,45 +55,16 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
    o.material=Array.isArray(o.material)?cloned:cloned[0];
    cloned.forEach(m=>{
     if(!(m instanceof THREE.MeshStandardMaterial))return;
-    const name=m.name.toLowerCase();
-    if(name.includes("skin")||name.includes("face")||name.includes("head"))return;
-    if(name.includes("shirt")||name.includes("jersey")||name.includes("jacket")||name.includes("cloth")||name.includes("torso")){
-     m.color.setHex(tint);m.roughness=isCoach ? .75 : .91;
+    const name=(m.name+" "+o.name).toLowerCase();
+    if(/skin|face|head|hair|eyebrow|eye|mouth|teeth|body/.test(name))return;
+    if(/shirt|jersey|jacket|cloth|clothes|outfit|sweater|coat|torso|fabric|top/.test(name)){
+     m.color.setHex(tint);m.roughness=isCoach ? .84 : .91;
     }
    });
   });
   group.add(rig);
-  if(isCoach){
-   // Dark natural hair *attached to the head*, not the suspended torus of
-   // separated curls seen in the real screenshots. The hemisphere covers
-   // the crown and short tapered locks give a cropped, wavy hairstyle.
-   const hair=new THREE.MeshStandardMaterial({color:0x19130f,roughness:.91,metalness:0});
-   const hairHighlight=new THREE.MeshStandardMaterial({color:0x2a201a,roughness:.9,metalness:0});
-   const scalp=new THREE.Mesh(
-    new THREE.SphereGeometry(.201,24,14,0,Math.PI*2,0,Math.PI*.58),
-    hair
-   );
-   scalp.position.set(0,1.75,-.008);
-   scalp.scale.set(1.05,1.02,1.04);
-   scalp.castShadow=true;
-   group.add(scalp);
-   // Golden-angle distribution avoids an artificial doughnut of hair around
-   // the perimeter. Keep locks inside the volume of the scalp.
-   for(let i=0;i<20;i++){
-    const angle=i*2.3999632297;
-    const radius=.137*Math.sqrt((i+.5)/20);
-    const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
-    const y=1.907-.038*(radius/.137)**2;
-    const tuft=new THREE.Mesh(
-     new THREE.SphereGeometry(.032+(i%3)*.006,8,6),
-     i%5===0?hairHighlight:hair
-    );
-    tuft.position.set(x,y,z-.008);
-    tuft.scale.set(1.15,.73,1.16);
-    tuft.castShadow=true;
-    group.add(tuft);
-   }
-  }
+  // The MakeHuman coach includes a real hairstyle. Never put a second
+  // procedural cap above the head: it caused a giant floating helmet.
   const fallback=group.getObjectByName("original-fallback");
   if(fallback)fallback.visible=false;
   const clip=gltf.animations.find(c=>/idle|talk|stand|wave/i.test(c.name))||gltf.animations[0];
