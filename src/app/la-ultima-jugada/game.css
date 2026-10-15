@@ -196,3 +196,19 @@
 .lj-root-victory .lj-end-score{background:#071b2ce6;box-shadow:0 10px 40px #0009;border-color:#d9c08e66}
 .lj-root-victory .lj-ending h1{text-shadow:0 12px 50px #000d}
 .lj-root-victory .lj-ending h2{text-shadow:0 7px 24px #000e}
+
+/* Keep the 3D goal visible: the stadium, run and net remain the focal point. */
+.lj-finale-gol{
+ top:auto!important;bottom:4%;padding:16px 20px 19px;
+ background:linear-gradient(180deg,transparent,rgba(2,19,31,.77) 43%,rgba(1,13,24,.92));
+}
+.lj-finale-gol strong{
+ font-size:clamp(29px,5.5vw,70px)!important;
+ line-height:1.04;
+ max-width:980px;
+}
+.lj-finale-gol span{font-size:clamp(14px,2vw,23px)}
+@media(max-width:600px){
+ .lj-finale-gol{top:auto!important;bottom:7%;padding:12px}
+ .lj-finale-gol strong{font-size:clamp(29px,7vw,44px)!important}
+}
