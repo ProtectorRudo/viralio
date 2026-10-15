@@ -136,7 +136,6 @@ export class FootballWorld {
    box(.085,.05,13,x,4.1,0,steel,this.root);
    for(let z=-5.2;z<6;z+=3.1){
     box(.83,.045,1.45,x,4.065,z,mat(0xbcd3e1,.25,.5,0xa1daff,.45),this.root);
-    this.glow(x,3.7,z,0xc1e7ff,4.4,6.4);
    }
   }
   for(let z=-5.6;z<=5.8;z+=2.1)box(.08,4.1,.12,-6.23,1.98,z,steel,this.root);
