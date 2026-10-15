@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import {FOOTBALL_ASSETS,loadFootballModel} from "./AssetLibrary";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import {paintTacticalFeed,type ReplayCamera} from "./TacticSimulation";
 import {FinaleDirector} from "./FinaleDirector";
@@ -289,9 +289,7 @@ export class FootballWorld {
   }
   // CC0 rigged football-appropriate background characters, loaded progressively.
   // A cheap geometry fallback remains visible if the GLB cannot be downloaded.
-  new GLTFLoader().load(
-   "https://raw.githubusercontent.com/kendrekaran/striker-3d/main/assets/player.glb",
-   gltf=>{
+  loadFootballModel(FOOTBALL_ASSETS.player).then(gltf=>{
     if(this.destroyed)return;
     lineUp.forEach(({x,z,proxy,blue},index)=>{
      const character=cloneRig(gltf.scene);
@@ -319,8 +317,7 @@ export class FootballWorld {
      const clip=gltf.animations.find(a=>/idle|jog|run|walk/i.test(a.name))||gltf.animations[0];
      if(clip){mixer.clipAction(clip).play();this.mixers.push(mixer);}
     });
-   },undefined,()=>{}
-  );
+   }).catch(()=>{});
   const set=buildStadiumSet(this.root,this.mobile);
   this.disposableTextures.push(...set.textures);
   this.stadiumAnimations.push(...set.animated);
@@ -396,11 +393,10 @@ export class FootballWorld {
   }
  }
  private loadFurniture(kind:"desk"|"chair", x:number,z:number,w:number,h:number,d:number,fallback:THREE.Group) {
-  const file=kind==="desk"?"desk-kari.glb":"chair-olve.glb";
-  const url="https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/main/public/assets/glb/"+file;
-  new GLTFLoader().load(url,gltf=>{
+  const url=FOOTBALL_ASSETS[kind];
+  loadFootballModel(url).then(gltf=>{
    if(this.destroyed)return;
-   const obj=gltf.scene;
+   const obj=gltf.scene.clone(true);
    const bounds=new THREE.Box3().setFromObject(obj);
    const dimensions=bounds.getSize(new THREE.Vector3());
    if(dimensions.x<.01||dimensions.y<.01||dimensions.z<.01)return;
@@ -409,7 +405,7 @@ export class FootballWorld {
    obj.position.set(x-center.x,-b.min.y,z-center.z);
    obj.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
    this.root.add(obj);fallback.visible=false;
-  },undefined,()=>{});
+  }).catch(()=>{});
  }
  private detailAnalysisRoom() {
   const trim=mat(0x99aab5,.78,.3),slate=mat(0x243946,.66,.51),
