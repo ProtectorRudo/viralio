@@ -487,7 +487,7 @@ export class FootballWorld {
  }
  private loop=(time:number)=>{
   this.frame=requestAnimationFrame(this.loop);
-  const dt=Math.min(.2,(time-this.last)/1000||.016);this.last=time;
+  const dt=Math.min(.5,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
   this.animateReplay(dt);
   this.finale?.update(dt);
