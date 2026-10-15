@@ -58,7 +58,7 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
     const name=m.name.toLowerCase();
     if(name.includes("skin")||name.includes("face")||name.includes("head"))return;
     if(name.includes("shirt")||name.includes("jersey")||name.includes("jacket")||name.includes("cloth")||name.includes("torso")){
-     m.color.setHex(tint);m.roughness=isCoach?.75:.91;
+     m.color.setHex(tint);m.roughness=isCoach ? .75 : .91;
     }
    });
   });
