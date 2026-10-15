@@ -1,8 +1,8 @@
 {
   "name": "Viralio Escape 3D scene starter packs",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updatedAt": "2026-10-15",
-  "notes": "Creative guides; football 72-piece external starter kit unavailable to CI and not in materialized model catalog. Load only verified local GLBs, no remote runtime dependency.",
+  "notes": "OPTIONAL catalog for choosing assets after review; not scenes or a request to build a game. Poly Haven football CC0 GLBs verified locally.",
   "packs": [
     {
       "id": "cine-maldito",
@@ -149,13 +149,21 @@
         "vent-perforated-locker",
         "four-compartment-locker",
         "mobile-double-whiteboard",
-        "football-coat-stand"
+        "football-coat-stand",
+        "football-duffel-bag",
+        "football-polyhaven-dirty"
       ],
       "support": [
         "lock-3-office-locker-bank",
         "football-conference-table",
         "football-laptop-trolley",
-        "mobile-tactics-whiteboard"
+        "mobile-tactics-whiteboard",
+        "football-backpack",
+        "football-toiletry-kit",
+        "football-mudroom-bench",
+        "football-changing-bench",
+        "football-tilted-shoe-rack",
+        "football-foam-roller"
       ],
       "character": "npc-jordan-locomotion",
       "rooms": [
@@ -180,7 +188,8 @@
       "support": [
         "football-acoustic-screen",
         "bleachers-three-row",
-        "football-scoreboard"
+        "football-scoreboard",
+        "football-hardcase-suitcase"
       ],
       "character": "npc-sam-locomotion",
       "rooms": [
@@ -207,7 +216,8 @@
         "retro-laptop",
         "football-laptop-trolley",
         "key-grid-mechanical-keyboard",
-        "pan-tilt-zoom-camera-on-pole"
+        "pan-tilt-zoom-camera-on-pole",
+        "football-coach-tablet-figure"
       ],
       "character": "npc-harper-locomotion",
       "rooms": [
@@ -226,13 +236,18 @@
       "hero": [
         "football-goal-full-size",
         "football-scoreboard",
-        "bleachers-three-row"
+        "bleachers-three-row",
+        "football-polyhaven-dirty",
+        "football-polyhaven-worn"
       ],
       "support": [
         "football-goal-junior",
         "cctv-security-camera",
         "soccer-player-running-static",
-        "soccer-player-kicking-static"
+        "soccer-player-kicking-static",
+        "football-outdoor-picnic-table",
+        "football-celebrating-spectator-static",
+        "football-raised-ball-figure-static"
       ],
       "character": "npc-jordan-locomotion",
       "rooms": [
