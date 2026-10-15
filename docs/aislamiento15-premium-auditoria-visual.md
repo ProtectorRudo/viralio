@@ -82,7 +82,7 @@ La segunda inspección encontró que las ruedas de purga aún parecían discos d
 **Correcciones implementadas:**
 
 - El Celador no aplica ataques inevitables mientras el jugador inspecciona archivos, carteles o mecanismos que abren una interfaz; el contador sigue corriendo. No es una pausa gratuita del reto.
-- Si el navegador móvil entra en segundo plano, se detiene la simulación 3D y se concede una **única tolerancia de hasta 45 segundos por interrupción** (máximo aplicado a cada interrupción; no es un modo de pausa manual). Al volver, el reloj retoma con el tiempo restante ajustado y el audio vuelve al estado de preferencia anterior.
+- Si el navegador móvil entra en segundo plano, se detiene la simulación 3D y se concede un **presupuesto acumulado de hasta 45 segundos para toda la partida** (no se renueva al cambiar repetidamente de aplicación; no es un modo de pausa manual). Al volver, el reloj retoma con el tiempo restante ajustado y el audio vuelve al estado de preferencia anterior.
 - La interfaz ahora ofrece pistas graduales por objetivo, de menor a mayor precisión. Pedir reiteradamente una pista ya agotada no contabiliza una ayuda adicional.
 - Nueva prueba automatizada que busca posiciones sin colisiones desde las cuales sea posible seleccionar **cada uno de los 22 mecanismos físicos de las tres salas**, en lugar de activar directamente las acciones de React sin comprobar la exploración.
 
@@ -91,3 +91,5 @@ La segunda inspección encontró que las ruedas de purga aún parecían discos d
 **Puertas de calidad todavía abiertas**: ensayo prolongado de 15 minutos en celulares Android/iPhone físicos, FPS/temperatura medidos en dispositivos de gama media, duración y tasa de resolución para jugadores nuevos, y prueba comercial de flujo de pago real. La batería de navegador automatizada no puede acreditar estas pruebas por sí sola.
 
 **Pruebas de señales críticas y alcance real (15/10/2026):** tras inspeccionar capturas verticales, la pizarra de purga y el protocolo de interruptores se movieron a paredes laterales, fuera del eje de la compuerta, en verdadera geometría Three.js. El QA verifica ahora **24 objetivos físicos** (22 mecanismos + ambos carteles esenciales) seleccionables mediante raycasting desde puntos sin colisión. [Resultado satisfactorio #38662806300](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38662806300). Las pruebas visuales toman vistas específicas de cada cartel desde el ángulo del jugador.
+
+**Integridad del tiempo:** el 15/10/2026 el presupuesto de cortesía cambió de un límite por interrupción a 45 segundos **totales por partida** para impedir congelar el cronómetro indefinidamente alternando aplicaciones. La verificación de CI simula dos interrupciones separadas de 30 s y exige un crédito acumulado total de exactamente 45 s.
