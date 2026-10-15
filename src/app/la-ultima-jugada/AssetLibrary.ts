@@ -8,13 +8,29 @@ import {GLTFLoader,type GLTF} from "three/examples/jsm/loaders/GLTFLoader.js";
 const loader=new GLTFLoader();
 const cache=new Map<string,Promise<GLTF>>();
 const BASE="/la-ultima-jugada/models/";
+const SHARED="/viralio-3d/models/";
 
 export const FOOTBALL_ASSETS={
  player:BASE+"player-quaternius.glb",
- desk:BASE+"desk-kari.glb",
+ desk:SHARED+"steel-office-desk.glb",
  chair:BASE+"chair-olve.glb",
  shelf:BASE+"shelf-kant.glb",
  lamp:BASE+"table-lamp-ember.glb"
+} as const;
+
+/** Premium CC0 assets copied from Viralio's verified 3D catalog, selectively. */
+export const FOOTBALL_PREMIUM={
+ monitor:SHARED+"video-analysis-27inch-monitor.glb",
+ keyboard:SHARED+"key-grid-mechanical-keyboard.glb",
+ camera:SHARED+"cctv-security-camera.glb",
+ keypad:SHARED+"access-control-keypad.glb",
+ duffel:SHARED+"football-duffel-bag.glb",
+ backpack:SHARED+"football-backpack.glb",
+ locker:SHARED+"vent-perforated-locker.glb",
+ fourLocker:SHARED+"four-compartment-locker.glb",
+ football:SHARED+"football-polyhaven-dirty.glb",
+ scoreboard:SHARED+"football-scoreboard.glb",
+ steelDoor:SHARED+"workshop-industrial-steel-door.glb"
 } as const;
 
 export function loadFootballModel(url:string):Promise<GLTF>{
@@ -30,5 +46,9 @@ export function loadFootballModel(url:string):Promise<GLTF>{
 }
 
 export async function preloadFootballAssets():Promise<void>{
- await Promise.allSettled(Object.values(FOOTBALL_ASSETS).map(loadFootballModel));
+ // Critical path only: do not preload all 12 premium models on midrange phones.
+ await Promise.allSettled([
+  ...Object.values(FOOTBALL_ASSETS),
+  FOOTBALL_PREMIUM.monitor,FOOTBALL_PREMIUM.keyboard
+ ].map(loadFootballModel));
 }
