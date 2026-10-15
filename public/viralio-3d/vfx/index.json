@@ -1,0 +1,86 @@
+{
+  "name": "Viralio — reusable original VFX alpha sprites",
+  "version": "1.0.0",
+  "count": 6,
+  "notes": "Sprite texture files ONLY. No game scene behavior or HDR effects are installed.",
+  "items": [
+    {
+      "id": "smoke-wisp",
+      "category": "vfx-sprite-alpha",
+      "path": "/viralio-3d/vfx/smoke-wisp.png",
+      "width": 512,
+      "height": 512,
+      "format": "PNG RGBA",
+      "sha256": "569495576d58eed363790742d3fb950182571040a26c0916ef37ab05bcaf9602",
+      "bytes": 62729,
+      "description": "Soft multiscale smoke curl for atmosphere or dissipating trails; procedural alpha only",
+      "license": "Viralio original",
+      "characteristics": "White RGBA mask, transparent, tint and animate at runtime only if chosen for a game"
+    },
+    {
+      "id": "fog-low",
+      "category": "vfx-sprite-alpha",
+      "path": "/viralio-3d/vfx/fog-low.png",
+      "width": 1024,
+      "height": 512,
+      "format": "PNG RGBA",
+      "sha256": "7d308b7b6e7848c8e839bcc4f82da07ae5f72d067adcd1bce068d0275370a1f8",
+      "bytes": 115262,
+      "description": "Low-lying fog-bank transparency with tapered edges; alpha only, not volumetric simulation",
+      "license": "Viralio original",
+      "characteristics": "White RGBA mask, transparent, tint and animate at runtime only if chosen for a game"
+    },
+    {
+      "id": "dust-haze",
+      "category": "vfx-sprite-alpha",
+      "path": "/viralio-3d/vfx/dust-haze.png",
+      "width": 512,
+      "height": 512,
+      "format": "PNG RGBA",
+      "sha256": "4e0a86430ad279f51b07feba17b1ee41571d6d5b7c8f6e21ceb505ee524980cc",
+      "bytes": 48656,
+      "description": "Uneven dust plume visible against light; procedural mask, not actual captured dust",
+      "license": "Viralio original",
+      "characteristics": "White RGBA mask, transparent, tint and animate at runtime only if chosen for a game"
+    },
+    {
+      "id": "dust-motes",
+      "category": "vfx-sprite-alpha",
+      "path": "/viralio-3d/vfx/dust-motes.png",
+      "width": 512,
+      "height": 512,
+      "format": "PNG RGBA",
+      "sha256": "7d11bc345ffa869b05e9a3267c2d0b4217399d0fc0af27d90548b0e0dadb77b1",
+      "bytes": 13207,
+      "description": "Sparse fine airborne particles and micro highlights; repeatable alpha texture",
+      "license": "Viralio original",
+      "characteristics": "White RGBA mask, transparent, tint and animate at runtime only if chosen for a game"
+    },
+    {
+      "id": "ember-sparks",
+      "category": "vfx-sprite-alpha",
+      "path": "/viralio-3d/vfx/ember-sparks.png",
+      "width": 512,
+      "height": 512,
+      "format": "PNG RGBA",
+      "sha256": "481f5c3c36dd81743824eca84d7eb46677b21de363ecdd25d156a20ba2e6eb7f",
+      "bytes": 9252,
+      "description": "Scattered streaky ember glints, intended for additive particle sprites",
+      "license": "Viralio original",
+      "characteristics": "White RGBA mask, transparent, tint and animate at runtime only if chosen for a game"
+    },
+    {
+      "id": "light-shaft-mask",
+      "category": "vfx-sprite-alpha",
+      "path": "/viralio-3d/vfx/light-shaft-mask.png",
+      "width": 512,
+      "height": 512,
+      "format": "PNG RGBA",
+      "sha256": "9c90be5cf8b4012610a8215cc716e1c247b9d67a0d1b0fdb768bb4f6eb3ca4a0",
+      "bytes": 15271,
+      "description": "Soft irregular volumetric-looking beam mask; alpha texture not physical volumetric light",
+      "license": "Viralio original",
+      "characteristics": "White RGBA mask, transparent, tint and animate at runtime only if chosen for a game"
+    }
+  ]
+}
