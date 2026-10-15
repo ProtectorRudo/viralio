@@ -135,3 +135,18 @@
  .lj-replay-transport span{font-size:9px;min-width:67px}
  .lj-feed-large{border-width:2px}
 }
+
+/* 3D finale plays with player controls disabled and the in-world camera tracking the ball. */
+.lj-root-finale .lj-hud,.lj-root-finale .lj-progress,.lj-root-finale .lj-cross,
+.lj-root-finale .lj-focus,.lj-root-finale .lj-objective,.lj-root-finale .lj-alert,
+.lj-root-finale .lj-topactions,.lj-root-finale .lj-touchpad,
+.lj-root-finale .lj-control-info,.lj-root-finale .lj-interact{display:none!important}
+.lj-finale-banner{position:absolute;z-index:9;left:0;right:0;top:7%;text-align:center;display:flex;align-items:center;flex-direction:column;gap:15px;padding:26px;pointer-events:none;animation:lj-show-finale .4s ease-out both;text-shadow:0 4px 27px #000b}
+.lj-finale-banner small{color:#f6d49b;letter-spacing:.3em;font-weight:900;font-size:12px}
+.lj-finale-banner strong{font-size:clamp(21px,4.1vw,51px);line-height:1.12;max-width:950px;font-weight:950;letter-spacing:-.045em;color:white}
+.lj-finale-banner span{color:#b6eaff;letter-spacing:.23em;font-weight:800;font-size:clamp(10px,1.2vw,16px)}
+.lj-finale-gol{top:22%;background:radial-gradient(ellipse at center,rgba(1,28,48,.8),transparent 75%)}
+.lj-finale-gol strong{font-size:clamp(40px,8vw,100px);color:#e7f8ff;text-shadow:0 7px 10px #021622,0 0 44px #58bdea}
+.lj-finale-gol span{font-size:clamp(19px,3.3vw,34px);letter-spacing:.1em;color:#fff0ce}
+@keyframes lj-show-finale{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.lj-finale-banner{top:14%;padding:12px}.lj-finale-banner small{font-size:10px}}
