@@ -84,6 +84,8 @@ jobs:
           cp football-source/scripts/la-ultima-jugada-standalone-entry.tsx scripts/
           node --check scripts/build-la-ultima-jugada-standalone.mjs
           node scripts/build-la-ultima-jugada-standalone.mjs
+          git -C football-source rev-parse HEAD > showcase/la-ultima-jugada/build-sha.txt
+          test -s showcase/la-ultima-jugada/build-sha.txt
           test -s showcase/la-ultima-jugada/index.html
           test -s showcase/la-ultima-jugada/app.js
           test -s showcase/la-ultima-jugada/app.css
@@ -175,4 +177,23 @@ jobs:
           test "$(wc -c </tmp/rescate-mauro-original.webm)" -gt 4000
           test "$(wc -c </tmp/rescate-mauro-suspense.wav)" -gt 100000
           echo "PASS: Rescate Mauro 3D invite is publicly served at $rescue/"
+          football="https://protectorrudo.github.io/viralio/la-ultima-jugada"
+          football_ok=0
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 15 "$football/" -o /tmp/football-pages.html && grep -Fq "La Última Jugada" /tmp/football-pages.html; then
+              football_ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$football_ok" -eq 1
+          curl -fsSL --max-time 20 "$football/app.js" -o /tmp/football-pages.js
+          curl -fsSL --max-time 20 "$football/app.css" -o /tmp/football-pages.css
+          curl -fsSL --max-time 20 "$football/build-sha.txt" -o /tmp/football-build-sha.txt
+          test "$(wc -c </tmp/football-pages.js)" -gt 100000
+          test "$(wc -c </tmp/football-pages.css)" -gt 10000
+          test "$(wc -c </tmp/football-build-sha.txt)" -eq 41
+          test -s /tmp/football-build-sha.txt
+          echo "PASS: New football 3D scene is publicly served at $football/"
+          echo "Published football game SHA: $(cat /tmp/football-build-sha.txt)"
 
