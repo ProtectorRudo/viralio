@@ -81,6 +81,8 @@ export class FootballWorld {
  private finale:FinaleDirector|null=null;
  private actors:Array<{update:(dt:number)=>void;dispose:()=>void}>=[];
  private stadiumAnimations:Array<(t:number)=>void>=[];
+ private stadiumClock:((remaining:number)=>void)|null=null;
+ private stadiumGoal:(()=>void)|null=null;
  private lifetime=0;
  private stadiumPlayers:Array<{actor:THREE.Object3D;index:number}>=[];
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
@@ -280,6 +282,8 @@ export class FootballWorld {
   const set=buildStadiumSet(this.root,this.mobile);
   this.disposableTextures.push(...set.textures);
   this.stadiumAnimations.push(...set.animated);
+  this.stadiumClock=set.setClock;
+  this.stadiumGoal=set.goal;
  }
  private makeRoom(chapter:Chapter){
   this.shell(chapter);
@@ -561,10 +565,11 @@ export class FootballWorld {
   this.camera.aspect=w/Math.max(1,h);this.camera.updateProjectionMatrix();
   this.renderer.setSize(w,h,false);
  }
+ setMatchTime(remaining:number){this.stadiumClock?.(remaining);}
  startFinale(cue:(name:"apertura"|"pase"|"centro"|"gol")=>void,complete:()=>void){
   this.setGameplayActive(false);
   if(this.finale)this.finale.dispose();
-  this.finale=new FinaleDirector(this.root,this.camera,{cue,complete},this.stadiumPlayers);
+  this.finale=new FinaleDirector(this.root,this.camera,{cue:(event)=>{if(event==="gol")this.stadiumGoal?.();cue(event);},complete},this.stadiumPlayers);
  }
  dispose(){
   this.finale?.dispose();this.finale=null;
