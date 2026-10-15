@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader.js";
+import {FOOTBALL_ASSETS,loadFootballModel} from "./AssetLibrary";
 import {clone as cloneRig} from "three/examples/jsm/utils/SkeletonUtils.js";
 
 /** Original player rig provided CC0 by Quaternius; fallback keeps roles recognizable offline. */
-const CHARACTER_GLB="https://raw.githubusercontent.com/kendrekaran/striker-3d/main/assets/player.glb";
+const CHARACTER_GLB=FOOTBALL_ASSETS.player;
 type Actor={group:THREE.Group;update:(t:number)=>void;dispose:()=>void};
 
 function humanFallback(group:THREE.Group,color:number){
@@ -37,7 +37,7 @@ function humanFallback(group:THREE.Group,color:number){
  return {group:local,arm:shoulderR};
 }
 function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boolean){
- new GLTFLoader().load(CHARACTER_GLB,gltf=>{
+ loadFootballModel(CHARACTER_GLB).then(gltf=>{
   if(!ready())return;
   const rig=cloneRig(gltf.scene);
   const box=new THREE.Box3().setFromObject(rig);
@@ -71,7 +71,7 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
    mixer.clipAction(clip).setEffectiveTimeScale(isCoach?.65:.45).play();
    (group.userData.animations as THREE.AnimationMixer[]).push(mixer);
   }
- },undefined,()=>{});
+ }).catch(()=>{});
 }
 export function createCoach(root:THREE.Group,isAlive:()=>boolean):Actor{
  const group=new THREE.Group();
