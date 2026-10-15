@@ -36,7 +36,8 @@ for(const mat of data.materials){
   const paths={};
   try{
     for(const [channel,url] of Object.entries(mat.maps)){
-      const ext=sharp?".webp":".png";
+      const webpFile=join(targetRoot,mat.id+"-"+channel+".webp");
+      const ext=validateOnly?(existsSync(webpFile)?".webp":".png"):(sharp?".webp":".png");
       const rel="/viralio-3d/materials/"+mat.id+"-"+channel+ext;
       const outputPath=join(targetRoot,mat.id+"-"+channel+ext);
       if(!existsSync(outputPath)){
