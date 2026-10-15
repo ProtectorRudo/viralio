@@ -37,6 +37,15 @@ jobs:
             "https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/617d6073a557cbc2f0f2ac917916e01b9c4b631b/public/assets/glb/chair-olve.glb" \
             --output "$dir/chair-olve.glb"
 
+          curl --fail --location --silent --show-error --retry 3 --max-time 45 \
+            "https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/617d6073a557cbc2f0f2ac917916e01b9c4b631b/public/assets/glb/shelf-kant.glb" \
+            --output "$dir/shelf-kant.glb"
+          curl --fail --location --silent --show-error --retry 3 --max-time 45 \
+            "https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/617d6073a557cbc2f0f2ac917916e01b9c4b631b/public/assets/glb/table-lamp-ember.glb" \
+            --output "$dir/table-lamp-ember.glb"
+
+          test "$(git hash-object "$dir/shelf-kant.glb")" = "478d3e80f774f50f17d2a8f3b520a4044853a4c5"
+          test "$(git hash-object "$dir/table-lamp-ember.glb")" = "f7a23bf28cf54e25c8d6565e4a67ecc0b970b0a3"
           test "$(git hash-object "$dir/player-quaternius.glb")" = "2faab1ed245bbe2b28153151d3b301913a216f69"
           test "$(git hash-object "$dir/desk-kari.glb")" = "5afd20527a55c0e635c384d5fd02ad9e323726b3"
           test "$(git hash-object "$dir/chair-olve.glb")" = "68ad09133116b5a5eb25dc5940ac855aec2812ba"
@@ -49,6 +58,8 @@ jobs:
           - player-quaternius.glb: Quaternius CC0 1.0, https://github.com/kendrekaran/striker-3d/blob/main/assets/LICENSE-quaternius.txt
           - desk-kari.glb: CC0 1.0, https://github.com/yadneshSalvi/hearth-webmcp/blob/main/public/assets/CREDITS.md
           - chair-olve.glb: CC0 1.0, https://github.com/yadneshSalvi/hearth-webmcp/blob/main/public/assets/CREDITS.md
+          - shelf-kant.glb: CC0 1.0, https://github.com/yadneshSalvi/hearth-webmcp/blob/main/public/assets/CREDITS.md
+          - table-lamp-ember.glb: CC0 1.0, https://github.com/yadneshSalvi/hearth-webmcp/blob/main/public/assets/CREDITS.md
 
           Immutable source commits:
           striker-3d 57847f87ff3d924712a1bb37df9dae391aedc315
