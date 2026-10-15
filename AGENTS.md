@@ -20,8 +20,8 @@ Al trabajar en salas 3D de Viralio consulta primero `docs/VIRALIO_3D_OPERATIONAL
 Antes de decidir compras, vestuario, modelos de primer plano o NPCs, sigue [`docs/VIRALIO_3D_PREMIUM_ROADMAP.md`](docs/VIRALIO_3D_PREMIUM_ROADMAP.md). Usa el catálogo CC0 y `src/lib/viralio-characters.ts` para instanciar humanoides animados con clips, sin confundir bases MakeHuman con humanos fotorrealistas terminados. No ofrecer como descargados los que solo estén en catálogo; comprobar `public/viralio-3d/index.json`. Mantener gasto en US$0 por defecto; solicitar aprobación previa de cada compra.
 
 
-## Packs de arquitectura, terror y objetos escaneados (171 GLB / 26 PBR)
-El catálogo ejecutable actualizado está en `public/viralio-3d/index.json` y el índice PBR en `public/viralio-3d/materials/index.json`. Al crear una sala, consulta `data/viralio-3d/experience-packs.json` para nueve combinaciones temáticas de objetos, los assets 3D nuevos en `data/viralio-3d/catalog.json` y la auditoría `docs/VIRALIO_3D_ARCH_HORROR_EXPANSION.md`. Reutiliza escenas con diseño propio, iluminación y aperturas reales. No confundir maniquí, esqueleto, paciente estático ni escultura de monstruo alado con una criatura animada o un NPC jugable. No cargar los 171 modelos juntos; solo lo necesario por sala.
+## Packs de arquitectura, terror y objetos escaneados (203 GLB / 31 PBR)
+El catálogo ejecutable actualizado está en `public/viralio-3d/index.json` y el índice PBR en `public/viralio-3d/materials/index.json`. Al crear una sala, consulta `data/viralio-3d/experience-packs.json` para nueve combinaciones temáticas de objetos, los assets 3D nuevos en `data/viralio-3d/catalog.json` y la auditoría `docs/VIRALIO_3D_ARCH_HORROR_EXPANSION.md`. Reutiliza escenas con diseño propio, iluminación y aperturas reales. No confundir maniquí, esqueleto, paciente estático ni escultura de monstruo alado con una criatura animada o un NPC jugable. No cargar los 203 modelos juntos; solo lo necesario por sala.
 
 
 ## Pack de fútbol — lectura obligatoria
@@ -38,3 +38,5 @@ Para elegir **solamente assets** de fútbol, leer `docs/VIRALIO_3D_FOOTBALL_PREM
 
 ## Biblioteca Universal Core — objetos cotidianos fotorrealistas
 Cuando la tarea sea buscar sillas, mesas, sofás, heladeras, comida, vajilla, armarios, objetos domésticos o decoración para futuras salas, consultar primero `docs/VIRALIO_3D_UNIVERSAL_CORE.md` y `data/viralio-3d/universal-core.json` (32 seleccionados, 18 PBR Innerscene y 14 fotoescaneados Poly Haven). `data/viralio-3d/polyhaven-universal-models.json` conserva las fichas CC0 de Poly Haven y `scripts/build-polyhaven-universal.mjs` importa GLB optimizados. Registrar toda descarga y verificar `public/viralio-3d/index.json` antes de contar modelos disponibles. Utilizar los cinco materiales PBR de madera/cuero de `data/viralio-3d/materials.json`. Calidad: priorizar hero para primer plano, support en medio; no confundir PBR con fotorrealismo certificado. **Este inventario NO autoriza crear, editar o publicar ningún juego.**
+
+Biblioteca validada al 15/10/2026: **203 archivos GLB y 31 sets PBR**. Los 32 modelos nuevos de Universal Core ya están efectivamente en `public/viralio-3d/index.json` (18 Innerscene y 14 Poly Haven). No alterar juegos sin pedido separado.
