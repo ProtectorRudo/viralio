@@ -1,6 +1,6 @@
 {
   "title": "Viralio Escape — Biblioteca de Investigación Criminal",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "curatedAt": "2026-10-15",
   "license": "CC0-1.0",
   "purpose": "Selección de modelos GLB, NO niveles, jugabilidad ni narrativa definitiva",
@@ -126,6 +126,52 @@
         "grille-security-grille-gate"
       ],
       "selectionOnly": true
+    },
+    {
+      "id": "evidence-intake-and-archive",
+      "name": "Recepción y archivo de indicios (utilería genérica)",
+      "assetIds": [
+        "investigation-sealed-storage-pouch",
+        "investigation-lidded-storage-tote",
+        "investigation-parts-drawer-cabinet",
+        "investigation-desktop-file-sorter",
+        "investigation-file-holder",
+        "investigation-document-scanner",
+        "investigation-pocket-journal",
+        "investigation-glass-magnifier",
+        "crime-clipboard"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "surveillance-and-night-exterior",
+      "name": "Accesos vigilados y perímetro nocturno",
+      "assetIds": [
+        "investigation-industrial-security-light",
+        "investigation-visitor-signin-sign",
+        "investigation-incident-report-sign",
+        "investigation-parcel-locker",
+        "crime-police-suv",
+        "cctv-security-camera",
+        "crime-barrier-tape",
+        "investigation-wire-wastebasket"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "digital-investigation",
+      "name": "Oficina de análisis digital y documentación",
+      "assetIds": [
+        "investigation-network-archive",
+        "investigation-document-scanner",
+        "investigation-desktop-file-sorter",
+        "investigation-file-holder",
+        "investigation-printmaking-glass-table",
+        "crime-field-recorder",
+        "investigation-coffee-cart-ph",
+        "investigation-trigger-spray-bottle"
+      ],
+      "selectionOnly": true
     }
   ],
   "qualityNotes": [
@@ -133,7 +179,9 @@
     "Las grabadoras son geometría; no reproducen audio por sí solas.",
     "La cinta sobre postes es de perímetro genérico, NO cinta policial impresa.",
     "La mesa clínica no sustituye una mesa de autopsias real.",
-    "Las 7 colecciones referencian modelos reutilizables y no descargan assets repetidos."
+    "Las 7 colecciones referencian modelos reutilizables y no descargan assets repetidos.",
+    "El lote de 17 fuentes CC0 es utilería de apoyo; no sustituye marcadores de evidencia numerados, bolsas periciales oficiales, informes auténticos ni animación facial.",
+    "Los modelos nuevos solo se consideran descargados tras aparecer en public/viralio-3d/index.json con archivo GLB validado."
   ],
   "pending": [
     "marcadores numerados de evidencia",
