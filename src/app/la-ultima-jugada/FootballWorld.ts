@@ -472,6 +472,18 @@ export class FootballWorld {
   this.yaw-=dx*.0031;this.pitch=Math.max(-1.12,Math.min(1.12,this.pitch-dy*.00265));
  }
  movement(x:number,z:number){this.touchMove=this.gameplayActive?{x,z}:{x:0,z:0};}
+ orientToward(id:GameAction):boolean{
+  const target=this.targets.find(t=>(t as Target).userData.action===id);
+  if(!target)return false;
+  // Look at the objective without teleportation or opening its puzzle.
+  // This accessibility aid is available only from the player's requested hint.
+  const dx=target.position.x-this.camera.position.x;
+  const dy=target.position.y-this.camera.position.y;
+  const dz=target.position.z-this.camera.position.z;
+  this.yaw=Math.atan2(-dx,-dz);
+  this.pitch=THREE.MathUtils.clamp(Math.atan2(dy,Math.hypot(dx,dz)),-1.12,1.12);
+  return true;
+ }
  private loop=(time:number)=>{
   this.frame=requestAnimationFrame(this.loop);
   const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
