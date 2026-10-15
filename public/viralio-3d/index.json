@@ -1,7 +1,7 @@
 {
   "name": "Viralio Escape — shared 3D models",
   "version": "1.1.0",
-  "generatedAt": "2026-10-15T16:52:37.775Z",
+  "generatedAt": "2026-10-15T17:01:26.324Z",
   "total": 111,
   "license": "CC0-1.0",
   "items": [
@@ -2366,7 +2366,7 @@
       "animations": 0,
       "skins": 1,
       "clipNames": [],
-      "optimized": true
+      "optimized": false
     }
   ]
 }

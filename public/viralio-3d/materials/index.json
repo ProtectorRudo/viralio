@@ -1,7 +1,7 @@
 {
   "name": "Viralio PBR Material Library",
-  "createdAt": "2026-10-15T16:52:37.930Z",
-  "total": 14,
+  "createdAt": "2026-10-15T17:01:46.080Z",
+  "total": 20,
   "license": "CC0-1.0",
   "materials": [
     {
@@ -309,6 +309,138 @@
           "path": "/viralio-3d/materials/rough_concrete-arm.webp",
           "bytes": 207458,
           "sha256": "44516beb508b49ab58f0e108eacbda1f0705bdb366feef6ac20daecce62faf32"
+        }
+      }
+    },
+    {
+      "id": "plastered_wall",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/plastered_wall",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/plastered_wall-color.webp",
+          "bytes": 108818,
+          "sha256": "865fd1c1710f049864b27b0c38d458e3379a26291eceb56f67e92da8133833ca"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/plastered_wall-normal.webp",
+          "bytes": 2099324,
+          "sha256": "119559053b1908fe1572e77064683d2f06e1fea36f1977d99e97426fdb2e778d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/plastered_wall-arm.webp",
+          "bytes": 75116,
+          "sha256": "6815945e0ae5aa78e2e37b800252feb0d3f16bec868c44a9f3f75844281e6d90"
+        }
+      }
+    },
+    {
+      "id": "dirty_tiles",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/dirty_tiles",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/dirty_tiles-color.webp",
+          "bytes": 49078,
+          "sha256": "9ddd0d1535883bc5e7ffba309d72ff97bd5b1e0db3a1283c20cb9afe2af48096"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/dirty_tiles-normal.webp",
+          "bytes": 1128850,
+          "sha256": "f04c86cfb218e8ff8d4041e9927a356ad61ece5d23efaacb3f3e897757b890f9"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/dirty_tiles-arm.webp",
+          "bytes": 61960,
+          "sha256": "58fdb8ec28e0e8549a3e417381f92c9f5a3e8c097cc755e1d7651702a0ebbfa2"
+        }
+      }
+    },
+    {
+      "id": "old_wood_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/old_wood_floor",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/old_wood_floor-color.webp",
+          "bytes": 155132,
+          "sha256": "180be3e7140a58341670b304d91a9cb4e34dff3c9d81bd235462fd6aa5e17985"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/old_wood_floor-normal.webp",
+          "bytes": 1202752,
+          "sha256": "c87bfc55acd2ec7840ab2213244ff0e707ef889b4d811a2c1142f550040d67be"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/old_wood_floor-arm.webp",
+          "bytes": 73556,
+          "sha256": "0d4d67b69146afe13a09ee0797ad90aee93d026044e79e9ab9dfd507b01d12ca"
+        }
+      }
+    },
+    {
+      "id": "wood_floor_worn",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_floor_worn",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/wood_floor_worn-color.webp",
+          "bytes": 77252,
+          "sha256": "df7ef4c6adc32164e1d241f790f488f3f1705fe2545ebd82e78bceb6af538e9e"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/wood_floor_worn-normal.webp",
+          "bytes": 1312192,
+          "sha256": "27dd847b6bbceca1fb989ee5597f6d32812b1a9c2f121025988351fbc34350c8"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/wood_floor_worn-arm.webp",
+          "bytes": 78346,
+          "sha256": "9af87fb40d588dda39c4fa4ffcf04001a8f726ba1a788a38798485e592b5fa3c"
+        }
+      }
+    },
+    {
+      "id": "wood_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_floor",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/wood_floor-color.webp",
+          "bytes": 150556,
+          "sha256": "22a5b62d3f32d2b31e4996157f65bb40d7275352b51cdbe9519da94b31ed203d"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/wood_floor-normal.webp",
+          "bytes": 857760,
+          "sha256": "0a96b7789dd7d223b56583a9a8ccb969497ccb8bcd5cf16f72adf5676995fd9d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/wood_floor-arm.webp",
+          "bytes": 39562,
+          "sha256": "05ce36e81b63a19093a07cf1f32f1cfe637d9ef3dd9708632f64c751c8e44a35"
+        }
+      }
+    },
+    {
+      "id": "old_wooden_floor_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/old_wooden_floor_01",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/old_wooden_floor_01-color.webp",
+          "bytes": 87030,
+          "sha256": "4fb41b3555dfd21e281f429f6afb8e8867c339d01261c2576156056f3df8d147"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/old_wooden_floor_01-normal.webp",
+          "bytes": 1659024,
+          "sha256": "81a804c87576ef9a96e4f25b306206810959d11a1f5f68f558c5a4145128b2a7"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/old_wooden_floor_01-arm.webp",
+          "bytes": 90108,
+          "sha256": "796276a8fe7640235eb1ebf9aa731e34c2b1de03b0fbc3423e4a833f6a932404"
         }
       }
     }
