@@ -15,7 +15,7 @@ const asPages=(code)=>code
  .replaceAll("'/la-ultima-jugada/","'"+pagesRoot+"/la-ultima-jugada/")
  .replaceAll('"/viralio-3d/','"'+pagesRoot+'/viralio-3d/')
  .replaceAll("'/viralio-3d/","'"+pagesRoot+"/viralio-3d/")
- .replaceAll('href="/#experiencias"','href="'+pagesRoot+'/");
+ .replaceAll('href="/#experiencias"','href="'+pagesRoot+'/"');
 
 const result=await build({
  entryPoints:["scripts/la-ultima-jugada-standalone-entry.tsx"],
