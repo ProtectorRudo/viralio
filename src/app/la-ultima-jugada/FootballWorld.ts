@@ -76,7 +76,7 @@ export class FootballWorld {
  private mixers:THREE.AnimationMixer[]=[];
  private destroyed=false;
  private finale:FinaleDirector|null=null;
- private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
+ private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
  private onMove=(e:PointerEvent)=>{
