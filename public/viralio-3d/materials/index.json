@@ -1,0 +1,317 @@
+{
+  "name": "Viralio PBR Material Library",
+  "createdAt": "2026-10-15T16:37:23.146Z",
+  "total": 14,
+  "license": "CC0-1.0",
+  "materials": [
+    {
+      "id": "concrete",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete-color.webp",
+          "bytes": 251656,
+          "sha256": "744a678d8037014ccb0ba65baa97f7f8a18f714ba3ae89cc0d6299cd777113f2"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete-normal.webp",
+          "bytes": 1194486,
+          "sha256": "f7535c51a712b66c506a2968ceeddf8f42e13e40f87cfd1bafa40f1f56b89d3d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete-arm.webp",
+          "bytes": 66990,
+          "sha256": "658ff69a5fc81f03170e780a324c186415565fdcc73a461a99a170d3fb8e641f"
+        }
+      }
+    },
+    {
+      "id": "rough_block_wall",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_block_wall",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rough_block_wall-color.webp",
+          "bytes": 229476,
+          "sha256": "dbbaf8164a5e049c5684dcc46acc6dfa105edb50b2d4d12cbbd8b5530b44c2b6"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rough_block_wall-normal.webp",
+          "bytes": 1854166,
+          "sha256": "04ceac2c5fe11354d13e316e316423a21f63f9eb0471c26825c3273bfad19e9d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rough_block_wall-arm.webp",
+          "bytes": 148476,
+          "sha256": "496a101ffea8b2123e4e4e45369c6f62269a63e8744a1add312ddc13834e26a4"
+        }
+      }
+    },
+    {
+      "id": "rough_plaster_broken",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_plaster_broken",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rough_plaster_broken-color.webp",
+          "bytes": 302594,
+          "sha256": "82d8d7658b9543006ff341e8d891a6215e812cdd3ec21fef0f45da1c3685d192"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rough_plaster_broken-normal.webp",
+          "bytes": 959278,
+          "sha256": "ce46e90fdde3eb94dd2d0c73b369a382fe4ec78ef89f11faefa6857414fc1bac"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rough_plaster_broken-arm.webp",
+          "bytes": 261326,
+          "sha256": "25be4286d14fa8b1b8e97b54fb10f17b74612b158bada2586175dc022c65f92c"
+        }
+      }
+    },
+    {
+      "id": "rough_wood",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_wood",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rough_wood-color.webp",
+          "bytes": 234304,
+          "sha256": "85c92eb132934f53e2a7a0361e63859843165d52d6599443ada6ffeec4ab5270"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rough_wood-normal.webp",
+          "bytes": 1808066,
+          "sha256": "3117fadb1e8a3915729918299f41fbefc9e844c34f49f9ed8d3a9793a867af9f"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rough_wood-arm.webp",
+          "bytes": 87792,
+          "sha256": "21bfb5b79647f4489c10f7f4a55b2e5f87f6209b7456c473c7bb02173324e854"
+        }
+      }
+    },
+    {
+      "id": "slate_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/slate_floor",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/slate_floor-color.webp",
+          "bytes": 100312,
+          "sha256": "d69a5a969fd987cbe37d24e314d0459cfa0b2353149fc0527cc0eda9ebf936c7"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/slate_floor-normal.webp",
+          "bytes": 1510600,
+          "sha256": "52bd80c8af1f8061e0d92d3ff8d9b04e094d4ef9ea9f2473bfe83f13a6221692"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/slate_floor-arm.webp",
+          "bytes": 244236,
+          "sha256": "00bff04474f93064d34bff747a6f614fa78a280661cbacf4ac4a979b6569960f"
+        }
+      }
+    },
+    {
+      "id": "smooth_concrete_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/smooth_concrete_floor",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/smooth_concrete_floor-color.webp",
+          "bytes": 211890,
+          "sha256": "ea4a6999128cdbfd52e726a0a88cdf0b2965a3982929d2cfcbcc5efe4d8ef7d3"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/smooth_concrete_floor-normal.webp",
+          "bytes": 1199040,
+          "sha256": "9775628c727e38df1e935ab68d02d69df3c708e35d6b6b24a6634c53e7301915"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/smooth_concrete_floor-arm.webp",
+          "bytes": 48890,
+          "sha256": "3df321c52e5314dc93863fcadcc7a290fa3c5fe97c6f066ca24bc20c916e9870"
+        }
+      }
+    },
+    {
+      "id": "concrete_floor_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_01",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_floor_01-color.webp",
+          "bytes": 377822,
+          "sha256": "82576a22b7963f3f96b54bbd45a973fa6b885c340b6643bf6def3cea7cc8eafa"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_floor_01-normal.webp",
+          "bytes": 1937992,
+          "sha256": "f540891a900743ba49dd888537c36ae30e1c9a7f410f9f4f8614a8d073dc99ca"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_floor_01-arm.webp",
+          "bytes": 136654,
+          "sha256": "d2f823b2d16358ee06593f89d720d13fe81fc090d92a487fabdd6e79ddb741cb"
+        }
+      }
+    },
+    {
+      "id": "concrete_floor_worn_001",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_worn_001",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_floor_worn_001-color.webp",
+          "bytes": 55330,
+          "sha256": "e2ac27d3e49cf66fc94101250307219251dd42f07fc4e391e4a8fa318185937f"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_floor_worn_001-normal.webp",
+          "bytes": 1514362,
+          "sha256": "2bb7887ea408effd6fc2626dda64741f8abadebb7cb180ecea5852efc07d20a5"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_floor_worn_001-arm.webp",
+          "bytes": 98266,
+          "sha256": "8fee56ca6fec7afb7854530b59017bbf1637ae3b0c1741f92ae980da3c022942"
+        }
+      }
+    },
+    {
+      "id": "concrete_brick_wall_001",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_brick_wall_001",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_brick_wall_001-color.webp",
+          "bytes": 67232,
+          "sha256": "864a699611f736c956f8c50d477471b277357594150385f90749f58d1aa51dc3"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_brick_wall_001-normal.webp",
+          "bytes": 1890544,
+          "sha256": "06c1cbe2b4d6b261152c11e5f811fb0b8e20c193ce5d67c3548236ecb8099c5e"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_brick_wall_001-arm.webp",
+          "bytes": 95082,
+          "sha256": "4482453204ff348deaaa6261f5c924f8c61decf13edbe4b5e9de00ab132573e2"
+        }
+      }
+    },
+    {
+      "id": "rough_plaster_brick",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_plaster_brick",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rough_plaster_brick-color.webp",
+          "bytes": 398028,
+          "sha256": "e53ff6f9af13452db7dfde69c6255fc8a556171b1c06c524ebac646a89d20dee"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rough_plaster_brick-normal.webp",
+          "bytes": 1475314,
+          "sha256": "c4fd874477ba5961b9813ec9ef5faf3cd93784d669e1c1767995946b5e973035"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rough_plaster_brick-arm.webp",
+          "bytes": 378134,
+          "sha256": "c7af493233b90077c1307038ea517dd7f59fb4ad9bcce7f2727ede4ecad77b3f"
+        }
+      }
+    },
+    {
+      "id": "concrete_debris",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_debris",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_debris-color.webp",
+          "bytes": 198210,
+          "sha256": "eef644c97c055157d1606c66b75a06292d61aa61dd02faa99fe5fa4be194fc29"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_debris-normal.webp",
+          "bytes": 2562936,
+          "sha256": "abe3924c0c041d4076f312fbd3f2a69474bc420b1f27a767818147690f32abb1"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_debris-arm.webp",
+          "bytes": 249684,
+          "sha256": "1bac533a2e3851056b44cce3d42fea00d0795e98550a2aa14630678d45ebccf1"
+        }
+      }
+    },
+    {
+      "id": "concrete_floor_painted",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_painted",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_floor_painted-color.webp",
+          "bytes": 256990,
+          "sha256": "b29da0950763c4506c006e3c75c8214642487c5c0c6e560457000306de83b8ed"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_floor_painted-normal.webp",
+          "bytes": 1920674,
+          "sha256": "abe79c01c172ba7f80da557ab131fd20cb6d9df6f3a34709c1790c382229176c"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_floor_painted-arm.webp",
+          "bytes": 262304,
+          "sha256": "d06f30b630aa48e3a7a266ff9f606e8866763ab95ad125b67affda627e0ba8e8"
+        }
+      }
+    },
+    {
+      "id": "rough_plaster_03",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_plaster_03",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rough_plaster_03-color.webp",
+          "bytes": 282688,
+          "sha256": "3a97553cb0397874fdb7da2bab7fb93b26fdd2fca06cf6f68a4549f912beb40e"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rough_plaster_03-normal.webp",
+          "bytes": 1751482,
+          "sha256": "ca26205e77a6ca7068f1ed6cb2befb86450cb52fd90007e1eea36f96dd533c0d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rough_plaster_03-arm.webp",
+          "bytes": 139194,
+          "sha256": "e1ca1241490eb551a678f8fe0edf3bd5f19a15c3eff814cb9d2fa3b2474630bd"
+        }
+      }
+    },
+    {
+      "id": "rough_concrete",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_concrete",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rough_concrete-color.webp",
+          "bytes": 356686,
+          "sha256": "ae84f5b5d2ef37f0e08606dcd77576a591220b659ee11cea9dd827cc2aedc5b0"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rough_concrete-normal.webp",
+          "bytes": 2459634,
+          "sha256": "8c502f94a6793dca11c549d2cef1ef43717c2d6b644b42aa6df4a8ba6961b5d3"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rough_concrete-arm.webp",
+          "bytes": 207458,
+          "sha256": "44516beb508b49ab58f0e108eacbda1f0705bdb366feef6ac20daecce62faf32"
+        }
+      }
+    }
+  ],
+  "errors": []
+}
