@@ -58,6 +58,9 @@ export class FootballWorld {
  private focusElapsed=0;
  private yaw=0;private pitch=0;
  private last=0;private frame=0;
+ private mobile=false;
+ private fpsTime=0;private fpsFrames=0;
+ private dpr=1;
  private boundResize=()=>this.resize();
  private chapter:Chapter;
  private tempVec=new THREE.Vector3();
@@ -81,9 +84,11 @@ export class FootballWorld {
   this.renderer.outputColorSpace=THREE.SRGBColorSpace;
   this.renderer.toneMapping=THREE.ACESFilmicToneMapping;
   this.renderer.toneMappingExposure=1.6;
+  this.mobile=window.innerWidth<=850;
   this.renderer.shadowMap.enabled=true;
   this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.55));
+  this.dpr=Math.min(window.devicePixelRatio||1,this.mobile?1.3:1.65);
+  this.renderer.setPixelRatio(this.dpr);
   this.scene.background=new THREE.Color(chapter===2?0x122533:0x0b1723);
   this.scene.fog=new THREE.FogExp2(chapter===2?0x192e40:0x131f2b,chapter===2?.009:.032);
   this.camera=new THREE.PerspectiveCamera(69,1,.08,220);
@@ -92,7 +97,7 @@ export class FootballWorld {
   this.scene.add(new THREE.HemisphereLight(0xbce4ff,0x48505e,2.25));
   this.scene.add(new THREE.AmbientLight(0xcce8ff,.87));
   const key=new THREE.DirectionalLight(0xffe3b8,chapter===2?2.1:1.2);
-  key.position.set(-3,8,-2);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
+  key.position.set(-3,8,-2);key.castShadow=true;key.shadow.mapSize.set(this.mobile?512:1024,this.mobile?512:1024);
   key.shadow.camera.left=-14;key.shadow.camera.right=14;key.shadow.camera.top=14;key.shadow.camera.bottom=-14;
   key.shadow.bias=-.0005;this.scene.add(key);
   this.makeRoom(chapter);
@@ -402,6 +407,14 @@ export class FootballWorld {
   this.frame=requestAnimationFrame(this.loop);
   const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
+  this.fpsTime+=dt;this.fpsFrames++;
+  if(this.fpsTime>4.5){
+   const fps=this.fpsFrames/this.fpsTime;
+   const max=Math.min(window.devicePixelRatio||1,this.mobile?1.3:1.65);
+   const newDpr=fps<28?Math.max(.7,this.dpr-.17):fps>54?Math.min(max,this.dpr+.07):this.dpr;
+   if(Math.abs(newDpr-this.dpr)>.02){this.dpr=newDpr;this.renderer.setPixelRatio(this.dpr);this.resize();}
+   this.fpsTime=0;this.fpsFrames=0;
+  }
   this.mixers.forEach(m=>m.update(dt));
   this.renderer.render(this.scene,this.camera);
  };
