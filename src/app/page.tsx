@@ -46,7 +46,14 @@ export default function Home(){
        <div className="ve-container">
          <div className="ve-small-heading"><span className="ve-overline ve-metal">EN PRIMER PLANO</span><span>VIRALIO ORIGINALS — 002</span></div>
          <Link href={`/salas/${featured.slug}`} className="ve-featured" style={{backgroundImage:`linear-gradient(90deg,rgba(6,8,11,.95) 0%, rgba(6,8,11,.72) 43%, rgba(6,8,11,.05) 100%), url("${featured.cover}")`}}>
-           <span className="ve-featured-inner"><span className="ve-overline ve-metal">EXPERIENCIA DESTACADA / TERROR PARANORMAL</span><strong>{featured.title}</strong><span className="ve-featured-sub">{featured.subtitle}</span><span className="ve-featured-description">{featured.tagline}</span><span className="ve-featured-cta">Conocé esta historia <span aria-hidden="true">↗</span></span></span>
+           <span className="ve-featured-inner"><span className="ve-overline ve-metal">EXPERIENCIA DESTACADA / TERROR PARANORMAL</span><strong>{featured.title}</strong><span className="ve-featured-sub">{featured.subtitle}</span><span className="ve-featured-description">{featured.tagline}</span>
+           <span className="ve-featured-intensity" aria-label="Intensidades orientativas: dificultad ${featured.intensity.difficulty} de 5; sustos ${featured.intensity.scares} de 5; sorpresa ${featured.intensity.surprise} de 5; tensión ${featured.intensity.tension} de 5">
+             <span>Dificultad <b>{featured.intensity.difficulty}/5</b></span>
+             <span>Sustos <b>{featured.intensity.scares}/5</b></span>
+             <span>Sorpresa <b>{featured.intensity.surprise}/5</b></span>
+             <span>Tensión <b>{featured.intensity.tension}/5</b></span>
+           </span>
+           <span className="ve-featured-cta">Conocé esta historia <span aria-hidden="true">↗</span></span></span>
            <span className="ve-featured-side" aria-hidden="true">ENTRÁ BAJO TU RESPONSABILIDAD</span>
          </Link>
        </div>
@@ -84,6 +91,7 @@ export default function Home(){
          <details><summary>¿Necesito descargar una aplicación?</summary><p>No. Las experiencias disponibles se abren desde el navegador; necesitás conexión a internet y un dispositivo compatible con gráficos 3D.</p></details>
          <details><summary>¿Puedo jugar desde mi celular?</summary><p>Sí, en celulares compatibles con WebGL2. Recomendamos un navegador actualizado, una conexión estable y utilizar auriculares.</p></details>
          <details><summary>¿Todas las experiencias son de terror?</summary><p>No. Viralio también desarrolla aventuras, misterios y experiencias pensadas para emocionar y sorprender.</p></details>
+         <details><summary>¿Qué significan los niveles de dificultad, sustos, sorpresa y tensión?</summary><p>Son indicadores orientativos del equipo Viralio, del 1 al 5. Dificultad mide los acertijos; sustos, los sobresaltos; sorpresa, los giros inesperados; y tensión, la presión durante el juego. No son calificaciones de usuarios ni revelan la historia.</p></details>
          <details><summary>¿Dónde compro una experiencia personalizada?</summary><p>Las sorpresas e invitaciones personalizadas se gestionan actualmente a través de Te Hice Esto, nuestro espacio de regalos digitales. Cada opción informa sus condiciones antes de contratar.</p></details>
        </div></div>
      </section>
