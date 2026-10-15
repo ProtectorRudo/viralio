@@ -1,0 +1,313 @@
+{
+  "name": "Viralio Nature, Fauna & Investigation Premium Resources",
+  "version": "1.0.0",
+  "curatedAt": "2026-10-15",
+  "scope": "ASSET LIBRARY ONLY. No levels, scenes, enemies or mechanics.",
+  "license": "CC0-1.0",
+  "count": 29,
+  "models": [
+    {
+      "id": "nature-crow",
+      "title": "Cuervo posado",
+      "category": "fauna-aves",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/crow-03a719bc",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Estática PBR original; cuervo de ambientación, no ave animada"
+    },
+    {
+      "id": "nature-pigeon",
+      "title": "Paloma urbana",
+      "category": "fauna-aves",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/urban-pigeon-3977bbba",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Estática PBR original; fondo urbano y jardines"
+    },
+    {
+      "id": "nature-red-fox",
+      "title": "Zorro rojizo",
+      "category": "fauna-silvestre",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/red-fox-e5cb59a3",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Estática PBR original; sin rig, postura creíble no garantiza fotorrealismo"
+    },
+    {
+      "id": "nature-squirrel",
+      "title": "Ardilla de árbol",
+      "category": "fauna-silvestre",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/tree-squirrel-6499352e",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Estática PBR original; escala real"
+    },
+    {
+      "id": "nature-deer-grazing",
+      "title": "Ciervo comiendo hierba",
+      "category": "fauna-silvestre",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/deer-grazing-f586dbe8",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Estática PBR original; postura natural"
+    },
+    {
+      "id": "nature-deer-standing",
+      "title": "Ciervo de pie",
+      "category": "fauna-silvestre",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/deer-standing-35e2f5f6",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Estática PBR original; alternativa para exteriores"
+    },
+    {
+      "id": "nature-cat-walking",
+      "title": "Gato caminando — pose fija",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/domestic-cat-walking-4e8ff6c2",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Pose fija de caminar; NO lleva clip ni locomoción"
+    },
+    {
+      "id": "nature-cat-sitting",
+      "title": "Gato doméstico sentado",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/domestic-cat-sitting-c7caf7c2",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Gato doméstico PBR estático"
+    },
+    {
+      "id": "nature-cat-sleeping",
+      "title": "Gato dormido enroscado",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/domestic-cat-curled-asleep-73a8a293",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Gato doméstico PBR estático"
+    },
+    {
+      "id": "nature-rabbit",
+      "title": "Conejo doméstico",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/domestic-rabbit-d5cbd890",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Conejo doméstico PBR estático"
+    },
+    {
+      "id": "nature-dog-medium-standing",
+      "title": "Perro mediano de pie",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/medium-dog-standing-5d64e1cd",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Perro mediano PBR estático"
+    },
+    {
+      "id": "nature-dog-medium-lying",
+      "title": "Perro mediano acostado",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/medium-dog-lying-0cd800ef",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Perro mediano PBR estático"
+    },
+    {
+      "id": "nature-dog-medium-sitting",
+      "title": "Perro mediano sentado",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/medium-dog-sitting-c404663e",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Perro mediano PBR estático"
+    },
+    {
+      "id": "nature-dog-small",
+      "title": "Perro pequeño",
+      "category": "fauna-domestica",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/small-dog-standing-ce18ca9c",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Perro pequeño PBR estático"
+    },
+    {
+      "id": "nature-cat-statue",
+      "title": "Estatua de gato de hormigón fotoescaneada",
+      "category": "esculturas-terror",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/concrete-cat-statue-585dc5f1",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Fotogrametría Poly Haven CC0; estatua de piedra, NO animal real"
+    },
+    {
+      "id": "nature-lion-statue",
+      "title": "Cabeza de león tallada fotoescaneada",
+      "category": "esculturas-terror",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/carved-lion-head-sculpture-98fce14d",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Fotogrametría Poly Haven CC0; ornamentación inmóvil"
+    },
+    {
+      "id": "horror-seated-mannequin",
+      "title": "Maniquí sentado sin animación",
+      "category": "horror-figuras",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/seated-mannequin-original-retail-fixture-b8a1f512",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Figura humana inerte PBR, útil para terror psicológico; NO es NPC"
+    },
+    {
+      "id": "horror-torso-mannequin",
+      "title": "Maniquí de torso sobre soporte",
+      "category": "horror-figuras",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/torso-mannequin-original-retail-fixture-b79f5417",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Figura comercial estática para depósitos o sastrerías"
+    },
+    {
+      "id": "character-humanoid-base-rig",
+      "title": "Humanoide base con rig de 53 huesos",
+      "category": "personajes-rig",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/human-base-mesh-with-editable-53-bone-rig-8e7c8ab1",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "rig-only",
+      "quality": "Base anatómica MakeHuman CC0 con skin y esqueleto 53 huesos, SIN animaciones; insumo de diseño, no personaje de calidad final"
+    },
+    {
+      "id": "investigation-open-notebook",
+      "title": "Cuaderno abierto encuadernado",
+      "category": "objetos-investigacion",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/open-notes-stationery-b40f246f",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "PBR ~5k tri, cubierta azul-verde; páginas no editables automáticamente"
+    },
+    {
+      "id": "investigation-biometric-terminal",
+      "title": "Terminal biométrica de huellas",
+      "category": "objetos-investigacion",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/entry-time-attendance-terminal-9bc75ac7",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "PBR teclado numérico y lector; no dispone de lógica ni datos reales"
+    },
+    {
+      "id": "investigation-carpenter-workbench",
+      "title": "Banco carpintero con prensa metálica",
+      "category": "muebles-taller",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/carpenter-workbench-carpentry-workbench-9855fae6",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "Mueble PBR madera roble y acero, escala real"
+    },
+    {
+      "id": "horror-standalone-candle",
+      "title": "Vela de cera sin encender",
+      "category": "objetos-investigacion",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/wax-column-candle-45a2dff5",
+      "license": "CC0-1.0",
+      "role": "support",
+      "animation": "static",
+      "quality": "PBR cera y mecha, no emite luz ni llama"
+    },
+    {
+      "id": "nature-ph-potted-plant-large",
+      "title": "Planta alta con maceta de terracota envejecida",
+      "category": "vegetacion-interior",
+      "sourcePage": "https://polyhaven.com/a/potted_plant_01",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer."
+    },
+    {
+      "id": "nature-ph-potted-plant-variegated",
+      "title": "Planta de hojas verdes bicolores y maceta de barro",
+      "category": "vegetacion-interior",
+      "sourcePage": "https://polyhaven.com/a/potted_plant_02",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer."
+    },
+    {
+      "id": "nature-ph-succulent-haworthia",
+      "title": "Suculenta haworthia en maceta pequeña",
+      "category": "vegetacion-interior",
+      "sourcePage": "https://polyhaven.com/a/potted_plant_04",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer."
+    },
+    {
+      "id": "nature-ph-fern-group",
+      "title": "Grupo de helechos con hojas reales",
+      "category": "vegetacion-exterior",
+      "sourcePage": "https://polyhaven.com/a/fern_02",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer."
+    },
+    {
+      "id": "nature-ph-tree-stump-roots",
+      "title": "Tocón de árbol con raíces expuestas y musgo",
+      "category": "vegetacion-exterior",
+      "sourcePage": "https://polyhaven.com/a/tree_stump_01",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer."
+    },
+    {
+      "id": "nature-ph-tree-stump-mossy",
+      "title": "Tocón antiguo de madera en descomposición",
+      "category": "vegetacion-exterior",
+      "sourcePage": "https://polyhaven.com/a/tree_stump_02",
+      "license": "CC0-1.0",
+      "role": "hero",
+      "animation": "static",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer."
+    }
+  ],
+  "materials": [
+    "forest_floor",
+    "concrete_moss",
+    "metasequoia_bark",
+    "mossy_rock",
+    "brick_moss_001"
+  ],
+  "rules": {
+    "visual": "Use photoreal scanned plants/stumps as hero. Animals are original PBR authored figures, not certified photoreal; review visually.",
+    "animation": "A static walking cat is a pose only. Rig-only base humanoid has zero animations. Do not claim ghost or monster rig.",
+    "safety": "No game modification. Read local availability from public/viralio-3d/index.json and materials/index.json.",
+    "perf": "Hero plants may include high mesh counts and alpha textures; test WebGL mobile with 1K textures before any deployment."
+  }
+}
