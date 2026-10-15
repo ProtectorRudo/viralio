@@ -64,18 +64,34 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
   });
   group.add(rig);
   if(isCoach){
-   // Specific coach identity: dark, visibly textured short hair over the
-   // skinned GLB head (not an invented helmet/visor and not the bald rig).
-   const hair=new THREE.MeshStandardMaterial({color:0x171212,roughness:.91,metalness:0});
-   const darkStroke=new THREE.MeshStandardMaterial({color:0x27211c,roughness:.86,metalness:0});
-   const scalp=new THREE.Mesh(new THREE.SphereGeometry(.20,20,12),hair);
-   scalp.position.set(0,1.83,-.008);scalp.scale.set(1.04,.39,1.12);
+   // Dark natural hair *attached to the head*, not the suspended torus of
+   // separated curls seen in the real screenshots. The hemisphere covers
+   // the crown and short tapered locks give a cropped, wavy hairstyle.
+   const hair=new THREE.MeshStandardMaterial({color:0x19130f,roughness:.91,metalness:0});
+   const hairHighlight=new THREE.MeshStandardMaterial({color:0x2a201a,roughness:.9,metalness:0});
+   const scalp=new THREE.Mesh(
+    new THREE.SphereGeometry(.201,24,14,0,Math.PI*2,0,Math.PI*.58),
+    hair
+   );
+   scalp.position.set(0,1.75,-.008);
+   scalp.scale.set(1.05,1.02,1.04);
+   scalp.castShadow=true;
    group.add(scalp);
-   for(let i=0;i<25;i++){
-    const theta=i*Math.PI*2/25,phi=.34+Math.sin(i*2.1)*.22;
-    const curl=new THREE.Mesh(new THREE.SphereGeometry(.038+(i%3)*.008,7,6),i%3===0?darkStroke:hair);
-    curl.position.set(Math.sin(theta)*.173,1.835+Math.cos(phi)*.045,Math.cos(theta)*.153);
-    curl.scale.set(1.15,.7,1.1);group.add(curl);
+   // Golden-angle distribution avoids an artificial doughnut of hair around
+   // the perimeter. Keep locks inside the volume of the scalp.
+   for(let i=0;i<20;i++){
+    const angle=i*2.3999632297;
+    const radius=.137*Math.sqrt((i+.5)/20);
+    const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
+    const y=1.907-.038*(radius/.137)**2;
+    const tuft=new THREE.Mesh(
+     new THREE.SphereGeometry(.032+(i%3)*.006,8,6),
+     i%5===0?hairHighlight:hair
+    );
+    tuft.position.set(x,y,z-.008);
+    tuft.scale.set(1.15,.73,1.16);
+    tuft.castShadow=true;
+    group.add(tuft);
    }
   }
   const fallback=group.getObjectByName("original-fallback");
@@ -91,7 +107,7 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
 export function createCoach(root:THREE.Group,isAlive:()=>boolean):Actor{
  const group=new THREE.Group();
  // Coach waits just outside the right edge of the walkable tunnel entrance.
- group.position.set(.48,.02,-4.86);group.rotation.y=Math.PI-.23;root.add(group);
+ group.position.set(.48,.02,-4.86);group.rotation.y=-.23;root.add(group);
  group.userData.animations=[] as THREE.AnimationMixer[];
  const fallback=humanFallback(group,0x152e4b);
  fallback.group.name="original-fallback";
