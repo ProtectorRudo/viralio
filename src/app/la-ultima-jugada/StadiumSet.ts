@@ -5,7 +5,7 @@ import * as THREE from "three";
  * Shared PBR materials, instanced furniture, low-draw-call line net and
  * in-world emissive sports signage keep the set useful on midrange phones.
  */
-type SceneAssets={textures:THREE.Texture[];animated:Array<(t:number)=>void>};
+type SceneAssets={textures:THREE.Texture[];animated:Array<(t:number)=>void>;setClock:(remaining:number)=>void;goal:()=>void};
 const make=(color:number,metalness=.2,roughness=.65,emissive=0,intensity=0)=>
  new THREE.MeshStandardMaterial({color,metalness,roughness,emissive,emissiveIntensity:intensity});
 function mesh(root:THREE.Group,geom:THREE.BufferGeometry,material:THREE.Material,x:number,y:number,z:number) {
@@ -106,7 +106,24 @@ function cameraRig(root:THREE.Group,x:number,z:number) {
 export function buildStadiumSet(root:THREE.Group,mobile:boolean):SceneAssets{
  const textures:THREE.Texture[]=[];
  const animated:Array<(t:number)=>void>=[];
- const score=textPanel("FINAL DEL MUNDO 2030","ARG  1 — 1  ENG","89:54  ·  TIEMPO REGLAMENTARIO");
+ const score=textPanel("FINAL DEL MUNDO 2030","ARG  1 — 1  ENG","87:00  ·  TIEMPO REGLAMENTARIO");
+ let lastDisplayed=-1;
+ let matchScore=1;
+ let clockLabel="87:00  ·  TIEMPO REGLAMENTARIO";
+ const redrawScore=()=>{
+  const updated=textPanel("FINAL DEL MUNDO 2030",`ARG  ${matchScore} — 1  ENG`,clockLabel);
+  score.image=updated.image;score.needsUpdate=true;updated.dispose();
+ };
+ const setClock=(remaining:number)=>{
+  const rounded=Math.max(0,Math.min(900,Math.floor(remaining)));
+  const epoch=Math.floor((900-rounded)/9);
+  if(epoch===lastDisplayed)return;lastDisplayed=epoch;
+  const matchSeconds=87*60+Math.floor((900-rounded)/900*420);
+  const minute=Math.floor(matchSeconds/60),sec=String(matchSeconds%60).padStart(2,"0");
+  const visibleMinute=minute>=90?"90+"+(minute-90):String(minute);
+  clockLabel=visibleMinute+":"+sec+(minute>=90?"  ·  TIEMPO AÑADIDO":"  ·  FINAL DEL MUNDO");
+  redrawScore();
+ };
  const walk=textPanel("ACCESO EXCLUSIVO", "BANCO ARGENTINO","AUTORIZACIÓN / INFORME VALIDADO");
  const banner=textPanel("VIRALIO ORIGINALS","LA ÚLTIMA JUGADA","LLEVÁ LA INFORMACIÓN · CAMBIÁ LA FINAL");
  textures.push(score,walk,banner);
@@ -152,5 +169,5 @@ export function buildStadiumSet(root:THREE.Group,mobile:boolean):SceneAssets{
    box(root,metal,.44,.25,.45,x,1.43,-28.1);
   }
  }
- return {textures,animated};
+ return {textures,animated,setClock,goal:()=>{matchScore=2;clockLabel="90+4 · ¡ARGENTINA CAMPEÓN!";redrawScore();}};
 }
