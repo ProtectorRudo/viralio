@@ -11,6 +11,12 @@ export type EscapeExperience = {
   photoCredit: string;
   duration: string;
   difficulty: string;
+  intensity: {
+    difficulty: 1 | 2 | 3 | 4 | 5;
+    scares: 1 | 2 | 3 | 4 | 5;
+    surprise: 1 | 2 | 3 | 4 | 5;
+    tension: 1 | 2 | 3 | 4 | 5;
+  };
   mode: string;
   tagline: string;
   synopsis: string;
@@ -30,6 +36,7 @@ export const experiences: readonly EscapeExperience[] = [
     photoCredit: "Fotografía de Ed Stone / Unsplash · Arte de referencia",
     duration: "3 min + 1 adicional",
     difficulty: "Intermedia",
+    intensity: { difficulty: 3, scares: 3, surprise: 3, tension: 4 },
     mode: "Individual",
     tagline: "Alguien desapareció. El reloj ya está corriendo.",
     synopsis: "Una habitación cerrada. Tres evidencias. Seis cifras. Y la certeza de que alguien podría regresar antes de que encuentres la salida.",
@@ -47,6 +54,7 @@ export const experiences: readonly EscapeExperience[] = [
     photoCredit: "Fotografía de Richard Heinen / Unsplash · Arte de referencia",
     duration: "7 min + 1 adicional",
     difficulty: "Intermedia",
+    intensity: { difficulty: 3, scares: 4, surprise: 4, tension: 4 },
     mode: "Individual",
     tagline: "La función terminó en 1968. Tu entrada acaba de llegar.",
     synopsis: "Ochenta y tres espectadores desaparecieron del teatro Belladonna. Nadie volvió a entrar. Hasta esta noche.",
@@ -65,6 +73,7 @@ export const experiences: readonly EscapeExperience[] = [
     photoCredit: "Fotografía de Annie Spratt / Unsplash · Arte de referencia",
     duration: "9 min + desenlace",
     difficulty: "Intermedia",
+    intensity: { difficulty: 3, scares: 1, surprise: 5, tension: 3 },
     mode: "Individual",
     tagline: "Hay secretos que sólo florecen a tiempo.",
     synopsis: "Un jardín que empieza a marchitarse, una carta sellada y una cuenta regresiva. Descubrí qué historia se esconde entre las flores.",
@@ -82,6 +91,7 @@ export const experiences: readonly EscapeExperience[] = [
     photoCredit: "Portada ilustrada original de Viralio",
     duration: "15 minutos",
     difficulty: "Desafiante",
+    intensity: { difficulty: 4, scares: 5, surprise: 4, tension: 5 },
     mode: "Individual · Primera persona",
     tagline: "Tenés quince minutos para salir del hospital. Algo quiere salir con vos.",
     synopsis: "Tres sectores de un hospital sellado, un protocolo irreversible y una anomalía capaz de imitar voces humanas. Escapá antes del último minuto.",
