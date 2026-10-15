@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
+import {paintTacticalFeed,type ReplayCamera} from "./TacticSimulation";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
@@ -65,6 +66,8 @@ export class FootballWorld {
  private chapter:Chapter;
  private tempVec=new THREE.Vector3();
  private disposableTextures:THREE.Texture[]=[];
+ private replayDisplays:Array<{canvas:HTMLCanvasElement;texture:THREE.CanvasTexture;camera:ReplayCamera}>=[];
+ private replayElapsed=0;private replayClock=0;
  private mixers:THREE.AnimationMixer[]=[];
  private destroyed=false;
  private onKeyDown=(e:KeyboardEvent)=>{if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
@@ -256,6 +259,7 @@ export class FootballWorld {
   if(chapter===0){
    this.desk(-1,0.5,4.5);this.chair(-2,1.9);this.chair(1,1.85);
    this.panel(-2,2.1,-6.38,3.55,1.85,"ANÁLISIS MULTICÁMARA",["CÁMARAS 01 / 02 / 03","FEED ALTERADO - REVISAR"],"monitores");
+   this.createReplayWall();
    this.panel(2.2,2.1,-6.36,3.15,1.85,"PIZARRA TÁCTICA",["MOVIMIENTO DE ATAQUE","7 / 10 / 9"],"pizarra");
    box(.97,.11,.65,-2.15,1,0.5,mat(0xb1ac9f,.16,.81),this.root);
    this.label("EXPEDIENTE 2030",["DOCUMENTO ORIGINAL"],-2.15,1.09,1.12,1.45,.78,"#f8c57e");
@@ -379,6 +383,35 @@ export class FootballWorld {
   this.glow(0,2.1,-4,0xf9c9aa,12,8);
  }
 
+ private createReplayWall(){
+  const cams=["C1","C2","C3"] as const;
+  for(let i=0;i<3;i++){
+   const canvas=document.createElement("canvas");canvas.width=512;canvas.height=324;
+   const ctx=canvas.getContext("2d");
+   if(!ctx)continue;
+   const camera=cams[i];paintTacticalFeed(ctx,camera,.2,canvas.width,canvas.height);
+   const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+   texture.minFilter=THREE.LinearFilter;texture.magFilter=THREE.LinearFilter;
+   this.disposableTextures.push(texture);
+   const x=-3.21+i*1.21;
+   box(1.19,1.16,.08,x,2.12,-6.05,mat(0x0b151b,.74,.33),this.root);
+   const screen=plane(1.12,.99,x,2.12,-5.99,new THREE.MeshBasicMaterial({map:texture,toneMapped:false}),this.root);
+   screen.renderOrder=2;
+   this.replayDisplays.push({canvas,texture,camera});
+  }
+ }
+ private animateReplay(dt:number){
+  if(!this.replayDisplays.length)return;
+  this.replayElapsed+=dt;this.replayClock=(this.replayClock+dt*.175)%1;
+  if(this.replayElapsed<.115)return;this.replayElapsed=0;
+  for(const display of this.replayDisplays){
+   const ctx=display.canvas.getContext("2d");
+   if(!ctx)continue;
+   paintTacticalFeed(ctx,display.camera,this.replayClock,display.canvas.width,display.canvas.height);
+   display.texture.needsUpdate=true;
+  }
+ }
+
  private actionAt(nx:number,ny:number){
   this.ray.setFromCamera(new THREE.Vector2(nx,ny),this.camera);
   const hits=this.ray.intersectObjects(this.targets,false);
@@ -407,6 +440,7 @@ export class FootballWorld {
   this.frame=requestAnimationFrame(this.loop);
   const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
+  this.animateReplay(dt);
   this.fpsTime+=dt;this.fpsFrames++;
   if(this.fpsTime>4.5){
    const fps=this.fpsFrames/this.fpsTime;
