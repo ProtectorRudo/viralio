@@ -264,6 +264,61 @@
         "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/grass_path_2/grass_path_2_nor_gl_1k.png",
         "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/grass_path_2/grass_path_2_arm_1k.png"
       }
+    },
+    {
+      "id": "wood_table",
+      "title": "Madera rústica barnizada para mesas",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_table",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table/wood_table_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table/wood_table_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table/wood_table_arm_1k.png"
+      }
+    },
+    {
+      "id": "wood_table_001",
+      "title": "Madera teñida para mobiliario fino",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_table_001",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table_001/wood_table_001_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table_001/wood_table_001_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table_001/wood_table_001_arm_1k.png"
+      }
+    },
+    {
+      "id": "wood_table_large",
+      "title": "Madera envejecida para mesas y estanterías",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_table_large",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table_large/wood_table_large_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table_large/wood_table_large_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_table_large/wood_table_large_arm_1k.png"
+      }
+    },
+    {
+      "id": "fabric_leather_01",
+      "title": "Cuero tapizado envejecido con pliegues",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/fabric_leather_01",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_01/fabric_leather_01_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_01/fabric_leather_01_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_01/fabric_leather_01_arm_1k.png"
+      }
+    },
+    {
+      "id": "fabric_leather_02",
+      "title": "Cuero tapizado realista con costuras y grietas",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/fabric_leather_02",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_02/fabric_leather_02_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_02/fabric_leather_02_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_02/fabric_leather_02_arm_1k.png"
+      }
     }
   ]
 }
