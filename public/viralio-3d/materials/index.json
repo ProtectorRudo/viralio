@@ -1,7 +1,7 @@
 {
   "name": "Viralio PBR Material Library",
-  "createdAt": "2026-10-15T17:47:17.165Z",
-  "total": 31,
+  "createdAt": "2026-10-15T17:55:16.565Z",
+  "total": 37,
   "license": "CC0-1.0",
   "materials": [
     {
@@ -683,6 +683,138 @@
           "path": "/viralio-3d/materials/fabric_leather_02-arm.webp",
           "bytes": 378126,
           "sha256": "a83a4e465af99e5e8f93b19e4651bf3f5aa1339a4921fe7fdfbe32692acb03cb"
+        }
+      }
+    },
+    {
+      "id": "rusted_shutter",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rusted_shutter",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rusted_shutter-color.webp",
+          "bytes": 254816,
+          "sha256": "0fbe450a2167ed8610d35b873c718e14a72d8a53942a85e4fc38fadc3d9b7699"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rusted_shutter-normal.webp",
+          "bytes": 2058306,
+          "sha256": "192e4a114562551b3c76e1f383a6c68c6b070c8247fdad161f9ed0e56488fa0c"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rusted_shutter-arm.webp",
+          "bytes": 140936,
+          "sha256": "8f8f978451ad5202555385808d5db4cf8f85c2d1434cfcb859abad1302afbeaa"
+        }
+      }
+    },
+    {
+      "id": "rust_coarse_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rust_coarse_01",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rust_coarse_01-color.webp",
+          "bytes": 204308,
+          "sha256": "1278ad184811fc885987653d1b6e897c37e121a942b2d0cd00aeb45d0b737937"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rust_coarse_01-normal.webp",
+          "bytes": 1590240,
+          "sha256": "d779fcb1efeaf915f40b2b3082fd70df575f68536479525a40a1a289769f1a98"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rust_coarse_01-arm.webp",
+          "bytes": 159228,
+          "sha256": "3f830ac9bc30433346c7138af636c180c5046d8a7f2f573f6702fd0ff9819e9f"
+        }
+      }
+    },
+    {
+      "id": "wood_plank_wall",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_plank_wall",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/wood_plank_wall-color.webp",
+          "bytes": 36316,
+          "sha256": "a81216f6a2163668d5ea7727c30a33fad9d2c2bf1b52db5bbb35799164c08cfd"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/wood_plank_wall-normal.webp",
+          "bytes": 1399650,
+          "sha256": "700138e6f2a8b9df527316bfb7ba92f6246ae43e65078fce5a590a21adbb759c"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/wood_plank_wall-arm.webp",
+          "bytes": 23842,
+          "sha256": "c883ef4346bd356795d8c6fdb1e72ae29a6f3793e5d5d6088baec88095e6cbac"
+        }
+      }
+    },
+    {
+      "id": "painted_concrete_02",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/painted_concrete_02",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/painted_concrete_02-color.webp",
+          "bytes": 19370,
+          "sha256": "8aa498ee812c2e2116247e8ebd44283ca40248e039184a29bd1e07fce995d60c"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/painted_concrete_02-normal.webp",
+          "bytes": 1351758,
+          "sha256": "a80e29c0021fa08fd5b9b776436a927d29ec24f7827c4f663426dbc731e5e65c"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/painted_concrete_02-arm.webp",
+          "bytes": 68002,
+          "sha256": "150473bee335f5d48cb10d547ce59af79b9be31cec25c5fea814b94ff413890e"
+        }
+      }
+    },
+    {
+      "id": "smoke_speckled_veneer",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/smoke_speckled_veneer",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/smoke_speckled_veneer-color.webp",
+          "bytes": 63564,
+          "sha256": "1a19ec4ee58634ec0b6a2173bf66b20a54fb95e10381afdb359b244cf7b3b4a9"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/smoke_speckled_veneer-normal.webp",
+          "bytes": 705668,
+          "sha256": "0220b8032b967dc3131557035db0964fd234515b0e3bc3b3b406a2b0c93fef2b"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/smoke_speckled_veneer-arm.webp",
+          "bytes": 119122,
+          "sha256": "bcb068471f6fd60001c0833040173622902d14be0608cdcdc7e85536a69f7137"
+        }
+      }
+    },
+    {
+      "id": "metal_grate_rusty",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/metal_grate_rusty",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/metal_grate_rusty-color.webp",
+          "bytes": 225104,
+          "sha256": "1155bcc6873cee282c16955c4dd65371367f452ad9c0a169c4a99f5338f4b728"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/metal_grate_rusty-normal.webp",
+          "bytes": 1608230,
+          "sha256": "71386daa3bbd11ce155be57008cc47f65571c5d52248c4d610d2a3b0fe950e2d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/metal_grate_rusty-arm.webp",
+          "bytes": 239814,
+          "sha256": "1c85ca0a34d50ead7d4e4023af11e173611d2b1531c91072866ac1b36e21ab33"
         }
       }
     }
