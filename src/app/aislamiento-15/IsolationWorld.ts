@@ -428,7 +428,12 @@ export class IsolationWorld {
       this.block("Tuberías de cámara", x - .68, 2.62, zz + .02, .075, .34, .075, mats.steel);
       this.pipe("Cartucho de suspensión", x + .72, 2.29, zz, .11, .65, mats.steel);
     }
-    this.panel(["SECUENCIA DE PURGA", this.valvePattern.map(c => ({ blue: "AZUL", green: "VERDE", red: "ROJO" }[c] || c.toUpperCase())).join(" > "), "EXTRACTOR: ACTIVAR AL FINAL"], 0, 2.31, z - 6.25, 4.17, 1.34, "#cbe1b7");
+    // The door cannot obscure a critical clue. The physical notice is placed
+    // on the side wall and can be approached and inspected on a portrait phone.
+    const purgeSign = this.panel(["SECUENCIA DE PURGA",
+      this.valvePattern.map(c => ({ blue: "AZUL", green: "VERDE", red: "ROJO" }[c] || c.toUpperCase())).join(" > "),
+      "EXTRACTOR: ACTIVAR AL FINAL"], -5.12, 2.45, z - 4.6, 3.12, 1.35, "#cbe1b7");
+    if (purgeSign) purgeSign.rotation.y = Math.PI / 2;
     this.cabinet(-4.45, z - 2.7, true);
     this.panel(["REGULADOR DE OXÍGENO", "DOS CELDAS ANTES DE PURGAR", "SOLO DESPUÉS: ABRIR VÁLVULAS"], 2.8, 1.55, z - 6.24, 2.52, .98, "#c5eee2");
     for (const [key, x, zz] of [["alpha", -3.85, z + 3.1], ["beta", 3.72, z + 3.25]] as const) {
@@ -515,7 +520,11 @@ export class IsolationWorld {
       this.breakerNodes.push(breaker);
       this.pipe("Conducto reactor", x, 3.34, zz, .14, .85, mats.rust);
     }
-    this.panel(["APERTURA DE EMERGENCIA", "A = ENCENDIDO", "B = APAGADO", "C = ENCENDIDO"], 0, 2.6, z - 6.23, 3.5, 1.56, "#bddfc1");
+    // Electrical instructions are deliberately off the central door axis.
+    const breakerSign = this.panel(["APERTURA DE EMERGENCIA",
+      "A = ENCENDIDO", "B = APAGADO", "C = ENCENDIDO"],
+      -5.12, 2.43, z - 3.25, 3.26, 1.51, "#bddfc1");
+    if (breakerSign) breakerSign.rotation.y = Math.PI / 2;
     const log = this.block("Registro audio #15", -4.28, 1.26, z - 2.8, .78, .18, .56, mats.dark);
     this.target("log", "Registro de identidad — expediente 15", log, 2, 3.4);
     this.panel(["TRANSMISIÓN INTERCEPTADA", "LA VOZ NO ES HUMANA", "PROTOCOLO: DESCONFIAR"], -3.88, 2.61, z - 6.23, 1.7, 1.18, "#ebbf9f");
