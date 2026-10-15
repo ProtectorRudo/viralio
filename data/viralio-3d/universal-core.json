@@ -1,0 +1,381 @@
+{
+  "title": "Viralio Universal Core",
+  "version": "1.0.0",
+  "updatedAt": "2026-10-15",
+  "scope": "Resource selection ONLY. No game levels, no puzzle work.",
+  "guidance": "Consult public/viralio-3d/index.json and /materials/index.json for actual verified availability; visual QA still required.",
+  "license": "CC0-1.0",
+  "totalCandidates": 32,
+  "priorityLegend": {
+    "1": "Hero - front-facing",
+    "2": "Support - mid/background"
+  },
+  "groups": {
+    "seating": "Sillas y asientos",
+    "tables": "Mesas y superficies",
+    "appliances": "Electrodomésticos",
+    "food": "Comida y vajilla",
+    "storage": "Almacenamiento"
+  },
+  "models": [
+    {
+      "id": "universal-fridge-premium",
+      "title": "Heladera doble puerta premium / Cold Column",
+      "group": "appliances",
+      "category": "cocina-electrodomesticos",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/cold-column-large-appliance-26616313",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-microwave-oven",
+      "title": "Microondas premium / Wave Compact",
+      "group": "appliances",
+      "category": "cocina-electrodomesticos",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/wave-compact-large-appliance-8d8fbc52",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-moka-coffee-maker",
+      "title": "Cafetera italiana / Octave Brewer",
+      "group": "appliances",
+      "category": "cocina-electrodomesticos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/octave-brewer-coffee-maker-f4084a85",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-french-press",
+      "title": "Cafetera de émbolo / Press Eight",
+      "group": "appliances",
+      "category": "cocina-electrodomesticos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/press-eight-coffee-maker-33aa2907",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-windsor-dining-chair",
+      "title": "Silla comedor Windsor de madera",
+      "group": "seating",
+      "category": "mobiliario-sillas",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/windsor-spindle-dining-chair-27c752b8",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-crossback-chair",
+      "title": "Silla comedor respaldo cruzado",
+      "group": "seating",
+      "category": "mobiliario-sillas",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/crossley-cross-back-dining-chair-021d7599",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-arc-upholstered-chair",
+      "title": "Silla comedor roble tapizada ARC",
+      "group": "seating",
+      "category": "mobiliario-sillas",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/arc-oak-upholstered-dining-chair-09932cbc",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-loop-arm-chair",
+      "title": "Silla comedor con brazos Loop",
+      "group": "seating",
+      "category": "mobiliario-sillas",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/loop-loop-arm-dining-chair-a8ae772c",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-round-dining-table",
+      "title": "Mesa comedor redonda HALO 120",
+      "group": "tables",
+      "category": "mobiliario-mesas",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/halo-120-round-dining-table-d1ecf403",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-link-sofa",
+      "title": "Sofá modular sin apoyabrazos Link",
+      "group": "seating",
+      "category": "mobiliario-sofas",
+      "level": "hero",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/link-armless-modular-sofa-c0827105",
+      "format": "GLB",
+      "priority": 1,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-modular-sofa-set",
+      "title": "Sofá esquinero cinco piezas",
+      "group": "seating",
+      "category": "mobiliario-sofas",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/modular-five-piece-sofa-original-interior-furnishing-1abdc568",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-chaise-sofa",
+      "title": "Sofá chaise longue",
+      "group": "seating",
+      "category": "mobiliario-sofas",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/chaise-sofa-original-interior-furnishing-93524551",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-fruit-bowl",
+      "title": "Frutera llena de frutas",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/fruit-bowl-with-fruit-original-tableware-and-food-prop-6b75ce64",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-sandwich-plate",
+      "title": "Plato con sándwich",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/sandwich-plate-original-tableware-and-food-prop-092f7ec3",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-pizza",
+      "title": "Pizza redonda entera",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/pizza-original-tableware-and-food-prop-f77c94ae",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-plate-set",
+      "title": "Juego de platos 22 cm",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/plate-set-medium-original-tableware-and-food-prop-5a33910d",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-cutlery-set",
+      "title": "Juego de cubiertos de acero",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/cutlery-set-original-tableware-and-food-prop-70a96c82",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-serving-platter",
+      "title": "Bandeja para servir comida",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "support",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/serving-platter-original-tableware-and-food-prop-db9a73d3",
+      "format": "GLB",
+      "priority": 2,
+      "review": "PBR original; requires visual QA"
+    },
+    {
+      "id": "universal-ph-leather-dining-chair",
+      "title": "Silla comedor de cuero capitoné",
+      "group": "seating",
+      "category": "mobiliario-sillas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/dining_chair_02",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-painted-dining-chair",
+      "title": "Silla comedor rústica pintada",
+      "group": "seating",
+      "category": "mobiliario-sillas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/painted_wooden_chair_02",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-leather-sofa",
+      "title": "Sofá de cuero y madera tallada",
+      "group": "seating",
+      "category": "mobiliario-sofas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/sofa_02",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-victorian-sofa",
+      "title": "Sofá victoriano de cuero y madera",
+      "group": "seating",
+      "category": "mobiliario-sofas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/sofa_03",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-wooden-table",
+      "title": "Mesa de madera vieja escaneada",
+      "group": "tables",
+      "category": "mobiliario-mesas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/WoodenTable_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-worn-coffee-table",
+      "title": "Mesa ratona turquesa envejecida",
+      "group": "tables",
+      "category": "mobiliario-mesas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/CoffeeTable_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-stone-coffee-table",
+      "title": "Mesa ratona moderna piedra y madera",
+      "group": "tables",
+      "category": "mobiliario-mesas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/modern_coffee_table_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-red-apple",
+      "title": "Manzana roja fotoescaneada",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/food_apple_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-carved-plate",
+      "title": "Plato de madera artesanal tallada",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/carved_wooden_plate",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-wooden-bowl",
+      "title": "Cuenco de madera tallada",
+      "group": "food",
+      "category": "comida-objetos",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/wooden_bowl_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-leather-ottoman",
+      "title": "Puf de cuero con costuras",
+      "group": "seating",
+      "category": "mobiliario-sofas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/Ottoman_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-painted-cabinet",
+      "title": "Armario vintage pintura desgastada",
+      "group": "storage",
+      "category": "mobiliario-armarios",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/painted_wooden_cabinet_02",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-wooden-crate",
+      "title": "Cajón de madera envejecida",
+      "group": "storage",
+      "category": "almacenaje-universal",
+      "level": "support",
+      "sourcePage": "https://polyhaven.com/a/wooden_crate_02",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    },
+    {
+      "id": "universal-ph-round-wood-table",
+      "title": "Mesa redonda de madera antigua",
+      "group": "tables",
+      "category": "mobiliario-mesas",
+      "level": "hero",
+      "sourcePage": "https://polyhaven.com/a/round_wooden_table_01",
+      "format": "GLB from official Poly Haven glTF",
+      "priority": 1,
+      "review": "Photo-scanned/photoreal model; check transform and phone performance"
+    }
+  ],
+  "pbrMaterialIds": [
+    "wood_table",
+    "wood_table_001",
+    "wood_table_large",
+    "fabric_leather_01",
+    "fabric_leather_02"
+  ]
+}
