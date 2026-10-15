@@ -93,6 +93,7 @@ async function worker(){
       } else if(!validateOnly){
         const raw=await download(item);
         const rawInfo=verifyGlb(raw);
+        if(item.rigged===true && rawInfo.skins<1) throw Error("Source rigged humanoid has no skin/skeleton");
         if(item.tier==="personaje-animado" && (rawInfo.skins<1||rawInfo.animations<7))
           throw Error("Animated character missing rig or 7 source clips");
         const temp=target+".source.glb";
@@ -108,7 +109,9 @@ async function worker(){
               "--join","false"
             ],{timeout:120000,maxBuffer:1024*1024});
             info=verifyGlb(readFileSync(target));
-            if(item.tier==="personaje-animado"&&(info.skins<1||info.animations<7))
+            if(item.rigged===true && info.skins<1) throw Error("Optimized humanoid lost skin/skeleton");
+            if(item.rigged===true && info.skins<1) throw Error("Rigged model missing skin/skeleton");
+      if(item.tier==="personaje-animado"&&(info.skins<1||info.animations<7))
               throw Error("Optimized character lost skin or animations");
             optimized=true;
           }catch(e){
