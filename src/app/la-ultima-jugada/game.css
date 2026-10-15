@@ -425,3 +425,16 @@
  .lj-run-report small{font-size:7px}
  .lj-run-report strong{font-size:18px}
 }
+
+/* Safe short-height desktop briefing: permanently expose the START control. */
+@media (min-width:651px) and (max-height:800px){
+ .lj-mission-backdrop{padding:8px 15px 68px}
+ .lj-mission-sheet{max-height:calc(100svh - 78px);overflow-y:auto}
+ .lj-mission-sheet .lj-mainbutton{
+  position:fixed;z-index:75;bottom:9px;left:50%;transform:translateX(-50%);
+  width:min(690px,calc(100vw - 32px));min-height:52px;
+  box-shadow:0 -12px 32px rgba(1,12,23,.90);
+ }
+ .lj-mission-footer{margin-bottom:6px}
+}
+.lj-mission-sheet .lj-mainbutton:disabled{cursor:progress;opacity:.73;filter:saturate(.7)}
