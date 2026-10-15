@@ -589,6 +589,10 @@ export class FootballWorld {
  }
  interactCenter(){
   if(!this.gameplayActive)return;
+  // Raycasts must see the current aiming angle immediately, not the angle
+  // from the previous rendered frame (critical on low-FPS mobile hardware).
+  this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
+  this.camera.updateMatrixWorld(true);
   const action=this.actionAt(0,0);if(action)this.handlers.action(action);
  }
  look(dx:number,dy:number){
@@ -607,6 +611,8 @@ export class FootballWorld {
   this.yaw=Math.atan2(-dx,-dz);
   this.renderer.domElement.dataset.aimTarget=id;
   this.pitch=THREE.MathUtils.clamp(Math.atan2(dy,Math.hypot(dx,dz)),-1.12,1.12);
+  this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
+  this.camera.updateMatrixWorld(true);
   return true;
  }
  private loop=(time:number)=>{
