@@ -75,7 +75,6 @@ test("Viralio Escape: 1-to-5 editorial profiles are differentiated and never mim
   {slug:"aislamiento-15",metrics:[4,5,4,5]}
  ];
  for(const entry of entries){
-  const card=page.locator(".ve-card").filter({has:page.locator(`.ve-card-${entry.slug.replace("la-ultima-funcion","theatre")}`)});
   const link=page.getByRole("link",{name:new RegExp("Conocer la experiencia")}).filter({has:page.locator(`.ve-card-content h3`,{hasText:entry.slug==="caso-m"?"CASO M":entry.slug==="aislamiento-15"?"AISLAMIENTO 15":entry.slug==="la-ultima-funcion"?"LA ÚLTIMA FUNCIÓN":"LA ÚLTIMA CAMPANADA"})});
   const meters=link.locator(".ve-intensity-metric");
   await expect(meters).toHaveCount(4);
