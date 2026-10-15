@@ -834,7 +834,13 @@ export class IsolationWorld {
   }
   private inspecting = false;
   private panelSafetyCooldown = -100;
-  setInspecting(active: boolean) { this.inspecting = active; }
+  setInspecting(active: boolean) {
+    if (active && !this.inspecting) {
+      this.keys.clear();
+      this.moveJoystick(0, 0);
+    }
+    this.inspecting = active;
+  }
   holdAtPanel(seconds = 10) {
     if (this.room === 0 || this.elapsed - this.panelSafetyCooldown < 22) return;
     this.panelSafetyCooldown = this.elapsed;
@@ -888,6 +894,7 @@ export class IsolationWorld {
   }
 
   private walk(dt: number) {
+    if (this.inspecting) return;
     let right = Number(this.keys.has("KeyD") || this.keys.has("ArrowRight")) - Number(this.keys.has("KeyA") || this.keys.has("ArrowLeft")) + this.mobileVector.x;
     let forward = Number(this.keys.has("KeyW") || this.keys.has("ArrowUp")) - Number(this.keys.has("KeyS") || this.keys.has("ArrowDown")) - this.mobileVector.y;
     const length = Math.hypot(right, forward);
