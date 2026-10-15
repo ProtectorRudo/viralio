@@ -4,7 +4,7 @@ import { installHospitalPremiumArt } from "./HospitalPremiumArt";
 import { installHospitalCinematics } from "./HospitalCinematics";
 import { installHospitalInteractionArt } from "./HospitalInteractionArt";
 import { constructOrderlyIdentity } from "./OrderlyCreature";
-import { canStand, clearSight, findPath, slide } from "./ChamberNavigation";
+import { EMERGENCY_LAYOUT, canStand, clearSight, findPath, slide } from "./ChamberNavigation";
 
 export type Chamber = 0 | 1 | 2;
 export type Focus = { id: string; label: string; distance: number };
@@ -376,7 +376,7 @@ export class IsolationWorld {
     this.gurney(3, z - 2.68, -.25);
     this.iv(4.12, z + 2.8);
     this.iv(4.5, z - 3.2);
-    this.cabinet(-4.3, z - 2.3, true);
+    this.cabinet(EMERGENCY_LAYOUT.locker.x, z + EMERGENCY_LAYOUT.locker.z, true);
     // No obstructive floating kiosks: the terminal is mounted on the desk.
     this.panel(["REGISTRO DE TRIAJE", "CLAVE = PRIORIDADES P1 P2 P3", "CONSULTAR ARCHIVO CLÍNICO"], -3.38, 2.03, z - 6.24, 2.26, 1.15);
     const triage = this.block("Archivo de triaje", 3.92, 1.1, z + 1.8, .37, .035, .28, mats.linen);
@@ -390,8 +390,20 @@ export class IsolationWorld {
       this.rotators.set("relay-" + n, lever);
     }
     this.panel(["SALA 01", "ALIMENTACIÓN AUXILIAR", "USE FUSIBLE F-08"], 3.35, 2.66, z - 6.24, 2.28, .91);
-    const fuse = this.block("Fusible F-08", -3.09, 1.16, z + 2.22, .14, .13, .26, mats.amber);
-    this.target("fuse", "Retirar fusible F-08 del mostrador", fuse, 0, 2.55);
+    // A visible, physical cartridge on the near end of the reception desk.
+    // Its previous spot (z + 2.22) was behind the raised terminal from the player approach.
+    const fuse = new THREE.Group();
+    fuse.name = "Cartucho recuperable F-08";
+    fuse.position.set(EMERGENCY_LAYOUT.fuse.x, 0, z + EMERGENCY_LAYOUT.fuse.z);
+    this.scene.add(fuse);
+    this.block("Soporte de cartucho F-08", 0, 1.105, 0, .32, .035, .40, mats.dark, fuse);
+    this.block("Cuerpo cerámico del fusible", 0, 1.20, 0, .16, .13, .30, mats.amber, fuse);
+    for (const x of [-.115, .115]) {
+      this.block("Terminal metálica del fusible", x, 1.20, 0, .065, .13, .16, mats.steel, fuse);
+    }
+    this.block("Marcador F-08", 0, 1.275, 0, .14, .018, .19, mats.ceramic, fuse);
+    // Group raycasting covers all visible parts; markTaken hides the whole cartridge.
+    this.target("fuse", "Retirar fusible F-08 del mostrador", fuse, 0, 2.75);
     const fuseBox = this.block("Panel de fusibles", -5.16, 1.42, z - 1.5, .23, 1.0, .86, mats.dark);
     this.target("fusebox", "Restaurar alimentación de seguridad", fuseBox, 0, 2.4);
     const badge = this.block("Tarjeta identificatoria", 3.1, 1.07, z + 1.85, .26, .015, .14, mats.ceramic);
