@@ -1,0 +1,143 @@
+{
+  "name": "Viralio Escape 3D scene starter packs",
+  "version": "1.0.0",
+  "updatedAt": "2026-10-15",
+  "notes": "Creative selection guides, not finished playable scenes. Avoid loading every prop at once on mobile.",
+  "packs": [
+    {
+      "id": "cine-maldito",
+      "name": "Cine embrujado",
+      "description": "Selección de recursos visuales reutilizables; no autoriza repetir el layout entre salas.",
+      "walls": "plastered_wall",
+      "floor": "old_wood_floor",
+      "hero": [
+        "project-box-projector",
+        "standing-mannequin",
+        "victorian-arched-mirror",
+        "gilt-landscape-picture-frame"
+      ],
+      "support": [
+        "egress-panic-bar-exit-door",
+        "vintage-crt-television",
+        "grille-security-grille-gate",
+        "candle-arm-chandelier"
+      ],
+      "character": "npc-jordan-locomotion",
+      "rooms": [
+        "Foyer clausurado",
+        "Cabina de proyección",
+        "Sala principal"
+      ],
+      "instructions": "Verificar archivos locales y FPS, materiales PBR, puertas funcionales, colisiones, audio y progresión. Los personajes están animados solo si tienen clips; esculturas, maniquíes y pacientes son estáticos."
+    },
+    {
+      "id": "hospital-aislado",
+      "name": "Hospital abandonado",
+      "description": "Selección de recursos visuales reutilizables; no autoriza repetir el layout entre salas.",
+      "walls": "plastered_wall",
+      "floor": "dirty_tiles",
+      "hero": [
+        "patient-wheelchair-attendant",
+        "vital-signs-monitor-on-roll-stand",
+        "standing-mannequin",
+        "window-security-grille"
+      ],
+      "support": [
+        "nurse-station-low-counter",
+        "sharps-disposal-container",
+        "hospital-bed-flat-mattress",
+        "sanitizer-station",
+        "clinical-examination-table"
+      ],
+      "character": "npc-harper-locomotion",
+      "rooms": [
+        "Recepción",
+        "Pabellón",
+        "Zona restringida"
+      ],
+      "instructions": "Verificar archivos locales y FPS, materiales PBR, puertas funcionales, colisiones, audio y progresión. Los personajes están animados solo si tienen clips; esculturas, maniquíes y pacientes son estáticos."
+    },
+    {
+      "id": "mansion-secreta",
+      "name": "Mansión secreta",
+      "description": "Selección de recursos visuales reutilizables; no autoriza repetir el layout entre salas.",
+      "walls": "plastered_wall",
+      "floor": "old_wooden_floor_01",
+      "hero": [
+        "victorian-arched-mirror",
+        "gothic-cabinet",
+        "kneeling-winged-monster",
+        "victorian-tea-set"
+      ],
+      "support": [
+        "gilt-landscape-picture-frame",
+        "candle-arm-chandelier",
+        "wingback-armchair",
+        "detailed-skull-with-articulated-jaw",
+        "casement-window",
+        "bay-three-sided-window"
+      ],
+      "character": "npc-maya-locomotion",
+      "rooms": [
+        "Vestíbulo",
+        "Biblioteca",
+        "Cripta"
+      ],
+      "instructions": "Verificar archivos locales y FPS, materiales PBR, puertas funcionales, colisiones, audio y progresión. Los personajes están animados solo si tienen clips; esculturas, maniquíes y pacientes son estáticos."
+    },
+    {
+      "id": "bunker-cuarentena",
+      "name": "Búnker cuarentena",
+      "description": "Selección de recursos visuales reutilizables; no autoriza repetir el layout entre salas.",
+      "walls": "rough_concrete",
+      "floor": "concrete_floor_worn_001",
+      "hero": [
+        "access-control-keypad",
+        "workshop-industrial-steel-door",
+        "window-security-grille",
+        "steel-office-desk"
+      ],
+      "support": [
+        "ceiling-dome-security-camera",
+        "sash-vertical-sash-window",
+        "clerestory-window",
+        "lattice-folding-security-gate",
+        "retro-laptop"
+      ],
+      "character": "npc-sam-locomotion",
+      "rooms": [
+        "Control",
+        "Almacén",
+        "Salida"
+      ],
+      "instructions": "Verificar archivos locales y FPS, materiales PBR, puertas funcionales, colisiones, audio y progresión. Los personajes están animados solo si tienen clips; esculturas, maniquíes y pacientes son estáticos."
+    },
+    {
+      "id": "hotel-misterioso",
+      "name": "Hotel misterioso",
+      "description": "Selección de recursos visuales reutilizables; no autoriza repetir el layout entre salas.",
+      "walls": "rough_plaster_03",
+      "floor": "wood_floor",
+      "hero": [
+        "slit-bedside-cabinet",
+        "linea-textile-wardrobe",
+        "victorian-arched-mirror",
+        "hotel-bed-with-headboard-and-bench-original-hotel-furnishing"
+      ],
+      "support": [
+        "angle-corner-wardrobe",
+        "sliding-patio-door",
+        "picture-fixed-window",
+        "casement-window",
+        "lobby-console-original-hotel-furnishing"
+      ],
+      "character": "npc-harper-locomotion",
+      "rooms": [
+        "Lobby",
+        "Suite 307",
+        "Pasadizo"
+      ],
+      "instructions": "Verificar archivos locales y FPS, materiales PBR, puertas funcionales, colisiones, audio y progresión. Los personajes están animados solo si tienen clips; esculturas, maniquíes y pacientes son estáticos."
+    }
+  ]
+}
