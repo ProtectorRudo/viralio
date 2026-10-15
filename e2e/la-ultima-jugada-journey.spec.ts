@@ -59,12 +59,18 @@ test("full Argentina–England investigation physically reaches every room and t
  await reachAction(page,/saboteador/i,true);
  await page.getByRole("button",{name:"CREDENCIAL 09"}).click();
  await solve(page);
- await reachAction(page,/informe en el túnel/i);
+ await reachAction(page,/Verificá la táctica/i);
  await expect(page.locator(".lj-brand small")).toHaveText("TÚNEL DE LA FINAL");
  await reachAction(page,/entrenador/i,true);
  await page.getByRole("button",{name:/Atraer la marca al centro/}).click();
  await solve(page);
- await reachAction(page,/LA FINAL/i);
+ for(let attempt=0;attempt<13;attempt++){
+   if(await page.locator(".lj-root-finale").isVisible())break;
+   await orient(page);
+   await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
+   if(await page.locator(".lj-root-finale").isVisible())break;
+   await walk(page,"w",680);
+ }
  await expect(page.locator(".lj-root-finale")).toBeVisible();
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
  await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible({timeout:19000});
