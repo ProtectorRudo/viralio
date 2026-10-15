@@ -328,7 +328,7 @@ export default function LaUltimaJugada(){
   setModal(null);
   if(modeRef.current==="playing")engine.current?.setGameplayActive(true);
  };
- return <main className={"lj-root lj-root-"+mode}>
+ return <main className={"lj-root lj-root-"+mode+(time<=180&&mode==="playing"?" lj-danger-phase":"")}>
   {mode==="intro"&&<section className="lj-intro">
    <div className="lj-intro-content">
     <span className="lj-kicker">VIRALIO ORIGINALS / MISIÓN 004</span>
@@ -346,6 +346,24 @@ export default function LaUltimaJugada(){
    <div className="lj-canvas-frame"><canvas ref={canvas} aria-label="Escenario tridimensional explorable: usá WASD para caminar, arrastrá para mirar y tocá los objetos para examinarlos."/></div>
    <div className="lj-vignette" aria-hidden="true"/>
    {!worldReady&&<div className="lj-loading-scene" role="status"><span>V / VIRALIO ORIGINALS</span><strong>PREPARANDO EL ESTADIO</strong><small>Cargando escena 3D y controles…</small></div>}
+   {briefing&&worldReady&&<section className="lj-mission-backdrop" role="dialog" aria-modal="true" aria-label="Orden de misión" >
+    <div className="lj-mission-sheet">
+     <span className="lj-mission-kicker"><span className="lj-live-dot"/> TRANSMISIÓN ENCRIPTADA / INFORME 87</span>
+     <p className="lj-mission-classified">CONFIDENCIAL — CUERPO TÉCNICO ARGENTINO</p>
+     <h2>LA ÚLTIMA <em>JUGADA</em></h2>
+     <div className="lj-mission-score"><span>FINAL DEL MUNDO · MINUTO 87</span><strong>ARGENTINA 1 — 1 INGLATERRA</strong></div>
+     <p>Alguien alteró el informe que puede cambiar esta final. Sos la única persona capaz de recuperar las pruebas antes del pitazo.</p>
+     <div className="lj-mission-steps"><div><b>01</b><span>OBSERVÁ LAS PRUEBAS</span></div><div><b>02</b><span>RECONSTRUÍ EL INFORME</span></div><div><b>03</b><span>ENTREGALO EN EL TÚNEL</span></div></div>
+     <div className="lj-mission-first"><small>PRIMERA PISTA / SIN SABER DE FÚTBOL</small><strong>Las tres cámaras parecen iguales, pero no lo son.</strong><p>Buscá tres anomalías: una pelota que salta, otra que se duplica y una grabación que continúa normalmente. Elegí la auténtica.</p></div>
+     <button className="lj-mainbutton" onClick={()=>{
+      startStamp.current=performance.now();
+      setBriefing(false);
+      engine.current?.orientToward("monitores");
+      notify("MISIÓN ACTIVADA · Buscá las diferencias en las tres cámaras.");
+     }}>COMENZAR CUENTA REGRESIVA <span>↗</span></button>
+     <small className="lj-mission-footer">15 MINUTOS · 3 ESCENARIOS · 7 PRUEBAS · EL RELOJ NO SE DETIENE</small>
+    </div>
+   </section>}
    {mode==="finale"&&<div className={"lj-finale-banner lj-finale-"+finaleCue} role="status" key={finaleCue}><small>LA ÚLTIMA JUGADA</small><strong>{finaleCue==="apertura"?"EL ENTRENADOR RECIBIÓ LA INFORMACIÓN":finaleCue==="pase"?"EL 7 SE ESCAPA POR LA BANDA DERECHA":finaleCue==="centro"?"CENTRO AL PRIMER PALO…":"¡¡GOOOOOOOL DE ARGENTINA!!"}</strong><span>{finaleCue==="gol"?"ARGENTINA 2 — 1 INGLATERRA":"LA FINAL SE DEFINE AHORA"}</span></div>}
    {cinematic&&<div className={"lj-cinematic lj-cinematic-"+cinematic} aria-live="assertive"><span>{cinematic==="var"?"¡GOL DE INGLATERRA!":cinematic==="blackout"?"COMUNICACIÓN INTERRUMPIDA":"TE HAN ENGAÑADO"}</span><strong>{cinematic==="var"?"REVISIÓN VAR · GOL ANULADO":cinematic==="blackout"?"SISTEMA BLOQUEADO · RESTAURANDO ENLACE":"EL OPERADOR DE RADIO ERA EL SABOTEADOR"}</strong></div>}
    <header className="lj-hud">
@@ -354,12 +372,17 @@ export default function LaUltimaJugada(){
     <div className="lj-match"><span>ARG</span><strong>1 : 1</strong><span>ING</span><small>FINAL DEL MUNDO</small></div>
    </header>
    <div className="lj-progress"><span className={chapter>=0?"is-current":""}>01 ANÁLISIS</span><i/><span className={chapter>=1?"is-current":""}>02 SABOTAJE</span><i/><span className={chapter>=2?"is-current":""}>03 ENTREGA</span></div>
+   {!briefing&&mode==="playing"&&<div className={"lj-pressure "+(time<=180?"lj-pressure-critical":time<=420?"lj-pressure-high":"")} role="status" aria-live="off">
+    <div className="lj-pressure-top"><span>{time>600?"LA FINAL SIGUE · RECUPERÁ EL INFORME":time>420?"ALGUIEN INTENTA BORRAR LAS PRUEBAS":time>180?"EL BANCO ARGENTINO ESTÁ ESPERANDO":"ÚLTIMOS MINUTOS · NO HAY TIEMPO"}</span><strong>{time<=180?"URGENTE":time<=420?"ALERTA":"EN VIVO"}</strong></div>
+    <div className="lj-pressure-track"><span style={{width:Math.max(0,time/900*100)+"%"}}/></div>
+    {mistakes>0&&<small>INTERFERENCIAS: {mistakes} · {Math.min(90,mistakes*12)} S DE PENALIZACIÓN</small>}
+   </div>}
    <div className="lj-cross" aria-hidden="true">+</div>
    {focus&&<div className="lj-focus"><span>◎</span>{focus}</div>}
-   <div className="lj-objective"><small>OBJETIVO ACTUAL</small><p>{nextObjective(chapter,solved)}</p></div>
+   <div className="lj-objective"><small>OBJETIVO ACTUAL</small><p>{nextObjective(chapter,solved,found)}</p></div>
    {alert&&<div className="lj-alert" role="status"><span className="lj-alert-beep">●</span>{alert}</div>}
    <div className="lj-topactions"><button onClick={()=>setHintVisible(!hintVisible)} aria-label="Mostrar u ocultar pista">? PISTA</button><button onClick={()=>setIsMuted(m=>!m)} aria-label={isMuted?"Activar sonido":"Silenciar"}>{isMuted?"♫ OFF":"♫ ON"}</button></div>
-   {hintVisible&&<div className="lj-hintbox"><strong>PISTA / {String(Math.max(1,hintLevel+2)).padStart(2,"0")}</strong><p>{hintFor(chapter,solved,Math.max(0,hintLevel))}</p><button onClick={()=>setHintLevel(i=>Math.min(1,i+1))}>Pista más clara ↗</button><button onClick={()=>{if(engine.current?.orientToward(targetAction(chapter,solved)))setHintVisible(false);}}>ORIENTARME ◎</button><button onClick={()=>setHintVisible(false)}>Cerrar ×</button></div>}
+   {hintVisible&&<div className="lj-hintbox"><strong>PISTA / {String(Math.max(1,hintLevel+2)).padStart(2,"0")}</strong><p>{hintFor(chapter,solved,found,Math.max(0,hintLevel))}</p><button onClick={()=>setHintLevel(i=>Math.min(1,i+1))}>Pista más clara ↗</button><button onClick={()=>{if(engine.current?.orientToward(targetAction(chapter,solved,found)))setHintVisible(false);}}>ORIENTARME ◎</button><button onClick={()=>setHintVisible(false)}>Cerrar ×</button></div>}
    <div className="lj-touchpad" aria-label="Controles de desplazamiento">
     {btn("▲",0,-1,"lj-forward")}{btn("◀",-1,0,"lj-left")}{btn("▼",0,1,"lj-backward")}{btn("▶",1,0,"lj-right")}
    </div>
@@ -367,23 +390,44 @@ export default function LaUltimaJugada(){
    <button className="lj-interact" onClick={()=>engine.current?.interactCenter()} aria-label="Interactuar con el objeto enfocado">INTERACTUAR <span>◎</span></button>
    {modal&&<div className="lj-modal-backdrop"><section className="lj-terminal" role="dialog" aria-modal="true" aria-label="Acertijo interactivo">
     <div className="lj-terminal-header"><span>VIRALIO / TERMINAL DE INVESTIGACIÓN</span><button onClick={close} aria-label="Cerrar acertijo">×</button></div>
-    {modal==="monitores"&&<><h2>La grabación alterada</h2><p>Las tres cámaras registraron el mismo ataque. Una tiene saltos de continuidad. Encontrá la secuencia verdadera.</p>
+    {modal==="monitores"&&<><h2>Tres pantallas. Tres anomalías.</h2><p>Revisá y pausá cada grabación. Marcá las <b>tres observaciones que encontraste</b> y luego elegí qué cámara no fue manipulada.</p>
      <TacticalReplay selection={selection} onSelect={setSelection}/>
+     <div className="lj-observations" aria-label="Anomalías detectadas">
+      {[["salto","La pelota aparece de golpe en otra zona"],["duplicado","Veo dos pelotas al mismo tiempo"],["continuidad","Hay una cámara con movimiento continuo"],["bandera","La bandera cambia de color"],["tribuna","La tribuna desaparece"]].map(([id,label])=>
+       <button key={id} type="button" className={differences.includes(id)?"selected":""} aria-pressed={differences.includes(id)}
+        onClick={()=>setDifferences(d=>d.includes(id)?d.filter(x=>x!==id):[...d,id])}>{differences.includes(id)?"✓ ":"□ "}{label}</button>)}
+     </div><small className="lj-puzzle-count">{differences.length}/3 OBSERVACIONES SELECCIONADAS · Tres son reales; dos fueron inventadas.</small>
     </>}
-    {modal==="pizarra"&&<><h2>Reconstruí la jugada</h2><p>El 10 arrastra la marca inglesa hacia adentro. Acomodá los tres movimientos para explotar el espacio que deja libre.</p>
+    {modal==="pizarra"&&<><h2>Rompecabezas magnético</h2><p>No hace falta entender de fútbol. Mirá la <b>tarjeta de referencia</b> y reconstruí las posiciones de las tres fichas numeradas. Seleccionalas y movelas a las zonas que coinciden con el croquis.</p>
+     <div className="lj-pattern"><small>REFERENCIA RECUPERADA / 3 MOVIMIENTOS</small><span>7 ↗ ZONA SUPERIOR DERECHA</span><span>10 ◌ A UN LADO DEL CÍRCULO</span><span>9 ▷ JUNTO AL ARCO, ARRIBA</span></div>
      <MagneticTactics moves={moves} onChange={setMoves}/>
     </>}
-    {modal==="relay"&&<><h2>Central intervenida</h2><p>Restaurá las tres terminales usando las inscripciones de mantenimiento. Cada dial acepta las posiciones del 1 al 4.</p>
-     <div className="lj-relay-clue"><span>ROJO / DORSAL DEL ZAGUERO</span><span>AZUL / LEONES DEL ESCUDO INGLÉS</span><span>VERDE / PUNTO DE ORIGEN</span></div>
+    {modal==="informe"&&<><h2>Expediente fragmentado</h2><p>Recuperaste las cuatro hojas físicas. Ahora ordenalas según los pequeños sellos estampados en sus esquinas. Tocá las tarjetas una por una.</p>
+     <div className="lj-fragments-inventory">{fragmentLabels.map((p,i)=><span key={p.id}><small>HOJA {i+1} · RECUPERADA</small><strong>{p.title}</strong></span>)}</div>
+     <div className="lj-puzzle-count">ORDEN RECONSTRUIDO: {fragmentOrder.length?fragmentOrder.join(" → "):"AÚN VACÍO"}</div>
+     <div className="lj-fragment-order">{[["RUTA","03"],["PLANO","01"],["FIRMA","04"],["SELLO","02"]].map(([name,stamp])=>
+      <button key={name} type="button" disabled={fragmentOrder.includes(name)}
+       onClick={()=>setFragmentOrder(p=>[...p,name])}><small>SELLO {stamp}</small>{name}</button>)}</div>
+     <button className="lj-reset-puzzle" onClick={()=>setFragmentOrder([])}>↶ REORDENAR FRAGMENTOS</button>
+     <p className="lj-evidence-strip">Al terminar, guardá este dato para el corredor: <b>cámara auténtica + hojas recuperadas + ficha número 7</b>.</p>
+    </>}
+    {modal==="casillero"&&<><h2>¿Cuál casillero contiene la llave?</h2><p>Una nota del saboteador dice: «No busques el número más alto. Abrí el 04 con las tres pistas que recuperaste». Combiná <b>la cámara auténtica, cuántas hojas encontraste y el número de la primera ficha</b>.</p>
+     <div className="lj-lockers">{["01","02","03","04"].map(n=><button type="button" key={n} className={locker===n?"selected":""} aria-pressed={locker===n} onClick={()=>setLocker(n)}><span>▤</span><strong>CASILLERO {n}</strong><small>{n==="04"?"CERRADURA MECÁNICA":"IDENTIFICACIÓN RESTRINGIDA"}</small></button>)}</div>
+     <label className="lj-pin-label">INTRODUCÍ EL CÓDIGO DE TRES CIFRAS<input aria-label="Código del casillero" inputMode="numeric" maxLength={3} value={lockerPin} onChange={e=>setLockerPin(e.target.value.replace(/[^0-9]/g,"").slice(0,3))} placeholder="_ _ _"/></label>
+    </>}
+    {modal==="relay"&&<><h2>Repará la señal</h2><p>No necesitás conocer fútbol: las placas de mantenimiento muestran formas. Contá cuántas hay de cada color y poné esa cantidad en cada dial.</p>
+     <div className="lj-relay-clue"><span>ROJO / ━ ━</span><span>AZUL / ▪ ▪ ▪ ▪</span><span>VERDE / ● ● ●</span></div>
      <div className="lj-dials">{["ROJO","AZUL","VERDE"].map((name,i)=><div key={name}><small>{name}</small><button aria-label={"Cambiar "+name} onClick={()=>setRelays(r=>r.map((v,j)=>i===j?v%4+1:v))}>{relays[i]}<span>↻</span></button></div>)}</div>
     </>}
-    {modal==="cctv"&&<><h2>El intruso tenía acceso</h2><p>Las cámaras de seguridad muestran al operador que anuló tu credencial. Compará el número que aparece en dos capturas consecutivas.</p>
+    {modal==="cctv"&&<><h2>¿Quién entró al pasillo?</h2><p>Compará las dos capturas. La credencial está tapada en cada una, pero juntas forman el mismo número.</p>
      <div className="lj-security"><div><span>CAM 09 / 89:12</span><strong>ACCESO / 0_</strong></div><div><span>CAM 09 / 89:13</span><strong>ACCESO / _9</strong></div></div>
      <div className="lj-options">{["12","09","17"].map(code=><button key={code} className={evidence===code?"selected":""} onClick={()=>setEvidence(code)}>CREDENCIAL {code}</button>)}</div>
     </>}
-    {modal==="prueba"&&<><h2>¿Cuál es la instrucción real?</h2><p>El sabotaje insertó dos planes falsos en el reporte del técnico. Elegí el que coincide con la secuencia auténtica que investigaste.</p>
+    {modal==="prueba"&&<><h2>Última validación: tres sellos</h2><p>La llave del entrenador exige tres sellos en orden: <b>cámara auténtica → casillero abierto → color de la señal reparada</b>. Después elegí la ruta del dibujo reconstruido.</p>
      <TacticalPitch kind="final"/>
-     <div className="lj-options lj-final-options">{[["centro","Atacar en línea recta por el centro, con los tres delanteros juntos."],["derecha","Atraer la marca al centro, abrir al 7 por derecha y buscar al 9 en el primer palo."],["izquierda","Retrasar el balón y buscar un centro desde la izquierda, sin desmarques."]].map(([id,text])=><button key={id} onClick={()=>setConfirm(id)} className={confirm===id?"selected":""}>{text}</button>)}</div>
+     <div className="lj-final-sequence"><small>SELLOS RECUPERADOS</small><strong>{finalSequence.length?finalSequence.join(" → "):"TOCÁ LAS TRES PISTAS EN ORDEN"}</strong><div>{["ROJO","04","C2","AZUL","09"].map(id=><button type="button" key={id} disabled={finalSequence.includes(id)||finalSequence.length>=3} onClick={()=>setFinalSequence(p=>[...p,id])}>{id}</button>)}</div>
+      <button className="lj-reset-puzzle" onClick={()=>setFinalSequence([])}>↶ LIMPIAR SECUENCIA</button></div>
+     <div className="lj-options lj-final-options">{[["centro","Ruta A: las tres fichas se agrupan sobre la línea central."],["derecha","La ruta que coincide con las fichas: 7 arriba a la derecha, 10 en el círculo y 9 junto al arco."],["izquierda","Ruta B: las tres fichas se colocan a la izquierda del tablero."]].map(([id,text])=><button key={id} onClick={()=>setConfirm(id)} className={confirm===id?"selected":""}>{text}</button>)}</div>
     </>}
     <div className="lj-terminal-footer"><button onClick={close}>VOLVER A LA SALA</button><button className="primary" onClick={verify}>VERIFICAR RESPUESTA ↗</button></div>
    </section></div>}
