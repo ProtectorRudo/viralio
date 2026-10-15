@@ -61,7 +61,11 @@ test("full Argentina–England investigation physically reaches every room and t
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
  await expect(page.getByText("¿Cuál de las tres cámaras muestra la grabación auténtica?")).toBeVisible();
- await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
+ // The mission remains readable while premium GLBs preload; timer starts
+ // only after WebGL is ready on low-end or software-rendered devices.
+ const begin=page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/});
+ await expect(begin).toBeEnabled({timeout:60_000});
+ await begin.click();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toHaveCount(0);
  await expect(page.locator(".lj-canvas-frame canvas")).toBeVisible();
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position"),{timeout:20_000}).not.toBeNull();
