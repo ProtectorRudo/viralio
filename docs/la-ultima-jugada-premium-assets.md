@@ -19,6 +19,10 @@ Actualizado: 2026-10-15. Estado: **copias binarias presentes en rama de desarrol
 | `football-scoreboard` | `/viralio-3d/models/football-scoreboard.glb` | Innerscene original model | 60664 | `ee2aa5daf8f23a3a74bbea8702e73b27fef06aae8fcaeb36de0e1b1075dbcd5f` | [Ficha](https://www.innerscene.com/tools/library/3d-parts/scoreboard-sports-equipment-12d80980) |
 | `workshop-industrial-steel-door` | `/viralio-3d/models/workshop-industrial-steel-door.glb` | Innerscene / credited creator on source | 133652 | `eb8fb393d981a1b789aa6a71fbc88e930e8471a356b34f31ee73cddb2b92cba4` | [Ficha](https://www.innerscene.com/tools/library/3d-parts/workshop-industrial-steel-door-4773934f) |
 
+| `npc-sam-locomotion` | `/viralio-3d/models/npc-sam-locomotion.glb` | Innerscene / MakeHuman MPFB contributors | 3197476 | `c2a7e56257e9a57dcff20845067cc66681769701734b6c659ef97eab57e4945a` | [Ficha](https://www.innerscene.com/tools/library/3d-parts/locomotion-collection-sam-3d-person-animated-dc23800f) |
+
+El entrenador utiliza `npc-sam-locomotion`: un personaje **skinned** de 12 skins y 7 clips originales (`Idle_Standing `, `Walk_Relaxed `, `Walk_Brisk `, `Jog `, `Run `, `Walk_Carry `, `Sit_Stand`). Este rig está destinado al entrenador del túnel; los futbolistas del estadio conservan un modelo más liviano. La apariencia final se audita mediante capturas y no se presume hiperrealista.
+
 ## Materiales PBR
 
 Base de archivos: `/viralio-3d/materials/`. `color` (sRGB), `normal` (OpenGL), `arm` (AO-Roughness-Metallic empaquetado). Procedencia: **Poly Haven, CC0**.
