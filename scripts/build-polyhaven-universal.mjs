@@ -42,7 +42,7 @@ async function get(url,max=totalCap){
  return b;
 }
 async function materialize(item) {
- if(!/^[a-z0-9_-]+$/.test(item.assetId)||!/^universal-ph-[a-z0-9-]+$/.test(item.id))throw Error("Invalid asset id");
+ if(!/^[a-zA-Z0-9_-]+$/.test(item.assetId)||!/^universal-ph-[a-z0-9-]+$/.test(item.id))throw Error("Invalid asset id");
  const dest=join(modelDir,item.id+".glb");
  if(existsSync(dest))return dest;
  if(validateOnly)throw Error("Missing file "+item.id);
