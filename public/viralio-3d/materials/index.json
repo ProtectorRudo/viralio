@@ -1,7 +1,7 @@
 {
   "name": "Viralio PBR Material Library",
-  "createdAt": "2026-10-15T17:42:21.874Z",
-  "total": 26,
+  "createdAt": "2026-10-15T17:43:37.728Z",
+  "total": 31,
   "license": "CC0-1.0",
   "materials": [
     {
@@ -573,6 +573,116 @@
           "path": "/viralio-3d/materials/grass_path_2-arm.webp",
           "bytes": 164494,
           "sha256": "1428839e7e01ddca2fa3d1206026b5c4cff4724ebff27006a52592d799783398"
+        }
+      }
+    },
+    {
+      "id": "wood_table",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_table",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/wood_table-color.webp",
+          "bytes": 300672,
+          "sha256": "0323c4e2e16cbbab7dd109209220044b775adef31d26db85504b0e405767fdb9"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/wood_table-normal.webp",
+          "bytes": 1107356,
+          "sha256": "f042f9cf73aa0ec75a3624843d791cbf3396df702d24f19353d3d17c13611159"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/wood_table-arm.webp",
+          "bytes": 109120,
+          "sha256": "c3d273a3381129853ce8351770934961451fff330eaee8ebd2bb3d269daf8ba0"
+        }
+      }
+    },
+    {
+      "id": "wood_table_001",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_table_001",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/wood_table_001-color.webp",
+          "bytes": 156440,
+          "sha256": "aa6a18025515629590b536448306562685ded3285ad63ca1cf88395339d59ab8"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/wood_table_001-normal.webp",
+          "bytes": 996712,
+          "sha256": "ca154d0c28fe7bddf605995beaeee5612410c1979194ffddb0179d27a67d09f7"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/wood_table_001-arm.webp",
+          "bytes": 162028,
+          "sha256": "47b71adad31af8d9875b74846443e425769a66299868f956d5f7fd2e77769641"
+        }
+      }
+    },
+    {
+      "id": "wood_table_large",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_table_large",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/wood_table_large-color.webp",
+          "bytes": 112242,
+          "sha256": "4ae469800ea80c3ae33680c5c87012d30285676bb8c1086bf678e238f1dacbc7"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/wood_table_large-normal.webp",
+          "bytes": 1329148,
+          "sha256": "22449700d64025281ea53f01ee961d5dd5c080057d59c6e6ff5f36282b3bcc10"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/wood_table_large-arm.webp",
+          "bytes": 105792,
+          "sha256": "2f44dbeba6005b8af047c1456e12b1871b57a1ed6152eaddd0f5b463cbcbf62b"
+        }
+      }
+    },
+    {
+      "id": "fabric_leather_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/fabric_leather_01",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/fabric_leather_01-color.webp",
+          "bytes": 250922,
+          "sha256": "46854b60114b487aa5ed68d1a63059843c288a55600572c34fbe736c9b68dee3"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/fabric_leather_01-normal.webp",
+          "bytes": 1566098,
+          "sha256": "ff10e26680a96404a9db539b94f765ae68e4d2e03cf9317af41ec28c40d5f74c"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/fabric_leather_01-arm.webp",
+          "bytes": 355850,
+          "sha256": "cf48e84470ddb22aaa97818f94d0a96265bfc59924f9a87eb0e1e4ce425c5465"
+        }
+      }
+    },
+    {
+      "id": "fabric_leather_02",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/fabric_leather_02",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/fabric_leather_02-color.webp",
+          "bytes": 298586,
+          "sha256": "f30e0463afd4fa916626c4e7d1a223df4a684491db59e179fadbb8541047599f"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/fabric_leather_02-normal.webp",
+          "bytes": 1613090,
+          "sha256": "60055be46e8a0b93e2ace9da8e5f41b2f50d0504ae47d6a518993a5419f4bfc7"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/fabric_leather_02-arm.webp",
+          "bytes": 378126,
+          "sha256": "a83a4e465af99e5e8f93b19e4651bf3f5aa1339a4921fe7fdfbe32692acb03cb"
         }
       }
     }
