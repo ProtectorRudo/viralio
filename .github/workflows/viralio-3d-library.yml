@@ -16,6 +16,7 @@ on:
       - 'scripts/build-polyhaven-cinematic.mjs'
       - 'data/viralio-3d/polyhaven-hdri.json'
       - 'scripts/build-polyhaven-hdri.mjs'
+      - 'scripts/build-vfx-masks.mjs'
       - '.github/workflows/viralio-3d-library.yml'
   workflow_dispatch:
 
@@ -58,6 +59,8 @@ jobs:
         run: node scripts/build-polyhaven-cinematic.mjs
       - name: Incorporar 7 HDRI reales para atmosferas cinematograficas
         run: node scripts/build-polyhaven-hdri.mjs
+      - name: Preparar seis texturas transparentes VFX reutilizables
+        run: node scripts/build-vfx-masks.mjs
       - name: Adjuntar reporte y biblioteca
         uses: actions/upload-artifact@v4
         with:
