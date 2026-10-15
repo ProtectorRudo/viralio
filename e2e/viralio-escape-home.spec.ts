@@ -2,35 +2,49 @@ import { mkdirSync } from "node:fs";
 mkdirSync("visual-qa-evidence",{recursive:true});
 import { test, expect } from "@playwright/test";
 
-test("Viralio Escape: catalogue exposes the three real rooms and clear navigation", async ({page}) => {
+test("Viralio Escape: catalogue exposes all four real rooms, editorial intensity and clear navigation", async ({page}) => {
  await page.goto("/");
  await expect(page.getByRole("heading",{level:1,name:/La realidad termina/})).toBeVisible();
  await page.screenshot({path:"visual-qa-evidence/viralio-escape-desktop.png",fullPage:true});
- for (const [slug,title] of [["caso-m","CASO M"],["la-ultima-funcion","LA ÚLTIMA FUNCIÓN"],["la-ultima-campanada","LA ÚLTIMA CAMPANADA"]]){
+ for (const [slug,title] of [["caso-m","CASO M"],["la-ultima-funcion","LA ÚLTIMA FUNCIÓN"],["la-ultima-campanada","LA ÚLTIMA CAMPANADA"],["aislamiento-15","AISLAMIENTO 15"]]){
    await expect(page.getByRole("link",{name:new RegExp("Conocer la experiencia "+title)})).toHaveAttribute("href","/salas/"+slug);
  }
  await expect(page.getByRole("link",{name:/Explorar experiencias/i}).first()).toHaveAttribute("href","#experiencias");
+ const grid=page.locator(".ve-card-grid");
+ await expect(grid.locator(".ve-card")).toHaveCount(4);
+ for(const key of ["Dificultad","Sustos","Sorpresa","Tensión"]){
+   await expect(grid.locator(".ve-intensity-metric-name",{hasText:key})).toHaveCount(4);
+ }
+ for(const card of await grid.locator(".ve-card").all()){
+   await expect(card.locator(".ve-intensity-metric")).toHaveCount(4);
+   await expect(card.locator(".ve-intensity-segment")).toHaveCount(20);
+ }
 });
 test("Viralio Escape: filters never invent rooms and allow returning to available games",async({page})=>{
  await page.goto("/");
  await page.getByRole("button",{name:"Misterio",exact:true}).click();
  await expect(page.getByRole("heading",{name:/Algo nuevo está por abrirse/})).toBeVisible();
  await page.getByRole("button",{name:/Ver experiencias disponibles/}).click();
- await expect(page.locator(".ve-card")).toHaveCount(3);
+ await expect(page.locator(".ve-card")).toHaveCount(4);
  await page.getByRole("button",{name:"Emociones",exact:true}).click();
  await expect(page.locator(".ve-card")).toHaveCount(1);
  await expect(page.getByRole("link",{name:/Conocer la experiencia LA ÚLTIMA CAMPANADA/})).toBeVisible();
 });
-test("Viralio Escape: all 3 product pages contain verified destination URLs",async({page})=>{
+test("Viralio Escape: all 4 product pages contain verified destination URLs and intensity profiles",async({page})=>{
  const pairs=[
   ["caso-m","https://tehiceesto.com/escape-play/caso-m/"],
   ["la-ultima-funcion","https://la-ultima-funcion.vercel.app/"],
-  ["la-ultima-campanada","https://la-ultima-campanada-desafio-v6.vercel.app/"]
+  ["la-ultima-campanada","https://la-ultima-campanada-desafio-v6.vercel.app/"],
+  ["aislamiento-15","https://protectorrudo.github.io/aislamiento-15/"]
  ];
  for(const [slug,dest] of pairs){
   await page.goto("/salas/"+slug);
   await expect(page.getByRole("link",{name:/Jugar experiencia/i})).toHaveAttribute("href",dest);
   await expect(page.getByRole("link",{name:/Entrar a la sala/i})).toHaveAttribute("href",dest);
+  const meter=page.locator(".ve-room-panel .ve-intensity-detail");
+  await expect(meter).toBeVisible();
+  await expect(meter.locator(".ve-intensity-metric")).toHaveCount(4);
+  await expect(page.getByText(/Intensidades orientativas definidas por el equipo/)).toBeVisible();
  }
 });
 test("Viralio Escape: no horizontal scroll from narrow phone through desktop",async({page})=>{
@@ -50,4 +64,25 @@ test("Legacy commerce landing remains in /comercios and QR merchant routes untou
  await expect(page.getByRole("link",{name:/Moka/})).toHaveAttribute("href","/moka");
  await page.goto("/moka");
  await expect(page).not.toHaveURL(/404/);
+});
+
+test("Viralio Escape: 1-to-5 editorial profiles are differentiated and never mimic user ratings",async({page})=>{
+ await page.goto("/");
+ const entries=[
+  {slug:"caso-m",metrics:[3,3,3,4]},
+  {slug:"la-ultima-funcion",metrics:[3,4,4,4]},
+  {slug:"la-ultima-campanada",metrics:[3,1,5,3]},
+  {slug:"aislamiento-15",metrics:[4,5,4,5]}
+ ];
+ for(const entry of entries){
+  const card=page.locator(".ve-card").filter({has:page.locator(`.ve-card-${entry.slug.replace("la-ultima-funcion","theatre")}`)});
+  const link=page.getByRole("link",{name:new RegExp("Conocer la experiencia")}).filter({has:page.locator(`.ve-card-content h3`,{hasText:entry.slug==="caso-m"?"CASO M":entry.slug==="aislamiento-15"?"AISLAMIENTO 15":entry.slug==="la-ultima-funcion"?"LA ÚLTIMA FUNCIÓN":"LA ÚLTIMA CAMPANADA"})});
+  const meters=link.locator(".ve-intensity-metric");
+  await expect(meters).toHaveCount(4);
+  for(const [i,score] of entry.metrics.entries()){
+   await expect(meters.nth(i).locator(".ve-intensity-segment.is-filled")).toHaveCount(score);
+  }
+ }
+ await expect(page.getByText(/Intensidades editoriales orientativas/)).toBeVisible();
+ await expect(page.getByText(/puntuaciones de usuarios/)).toBeVisible();
 });
