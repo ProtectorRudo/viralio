@@ -81,7 +81,7 @@ export class FootballWorld {
  private actors:Array<{update:(dt:number)=>void;dispose:()=>void}>=[];
  private stadiumAnimations:Array<(t:number)=>void>=[];
  private lifetime=0;
- private stadiumPlayers:Array<{actor:THREE.Group;index:number}>=[];
+ private stadiumPlayers:Array<{actor:THREE.Object3D;index:number}>=[];
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
