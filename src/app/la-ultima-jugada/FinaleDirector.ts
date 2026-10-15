@@ -14,10 +14,10 @@ export class FinaleDirector {
  private finished=false;
  private startPosition=new THREE.Vector3();
  private fov:number;
- private athletes:Array<{actor:THREE.Group;original:THREE.Vector3}>=[];
+ private athletes:Array<{actor:THREE.Group;original:THREE.Vector3;index:number}>=[];
  private goalFlash:THREE.PointLight;
- constructor(private world:THREE.Group, private camera:THREE.PerspectiveCamera,private hook:Hook,players:THREE.Group[]=[]){
-  this.athletes=players.map(actor=>({actor,original:actor.position.clone()}));
+ constructor(private world:THREE.Group, private camera:THREE.PerspectiveCamera,private hook:Hook,players:Array<{actor:THREE.Group;index:number}>=[]){
+  this.athletes=players.map(p=>({actor:p.actor,original:p.actor.position.clone(),index:p.index}));
   this.startPosition.copy(camera.position);
   this.fov=camera.fov;
   this.ball=new THREE.Group();
@@ -99,13 +99,13 @@ export class FinaleDirector {
   const attack=THREE.MathUtils.smoothstep(t,2.2,7.55);
   const anticipation=THREE.MathUtils.smoothstep(t,.6,3.1);
   for(let i=0;i<this.athletes.length;i++){
-   const item=this.athletes[i],p=item.original,blue=i%2===0;
+   const item=this.athletes[i],p=item.original,blue=item.index%2===0;
    const pursuit=blue?attack:anticipation*.75+attack*.25;
-   const ix=i%12;
+   const ix=item.index;
    const destX=blue?([2,6,10].includes(ix)?(ix===2?15:ix===6?10:0):p.x+5):p.x*.55+7;
    const destZ=blue?([6,10].includes(ix)?-96:-82):-88;
    item.actor.position.set(THREE.MathUtils.lerp(p.x,destX,pursuit),0,THREE.MathUtils.lerp(p.z,destZ,pursuit));
-   if(i%2===0)item.actor.rotation.y=THREE.MathUtils.lerp(0,-.21,attack);
+   if(blue)item.actor.rotation.y=THREE.MathUtils.lerp(0,-.21,attack);
   }
  }
  dispose(){
