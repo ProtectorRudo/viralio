@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Chapter, GameAction } from "./FootballWorld";
 import { verifyFootballPuzzle, canEnterCorridor, canEnterTunnel, canFinish } from "./rules";
 import TacticalReplay from "./TacticalReplay";
+import MagneticTactics from "./MagneticTactics";
 import "./game.css";
 
 type Puzzle = "monitores" | "pizarra" | "relay" | "cctv" | "prueba";
@@ -316,10 +317,7 @@ export default function LaUltimaJugada(){
      <TacticalReplay selection={selection} onSelect={setSelection}/>
     </>}
     {modal==="pizarra"&&<><h2>Reconstruí la jugada</h2><p>El 10 arrastra la marca inglesa hacia adentro. Acomodá los tres movimientos para explotar el espacio que deja libre.</p>
-     <TacticalPitch kind="board"/>
-     <div className="lj-selectors">{[7,10,9].map((num,i)=><label key={num}><span>JUGADOR {num}</span><select value={moves[i]} onChange={e=>setMoves(old=>old.map((v,j)=>j===i?e.target.value:v))}>
-      {["centro","banda derecha","banda izquierda","medialuna","primer palo","segundo palo"].map(opt=><option key={opt} value={opt}>{opt}</option>)}
-     </select></label>)}</div>
+     <MagneticTactics moves={moves} onChange={setMoves}/>
     </>}
     {modal==="relay"&&<><h2>Central intervenida</h2><p>Restaurá las tres terminales usando las inscripciones de mantenimiento. Cada dial acepta las posiciones del 1 al 4.</p>
      <div className="lj-relay-clue"><span>ROJO / DORSAL DEL ZAGUERO</span><span>AZUL / LEONES DEL ESCUDO INGLÉS</span><span>VERDE / PUNTO DE ORIGEN</span></div>
