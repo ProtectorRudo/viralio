@@ -228,7 +228,9 @@ export default function LaUltimaJugada(){
   if(mode!=="playing")return;
   const ticker=setInterval(()=>{
    const elapsed=Math.max(0,Math.floor((performance.now()-startStamp.current)/1000));
-   setTime(Math.max(0,900-elapsed));
+   const remaining=Math.max(0,900-elapsed);
+   setTime(remaining);
+   engine.current?.setMatchTime(remaining);
    for(const item of stories){
     if(elapsed>=item.time&&!announcements.current.has(item.time)){
      announcements.current.add(item.time);notify(item.text);
