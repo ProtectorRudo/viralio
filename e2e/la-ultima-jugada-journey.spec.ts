@@ -84,6 +84,7 @@ test("full Argentina–England investigation physically reaches every room and t
  }
  await expect(page.locator(".lj-root-finale")).toBeVisible();
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
+ await page.screenshot({path:"test-results/la-ultima-jugada-gol-3d.png",fullPage:true});
  await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible({timeout:19000});
  await page.screenshot({path:"test-results/la-ultima-jugada-final-victoria.png",fullPage:true});
  expect(errors).toEqual([]);
