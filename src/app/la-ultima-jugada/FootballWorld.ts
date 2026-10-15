@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {FOOTBALL_ASSETS,loadFootballModel} from "./AssetLibrary";
+import {FOOTBALL_ASSETS,FOOTBALL_PREMIUM,loadFootballModel} from "./AssetLibrary";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import {paintTacticalFeed,type ReplayCamera} from "./TacticSimulation";
 import {FinaleDirector} from "./FinaleDirector";
@@ -9,6 +9,14 @@ import {proceduralSurface} from "./MaterialLibrary";
 import {CrisisDirector} from "./CrisisDirector";
 
 export type Chapter = 0 | 1 | 2;
+type FloorPbr="old_linoleum_flooring_01"|"rubber_tiles"|"concrete_tiles";
+const textureLoader=new THREE.TextureLoader();
+const textureCache=new Map<string,Promise<THREE.Texture>>();
+function sharedTexture(path:string):Promise<THREE.Texture>{
+ let t=textureCache.get(path);
+ if(!t){t=textureLoader.loadAsync(path).catch(error=>{textureCache.delete(path);throw error;});textureCache.set(path,t);}
+ return t;
+}
 export type GameAction = "monitores" | "pizarra" | "informe" | "pieza1" | "pieza2" | "pieza3" | "pieza4" | "salida1" | "casillero" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
 type Handlers = { action:(id:GameAction)=>void; focus:(label:string)=>void; position?:(x:number,y:number,z:number,yaw:number)=>void; failure:()=>void };
 type Target = THREE.Object3D & {userData:{action?:GameAction,label?:string}};
@@ -202,6 +210,46 @@ export class FootballWorld {
   box(w+.04,.04,.08,x,y+h/2,z+depth/2,trim,this.root);
   box(w+.04,.04,.08,x,y-h/2,z+depth/2,trim,this.root);
  }
+ /** From the shared Viralio CC0 library. Keep procedural surfaces until all
+      three PBR maps load successfully; never block the WebGL first frame. */
+ private upgradePbr(surfaces:THREE.Mesh[],kind:FloorPbr,repeat:number,color:number){
+  const base="/viralio-3d/materials/"+kind+"-";
+  Promise.all(["color","normal","arm"].map(x=>sharedTexture(base+x+".webp"))).then(([albedo,normal,arm])=>{
+   if(this.destroyed)return;
+   // Repeat is fixed per material ID; loaded texture instances remain shared
+   // between the three rooms without repeatedly uploading huge maps.
+   for(const tex of [albedo,normal,arm]){
+    tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+    tex.repeat.set(repeat,repeat);
+    tex.anisotropy=this.mobile?2:4;
+   }
+   albedo.colorSpace=THREE.SRGBColorSpace;
+   const newMaterial=new THREE.MeshStandardMaterial({
+    color,metalness:.1,roughness:.88,
+    map:albedo,normalMap:normal,normalScale:new THREE.Vector2(.37,.37),
+    roughnessMap:arm,metalnessMap:arm
+   });
+   for(const surface of surfaces)surface.material=newMaterial;
+  }).catch(()=>{/* existing procedural PBR is a functional offline fallback */});
+ }
+ /** Positions authored in room coordinates, bounds-normalized. All hero
+     objects are scenery: interactive targets retain their own colliders. */
+ private premiumProp(url:string,x:number,y:number,z:number,w:number,h:number,d:number,rotation=0,fallback?:THREE.Group){
+  const pivot=new THREE.Group();pivot.position.set(x,y,z);pivot.rotation.y=rotation;this.root.add(pivot);
+  loadFootballModel(url).then(gltf=>{
+   if(this.destroyed)return;
+   const glb=gltf.scene.clone(true);
+   const b=new THREE.Box3().setFromObject(glb),sz=b.getSize(new THREE.Vector3());
+   if(sz.x<.01||sz.y<.01||sz.z<.01)return;
+   glb.scale.setScalar(Math.min(w/sz.x,h/sz.y,d/sz.z));
+   const real=new THREE.Box3().setFromObject(glb);
+   const center=real.getCenter(new THREE.Vector3());
+   glb.position.set(-center.x,-real.min.y,-center.z);
+   glb.traverse(o=>{if(o instanceof THREE.Mesh){o.receiveShadow=true;o.castShadow=!this.mobile;}});
+   pivot.add(glb);
+   if(fallback)fallback.visible=false;
+  }).catch(()=>{/* retain existing real-geometry fallback */});
+ }
  private shell(chapter:Chapter) {
   const concreteTexture=proceduralSurface("concrete",this.mobile);
   const flooringTexture=proceduralSurface("rubber",this.mobile);
@@ -211,12 +259,17 @@ export class FootballWorld {
   const floorMat=flooringTexture.material;
   const deep=ceilingTexture.material;
   const steel=mat(0x53616b,.83,.35);
-  box(13,.25,14,0,-.16,0,floorMat,this.root);
+  const ground=box(13,.25,14,0,-.16,0,floorMat,this.root);
   box(13,.25,14,0,4.24,0,deep,this.root);
-  box(.28,4.35,14,-6.4,2.05,0,concrete,this.root);
-  box(.28,4.35,14,6.4,2.05,0,concrete,this.root);
-  if(chapter!==2)box(13,4.35,.28,0,2.05,-6.7,concrete,this.root);
-  box(13,4.35,.28,0,2.05,6.7,concrete,this.root);
+  const walls=[
+   box(.28,4.35,14,-6.4,2.05,0,concrete,this.root),
+   box(.28,4.35,14,6.4,2.05,0,concrete,this.root)
+  ];
+  if(chapter!==2)walls.push(box(13,4.35,.28,0,2.05,-6.7,concrete,this.root));
+  walls.push(box(13,4.35,.28,0,2.05,6.7,concrete,this.root));
+  // Two actual scanned-material finishes instead of flat generated tiles.
+  this.upgradePbr([ground],chapter===0?"old_linoleum_flooring_01":"rubber_tiles",4,chapter===0?0x879bb1:0x929ca5);
+  this.upgradePbr(walls,"concrete_tiles",3,0x728da4);
   for(let x=-4.5;x<6;x+=3){
    box(.085,.05,13,x,4.1,0,steel,this.root);
    for(let z=-5.2;z<6;z+=3.1){
@@ -435,6 +488,8 @@ export class FootballWorld {
    box(4.6,3.0,.32,3.95,1.6,-6.52,mat(0x1c2933,.68,.42),this.root);
    this.desk(-2.3,.65,2.9);
    this.panel(-2.25,1.87,1.43,2.32,1.36,"INFORME FINAL",["VERIFICAR LA PRUEBA","FUENTE ORIGINAL"],"prueba");
+   this.premiumProp(FOOTBALL_PREMIUM.duffel,4.2,.02,1.83,.76,.48,.5);
+   this.premiumProp(FOOTBALL_PREMIUM.scoreboard,-3.96,2.85,-6.21,1.4,.72,.34);
    this.actors.push(createCoach(this.root,()=>!this.destroyed));
    // Treat the coach as a physical human. Before this collider was added,
    // players could push the first-person camera inside his low-poly face and
@@ -501,6 +556,9 @@ export class FootballWorld {
    this.obstacles.push({minX:x-.47,maxX:x+.47,minZ:z-.30,maxZ:z+.33});
   }
   this.interactive("casillero",-2.8,1.15,4.11,4.0,1.85,.20);
+  this.premiumProp(FOOTBALL_PREMIUM.fourLocker,-2.8,0,3.55,1.23,1.78,.7);
+  this.premiumProp(FOOTBALL_PREMIUM.keypad,-.8,1.31,-6.23,.3,.47,.19);
+  this.premiumProp(FOOTBALL_PREMIUM.camera,-5.6,3.34,-5.22,.52,.4,.7,Math.PI/2);
   this.glow(-2.7,2.2,2.72,0xffbb76,7,5);
  }
  private detailAnalysisRoom() {
@@ -554,14 +612,13 @@ export class FootballWorld {
   this.loadFurniture("lamp",.75,.65,.54,.64,.54,lampFallback,.96);
   this.glow(.75,1.64,.65,0xffcc89,3.8,2.1);
   // Monitor desk peripherals: keyboard keys, articulated lamps, cable loops.
-  for(const x of [-3.4,-1.55,.4,1.6]){
-   box(.87,.07,.27,x,1.08,-1.15,plastic,this.root);
-   for(let i=0;i<8;i++)for(let j=0;j<3;j++){
-    box(.073,.024,.049,x-.35+i*.10,1.127,-1.25+j*.07,trim,this.root);
-   }
-   tube(.07,.2,x+.62,1.15,-1.45,trim,this.root);
-   box(.28,.055,.17,x+.62,1.28,-1.45,glass,this.root);
-  }
+  // The operator's equipment is real glTF/PBR, with natural silhouettes.
+  this.premiumProp(FOOTBALL_PREMIUM.keyboard,.32,1,.83,.65,.085,.27);
+  this.premiumProp(FOOTBALL_PREMIUM.monitor,.33,.99,.12,.72,.78,.41);
+  this.premiumProp(FOOTBALL_PREMIUM.camera,-5.61,3.1,-4.45,.5,.45,.8,Math.PI/2);
+  this.premiumProp(FOOTBALL_PREMIUM.duffel,4.65,.03,2.65,.83,.54,.57,Math.PI/2);
+  this.premiumProp(FOOTBALL_PREMIUM.backpack,5.1,.03,4.5,.53,.8,.41,-Math.PI/2);
+  this.premiumProp(FOOTBALL_PREMIUM.football,3.8,1.05,1.3,.32,.32,.32);
   // Floor tactile strips and a bright path indicating the required exit.
   for(let z=1;z>-5.8;z-=.6)box(.05,.012,.37,4.15,.018,z,copper,this.root);
   box(2.15,.03,.2,4.83,.018,-5.46,copper,this.root);
