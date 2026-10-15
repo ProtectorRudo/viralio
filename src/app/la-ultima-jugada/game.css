@@ -110,3 +110,28 @@
 .lj-cinematic-betrayal span{color:#ff9b95}
 @keyframes lj-shock{0%{opacity:0;filter:blur(12px)}10%{opacity:1;filter:blur(0)}82%{opacity:1}100%{opacity:0}}
 @keyframes lj-noise{0%{transform:translateY(1px)}50%{transform:translateY(-1px)}100%{transform:translateY(0)}}
+
+/* Diegetic video examination: the same frame is visible on 3D wall monitors. */
+.lj-replay-console{background:linear-gradient(170deg,#09151b,#172938 70%,#0a1924);border:1px solid #6e8797;padding:12px;box-shadow:inset 0 1px #b8d5dd25}
+.lj-feed-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:#bdd2df}
+.lj-feed-top span:last-child{color:#f47d71}
+.lj-feed-large{width:100%;height:auto;display:block;aspect-ratio:640/380;background:#07141c;border:4px solid #202d35;image-rendering:auto}
+.lj-replay-transport{display:flex;align-items:center;gap:9px;padding:10px 0 13px}
+.lj-replay-transport button{font-size:15px;color:#f0e4cf;background:#102a3b;border:1px solid #567288;min-width:38px;height:37px}
+.lj-replay-transport input{width:100%;min-width:24px;flex:1;accent-color:#f0ca87;cursor:ew-resize}
+.lj-replay-transport span{min-width:76px;font:11px ui-monospace,monospace;text-align:right;color:#e3d9bf}
+.lj-replay-cameras{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.lj-replay-cameras>button{border:1px solid #506779;background:#07131f;padding:6px;color:#f3f7fa;text-align:left;display:flex;flex-direction:column;gap:3px}
+.lj-replay-cameras>button.is-active{border-color:#f1cf8b;box-shadow:0 0 0 1px #f1cf8b inset}
+.lj-feed-small{width:100%;height:auto;aspect-ratio:640/380;display:block}
+.lj-replay-cameras strong{font-size:11px;letter-spacing:.08em;margin-top:4px}
+.lj-replay-cameras small{color:#94aebe;font-size:10px}
+.lj-replay-guidance{font-size:12px!important;line-height:1.65;color:#d3e4ee;margin:12px 1px 2px}.lj-replay-guidance strong{color:#f3d99e}
+@media(max-width:520px){
+ .lj-replay-console{padding:6px}.lj-feed-top{font-size:8px}
+ .lj-replay-cameras{gap:4px}.lj-replay-cameras>button{padding:3px}
+ .lj-replay-cameras strong{font-size:9px}.lj-replay-cameras small{font-size:8px}
+ .lj-replay-transport{gap:4px}.lj-replay-transport button{min-width:30px;height:32px}
+ .lj-replay-transport span{font-size:9px;min-width:67px}
+ .lj-feed-large{border-width:2px}
+}
