@@ -156,6 +156,12 @@ export default function IsolationGame() {
       const realFrameMs = now - last;
       const dt = Math.min(.05, realFrameMs / 1000);
       last = now;
+      // Some mobile browsers still fire throttled RAF callbacks while hidden.
+      // Do not run the clock or a failure transition before applying grace.
+      if (backgroundAtRef.current !== null) {
+        req = requestAnimationFrame(frame);
+        return;
+      }
       if (realFrameMs > 0 && realFrameMs < 1000) {
         const frames = fpsFrames.current;
         frames.push(realFrameMs);
