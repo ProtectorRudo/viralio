@@ -319,6 +319,78 @@
         "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_02/fabric_leather_02_nor_gl_1k.png",
         "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/fabric_leather_02/fabric_leather_02_arm_1k.png"
       }
+    },
+    {
+      "id": "rusted_shutter",
+      "title": "Chapa de persiana azul oxidada",
+      "category": "puertas-muros",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rusted_shutter",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rusted_shutter/rusted_shutter_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rusted_shutter/rusted_shutter_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rusted_shutter/rusted_shutter_arm_1k.png"
+      }
+    },
+    {
+      "id": "rust_coarse_01",
+      "title": "Óxido grueso para artefactos antiguos",
+      "category": "materiales-desgaste",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rust_coarse_01",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rust_coarse_01/rust_coarse_01_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rust_coarse_01/rust_coarse_01_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rust_coarse_01/rust_coarse_01_arm_1k.png"
+      }
+    },
+    {
+      "id": "wood_plank_wall",
+      "title": "Tablones de madera oscura con polvo",
+      "category": "muros-interiores",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_plank_wall",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_plank_wall/wood_plank_wall_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_plank_wall/wood_plank_wall_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_plank_wall/wood_plank_wall_arm_1k.png"
+      }
+    },
+    {
+      "id": "painted_concrete_02",
+      "title": "Hormigón pintado y desgastado",
+      "category": "suelos-pasillos",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/painted_concrete_02",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/painted_concrete_02/painted_concrete_02_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/painted_concrete_02/painted_concrete_02_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/painted_concrete_02/painted_concrete_02_arm_1k.png"
+      }
+    },
+    {
+      "id": "smoke_speckled_veneer",
+      "title": "Chapa de madera oscura ahumada (NO humo VFX)",
+      "category": "muebles-premium",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/smoke_speckled_veneer",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/smoke_speckled_veneer/smoke_speckled_veneer_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/smoke_speckled_veneer/smoke_speckled_veneer_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/smoke_speckled_veneer/smoke_speckled_veneer_arm_1k.png"
+      }
+    },
+    {
+      "id": "metal_grate_rusty",
+      "title": "Rejilla metálica industrial oxidada",
+      "category": "pisos-pasarelas",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/metal_grate_rusty",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/metal_grate_rusty/metal_grate_rusty_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/metal_grate_rusty/metal_grate_rusty_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/metal_grate_rusty/metal_grate_rusty_arm_1k.png"
+      }
     }
   ]
 }
