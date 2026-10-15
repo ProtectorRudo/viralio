@@ -474,13 +474,14 @@ export class FootballWorld {
    this.panel(2.2,1.74,-6.36,2.75,2.12,"CENTRAL DE ENLACE",["CONTEO DE SÍMBOLOS","2 / 4 / 3"],"relay");
    this.maintenanceLockers();
    this.panel(-2.5,1.72,-6.36,2.6,2.1,"CIRCUITO CERRADO",["REGISTRO ACCESOS","CÁMARA 09"],"cctv");
-   // Service trays are anchored to the wall instead of floating across
-   // the player's field of view as they did in the earlier prototype.
-   const tray=mat(0x617686,.78,.44);
-   for(let i=0;i<3;i++){
-    const y=3.55-i*.19;
-    box(.27,.07,11.2,-5.79,y,-.12,tray,this.root);
-    for(let j=0;j<8;j++)box(.44,.035,.07,-5.79,y-.035,-5.3+j*1.4,tray,this.root);
+   // Fixed service cable tray: one enclosed channel with brackets bolted
+   // into the wall, instead of three detached horizontal bars.
+   const tray=mat(0x526773,.74,.49);
+   box(.29,.16,10.9,-6.03,3.55,-.12,tray,this.root);
+   for(let j=0;j<6;j++){
+    const z=-5+j*1.9;
+    box(.41,.10,.075,-6.08,3.43,z,tray,this.root);
+    box(.075,.23,.12,-6.23,3.57,z,tray,this.root);
    }
    // Electrical lockers are distributed down the left wall to leave a
    // physically walkable and visibly uninterrupted escape route.
@@ -511,6 +512,13 @@ export class FootballWorld {
    box(4.6,3.0,.32,-3.95,1.6,-6.52,mat(0x1c2933,.68,.42),this.root);
    box(4.6,3.0,.32,3.95,1.6,-6.52,mat(0x1c2933,.68,.42),this.root);
    this.desk(-2.3,.65,2.9);
+   // Stand-mounted final evidence terminal: its visible legs touch the
+   // desk top, rather than appearing as a detached floating glass board.
+   const mount=mat(0x70838e,.78,.39);
+   for(const x of [-3.19,-1.31]){
+    box(.065,.30,.07,x,1.18,1.28,mount,this.root);
+    box(.21,.025,.21,x,1.095,1.22,mount,this.root);
+   }
    this.panel(-2.25,1.87,1.43,2.32,1.36,"INFORME FINAL",["VERIFICAR LA PRUEBA","FUENTE ORIGINAL"],"prueba");
    this.premiumProp(FOOTBALL_PREMIUM.duffel,4.2,.02,1.83,.76,.48,.5);
    this.premiumProp(FOOTBALL_PREMIUM.scoreboard,-3.96,2.85,-6.21,1.4,.72,.34);
@@ -681,17 +689,24 @@ export class FootballWorld {
  }
  private detailServiceRoom(){
   const pipe=mat(0xa5aeb4,.77,.37),rust=mat(0x6a493b,.65,.61),paint=mat(0x7d8a8c,.31,.67);
-  for(let side of [-1,1])for(let i=0;i<9;i++){
-   const z=-5.5+i*1.35;
-   const a=tube(.065,2.7,side*6.1,2.1,z,pipe,this.root,10);
-   a.rotation.z=Math.PI/2;
-   box(.18,.17,.16,side*6.0,3.43,z,rust,this.root);
+  // Real vertically-mounted conduits, with clamps touching the concrete.
+  // Previous horizontal cylinders projected more than a metre into the
+  // passage and appeared to float at head height.
+  for(const side of [-1,1])for(let i=0;i<5;i++){
+   const z=-4.9+i*2.46;
+   tube(.052,2.83,side*6.14,2.15,z,pipe,this.root,10);
+   for(const y of [.78,2.2,3.55]){
+    box(.17,.08,.23,side*6.18,y,z,rust,this.root);
+    box(.10,.065,.17,side*6.07,y,z,paint,this.root);
+   }
   }
   for(let i=0;i<5;i++){
    const z=-4+i*2.05;
-   box(.76,.95,.28,-5.98,1.9,z,paint,this.root);
-   box(.31,.07,.07,-5.78,2.25,z+.24,rust,this.root);
-   tube(.09,.14,-5.76,1.91,z+.24,pipe,this.root,12).rotation.x=Math.PI/2;
+   box(.76,.95,.28,-6.01,1.9,z,paint,this.root);
+   // Junction enclosures are bolted to wall; controls sit in front.
+   for(const y of [1.54,2.26])box(.07,.07,.36,-6.15,y,z,rust,this.root);
+   box(.31,.07,.07,-5.78,2.25,z+.17,rust,this.root);
+   tube(.09,.14,-5.79,1.91,z+.18,pipe,this.root,12).rotation.x=Math.PI/2;
   }
   for(let i=0;i<6;i++){
    const z=-5.8+i*1.25;
