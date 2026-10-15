@@ -104,7 +104,7 @@ type FragmentPickup="pieza1"|"pieza2"|"pieza3"|"pieza4";
 const pieces:readonly FragmentPickup[]=["pieza1","pieza2","pieza3","pieza4"];
 const fragmentLabels:{id:FragmentPickup;title:string;hint:string}[]=[
  {id:"pieza1",title:"PLANO",hint:"Buscá el papel junto al escritorio"},
- {id:"pieza2",title:"SELLO",hint:"Revisá las carpetas del estante lateral"},
+ {id:"pieza2",title:"SELLO",hint:"Está junto al estante derecho. Para llegar, rodeá el escritorio por el pasillo del fondo."},
  {id:"pieza3",title:"RUTA",hint:"Inspeccioná el archivador del fondo"},
  {id:"pieza4",title:"FIRMA",hint:"El cuarto fragmento está cerca de la puerta"}
 ];
