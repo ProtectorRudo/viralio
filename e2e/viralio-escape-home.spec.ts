@@ -9,7 +9,7 @@ test("Viralio Escape: catalogue exposes all four real rooms, editorial intensity
  for (const [slug,title] of [["caso-m","CASO M"],["la-ultima-funcion","LA ÚLTIMA FUNCIÓN"],["la-ultima-campanada","LA ÚLTIMA CAMPANADA"],["aislamiento-15","AISLAMIENTO 15"]]){
    await expect(page.getByRole("link",{name:new RegExp("Conocer la experiencia "+title)})).toHaveAttribute("href","/salas/"+slug);
  }
- await expect(page.getByRole("link",{name:/Explorar experiencias/i}).first()).toHaveAttribute("href","#experiencias");
+ await expect(page.getByRole("link",{name:"Probar gratis",exact:true}).first()).toHaveAttribute("href","/probar");
  const grid=page.locator(".ve-card-grid");
  await expect(grid.locator(".ve-card")).toHaveCount(4);
  for(const key of ["Dificultad","Sustos","Sorpresa","Tensión"]){
@@ -39,8 +39,8 @@ test("Viralio Escape: all 4 product pages contain verified destination URLs and 
  ];
  for(const [slug,dest] of pairs){
   await page.goto("/salas/"+slug);
-  await expect(page.getByRole("link",{name:/Jugar experiencia/i})).toHaveAttribute("href",dest);
-  await expect(page.getByRole("link",{name:/Entrar a la sala/i})).toHaveAttribute("href",dest);
+  await expect(page.getByRole("link",{name:/Jugar gratis durante las pruebas/i})).toHaveAttribute("href",dest);
+  await expect(page.getByRole("link",{name:"Jugar gratis",exact:true})).toHaveAttribute("href",dest);
   const meter=page.locator(".ve-room-panel .ve-intensity-detail");
   await expect(meter).toBeVisible();
   await expect(meter.locator(".ve-intensity-metric")).toHaveCount(4);
@@ -84,4 +84,34 @@ test("Viralio Escape: 1-to-5 editorial profiles are differentiated and never mim
  }
  await expect(page.getByText(/Intensidades editoriales orientativas/)).toBeVisible();
  await expect(page.getByText(/puntuaciones de usuarios/)).toBeVisible();
+});
+
+test("Viralio Escape: genuine video teaser is playable on the catalogue and hospital detail page",async({page})=>{
+  const url="https://protectorrudo.github.io/aislamiento-15/media/trailer-real.mp4";
+  await page.goto("/");
+  await expect(page.getByRole("heading",{name:/No te mostramos/})).toBeVisible();
+  await expect(page.locator(".ve-realfilm-video source")).toHaveAttribute("src",url);
+  await expect(page.locator(".ve-realfilm-video")).toHaveAttribute("preload","none");
+  await expect(page.getByText(/MATERIAL CAPTURADO EN EL JUEGO REAL/)).toBeVisible();
+  await page.goto("/salas/aislamiento-15");
+  await expect(page.locator(".ve-realfilm-video source")).toHaveAttribute("src",url);
+  await expect(page.getByRole("link",{name:/Jugar gratis durante las pruebas/})).toHaveAttribute(
+    "href","https://protectorrudo.github.io/aislamiento-15/");
+});
+test("Viralio Escape: transparent free playable trial requires no account or payment",async({page})=>{
+  for(const width of [360,390,768,1440]){
+    await page.setViewportSize({width,height:844});
+    await page.goto("/probar");
+    await expect(page.getByRole("heading",{level:1,name:/Antes de creerlo/})).toBeVisible();
+    await expect(page.getByRole("link",{name:/Empezar la prueba gratis/})).toHaveAttribute(
+      "href","https://protectorrudo.github.io/aislamiento-15/");
+    await expect(page.getByText(/Actualmente se puede jugar la experiencia completa sin pagar/)).toBeVisible();
+    await expect(page.locator(".ve-realfilm-video")).toHaveCount(1);
+    const overflow=await page.evaluate(()=>({
+      width:document.documentElement.clientWidth,
+      scroll:document.documentElement.scrollWidth
+    }));
+    expect(overflow.scroll,"/probar should never scroll horizontally at "+width)
+      .toBeLessThanOrEqual(overflow.width+1);
+  }
 });
