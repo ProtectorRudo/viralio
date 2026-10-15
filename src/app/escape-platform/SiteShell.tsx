@@ -8,12 +8,11 @@ export function SiteHeader() {
       </Link>
       <nav className="ve-desktop-nav" aria-label="Navegación principal">
         <Link href="/#experiencias">Experiencias</Link>
-        <Link href="/probar">Probar gratis</Link>
         <Link href="/#colecciones">Colecciones</Link>
         <Link href="/#como-funciona">Cómo se juega</Link>
         <Link href="/#regalos">Regalos</Link>
       </nav>
-      <Link className="ve-nav-action" href="/probar">Probar gratis <span aria-hidden="true">↗</span></Link>
+      <Link className="ve-nav-action" href="/#experiencias">Explorar experiencias <span aria-hidden="true">↗</span></Link>
       <details className="ve-mobile-menu">
         <summary aria-label="Abrir menú de navegación"><span></span><span></span><span></span></summary>
         <nav aria-label="Menú móvil">
@@ -31,7 +30,7 @@ export function SiteFooter() {
  return <footer className="ve-footer">
    <div className="ve-container ve-footer-inside">
      <div><Link href="/" className="ve-footer-logo">VIRALIO<span>®</span></Link><p>Historias que no mirás. Historias que vivís.</p></div>
-     <div className="ve-footer-links"><Link href="/probar">Prueba gratuita</Link><Link href="/#experiencias">Experiencias</Link><Link href="/#como-funciona">Cómo se juega</Link><Link href="/#regalos">Regalar</Link><Link href="/comercios">Viralio para comercios</Link></div>
+     <div className="ve-footer-links"><Link href="/#experiencias">Experiencias</Link><Link href="/#como-funciona">Cómo se juega</Link><Link href="/#regalos">Regalar</Link><Link href="/comercios">Viralio para comercios</Link></div>
      <small>© {new Date().getFullYear()} Viralio · Hecho para jugar.</small>
    </div>
  </footer>;
