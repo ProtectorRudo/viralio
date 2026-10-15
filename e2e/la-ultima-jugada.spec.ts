@@ -5,7 +5,7 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  const errors:string[]=[];page.on("pageerror",err=>errors.push(err.message));
  await page.goto("/la-ultima-jugada");
  await expect(page.getByRole("heading",{name:/LA ÚLTIMA/})).toBeVisible();
- await expect(page.getByText("INGLATERRA")).toBeVisible();
+ await expect(page.getByText("INGLATERRA",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.getByText("OBJETIVO ACTUAL")).toBeVisible();
