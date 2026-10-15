@@ -80,7 +80,7 @@ export async function loadViralio3DAsset(id: string): Promise<CachedAsset> {
     );
   }
   const cached = await resourceCache.get(id)!;
-  return { scene: cloneSkinned(cached.scene), animations: cached.animations, entry: cached.entry };
+  return { scene: cloneSkinned(cached.scene) as Group, animations: cached.animations, entry: cached.entry };
 }
 
 /** Precarga opcional de los recursos de la SALA actual; no precargar los 81 modelos. */
