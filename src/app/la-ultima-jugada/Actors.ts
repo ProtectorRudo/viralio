@@ -63,6 +63,21 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
    });
   });
   group.add(rig);
+  if(isCoach){
+   // Specific coach identity: dark, visibly textured short hair over the
+   // skinned GLB head (not an invented helmet/visor and not the bald rig).
+   const hair=new THREE.MeshStandardMaterial({color:0x171212,roughness:.91,metalness:0});
+   const darkStroke=new THREE.MeshStandardMaterial({color:0x27211c,roughness:.86,metalness:0});
+   const scalp=new THREE.Mesh(new THREE.SphereGeometry(.20,20,12),hair);
+   scalp.position.set(0,1.83,-.008);scalp.scale.set(1.04,.39,1.12);
+   group.add(scalp);
+   for(let i=0;i<25;i++){
+    const theta=i*Math.PI*2/25,phi=.34+Math.sin(i*2.1)*.22;
+    const curl=new THREE.Mesh(new THREE.SphereGeometry(.038+(i%3)*.008,7,6),i%3===0?darkStroke:hair);
+    curl.position.set(Math.sin(theta)*.173,1.835+Math.cos(phi)*.045,Math.cos(theta)*.153);
+    curl.scale.set(1.15,.7,1.1);group.add(curl);
+   }
+  }
   const fallback=group.getObjectByName("original-fallback");
   if(fallback)fallback.visible=false;
   const clip=gltf.animations.find(c=>/idle|talk|stand|wave/i.test(c.name))||gltf.animations[0];
@@ -76,7 +91,7 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
 export function createCoach(root:THREE.Group,isAlive:()=>boolean):Actor{
  const group=new THREE.Group();
  // Coach waits just outside the right edge of the walkable tunnel entrance.
- group.position.set(.48,.02,-7.75);group.rotation.y=Math.PI-.23;root.add(group);
+ group.position.set(.48,.02,-4.86);group.rotation.y=Math.PI-.23;root.add(group);
  group.userData.animations=[] as THREE.AnimationMixer[];
  const fallback=humanFallback(group,0x152e4b);
  fallback.group.name="original-fallback";
@@ -123,7 +138,8 @@ export function createIntruder(root:THREE.Group,isAlive:()=>boolean):Actor{
    const period=t%19.5;
    group.position.x=period<6?5.62:period<6.65?5.62+(period-6)*2.3:7.14;
    if(fallback.group.visible)fallback.arm.rotation.x=.1+Math.sin(t*.45)*.045;
-   for(const mixer of group.userData.animations as THREE.AnimationMixer[])mixer.update(Math.min(t,1/25));
+   const dt=Math.max(0,Math.min(.06,t-lastTick));lastTick=t;
+   for(const mixer of group.userData.animations as THREE.AnimationMixer[])mixer.update(dt);
   },
   dispose(){root.remove(group);}
  };
