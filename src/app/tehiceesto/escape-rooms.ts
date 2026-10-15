@@ -17,7 +17,7 @@ export const escapeRooms:EscapeRoom[]=[
  fields:[...common,{key:"codigo",label:"Código del candado (6 dígitos)",max:6,required:true,hint:"Cambia también la fotografía, la cinta y el archivo de vigilancia.",defaultValue:"131026"},{key:"voz",label:"Audio de la misión (URL HTTPS MP3, opcional)",max:950}]},
  {slug:"ultima-funcion",title:"La Última Función",eyebrow:"CINE · TERROR 3D",subtitle:"El teatro cerró. Tu butaca sigue esperando.",
  description:"Explorá una sala de cine abandonada, resolvé sus acertijos y descubrí una entrada personalizada al final.",
- accent:"#aa7ab9",url:"https://la-ultima-funcion.vercel.app/",duration:"8 minutos de suspenso",
+ accent:"#aa7ab9",url:"https://protectorrudo.github.io/la-ultima-funcion/",duration:"8 minutos de suspenso",
  fields:common},
  {slug:"ultima-campanada",title:"La Última Campanada",eyebrow:"ROMANCE · JARDÍN 3D",subtitle:"Antes de que se marchiten las flores, descubrí una invitación.",
  description:"Un invernadero misterioso, pistas entre flores y relojes, una carta sellada y un desenlace íntimo.",
