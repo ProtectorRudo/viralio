@@ -8,7 +8,7 @@ type Handlers = { action:(id:GameAction)=>void; focus:(label:string)=>void; posi
 type Target = THREE.Object3D & {userData:{action?:GameAction,label?:string}};
 
 const palette = {
- floor:0x222b34, wall:0x26323e, metal:0x65727c, blue:0x38bdf8,
+ floor:0x566477, wall:0x667687, metal:0x8798a4, blue:0x38bdf8,
  gold:0xf3c777, deep:0x0c1823, red:0xe44c4e, cream:0xeee4ce
 };
 const names:Record<GameAction,string>={
@@ -80,7 +80,7 @@ export class FootballWorld {
   this.renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance",alpha:false});
   this.renderer.outputColorSpace=THREE.SRGBColorSpace;
   this.renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  this.renderer.toneMappingExposure=1.25;
+  this.renderer.toneMappingExposure=1.6;
   this.renderer.shadowMap.enabled=true;
   this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.55));
@@ -89,7 +89,8 @@ export class FootballWorld {
   this.camera=new THREE.PerspectiveCamera(69,1,.08,220);
   this.camera.position.set(0,1.68,4.2);
   this.scene.add(this.root);
-  this.scene.add(new THREE.HemisphereLight(0x8ab5d7,0x16181b,1.65));
+  this.scene.add(new THREE.HemisphereLight(0xbce4ff,0x48505e,2.25));
+  this.scene.add(new THREE.AmbientLight(0xcce8ff,.87));
   const key=new THREE.DirectionalLight(0xffe3b8,chapter===2?2.1:1.2);
   key.position.set(-3,8,-2);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
   key.shadow.camera.left=-14;key.shadow.camera.right=14;key.shadow.camera.top=14;key.shadow.camera.bottom=-14;
@@ -122,23 +123,27 @@ export class FootballWorld {
   box(w+.04,.04,.08,x,y-h/2,z+depth/2,trim,this.root);
  }
  private shell(chapter:Chapter) {
-  const concrete=mat(chapter===0?0x303c47:0x283139,.16,.89);
-  const deep=mat(palette.deep,.3,.62);
+  const concrete=mat(chapter===0?0x687681:0x64727a,.16,.89);
+  const deep=mat(0x334653,.3,.64);
   const steel=mat(0x53616b,.83,.35);
-  box(13,.25,14,0,-.16,0,mat(palette.floor,.24,.71),this.root);
+  box(13,.25,14,0,-.16,0,mat(palette.floor,.24,.83),this.root);
   box(13,.25,14,0,4.24,0,deep,this.root);
   box(.28,4.35,14,-6.4,2.05,0,concrete,this.root);
   box(.28,4.35,14,6.4,2.05,0,concrete,this.root);
   if(chapter!==2)box(13,4.35,.28,0,2.05,-6.7,concrete,this.root);
   box(13,4.35,.28,0,2.05,6.7,concrete,this.root);
-  for(let x=-5.5;x<6;x+=2.15){
-   box(.1,.05,13,x,4.1,0,steel,this.root);
-   for(let z=-5.5;z<6;z+=2.3)box(.77,.026,1.26,x,4.06,z,mat(0xdceef6,.25,.5,0x7bcaff,.65),this.root);
+  for(let x=-4.5;x<6;x+=3){
+   box(.085,.05,13,x,4.1,0,steel,this.root);
+   for(let z=-5.2;z<6;z+=3.1){
+    box(.83,.045,1.45,x,4.065,z,mat(0xbcd3e1,.25,.5,0xa1daff,.45),this.root);
+    this.glow(x,3.7,z,0xc1e7ff,4.4,6.4);
+   }
   }
   for(let z=-5.6;z<=5.8;z+=2.1)box(.08,4.1,.12,-6.23,1.98,z,steel,this.root);
   for(let i=0;i<12;i++)box(.03,.02,13,-5.9+i*1.07,.018,0,steel,this.root);
-  this.glow(-4,3,1,0x4fa8e2,8,12);
-  this.glow(4,3,-2,chapter===1?0xf65e4b:0xf3ca83,6,11);
+  this.glow(-3.5,2.9,1.8,0xa6dfff,18,13);
+  this.glow(4.5,2.8,-1.4,chapter===1?0xf7b8a2:0xffe3b6,13,12);
+  this.glow(0,3.5,-3,0xeaf7ff,11,10);
  }
  private door(x:number,z:number,id:GameAction,code:string){
   const dark=mat(0x202b32,.9,.38);const edge=mat(0x9eacb2,.7,.26);
@@ -151,10 +156,12 @@ export class FootballWorld {
   this.interactive(id,x,1.6,z+.18,2.03,2.9,.25);
  }
  private desk(x:number,z:number,w=3.15){
+  const local=new THREE.Group();this.root.add(local);
   const wood=mat(0x4a4846,.35,.52);
-  box(w,.14,1.26,x,.89,z,wood,this.root);
-  for(const dx of [-w/2+.18,w/2-.18])for(const dz of [-.47,.47])box(.08,.9,.08,x+dx,.4,z+dz,mat(0x778690,.8,.38),this.root);
-  box(w-.35,.07,.95,x,.47,z,mat(0x1d262d,.55,.6),this.root);
+  box(w,.14,1.26,x,.89,z,wood,local);
+  for(const dx of [-w/2+.18,w/2-.18])for(const dz of [-.47,.47])box(.08,.9,.08,x+dx,.4,z+dz,mat(0x778690,.8,.38),local);
+  box(w-.35,.07,.95,x,.47,z,mat(0x1d262d,.55,.6),local);
+  this.loadFurniture("desk",x,z,w,1.1,1.23,local);
  }
  private panel(x:number,y:number,z:number,w:number,h:number,title:string,lines:string[],id?:GameAction){
   box(w+.15,h+.15,.2,x,y,z,mat(0x0c111a,.79,.25),this.root);
@@ -162,10 +169,12 @@ export class FootballWorld {
   if(id)this.interactive(id,x,y,z+.18,w,h,.3);
  }
  private chair(x:number,z:number){
-  tube(.36,.10,x,.55,z,mat(0x253039,.18,.7),this.root);
-  box(.7,.78,.11,x,1.04,z+.31,mat(0x253039,.18,.7),this.root);
-  tube(.055,.58,x,.23,z,mat(0x98a2a9,.85,.28),this.root);
-  for(let i=0;i<5;i++){const ang=i*Math.PI*2/5;const leg=box(.1,.06,.58,x+Math.sin(ang)*.26,.085,z+Math.cos(ang)*.26,mat(0x65747e,.81,.33),this.root);leg.rotation.y=ang;}
+  const local=new THREE.Group();this.root.add(local);
+  tube(.36,.10,x,.55,z,mat(0x253039,.18,.7),local);
+  box(.7,.78,.11,x,1.04,z+.31,mat(0x253039,.18,.7),local);
+  tube(.055,.58,x,.23,z,mat(0x98a2a9,.85,.28),local);
+  for(let i=0;i<5;i++){const ang=i*Math.PI*2/5;const leg=box(.1,.06,.58,x+Math.sin(ang)*.26,.085,z+Math.cos(ang)*.26,mat(0x65747e,.81,.33),local);leg.rotation.y=ang;}
+  this.loadFurniture("chair",x,z,.85,1.2,.85,local);
  }
  private stadium(){
   const turf=mat(0x315b42,.13,.9);
@@ -249,6 +258,7 @@ export class FootballWorld {
    this.interactive("informe",-2.15,1.04,.78,1.65,.32,.85);
    for(let i=0;i<4;i++){const x=-4+i*1.05;box(.8,.62,.46,x,1.2,-1.7,mat(0x182a37,.62,.4),this.root);box(.65,.36,.03,x,1.25,-1.46,mat(0x57b5cf,.32,.51,0x1c7190,.5),this.root);}
    this.door(4.9,-6.48,"salida1","SECTOR INTERNO");
+   this.detailAnalysisRoom();
    this.label("ARG 1 - 1 ENG",["MINUTO 87 · FINAL"],0,3.64,-6.39,3.25,.78);
   }else if(chapter===1){
    this.panel(2.2,1.74,-6.36,2.75,2.12,"CENTRAL DE ENLACE",["TERMINALES A / B / C","PROTOCOLO 031"],"relay");
@@ -259,6 +269,7 @@ export class FootballWorld {
    }
    for(let i=0;i<4;i++)box(1.2,1.7,.7,-4.5+i*1.35,.85,2.4,mat(0x596269,.68,.45),this.root);
    this.door(0,-6.48,"salida2","TÚNEL DE CAMPO");
+   this.detailServiceRoom();
    this.glow(0,3,-6,0xfd7459,9,7);
    this.label("AUTORIZACIÓN",["CREDENCIAL REVOCADA"],-4.2,2.0,-6.32,2.1,1.2,"#ed7779");
    for(const side of [-1,1]){
@@ -282,6 +293,88 @@ export class FootballWorld {
    tube(.044,.034,side*6.19,2.65,-6+i*.9,nickel,this.root,8).rotation.z=Math.PI/2;
   }
  }
+ private loadFurniture(kind:"desk"|"chair", x:number,z:number,w:number,h:number,d:number,fallback:THREE.Group) {
+  const file=kind==="desk"?"desk-kari.glb":"chair-olve.glb";
+  const url="https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/main/public/assets/glb/"+file;
+  new GLTFLoader().load(url,gltf=>{
+   if(this.destroyed)return;
+   const obj=gltf.scene;
+   const bounds=new THREE.Box3().setFromObject(obj);
+   const dimensions=bounds.getSize(new THREE.Vector3());
+   if(dimensions.x<.01||dimensions.y<.01||dimensions.z<.01)return;
+   obj.scale.multiplyScalar(Math.min(w/dimensions.x,h/dimensions.y,d/dimensions.z));
+   const b=new THREE.Box3().setFromObject(obj),center=b.getCenter(new THREE.Vector3());
+   obj.position.set(x-center.x,-b.min.y,z-center.z);
+   obj.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
+   this.root.add(obj);fallback.visible=false;
+  },undefined,()=>{});
+ }
+ private detailAnalysisRoom() {
+  const trim=mat(0x99aab5,.78,.3),slate=mat(0x243946,.66,.51),
+  copper=mat(0xb3a18d,.6,.4),plastic=mat(0x3a4e5b,.34,.72),
+  glass=mat(0xaed8ec,.15,.17);
+  // Acoustic wall slats, joined with recessed uplighting and brass rails.
+  for(const wall of [-1,1]){
+   for(let n=0;n<9;n++){
+    const z=-4.95+n*1.12;
+    box(.12,2.45,.062,wall*6.14,1.75,z,slate,this.root);
+    box(.044,.055,.78,wall*6.05,.53,z,trim,this.root);
+   }
+   for(let n=0;n<6;n++){
+    const z=-4.9+n*1.85;
+    box(.05,.12,1.3,wall*6.02,3.25,z,copper,this.root);
+   }
+  }
+  // Framed scouting prints, equipment cabinets and labelled document racks.
+  for(const dx of [-4.9,-3.2]){
+   box(1.26,1.06,.10,dx,2.16,6.48,trim,this.root);
+   box(1.13,.93,.03,dx,2.16,6.57,slate,this.root);
+   this.label("DOSSIER / ENG",["PRESIÓN ALTA","BANDA DERECHA"],dx,2.16,6.62,1.07,.82);
+  }
+  for(let i=0;i<4;i++){
+   const z=-2.8+i*.94;
+   box(.58,2.18,.83,5.3,1.12,z,plastic,this.root);
+   box(.56,.04,.78,5.3,1.83,z,trim,this.root);
+   box(.41,.06,.05,5.25,1.02,z+.44,copper,this.root);
+   for(let t=0;t<3;t++){
+    box(.38,.28,.06,5.25,1.35-t*.35,z+.45,mat(t===0?0x96b9c4:t===1?0xc9b996:0x5a6f83,.19,.65),this.root);
+   }
+  }
+  // Monitor desk peripherals: keyboard keys, articulated lamps, cable loops.
+  for(const x of [-3.4,-1.55,.4,1.6]){
+   box(.87,.07,.27,x,1.08,-1.15,plastic,this.root);
+   for(let i=0;i<8;i++)for(let j=0;j<3;j++){
+    box(.073,.024,.049,x-.35+i*.10,1.127,-1.25+j*.07,trim,this.root);
+   }
+   tube(.07,.2,x+.62,1.15,-1.45,trim,this.root);
+   box(.28,.055,.17,x+.62,1.28,-1.45,glass,this.root);
+  }
+  // Floor tactile strips and a bright path indicating the required exit.
+  for(let z=1;z>-5.8;z-=.6)box(.05,.012,.37,4.15,.018,z,copper,this.root);
+  box(2.15,.03,.2,4.83,.018,-5.46,copper,this.root);
+  this.glow(4.5,2.8,-5.4,0xffdb8e,13,7);
+ }
+ private detailServiceRoom(){
+  const pipe=mat(0xa5aeb4,.77,.37),rust=mat(0x6a493b,.65,.61),paint=mat(0x7d8a8c,.31,.67);
+  for(let side of [-1,1])for(let i=0;i<9;i++){
+   const z=-5.5+i*1.35;
+   const a=tube(.065,2.7,side*6.1,2.1,z,pipe,this.root,10);
+   a.rotation.z=Math.PI/2;
+   box(.18,.17,.16,side*6.0,3.43,z,rust,this.root);
+  }
+  for(let i=0;i<5;i++){
+   const z=-4+i*2.05;
+   box(.76,.95,.28,-5.98,1.9,z,paint,this.root);
+   box(.31,.07,.07,-5.78,2.25,z+.24,rust,this.root);
+   tube(.09,.14,-5.76,1.91,z+.24,pipe,this.root,12).rotation.x=Math.PI/2;
+  }
+  for(let i=0;i<6;i++){
+   const z=-5.8+i*1.25;
+   box(1.4,.04,.11,0,.01,z,mat(0xe5c78c,.27,.55),this.root);
+  }
+  this.glow(0,2.1,-4,0xf9c9aa,12,8);
+ }
+
  private actionAt(nx:number,ny:number){
   this.ray.setFromCamera(new THREE.Vector2(nx,ny),this.camera);
   const hits=this.ray.intersectObjects(this.targets,false);
