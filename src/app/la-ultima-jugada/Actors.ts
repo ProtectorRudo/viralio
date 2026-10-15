@@ -92,12 +92,14 @@ export function createCoach(root:THREE.Group,isAlive:()=>boolean):Actor{
  const face=new THREE.Mesh(new THREE.PlaneGeometry(.31,.48),new THREE.MeshBasicMaterial({color:0x73cbe9,toneMapped:false}));
  face.position.z=-.026;face.rotation.y=Math.PI;tablet.add(face);
  attachRig(group,0x1a3554,true,isAlive);
+ let lastTick=0;
  return {
   group,
   update(t){
    if(fallback.group.visible)fallback.arm.rotation.x=-.23+Math.sin(t*.82)*.15;
    tablet.rotation.z=.23+Math.sin(t*.6)*.05;
-   for(const mixer of group.userData.animations as THREE.AnimationMixer[])mixer.update(Math.min(t,1/25));
+   const dt=Math.max(0,Math.min(.06,t-lastTick));lastTick=t;
+   for(const mixer of group.userData.animations as THREE.AnimationMixer[])mixer.update(dt);
   },
   dispose(){root.remove(group);}
  };
@@ -113,6 +115,7 @@ export function createIntruder(root:THREE.Group,isAlive:()=>boolean):Actor{
   new THREE.MeshPhysicalMaterial({color:0x86b1c0,metalness:.08,roughness:.13,transparent:true,opacity:.17,side:THREE.DoubleSide,depthWrite:false}));
  glass.position.set(0,1.43,.88);group.add(glass);
  attachRig(group,0x20242b,false,isAlive);
+ let lastTick=0;
  return {
   group,
   update(t){
