@@ -22,7 +22,11 @@ async function reachAction(page:Page,nextText:RegExp,puzzle=false){
   if(attempt===4||attempt===8)await walk(page,"d",680);
   else await walk(page,"w",660);
  }
- throw new Error("Could not physically reach the next interaction: "+nextText+" / "+await page.locator(".lj-objective p").innerText());
+ throw new Error("Could not reach interaction "+nextText+" / "+await page.locator(".lj-objective p").innerText()+
+ " position="+await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")+
+ " yaw="+await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-yaw")+
+ " focus="+await page.locator(".lj-canvas-frame canvas").getAttribute("data-focus-target")+
+ " aim="+await page.locator(".lj-canvas-frame canvas").getAttribute("data-aim-target"));
 }
 async function solve(page:Page){
  await page.getByRole("button",{name:"VERIFICAR RESPUESTA ↗"}).click();
