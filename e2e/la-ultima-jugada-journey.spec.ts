@@ -134,6 +134,7 @@ test("full Argentina–England investigation physically reaches every room and t
  await walkUntil(page,"w","x",-1,"gte");
  await orient(page);
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-focus-target"),{timeout:6500}).toBe("entrega");
+ await page.screenshot({path:"test-results/la-ultima-jugada-tecnico-primer-plano.png",fullPage:false,timeout:17000});
  await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
  await expect(page.locator(".lj-root-finale")).toBeVisible({timeout:12000});
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
