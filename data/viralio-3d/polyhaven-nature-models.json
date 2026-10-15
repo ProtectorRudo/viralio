@@ -1,0 +1,81 @@
+{
+  "name": "Viralio Nature Premium - Poly Haven CC0",
+  "version": "1.0.0",
+  "updatedAt": "2026-10-15",
+  "license": "CC0-1.0",
+  "description": "Six high fidelity photogrammetry/premium PBR nature assets, exported as 1K web-optimized GLB; plants are static, alpha materials may require visual QA.",
+  "assets": [
+    {
+      "id": "nature-ph-potted-plant-large",
+      "assetId": "potted_plant_01",
+      "title": "Planta alta con maceta de terracota envejecida",
+      "category": "vegetacion-interior",
+      "author": "Rico Cilliers",
+      "tier": "hero-fotorealista",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer.",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/potted_plant_01",
+      "status": "curated-source"
+    },
+    {
+      "id": "nature-ph-potted-plant-variegated",
+      "assetId": "potted_plant_02",
+      "title": "Planta de hojas verdes bicolores y maceta de barro",
+      "category": "vegetacion-interior",
+      "author": "Rico Cilliers",
+      "tier": "hero-fotorealista",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer.",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/potted_plant_02",
+      "status": "curated-source"
+    },
+    {
+      "id": "nature-ph-succulent-haworthia",
+      "assetId": "potted_plant_04",
+      "title": "Suculenta haworthia en maceta pequeña",
+      "category": "vegetacion-interior",
+      "author": "James Ray Cock",
+      "tier": "hero-fotorealista",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer.",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/potted_plant_04",
+      "status": "curated-source"
+    },
+    {
+      "id": "nature-ph-fern-group",
+      "assetId": "fern_02",
+      "title": "Grupo de helechos con hojas reales",
+      "category": "vegetacion-exterior",
+      "author": "Rico Cilliers / Rob Tuytel",
+      "tier": "hero-fotorealista",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer.",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/fern_02",
+      "status": "curated-source"
+    },
+    {
+      "id": "nature-ph-tree-stump-roots",
+      "assetId": "tree_stump_01",
+      "title": "Tocón de árbol con raíces expuestas y musgo",
+      "category": "vegetacion-exterior",
+      "author": "Rob Tuytel",
+      "tier": "hero-fotorealista",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer.",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/tree_stump_01",
+      "status": "curated-source"
+    },
+    {
+      "id": "nature-ph-tree-stump-mossy",
+      "assetId": "tree_stump_02",
+      "title": "Tocón antiguo de madera en descomposición",
+      "category": "vegetacion-exterior",
+      "author": "Rob Tuytel",
+      "tier": "hero-fotorealista",
+      "quality": "Photoreal Poly Haven CC0 PBR model; scanned or artist authored, not animated. 1K mobile-optimized import; evaluate transparency and geometry in viewer.",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/tree_stump_02",
+      "status": "curated-source"
+    }
+  ]
+}
