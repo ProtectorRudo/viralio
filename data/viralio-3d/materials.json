@@ -1,0 +1,129 @@
+{
+  "name": "Viralio Escape — Poly Haven CC0 PBR materials",
+  "license": "CC0-1.0",
+  "resolution": "1K",
+  "source": "Poly Haven",
+  "catalogDate": "2026-10-15",
+  "materials": [
+    {
+      "id": "concrete",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete/concrete_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete/concrete_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete/concrete_arm_1k.png"
+      }
+    },
+    {
+      "id": "rough_block_wall",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_block_wall",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_block_wall/rough_block_wall_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_block_wall/rough_block_wall_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_block_wall/rough_block_wall_arm_1k.png"
+      }
+    },
+    {
+      "id": "rough_plaster_broken",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_plaster_broken",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_plaster_broken/rough_plaster_broken_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_plaster_broken/rough_plaster_broken_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_plaster_broken/rough_plaster_broken_arm_1k.png"
+      }
+    },
+    {
+      "id": "rough_wood",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_wood",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_wood/rough_wood_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_wood/rough_wood_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_wood/rough_wood_arm_1k.png"
+      }
+    },
+    {
+      "id": "slate_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/slate_floor",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/slate_floor/slate_floor_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/slate_floor/slate_floor_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/slate_floor/slate_floor_arm_1k.png"
+      }
+    },
+    {
+      "id": "smooth_concrete_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/smooth_concrete_floor",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/smooth_concrete_floor/smooth_concrete_floor_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/smooth_concrete_floor/smooth_concrete_floor_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/smooth_concrete_floor/smooth_concrete_floor_arm_1k.png"
+      }
+    },
+    {
+      "id": "concrete_floor_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_01",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_01/concrete_floor_01_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_01/concrete_floor_01_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_01/concrete_floor_01_arm_1k.png"
+      }
+    },
+    {
+      "id": "concrete_floor_worn_001",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_worn_001",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_worn_001/concrete_floor_worn_001_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_worn_001/concrete_floor_worn_001_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_worn_001/concrete_floor_worn_001_arm_1k.png"
+      }
+    },
+    {
+      "id": "concrete_brick_wall_001",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_brick_wall_001",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_brick_wall_001/concrete_brick_wall_001_diffuse_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_brick_wall_001/concrete_brick_wall_001_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_brick_wall_001/concrete_brick_wall_001_arm_1k.png"
+      }
+    },
+    {
+      "id": "rough_plaster_brick",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rough_plaster_brick",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_plaster_brick/rough_plaster_brick_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_plaster_brick/rough_plaster_brick_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_plaster_brick/rough_plaster_brick_arm_1k.png"
+      }
+    },
+    {
+      "id": "concrete_debris",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_debris",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_debris/concrete_debris_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_debris/concrete_debris_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_debris/concrete_debris_arm_1k.png"
+      }
+    },
+    {
+      "id": "concrete_floor_painted",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_painted",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_painted/concrete_floor_painted_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_painted/concrete_floor_painted_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/concrete_floor_painted/concrete_floor_painted_arm_1k.png"
+      }
+    }
+  ]
+}
