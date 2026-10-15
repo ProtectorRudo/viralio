@@ -142,6 +142,7 @@ export default function LaUltimaJugada(){
  const audio=useRef<StadiumAudio|null>(null);
  const startStamp=useRef(0);
  const announcements=useRef(new Set<number>());
+ const crisisTriggered=useRef(false);
  const alertTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const cinematicTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const modeRef=useRef<Mode>("intro");
@@ -231,6 +232,12 @@ export default function LaUltimaJugada(){
    const remaining=Math.max(0,900-elapsed);
    setTime(remaining);
    engine.current?.setMatchTime(remaining);
+   if(elapsed>=75&&!crisisTriggered.current&&engine.current){
+    crisisTriggered.current=true;
+    engine.current.triggerCrisis();
+    notify("INTERFERENCIA · Alguien controla las luces. Apareció un mensaje en las paredes.");
+    if("vibrate" in navigator)navigator.vibrate([95,65,150]);
+   }
    for(const item of stories){
     if(elapsed>=item.time&&!announcements.current.has(item.time)){
      announcements.current.add(item.time);notify(item.text);
@@ -247,7 +254,7 @@ export default function LaUltimaJugada(){
   isMutedRef.current=false;setIsMuted(false);setWorldReady(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
   solvedRef.current={...EMPTY};setModal(null);setFocus("");setHintLevel(-1);setHintVisible(false);setTime(900);
   setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");
-  announcements.current.clear();setCinematic("");setFinaleCue("apertura");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
+  announcements.current.clear();crisisTriggered.current=false;setCinematic("");setFinaleCue("apertura");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
   notify("MINUTO 87 · Argentina 1 - 1 Inglaterra. Encontrá la grabación auténtica.");
  };
  const verify=()=>{
