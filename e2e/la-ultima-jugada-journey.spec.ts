@@ -61,10 +61,12 @@ test("full Argentina–England investigation physically reaches every room and t
  await walkUntil(page,"d","x",3,"gte");
  await walkUntil(page,"w","z",-1.4,"lte");
  await reachAction(page,/Reconstruí la jugada/i,true);
+ await page.screenshot({path:"test-results/la-ultima-jugada-replay-terminal.png",fullPage:true});
  await page.getByRole("button",{name:/CÁMARA 2/}).click();
  await solve(page);
  await expect(page.locator(".lj-objective p")).toContainText("pizarra");
  await reachAction(page,/informe/i,true);
+ await page.screenshot({path:"test-results/la-ultima-jugada-magnetic-tactics.png",fullPage:true});
  for(const [player,slot] of [[7,"banda derecha"],[10,"medialuna"],[9,"primer palo"]] as const){
    await page.getByRole("button",{name:"Jugador "+player,exact:true}).click();
    await page.getByRole("button",{name:"Mover jugador "+player+" a "+slot}).click();
@@ -104,5 +106,14 @@ test("full Argentina–England investigation physically reaches every room and t
  await page.screenshot({path:"test-results/la-ultima-jugada-gol-3d.png",fullPage:true});
  await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible({timeout:19000});
  await page.screenshot({path:"test-results/la-ultima-jugada-final-victoria.png",fullPage:true});
+ const desktopTitle=await page.locator(".lj-root-victory .lj-ending h1").boundingBox();
+ expect(desktopTitle?.y,"The winner's headline must not be clipped on desktop").toBeGreaterThanOrEqual(0);
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible();
+ const mobileTitle=await page.locator(".lj-root-victory .lj-ending h1").boundingBox();
+ expect(mobileTitle?.y,"The winner's headline must not be clipped on mobile").toBeGreaterThanOrEqual(0);
+ const hasHorizontalOverflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
+ expect(hasHorizontalOverflow).toBe(false);
+ await page.screenshot({path:"test-results/la-ultima-jugada-final-victoria-mobile.png",fullPage:true});
  expect(errors).toEqual([]);
 });
