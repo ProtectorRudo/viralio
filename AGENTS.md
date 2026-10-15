@@ -18,3 +18,7 @@ Al trabajar en salas 3D de Viralio consulta primero `docs/VIRALIO_3D_OPERATIONAL
 
 ## Paquete premium de personajes y prioridades
 Antes de decidir compras, vestuario, modelos de primer plano o NPCs, sigue [`docs/VIRALIO_3D_PREMIUM_ROADMAP.md`](docs/VIRALIO_3D_PREMIUM_ROADMAP.md). Usa el catálogo CC0 y `src/lib/viralio-characters.ts` para instanciar humanoides animados con clips, sin confundir bases MakeHuman con humanos fotorrealistas terminados. No ofrecer como descargados los que solo estén en catálogo; comprobar `public/viralio-3d/index.json`. Mantener gasto en US$0 por defecto; solicitar aprobación previa de cada compra.
+
+
+## Packs de arquitectura, terror y objetos escaneados (139 GLB / 20 PBR)
+El catálogo ejecutable actualizado está en `public/viralio-3d/index.json` y el índice PBR en `public/viralio-3d/materials/index.json`. Al crear una sala, consulta `data/viralio-3d/experience-packs.json` para cinco combinaciones temáticas de objetos, los assets 3D nuevos en `data/viralio-3d/catalog.json` y la auditoría `docs/VIRALIO_3D_ARCH_HORROR_EXPANSION.md`. Reutiliza escenas con diseño propio, iluminación y aperturas reales. No confundir maniquí, esqueleto, paciente estático ni escultura de monstruo alado con una criatura animada o un NPC jugable. No cargar los 139 modelos juntos; solo lo necesario por sala.
