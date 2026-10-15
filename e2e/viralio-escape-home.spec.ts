@@ -18,7 +18,7 @@ async function expectNoFreeTrialOrTrailer(page: import("@playwright/test").Page)
 test("Viralio Escape: four rooms remain accessible as product pages without trailers or free promotion", async ({page}) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: /La realidad termina/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Explorar experiencias/ }).first()).toHaveAttribute("href", "#experiencias");
+  await expect(page.locator(".ve-hero-content").getByRole("link", { name: /Explorar experiencias/ })).toHaveAttribute("href", "#experiencias");
   await expectNoFreeTrialOrTrailer(page);
   await page.screenshot({path:"visual-qa-evidence/viralio-escape-desktop.png",fullPage:true});
   for (const room of rooms) {
