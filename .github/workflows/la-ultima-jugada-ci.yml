@@ -47,6 +47,9 @@ jobs:
             test-results/la-ultima-jugada-gol-3d.png
             test-results/la-ultima-jugada-corredor-3d.png
             test-results/la-ultima-jugada-tunel-3d.png
+            test-results/la-ultima-jugada-replay-terminal.png
+            test-results/la-ultima-jugada-magnetic-tactics.png
+            test-results/la-ultima-jugada-final-victoria-mobile.png
             test-results/**/trace.zip
           if-no-files-found: warn
           retention-days: 7
