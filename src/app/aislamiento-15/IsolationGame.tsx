@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { IsolationWorld, type Chamber, type Focus } from "./IsolationWorld";
 import { IsolationSound } from "./IsolationSound";
 import { earlyHint } from "./IsolationHints";
+import { LocalPlaytest, type QualityOutcome } from "./LocalPlaytest";
 import "./isolation.css";
 
 type Mode = "intro" | "playing" | "failed" | "won";
@@ -64,7 +65,12 @@ export default function IsolationGame() {
   const pinchRef = useRef<{ distance: number; zoom: number } | null>(null);
   const fpsFrames = useRef<number[]>([]);
   const hintStagesRef = useRef(new Map<string, number>());
+  const testMetricsRef = useRef(new LocalPlaytest());
+  const hintCountRef = useRef(0);
   const [mode, setMode] = useState<Mode>("intro");
+  const [compatibilityError, setCompatibilityError] = useState("");
+  const [playtestReport, setPlaytestReport] = useState("");
+  const [copiedReport, setCopiedReport] = useState(false);
   const [chamber, setChamber] = useState<Chamber>(0);
   const [remaining, setRemaining] = useState(SECONDS);
   const [focus, setFocus] = useState<Focus | null>(null);
@@ -88,6 +94,25 @@ export default function IsolationGame() {
   const [soundOn, setSoundOn] = useState(true);
   const [joy, setJoy] = useState({ x: 0, y: 0 });
 
+  function buildTestReport(outcome: QualityOutcome, elapsedSeconds: number) {
+    const w=worldRef.current;
+    if(!w)return "";
+    return testMetricsRef.current.report({
+      outcome, elapsed:Math.max(0,elapsedSeconds),hints:hintCountRef.current,
+      render:w.getPerformanceSnapshot(),
+      viewport:{width:window.innerWidth,height:window.innerHeight}
+    });
+  }
+  async function copyTestReport() {
+    if(!playtestReport)return;
+    try {
+      await navigator.clipboard.writeText(playtestReport);
+      setCopiedReport(true);
+    } catch {
+      setCopiedReport(false);
+      notify("NO SE PUDO COPIAR. EL NAVEGADOR REQUIERE PERMISO DE PORTAPAPELES.");
+    }
+  }
   const notify = useCallback((message: string, danger = false) => {
     setNotice(message);
     if (danger) {
@@ -124,6 +149,7 @@ export default function IsolationGame() {
     try {
       world = new IsolationWorld(canvas, {
         onChamber: (next) => {
+          testMetricsRef.current.enter(next, SECONDS-timeRef.current);
           setChamber(next);
           setChapterCard(next);
           setChapterKey(v => v+1);
@@ -134,6 +160,7 @@ export default function IsolationGame() {
           notify(next === 1 ? "ACCESO A AISLAMIENTO. NO ESTÁS SOLO." : "SECTOR FINAL. LA VOZ CONOCE TU NOMBRE.", true);
         },
         onCaught: () => {
+          testMetricsRef.current.caught();
           penaltyRef.current += 16;
           notify("TE ALCANZÓ. PERDISTE 16 SEGUNDOS. ESCAPÁ.", true);
           sound.scare();
@@ -145,7 +172,8 @@ export default function IsolationGame() {
         }
       });
     } catch {
-      window.requestAnimationFrame(() => notify("No se pudo iniciar WebGL2. Probá con otro navegador o dispositivo."));
+      const message="Tu dispositivo o navegador no pudo iniciar el entorno 3D WebGL. Probá con Chrome, Safari actualizado u otro equipo compatible.";
+      setCompatibilityError(message);
       return;
     }
     worldRef.current = world;
@@ -175,6 +203,7 @@ export default function IsolationGame() {
         timeRef.current = left;
         if (left <= 0) {
           modeRef.current = "failed";
+          setPlaytestReport(buildTestReport("sellado", SECONDS));
           setMode("failed");
           world.running = false;
           sound.scare();
@@ -216,7 +245,9 @@ export default function IsolationGame() {
         const samples = fpsFrames.current;
         const average = samples.reduce((total, value) => total + value, 0) / samples.length;
         const metrics = world.getPerformanceSnapshot();
-        setPerformanceStats({ fps: Math.round(1000 / average), ...metrics });
+        const fps=Math.round(1000/average);
+        testMetricsRef.current.fps(fps);
+        setPerformanceStats({ fps, ...metrics });
       }
       req = requestAnimationFrame(frame);
     };
@@ -241,6 +272,7 @@ export default function IsolationGame() {
       const remainingGrace = Math.max(0, 45_000 - backgroundGraceUsedRef.current);
       const graceMs = Math.min(remainingGrace, awayMs);
       backgroundGraceUsedRef.current += graceMs;
+      testMetricsRef.current.courtesy(graceMs);
       startAtRef.current += graceMs;
       fpsFrames.current = [];
       last = performance.now();
@@ -285,6 +317,12 @@ export default function IsolationGame() {
     const w = worldRef.current;
     if (!w) return;
     audioRef.current?.start();
+    testMetricsRef.current.reset();
+    hintCountRef.current=0;
+    setPlaytestReport("");
+    setCopiedReport(false);
+    hintStagesRef.current.clear();
+    setHints(0);
     setTriageCode(w.triageDigits.join(""));
     modeRef.current = "playing";
     startAtRef.current = Date.now();
@@ -326,7 +364,7 @@ export default function IsolationGame() {
         if (w.relays.length === 3) { notify("RED DE SEGURIDAD ESTABLE. VOLVÉ A LA TERMINAL."); break; }
         if (w.relays.includes(n)) { notify("ESTE RELÉ YA FUE ACCIONADO."); break; }
         if (n !== w.relayPattern[w.relays.length]) {
-          w.relays = []; penaltyRef.current += 5; w.setAlert(.75);
+          w.relays = []; penaltyRef.current += 5; testMetricsRef.current.penalize(5); w.setAlert(.75);
           w.resetRelays();
           notify("ERROR DE SINCRONIZACIÓN. REINICIO AUTOMÁTICO. -5 SEGUNDOS.", true); sound?.mistake();
         } else {
@@ -413,7 +451,9 @@ export default function IsolationGame() {
       case "escape":
         if (!hasVoiceRef.current) notify("EVACUACIÓN NO AUTORIZADA. VERIFICÁ LA VOZ.");
         else {
-          w.won = true; w.running = false; modeRef.current = "won"; setMode("won");
+          w.won = true; w.running = false; modeRef.current = "won";
+           setPlaytestReport(buildTestReport("evacuacion", SECONDS-timeRef.current));
+           setCopiedReport(false); setMode("won");
           sound?.finale();
           try { const prev = Number(localStorage.getItem("viralio-isolation-best") || "9999"); const duration = SECONDS - timeRef.current; if (duration < prev) localStorage.setItem("viralio-isolation-best", String(Math.ceil(duration))); } catch {}
         }
@@ -436,7 +476,7 @@ export default function IsolationGame() {
     if (code === w.triageDigits.join("")) {
       w.openDoor(0); setPanel(null); notify("CREDENCIAL VALIDADA. PUERTA 01 DESBLOQUEADA.", true); audioRef.current?.door();
     } else {
-      penaltyRef.current += 8; setCode(""); notify("CÓDIGO INCORRECTO. PENALIZACIÓN: 8 SEGUNDOS.", true); audioRef.current?.mistake();
+      penaltyRef.current += 8; testMetricsRef.current.penalize(8); setCode(""); notify("CÓDIGO INCORRECTO. PENALIZACIÓN: 8 SEGUNDOS.", true); audioRef.current?.mistake();
     }
     refresh();
   }
@@ -445,6 +485,7 @@ export default function IsolationGame() {
     setPanel(null);
     if (choice === "trust") {
       penaltyRef.current += 25;
+      testMetricsRef.current.penalize(25);
       notify("ERROR. LA VOZ NO PERTENECE A UN OPERADOR. -25 SEGUNDOS.", true);
       audioRef.current?.scare();
     } else {
@@ -516,7 +557,10 @@ export default function IsolationGame() {
     const key = w.room + ":" + hintText(w, w.room);
     const previous = hintStagesRef.current.get(key) ?? 0;
     const next = Math.min(3, previous + 1);
-    if (previous < 3) setHints(value => value + 1);
+    if (previous < 3) {
+      hintCountRef.current++;
+      setHints(value => value + 1);
+    }
     hintStagesRef.current.set(key, next);
     setHintStage(next);
     setHelpCopy(tieredHint(w, w.room, next));
@@ -613,7 +657,8 @@ export default function IsolationGame() {
           <p>Una voz asegura que puede ayudarte. Algo recorre los pasillos. <strong>Las dos cosas parecen conocerte.</strong></p>
         </div>
         <div className="iso-intro-meta"><span>◷ 15 MIN</span><span>◇ 3 SECTORES</span><span>▣ 3D REAL</span><span>♬ AURICULARES</span></div>
-        <button className="iso-start" onClick={start}><span>COMENZAR AISLAMIENTO</span><b>↗</b></button>
+        {compatibilityError && <p className="iso-compat-error" role="alert">{compatibilityError}</p>}
+         <button className="iso-start" onClick={start} disabled={!!compatibilityError}><span>{compatibilityError?"WEBGL NO DISPONIBLE":"COMENZAR AISLAMIENTO"}</span><b>↗</b></button>
         <p className="iso-devices">Exploración libre · Celular: control izquierdo para caminar y arrastrar para mirar · PC: WASD + mouse · Sonido y efectos de susto · Requiere WebGL2. Las interrupciones del celular comparten hasta 45 segundos de pausa de cortesía durante toda la partida.</p>
       </div>
       <div className="iso-intro-coordinate">UNIDAD MÉDICA 15 — ACCESO RESTRINGIDO / 00.15</div>
@@ -625,6 +670,7 @@ export default function IsolationGame() {
       <p>Las compuertas de seguridad sellaron el edificio. La última voz que escuchaste fue la tuya.</p>
       <div className="iso-end-stat"><span>SUPERVIVENCIA</span><strong>15:00</strong></div>
       <button onClick={() => window.location.reload()} className="iso-start">VOLVER A INTENTARLO <b>↗</b></button>
+       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>}
       <a href="https://viralio.net/">Volver a Viralio</a>
     </div>}
 
@@ -636,6 +682,7 @@ export default function IsolationGame() {
       <p className="iso-replay-hook">¿Podés escapar más rápido? Los errores, la ruta y la persecución cambian tu resultado.</p>
       <button onClick={() => { if (navigator.share) { void navigator.share({ title: "AISLAMIENTO 15 · VIRALIO", text: "Escapé de AISLAMIENTO 15 en " + format(elapsed) + ". ¿Podés superarme?", url: location.href }); } else { void navigator.clipboard?.writeText(location.href); notify("ENLACE COPIADO"); } }} className="iso-start">DESAFIAR A UN AMIGO <b>↗</b></button>
       <button className="iso-again" onClick={() => window.location.reload()}>VOLVER A JUGAR ↻</button>
+       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>
       <a href="https://viralio.net/">Explorar más salas Viralio</a>
     </div>}
 
