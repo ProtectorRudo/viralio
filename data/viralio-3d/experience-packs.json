@@ -1,8 +1,8 @@
 {
   "name": "Viralio Escape 3D scene starter packs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updatedAt": "2026-10-15",
-  "notes": "Creative selection guides, not finished playable scenes. Avoid loading every prop at once on mobile.",
+  "notes": "Creative selection guides for scene art and interactions, NOT ready-made playable room layouts. Football starter GLB contains 72 low-poly pieces; not counted as 72 premium standalone GLBs.",
   "packs": [
     {
       "id": "cine-maldito",
@@ -138,6 +138,111 @@
         "Pasadizo"
       ],
       "instructions": "Verificar archivos locales y FPS, materiales PBR, puertas funcionales, colisiones, audio y progresión. Los personajes están animados solo si tienen clips; esculturas, maniquíes y pacientes son estáticos."
+    },
+    {
+      "id": "futbol-vestuario",
+      "name": "Vestuario de fútbol — entrenamiento y partido",
+      "description": "Uniformes genéricos sin marcas, lockers, banco de suplentes, percheros y pistas escondidas en equipamiento.",
+      "walls": "concrete_tiles",
+      "floor": "rubber_tiles",
+      "hero": [
+        "vent-perforated-locker",
+        "four-compartment-locker",
+        "mobile-double-whiteboard",
+        "football-coat-stand"
+      ],
+      "support": [
+        "lock-3-office-locker-bank",
+        "football-conference-table",
+        "football-laptop-trolley",
+        "mobile-tactics-whiteboard"
+      ],
+      "character": "npc-jordan-locomotion",
+      "rooms": [
+        "Vestuario principal",
+        "Zona de utilería",
+        "Salida a la manga"
+      ],
+      "instructions": "No inventar casacas de clubes: la identidad de clubes requiere permisos. Animar apertura de lockers con pivotes y prueba de colisiones; objetos PBR a escala real."
+    },
+    {
+      "id": "futbol-manga",
+      "name": "Manga de acceso y corredor al estadio",
+      "description": "Pasillo técnico, rejas, cartelería, ruidos de hinchada y última puerta al campo.",
+      "walls": "concrete_tiles",
+      "floor": "rubber_tiles",
+      "hero": [
+        "workshop-industrial-steel-door",
+        "egress-panic-bar-exit-door",
+        "cctv-security-camera",
+        "access-control-keypad"
+      ],
+      "support": [
+        "football-acoustic-screen",
+        "bleachers-three-row",
+        "football-scoreboard",
+        "football-soccer-club-grounds-starter"
+      ],
+      "character": "npc-sam-locomotion",
+      "rooms": [
+        "Corredor interno",
+        "Manga de acceso",
+        "Salida al campo"
+      ],
+      "instructions": "La manga debe construirse con geometría modular, curvas y barreras, no es un archivo independiente hiperrealista. El estadio low-poly es solo la base de arquitectura lejana."
+    },
+    {
+      "id": "futbol-videoanalisis",
+      "name": "Sala de videoanálisis y charla técnica",
+      "description": "Pantallas de replay, pizarra táctica interactiva, sala de entrenadores y proyector.",
+      "walls": "rough_plaster_03",
+      "floor": "old_linoleum_flooring_01",
+      "hero": [
+        "mobile-double-whiteboard",
+        "video-analysis-27inch-monitor",
+        "sixty-five-inch-display-with-wall-bracket",
+        "project-box-projector"
+      ],
+      "support": [
+        "football-conference-table",
+        "retro-laptop",
+        "football-laptop-trolley",
+        "key-grid-mechanical-keyboard",
+        "pan-tilt-zoom-camera-on-pole"
+      ],
+      "character": "npc-harper-locomotion",
+      "rooms": [
+        "Sala de scouting",
+        "Pantalla de análisis",
+        "Charla previa al partido"
+      ],
+      "instructions": "Pantallas: integrar CanvasTexture/VideoTexture con clips propios o licenciados; pizarras: render de formaciones 4-3-3, 4-4-2 mediante capas y no texto quemado en GLB."
+    },
+    {
+      "id": "futbol-cancha-estadio",
+      "name": "Cancha y tribunas — final futbolístico",
+      "description": "Terreno 105 x 68, arcos, marcador y tribunas, apoyo en HDRI de estadio.",
+      "walls": "concrete",
+      "floor": "grass_ground",
+      "hero": [
+        "football-goal-full-size",
+        "football-scoreboard",
+        "football-soccer-club-grounds-starter",
+        "bleachers-three-row"
+      ],
+      "support": [
+        "football-goal-junior",
+        "cctv-security-camera",
+        "soccer-player-running-static",
+        "soccer-player-kicking-static"
+      ],
+      "character": "npc-jordan-locomotion",
+      "rooms": [
+        "Costado de campo",
+        "Banco de suplentes",
+        "Cancha y tribuna"
+      ],
+      "instructions": "En escena premium, campo real con textura césped, líneas pintadas, iluminación y tribuna escalonada; la escena 72 piezas no es hiperrealista por sí sola. Jugadores en pose son ESTÁTICOS; no usarlos como jugadores animados."
     }
   ]
 }
