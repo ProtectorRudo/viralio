@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+<title id="title">La Última Jugada</title><desc id="desc">Cartel de aventura futbolera: Argentina frente a Inglaterra, investigador en el túnel durante la final</desc>
+<defs>
+ <radialGradient id="sky" cx=".53" cy=".35" r=".74"><stop stop-color="#4c8fb7"/><stop offset=".33" stop-color="#183b54"/><stop offset=".77" stop-color="#081523"/><stop offset="1" stop-color="#03080f"/></radialGradient>
+ <linearGradient id="hall"><stop stop-color="#03070d"/><stop offset=".5" stop-color="#1e2934"/><stop offset="1" stop-color="#03070c"/></linearGradient>
+ <linearGradient id="field" x2=".15" y2="1"><stop stop-color="#3e7954"/><stop offset="1" stop-color="#123d33"/></linearGradient>
+ <linearGradient id="titleFill" x2="0" y2="1"><stop stop-color="#f3f7f9"/><stop offset=".62" stop-color="#add9ef"/><stop offset="1" stop-color="#4982ab"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="16"/></filter>
+ <pattern id="seats" width="17" height="14" patternUnits="userSpaceOnUse"><rect width="17" height="14" fill="#142c43"/><circle cx="5" cy="4" r="2.5" fill="#97b9cb"/><circle cx="13" cy="11" r="2" fill="#c8e2f1"/></pattern>
+</defs>
+<rect width="1200" height="1600" fill="url(#sky)"/>
+<g opacity=".54" stroke="#a2cce1" fill="none"><path d="M80 180l130-70 84 46m-171 52 81-50m785 8 93 48m-63-130 43 107"/><path d="M103 440l120-75 71 37m734-54-64-38-92 55"/></g>
+<ellipse cx="620" cy="850" rx="580" ry="290" fill="#b5e5f8" opacity=".17" filter="url(#glow)"/>
+<path d="M0 720Q600 410 1200 720v440H0z" fill="#152d3f"/><path d="M0 750Q600 480 1200 750v260H0z" fill="url(#seats)" stroke="#577e92" stroke-width="7"/>
+<path d="M0 860Q600 680 1200 860" stroke="#9ac0d4" stroke-width="9" fill="none" opacity=".65"/>
+<path d="M90 1050Q600 870 1110 1050L1230 1500H-30z" fill="url(#field)"/>
+<path d="M140 1100Q600 990 1060 1100m-460-72v330m-380-160h760" stroke="#d4f0dc" stroke-width="7" opacity=".6" fill="none"/>
+<g opacity=".75"><rect x="80" y="660" width="330" height="16" fill="#ecf7ff" filter="url(#glow)"/><rect x="760" y="660" width="340" height="16" fill="#ecf7ff" filter="url(#glow)"/><rect x="60" y="660" width="360" height="8" fill="#f6fbff"/><rect x="750" y="660" width="380" height="8" fill="#f6fbff"/></g>
+<path d="M0 0h170l270 780-165 900H0zM1200 0h-170L760 780l165 900h275z" fill="url(#hall)"/>
+<path d="M0 1430l410-350h380l410 350v170H0z" fill="#12242e" opacity=".85"/>
+<g transform="translate(385 845)" fill="#06121d"><ellipse cx="115" cy="485" rx="114" ry="36"/><path d="M48 240l-43 240 85 30 42-270 28 270 84-20-49-250z"/><path d="M45 86Q119 55 191 91l32 180-184 3z"/><circle cx="117" cy="30" r="63"/><path d="M56 94L-15 205l68 28 63-107z"/></g>
+<path d="M485 1160l125-53 105 90-127 70z" fill="#264758" stroke="#bcd5d9" stroke-width="9"/><path d="M510 1161l100-25 66 57-95 34z" fill="#75bbd8"/><path d="M550 1184l44-21 39 16-35 29z" fill="#18445c"/>
+<g text-anchor="middle"><text x="600" y="235" fill="#eff6fb" font-size="105" font-family="Arial Black,Arial,sans-serif" font-weight="900" letter-spacing="-4">LA ÚLTIMA</text>
+<text x="600" y="377" fill="url(#titleFill)" font-size="177" font-family="Arial Black,Arial,sans-serif" font-weight="900" letter-spacing="-9">JUGADA</text>
+<text x="600" y="449" fill="#f1d79d" font-size="26" font-family="Arial,sans-serif" font-weight="bold" letter-spacing="6">LLEVÁ LA INFORMACIÓN. CAMBIÁ LA FINAL.</text>
+<text x="600" y="510" fill="#ddeef6" font-size="34" font-family="Arial,sans-serif" font-weight="bold" letter-spacing="3">ARGENTINA  VS  INGLATERRA</text>
+<rect x="305" y="525" width="270" height="8" fill="#8fd4f7"/><rect x="625" y="525" width="270" height="8" fill="#d85858"/>
+<rect x="160" y="1440" width="880" height="95" fill="#061522" fill-opacity=".85" stroke="#64819a" stroke-width="3"/>
+<text x="600" y="1499" fill="#e4ebf0" font-size="26" font-family="Arial,sans-serif" font-weight="bold" letter-spacing="3">15 MINUTOS   ·   3 ESCENARIOS   ·   INVESTIGACIÓN</text>
+</g></svg>
