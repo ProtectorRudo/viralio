@@ -58,6 +58,7 @@ export default function IsolationGame() {
   const hasVoiceRef = useRef(false);
   const spokenAtRef = useRef(-1);
   const backgroundAtRef = useRef<number | null>(null);
+  const backgroundGraceUsedRef = useRef(0);
   const soundEnabledRef = useRef(true);
   const lookRef = useRef(new Map<number, { x: number; y: number; moved: number }>());
   const pinchRef = useRef<{ distance: number; zoom: number } | null>(null);
@@ -235,15 +236,19 @@ export default function IsolationGame() {
       backgroundAtRef.current = null;
       if (hiddenAt === null || modeRef.current !== "playing") return;
       const awayMs = Math.max(0, Date.now() - hiddenAt);
-      const graceMs = Math.min(45_000, awayMs);
+      // Exactly 45 seconds of courtesy across the ENTIRE run, never per
+      // interruption. Repeated app switching must not invalidate rankings.
+      const remainingGrace = Math.max(0, 45_000 - backgroundGraceUsedRef.current);
+      const graceMs = Math.min(remainingGrace, awayMs);
+      backgroundGraceUsedRef.current += graceMs;
       startAtRef.current += graceMs;
       fpsFrames.current = [];
       last = performance.now();
       world.running = true;
       sound.mute(!soundEnabledRef.current);
-      notify(awayMs <= 45_000
-        ? "PARTIDA REANUDADA. EL RELOJ ESTUVO EN PAUSA POR LA INTERRUPCIÓN."
-        : "PARTIDA REANUDADA. LA PAUSA DE CORTESÍA TENÍA UN MÁXIMO DE 45 SEGUNDOS.");
+      notify(awayMs <= remainingGrace
+        ? "PARTIDA REANUDADA. RESTAN " + Math.ceil((45_000 - backgroundGraceUsedRef.current) / 1000) + " SEGUNDOS DE PAUSA DE CORTESÍA."
+        : "PARTIDA REANUDADA. LOS 45 SEGUNDOS DE PAUSA TOTAL SE AGOTARON.");
     };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLButtonElement) return;
@@ -285,6 +290,7 @@ export default function IsolationGame() {
     startAtRef.current = Date.now();
     penaltyRef.current = 0;
     backgroundAtRef.current = null;
+    backgroundGraceUsedRef.current = 0;
     w.running = true;
     setMode("playing");
     setNotice("BUSCÁ EL FUSIBLE. RESTAURÁ LA SEGURIDAD. ESCAPÁ.");
@@ -608,7 +614,7 @@ export default function IsolationGame() {
         </div>
         <div className="iso-intro-meta"><span>◷ 15 MIN</span><span>◇ 3 SECTORES</span><span>▣ 3D REAL</span><span>♬ AURICULARES</span></div>
         <button className="iso-start" onClick={start}><span>COMENZAR AISLAMIENTO</span><b>↗</b></button>
-        <p className="iso-devices">Exploración libre · Celular: control izquierdo para caminar y arrastrar para mirar · PC: WASD + mouse · Sonido y efectos de susto · Requiere WebGL2. Las interrupciones del celular cuentan con 45 segundos de pausa de cortesía.</p>
+        <p className="iso-devices">Exploración libre · Celular: control izquierdo para caminar y arrastrar para mirar · PC: WASD + mouse · Sonido y efectos de susto · Requiere WebGL2. Las interrupciones del celular comparten hasta 45 segundos de pausa de cortesía durante toda la partida.</p>
       </div>
       <div className="iso-intro-coordinate">UNIDAD MÉDICA 15 — ACCESO RESTRINGIDO / 00.15</div>
     </div>}
