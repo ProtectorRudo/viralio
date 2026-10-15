@@ -18,6 +18,12 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  }
  await expect(page.getByText("OBJETIVO ACTUAL")).toBeVisible();
  await expect(page.getByText("TIEMPO RESTANTE")).toBeVisible();
+ const sceneCanvas=page.locator(".lj-canvas-frame canvas");
+ await expect.poll(async()=>Number(await sceneCanvas.getAttribute("data-camera-fov"))).toBeGreaterThan(0);
+ const initialFov=Number(await sceneCanvas.getAttribute("data-camera-fov"));
+ await page.mouse.move(600,440);
+ await page.mouse.wheel(0,-190);
+ await expect.poll(async()=>Number(await sceneCanvas.getAttribute("data-camera-fov"))).toBeLessThan(initialFov);
  await page.waitForTimeout(1400);
  expect(await page.locator("canvas").evaluate((c)=>!!(c as HTMLCanvasElement).getContext("webgl2"))).toBe(true);
  await page.getByRole("button",{name:"Mostrar u ocultar pista"}).click();
