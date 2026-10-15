@@ -97,6 +97,7 @@ export default function LaUltimaJugada(){
  const [modal,setModal]=useState<Puzzle|null>(null);
  const [focus,setFocus]=useState("");
  const [alert,setAlert]=useState("");
+ const [cinematic,setCinematic]=useState<""|"var"|"blackout"|"betrayal">("");
  const [hintLevel,setHintLevel]=useState(-1);
  const [hintVisible,setHintVisible]=useState(false);
  const [isMuted,setIsMuted]=useState(false);
@@ -111,6 +112,7 @@ export default function LaUltimaJugada(){
  const startStamp=useRef(0);
  const announcements=useRef(new Set<number>());
  const alertTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const cinematicTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const modeRef=useRef<Mode>("intro");
  const chapterRef=useRef<Chapter>(0);
  const isMutedRef=useRef(false);
@@ -120,6 +122,11 @@ export default function LaUltimaJugada(){
   if(!isMutedRef.current)audio.current?.pulse();
  },[]);
  const advance=useCallback((id:Puzzle|"informe")=>{
+  if(id==="monitores"||id==="relay"||id==="cctv"){
+   if(cinematicTimeout.current)clearTimeout(cinematicTimeout.current);
+   setCinematic(id==="monitores"?"var":id==="relay"?"blackout":"betrayal");
+   cinematicTimeout.current=setTimeout(()=>setCinematic(""),3800);
+  }
   const n={...solvedRef.current,[id]:true};solvedRef.current=n;setSolved(n);setModal(null);setHintLevel(-1);
   if(!isMutedRef.current)audio.current?.pulse(820);
  },[]);
@@ -181,14 +188,14 @@ export default function LaUltimaJugada(){
   },200);
   return()=>clearInterval(ticker);
  },[mode,notify]);
- useEffect(()=>()=>{audio.current?.stop();if(alertTimeout.current)clearTimeout(alertTimeout.current);},[]);
+ useEffect(()=>()=>{audio.current?.stop();if(alertTimeout.current)clearTimeout(alertTimeout.current);if(cinematicTimeout.current)clearTimeout(cinematicTimeout.current);},[]);
  const start=()=>{
   if(!document.createElement("canvas").getContext("webgl2")){setMode("unsupported");return;}
   audio.current?.stop();audio.current=new StadiumAudio();audio.current.start();
   isMutedRef.current=false;setIsMuted(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
   solvedRef.current={...EMPTY};setModal(null);setFocus("");setHintLevel(-1);setHintVisible(false);setTime(900);
   setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");
-  announcements.current.clear();startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
+  announcements.current.clear();setCinematic("");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
   notify("MINUTO 87 · Argentina 1 - 1 Inglaterra. Encontrá la grabación auténtica.");
  };
  const verify=()=>{
@@ -236,6 +243,7 @@ export default function LaUltimaJugada(){
   {mode==="playing"&&<>
    <div className="lj-canvas-frame"><canvas ref={canvas} aria-label="Escenario tridimensional explorable: usá WASD para caminar, arrastrá para mirar y tocá los objetos para examinarlos."/></div>
    <div className="lj-vignette" aria-hidden="true"/>
+   {cinematic&&<div className={"lj-cinematic lj-cinematic-"+cinematic} aria-live="assertive"><span>{cinematic==="var"?"¡GOL DE INGLATERRA!":cinematic==="blackout"?"COMUNICACIÓN INTERRUMPIDA":"TE HAN ENGAÑADO"}</span><strong>{cinematic==="var"?"REVISIÓN VAR · GOL ANULADO":cinematic==="blackout"?"SISTEMA BLOQUEADO · RESTAURANDO ENLACE":"EL OPERADOR DE RADIO ERA EL SABOTEADOR"}</strong></div>}
    <header className="lj-hud">
     <div className="lj-brand">V / <strong>LA ÚLTIMA JUGADA</strong><small>{titles[chapter]}</small></div>
     <div className={"lj-clock "+(time<120?"lj-clock-urgent":"")}><small>TIEMPO RESTANTE</small><strong>{format(time)}</strong></div>
