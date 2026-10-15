@@ -263,3 +263,25 @@
   }
   .isolation .iso-broadcast strong{font-size:10px;line-height:1.3}
 }
+
+/* Premium mobile accessibility: every clinical warning can be read up close
+   without relying on low-resolution, distant WebGL text. */
+.iso-sign-transcription{display:grid;gap:12px;margin:21px 0 12px;background:linear-gradient(140deg,#172a2c,#0a1416);border:1px solid rgba(182,219,197,.35);padding:22px 18px;box-shadow:inset 0 0 26px rgba(4,14,16,.6)}
+.iso-sign-transcription p{margin:0;font:500 clamp(15px,3.5vw,21px)/1.45 "Arial",sans-serif;letter-spacing:.035em;color:#e2f0e7;overflow-wrap:anywhere}
+.iso-sign-transcription .iso-sign-title{color:#e5ae99;font-size:clamp(18px,4.4vw,26px);font-weight:800;line-height:1.15;padding-bottom:12px;border-bottom:1px solid rgba(208,153,138,.4)}
+.iso-diagnostic-button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:14px 13px;background:transparent;color:#b6d8c9;border:1px solid #537268;letter-spacing:.08em;font-size:11px;font-weight:700}
+.iso-diagnostic-button:hover,.iso-diagnostic-button:focus-visible{background:rgba(89,132,117,.21);color:#fff}
+.iso-device-performance{position:absolute;z-index:17;left:clamp(16px,3vw,48px);top:280px;background:rgba(3,13,14,.92);border:1px solid rgba(137,210,187,.53);border-left:3px solid #66b9aa;box-shadow:0 8px 27px #0008;backdrop-filter:blur(5px);padding:12px 16px 13px;min-width:245px;max-width:min(350px,87vw);color:#dcf2e4;pointer-events:auto}
+.iso-device-performance>span{font:700 10px monospace;letter-spacing:.06em;color:#9bd0bd}
+.iso-device-performance>strong{display:block;font:600 30px/1.3 monospace;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.iso-device-performance strong small{font:500 12px monospace;color:#b2c9c0}
+.iso-device-performance>div{font:11px/1.6 monospace;color:#becfc9}
+.iso-device-performance button{margin-top:9px;border:1px solid #527a6d;color:#daeae2;padding:5px 13px;background:#162825;font:11px monospace}
+@media(max-width:750px){
+  .iso-device-performance{top:calc(env(safe-area-inset-top) + 191px);left:12px;min-width:0;width:min(230px,60vw);padding:9px 10px}
+  .iso-device-performance>span{font-size:8px}
+  .iso-device-performance>strong{font-size:26px}
+  .iso-device-performance>div{font-size:9px}
+  .iso-sign-transcription{padding:15px 13px}
+  .iso-panel-scrim .iso-panel{max-height:86dvh}
+}
