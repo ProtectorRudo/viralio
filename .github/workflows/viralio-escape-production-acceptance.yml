@@ -11,47 +11,38 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
-      - name: Check real custom-domain HTML, free demo and four game pages
+      - name: Verify public pages without trailers and free trials
         run: |
           set -euo pipefail
           base='https://viralio.net'
           nonce="$(date +%s)"
           curl --location --fail --silent --show-error --compressed --max-time 40 \
             --header 'Cache-Control: no-cache' "$base/?verification=$nonce" >/tmp/viralio-production.html
-          curl --location --fail --silent --show-error --compressed --max-time 40 \
-            --header 'Cache-Control: no-cache' "$base/probar?verification=$nonce" >/tmp/viralio-trial.html
-          curl --location --fail --silent --show-error --compressed --max-time 40 \
-            "$base/salas/aislamiento-15?verification=$nonce" >/tmp/viralio-hospital.html
+          for slug in caso-m la-ultima-funcion la-ultima-campanada aislamiento-15;do
+            curl --location --fail --silent --show-error --compressed --max-time 40 \
+              "$base/salas/$slug?verification=$nonce" >"/tmp/viralio-$slug.html"
+          done
           curl --location --fail --silent --show-error --compressed --max-time 40 \
             "$base/comercios?verification=$nonce" >/tmp/viralio-merchants.html
+          status="$(curl --silent --show-error --output /dev/null --max-time 40 \
+            --write-out '%{http_code}' "$base/probar?verification=$nonce")"
+          test "$status" = 308 || { echo "Retired free trial route did not redirect: $status"; exit 1; }
           python3 - <<'PY'
           from pathlib import Path
-          checks={
-            '/tmp/viralio-production.html':['La realidad termina','Probar gratis','AISLAMIENTO 15','No te mostramos'],
-            '/tmp/viralio-trial.html':['Antes de creerlo','Empezar la prueba gratis','completa sin pagar'],
-            '/tmp/viralio-hospital.html':['AISLAMIENTO 15','trailer-real.mp4','Jugar gratis'],
-            '/tmp/viralio-merchants.html':['Dale a tus clientes una razón para volver','Moka'],
+          checks = {
+            '/tmp/viralio-production.html': ['La realidad termina', 'Explorar experiencias', 'AISLAMIENTO 15'],
+            '/tmp/viralio-caso-m.html': ['CASO M', 'Acceso individual próximamente'],
+            '/tmp/viralio-la-ultima-funcion.html': ['LA ÚLTIMA FUNCIÓN', 'Acceso individual próximamente'],
+            '/tmp/viralio-la-ultima-campanada.html': ['LA ÚLTIMA CAMPANADA', 'Acceso individual próximamente'],
+            '/tmp/viralio-aislamiento-15.html': ['AISLAMIENTO 15', 'Acceso individual próximamente'],
+            '/tmp/viralio-merchants.html': ['Dale a tus clientes una razón para volver', 'Moka']
           }
-          for path,expected in checks.items():
-            html=Path(path).read_text()
-            missing=[phrase for phrase in expected if phrase not in html]
-            print(path, len(html),'bytes', 'OK' if not missing else 'MISSING: '+str(missing))
-            if missing: raise SystemExit('Public domain is not serving the intended release: '+path)
-          print('PASS: viralio.net serves the escape homepage, free trial, real teaser and preserved merchant site')
+          forbidden = ['Probar gratis', 'Prueba gratuita', 'Jugar gratis', 'trailer-real.mp4', 'MATERIAL CAPTURADO EN EL JUEGO REAL']
+          for path, expected in checks.items():
+            html = Path(path).read_text()
+            missing = [phrase for phrase in expected if phrase not in html]
+            unwanted = [phrase for phrase in forbidden if phrase.lower() in html.lower()]
+            print(path,len(html),'bytes', 'OK' if not (missing or unwanted) else f'MISSING={missing}, FORBIDDEN={unwanted}')
+            if missing or unwanted: raise SystemExit('Public page did not match release requirements: '+path)
+          print('PASS: four commercial room pages and preserved QR business homepage, without trailer/free-trial UI')
           PY
-      - name: Verify authentic H.264 video is publicly downloadable
-        run: |
-          set -euo pipefail
-          url='https://protectorrudo.github.io/aislamiento-15/media/trailer-real.mp4'
-          for i in 1 2 3 4 5;do
-            http=$(curl -L -s -o /tmp/viralio-trailer-status -w '%{http_code}' \
-              --max-time 40 --range 0-2047 "$url" || true)
-            echo "Recorded gameplay teaser HTTP=$http (attempt $i)"
-            if [ "$http" = 200 ] || [ "$http" = 206 ];then
-              file /tmp/viralio-trailer-status
-              echo 'PASS: real game film served from studio GitHub Pages'
-              exit 0
-            fi
-            sleep 12
-          done
-          exit 1
