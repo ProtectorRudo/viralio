@@ -394,14 +394,14 @@ export class IsolationWorld {
     // Its previous spot (z + 2.22) was behind the raised terminal from the player approach.
     const fuse = new THREE.Group();
     fuse.name = "Cartucho recuperable F-08";
-    fuse.position.set(EMERGENCY_LAYOUT.fuse.x, 0, z + EMERGENCY_LAYOUT.fuse.z);
+    fuse.position.set(EMERGENCY_LAYOUT.fuse.x, 1.20, z + EMERGENCY_LAYOUT.fuse.z);
     this.scene.add(fuse);
-    this.block("Soporte de cartucho F-08", 0, 1.105, 0, .32, .035, .40, mats.dark, fuse);
-    this.block("Cuerpo cerámico del fusible", 0, 1.20, 0, .16, .13, .30, mats.amber, fuse);
+    this.block("Soporte de cartucho F-08", 0, -.095, 0, .32, .035, .40, mats.dark, fuse);
+    this.block("Cuerpo cerámico del fusible", 0, 0, 0, .16, .13, .30, mats.amber, fuse);
     for (const x of [-.115, .115]) {
-      this.block("Terminal metálica del fusible", x, 1.20, 0, .065, .13, .16, mats.steel, fuse);
+      this.block("Terminal metálica del fusible", x, 0, 0, .065, .13, .16, mats.steel, fuse);
     }
-    this.block("Marcador F-08", 0, 1.275, 0, .14, .018, .19, mats.ceramic, fuse);
+    this.block("Marcador F-08", 0, .075, 0, .14, .018, .19, mats.ceramic, fuse);
     // Group raycasting covers all visible parts; markTaken hides the whole cartridge.
     this.target("fuse", "Retirar fusible F-08 del mostrador", fuse, 0, 2.75);
     const fuseBox = this.block("Panel de fusibles", -5.16, 1.42, z - 1.5, .23, 1.0, .86, mats.dark);
