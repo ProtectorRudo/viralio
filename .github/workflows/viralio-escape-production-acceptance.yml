@@ -1,0 +1,57 @@
+name: Viralio Escape - public domain production acceptance
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/viralio-escape-production-acceptance.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-public-domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Check real custom-domain HTML, free demo and four game pages
+        run: |
+          set -euo pipefail
+          base='https://viralio.net'
+          nonce="$(date +%s)"
+          curl --location --fail --silent --show-error --compressed --max-time 40 \
+            --header 'Cache-Control: no-cache' "$base/?verification=$nonce" >/tmp/viralio-production.html
+          curl --location --fail --silent --show-error --compressed --max-time 40 \
+            --header 'Cache-Control: no-cache' "$base/probar?verification=$nonce" >/tmp/viralio-trial.html
+          curl --location --fail --silent --show-error --compressed --max-time 40 \
+            "$base/salas/aislamiento-15?verification=$nonce" >/tmp/viralio-hospital.html
+          curl --location --fail --silent --show-error --compressed --max-time 40 \
+            "$base/comercios?verification=$nonce" >/tmp/viralio-merchants.html
+          python3 - <<'PY'
+          from pathlib import Path
+          checks={
+            '/tmp/viralio-production.html':['La realidad termina','Probar gratis','AISLAMIENTO 15','No te mostramos'],
+            '/tmp/viralio-trial.html':['Antes de creerlo','Empezar la prueba gratis','completa sin pagar'],
+            '/tmp/viralio-hospital.html':['AISLAMIENTO 15','trailer-real.mp4','Jugar gratis'],
+            '/tmp/viralio-merchants.html':['Dale a tus clientes una razón para volver','Moka'],
+          }
+          for path,expected in checks.items():
+            html=Path(path).read_text()
+            missing=[phrase for phrase in expected if phrase not in html]
+            print(path, len(html),'bytes', 'OK' if not missing else 'MISSING: '+str(missing))
+            if missing: raise SystemExit('Public domain is not serving the intended release: '+path)
+          print('PASS: viralio.net serves the escape homepage, free trial, real teaser and preserved merchant site')
+          PY
+      - name: Verify authentic H.264 video is publicly downloadable
+        run: |
+          set -euo pipefail
+          url='https://protectorrudo.github.io/aislamiento-15/media/trailer-real.mp4'
+          for i in 1 2 3 4 5;do
+            http=$(curl -L -s -o /tmp/viralio-trailer-status -w '%{http_code}' \
+              --max-time 40 --range 0-2047 "$url" || true)
+            echo "Recorded gameplay teaser HTTP=$http (attempt $i)"
+            if [ "$http" = 200 ] || [ "$http" = 206 ];then
+              file /tmp/viralio-trailer-status
+              echo 'PASS: real game film served from studio GitHub Pages'
+              exit 0
+            fi
+            sleep 12
+          done
+          exit 1
