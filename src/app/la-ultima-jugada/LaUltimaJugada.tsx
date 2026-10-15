@@ -181,11 +181,11 @@ export default function LaUltimaJugada(){
   const s=solvedRef.current;
   if(id==="salida1"){
    if(!canEnterCorridor(s)){notify("ACCESO DENEGADO · Necesitás recuperar el informe auténtico.");return;}
-   chapterRef.current=1;setChapter(1);setModal(null);setHintLevel(-1);notify("Sector 02 · Una voz desconocida interceptó las comunicaciones.");return;
+   chapterRef.current=1;setChapter(1);setModal(null);setFocus("");setHintLevel(-1);notify("Sector 02 · Una voz desconocida interceptó las comunicaciones.");return;
   }
   if(id==="salida2"){
    if(!canEnterTunnel(s)){notify("ACCESO DENEGADO · Restablecé el enlace e identificá al intruso.");return;}
-   chapterRef.current=2;setChapter(2);setModal(null);setHintLevel(-1);notify("Sector 03 · Se escucha la tribuna. Ya casi estás en la cancha.");return;
+   chapterRef.current=2;setChapter(2);setModal(null);setFocus("");setHintLevel(-1);notify("Sector 03 · Se escucha la tribuna. Ya casi estás en la cancha.");return;
   }
   if(id==="informe"){
    if(!s.monitores||!s.pizarra){notify("El expediente no se puede abrir: falta verificar las cámaras y la pizarra.");return;}
@@ -213,7 +213,7 @@ export default function LaUltimaJugada(){
  const sceneActive=mode==="playing"||mode==="finale"||mode==="victory";
  useEffect(()=>{
   if(!sceneActive||!canvas.current)return;
-  let disposed=false;setWorldReady(false);
+  let disposed=false;setWorldReady(false);setFocus("");
   (async()=>{
    try{
     const {FootballWorld}=await import("./FootballWorld");
