@@ -15,3 +15,6 @@ Consulta [`docs/VIRALIO_3D_LIBRARY.md`](docs/VIRALIO_3D_LIBRARY.md) para encontr
 
 ## Biblioteca 3D materializada — uso preferente
 Al trabajar en salas 3D de Viralio consulta primero `docs/VIRALIO_3D_OPERATIONAL_LIBRARY.md`, `data/viralio-3d/catalog.json` y `data/viralio-3d/materials.json`. Usa `src/lib/viralio-3d.ts` para cargar modelos CC0 de forma perezosa y `src/lib/viralio-rooms.ts` para superficies/escenarios PBR. Los archivos finales y sus índices están en `public/viralio-3d/` **solo después** de ejecutar el pipeline. Confirma la presencia real y QA de cada asset. Busca la licencia y el origen antes de incorporar nuevos modelos, y evita descargar todos los modelos cuando el jugador solo necesita unos pocos.
+
+## Paquete premium de personajes y prioridades
+Antes de decidir compras, vestuario, modelos de primer plano o NPCs, sigue [`docs/VIRALIO_3D_PREMIUM_ROADMAP.md`](docs/VIRALIO_3D_PREMIUM_ROADMAP.md). Usa el catálogo CC0 y `src/lib/viralio-characters.ts` para instanciar humanoides animados con clips, sin confundir bases MakeHuman con humanos fotorrealistas terminados. No ofrecer como descargados los que solo estén en catálogo; comprobar `public/viralio-3d/index.json`. Mantener gasto en US$0 por defecto; solicitar aprobación previa de cada compra.
