@@ -31,3 +31,18 @@ jobs:
         run: npm run typecheck
       - name: Build production app
         run: npm run build
+      - name: Install Chromium and graphical libraries
+        run: npx playwright install --with-deps chromium
+      - name: Exercise real WebGL2 on desktop and mobile viewports
+        run: npx playwright test e2e/la-ultima-jugada.spec.ts
+      - name: Attach review screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: la-ultima-jugada-visual-review
+          path: |
+            test-results/la-ultima-jugada-desktop.png
+            test-results/la-ultima-jugada-mobile.png
+            test-results/**/trace.zip
+          if-no-files-found: warn
+          retention-days: 7
