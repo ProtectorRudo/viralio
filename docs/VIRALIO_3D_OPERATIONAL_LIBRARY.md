@@ -2,8 +2,8 @@
 
 ## Qué existe realmente
 
-- **256 modelos GLB materializados y verificados**, disponibles en `public/viralio-3d/index.json`; sus fichas fuente están distribuidas entre `data/viralio-3d/catalog.json` (222 modelos Innerscene) y los manifiestos Poly Haven (34 modelos). Incluye más de 30 modelos fotorrealistas de Poly Haven, cuatro humanoides con rig y siete clips cada uno, mobiliario, puertas, ventanas, equipamiento médico, figuras estáticas, accesorios de terror y una escultura escaneada de bronce. El carácter fotorrealista de cada escena completa aún depende de iluminación, materiales y QA en móvil.
-- **42 materiales PBR CC0** de Poly Haven en `data/viralio-3d/materials.json`: 3 mapas (base color, normal OpenGL y ARM) por material, 126 mapas publicados y validados.
+- **285 modelos GLB materializados y verificados**, disponibles en `public/viralio-3d/index.json`; sus fichas fuente están distribuidas entre `data/viralio-3d/catalog.json` (222 modelos Innerscene) y los manifiestos Poly Haven (34 modelos). Incluye más de 30 modelos fotorrealistas de Poly Haven, cuatro humanoides con rig y siete clips cada uno, mobiliario, puertas, ventanas, equipamiento médico, figuras estáticas, accesorios de terror y una escultura escaneada de bronce. El carácter fotorrealista de cada escena completa aún depende de iluminación, materiales y QA en móvil.
+- **44 materiales PBR CC0** de Poly Haven en `data/viralio-3d/materials.json`: 3 mapas (base color, normal OpenGL y ARM) por material, 132 mapas publicados y validados.
 - **Construcción reproducible** con `scripts/build-viralio-3d-library.mjs` y `scripts/build-viralio-materials.mjs`, desplegados por `.github/workflows/viralio-3d-library.yml`.
 - **Archivos GLB ya materializados** se sirven bajo `public/viralio-3d/models/*.glb`. El índice definitivo con archivos realmente disponibles es `public/viralio-3d/index.json`. El índice de materiales publicados será `public/viralio-3d/materials/index.json`.
 - **Helpers de juego** `src/lib/viralio-3d.ts` para búsqueda, carga perezosa, reutilización de mallas sin descargar dos veces el mismo modelo y clonación de rigs.
@@ -40,7 +40,7 @@ Los props y paredes son **base artística**: el desarrollo de cada sala debe inc
 - Crear variaciones de iluminación, desgaste, focos, voces, sonido ambiente, distancia de cámara y objetos narrativos.
 - No repetir los mismos 4 props hero en salas contiguas, ni reutilizar la misma disposición de muebles. Las figuras anatómicas, maniquíes, pacientes y la escultura de monstruo alado SON ESTÁTICOS, no NPCs.
 - Reservar fotorrealismo/alta resolución para objetos cercanos al jugador; muebles secundarios pueden usar 1K.
-- No cargar automáticamente los 256 modelos ni 26 materiales en cada visita. Cada sala selecciona solo los que efectivamente usa.
+- No cargar automáticamente los 285 modelos ni 26 materiales en cada visita. Cada sala selecciona solo los que efectivamente usa.
 
 ## Fuentes y licencia
 
@@ -98,4 +98,8 @@ Ver `docs/VIRALIO_3D_CINEMATIC_PREMIUM.md`, `data/viralio-3d/cinematic-core.json
 
 ## Ampliación Nature & Investigation — estado verificado
 
-Se incorporaron **29 GLB** adicionales (23 modelos Innerscene y 6 modelos vegetales Poly Haven) y **5 materiales PBR**. Los nuevos archivos pasaron la validación de descarga y los materiales tienen sus tres mapas. Total actual **256 GLB, 42 materiales PBR, 7 HDRI y 6 máscaras VFX**. El humanoide base tiene **un skin y ninguna animación**, los 14 animales nuevos son **estáticos**, y los modelos vegetales tienen alpha/filtrados que todavía requieren auditoría visual en el teléfono. Consultar `docs/VIRALIO_3D_NATURE_INVESTIGATION.md`, `data/viralio-3d/nature-investigation-core.json`, `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json`. Esta ampliación no alteró ningún juego.
+Se incorporaron **29 GLB** adicionales (23 modelos Innerscene y 6 modelos vegetales Poly Haven) y **5 materiales PBR**. Los nuevos archivos pasaron la validación de descarga y los materiales tienen sus tres mapas. Total tras ese lote **256 GLB, 42 materiales PBR, 7 HDRI y 6 máscaras VFX**. El humanoide base tiene **un skin y ninguna animación**, los 14 animales nuevos son **estáticos**, y los modelos vegetales tienen alpha/filtrados que todavía requieren auditoría visual en el teléfono. Consultar `docs/VIRALIO_3D_NATURE_INVESTIGATION.md`, `data/viralio-3d/nature-investigation-core.json`, `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json`. Esta ampliación no alteró ningún juego.
+
+## Investigación criminal premium — estado operativo
+
+Se importaron y verificaron **29 GLB adicionales** (policía y vehículos, prueba fotográfica, grabadoras, interrogatorio, archivo y equipo clínico), y **dos PBR**: `dirty_concrete`, `rusty_metal`. Los recursos ya presentes se referencian sin duplicación. Inventario actualizado **285 modelos GLB, 44 materiales PBR, 7 HDRI, 6 sprites VFX**. Selección por siete subpacks: `data/viralio-3d/crime-investigation-core.json`; guía de calidad/procedencia: `docs/VIRALIO_3D_CRIME_INVESTIGATION.md`. No se modificaron juegos. La validación técnica no sustituye la estética en Android.
