@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IsolationWorld, type Chamber, type Focus } from "./IsolationWorld";
 import { IsolationSound } from "./IsolationSound";
+import { earlyHint } from "./IsolationHints";
 import "./isolation.css";
 
 type Mode = "intro" | "playing" | "failed" | "won";
@@ -41,6 +42,10 @@ function hintText(w: IsolationWorld | null, chamber: Chamber) {
   return "Usá el intercomunicador y decidí si confiar o no en la voz.";
 }
 
+function tieredHint(w: IsolationWorld, room: Chamber, level: number) {
+  return level >= 3 ? hintText(w, room) : earlyHint(w, room, level === 2 ? 2 : 1);
+}
+const HINT_PROMPT = "Cada objetivo tiene tres niveles de ayuda. La primera pista orienta sin revelar la respuesta.";
 export default function IsolationGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const worldRef = useRef<IsolationWorld | null>(null);
@@ -57,6 +62,7 @@ export default function IsolationGame() {
   const lookRef = useRef(new Map<number, { x: number; y: number; moved: number }>());
   const pinchRef = useRef<{ distance: number; zoom: number } | null>(null);
   const fpsFrames = useRef<number[]>([]);
+  const hintStagesRef = useRef(new Map<string, number>());
   const [mode, setMode] = useState<Mode>("intro");
   const [chamber, setChamber] = useState<Chamber>(0);
   const [remaining, setRemaining] = useState(SECONDS);
@@ -77,6 +83,7 @@ export default function IsolationGame() {
   const [benchmark, setBenchmark] = useState(false);
   const [performanceStats, setPerformanceStats] = useState({ fps: 0, dpr: 1, drawCalls: 0, triangles: 0, webgl2: false, software: false, chamber: 1 });
   const [hints, setHints] = useState(0);
+  const [hintStage, setHintStage] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
   const [joy, setJoy] = useState({ x: 0, y: 0 });
 
@@ -237,7 +244,13 @@ export default function IsolationGame() {
       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
       world.keys.add(e.code);
       if (e.code === "KeyE" || e.code === "Space") { e.preventDefault(); interactRef.current(); }
-      if (e.code === "KeyH") { setHelpCopy(hintText(world, world.room)); setPanel("help"); }
+      if (e.code === "KeyH" && modeRef.current === "playing") {
+        const key = world.room + ":" + hintText(world, world.room);
+        const level = hintStagesRef.current.get(key) ?? 0;
+        setHintStage(level);
+        setHelpCopy(level ? tieredHint(world, world.room, level) : HINT_PROMPT);
+        setPanel("help");
+      }
     };
     const onKeyUp = (e: KeyboardEvent) => world.keys.delete(e.code);
     window.addEventListener("resize", onResize);
@@ -478,8 +491,25 @@ export default function IsolationGame() {
 
   function openHelp() {
     const w = worldRef.current;
-    setHelpCopy(hintText(w, w?.room ?? chamber));
+    const key = w ? w.room + ":" + hintText(w, w.room) : "";
+    const level = hintStagesRef.current.get(key) ?? 0;
+    setHintStage(level);
+    setHelpCopy(w && level ? tieredHint(w, w.room, level) : HINT_PROMPT);
     setPanel("help");
+  }
+
+  function requestHint() {
+    const w = worldRef.current;
+    if (!w || modeRef.current !== "playing") return;
+    const key = w.room + ":" + hintText(w, w.room);
+    const previous = hintStagesRef.current.get(key) ?? 0;
+    const next = Math.min(3, previous + 1);
+    if (previous < 3) setHints(value => value + 1);
+    hintStagesRef.current.set(key, next);
+    setHintStage(next);
+    setHelpCopy(tieredHint(w, w.room, next));
+    setPanel("help");
+    audioRef.current?.message();
   }
 
   function updateJoy(e: React.PointerEvent<HTMLDivElement>) {
@@ -548,7 +578,7 @@ export default function IsolationGame() {
           <span className="iso-joystick-ring" /><span className="iso-joystick-knob" style={{ transform: "translate(" + joy.x * 34 + "px," + joy.y * 34 + "px)" }} />
         </div>
         <div className="iso-bottom-center">
-          <button className="iso-hint-button" onClick={() => { setHints(n => n + 1); openHelp(); }}>◈ PISTA <span>{hints > 0 ? "CONSULTADA" : "DISPONIBLE"}</span></button>
+          <button className="iso-hint-button" onClick={requestHint}>◈ PISTA <span>{hints > 0 ? "CONSULTADA" : "DISPONIBLE"}</span></button>
           <small>MOVÉ: WASD / JOYSTICK · MIRÁ: ARRASTRÁ · INTERACTUÁ: E</small>
         </div>
         <button className={"iso-action " + (focus ? "iso-action--active" : "")} onClick={interact} disabled={!focus}><span>✋</span> INTERACTUAR</button>
@@ -634,7 +664,9 @@ export default function IsolationGame() {
       </>}
       {panel === "help" && <>
         <span className="iso-panel-sub">ASISTENCIA / {PHASES[chamber].name}</span><h2>REGISTRO DE PISTAS</h2>
+        <span className="iso-panel-sub">{hintStage ? "PISTA " + hintStage + " DE 3 PARA ESTE OBJETIVO" : "AYUDA GRADUAL · PRIMERO ORIENTACIÓN, DESPUÉS DETALLES"}</span>
         <p>{helpCopy}</p>
+        {hintStage < 3 && <button className="iso-diagnostic-button" onClick={requestHint}>◈ {hintStage ? "REVELAR UNA PISTA MÁS CLARA" : "SOLICITAR PRIMERA PISTA"} <span>↗</span></button>}
         <div className="iso-help-controls"><b>DESPLAZAMIENTO</b><span>PC: WASD / flechas. Celular: círculo izquierdo.</span><b>CÁMARA</b><span>Arrastrá para mirar. Acercá dos dedos para hacer zoom; en PC usá la rueda.</span><b>OBJETOS Y CARTELERÍA</b><span>Tocá objetos y carteles para examinarlos o usá INTERACTUAR cuando aparezca el indicador.</span><b>PERSECUCIÓN</b><span>Podés perder de vista al Celador escondiéndote detrás del mobiliario.</span></div>
         <button className="iso-diagnostic-button" onClick={() => { setBenchmark(true); closePanel(); }}>MEDIR FPS EN MI DISPOSITIVO <span>↗</span></button>
         <button className="iso-confirm" onClick={closePanel}>VOLVER A LA SALA ↗</button>
