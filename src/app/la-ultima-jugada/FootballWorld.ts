@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
@@ -60,6 +62,8 @@ export class FootballWorld {
  private chapter:Chapter;
  private tempVec=new THREE.Vector3();
  private disposableTextures:THREE.Texture[]=[];
+ private mixers:THREE.AnimationMixer[]=[];
+ private destroyed=false;
  private onKeyDown=(e:KeyboardEvent)=>{if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
@@ -194,13 +198,45 @@ export class FootballWorld {
   }
   const goal=mat(0xf5fbff,.57,.3);
   box(.1,2.9,.12,-3.7,1.14,-101,goal,this.root);box(.1,2.9,.12,3.7,1.14,-101,goal,this.root);box(7.5,.1,.12,0,2.57,-101,goal,this.root);
+  const lineUp:{x:number,z:number,proxy:THREE.Group,blue:boolean}[]=[];
   for(let i=0;i<12;i++){
-   const blue=i%2===0;
-   const jersey=mat(blue?0x8fcff5:0xf0f1f0,.15,.73);
-   const x=-18+i*3.3;const z=-49-(i%3)*8;
-   tube(.38,.91,x,.85,z,jersey,this.root,10);tube(.19,.21,x,1.42,z,mat(0xc1a58d),this.root);
-   for(const dx of [-.2,.2])tube(.095,.66,x+dx,.19,z,mat(0x2d3b51),this.root);
+   const blue=i%2===0,x=-18+i*3.3,z=-49-(i%3)*8;
+   const proxy=new THREE.Group();proxy.position.set(x,0,z);this.root.add(proxy);
+   tube(.38,.91,0,.85,0,mat(blue?0x8fcff5:0xf0f1f0,.15,.73),proxy,10);
+   tube(.19,.21,0,1.42,0,mat(0xc1a58d),proxy);
+   for(const dx of [-.2,.2])tube(.095,.66,dx,.19,0,mat(0x2d3b51),proxy);
+   lineUp.push({x,z,proxy,blue});
   }
+  // CC0 rigged football-appropriate background characters, loaded progressively.
+  // A cheap geometry fallback remains visible if the GLB cannot be downloaded.
+  new GLTFLoader().load(
+   "https://raw.githubusercontent.com/kendrekaran/striker-3d/main/assets/player.glb",
+   gltf=>{
+    if(this.destroyed)return;
+    lineUp.filter((_,i)=>i%2===0).forEach(({x,z,proxy,blue},index)=>{
+     const character=cloneRig(gltf.scene);
+     character.position.set(x,0,z);character.scale.setScalar(.95);
+     character.rotation.y=(index%3-1)*.4;
+     character.traverse(obj=>{
+      if(obj instanceof THREE.Mesh){
+       obj.castShadow=false;
+       if(Array.isArray(obj.material))obj.material=obj.material.map(m=>m.clone());
+       else obj.material=obj.material.clone();
+       const materials=Array.isArray(obj.material)?obj.material:[obj.material];
+       materials.forEach(m=>{
+        if(m instanceof THREE.MeshStandardMaterial&&/shirt|jersey|uniform|top/i.test(m.name)){
+         m.color.setHex(blue?0xa6ddf5:0xf0eeee);
+        }
+       });
+      }
+     });
+     this.root.add(character);proxy.visible=false;
+     const mixer=new THREE.AnimationMixer(character);
+     const clip=gltf.animations.find(a=>/idle|jog|run|walk/i.test(a.name))||gltf.animations[0];
+     if(clip){mixer.clipAction(clip).play();this.mixers.push(mixer);}
+    });
+   },undefined,()=>{}
+  );
  }
  private makeRoom(chapter:Chapter){
   this.shell(chapter);
@@ -274,6 +310,7 @@ export class FootballWorld {
   this.frame=requestAnimationFrame(this.loop);
   const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
+  this.mixers.forEach(m=>m.update(dt));
   this.renderer.render(this.scene,this.camera);
  };
  private update(dt:number){
@@ -298,6 +335,7 @@ export class FootballWorld {
   this.renderer.setSize(w,h,false);
  }
  dispose(){
+  this.destroyed=true;
   cancelAnimationFrame(this.frame);
   window.removeEventListener("resize",this.boundResize);
   window.removeEventListener("keydown",this.onKeyDown);
