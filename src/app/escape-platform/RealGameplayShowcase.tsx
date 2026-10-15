@@ -5,7 +5,7 @@ const room=experiences.find(item=>item.slug==="aislamiento-15")!;
 
 /** Production footage of the actual React/Three.js hospital, not a stock render. */
 export function RealGameplayShowcase({compact=false}:{compact?:boolean}) {
- return <section className={compact?"ve-realfilm ve-realfilm-compact":"ve-realfilm"} id={compact?undefined:"trailer"} aria-label="Tráiler con escenas reales de AISLAMIENTO 15">
+ return <section className={compact?"ve-realfilm ve-realfilm-compact":"ve-realfilm"} id="trailer" aria-label="Tráiler con escenas reales de AISLAMIENTO 15">
   <div className="ve-container ve-realfilm-layout">
    <div className="ve-realfilm-copy">
     <span className="ve-overline ve-metal">MIRÁ ANTES DE ENTRAR / GAMEPLAY REAL</span>
