@@ -285,3 +285,11 @@
   .iso-sign-transcription{padding:15px 13px}
   .iso-panel-scrim .iso-panel{max-height:86dvh}
 }
+
+
+/* Prelaunch playtest data stays local; only the player can copy it. */
+.iso-report-copy{display:flex;justify-content:center;align-items:center;gap:13px;width:100%;max-width:460px;margin:16px auto 0;padding:12px 18px;border:1px solid rgba(162,218,193,.4);background:rgba(8,31,33,.72);color:#c9e6d9;font:700 11px/1.5 monospace;letter-spacing:.07em;cursor:pointer;transition:border-color .2s,background .2s}
+.iso-report-copy:hover,.iso-report-copy:focus-visible{border-color:#b2dcca;background:rgba(20,65,55,.8)}
+.iso-compat-error{border:1px solid rgba(240,128,114,.7);border-left:3px solid #e26d58;background:rgba(56,17,16,.82);padding:12px 14px;line-height:1.5;color:#f7c8be;font-size:13px;max-width:590px}
+.iso-start:disabled{cursor:not-allowed;opacity:.43;filter:grayscale(.8)}
+@media(max-width:750px){.iso-report-copy{max-width:90vw;min-height:44px}}
