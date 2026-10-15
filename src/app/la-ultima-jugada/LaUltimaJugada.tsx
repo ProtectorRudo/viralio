@@ -217,6 +217,11 @@ export default function LaUltimaJugada(){
   let disposed=false;setWorldReady(false);setFocus("");
   (async()=>{
    try{
+    // The game does not expose the scene until its first-party GLB cache
+    // is settled: no disappearing players or furniture on slow connections.
+    const {preloadFootballAssets}=await import("./AssetLibrary");
+    await preloadFootballAssets();
+    if(disposed||!canvas.current)return;
     const {FootballWorld}=await import("./FootballWorld");
     if(disposed||!canvas.current)return;
     const w=new FootballWorld(canvas.current,chapter,{action,focus:setFocus,position:(x,y,z,yaw)=>audio.current?.position(x,y,z,yaw),failure:()=>{modeRef.current="unsupported";setMode("unsupported");}});
