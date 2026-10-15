@@ -71,8 +71,8 @@ test("full Argentina–England investigation physically reaches every room and t
   await page.getByRole("button",{name:new RegExp(name)}).click();
  }
  await solve(page);
- await expect(page.locator(".lj-objective p")).toContainText("pizarra");
- await reachAction(page,/informe/i,true);
+ await expect(page.locator(".lj-objective p")).toContainText("fichas");
+ await reachAction(page,/fichas/i,true);
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-magnetic-tactics.png",fullPage:false});
  for(const [player,slot] of [[7,"banda derecha"],[10,"medialuna"],[9,"primer palo"]] as const){
    await page.getByRole("button",{name:"Jugador "+player,exact:true}).click();
@@ -105,12 +105,12 @@ test("full Argentina–England investigation physically reaches every room and t
  await reachAction(page,/saboteador/i,true);
  await page.getByRole("button",{name:"CREDENCIAL 09"}).click();
  await solve(page);
- await reachAction(page,/Verificá la táctica/i);
+ await reachAction(page,/tres sellos/i);
  await expect(page.locator(".lj-brand small")).toHaveText("TÚNEL DE LA FINAL");
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  await page.waitForTimeout(900);
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-tunel-3d.png",fullPage:false});
- await reachAction(page,/entrenador/i,true);
+ await reachAction(page,/tres pistas/i,true);
  await page.getByRole("button",{name:/La ruta que coincide con las fichas/i}).click();
  for(const stamp of ["C2","04","ROJO"]){
   await page.getByRole("button",{name:stamp,exact:true}).click();
