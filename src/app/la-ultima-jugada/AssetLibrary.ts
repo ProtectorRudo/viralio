@@ -20,6 +20,7 @@ export const FOOTBALL_ASSETS={
 
 /** Premium CC0 assets copied from Viralio's verified 3D catalog, selectively. */
 export const FOOTBALL_PREMIUM={
+ coach:SHARED+"npc-sam-locomotion.glb",
  monitor:SHARED+"video-analysis-27inch-monitor.glb",
  keyboard:SHARED+"key-grid-mechanical-keyboard.glb",
  camera:SHARED+"cctv-security-camera.glb",
