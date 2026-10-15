@@ -160,6 +160,9 @@ export default function LaUltimaJugada(){
    cinematicTimeout.current=setTimeout(()=>setCinematic(""),3800);
   }
   const n={...solvedRef.current,[id]:true};solvedRef.current=n;setSolved(n);setModal(null);setHintLevel(-1);
+  // A successful terminal must release game movement immediately; some
+  // mobile browsers can defer the React effect until a later frame.
+  if(modeRef.current==="playing")engine.current?.setGameplayActive(true);
   if(!isMutedRef.current)audio.current?.pulse(820);
  },[]);
  const win=useCallback(()=>{
@@ -289,7 +292,10 @@ export default function LaUltimaJugada(){
  const moveRef=useRef({x:0,z:0});
  const move=(x:number,z:number)=>{moveRef.current={x,z};engine.current?.movement(x,z);};
  const btn=(icon:string,x:number,z:number,cls:string)=> <button type="button" className={"lj-pad "+cls} aria-label={cls} onPointerDown={e=>{e.preventDefault();move(x,z);(e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId)}} onPointerUp={()=>move(0,0)} onPointerCancel={()=>move(0,0)} onLostPointerCapture={()=>move(0,0)}>{icon}</button>;
- const close=()=>setModal(null);
+ const close=()=>{
+  setModal(null);
+  if(modeRef.current==="playing")engine.current?.setGameplayActive(true);
+ };
  return <main className={"lj-root lj-root-"+mode}>
   {mode==="intro"&&<section className="lj-intro">
    <div className="lj-intro-content">
