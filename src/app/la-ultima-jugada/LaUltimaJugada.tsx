@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Chapter, GameAction } from "./FootballWorld";
+import { verifyFootballPuzzle, canEnterCorridor, canEnterTunnel, canFinish } from "./rules";
 import "./game.css";
 
 type Puzzle = "monitores" | "pizarra" | "relay" | "cctv" | "prueba";
@@ -130,11 +131,11 @@ export default function LaUltimaJugada(){
   if(modeRef.current!=="playing")return;
   const s=solvedRef.current;
   if(id==="salida1"){
-   if(!s.informe){notify("ACCESO DENEGADO · Necesitás recuperar el informe auténtico.");return;}
+   if(!canEnterCorridor(s)){notify("ACCESO DENEGADO · Necesitás recuperar el informe auténtico.");return;}
    chapterRef.current=1;setChapter(1);setModal(null);setHintLevel(-1);notify("Sector 02 · Una voz desconocida interceptó las comunicaciones.");return;
   }
   if(id==="salida2"){
-   if(!s.relay||!s.cctv){notify("ACCESO DENEGADO · Restablecé el enlace e identificá al intruso.");return;}
+   if(!canEnterTunnel(s)){notify("ACCESO DENEGADO · Restablecé el enlace e identificá al intruso.");return;}
    chapterRef.current=2;setChapter(2);setModal(null);setHintLevel(-1);notify("Sector 03 · Se escucha la tribuna. Ya casi estás en la cancha.");return;
   }
   if(id==="informe"){
@@ -143,7 +144,7 @@ export default function LaUltimaJugada(){
    else notify("Tenés el informe auténtico. Dirigite al corredor.");return;
   }
   if(id==="entrega"){
-   if(!s.prueba){notify("El entrenador necesita una jugada VERIFICADA. Revisá el informe en el túnel.");return;}
+   if(!canFinish(s)){notify("El entrenador necesita una jugada VERIFICADA. Revisá el informe en el túnel.");return;}
    win();return;
   }
   if(id==="pizarra"&&!s.monitores){notify("Primero debés reconstruir la repetición auténtica.");return;}
@@ -192,24 +193,25 @@ export default function LaUltimaJugada(){
  };
  const verify=()=>{
   if(!modal)return;
+  const valid=verifyFootballPuzzle(modal,{selection,moves,relays,evidence,confirm});
   if(modal==="monitores"){
-   if(selection==="C2"){advance("monitores");notify("CÁMARA 02 VERIFICADA · La defensa inglesa cierra el centro. Revisá la pizarra.");}
+   if(valid){advance("monitores");notify("CÁMARA 02 VERIFICADA · La defensa inglesa cierra el centro. Revisá la pizarra.");}
    else notify("ESA CÁMARA FUE MANIPULADA. Mirá la continuidad del balón y sus sombras.");
   }
   if(modal==="pizarra"){
-   if(moves[0]==="banda derecha"&&moves[1]==="medialuna"&&moves[2]==="primer palo"){advance("pizarra");notify("JUGADA RECONSTRUIDA · El expediente original ya se puede recuperar.");}
+   if(valid){advance("pizarra");notify("JUGADA RECONSTRUIDA · El expediente original ya se puede recuperar.");}
    else notify("LA JUGADA NO CIERRA. Necesitás generar un espacio por derecha y atacar el primer palo.");
   }
   if(modal==="relay"){
-   if(relays.join("-")==="2-3-1"){advance("relay");notify("SEÑAL RESTAURADA · Ahora podés examinar las cámaras de seguridad.");}
+   if(valid){advance("relay");notify("SEÑAL RESTAURADA · Ahora podés examinar las cámaras de seguridad.");}
    else notify("FALLO DE SINCRONIZACIÓN · Revisá las pistas de cada terminal.");
   }
   if(modal==="cctv"){
-   if(evidence==="09"){advance("cctv");notify("SABOTAJE CONFIRMADO · El operador de radio anuló tu credencial.");}
+   if(valid){advance("cctv");notify("SABOTAJE CONFIRMADO · El operador de radio anuló tu credencial.");}
    else notify("LA ACREDITACIÓN NO COINCIDE. Observá la secuencia en el monitor.");
   }
   if(modal==="prueba"){
-   if(confirm==="derecha"){advance("prueba");notify("PRUEBA AUTENTICADA · Entregá la instrucción al entrenador. ¡Corré!");}
+   if(valid){advance("prueba");notify("PRUEBA AUTENTICADA · Entregá la instrucción al entrenador. ¡Corré!");}
    else notify("INFORME FALSO · Esa instrucción favorece a la defensa inglesa.");
   }
  };
