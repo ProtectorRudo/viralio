@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  AmbientLight, Box3, Color, DirectionalLight, Group,
+  AmbientLight, Box3, Color, DirectionalLight,
   HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
