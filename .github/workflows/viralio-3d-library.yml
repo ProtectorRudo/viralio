@@ -6,6 +6,8 @@ on:
     paths:
       - 'data/viralio-3d/catalog.json'
       - 'scripts/build-viralio-3d-library.mjs'
+      - 'scripts/build-viralio-materials.mjs'
+      - 'data/viralio-3d/materials.json'
       - '.github/workflows/viralio-3d-library.yml'
   workflow_dispatch:
 
@@ -34,6 +36,10 @@ jobs:
           npm install --no-save --no-package-lock @gltf-transform/cli@4.5.1
       - name: Descargar, verificar y optimizar los modelos CC0
         run: node scripts/build-viralio-3d-library.mjs --all --min-success=45
+      - name: Descargar y optimizar materiales PBR para arquitectura
+        run: node scripts/build-viralio-materials.mjs
+      - name: Validar materiales PBR descargados
+        run: node scripts/build-viralio-materials.mjs --validate-only
       - name: Verificar que los GLB generados sean validos
         run: node scripts/build-viralio-3d-library.mjs --all --validate-only
       - name: Adjuntar reporte y biblioteca
@@ -53,5 +59,15 @@ jobs:
             echo "Assets unchanged"
           else
             git commit -m "assets: materialize curated CC0 Viralio 3D library"
-            git push
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                echo "Library committed to main"
+                exit 0
+              fi
+              echo "Main advanced; rebasing asset-only commit ($attempt)"
+              git fetch origin main
+              git rebase origin/main
+            done
+            echo "Unable to publish GLBs after three retries"
+            exit 1
           fi
