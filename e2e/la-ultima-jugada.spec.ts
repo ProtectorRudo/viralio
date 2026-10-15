@@ -20,7 +20,8 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
   const viewport=page.viewportSize();
   return !!rect&&!!viewport&&rect.y>=0&&rect.y+rect.height<=viewport.height-5;
  },{message:"The briefing CTA must be fully visible without scrolling at 1280x720",timeout:4000}).toBe(true);
- await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
+ await expect(startButton).toBeEnabled({timeout:60_000});
+ await startButton.click();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0,{timeout:30_000});
  for(const asset of ["player-quaternius.glb","steel-office-desk.glb","chair-olve.glb","video-analysis-27inch-monitor.glb","key-grid-mechanical-keyboard.glb"]){
@@ -55,7 +56,9 @@ test("La Última Jugada remains navigable in a vertical mobile viewport",async({
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).tap();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
  await page.screenshot({path:"test-results/la-ultima-jugada-mision-mobile.png",timeout:17000,fullPage:false});
- await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).tap();
+ const mobileStart=page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/});
+ await expect(mobileStart).toBeEnabled({timeout:60_000});
+ await mobileStart.tap();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.getByRole("button",{name:"lj-forward"})).toBeVisible();
  await expect(page.getByRole("button",{name:"Interactuar con el objeto enfocado"})).toBeVisible();
