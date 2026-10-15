@@ -1,8 +1,8 @@
 {
   "name": "Viralio Escape — shared 3D models",
-  "version": "1.4.0",
-  "generatedAt": "2026-10-15T17:31:26.880Z",
-  "total": 169,
+  "version": "1.4.0-football-scan",
+  "generatedAt": "2026-10-15T17:33:51.294Z",
+  "total": 171,
   "license": "CC0-1.0",
   "items": [
     {
@@ -3584,6 +3584,46 @@
       "animations": 0,
       "skins": 0,
       "clipNames": [],
+      "optimized": true
+    },
+    {
+      "id": "football-polyhaven-dirty",
+      "title": "Balón de fútbol vintage fotoescaneado, costuras y barro",
+      "category": "futbol-balones",
+      "tier": "hero-fotorealista",
+      "quality": "Poly Haven CC0 photogrammetry, PBR source 8K; optimize 1K for mobile",
+      "license": "CC0-1.0",
+      "author": "Rohit Seervi",
+      "sourcePage": "https://polyhaven.com/a/dirty_football",
+      "path": "/viralio-3d/models/football-polyhaven-dirty.glb",
+      "byteSize": 623756,
+      "sha256": "3ce46a04de16cc4e856e6f72a2a460dd9d7ccbd7f30164997ca1576557f986e5",
+      "meshes": 1,
+      "nodes": 1,
+      "textures": 3,
+      "materials": 1,
+      "animations": 0,
+      "skins": 0,
+      "optimized": true
+    },
+    {
+      "id": "football-polyhaven-worn",
+      "title": "Balón de fútbol deteriorado parcialmente desinflado",
+      "category": "futbol-balones",
+      "tier": "hero-fotorealista",
+      "quality": "Poly Haven CC0 photo-real PBR 4K source, worn/partially deflated soccer ball; optimized 1K",
+      "license": "CC0-1.0",
+      "author": "Amal Kumar",
+      "sourcePage": "https://polyhaven.com/a/football",
+      "path": "/viralio-3d/models/football-polyhaven-worn.glb",
+      "byteSize": 623028,
+      "sha256": "c1df7725017a812726a42639ed207570eef20e3ea9421029a0346906b665fe74",
+      "meshes": 2,
+      "nodes": 2,
+      "textures": 3,
+      "materials": 1,
+      "animations": 0,
+      "skins": 0,
       "optimized": true
     }
   ]
