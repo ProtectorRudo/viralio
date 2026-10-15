@@ -52,6 +52,8 @@ export default function IsolationGame() {
   const penaltyRef = useRef(0);
   const hasVoiceRef = useRef(false);
   const spokenAtRef = useRef(-1);
+  const backgroundAtRef = useRef<number | null>(null);
+  const soundEnabledRef = useRef(true);
   const lookRef = useRef(new Map<number, { x: number; y: number; moved: number }>());
   const pinchRef = useRef<{ distance: number; zoom: number } | null>(null);
   const fpsFrames = useRef<number[]>([]);
@@ -100,6 +102,10 @@ export default function IsolationGame() {
         : (!w.foundLog ? "Encontrá el expediente 015" : w.breakers.join(",") !== "true,false,true" ? "Configurá los interruptores" : !hasVoiceRef.current ? "Identificá la voz que te llama" : "Activá la evacuación"));
   };
   const closePanel = () => setPanel(null);
+  useEffect(() => {
+    // Reading a document protects against off-screen attacks; time still runs.
+    worldRef.current?.setInspecting(panel !== null);
+  }, [panel]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -202,6 +208,30 @@ export default function IsolationGame() {
     };
     req = requestAnimationFrame(frame);
     const onResize = () => world.resize();
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (modeRef.current !== "playing") return;
+        backgroundAtRef.current = Date.now();
+        world.running = false;
+        sound.mute(true);
+        world.keys.clear();
+        world.moveJoystick(0, 0);
+        return;
+      }
+      const hiddenAt = backgroundAtRef.current;
+      backgroundAtRef.current = null;
+      if (hiddenAt === null || modeRef.current !== "playing") return;
+      const awayMs = Math.max(0, Date.now() - hiddenAt);
+      const graceMs = Math.min(45_000, awayMs);
+      startAtRef.current += graceMs;
+      fpsFrames.current = [];
+      last = performance.now();
+      world.running = true;
+      sound.mute(!soundEnabledRef.current);
+      notify(awayMs <= 45_000
+        ? "PARTIDA REANUDADA. EL RELOJ ESTUVO EN PAUSA POR LA INTERRUPCIÓN."
+        : "PARTIDA REANUDADA. LA PAUSA DE CORTESÍA TENÍA UN MÁXIMO DE 45 SEGUNDOS.");
+    };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLButtonElement) return;
       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
@@ -211,11 +241,13 @@ export default function IsolationGame() {
     };
     const onKeyUp = (e: KeyboardEvent) => world.keys.delete(e.code);
     window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     return () => {
       cancelAnimationFrame(req);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       world.destroy();
@@ -233,6 +265,7 @@ export default function IsolationGame() {
     modeRef.current = "playing";
     startAtRef.current = Date.now();
     penaltyRef.current = 0;
+    backgroundAtRef.current = null;
     w.running = true;
     setMode("playing");
     setNotice("BUSCÁ EL FUSIBLE. RESTAURÁ LA SEGURIDAD. ESCAPÁ.");
@@ -479,7 +512,7 @@ export default function IsolationGame() {
           <strong>{format(remaining)}</strong>
         </div>
         <div className="iso-hud-tools">
-          <button onClick={() => { const next = !soundOn; setSoundOn(next); audioRef.current?.mute(!next); }} aria-label={soundOn ? "Silenciar sonido" : "Activar sonido"}>{soundOn ? "♫" : "♪̸"}</button>
+          <button onClick={() => { const next = !soundOn; soundEnabledRef.current = next; setSoundOn(next); audioRef.current?.mute(!next); }} aria-label={soundOn ? "Silenciar sonido" : "Activar sonido"}>{soundOn ? "♫" : "♪̸"}</button>
           <button onClick={openHelp} title="Ayuda">?</button>
         </div>
       </header>
@@ -539,7 +572,7 @@ export default function IsolationGame() {
         </div>
         <div className="iso-intro-meta"><span>◷ 15 MIN</span><span>◇ 3 SECTORES</span><span>▣ 3D REAL</span><span>♬ AURICULARES</span></div>
         <button className="iso-start" onClick={start}><span>COMENZAR AISLAMIENTO</span><b>↗</b></button>
-        <p className="iso-devices">Exploración libre · Celular: control izquierdo para caminar y arrastrar para mirar · PC: WASD + mouse · Sonido y efectos de susto · Requiere WebGL2.</p>
+        <p className="iso-devices">Exploración libre · Celular: control izquierdo para caminar y arrastrar para mirar · PC: WASD + mouse · Sonido y efectos de susto · Requiere WebGL2. Las interrupciones del celular cuentan con 45 segundos de pausa de cortesía.</p>
       </div>
       <div className="iso-intro-coordinate">UNIDAD MÉDICA 15 — ACCESO RESTRINGIDO / 00.15</div>
     </div>}
