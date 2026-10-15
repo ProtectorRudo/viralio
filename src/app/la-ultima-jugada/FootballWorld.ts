@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import {paintTacticalFeed,type ReplayCamera} from "./TacticSimulation";
+import {FinaleDirector} from "./FinaleDirector";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
@@ -74,6 +75,7 @@ export class FootballWorld {
  private replayElapsed=0;private replayClock=0;
  private mixers:THREE.AnimationMixer[]=[];
  private destroyed=false;
+ private finale:FinaleDirector|null=null;
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
@@ -295,7 +297,9 @@ export class FootballWorld {
    }
   }else{
    this.stadium();
-   box(11,3.3,.3,0,2.2,-6.55,mat(0x17212a,.65,.58),this.root);
+   // Open field portal: a high lintel rather than an opaque wall covering the pitch.
+   box(11,.35,.3,0,3.93,-6.55,mat(0x17212a,.65,.58),this.root);
+   box(3.35,.085,.29,0,3.24,-6.41,mat(0xc6d2d7,.75,.36,0x9ee1f5,.23),this.root);
    box(4.6,3.0,.32,-3.95,1.6,-6.52,mat(0x1c2933,.68,.42),this.root);
    box(4.6,3.0,.32,3.95,1.6,-6.52,mat(0x1c2933,.68,.42),this.root);
    this.desk(-2.3,.65,2.9);
@@ -473,6 +477,7 @@ export class FootballWorld {
   const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
   this.animateReplay(dt);
+  this.finale?.update(dt);
   this.fpsTime+=dt;this.fpsFrames++;
   if(this.fpsTime>4.5){
    const fps=this.fpsFrames/this.fpsTime;
@@ -511,7 +516,13 @@ export class FootballWorld {
   this.camera.aspect=w/Math.max(1,h);this.camera.updateProjectionMatrix();
   this.renderer.setSize(w,h,false);
  }
+ startFinale(cue:(name:"apertura"|"pase"|"centro"|"gol")=>void,complete:()=>void){
+  this.setGameplayActive(false);
+  if(this.finale)this.finale.dispose();
+  this.finale=new FinaleDirector(this.root,this.camera,{cue,complete});
+ }
  dispose(){
+  this.finale?.dispose();this.finale=null;
   this.destroyed=true;
   cancelAnimationFrame(this.frame);
   window.removeEventListener("resize",this.boundResize);
