@@ -287,14 +287,18 @@ export class FootballWorld {
   this.glow(0,3.5,-3,0xeaf7ff,11,10);
  }
  private door(x:number,z:number,id:GameAction,code:string){
+  // A licensed industrial GLB provides real hinges, frame and hardware.
+  // Retain a functional fallback and the original accessible raycast collider.
+  const fallback=new THREE.Group();this.root.add(fallback);
   const dark=mat(0x202b32,.9,.38);const edge=mat(0x9eacb2,.7,.26);
-  box(2.15,3.2,.22,x,1.54,z,dark,this.root);
-  box(2.33,.13,.3,x,3.16,z,edge,this.root);
-  box(.11,3.2,.3,x-1.12,1.55,z,edge,this.root);
-  box(.11,3.2,.3,x+1.12,1.55,z,edge,this.root);
-  box(.05,1.23,.13,x+.57,1.55,z+.17,edge,this.root);
-  this.label(code,["ACCESO RESTRINGIDO"],x,2.58,z+.18,1.52,.66,"#ed7779");
-  this.interactive(id,x,1.6,z+.18,2.03,2.9,.25);
+  box(2.15,3.2,.22,x,1.54,z,dark,fallback);
+  box(2.33,.13,.3,x,3.16,z,edge,fallback);
+  box(.11,3.2,.3,x-1.12,1.55,z,edge,fallback);
+  box(.11,3.2,.3,x+1.12,1.55,z,edge,fallback);
+  box(.05,1.23,.13,x+.57,1.55,z+.17,edge,fallback);
+  this.premiumProp(FOOTBALL_PREMIUM.steelDoor,x,.0,z,2.13,3.18,.45,0,fallback);
+  this.label(code,["ACCESO RESTRINGIDO"],x,2.58,z+.27,1.52,.66,"#ed7779");
+  this.interactive(id,x,1.6,z+.27,2.03,2.9,.26);
  }
  private desk(x:number,z:number,w=3.15){
   const local=new THREE.Group();this.root.add(local);
