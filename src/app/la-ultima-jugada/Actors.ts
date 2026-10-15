@@ -76,7 +76,7 @@ function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boole
 export function createCoach(root:THREE.Group,isAlive:()=>boolean):Actor{
  const group=new THREE.Group();
  // Coach waits just outside the right edge of the walkable tunnel entrance.
- group.position.set(1.48,.02,-8.35);group.rotation.y=-.37;root.add(group);
+ group.position.set(.48,.02,-7.75);group.rotation.y=Math.PI-.23;root.add(group);
  group.userData.animations=[] as THREE.AnimationMixer[];
  const fallback=humanFallback(group,0x152e4b);
  fallback.group.name="original-fallback";
