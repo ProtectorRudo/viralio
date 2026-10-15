@@ -2,25 +2,26 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Chapter, GameAction } from "./FootballWorld";
-import { verifyFootballPuzzle, canEnterCorridor, canEnterTunnel, canFinish } from "./rules";
+import { verifyFootballPuzzle, canEnterCorridor, canEnterTunnel, canFinish, FRAGMENT_ORDER, FINAL_STAMPS } from "./rules";
 import TacticalReplay from "./TacticalReplay";
 import MagneticTactics from "./MagneticTactics";
 import "./game.css";
 
-type Puzzle = "monitores" | "pizarra" | "relay" | "cctv" | "prueba";
-type Solved = Record<Puzzle | "informe", boolean>;
+type Puzzle = "monitores" | "pizarra" | "informe" | "casillero" | "relay" | "cctv" | "prueba";
+type Solved = Record<Puzzle, boolean>;
 type Mode = "intro" | "playing" | "finale" | "victory" | "defeat" | "unsupported";
-const EMPTY: Solved = {monitores:false,pizarra:false,relay:false,cctv:false,prueba:false,informe:false};
+const EMPTY: Solved = {monitores:false,pizarra:false,informe:false,casillero:false,relay:false,cctv:false,prueba:false};
 const titles = ["CABINA DE ANÁLISIS","CORREDOR RESTRINGIDO","TÚNEL DE LA FINAL"] as const;
-const stories = [
- {time:60,text:"Los ingleses preparan un cambio. La transmisión del banco se está deteriorando.",tone:"alert"},
- {time:155,text:"¡GOL DE INGLATERRA! ... Un momento. El VAR revisa la posición del delantero.",tone:"danger"},
- {time:172,text:"FUERA DE JUEGO. Gol anulado. La final sigue 1 a 1.",tone:"success"},
- {time:320,text:"SEGURIDAD: hay una credencial anulada en el corredor de servicio.",tone:"alert"},
- {time:490,text:"RADIO INTERVENIDA: «No le entregues ese informe al técnico. Dámelo a mí».",tone:"danger"},
- {time:620,text:"Detectaron que alguien reemplazó el análisis original por una jugada falsa.",tone:"alert"},
- {time:750,text:"CUARTO ÁRBITRO: se anuncia tiempo añadido. El banco espera tu información.",tone:"danger"},
- {time:845,text:"ÚLTIMA OPORTUNIDAD. Si el entrenador no recibe la prueba, la final se escapa.",tone:"danger"}
+const stories=[
+ {time:90,text:"RADIO / El entrenador pidió el informe. Tenemos 13 minutos.",tone:"alert"},
+ {time:180,text:"TRANSMISIÓN INTERVENIDA · Una cámara acaba de perder la señal.",tone:"danger"},
+ {time:270,text:"SEGURIDAD / Se escucharon pasos detrás de los armarios.",tone:"alert"},
+ {time:360,text:"¡LA TRIBUNA GRITA! El reloj no se detiene por vos.",tone:"danger"},
+ {time:475,text:"ALERTA / El saboteador intenta borrar el expediente.",tone:"danger"},
+ {time:590,text:"RADIO / El técnico se acercó al túnel. Necesita el informe YA.",tone:"alert"},
+ {time:710,text:"SE ANUNCIA TIEMPO AÑADIDO. La última oportunidad se acerca.",tone:"danger"},
+ {time:780,text:"ÚLTIMOS DOS MINUTOS · Corré hacia el entrenador.",tone:"danger"},
+ {time:845,text:"45 SEGUNDOS · ENTREGÁ EL INFORME AHORA.",tone:"danger"}
 ] as const;
 
 function TacticalPitch({kind}:{kind:"video"|"board"|"final"}){
@@ -87,35 +88,50 @@ class StadiumAudio {
  stop(){try{this.noise?.stop();void this.ctx?.close();}catch{}this.ctx=null;this.noise=null;this.gain=null;this.panner=null;}
 }
 function format(seconds:number){const s=Math.max(0,Math.floor(seconds));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
-function targetAction(chapter:Chapter,s:Solved):GameAction {
- if(chapter===0)return !s.monitores?"monitores":!s.pizarra?"pizarra":!s.informe?"informe":"salida1";
- if(chapter===1)return !s.relay?"relay":!s.cctv?"cctv":"salida2";
+type FragmentPickup="pieza1"|"pieza2"|"pieza3"|"pieza4";
+const pieces:readonly FragmentPickup[]=["pieza1","pieza2","pieza3","pieza4"];
+const fragmentLabels:{id:FragmentPickup;title:string;hint:string}[]=[
+ {id:"pieza1",title:"PLANO",hint:"Buscá el papel junto al escritorio"},
+ {id:"pieza2",title:"SELLO",hint:"Revisá las carpetas del estante lateral"},
+ {id:"pieza3",title:"RUTA",hint:"Inspeccioná el archivador del fondo"},
+ {id:"pieza4",title:"FIRMA",hint:"El cuarto fragmento está cerca de la puerta"}
+];
+function targetAction(chapter:Chapter,s:Solved,found:readonly FragmentPickup[]):GameAction{
+ if(chapter===0)return !s.monitores?"monitores":!s.pizarra?"pizarra":found.length<4?pieces.find(p=>!found.includes(p))! :!s.informe?"informe":"salida1";
+ if(chapter===1)return !s.casillero?"casillero":!s.relay?"relay":!s.cctv?"cctv":"salida2";
  return !s.prueba?"prueba":"entrega";
 }
-function nextObjective(chapter:Chapter, s:Solved){
+function nextObjective(chapter:Chapter,s:Solved,found:readonly FragmentPickup[]){
  if(chapter===0){
-  if(!s.monitores)return "Compará las grabaciones de las tres cámaras.";
-  if(!s.pizarra)return "Reconstruí la jugada en la pizarra táctica.";
-  if(!s.informe)return "Recuperá el informe verdadero del escritorio.";
+  if(!s.monitores)return "Descubrí las tres diferencias entre las grabaciones.";
+  if(!s.pizarra)return "Recomponé las posiciones de tres fichas en el tablero.";
+  if(found.length<4)return "Encontrá los cuatro fragmentos del informe ("+found.length+"/4).";
+  if(!s.informe)return "Ordená los cuatro fragmentos para reconstruir el informe.";
   return "Buscá la puerta al corredor de servicio.";
  }
- if(chapter===1){if(!s.relay)return "Repará la central de comunicaciones.";if(!s.cctv)return "Encontrá al saboteador en el circuito cerrado.";return "Accedé al túnel del estadio.";}
- if(!s.prueba)return "Verificá la táctica antes de entregarla.";
- return "Llegá al entrenador, al final del túnel.";
+ if(chapter===1){
+  if(!s.casillero)return "Descifrá qué casillero contiene la llave y abrilo.";
+  if(!s.relay)return "Repará la central uniendo los símbolos correctos.";
+  if(!s.cctv)return "Identificá al intruso comparando dos capturas.";
+  return "Accedé al túnel del estadio.";
+ }
+ return !s.prueba?"Uní las tres pistas y sellá el informe definitivo.":"Entregale el informe al entrenador antes del pitazo.";
 }
-function hintFor(chapter:Chapter,s:Solved,level:number){
- const texts=chapter===0?
-  !s.monitores?["Las tres cámaras muestran un mismo ataque, pero el balón no puede estar en dos lugares al mismo tiempo.","Observá la pelota y su sombra. La toma sin saltos temporales es la CÁMARA 02."]:
-  !s.pizarra?["Fijate cómo el defensor inglés persigue al 10: se abre un espacio por derecha.","El 7 debe abrirse a banda derecha, el 10 ir a la medialuna y el 9 atacar el primer palo."]:
-  !s.informe?["Sobre el escritorio hay una carpeta de color claro.","Tocá el expediente que está delante de los monitores."]:
-  ["La salida al corredor está a la derecha de la cabina.","Acercate al portón marcado SECTOR INTERNO."]:
+function hintFor(chapter:Chapter,s:Solved,found:readonly FragmentPickup[],level:number){
+ const hints=chapter===0?
+  !s.monitores?["Pausá las tres cámaras en el mismo instante. Hay una pelota que salta, una que se duplica y una toma continua.","Revisá la cámara 1 cerca del segundo 5, la 3 cerca del segundo 6, y buscá la única secuencia sin trampas."]:
+  !s.pizarra?["No hace falta saber fútbol. Compará el dibujo de referencia con la ubicación de los números 7, 10 y 9.","7 termina arriba a la derecha, 10 cerca del círculo derecho y 9 cerca del arco arriba."]:
+  found.length<4?["Hay papeles pequeños repartidos por la sala, no todos están en la misma mesa.",fragmentLabels.find(p=>!found.includes(p.id))?.hint||"Ya tenés los cuatro fragmentos."]:
+  !s.informe?["Cada hoja tiene un sello con un número del 1 al 4.","Ordená PLANO, SELLO, RUTA y FIRMA según los números impresos."]:
+  ["La puerta está en el extremo derecho del muro de pantallas.","Acercate al portón SECTOR INTERNO."]:
  chapter===1?
-  !s.relay?["Los símbolos codifican cantidades: zaguero, tres leones y origen.","Terminal roja = 2, azul = 3, verde = 1."]:
-  !s.cctv?["El saboteador aparece varias veces en el monitor de seguridad.","Su acreditación termina en 09."]:
-  ["La puerta de salida da al túnel que conduce al campo.","Seguí hasta el portón TÚNEL DE CAMPO."]:
- !s.prueba?["El video auténtico muestra a los defensores cerrando el centro.","El plan correcto es atacar por derecha tras atraer la marca al centro."]:
- ["El entrenador te está esperando bajo la entrada al campo.","Acercate al hombre del cuerpo técnico y entregale el informe verificado."];
- return texts[Math.min(level,1)];
+  !s.casillero?["Combiná tres recuerdos de la primera sala: cámara auténtica, cantidad de hojas y dorsal de la ficha principal.","El código tiene tres cifras: 2 por la cámara, 4 por las hojas y 7 por la ficha. Buscá el casillero 04."]:
+  !s.relay?["No necesitás conocer fútbol. Las placas de mantenimiento indican cuántas figuras hay de cada tipo.","En las placas hay 2 rayas rojas, 4 cuadros azules y 3 círculos verdes."]:
+  !s.cctv?["Compará las dos capturas: el número se revela entre ambas.","Las capturas muestran 0_ y _9. Juntas forman 09."]:
+  ["El túnel está al fondo del corredor.","Acercate a la puerta con el cartel TÚNEL DE CAMPO."]:
+ !s.prueba?["Reconstruí los tres sellos que conseguiste y elegí el dibujo que coincide con tu tablero.","Los sellos se leen en orden: C2, 04, ROJO. Elegí la ruta que comienza por la derecha."]:
+ ["El técnico espera en el propio túnel, lejos de la tribuna.","Acercate al técnico de pelo oscuro y tocá ENTREGAR."];
+ return hints[Math.min(level,1)];
 }
 export default function LaUltimaJugada(){
  const [mode,setMode]=useState<Mode>("intro");
@@ -125,6 +141,16 @@ export default function LaUltimaJugada(){
  const solvedRef=useRef<Solved>({...EMPTY});
  const [time,setTime]=useState(900);
  const [modal,setModal]=useState<Puzzle|null>(null);
+ const [briefing,setBriefing]=useState(false);
+ const [found,setFound]=useState<FragmentPickup[]>([]);
+ const foundRef=useRef<FragmentPickup[]>([]);
+ const [differences,setDifferences]=useState<string[]>([]);
+ const [fragmentOrder,setFragmentOrder]=useState<string[]>([]);
+ const [locker,setLocker]=useState("01");
+ const [lockerPin,setLockerPin]=useState("");
+ const [finalSequence,setFinalSequence]=useState<string[]>([]);
+ const timeDebt=useRef(0);
+ const [mistakes,setMistakes]=useState(0);
  const [focus,setFocus]=useState("");
  const [alert,setAlert]=useState("");
  const [cinematic,setCinematic]=useState<""|"var"|"blackout"|"betrayal">("");
@@ -153,7 +179,7 @@ export default function LaUltimaJugada(){
   setAlert(msg);alertTimeout.current=setTimeout(()=>setAlert(""),5800);
   if(!isMutedRef.current)audio.current?.pulse();
  },[]);
- const advance=useCallback((id:Puzzle|"informe")=>{
+ const advance=useCallback((id:Puzzle)=>{
   if(id==="monitores"||id==="relay"||id==="cctv"){
    if(cinematicTimeout.current)clearTimeout(cinematicTimeout.current);
    setCinematic(id==="monitores"?"var":id==="relay"?"blackout":"betrayal");
@@ -191,22 +217,35 @@ export default function LaUltimaJugada(){
    if(!canEnterTunnel(s)){notify("ACCESO DENEGADO · Restablecé el enlace e identificá al intruso.");return;}
    chapterRef.current=2;setChapter(2);setModal(null);setFocus("");setHintLevel(-1);notify("Sector 03 · Se escucha la tribuna. Ya casi estás en la cancha.");return;
   }
+  if(pieces.includes(id as FragmentPickup)){
+   if(!s.monitores||!s.pizarra){notify("Primero investigá las cámaras y la pizarra.");return;}
+   const p=id as FragmentPickup;
+   if(foundRef.current.includes(p)){notify("Ya recogiste este fragmento.");return;}
+   const updated=[...foundRef.current,p];foundRef.current=updated;setFound(updated);
+   notify("HOJA ENCONTRADA · "+updated.length+"/4. "+(updated.length===4?"Ya podés ordenar el expediente.":"Buscá las restantes."));
+   if(!isMutedRef.current)audio.current?.pulse(920);
+   return;
+  }
   if(id==="informe"){
-   if(!s.monitores||!s.pizarra){notify("El expediente no se puede abrir: falta verificar las cámaras y la pizarra.");return;}
-   if(!s.informe){advance("informe");notify("INFORME RECUPERADO · Llevá la prueba al banco argentino.");}
-   else notify("Tenés el informe auténtico. Dirigite al corredor.");return;
+   if(!s.monitores||!s.pizarra||foundRef.current.length<4){
+    notify("EL EXPEDIENTE ESTÁ INCOMPLETO · Necesitás las 4 hojas. ");return;
+   }
+   if(s.informe){notify("Ya recuperaste el expediente. Buscá la salida.");return;}
+   setModal("informe");setFragmentOrder([]);return;
   }
   if(id==="entrega"){
    if(!canFinish(s)){notify("El entrenador necesita una jugada VERIFICADA. Revisá el informe en el túnel.");return;}
    win();return;
   }
+  if(id==="casillero"&&!s.informe){notify("Necesitás reconstruir el expediente primero.");return;}
+  if(id==="relay"&&!s.casillero){notify("Primero encontrá la llave del casillero.");return;}
   if(id==="pizarra"&&!s.monitores){notify("Primero debés reconstruir la repetición auténtica.");return;}
   if(id==="cctv"&&!s.relay){notify("Primero restaurá la señal del circuito cerrado.");return;}
-  if(id==="prueba"&&!s.informe){notify("No encontraste el expediente original.");return;}
+  if(id==="prueba"&&(!s.informe||!s.casillero)){notify("No encontraste el expediente original.");return;}
   const p=id as Puzzle;if(s[p]){notify("Esa prueba ya está resuelta. Seguí hacia el siguiente objetivo.");return;}
-  setModal(p);setSelection("C1");setEvidence("");setConfirm("");
+  setModal(p);setSelection("C1");setEvidence("");setConfirm("");setDifferences([]);setFinalSequence([]);
  },[advance,notify,win]);
- useEffect(()=>{engine.current?.setGameplayActive(!modal&&!cinematic&&mode==="playing");},[modal,cinematic,mode]);
+ useEffect(()=>{engine.current?.setGameplayActive(!briefing&&!modal&&!cinematic&&mode==="playing");},[briefing,modal,cinematic,mode]);
  useEffect(()=>{
    if(!modal)return;
    const closeOnEscape=(e:KeyboardEvent)=>{if(e.key==="Escape")setModal(null);};
@@ -234,13 +273,13 @@ export default function LaUltimaJugada(){
   return()=>{disposed=true;engine.current?.dispose();engine.current=null;};
  },[sceneActive,chapter,action]);
  useEffect(()=>{
-  if(mode!=="playing")return;
+  if(mode!=="playing"||briefing)return;
   const ticker=setInterval(()=>{
-   const elapsed=Math.max(0,Math.floor((performance.now()-startStamp.current)/1000));
+   const elapsed=Math.max(0,Math.floor((performance.now()-startStamp.current)/1000)+timeDebt.current);
    const remaining=Math.max(0,900-elapsed);
    setTime(remaining);
    engine.current?.setMatchTime(remaining);
-   if(elapsed>=75&&!crisisTriggered.current&&engine.current){
+   if(elapsed>=180&&!crisisTriggered.current&&engine.current){
     crisisTriggered.current=true;
     engine.current.triggerCrisis();
     notify("INTERFERENCIA · Alguien controla las luces. Apareció un mensaje en las paredes.");
@@ -254,40 +293,33 @@ export default function LaUltimaJugada(){
    if(elapsed>=900){modeRef.current="defeat";setMode("defeat");setModal(null);}
   },200);
   return()=>clearInterval(ticker);
- },[mode,notify]);
+ },[mode,notify,briefing]);
  useEffect(()=>()=>{audio.current?.stop();if(alertTimeout.current)clearTimeout(alertTimeout.current);if(cinematicTimeout.current)clearTimeout(cinematicTimeout.current);},[]);
  const start=()=>{
   if(!document.createElement("canvas").getContext("webgl2")){setMode("unsupported");return;}
   audio.current?.stop();audio.current=new StadiumAudio();audio.current.start();
   isMutedRef.current=false;setIsMuted(false);setWorldReady(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
   solvedRef.current={...EMPTY};setModal(null);setFocus("");setHintLevel(-1);setHintVisible(false);setTime(900);
-  setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");
-  announcements.current.clear();crisisTriggered.current=false;setCinematic("");setFinaleCue("apertura");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
-  notify("MINUTO 87 · Argentina 1 - 1 Inglaterra. Encontrá la grabación auténtica.");
+  setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");setFound([]);foundRef.current=[];setDifferences([]);setFragmentOrder([]);setLocker("01");setLockerPin("");setFinalSequence([]);setMistakes(0);timeDebt.current=0;
+  announcements.current.clear();crisisTriggered.current=false;setCinematic("");setFinaleCue("apertura");
+  startStamp.current=0;setBriefing(true);modeRef.current="playing";setMode("playing");
+  notify("RADIO RECIBIDA · Confirmá la misión para iniciar la cuenta regresiva.");
  };
  const verify=()=>{
   if(!modal)return;
-  const valid=verifyFootballPuzzle(modal,{selection,moves,relays,evidence,confirm});
-  if(modal==="monitores"){
-   if(valid){advance("monitores");notify("CÁMARA 02 VERIFICADA · La defensa inglesa cierra el centro. Revisá la pizarra.");}
-   else notify("ESA CÁMARA FUE MANIPULADA. Mirá la continuidad del balón y sus sombras.");
+  const valid=verifyFootballPuzzle(modal,{selection,differences,moves,fragments:fragmentOrder,relays,locker,lockerPin,evidence,confirm,finalSequence});
+  if(!valid){timeDebt.current=Math.min(90,timeDebt.current+12);setMistakes(m=>m+1);
+   if(!isMutedRef.current)audio.current?.pulse(190);
+   notify("RESPUESTA INCORRECTA · El sistema perdió 12 segundos. Revisá las pistas.");
+   return;
   }
-  if(modal==="pizarra"){
-   if(valid){advance("pizarra");notify("JUGADA RECONSTRUIDA · El expediente original ya se puede recuperar.");}
-   else notify("LA JUGADA NO CIERRA. Necesitás generar un espacio por derecha y atacar el primer palo.");
-  }
-  if(modal==="relay"){
-   if(valid){advance("relay");notify("SEÑAL RESTAURADA · Ahora podés examinar las cámaras de seguridad.");}
-   else notify("FALLO DE SINCRONIZACIÓN · Revisá las pistas de cada terminal.");
-  }
-  if(modal==="cctv"){
-   if(valid){advance("cctv");notify("SABOTAJE CONFIRMADO · El operador de radio anuló tu credencial.");}
-   else notify("LA ACREDITACIÓN NO COINCIDE. Observá la secuencia en el monitor.");
-  }
-  if(modal==="prueba"){
-   if(valid){advance("prueba");notify("PRUEBA AUTENTICADA · Entregá la instrucción al entrenador. ¡Corré!");}
-   else notify("INFORME FALSO · Esa instrucción favorece a la defensa inglesa.");
-  }
+  if(modal==="monitores"){advance("monitores");notify("TRES ANOMALÍAS IDENTIFICADAS · Ahora reconstruí las fichas.");}
+  if(modal==="pizarra"){advance("pizarra");notify("PIZARRA RESUELTA · Hay cuatro hojas del expediente ocultas en la sala.");}
+  if(modal==="informe"){advance("informe");notify("EXPEDIENTE COMPLETO · Recordá el código: C2 / 4 HOJAS / 7.");}
+  if(modal==="casillero"){advance("casillero");notify("CASILLERO ABIERTO · Recuperaste la llave de mantenimiento.");}
+  if(modal==="relay"){advance("relay");notify("SEÑAL RESTAURADA · Investigá las cámaras del pasillo.");}
+  if(modal==="cctv"){advance("cctv");notify("SABOTAJE CONFIRMADO · Una silueta acaba de cruzar la puerta.");}
+  if(modal==="prueba"){advance("prueba");notify("INFORME SELLADO · El entrenador está esperando. ¡CORRÉ!");}
  };
  const moveRef=useRef({x:0,z:0});
  const move=(x:number,z:number)=>{moveRef.current={x,z};engine.current?.movement(x,z);};
