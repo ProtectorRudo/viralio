@@ -119,6 +119,7 @@ function hintFor(chapter:Chapter,s:Solved,level:number){
 }
 export default function LaUltimaJugada(){
  const [mode,setMode]=useState<Mode>("intro");
+ const [worldReady,setWorldReady]=useState(false);
  const [chapter,setChapter]=useState<Chapter>(0);
  const [solved,setSolved]=useState<Solved>({...EMPTY});
  const solvedRef=useRef<Solved>({...EMPTY});
@@ -212,13 +213,13 @@ export default function LaUltimaJugada(){
  const sceneActive=mode==="playing"||mode==="finale";
  useEffect(()=>{
   if(!sceneActive||!canvas.current)return;
-  let disposed=false;
+  let disposed=false;setWorldReady(false);
   (async()=>{
    try{
     const {FootballWorld}=await import("./FootballWorld");
     if(disposed||!canvas.current)return;
     const w=new FootballWorld(canvas.current,chapter,{action,focus:setFocus,position:(x,y,z,yaw)=>audio.current?.position(x,y,z,yaw),failure:()=>{modeRef.current="unsupported";setMode("unsupported");}});
-    engine.current=w;if(!isMutedRef.current)audio.current?.chapter(chapter);
+    engine.current=w;setWorldReady(true);if(!isMutedRef.current)audio.current?.chapter(chapter);
    }catch{if(!disposed){modeRef.current="unsupported";setMode("unsupported");}}
   })();
   return()=>{disposed=true;engine.current?.dispose();engine.current=null;};
@@ -241,7 +242,7 @@ export default function LaUltimaJugada(){
  const start=()=>{
   if(!document.createElement("canvas").getContext("webgl2")){setMode("unsupported");return;}
   audio.current?.stop();audio.current=new StadiumAudio();audio.current.start();
-  isMutedRef.current=false;setIsMuted(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
+  isMutedRef.current=false;setIsMuted(false);setWorldReady(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
   solvedRef.current={...EMPTY};setModal(null);setFocus("");setHintLevel(-1);setHintVisible(false);setTime(900);
   setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");
   announcements.current.clear();setCinematic("");setFinaleCue("apertura");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
@@ -292,6 +293,7 @@ export default function LaUltimaJugada(){
   {sceneActive&&<>
    <div className="lj-canvas-frame"><canvas ref={canvas} aria-label="Escenario tridimensional explorable: usá WASD para caminar, arrastrá para mirar y tocá los objetos para examinarlos."/></div>
    <div className="lj-vignette" aria-hidden="true"/>
+   {!worldReady&&<div className="lj-loading-scene" role="status"><span>V / VIRALIO ORIGINALS</span><strong>PREPARANDO EL ESTADIO</strong><small>Cargando escena 3D y controles…</small></div>}
    {mode==="finale"&&<div className={"lj-finale-banner lj-finale-"+finaleCue} role="status" key={finaleCue}><small>LA ÚLTIMA JUGADA</small><strong>{finaleCue==="apertura"?"EL ENTRENADOR RECIBIÓ LA INFORMACIÓN":finaleCue==="pase"?"EL 7 SE ESCAPA POR LA BANDA DERECHA":finaleCue==="centro"?"CENTRO AL PRIMER PALO…":"¡¡GOOOOOOOL DE ARGENTINA!!"}</strong><span>{finaleCue==="gol"?"ARGENTINA 2 — 1 INGLATERRA":"LA FINAL SE DEFINE AHORA"}</span></div>}
    {cinematic&&<div className={"lj-cinematic lj-cinematic-"+cinematic} aria-live="assertive"><span>{cinematic==="var"?"¡GOL DE INGLATERRA!":cinematic==="blackout"?"COMUNICACIÓN INTERRUMPIDA":"TE HAN ENGAÑADO"}</span><strong>{cinematic==="var"?"REVISIÓN VAR · GOL ANULADO":cinematic==="blackout"?"SISTEMA BLOQUEADO · RESTAURANDO ENLACE":"EL OPERADOR DE RADIO ERA EL SABOTEADOR"}</strong></div>}
    <header className="lj-hud">
