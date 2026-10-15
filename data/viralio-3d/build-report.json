@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-15T18:02:04.590Z",
+  "generatedAt": "2026-10-15T18:04:52.959Z",
   "selected": 222,
   "successful": 222,
   "failed": 0,
@@ -49,6 +49,18 @@
       "premium-ph-garden-gnome",
       "premium-ph-crystal-chandelier",
       "premium-ph-wood-lantern"
+    ]
+  },
+  "polyHavenNature": {
+    "successful": 6,
+    "failed": 0,
+    "ids": [
+      "nature-ph-potted-plant-large",
+      "nature-ph-potted-plant-variegated",
+      "nature-ph-succulent-haworthia",
+      "nature-ph-fern-group",
+      "nature-ph-tree-stump-roots",
+      "nature-ph-tree-stump-mossy"
     ]
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "Viralio PBR Material Library",
-  "createdAt": "2026-10-15T18:02:04.799Z",
-  "total": 37,
+  "createdAt": "2026-10-15T18:05:01.211Z",
+  "total": 42,
   "license": "CC0-1.0",
   "materials": [
     {
@@ -815,6 +815,116 @@
           "path": "/viralio-3d/materials/metal_grate_rusty-arm.webp",
           "bytes": 239814,
           "sha256": "1c85ca0a34d50ead7d4e4023af11e173611d2b1531c91072866ac1b36e21ab33"
+        }
+      }
+    },
+    {
+      "id": "forest_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/forest_floor",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/forest_floor-color.webp",
+          "bytes": 474798,
+          "sha256": "1de7671e282c246c8b2c736e2b0df913fa237fcd995a173e0a75855805398094"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/forest_floor-normal.webp",
+          "bytes": 2560566,
+          "sha256": "0b05c350cfe34340c5870459a0a3bd5e668cb268c98f0d84ea3750b2889f36a0"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/forest_floor-arm.webp",
+          "bytes": 225386,
+          "sha256": "3621815cec12c0666d11e81b92faff71359b54065c5879b91778476834619ea3"
+        }
+      }
+    },
+    {
+      "id": "concrete_moss",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_moss",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_moss-color.webp",
+          "bytes": 103238,
+          "sha256": "fb2463583e7be2b2aa2be38b2f41de53fa374ad7eb953da4468a93a8925cebd2"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_moss-normal.webp",
+          "bytes": 1629186,
+          "sha256": "bae0284f46dc0ee5332c946ed79dd74c2db4e0f3f91c3658aca79e6045a1caaf"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_moss-arm.webp",
+          "bytes": 18584,
+          "sha256": "52468af178ffbdba6aef66caa5740c838a1cec129ab97e3acbd2d428236335fa"
+        }
+      }
+    },
+    {
+      "id": "metasequoia_bark",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/metasequoia_bark",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/metasequoia_bark-color.webp",
+          "bytes": 228832,
+          "sha256": "862d3e47e2c60e53b897206f548c86d6405aae08352ff52ddac374aeca147423"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/metasequoia_bark-normal.webp",
+          "bytes": 2237378,
+          "sha256": "561d386fb9147c14b2f58b29a5e65c17866dac39d9a5c0585c9a7919e83c05c2"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/metasequoia_bark-arm.webp",
+          "bytes": 152794,
+          "sha256": "46e95302fd31660f583547fc1de70a15abf64a69defcd06c833db89f6daf310d"
+        }
+      }
+    },
+    {
+      "id": "mossy_rock",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/mossy_rock",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/mossy_rock-color.webp",
+          "bytes": 370040,
+          "sha256": "9b78ff7afbbe6276fce4050887a940e309da8d0b3f86007555f97c1e86988563"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/mossy_rock-normal.webp",
+          "bytes": 1880818,
+          "sha256": "9d2237b75171610fabbb3f7bde2be4d1d6ca93d6129decef5a4ea8e677c9a541"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/mossy_rock-arm.webp",
+          "bytes": 225594,
+          "sha256": "b09e40abc3e742b89e9c110696c37ec00d575162a372580160b272c085f3fd5e"
+        }
+      }
+    },
+    {
+      "id": "brick_moss_001",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/brick_moss_001",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/brick_moss_001-color.webp",
+          "bytes": 220766,
+          "sha256": "e49881ce04cddab4b2d4a6ebba182afabe773dc00767fab92b80ebf41cde8388"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/brick_moss_001-normal.webp",
+          "bytes": 1831768,
+          "sha256": "4a56b2381f389bb3f18ec037f024a9cca0d4e6d74c83399159daa791b2aab3d2"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/brick_moss_001-arm.webp",
+          "bytes": 124508,
+          "sha256": "06690ba44786272e80a665e7333e125b89d206a5c19c2d57bf68ee596e56d1bb"
         }
       }
     }
