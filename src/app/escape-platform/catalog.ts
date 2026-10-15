@@ -1,5 +1,5 @@
 export type RoomCategory = "terror" | "misterio" | "emociones";
-export type RoomTheme = "case" | "theatre" | "garden" | "ward";
+export type RoomTheme = "case" | "theatre" | "garden" | "ward" | "stadium";
 export type EscapeExperience = {
   slug: string;
   title: string;
@@ -24,6 +24,27 @@ export type EscapeExperience = {
   featured?: boolean;
 };
 export const experiences: readonly EscapeExperience[] = [
+  {
+    slug: "la-ultima-jugada",
+    title: "LA ÚLTIMA JUGADA",
+    subtitle: "Argentina vs Inglaterra",
+    category: "misterio",
+    categoryLabel: "Aventura deportiva · Investigación",
+    theme: "stadium",
+    cover: "/la-ultima-jugada/cover.svg",
+    photoCredit: "Arte original de Viralio Escape",
+    duration: "15 minutos",
+    difficulty: "Intermedia",
+    intensity: {difficulty:3, scares:1, surprise:5, tension:5},
+    mode: "Individual · Primera persona",
+    tagline: "Llevá la información. Cambiá la final.",
+    synopsis: "Argentina enfrenta a Inglaterra en la final del mundo. Alguien saboteó los informes del entrenador. Tenés 15 minutos, tres sectores del estadio y una última oportunidad para cambiar la historia.",
+    story: [
+      "En una final ficticia entre Argentina e Inglaterra, un investigador detecta una maniobra decisiva que el entrenador necesita conocer.",
+      "Recuperá las grabaciones originales, reconstruí la jugada y esquivá a quien intenta silenciarte.",
+      "Atravesá el estadio antes del pitazo final. La información puede cambiarlo todo."
+    ]
+  },
   {
     slug: "caso-m",
     title: "CASO M",
