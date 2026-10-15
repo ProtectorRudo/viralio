@@ -49,6 +49,8 @@ function verifyGlb(buf) {
     materials:gltf.materials?.length||0,
     textures:gltf.textures?.length||0,
     animations:gltf.animations?.length||0,
+    skins:gltf.skins?.length||0,
+    clipNames:gltf.animations?.map(a=>a.name||"unnamed")||[],
     extensions:gltf.extensionsUsed||[],
   };
 }
@@ -88,6 +90,9 @@ async function worker(){
         info=verifyGlb(readFileSync(target));
       } else if(!validateOnly){
         const raw=await download(item);
+        const rawInfo=verifyGlb(raw);
+        if(item.tier==="personaje-animado" && (rawInfo.skins<1||rawInfo.animations<7))
+          throw Error("Animated character missing rig or 7 source clips");
         const temp=target+".source.glb";
         writeFileSync(temp,raw);
         if(existsSync(cli)){
@@ -101,6 +106,8 @@ async function worker(){
               "--join","false"
             ],{timeout:120000,maxBuffer:1024*1024});
             info=verifyGlb(readFileSync(target));
+            if(item.tier==="personaje-animado"&&(info.skins<1||info.animations<7))
+              throw Error("Optimized character lost skin or animations");
             optimized=true;
           }catch(e){
             console.warn("OPTIMIZE_FALLBACK",item.id,String(e.message).slice(0,160));
@@ -113,6 +120,7 @@ async function worker(){
         }
         rmSync(temp,{force:true});
       } else throw Error("Missing GLB: "+relative);
+      if(item.tier==="personaje-animado"&&(info.skins<1||info.animations<7))throw Error("Missing character skeleton or clips");
       const size=statSync(target).size;
       if(size>totalMaxBytes)throw Error("Output exceeds 36 MiB");
       const hash=sha(readFileSync(target));
@@ -122,7 +130,7 @@ async function worker(){
         author:item.author,path:relative,
         byteSize:size,sha256:hash,
         meshes:info.meshes,nodes:info.nodes,materials:info.materials,
-        textures:info.textures,animations:info.animations,
+        textures:info.textures,animations:info.animations,skins:info.skins,clipNames:info.clipNames,
         optimized:optimized||info.extensions.includes("EXT_texture_webp")||info.extensions.includes("KHR_texture_webp")
       };
       results.push({ok:true,entry});
@@ -147,3 +155,5 @@ console.log("VIRALIO_3D",JSON.stringify({catalog:catalog.assets.length,selected:
   loaded:ordered.length,errors:failures.length,bytes:ordered.reduce((n,e)=>n+e.byteSize,0)}));
 if(ordered.length<minSuccess) process.exitCode=1;
 if(validateOnly && failures.length) process.exitCode=1;
+const expectedCharacters=selected.filter(item=>item.tier==="personaje-animado");
+if(expectedCharacters.some(item=>!ordered.some(entry=>entry.id===item.id))) process.exitCode=1;
