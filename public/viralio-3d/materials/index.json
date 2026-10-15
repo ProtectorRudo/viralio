@@ -1,7 +1,7 @@
 {
   "name": "Viralio PBR Material Library",
-  "createdAt": "2026-10-15T18:20:28.726Z",
-  "total": 42,
+  "createdAt": "2026-10-15T18:22:07.657Z",
+  "total": 44,
   "license": "CC0-1.0",
   "materials": [
     {
@@ -925,6 +925,50 @@
           "path": "/viralio-3d/materials/brick_moss_001-arm.webp",
           "bytes": 124508,
           "sha256": "06690ba44786272e80a665e7333e125b89d206a5c19c2d57bf68ee596e56d1bb"
+        }
+      }
+    },
+    {
+      "id": "dirty_concrete",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/dirty_concrete",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/dirty_concrete-color.webp",
+          "bytes": 304366,
+          "sha256": "acfefe1ed8f91e9181101819ad433efad348a08a79f9882e1d1f27c61d7c2c4b"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/dirty_concrete-normal.webp",
+          "bytes": 2175408,
+          "sha256": "32327d2f26bcc230de83a996488fe41987bb5498b7947c7482c93681a04119b2"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/dirty_concrete-arm.webp",
+          "bytes": 55370,
+          "sha256": "2f230c7d1f5cfb5d68939531cdc07e36fefe724884e0e72d2226dc0ef3b0852b"
+        }
+      }
+    },
+    {
+      "id": "rusty_metal",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rusty_metal",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rusty_metal-color.webp",
+          "bytes": 183120,
+          "sha256": "7e3c670cb9eb05d4eefbd1ef948807cb79ad1e7b5c372166f0f62ceb0c233fad"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rusty_metal-normal.webp",
+          "bytes": 1416684,
+          "sha256": "9a8b6a2267e0c3ff94de1c95aae72207d9f27bf8af6fdebcb8e97be48a28e33d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rusty_metal-arm.webp",
+          "bytes": 58700,
+          "sha256": "dccd55638de65093f3f2108ff8cb144e53ab6e50b75a3e9849d36240ad8ad948"
         }
       }
     }
