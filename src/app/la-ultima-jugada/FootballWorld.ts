@@ -48,6 +48,10 @@ export class FootballWorld {
  private root=new THREE.Group();
  private ray=new THREE.Raycaster();
  private targets:THREE.Object3D[]=[];
+ private obstacles:Array<{minX:number;maxX:number;minZ:number;maxZ:number}>=[];
+ private gameplayActive=true;
+ private walkingPhase=0;
+ private headSway=0;
  private active:GameAction|null=null;
  private handlers:Handlers;
  private keys=new Set<string>();
@@ -70,17 +74,17 @@ export class FootballWorld {
  private replayElapsed=0;private replayClock=0;
  private mixers:THREE.AnimationMixer[]=[];
  private destroyed=false;
- private onKeyDown=(e:KeyboardEvent)=>{if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
+ private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
- private onDown=(e:PointerEvent)=>{this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
+ private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
  private onMove=(e:PointerEvent)=>{
-  if(!this.dragging)return;
+  if(!this.dragging||!this.gameplayActive)return;
   const dx=e.clientX-this.previous.x,dy=e.clientY-this.previous.y;
   this.pointerTravel+=Math.abs(dx)+Math.abs(dy);
   if(this.pointerTravel>7)this.look(dx,dy);
   this.previous={x:e.clientX,y:e.clientY};
  };
- private onUp=(e:PointerEvent)=>{if(!this.dragging)return;this.dragging=false;if(this.pointerTravel<12)this.tap(e.clientX,e.clientY);};
+ private onUp=(e:PointerEvent)=>{if(!this.dragging||!this.gameplayActive)return;this.dragging=false;if(this.pointerTravel<12)this.tap(e.clientX,e.clientY);};
  constructor(canvas:HTMLCanvasElement, chapter:Chapter, handlers:Handlers){
   this.chapter=chapter;this.handlers=handlers;
   this.renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance",alpha:false});
@@ -169,6 +173,7 @@ export class FootballWorld {
   for(const dx of [-w/2+.18,w/2-.18])for(const dz of [-.47,.47])box(.08,.9,.08,x+dx,.4,z+dz,mat(0x778690,.8,.38),local);
   box(w-.35,.07,.95,x,.47,z,mat(0x1d262d,.55,.6),local);
   this.loadFurniture("desk",x,z,w,1.1,1.23,local);
+  this.obstacles.push({minX:x-w/2,maxX:x+w/2,minZ:z-.67,maxZ:z+.67});
  }
  private panel(x:number,y:number,z:number,w:number,h:number,title:string,lines:string[],id?:GameAction){
   box(w+.15,h+.15,.2,x,y,z,mat(0x0c111a,.79,.25),this.root);
@@ -182,6 +187,7 @@ export class FootballWorld {
   tube(.055,.58,x,.23,z,mat(0x98a2a9,.85,.28),local);
   for(let i=0;i<5;i++){const ang=i*Math.PI*2/5;const leg=box(.1,.06,.58,x+Math.sin(ang)*.26,.085,z+Math.cos(ang)*.26,mat(0x65747e,.81,.33),local);leg.rotation.y=ang;}
   this.loadFurniture("chair",x,z,.85,1.2,.85,local);
+  this.obstacles.push({minX:x-.34,maxX:x+.34,minZ:z-.34,maxZ:z+.34});
  }
  private stadium(){
   const turf=mat(0x315b42,.13,.9);
@@ -275,7 +281,11 @@ export class FootballWorld {
     const a=box(4,.12,.1,-3.6+i*.05,3.48-i*.28,0,mat(i%2?0x727e86:0x4b5961,.8,.4),this.root);
     a.rotation.z=0;
    }
-   for(let i=0;i<4;i++)box(1.2,1.7,.7,-4.5+i*1.35,.85,2.4,mat(0x596269,.68,.45),this.root);
+   for(let i=0;i<4;i++){
+    const x=-4.5+i*1.35;
+    box(1.2,1.7,.7,x,.85,2.4,mat(0x596269,.68,.45),this.root);
+    this.obstacles.push({minX:x-.6,maxX:x+.6,minZ:2.03,maxZ:2.77});
+   }
    this.door(0,-6.48,"salida2","TÚNEL DE CAMPO");
    this.detailServiceRoom();
    this.glow(0,3,-6,0xfd7459,9,7);
@@ -412,6 +422,25 @@ export class FootballWorld {
   }
  }
 
+ private canWalk(x:number,z:number){
+  const r=.31;
+  if(x<-5.62||x>5.62||z<-5.8||z>5.8)return false;
+  for(const obstacle of this.obstacles){
+   const cx=THREE.MathUtils.clamp(x,obstacle.minX,obstacle.maxX);
+   const cz=THREE.MathUtils.clamp(z,obstacle.minZ,obstacle.maxZ);
+   if((x-cx)*(x-cx)+(z-cz)*(z-cz)<r*r)return false;
+  }
+  return true;
+ }
+ setGameplayActive(value:boolean){
+  this.gameplayActive=value;
+  if(!value){
+   this.keys.clear();
+   this.touchMove={x:0,z:0};
+   this.dragging=false;
+  }
+ }
+
  private actionAt(nx:number,ny:number){
   this.ray.setFromCamera(new THREE.Vector2(nx,ny),this.camera);
   const hits=this.ray.intersectObjects(this.targets,false);
@@ -423,6 +452,7 @@ export class FootballWorld {
   }return null;
  }
  tap(clientX:number,clientY:number){
+  if(!this.gameplayActive)return;
   const rect=this.renderer.domElement.getBoundingClientRect();
   const x=(clientX-rect.left)/rect.width*2-1;
   const y=-(clientY-rect.top)/rect.height*2+1;
@@ -430,12 +460,14 @@ export class FootballWorld {
   if(action)this.handlers.action(action);else this.interactCenter();
  }
  interactCenter(){
+  if(!this.gameplayActive)return;
   const action=this.actionAt(0,0);if(action)this.handlers.action(action);
  }
  look(dx:number,dy:number){
+  if(!this.gameplayActive)return;
   this.yaw-=dx*.0031;this.pitch=Math.max(-1.12,Math.min(1.12,this.pitch-dy*.00265));
  }
- movement(x:number,z:number){this.touchMove={x,z};}
+ movement(x:number,z:number){this.touchMove=this.gameplayActive?{x,z}:{x:0,z:0};}
  private loop=(time:number)=>{
   this.frame=requestAnimationFrame(this.loop);
   const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
@@ -456,13 +488,19 @@ export class FootballWorld {
   const inputX=Number(this.keys.has("KeyD")||this.keys.has("ArrowRight"))-Number(this.keys.has("KeyA")||this.keys.has("ArrowLeft"))+this.touchMove.x;
   const inputZ=Number(this.keys.has("KeyS")||this.keys.has("ArrowDown"))-Number(this.keys.has("KeyW")||this.keys.has("ArrowUp"))+this.touchMove.z;
   const length=Math.hypot(inputX,inputZ);
-  if(length>0){
-   const speed=2.75*dt/Math.max(1,length);
-   this.camera.position.x+= (Math.cos(this.yaw)*inputX+Math.sin(this.yaw)*inputZ)*speed;
-   this.camera.position.z+= (-Math.sin(this.yaw)*inputX+Math.cos(this.yaw)*inputZ)*speed;
-   this.camera.position.x=THREE.MathUtils.clamp(this.camera.position.x,-5.55,5.55);
-   this.camera.position.z=THREE.MathUtils.clamp(this.camera.position.z,-5.55,5.8);
-  }
+  if(length>0&&this.gameplayActive){
+   const speed=2.65*dt/Math.max(1,length);
+   const dx=(Math.cos(this.yaw)*inputX+Math.sin(this.yaw)*inputZ)*speed;
+   const dz=(-Math.sin(this.yaw)*inputX+Math.cos(this.yaw)*inputZ)*speed;
+   const x=this.camera.position.x,z=this.camera.position.z;
+   // Axis-separated capsule-on-ground collision: slide alongside tables
+   // rather than walking through them, even if the model arrives later.
+   if(this.canWalk(x+dx,z))this.camera.position.x=x+dx;
+   if(this.canWalk(this.camera.position.x,z+dz))this.camera.position.z=z+dz;
+   this.walkingPhase+=dt*11;
+   this.headSway=Math.sin(this.walkingPhase)*.018;
+  }else this.headSway=THREE.MathUtils.lerp(this.headSway,0,Math.min(1,dt*6));
+  this.camera.position.y=1.68+this.headSway;
   this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
   this.focusElapsed+=dt;
   if(this.focusElapsed>0.14){this.focusElapsed=0;this.handlers.position?.(this.camera.position.x,this.camera.position.y,this.camera.position.z,this.yaw);const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
