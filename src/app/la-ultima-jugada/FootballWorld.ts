@@ -219,15 +219,50 @@ export class FootballWorld {
    const geo=new THREE.TorusGeometry(r,.48,5,110,Math.PI*1.5);
    const arc=new THREE.Mesh(geo,grand);arc.position.set(0,y,-68);arc.rotation.x=Math.PI/2;stand.add(arc);
   }
-  const count=3000;const g=new THREE.BoxGeometry(.22,.18,.12);const inst=new THREE.InstancedMesh(g,new THREE.MeshBasicMaterial({vertexColors:false,color:0xffffff}),count);
-  const dummy=new THREE.Object3D();const col=new THREE.Color();
+  // Stadium audiences use instanced silhouettes: two meshes for the whole
+  // crowd, rather than thousands of individual draw calls. Heads and torsos
+  // are proportionate at stand distance and do not look like pixels.
+  const count=this.mobile?2200:4600;
+  const dummy=new THREE.Object3D(),col=new THREE.Color();
+  const chest=new THREE.InstancedMesh(
+   new THREE.CapsuleGeometry(.23,.43,3,6),
+   new THREE.MeshStandardMaterial({color:0xffffff,roughness:.96,metalness:0}),
+   count
+  );
+  const heads=new THREE.InstancedMesh(
+   new THREE.SphereGeometry(.16,5,4),
+   new THREE.MeshStandardMaterial({color:0xc3b5a5,roughness:1,metalness:0}),
+   count
+  );
+  chest.frustumCulled=false;heads.frustumCulled=false;
+  const skinShades=[0xd7bd9b,0xb88c70,0x946b59,0xe1cab0,0x795948];
+  const seeded=(i:number)=>((i*1664525+1013904223)>>>0)/4294967296;
   for(let i=0;i<count;i++){
-   const a=(i/count)*Math.PI*1.75+Math.PI*.62;const r=56+(i%15)*1.32;
-   dummy.position.set(Math.cos(a)*r,2+(i%15)*.7,-68+Math.sin(a)*r);
-   dummy.rotation.y=-a;dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);
-   const color=crowdColors[(i*37+Math.floor(i/7))%crowdColors.length];col.setHex(color);inst.setColorAt(i,col);
+   const tier=i%15,ringPos=Math.floor(i/15);
+   const a=ringPos/(Math.ceil(count/15))*Math.PI*1.84+Math.PI*.58;
+   const radius=55.5+tier*1.34;
+   const x=Math.cos(a)*radius,z=-68+Math.sin(a)*radius;
+   const baseY=2+tier*.71;
+   dummy.position.set(x,baseY+.55,z);
+   dummy.rotation.y=-a+Math.PI*.5;
+   dummy.scale.set(1,.85+seeded(i)*.4,1);dummy.updateMatrix();
+   chest.setMatrixAt(i,dummy.matrix);
+   const fanSector=Math.floor((a+Math.PI)*4.2);
+   const color=crowdColors[(i*17+fanSector*11+Math.floor(tier/3))%crowdColors.length];
+   col.setHex(color);chest.setColorAt(i,col);
+   dummy.position.y=baseY+1.0;dummy.scale.setScalar(.83+seeded(i+71)*.32);dummy.updateMatrix();
+   heads.setMatrixAt(i,dummy.matrix);
+   col.setHex(skinShades[(i*11+fanSector)%skinShades.length]);heads.setColorAt(i,col);
   }
-  inst.instanceMatrix.needsUpdate=true;this.root.add(inst);
+  chest.instanceMatrix.needsUpdate=true;heads.instanceMatrix.needsUpdate=true;
+  this.root.add(chest,heads);
+  // Low-cost illuminated fascia along the lower spectator ring.
+  const fascia=new THREE.Mesh(
+   new THREE.TorusGeometry(54.3,.055,5,160,Math.PI*1.83),
+   new THREE.MeshBasicMaterial({color:0x94d6f7,toneMapped:false})
+  );
+  fascia.position.set(0,1.8,-68);fascia.rotation.x=Math.PI/2;
+  this.root.add(fascia);
   for(let i=0;i<7;i++){
    const x=-41+i*14;
    // Visible light bars are emissive; only a few emit actual GPU lights.
