@@ -9,6 +9,21 @@ async function walk(page:Page,key:"w"|"a"|"s"|"d",ms:number){
  await page.keyboard.up(key);
 }
 
+
+async function walkUntil(page:Page,key:"w"|"a"|"s"|"d",axis:"x"|"z",goal:number,direction:"gte"|"lte"){
+ await page.keyboard.down(key);
+ try{
+  await expect.poll(async()=>{
+   const raw=await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position");
+   if(!raw)return false;
+   const numbers=raw.split(",").map(Number);
+   const value=axis==="x"?numbers[0]:numbers[1];
+   return direction==="gte"?value>=goal:value<=goal;
+  },{timeout:16_000,intervals:[130,190,330,500]})
+   .toBe(true);
+ }finally{await page.keyboard.up(key);}
+}
+
 async function orient(page:Page){
  await page.getByRole("button",{name:"Mostrar u ocultar pista"}).click();
  await page.getByRole("button",{name:/ORIENTARME/}).click();
@@ -41,14 +56,10 @@ test("full Argentina–England investigation physically reaches every room and t
  await expect(page.locator(".lj-canvas-frame canvas")).toBeVisible();
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position"),{timeout:20_000}).not.toBeNull();
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
- // Move around the analysis desk instead of walking through solid furniture.
- await walk(page,"d",1300);
- const afterStrafe=(await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")||"0,0").split(",").map(Number);
- expect(afterStrafe[0],"Keyboard movement should enter the right-hand aisle").toBeGreaterThan(1.85);
- // Use the aisle next to the furniture before turning toward the rear monitors.
- await walk(page,"w",2400);
- const afterAisle=(await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")||"0,0").split(",").map(Number);
- expect(afterAisle[1],"Walking forward in the clear side aisle").toBeLessThan(-.5);
+ // Follow a physical aisle without frame-rate-dependent distances.
+ // Slow software WebGL should not penalize a user for having low FPS.
+ await walkUntil(page,"d","x",3,"gte");
+ await walkUntil(page,"w","z",-1.4,"lte");
  await reachAction(page,/Reconstruí la jugada/i,true);
  await page.getByRole("button",{name:/CÁMARA 2/}).click();
  await solve(page);
