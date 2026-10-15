@@ -1,7 +1,7 @@
 {
   "name": "Viralio Escape — shared 3D models",
   "version": "1.0.0",
-  "generatedAt": "2026-10-15T16:36:55.714Z",
+  "generatedAt": "2026-10-15T16:49:23.164Z",
   "total": 81,
   "license": "CC0-1.0",
   "items": [
@@ -22,6 +22,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -41,6 +43,8 @@
       "materials": 2,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -60,6 +64,8 @@
       "materials": 1,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -79,6 +85,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -98,6 +106,8 @@
       "materials": 2,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -117,6 +127,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -136,6 +148,8 @@
       "materials": 3,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -155,6 +169,8 @@
       "materials": 2,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -174,6 +190,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -193,6 +211,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -212,6 +232,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -231,6 +253,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 4,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -250,6 +274,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -269,6 +295,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -288,6 +316,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -307,6 +337,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -326,6 +358,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -345,6 +379,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -364,6 +400,8 @@
       "materials": 2,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -383,6 +421,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -402,6 +442,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -421,6 +463,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -440,6 +484,8 @@
       "materials": 2,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -459,6 +505,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -478,6 +526,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -497,6 +547,8 @@
       "materials": 2,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -516,6 +568,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -535,6 +589,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -554,6 +610,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -573,6 +631,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -592,6 +652,8 @@
       "materials": 1,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -611,6 +673,8 @@
       "materials": 4,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -630,6 +694,8 @@
       "materials": 4,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -649,6 +715,8 @@
       "materials": 3,
       "textures": 8,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -668,6 +736,8 @@
       "materials": 5,
       "textures": 10,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -687,6 +757,8 @@
       "materials": 3,
       "textures": 8,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -706,6 +778,8 @@
       "materials": 4,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -725,6 +799,8 @@
       "materials": 4,
       "textures": 9,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -744,6 +820,8 @@
       "materials": 5,
       "textures": 10,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -763,6 +841,8 @@
       "materials": 2,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -782,6 +862,8 @@
       "materials": 4,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -801,6 +883,8 @@
       "materials": 3,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -820,6 +904,8 @@
       "materials": 6,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -839,6 +925,8 @@
       "materials": 8,
       "textures": 8,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -858,6 +946,8 @@
       "materials": 5,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -877,6 +967,8 @@
       "materials": 4,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -896,6 +988,8 @@
       "materials": 5,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -915,6 +1009,8 @@
       "materials": 3,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -934,6 +1030,8 @@
       "materials": 3,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -953,6 +1051,8 @@
       "materials": 3,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -972,6 +1072,8 @@
       "materials": 3,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -991,6 +1093,8 @@
       "materials": 5,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1010,6 +1114,8 @@
       "materials": 3,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1029,6 +1135,8 @@
       "materials": 4,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1048,6 +1156,8 @@
       "materials": 6,
       "textures": 7,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1067,6 +1177,8 @@
       "materials": 4,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1086,6 +1198,8 @@
       "materials": 12,
       "textures": 13,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1105,6 +1219,8 @@
       "materials": 6,
       "textures": 7,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1124,6 +1240,8 @@
       "materials": 11,
       "textures": 12,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1143,6 +1261,8 @@
       "materials": 11,
       "textures": 12,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1162,6 +1282,8 @@
       "materials": 10,
       "textures": 11,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1181,6 +1303,8 @@
       "materials": 3,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1200,6 +1324,8 @@
       "materials": 13,
       "textures": 14,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1219,6 +1345,8 @@
       "materials": 11,
       "textures": 12,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1238,6 +1366,8 @@
       "materials": 8,
       "textures": 9,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1257,6 +1387,8 @@
       "materials": 5,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1276,6 +1408,8 @@
       "materials": 6,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1295,6 +1429,8 @@
       "materials": 4,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1314,6 +1450,8 @@
       "materials": 2,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1333,6 +1471,8 @@
       "materials": 4,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1352,6 +1492,8 @@
       "materials": 3,
       "textures": 4,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1371,6 +1513,8 @@
       "materials": 6,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1390,6 +1534,8 @@
       "materials": 6,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1409,6 +1555,8 @@
       "materials": 2,
       "textures": 2,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1428,6 +1576,8 @@
       "materials": 5,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1447,6 +1597,8 @@
       "materials": 6,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1466,6 +1618,8 @@
       "materials": 5,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1485,6 +1639,8 @@
       "materials": 9,
       "textures": 9,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1504,6 +1660,8 @@
       "materials": 5,
       "textures": 5,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1523,6 +1681,8 @@
       "materials": 3,
       "textures": 3,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     },
     {
@@ -1542,6 +1702,8 @@
       "materials": 6,
       "textures": 6,
       "animations": 0,
+      "skins": 0,
+      "clipNames": [],
       "optimized": true
     }
   ]
