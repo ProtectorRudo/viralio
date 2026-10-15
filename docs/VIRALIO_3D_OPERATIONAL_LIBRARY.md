@@ -2,7 +2,7 @@
 
 ## Qué existe realmente
 
-- **155 assets CC0 materializados y verificados** en `data/viralio-3d/catalog.json`. Incluye más de 30 modelos fotorrealistas de Poly Haven, cuatro humanoides con rig y siete clips cada uno, mobiliario, puertas, ventanas, equipamiento médico, figuras estáticas, accesorios de terror y una escultura escaneada de bronce. El carácter fotorrealista de cada escena completa aún depende de iluminación, materiales y QA en móvil.
+- **171 assets CC0 materializados y verificados** en `data/viralio-3d/catalog.json`. Incluye más de 30 modelos fotorrealistas de Poly Haven, cuatro humanoides con rig y siete clips cada uno, mobiliario, puertas, ventanas, equipamiento médico, figuras estáticas, accesorios de terror y una escultura escaneada de bronce. El carácter fotorrealista de cada escena completa aún depende de iluminación, materiales y QA en móvil.
 - **26 materiales PBR CC0** de Poly Haven en `data/viralio-3d/materials.json`: 3 mapas (base color, normal OpenGL y ARM) por material, 78 mapas publicados y validados.
 - **Construcción reproducible** con `scripts/build-viralio-3d-library.mjs` y `scripts/build-viralio-materials.mjs`, desplegados por `.github/workflows/viralio-3d-library.yml`.
 - **Archivos GLB ya materializados** se sirven bajo `public/viralio-3d/models/*.glb`. El índice definitivo con archivos realmente disponibles es `public/viralio-3d/index.json`. El índice de materiales publicados será `public/viralio-3d/materials/index.json`.
@@ -40,7 +40,7 @@ Los props y paredes son **base artística**: el desarrollo de cada sala debe inc
 - Crear variaciones de iluminación, desgaste, focos, voces, sonido ambiente, distancia de cámara y objetos narrativos.
 - No repetir los mismos 4 props hero en salas contiguas, ni reutilizar la misma disposición de muebles. Las figuras anatómicas, maniquíes, pacientes y la escultura de monstruo alado SON ESTÁTICOS, no NPCs.
 - Reservar fotorrealismo/alta resolución para objetos cercanos al jugador; muebles secundarios pueden usar 1K.
-- No cargar automáticamente los 155 modelos ni 26 materiales en cada visita. Cada sala selecciona solo los que efectivamente usa.
+- No cargar automáticamente los 171 modelos ni 26 materiales en cada visita. Cada sala selecciona solo los que efectivamente usa.
 
 ## Fuentes y licencia
 
@@ -81,3 +81,7 @@ Si algún modelo falla, el reporte indica los ausentes; no afirmar integración 
 5. Crear una escena piloto y comparar capturas con la versión actual de Viralio Escape.
 
 **Política de costo:** US$0 en licencias, salvo autorización explícita para un recurso pago.
+
+## Balones y vestuario de fútbol
+
+Última selección: 12 props CC0 e instalaciones y dos balones Poly Haven fotoescaneados, convertidos y verificados. Ver `docs/VIRALIO_3D_FOOTBALL_PREMIUM_ASSETS.md`, manifest `data/viralio-3d/polyhaven-football-models.json` e índice `public/viralio-3d/index.json`. Total 171 GLB y 26 materiales PBR. Los jugadores de fondo de esta colección son figuras estáticas; no construir escenas o juegos sin solicitud.
