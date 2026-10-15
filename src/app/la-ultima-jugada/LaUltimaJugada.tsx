@@ -465,7 +465,7 @@ export default function LaUltimaJugada(){
    <div className="lj-end-score"><span>ARGENTINA</span><strong>2 : 1</strong><span>INGLATERRA</span></div>
    <h2>CAMPEONES DEL MUNDO</h2>
    <div className="lj-run-report" aria-label="Resultado de la misión">
-    <div><small>TIEMPO DE RESOLUCIÓN</small><strong>{String(Math.floor(Math.max(0,900-time-mistakes*12)/60)).padStart(2,"0")}:{String(Math.max(0,900-time-mistakes*12)%60).padStart(2,"0")}</strong></div>
+    <div><small>TIEMPO DE RESOLUCIÓN</small><strong>{String(Math.floor(Math.max(0,900-time-Math.min(90,mistakes*12))/60)).padStart(2,"0")}:{String(Math.max(0,900-time-Math.min(90,mistakes*12))%60).padStart(2,"0")}</strong></div>
     <div><small>RESPUESTAS INCORRECTAS</small><strong>{mistakes}</strong></div>
     <div><small>PENALIZACIÓN DE TIEMPO</small><strong>{Math.min(90,mistakes*12)} s</strong></div>
    </div>
