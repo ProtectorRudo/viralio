@@ -82,6 +82,7 @@ jobs:
           cp -R football-source/public/viralio-3d public/viralio-3d
           cp football-source/scripts/build-la-ultima-jugada-standalone.mjs scripts/
           cp football-source/scripts/la-ultima-jugada-standalone-entry.tsx scripts/
+          node --check scripts/build-la-ultima-jugada-standalone.mjs
           node scripts/build-la-ultima-jugada-standalone.mjs
           test -s showcase/la-ultima-jugada/index.html
           test -s showcase/la-ultima-jugada/app.js
