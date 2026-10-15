@@ -52,7 +52,8 @@ export class FootballWorld {
  private dragging=false;
  private start={x:0,y:0};
  private previous={x:0,y:0};
- private delta=0;
+ private pointerTravel=0;
+ private focusElapsed=0;
  private yaw=0;private pitch=0;
  private last=0;private frame=0;
  private boundResize=()=>this.resize();
@@ -61,15 +62,15 @@ export class FootballWorld {
  private disposableTextures:THREE.Texture[]=[];
  private onKeyDown=(e:KeyboardEvent)=>{if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
- private onDown=(e:PointerEvent)=>{this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.delta=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
+ private onDown=(e:PointerEvent)=>{this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
  private onMove=(e:PointerEvent)=>{
   if(!this.dragging)return;
   const dx=e.clientX-this.previous.x,dy=e.clientY-this.previous.y;
-  this.delta+=Math.abs(dx)+Math.abs(dy);
-  if(this.delta>7)this.look(dx,dy);
+  this.pointerTravel+=Math.abs(dx)+Math.abs(dy);
+  if(this.pointerTravel>7)this.look(dx,dy);
   this.previous={x:e.clientX,y:e.clientY};
  };
- private onUp=(e:PointerEvent)=>{if(!this.dragging)return;this.dragging=false;if(this.delta<12)this.tap(e.clientX,e.clientY);};
+ private onUp=(e:PointerEvent)=>{if(!this.dragging)return;this.dragging=false;if(this.pointerTravel<12)this.tap(e.clientX,e.clientY);};
  constructor(canvas:HTMLCanvasElement, chapter:Chapter, handlers:Handlers){
   this.chapter=chapter;this.handlers=handlers;
   this.renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance",alpha:false});
@@ -287,8 +288,8 @@ export class FootballWorld {
    this.camera.position.z=THREE.MathUtils.clamp(this.camera.position.z,-5.55,5.8);
   }
   this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
-  this.delta+=dt;
-  if(this.delta>0.14){this.delta=0;const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
+  this.focusElapsed+=dt;
+  if(this.focusElapsed>0.14){this.focusElapsed=0;const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
  }
  resize(){
   const canvas=this.renderer.domElement;const parent=canvas.parentElement;
