@@ -88,3 +88,40 @@ El archivo **`data/viralio-3d/crime-investigation-core.json`** ofrece siete list
 ## Resultado verificado
 
 En el workflow final, los 251 modelos Innerscene del catálogo fueron descargados y validados sin fallos; más los 34 modelos de Poly Haven de bibliotecas complementarias dan **285 GLB reales**. 44 superficies PBR. Nuevos materiales `dirty_concrete` y `rusty_metal` disponibles con mapas color/normal/ARM. Los 29 `crime-*` nuevos están en `public/viralio-3d/index.json` y los 7 packs de selección en `data/viralio-3d/crime-investigation-core.json`. **No se han publicado escenas jugables.**
+
+## Segunda ampliación: 17 utilerías de apoyo CC0 (15/10/2026)
+
+Se agregaron **17 fuentes GLB sin duplicaciones** a `data/viralio-3d/catalog.json` para materialización mediante GitHub Actions. **Estado inicial: curadas, sin declarar descargadas hasta comprobar el índice publicado.** El catálogo pasa de 251 a 268 modelos Innerscene (más 34 GLB adicionales de bibliotecas Poly Haven externas, previamente verificados). El objetivo verificado, si no hay fallos, sería **302 GLB**.
+
+### Recursos incorporados al catálogo
+
+| ID | Uso correcto | Fuente |
+| --- | --- | --- |
+| `investigation-sealed-storage-pouch` | bolsa sellable doméstica para utilería; **no** bolsa pericial certificada | Innerscene |
+| `investigation-desktop-file-sorter` | clasificación de expedientes | Innerscene |
+| `investigation-lidded-storage-tote` | contenedor de almacenamiento | Innerscene |
+| `investigation-network-archive` | servidor NAS de seguridad y análisis digital | Innerscene |
+| `investigation-parts-drawer-cabinet` | gabinete para piezas/útiles pequeños | Innerscene |
+| `investigation-file-holder` | soporte de expedientes | Innerscene |
+| `investigation-glass-magnifier` | lupa con cristal y madera | Innerscene |
+| `investigation-incident-report-sign` | señal de protocolo de incidentes | Innerscene |
+| `investigation-visitor-signin-sign` | señal de registro de visitantes | Innerscene |
+| `investigation-industrial-security-light` | reflector de seguridad PBR escaneado (hero) | Poly Haven vía Innerscene |
+| `investigation-printmaking-glass-table` | mesa de trabajo de vidrio (no mesa de autopsias) | Innerscene |
+| `investigation-coffee-cart-ph` | carro de ambiente fotoescaneado PBR (hero) | Poly Haven vía Innerscene |
+| `investigation-document-scanner` | escáner de hojas para análisis documental | Innerscene |
+| `investigation-pocket-journal` | objeto personal/diario de bolsillo | Innerscene |
+| `investigation-trigger-spray-bottle` | aerosol de utilería genérica, **sin** químicos reales | Innerscene |
+| `investigation-wire-wastebasket` | cesto de papel metálico | Innerscene |
+| `investigation-parcel-locker` | casillero de paquetería | Innerscene |
+
+Cada recurso tiene una ficha `sourcePage` CC0, autor, URL de descarga e identificador único en el catálogo. Licencia general: [Innerscene CC0](https://www.innerscene.com/tools/library/terms); 2 modelos proceden del repositorio [Poly Haven CC0](https://polyhaven.com/license). No se adquirieron licencias ni se modificaron juegos.
+
+Tres selecciones opcionales se suman a `crime-investigation-core.json`: recepción y archivo de indicios, accesos vigilados y análisis digital. **Son listas de recursos, no niveles o escenas.** Los personajes animados cinematográficos, marcadores numerados y bolsas verdaderas de evidencia siguen pendientes.
+
+### Verificación física
+
+- Revisar `public/viralio-3d/index.json` y los `investigation-*.glb` tras completar el workflow.
+- Diferenciar alta en catálogo (`curated-source`) de materialización real y optimización.
+- Verificar específicamente transparencia del pouch, luminaria y polígonos de muebles en navegador Android.
+- Mantener objetivos móviles y no introducir estos 17 GLB juntos en una misma escena.
