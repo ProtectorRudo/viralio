@@ -104,7 +104,7 @@ test("full Argentina–England investigation physically reaches every room and t
  await reachAction(page,/saboteador/i,true);
  await page.getByRole("button",{name:"CREDENCIAL 09"}).click();
  await solve(page);
- await reachAction(page,/tres sellos/i);
+ await reachAction(page,/tres pistas/i);
  await expect(page.locator(".lj-brand small")).toHaveText("TÚNEL DE LA FINAL");
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  await page.waitForTimeout(900);
