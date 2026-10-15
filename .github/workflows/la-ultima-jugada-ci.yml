@@ -44,6 +44,7 @@ jobs:
             test-results/la-ultima-jugada-desktop.png
             test-results/la-ultima-jugada-mobile.png
             test-results/la-ultima-jugada-final-victoria.png
+            test-results/la-ultima-jugada-gol-3d.png
             test-results/**/trace.zip
           if-no-files-found: warn
           retention-days: 7
