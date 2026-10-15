@@ -1,0 +1,231 @@
+{
+  "name": "Viralio Premium Cinematic Choice Catalog",
+  "version": "1.0.0",
+  "date": "2026-10-15",
+  "scope": "Assets, not playable game",
+  "modelIds": [
+    {
+      "id": "premium-guard-drew",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Vigilancia / hotel / cine",
+      "priority": 1,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-doctor-jordan",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Hospital / investigación",
+      "priority": 1,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-surgeon-alex",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Laboratorio / quirófano",
+      "priority": 1,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-paramedic-drew",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Emergencias",
+      "priority": 2,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-nurse-tablet-micah",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Sanatorio / control",
+      "priority": 2,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-construction-worker-drew",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Obras / depósito",
+      "priority": 2,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-chef-sam",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Restaurante / cocina",
+      "priority": 1,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-courier-owen",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Hotel / recepción / envío",
+      "priority": 2,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-worker-clipboard-taylor",
+      "category": "PERSONAJE",
+      "renderType": "Static",
+      "use": "Administración / registro",
+      "priority": 2,
+      "limitations": "Figura fija, no tiene rig ni acciones"
+    },
+    {
+      "id": "premium-dancer-step",
+      "category": "PERSONAJE",
+      "renderType": "Rig+1 clip",
+      "use": "Fiesta / recuerdo / video",
+      "priority": 2,
+      "limitations": "Un único clip, no locomoción completa"
+    },
+    {
+      "id": "premium-dancer-groove",
+      "category": "PERSONAJE",
+      "renderType": "Rig+1 clip",
+      "use": "Fiesta / música",
+      "priority": 2,
+      "limitations": "Un único clip, no locomoción completa"
+    },
+    {
+      "id": "premium-audio-speaker",
+      "category": "ELECTRÓNICA",
+      "renderType": "PBR",
+      "use": "Sonido ambiental / parlante",
+      "priority": 2,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-hurricane-lantern",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Mansión / luz antigua",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-victorian-books",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Biblioteca / pistas",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-telephone-clock",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Hotel / teléfono-reloj",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-wooden-candle",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Ritual / antigua casa",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-magnifier",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Investigación",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-metal-toolbox",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Búnker / taller",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-metal-tool-chest",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Taller / depósito",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-bolt-cutters",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Industrial",
+      "priority": 2,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-hand-truck",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Depósito / logística",
+      "priority": 2,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-garden-gnome",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Jardín / casa",
+      "priority": 2,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-crystal-chandelier",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Teatro / hotel / mansión",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    },
+    {
+      "id": "premium-ph-wood-lantern",
+      "category": "ARTEFACTO",
+      "renderType": "Photoreal",
+      "use": "Rústica / antigua",
+      "priority": 1,
+      "limitations": "Objetos sin comportamiento/luz por sí solos"
+    }
+  ],
+  "hdriIds": [
+    "cinema-vintage",
+    "cinema-lobby",
+    "abandoned-warehouse",
+    "abandoned-tile-room",
+    "victorian-old-hall",
+    "forest-mist",
+    "abandoned-games-room"
+  ],
+  "materials": [
+    "rusted_shutter",
+    "rust_coarse_01",
+    "wood_plank_wall",
+    "painted_concrete_02",
+    "smoke_speckled_veneer",
+    "metal_grate_rusty"
+  ],
+  "vfxIds": [
+    "smoke-wisp",
+    "fog-low",
+    "dust-haze",
+    "dust-motes",
+    "ember-sparks",
+    "light-shaft-mask"
+  ],
+  "sources": [
+    "Innerscene CC0",
+    "Poly Haven CC0",
+    "Viralio in-house procedural alpha masks"
+  ],
+  "policy": "Only confirm usable if local resource appears in published public index. HDRI ≠ 3D scene, procedural mask ≠ volumetric VFX."
+}
