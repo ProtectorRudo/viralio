@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { experiences, getExperience } from "../../escape-platform/catalog";
 import { ExperienceIntensity } from "../../escape-platform/ExperienceIntensity";
+import { RealGameplayShowcase } from "../../escape-platform/RealGameplayShowcase";
 import { SiteFooter, SiteHeader } from "../../escape-platform/SiteShell";
 import "../../escape-platform/escape-premium.css";
 
@@ -36,11 +37,12 @@ export default async function ExperiencePage({params}:Props) {
            <span>◷ {room.duration}</span><span>Dificultad: {room.difficulty}</span><span>Modo: {room.mode}</span>
          </div>
          <div className="ve-actions">
-           <a className="ve-button ve-button-primary" href={room.playUrl} target="_blank" rel="noopener noreferrer">Jugar experiencia <span aria-hidden="true">↗</span></a>
+           <a className="ve-button ve-button-primary" href={room.playUrl} target="_blank" rel="noopener noreferrer">Jugar gratis durante las pruebas <span aria-hidden="true">↗</span></a>
            <a className="ve-button ve-button-ghost" href="https://tehiceesto.com/#escapes" target="_blank" rel="noopener noreferrer">Explorar versiones para regalar <span aria-hidden="true">↗</span></a>
          </div>
        </div>
      </section>
+     {room.trailerUrl && <RealGameplayShowcase compact/>}
      <section className="ve-room-detail">
        <div className="ve-container ve-room-detail-grid">
          <div><span className="ve-overline ve-metal">LA HISTORIA / SIN SPOILERS</span><h2>Hay algo que debés descubrir.</h2>
@@ -53,8 +55,8 @@ export default async function ExperiencePage({params}:Props) {
            <ExperienceIntensity room={room} variant="detail"/>
            <p><strong>Dispositivos:</strong> celular o computadora compatibles con gráficos 3D (WebGL2).</p>
            <p><strong>Recomendación:</strong> jugá con auriculares y en un lugar tranquilo.</p>
-           <a className="ve-button ve-button-primary" href={room.playUrl} target="_blank" rel="noopener noreferrer">Entrar a la sala <span aria-hidden="true">↗</span></a>
-           <small>La partida se abre en el sitio donde está alojado el juego. Las modalidades comerciales se anunciarán con condiciones y precios visibles.</small>
+           <a className="ve-button ve-button-primary" href={room.playUrl} target="_blank" rel="noopener noreferrer">Jugar gratis <span aria-hidden="true">↗</span></a>
+           <small>Acceso completo gratuito durante esta fase de pruebas, sin registro ni pago. La partida se abre en el sitio donde está alojado el juego; las modalidades comerciales se anunciarán con precios y condiciones claras.</small>
          </aside>
        </div>
      </section>
