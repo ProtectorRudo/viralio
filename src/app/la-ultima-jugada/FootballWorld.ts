@@ -302,14 +302,23 @@ export class FootballWorld {
   }else if(chapter===1){
    this.panel(2.2,1.74,-6.36,2.75,2.12,"CENTRAL DE ENLACE",["TERMINALES A / B / C","PROTOCOLO 031"],"relay");
    this.panel(-2.5,1.72,-6.36,2.6,2.1,"CIRCUITO CERRADO",["REGISTRO ACCESOS","CÁMARA 09"],"cctv");
-   for(let i=0;i<6;i++){
-    const a=box(4,.12,.1,-3.6+i*.05,3.48-i*.28,0,mat(i%2?0x727e86:0x4b5961,.8,.4),this.root);
-    a.rotation.z=0;
+   // Service trays are anchored to the wall instead of floating across
+   // the player's field of view as they did in the earlier prototype.
+   const tray=mat(0x617686,.78,.44);
+   for(let i=0;i<3;i++){
+    const y=3.55-i*.19;
+    box(.27,.07,11.2,-5.79,y,-.12,tray,this.root);
+    for(let j=0;j<8;j++)box(.44,.035,.07,-5.79,y-.035,-5.3+j*1.4,tray,this.root);
    }
+   // Electrical lockers are distributed down the left wall to leave a
+   // physically walkable and visibly uninterrupted escape route.
    for(let i=0;i<4;i++){
-    const x=-4.5+i*1.35;
-    box(1.2,1.7,.7,x,.85,2.4,mat(0x596269,.68,.45),this.root);
-    this.obstacles.push({minX:x-.6,maxX:x+.6,minZ:2.03,maxZ:2.77});
+    const z=2.45-i*1.65;
+    const x=-5.37;
+    box(.85,1.79,1.28,x,.92,z,mat(0x3b4d5b,.63,.53),this.root);
+    box(.075,1.58,1.08,x+.44,.94,z,mat(0x788b96,.76,.36),this.root);
+    box(.045,.16,.20,x+.49,1.16,z-.28,mat(0xc8b487,.62,.35),this.root);
+    this.obstacles.push({minX:x-.45,maxX:x+.45,minZ:z-.64,maxZ:z+.64});
    }
    this.door(0,-6.48,"salida2","TÚNEL DE CAMPO");
    this.detailServiceRoom();
@@ -321,6 +330,9 @@ export class FootballWorld {
    }
   }else{
    this.stadium();
+   const flood=new THREE.SpotLight(0xb9e5ff,25,64,Math.PI/5,.74,1.65);
+   flood.position.set(0,7.8,-11);flood.target.position.set(0,.1,-28);
+   this.root.add(flood,flood.target);
    // Open field portal: a high lintel rather than an opaque wall covering the pitch.
    box(11,.35,.3,0,3.93,-6.55,mat(0x17212a,.65,.58),this.root);
    box(3.35,.085,.29,0,3.24,-6.41,mat(0xc6d2d7,.75,.36,0x9ee1f5,.23),this.root);
@@ -333,7 +345,7 @@ export class FootballWorld {
    // The raycast target surrounds a tangible coach instead of an invisible door.
    this.interactive("entrega",.85,1.52,-6.29,1.5,2.36,.43);
    for(let i=0;i<6;i++){const z=4.5-i*1.45;box(.075,.03,9,0,.025,z,mat(0xe4bd79,.41,.55,0xa27622,.14),this.root);}
-   this.glow(0,2,-5,0xa3dffd,9,12);
+   this.glow(0,2.7,-7,0xd5f3ff,19,16);
   }
   // Decorative rivets and practical wall fixtures; real meshes and PBR materials.
   const nickel=mat(0x84949f,.88,.24);
