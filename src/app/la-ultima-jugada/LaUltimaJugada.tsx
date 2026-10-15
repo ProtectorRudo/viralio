@@ -36,6 +36,7 @@ class StadiumAudio {
  ctx:AudioContext|null=null;
  noise:AudioBufferSourceNode|null=null;
  gain:GainNode|null=null;
+ panner:PannerNode|null=null;
  start(){
   try{
    const ctx=new AudioContext();this.ctx=ctx;
@@ -44,7 +45,10 @@ class StadiumAudio {
    for(let i=0;i<len;i++){previous=(previous+Math.random()*2-1)/1.014;data[i]=Math.max(-1,Math.min(1,previous*.045));}
    const noise=ctx.createBufferSource();noise.buffer=b;noise.loop=true;
    const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=790;
-   const g=ctx.createGain();g.gain.value=.29;noise.connect(filter);filter.connect(g);g.connect(ctx.destination);
+   const g=ctx.createGain();g.gain.value=.29;
+   const pan=ctx.createPanner();pan.panningModel="HRTF";pan.distanceModel="inverse";pan.refDistance=23;pan.maxDistance=180;pan.rolloffFactor=.55;
+   pan.positionX.value=0;pan.positionY.value=8;pan.positionZ.value=-38;this.panner=pan;
+   noise.connect(filter);filter.connect(pan);pan.connect(g);g.connect(ctx.destination);
    noise.start();this.noise=noise;this.gain=g;
   }catch{}
  }
@@ -56,11 +60,16 @@ class StadiumAudio {
   g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.35);
   o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.36);
  }
+ position(x:number,y:number,z:number,yaw:number){
+  if(!this.ctx)return;const t=this.ctx.currentTime,listener=this.ctx.listener;
+  listener.positionX.setTargetAtTime(x,t,.04);listener.positionY.setTargetAtTime(y,t,.04);listener.positionZ.setTargetAtTime(z,t,.04);
+  listener.forwardX.setTargetAtTime(-Math.sin(yaw),t,.04);listener.forwardY.setTargetAtTime(0,t,.04);listener.forwardZ.setTargetAtTime(-Math.cos(yaw),t,.04);
+ }
  chapter(n:number){
   if(this.gain&&this.ctx)this.gain.gain.setTargetAtTime(n===2?.54:.22,this.ctx.currentTime,.5);
   this.pulse(n===2?680:390);
  }
- stop(){try{this.noise?.stop();void this.ctx?.close();}catch{}this.ctx=null;this.noise=null;this.gain=null;}
+ stop(){try{this.noise?.stop();void this.ctx?.close();}catch{}this.ctx=null;this.noise=null;this.gain=null;this.panner=null;}
 }
 function format(seconds:number){const s=Math.max(0,Math.floor(seconds));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 function nextObjective(chapter:Chapter, s:Solved){
@@ -168,7 +177,7 @@ export default function LaUltimaJugada(){
    try{
     const {FootballWorld}=await import("./FootballWorld");
     if(disposed||!canvas.current)return;
-    const w=new FootballWorld(canvas.current,chapter,{action,focus:setFocus,failure:()=>{modeRef.current="unsupported";setMode("unsupported");}});
+    const w=new FootballWorld(canvas.current,chapter,{action,focus:setFocus,position:(x,y,z,yaw)=>audio.current?.position(x,y,z,yaw),failure:()=>{modeRef.current="unsupported";setMode("unsupported");}});
     engine.current=w;if(!isMutedRef.current)audio.current?.chapter(chapter);
    }catch{if(!disposed){modeRef.current="unsupported";setMode("unsupported");}}
   })();
