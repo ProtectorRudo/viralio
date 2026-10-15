@@ -20,8 +20,8 @@ Al trabajar en salas 3D de Viralio consulta primero `docs/VIRALIO_3D_OPERATIONAL
 Antes de decidir compras, vestuario, modelos de primer plano o NPCs, sigue [`docs/VIRALIO_3D_PREMIUM_ROADMAP.md`](docs/VIRALIO_3D_PREMIUM_ROADMAP.md). Usa el catálogo CC0 y `src/lib/viralio-characters.ts` para instanciar humanoides animados con clips, sin confundir bases MakeHuman con humanos fotorrealistas terminados. No ofrecer como descargados los que solo estén en catálogo; comprobar `public/viralio-3d/index.json`. Mantener gasto en US$0 por defecto; solicitar aprobación previa de cada compra.
 
 
-## Packs de arquitectura, terror y objetos escaneados (155 GLB / 26 PBR)
-El catálogo ejecutable actualizado está en `public/viralio-3d/index.json` y el índice PBR en `public/viralio-3d/materials/index.json`. Al crear una sala, consulta `data/viralio-3d/experience-packs.json` para nueve combinaciones temáticas de objetos, los assets 3D nuevos en `data/viralio-3d/catalog.json` y la auditoría `docs/VIRALIO_3D_ARCH_HORROR_EXPANSION.md`. Reutiliza escenas con diseño propio, iluminación y aperturas reales. No confundir maniquí, esqueleto, paciente estático ni escultura de monstruo alado con una criatura animada o un NPC jugable. No cargar los 155 modelos juntos; solo lo necesario por sala.
+## Packs de arquitectura, terror y objetos escaneados (171 GLB / 26 PBR)
+El catálogo ejecutable actualizado está en `public/viralio-3d/index.json` y el índice PBR en `public/viralio-3d/materials/index.json`. Al crear una sala, consulta `data/viralio-3d/experience-packs.json` para nueve combinaciones temáticas de objetos, los assets 3D nuevos en `data/viralio-3d/catalog.json` y la auditoría `docs/VIRALIO_3D_ARCH_HORROR_EXPANSION.md`. Reutiliza escenas con diseño propio, iluminación y aperturas reales. No confundir maniquí, esqueleto, paciente estático ni escultura de monstruo alado con una criatura animada o un NPC jugable. No cargar los 171 modelos juntos; solo lo necesario por sala.
 
 
 ## Pack de fútbol — lectura obligatoria
@@ -30,3 +30,7 @@ Para canchas, vestuarios, manga/túnel, charlas técnicas, tableros y salas de v
 
 ## Regla de alcance: biblioteca, no juego
 Cuando el usuario pida buscar, ampliar o incorporar mobiliario, personajes, canchas, paredes, puertas, materiales, texturas o recursos 3D para Viralio, **trabajar únicamente en el inventario y el repositorio de assets**: búsqueda y verificación de procedencia, licencias, descargas y optimización, índices GLB/PBR, documentación, vista previa de activos si la solicita. No crear ni modificar niveles, partidas, mecánicas, rutas jugables, rompecabezas ni fichas comerciales sin una solicitud explícita y separada para diseñar un juego. Los packs temáticos son catálogos optativos para elegir luego, no una autorización para construir escenas o integrar modelos en niveles existentes.
+
+
+## Objetos de fútbol CC0 verificados
+Para elegir **solamente assets** de fútbol, leer `docs/VIRALIO_3D_FOOTBALL_PREMIUM_ASSETS.md`, consultar `data/viralio-3d/polyhaven-football-models.json` y confirmar ambos balones fotoescaneados en `public/viralio-3d/index.json` (`football-polyhaven-dirty` y `football-polyhaven-worn`). Hay 171 modelos GLB y 26 materiales PBR; 12 props nuevos de vestuario, fisioterapia y figuras deportivas estáticas. Los packs son listas opcionales: **no construir juegos ni modificar salas sin pedido explícito**.
