@@ -4,7 +4,7 @@
 
 ## Actualización técnica
 
-Biblioteca anterior: **256 modelos GLB y 42 materiales PBR**. Nueva tanda: **29 GLB CC0 nuevos y 2 materiales PBR** elegidos de fuentes concretas, evitando **3 descargas duplicadas**. **El inventario final real se determina en** `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json` **después** de concluir GitHub Actions; no basarse solo en `catalog.json`.
+Biblioteca anterior: **256 modelos GLB y 42 materiales PBR**. Nueva tanda: **29 GLB CC0 nuevos y 2 materiales PBR** elegidos de fuentes concretas, evitando **3 descargas duplicadas**. **Validación de importación completada:** 29/29 GLB nuevos y 2/2 materiales PBR se encuentran en índices físicos, sin errores. Estado actual **285 GLB y 44 materiales PBR**. **El inventario final real se determina en** `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json` **después** de concluir GitHub Actions; no basarse solo en `catalog.json`.
 
 Todos los nuevos GLB están en `data/viralio-3d/catalog.json`; sus páginas originales se guardan en cada `sourcePage`. Licencia fuente: [Innerscene CC0](https://www.innerscene.com/tools/library), con modelos originales y otros adaptados de [Poly Haven CC0](https://polyhaven.com/license) / MakeHuman CC0.
 
@@ -84,3 +84,7 @@ El archivo **`data/viralio-3d/crime-investigation-core.json`** ofrece siete list
 
 **Costo de licencias:** US$0. No se realizaron compras.
 
+
+## Resultado verificado
+
+En el workflow final, los 251 modelos Innerscene del catálogo fueron descargados y validados sin fallos; más los 34 modelos de Poly Haven de bibliotecas complementarias dan **285 GLB reales**. 44 superficies PBR. Nuevos materiales `dirty_concrete` y `rusty_metal` disponibles con mapas color/normal/ARM. Los 29 `crime-*` nuevos están en `public/viralio-3d/index.json` y los 7 packs de selección en `data/viralio-3d/crime-investigation-core.json`. **No se han publicado escenas jugables.**
