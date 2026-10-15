@@ -54,7 +54,9 @@ export class CrisisDirector {
   this.emergency.position.set(0,3,-2);
   this.root.add(this.emergency);
  }
- trigger(){if(this.time<0)this.time=0;}
+ trigger(){
+  if(this.time<0||this.time>16)this.time=0;
+ }
  setPressure(remaining:number){this.pressure=remaining<=120?Math.min(1,(120-remaining)/120):0;}
  update(dt:number){
   if(this.time<0){
