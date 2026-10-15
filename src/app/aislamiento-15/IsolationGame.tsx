@@ -6,7 +6,7 @@ import { IsolationSound } from "./IsolationSound";
 import "./isolation.css";
 
 type Mode = "intro" | "playing" | "failed" | "won";
-type Panel = null | "terminal" | "triage" | "record" | "voice" | "help";
+type Panel = null | "terminal" | "triage" | "record" | "voice" | "help" | "sign";
 const SECONDS = 900;
 const PHASES = [
   { name: "URGENCIAS", subtitle: "Restaurá la seguridad", quote: "El edificio está vacío. Eso dice el registro." },
@@ -53,6 +53,8 @@ export default function IsolationGame() {
   const hasVoiceRef = useRef(false);
   const spokenAtRef = useRef(-1);
   const lookRef = useRef(new Map<number, { x: number; y: number; moved: number }>());
+  const pinchRef = useRef<{ distance: number; zoom: number } | null>(null);
+  const fpsFrames = useRef<number[]>([]);
   const [mode, setMode] = useState<Mode>("intro");
   const [chamber, setChamber] = useState<Chamber>(0);
   const [remaining, setRemaining] = useState(SECONDS);
@@ -69,6 +71,9 @@ export default function IsolationGame() {
   const [chapterKey,setChapterKey] = useState(0);
   const [briefAlert, setBriefAlert] = useState(false);
   const [helpCopy, setHelpCopy] = useState("");
+  const [signCopy, setSignCopy] = useState<string[]>([]);
+  const [benchmark, setBenchmark] = useState(false);
+  const [performanceStats, setPerformanceStats] = useState({ fps: 0, dpr: 1, drawCalls: 0, triangles: 0, webgl2: false, software: false, chamber: 1 });
   const [hints, setHints] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
   const [joy, setJoy] = useState({ x: 0, y: 0 });
@@ -133,9 +138,16 @@ export default function IsolationGame() {
     let req = 0;
     let last = performance.now();
     let lastUI = 0;
+    let lastPerformanceUpdate = 0;
     const frame = (now: number) => {
-      const dt = Math.min(.05, (now - last) / 1000);
+      const realFrameMs = now - last;
+      const dt = Math.min(.05, realFrameMs / 1000);
       last = now;
+      if (realFrameMs > 0 && realFrameMs < 1000) {
+        const frames = fpsFrames.current;
+        frames.push(realFrameMs);
+        if (frames.length > 90) frames.shift();
+      }
       const playing = modeRef.current === "playing";
       const elapsed = playing ? (Date.now() - startAtRef.current) / 1000 + penaltyRef.current : SECONDS - timeRef.current;
       const left = Math.max(0, SECONDS - elapsed);
@@ -178,6 +190,13 @@ export default function IsolationGame() {
         setRemaining(left);
         const next = playing ? world.getFocus() : null;
         setFocus(prev => prev?.id === next?.id ? prev : next);
+      }
+      if (now - lastPerformanceUpdate > 1300 && playing && fpsFrames.current.length > 10) {
+        lastPerformanceUpdate = now;
+        const samples = fpsFrames.current;
+        const average = samples.reduce((total, value) => total + value, 0) / samples.length;
+        const metrics = world.getPerformanceSnapshot();
+        setPerformanceStats({ fps: Math.round(1000 / average), ...metrics });
       }
       req = requestAnimationFrame(frame);
     };
@@ -224,6 +243,15 @@ export default function IsolationGame() {
     const w = worldRef.current, sound = audioRef.current;
     if (!w || modeRef.current !== "playing" || panel) return;
     sound?.click();
+    if (id.startsWith("sign-")) {
+      const text = w.getSignText(id);
+      if (text) {
+        setSignCopy(text);
+        setPanel("sign");
+        sound?.message();
+      }
+      return;
+    }
     switch (id) {
       case "fuse":
         if (!w.hasFuse) { w.hasFuse = true; w.markTaken(id); notify("FUSIBLE F-08 ADQUIRIDO. BUSCÁ EL TABLERO."); sound?.success(); }
@@ -373,6 +401,14 @@ export default function IsolationGame() {
     if (modeRef.current !== "playing" || panel) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     lookRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY, moved: 0 });
+    if (lookRef.current.size === 2) {
+      const [a, b] = [...lookRef.current.values()];
+      pinchRef.current = {
+        distance: Math.hypot(a.x - b.x, a.y - b.y),
+        zoom: worldRef.current?.zoom ?? 72
+      };
+      for (const pointer of lookRef.current.values()) pointer.moved = 100;
+    }
   }
   function canvasMove(e: React.PointerEvent<HTMLCanvasElement>) {
     const p = lookRef.current.get(e.pointerId);
@@ -380,6 +416,13 @@ export default function IsolationGame() {
     const dx = e.clientX - p.x, dy = e.clientY - p.y;
     p.moved += Math.abs(dx) + Math.abs(dy);
     p.x = e.clientX; p.y = e.clientY;
+    if (pinchRef.current && lookRef.current.size >= 2) {
+      const [a, b] = [...lookRef.current.values()];
+      const distance = Math.hypot(a.x - b.x, a.y - b.y);
+      const initial = pinchRef.current;
+      worldRef.current?.setZoom(initial.zoom - (distance - initial.distance) * .105);
+      return;
+    }
     const factor = e.pointerType === "touch" ? .77 : 1;
     worldRef.current?.rotate(dx * factor, dy * factor);
   }
@@ -394,6 +437,10 @@ export default function IsolationGame() {
       }
     }
     lookRef.current.delete(e.pointerId);
+    if (pinchRef.current) {
+      for (const pointer of lookRef.current.values()) pointer.moved = 100;
+      pinchRef.current = null;
+    }
   }
 
   function openHelp() {
@@ -453,6 +500,14 @@ export default function IsolationGame() {
       </div>}
       {chamber>0 && <div className="iso-edge-threat" style={{opacity: Math.min(.44,Math.max(0,(dangerLevel-63)/95))}} aria-hidden="true" />}
       {chamber > 0 && <div className="iso-threat-meter" aria-label={"Proximidad de amenaza " + Math.round(dangerLevel) + " por ciento"}><span>◉ PRESENCIA DETECTADA</span><div><i style={{ width: dangerLevel + "%" }} /></div></div>}
+      {benchmark && <aside className="iso-device-performance" aria-label="Diagnóstico gráfico en este dispositivo">
+        <span>DIAGNÓSTICO WEBGL · EN VIVO</span>
+        <strong>{performanceStats.fps} <small>FPS</small></strong>
+        <div>Escala: {performanceStats.dpr.toFixed(2)}× · Sector {performanceStats.chamber}</div>
+        <div>Draw calls: {performanceStats.drawCalls} · Triángulos: {performanceStats.triangles.toLocaleString("es-AR")}</div>
+        <div>{performanceStats.software ? "Renderizado por software" : "Renderizado WebGL"}{!performanceStats.webgl2 ? " · Compatibilidad" : "2"}</div>
+        <button onClick={() => setBenchmark(false)} aria-label="Cerrar diagnóstico de rendimiento">Cerrar ×</button>
+      </aside>}
       {notice && <div className="iso-broadcast" role="status"><span>■ TRANSMISIÓN DE EMERGENCIA</span><strong>{notice}</strong></div>}
       {focus && !panel && <div className="iso-focus" aria-live="off"><span>OBJETO INTERACTIVO</span><strong>{focus.label}</strong><small>TOCÁ EL OBJETO O PULSÁ INTERACTUAR</small></div>}
       <div className="iso-bottom">
@@ -535,10 +590,20 @@ export default function IsolationGame() {
         <p>«Hola, soy el médico a cargo. Para activar la salida, autorizame a abrir el sistema de contención. Confiá en mí».</p>
         <div className="iso-decisions"><button onClick={() => chooseVoice("trust")}>CONFIAR EN LA VOZ <span>→</span></button><button onClick={() => chooseVoice("refuse")}>RECHAZAR COMUNICACIÓN <span>→</span></button></div>
       </>}
+      {panel === "sign" && <>
+        <span className="iso-panel-sub">INSPECCIÓN CLÍNICA / HÉLIX 015</span>
+        <h2>REGISTRO DE INSTALACIÓN</h2>
+        <div className="iso-sign-transcription">
+          {signCopy.map((line, i) => <p key={i} className={i === 0 ? "iso-sign-title" : ""}>{line}</p>)}
+        </div>
+        <p>Transcripción ampliada del cartel que estás examinando. No modifica el funcionamiento del mecanismo.</p>
+        <button className="iso-confirm" onClick={closePanel}>VOLVER AL HOSPITAL ↗</button>
+      </>}
       {panel === "help" && <>
         <span className="iso-panel-sub">ASISTENCIA / {PHASES[chamber].name}</span><h2>REGISTRO DE PISTAS</h2>
         <p>{helpCopy}</p>
-        <div className="iso-help-controls"><b>DESPLAZAMIENTO</b><span>PC: WASD / flechas. Celular: círculo izquierdo.</span><b>CÁMARA</b><span>Arrastrá sobre la escena. Zoom: botones + y − o rueda.</span><b>OBJETOS</b><span>Apuntá y tocá INTERACTUAR, o tocá directamente el objeto en celular.</span><b>PERSECUCIÓN</b><span>Los escondites separan por unos segundos al perseguidor.</span></div>
+        <div className="iso-help-controls"><b>DESPLAZAMIENTO</b><span>PC: WASD / flechas. Celular: círculo izquierdo.</span><b>CÁMARA</b><span>Arrastrá para mirar. Acercá dos dedos para hacer zoom; en PC usá la rueda.</span><b>OBJETOS Y CARTELERÍA</b><span>Tocá objetos y carteles para examinarlos o usá INTERACTUAR cuando aparezca el indicador.</span><b>PERSECUCIÓN</b><span>Podés perder de vista al Celador escondiéndote detrás del mobiliario.</span></div>
+        <button className="iso-diagnostic-button" onClick={() => { setBenchmark(true); closePanel(); }}>MEDIR FPS EN MI DISPOSITIVO <span>↗</span></button>
         <button className="iso-confirm" onClick={closePanel}>VOLVER A LA SALA ↗</button>
       </>}
     </div></div>}
