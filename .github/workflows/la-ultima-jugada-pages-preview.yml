@@ -1,0 +1,125 @@
+name: La Última Jugada - Public Playtest (GitHub Pages)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/la-ultima-jugada-inglaterra-20261015
+    paths:
+      - .github/workflows/la-ultima-jugada-pages-preview.yml
+      - scripts/build-la-ultima-jugada-standalone.mjs
+      - scripts/la-ultima-jugada-standalone-entry.tsx
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish-football:
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    environment:
+      name: github-pages
+      url: https://protectorrudo.github.io/viralio/la-ultima-jugada/
+    steps:
+      - name: Restore original public showroom from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site
+
+      - name: Get latest verified football game without merging production
+        uses: actions/checkout@v4
+        with:
+          ref: feat/la-ultima-jugada-inglaterra-20261015
+          path: game
+
+      - name: Prepare pinned dependencies and esbuild
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install existing showroom audio requirements
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak ffmpeg
+          python3 -m pip install --quiet --user --break-system-packages edge-tts || true
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Rebuild and preserve original UMBRAL and rescue site
+        shell: bash
+        working-directory: site
+        run: |
+          npm ci
+          npm install --no-save --no-package-lock esbuild@0.25.12
+          node scripts/build-escape-standalone.mjs
+          test -s showcase/escape/index.html
+          test -s showcase/rescate-mauro/index.html
+          test -s showcase/rescate-mauro/models/stalker-skeletal.glb
+
+      - name: Add the premium football game under its own separate route
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site/src/app site/public site/scripts
+          cp -R game/src/app/la-ultima-jugada site/src/app/la-ultima-jugada
+          cp -R game/public/la-ultima-jugada site/public/la-ultima-jugada
+          cp -R game/public/viralio-3d site/public/viralio-3d
+          cp game/scripts/build-la-ultima-jugada-standalone.mjs site/scripts/
+          cp game/scripts/la-ultima-jugada-standalone-entry.tsx site/scripts/
+          cd site
+          node scripts/build-la-ultima-jugada-standalone.mjs
+          test -s showcase/la-ultima-jugada/index.html
+          test -s showcase/la-ultima-jugada/app.js
+          test -s showcase/la-ultima-jugada/app.css
+          test -s showcase/la-ultima-jugada/models/player-quaternius.glb
+          test -s showcase/viralio-3d/models/npc-sam-locomotion.glb
+          test -s showcase/viralio-3d/models/steel-office-desk.glb
+          test -s showcase/viralio-3d/materials/concrete_tiles-color.webp
+          test -s showcase/escape/app.js
+          test -s showcase/rescate-mauro/app.js
+          node --check showcase/la-ultima-jugada/app.js
+          echo "Built all three games without changing viralio.net"
+
+      - name: Configure existing GitHub Pages site
+        uses: actions/configure-pages@v5
+
+      - name: Upload complete public site including original experiences
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/showcase
+
+      - name: Deploy standalone football playtest
+        uses: actions/deploy-pages@v4
+        id: deployment
+
+      - name: Check public football link and imported assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://protectorrudo.github.io/viralio/la-ultima-jugada"
+          for i in $(seq 1 18); do
+            if curl -fsSL --max-time 14 "$base/" -o /tmp/ultima-landing.html && grep -Fq "La Última Jugada" /tmp/ultima-landing.html; then
+              echo "Landing available at $base/"
+              break
+            fi
+            sleep 8
+          done
+          grep -Fq "La Última Jugada" /tmp/ultima-landing.html
+          curl -fsSL --max-time 25 "$base/app.js" -o /tmp/ultima-app.js
+          curl -fsSL --max-time 25 "$base/app.css" -o /tmp/ultima-app.css
+          test "$(wc -c </tmp/ultima-app.js)" -gt 100000
+          test "$(wc -c </tmp/ultima-app.css)" -gt 10000
+          curl -fsSL --max-time 25 "$base/models/player-quaternius.glb" -o /tmp/ultima-player.glb
+          head -c 4 /tmp/ultima-player.glb | grep -Fq glTF
+          curl -fsSL --max-time 25 "https://protectorrudo.github.io/viralio/viralio-3d/models/steel-office-desk.glb" -o /tmp/ultima-desk.glb
+          head -c 4 /tmp/ultima-desk.glb | grep -Fq glTF
+          echo "PUBLIC PLAYTEST READY: $base/"

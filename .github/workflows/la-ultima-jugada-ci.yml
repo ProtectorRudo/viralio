@@ -1,0 +1,58 @@
+name: La Última Jugada - Build and Gameplay
+
+on:
+  push:
+    branches:
+      - feat/la-ultima-jugada-inglaterra-20261015
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  game-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Get source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Use Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Test all football game rules
+        run: npx vitest run tests/la-ultima-jugada.test.ts
+      - name: Check strict TypeScript
+        run: npm run typecheck
+      - name: Build production app
+        run: npm run build
+      - name: Install Chromium and graphical libraries
+        run: npx playwright install --with-deps chromium
+      - name: Exercise real WebGL2 on desktop and mobile viewports
+        run: npx playwright test e2e/la-ultima-jugada.spec.ts e2e/la-ultima-jugada-journey.spec.ts --config playwright.ultima.config.ts
+      - name: Attach review screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: la-ultima-jugada-visual-review
+          path: |
+            test-results/la-ultima-jugada-desktop.png
+            test-results/la-ultima-jugada-mobile.png
+            test-results/la-ultima-jugada-final-victoria.png
+            test-results/la-ultima-jugada-gol-3d.png
+            test-results/la-ultima-jugada-corredor-3d.png
+            test-results/la-ultima-jugada-tunel-3d.png
+            test-results/la-ultima-jugada-tecnico-primer-plano.png
+            test-results/la-ultima-jugada-replay-terminal.png
+            test-results/la-ultima-jugada-magnetic-tactics.png
+            test-results/la-ultima-jugada-final-victoria-mobile.png
+            test-results/la-ultima-jugada-mision-desktop.png
+            test-results/la-ultima-jugada-mision-mobile.png
+            test-results/**/trace.zip
+          if-no-files-found: warn
+          retention-days: 7
