@@ -2,7 +2,7 @@
   "name": "Viralio Escape 3D scene starter packs",
   "version": "1.1.0",
   "updatedAt": "2026-10-15",
-  "notes": "Creative selection guides for scene art and interactions, NOT ready-made playable room layouts. Football starter GLB contains 72 low-poly pieces; not counted as 72 premium standalone GLBs.",
+  "notes": "Creative guides; football 72-piece external starter kit unavailable to CI and not in materialized model catalog. Load only verified local GLBs, no remote runtime dependency.",
   "packs": [
     {
       "id": "cine-maldito",
@@ -180,8 +180,7 @@
       "support": [
         "football-acoustic-screen",
         "bleachers-three-row",
-        "football-scoreboard",
-        "football-soccer-club-grounds-starter"
+        "football-scoreboard"
       ],
       "character": "npc-sam-locomotion",
       "rooms": [
@@ -227,7 +226,6 @@
       "hero": [
         "football-goal-full-size",
         "football-scoreboard",
-        "football-soccer-club-grounds-starter",
         "bleachers-three-row"
       ],
       "support": [
