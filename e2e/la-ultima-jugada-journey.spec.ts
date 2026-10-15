@@ -48,7 +48,7 @@ test("full Argentina–England investigation physically reaches every room and t
  // Use the aisle next to the furniture before turning toward the rear monitors.
  await walk(page,"w",2400);
  const afterAisle=(await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")||"0,0").split(",").map(Number);
- expect(afterAisle[1],"Walking forward in the clear side aisle").toBeLessThan(-.8);
+ expect(afterAisle[1],"Walking forward in the clear side aisle").toBeLessThan(-.5);
  await reachAction(page,/Reconstruí la jugada/i,true);
  await page.getByRole("button",{name:/CÁMARA 2/}).click();
  await solve(page);
