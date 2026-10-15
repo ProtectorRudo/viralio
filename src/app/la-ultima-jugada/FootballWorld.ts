@@ -81,6 +81,7 @@ export class FootballWorld {
  private actors:Array<{update:(dt:number)=>void;dispose:()=>void}>=[];
  private stadiumAnimations:Array<(t:number)=>void>=[];
  private lifetime=0;
+ private stadiumPlayers:Array<{actor:THREE.Group;index:number}>=[];
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
@@ -237,6 +238,7 @@ export class FootballWorld {
    tube(.19,.21,0,1.42,0,mat(0xc1a58d),proxy);
    for(const dx of [-.2,.2])tube(.095,.66,dx,.19,0,mat(0x2d3b51),proxy);
    lineUp.push({x,z,proxy,blue});
+   this.stadiumPlayers.push({actor:proxy,index:i});
   }
   // CC0 rigged football-appropriate background characters, loaded progressively.
   // A cheap geometry fallback remains visible if the GLB cannot be downloaded.
@@ -262,6 +264,7 @@ export class FootballWorld {
       }
      });
      this.root.add(character);proxy.visible=false;
+     this.stadiumPlayers.push({actor:character,index:index*2});
      const mixer=new THREE.AnimationMixer(character);
      const clip=gltf.animations.find(a=>/idle|jog|run|walk/i.test(a.name))||gltf.animations[0];
      if(clip){mixer.clipAction(clip).play();this.mixers.push(mixer);}
@@ -555,7 +558,7 @@ export class FootballWorld {
  startFinale(cue:(name:"apertura"|"pase"|"centro"|"gol")=>void,complete:()=>void){
   this.setGameplayActive(false);
   if(this.finale)this.finale.dispose();
-  this.finale=new FinaleDirector(this.root,this.camera,{cue,complete});
+  this.finale=new FinaleDirector(this.root,this.camera,{cue,complete},this.stadiumPlayers);
  }
  dispose(){
   this.finale?.dispose();this.finale=null;
