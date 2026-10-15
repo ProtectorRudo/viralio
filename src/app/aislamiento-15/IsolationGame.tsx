@@ -670,7 +670,7 @@ export default function IsolationGame() {
       <p>Las compuertas de seguridad sellaron el edificio. La última voz que escuchaste fue la tuya.</p>
       <div className="iso-end-stat"><span>SUPERVIVENCIA</span><strong>15:00</strong></div>
       <button onClick={() => window.location.reload()} className="iso-start">VOLVER A INTENTARLO <b>↗</b></button>
-       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>}}
+       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>}
       <a href="https://viralio.net/">Volver a Viralio</a>
     </div>}
 
@@ -682,7 +682,7 @@ export default function IsolationGame() {
       <p className="iso-replay-hook">¿Podés escapar más rápido? Los errores, la ruta y la persecución cambian tu resultado.</p>
       <button onClick={() => { if (navigator.share) { void navigator.share({ title: "AISLAMIENTO 15 · VIRALIO", text: "Escapé de AISLAMIENTO 15 en " + format(elapsed) + ". ¿Podés superarme?", url: location.href }); } else { void navigator.clipboard?.writeText(location.href); notify("ENLACE COPIADO"); } }} className="iso-start">DESAFIAR A UN AMIGO <b>↗</b></button>
       <button className="iso-again" onClick={() => window.location.reload()}>VOLVER A JUGAR ↻</button>
-       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>
+       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>}
       <a href="https://viralio.net/">Explorar más salas Viralio</a>
     </div>}
 
