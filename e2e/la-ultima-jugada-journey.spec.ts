@@ -146,6 +146,12 @@ test("full Argentina–England investigation physically reaches every room and t
  await orient(page);
  await walkUntil(page,"w","x",-1,"gte");
  await orient(page);
+ // Try to walk into the coach. The physical character collider must stop
+ // the camera outside the body even while the interaction stays reachable.
+ await walk(page,"w",950);
+ await orient(page);
+ const nearCoach=(await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")||"0,0").split(",").map(Number);
+ expect(Math.hypot(nearCoach[0]-.48,nearCoach[1]+4.86),"Camera should never clip into coach body").toBeGreaterThan(.74);
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-focus-target"),{timeout:6500}).toBe("entrega");
  await page.screenshot({path:"test-results/la-ultima-jugada-tecnico-primer-plano.png",fullPage:false,timeout:17000});
  await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
