@@ -263,3 +263,122 @@
  .lj-root-victory .lj-ending .lj-end-score{margin:9px 0}
  .lj-root-victory .lj-ending h2{font-size:24px;margin:9px 0}
 }
+
+
+/* MISSION LAUNCH — in-world broadcast dossier rather than an unexplained spawn. */
+.lj-mission-backdrop{
+ position:absolute;inset:0;z-index:72;display:grid;place-items:center;
+ overflow-y:auto;padding:clamp(14px,3vw,48px);background:radial-gradient(ellipse at 50% 25%,rgba(10,37,57,.83),rgba(1,8,16,.94) 85%);
+ backdrop-filter:blur(6px);
+}
+.lj-mission-sheet{
+ width:min(690px,100%);margin:auto;
+ padding:clamp(22px,4.2vw,48px);
+ background:linear-gradient(145deg,#162838f5 0%,#0b1926fa 51%,#101b26f7 100%);
+ border:1px solid #a5c8d65b;border-top:3px solid #f5c77e;
+ box-shadow:0 35px 110px #000b,0 0 55px #40a2d41b;
+ color:#e5eff3;text-align:left;position:relative;
+}
+.lj-mission-sheet:before{
+ content:"";position:absolute;inset:9px;border:1px solid #a4c9d01c;pointer-events:none;
+}
+.lj-mission-kicker{font:700 12px/1.3 var(--font-mono,monospace);letter-spacing:.17em;color:#f3d098;display:flex;align-items:center;gap:11px}
+.lj-live-dot{width:9px;height:9px;flex-shrink:0;background:#ff5a53;border-radius:100%;box-shadow:0 0 19px #ff4747;animation:lj-pulse 2.1s ease-in-out infinite}
+.lj-mission-classified{margin:25px 0 9px;color:#8fa5b0;font-size:10px;letter-spacing:.19em;font-weight:800}
+.lj-mission-sheet h2{font-size:clamp(42px,9vw,76px);letter-spacing:-.065em;line-height:.92;font-weight:950;margin:0 0 20px;text-wrap:balance}
+.lj-mission-sheet h2 em{color:#eac384;font-style:normal}
+.lj-mission-sheet>p:not(.lj-mission-classified){font-size:clamp(14px,1.8vw,16px);line-height:1.65;max-width:595px;color:#d1dfe5;margin:18px 0}
+.lj-mission-score{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #abc0c92c;border-bottom:1px solid #abc0c92c;padding:13px 0;flex-wrap:wrap}
+.lj-mission-score span{letter-spacing:.14em;color:#8bb0c1;font-size:10px;font-weight:900}
+.lj-mission-score strong{font-size:14px;letter-spacing:.07em}
+.lj-mission-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:18px 0 23px}
+.lj-mission-steps>div{display:flex;align-items:center;gap:10px;background:#fff1;padding:14px 10px;min-height:56px}
+.lj-mission-steps b{color:#f5ca85;font-family:monospace;font-size:19px}
+.lj-mission-steps span{color:#dae7ed;font-size:9px;line-height:1.45;letter-spacing:.08em;font-weight:850}
+.lj-mission-first{border-left:3px solid #e9b873;background:linear-gradient(90deg,#d4aa6a1a,transparent);padding:15px 19px;margin-bottom:22px}
+.lj-mission-first small{color:#eac48f;letter-spacing:.18em;font-size:10px;font-weight:850}
+.lj-mission-first strong{display:block;margin:8px 0;font-size:clamp(16px,2.3vw,21px);line-height:1.3}
+.lj-mission-first p{color:#bfcfd6;font-size:13px;line-height:1.5;margin:0}
+.lj-mission-sheet .lj-mainbutton{width:100%;max-width:none;margin:0;display:flex;align-items:center;justify-content:space-between;font-size:13px}
+.lj-mission-footer{display:block;color:#8ba5b4;font-size:10px;letter-spacing:.12em;margin-top:13px;text-align:center;font-weight:700}
+
+/* Pressure builds gradually; warnings never obscure the centre reticle. */
+.lj-pressure{position:absolute;z-index:11;top:99px;left:50%;transform:translateX(-50%);width:min(355px,35vw);min-width:230px;pointer-events:none;text-align:center;color:#c4dbe8}
+.lj-pressure-top{display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:8px;font-weight:900;letter-spacing:.095em;line-height:1.3}
+.lj-pressure-top strong{color:#e6c493;font-size:8px;letter-spacing:.12em}
+.lj-pressure-track{margin-top:5px;width:100%;height:3px;background:#cddfea29;overflow:hidden}
+.lj-pressure-track>span{display:block;height:100%;background:#81cad7;transition:width .3s linear,background .4s ease;box-shadow:0 0 12px #7dc9eb}
+.lj-pressure-high .lj-pressure-track>span{background:#f6c875}
+.lj-pressure-high .lj-pressure-top strong{color:#fac173}
+.lj-pressure-critical .lj-pressure-track>span{background:#ff635b}
+.lj-pressure-critical .lj-pressure-top strong{color:#ff827b;animation:lj-pulse 1.1s ease-in-out infinite}
+.lj-pressure small{color:#fa9c87;display:block;font-size:8px;letter-spacing:.1em;margin-top:4px}
+.lj-danger-phase .lj-clock{border-color:#f3616670;box-shadow:0 0 28px #bd131a25;animation:lj-pulse 1.7s ease-in-out infinite}
+@keyframes lj-pulse{0%,100%{opacity:1}50%{opacity:.65}}
+
+/* Seven observation / assembly puzzles. */
+.lj-observations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.lj-observations button,.lj-fragment-order button,.lj-lockers button,.lj-final-sequence button{
+ border:1px solid #78adbb55;background:#0b2433;color:#d5e7ef;border-radius:2px;
+ padding:13px;text-align:left;font:700 12px/1.4 inherit;cursor:pointer;min-height:46px;
+ transition:border-color .16s,background .16s,transform .16s;
+}
+.lj-observations button:hover,.lj-fragment-order button:hover,.lj-lockers button:hover,.lj-final-sequence button:hover{border-color:#d5c18b}
+.lj-observations button.selected,.lj-lockers button.selected{border-color:#ecc880;background:#7d5b292a;color:#ffdeb0}
+.lj-puzzle-count{display:block;color:#bcd0d9;font-size:11px;letter-spacing:.07em;margin:12px 0;line-height:1.7}
+.lj-fragments-inventory{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:16px 0}
+.lj-fragments-inventory>span{display:flex;flex-direction:column;gap:11px;padding:13px 9px;background:#decba9;color:#2b2a29;box-shadow:2px 3px 0 #9f8968;min-height:85px}
+.lj-fragments-inventory small{font:700 9px/1.3 monospace;color:#805f45}
+.lj-fragments-inventory strong{font:850 12px/1.3 inherit}
+.lj-fragment-order{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.lj-fragment-order button{background:linear-gradient(160deg,#e2d0ab,#b6a17b);color:#232e35;display:flex;flex-direction:column;justify-content:space-between;align-items:start;font-size:13px;min-height:84px}
+.lj-fragment-order button small{color:#5c4330;font:700 10px monospace}
+.lj-fragment-order button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.4)}
+.lj-evidence-strip{border-left:2px solid #dabc80;padding-left:12px;color:#cbd6db;font-size:12px}
+.lj-evidence-strip b{color:#f3d292}
+.lj-lockers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}
+.lj-lockers button{display:flex;flex-direction:column;justify-content:space-between;min-height:123px;gap:7px;text-align:center}
+.lj-lockers button>span{font-size:26px;color:#94c8d7}
+.lj-lockers button strong{font-size:11px}
+.lj-lockers button small{font-size:9px;line-height:1.3;color:#9bb5c3}
+.lj-pin-label{display:flex;flex-direction:column;gap:9px;font-size:11px;font-weight:850;letter-spacing:.14em;color:#e9c489}
+.lj-pin-label input{width:100%;max-width:240px;border:1px solid #95c9d870;border-radius:1px;background:#091e2c;color:#f3e7d9;font-size:28px;letter-spacing:.25em;padding:11px 15px;outline-offset:3px}
+.lj-final-sequence{margin:12px 0;padding:15px;border:1px solid #80b7cc55;background:#0c1e2cdd}
+.lj-final-sequence>small{display:block;font-size:10px;color:#bbd0db;letter-spacing:.14em}
+.lj-final-sequence>strong{display:block;margin:9px 0;color:#edc887;font-size:14px;letter-spacing:.1em}
+.lj-final-sequence>div{display:flex;gap:7px;flex-wrap:wrap}
+.lj-final-sequence>div button{min-width:60px;text-align:center}
+.lj-final-sequence button:disabled{opacity:.39;cursor:not-allowed}
+.lj-reset-puzzle{border:0;background:transparent;color:#e9c588;font-size:11px;font-weight:850;margin:12px 0;cursor:pointer;padding:7px 0;text-decoration:underline;text-underline-offset:4px}
+.lj-pattern{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px dashed #d6ba7566;padding:11px;margin:12px 0;background:#c09c6e12}
+.lj-pattern small{font-size:10px;letter-spacing:.15em;color:#e6c98d;flex-basis:100%;font-weight:850}
+.lj-pattern span{font-size:10px;color:#d9e7eb;background:#234352;padding:7px;font-weight:850;letter-spacing:.045em}
+.lj-relay-clue span{font-size:clamp(11px,2vw,17px);letter-spacing:.065em;font-weight:900}
+
+@media(max-width:650px){
+ .lj-mission-backdrop{padding:10px 12px}
+ .lj-mission-sheet{padding:19px 15px 23px;max-width:100%}
+ .lj-mission-sheet h2{font-size:clamp(37px,10vw,59px)}
+ .lj-mission-classified{margin-top:12px}
+ .lj-mission-score{padding:8px 0}
+ .lj-mission-steps{gap:3px;margin:12px 0}
+ .lj-mission-steps>div{padding:7px 5px;gap:4px}
+ .lj-mission-steps b{font-size:14px}
+ .lj-mission-steps span{font-size:8px}
+ .lj-mission-first{padding:10px 12px;margin-bottom:13px}
+ .lj-mission-first strong{font-size:16px}
+ .lj-mission-first p{font-size:11px}
+ .lj-pressure{top:118px;width:min(350px,85vw);min-width:unset}
+ .lj-observations{grid-template-columns:1fr}
+ .lj-fragments-inventory{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .lj-fragment-order{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .lj-lockers{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-height:620px){
+ .lj-mission-sheet{padding:15px 23px}
+ .lj-mission-classified{margin-top:8px}
+ .lj-mission-steps{margin:8px 0}
+ .lj-mission-first{margin-bottom:10px}
+ .lj-mission-sheet>p:not(.lj-mission-classified){margin:10px 0}
+ .lj-mission-sheet h2{font-size:42px}
+}
