@@ -670,7 +670,7 @@ export default function IsolationGame() {
       <p>Las compuertas de seguridad sellaron el edificio. La última voz que escuchaste fue la tuya.</p>
       <div className="iso-end-stat"><span>SUPERVIVENCIA</span><strong>15:00</strong></div>
       <button onClick={() => window.location.reload()} className="iso-start">VOLVER A INTENTARLO <b>↗</b></button>
-       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>}
+       {playtestReport && <button className="iso-report-copy" onClick={() => void copyTestReport()}>{copiedReport?"INFORME COPIADO ✓":"COPIAR INFORME DE PRUEBA"} <span>↗</span></button>}}
       <a href="https://viralio.net/">Volver a Viralio</a>
     </div>}
 
