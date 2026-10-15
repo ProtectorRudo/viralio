@@ -14,9 +14,9 @@ export class FinaleDirector {
  private finished=false;
  private startPosition=new THREE.Vector3();
  private fov:number;
- private athletes:Array<{actor:THREE.Group;original:THREE.Vector3;index:number}>=[];
+ private athletes:Array<{actor:THREE.Object3D;original:THREE.Vector3;index:number}>=[];
  private goalFlash:THREE.PointLight;
- constructor(private world:THREE.Group, private camera:THREE.PerspectiveCamera,private hook:Hook,players:Array<{actor:THREE.Group;index:number}>=[]){
+ constructor(private world:THREE.Group, private camera:THREE.PerspectiveCamera,private hook:Hook,players:Array<{actor:THREE.Object3D;index:number}>=[]){
   this.athletes=players.map(p=>({actor:p.actor,original:p.actor.position.clone(),index:p.index}));
   this.startPosition.copy(camera.position);
   this.fov=camera.fov;
