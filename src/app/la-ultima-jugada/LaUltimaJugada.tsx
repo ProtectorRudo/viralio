@@ -8,7 +8,7 @@ import "./game.css";
 
 type Puzzle = "monitores" | "pizarra" | "relay" | "cctv" | "prueba";
 type Solved = Record<Puzzle | "informe", boolean>;
-type Mode = "intro" | "playing" | "victory" | "defeat" | "unsupported";
+type Mode = "intro" | "playing" | "finale" | "victory" | "defeat" | "unsupported";
 const EMPTY: Solved = {monitores:false,pizarra:false,relay:false,cctv:false,prueba:false,informe:false};
 const titles = ["CABINA DE ANÁLISIS","CORREDOR RESTRINGIDO","TÚNEL DE LA FINAL"] as const;
 const stories = [
@@ -70,6 +70,19 @@ class StadiumAudio {
   if(this.gain&&this.ctx)this.gain.gain.setTargetAtTime(n===2?.54:.22,this.ctx.currentTime,.5);
   this.pulse(n===2?680:390);
  }
+ goal(){
+  if(!this.ctx)return;
+  const c=this.ctx;
+  if(this.gain)this.gain.gain.setTargetAtTime(.88,c.currentTime,.16);
+  for(let i=0;i<5;i++){
+   const osc=c.createOscillator(),g=c.createGain();
+   const at=c.currentTime+i*.19;
+   osc.type="triangle";osc.frequency.value=[392,493.88,587.33,783.99,987.77][i];
+   g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.038,at+.04);
+   g.gain.exponentialRampToValueAtTime(.0001,at+.76);
+   osc.connect(g);g.connect(c.destination);osc.start(at);osc.stop(at+.8);
+  }
+ }
  stop(){try{this.noise?.stop();void this.ctx?.close();}catch{}this.ctx=null;this.noise=null;this.gain=null;this.panner=null;}
 }
 function format(seconds:number){const s=Math.max(0,Math.floor(seconds));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
@@ -108,6 +121,7 @@ export default function LaUltimaJugada(){
  const [focus,setFocus]=useState("");
  const [alert,setAlert]=useState("");
  const [cinematic,setCinematic]=useState<""|"var"|"blackout"|"betrayal">("");
+ const [finaleCue,setFinaleCue]=useState<"apertura"|"pase"|"centro"|"gol">("apertura");
  const [hintLevel,setHintLevel]=useState(-1);
  const [hintVisible,setHintVisible]=useState(false);
  const [isMuted,setIsMuted]=useState(false);
@@ -141,8 +155,19 @@ export default function LaUltimaJugada(){
   if(!isMutedRef.current)audio.current?.pulse(820);
  },[]);
  const win=useCallback(()=>{
-  modeRef.current="victory";setMode("victory");setModal(null);
-  if(!isMutedRef.current){audio.current?.pulse(950);audio.current?.chapter(2);}
+  modeRef.current="finale";setMode("finale");setModal(null);
+  setFinaleCue("apertura");
+  if(!isMutedRef.current)audio.current?.chapter(2);
+  if(!engine.current){modeRef.current="victory";setMode("victory");return;}
+  engine.current.startFinale((cue)=>{
+   setFinaleCue(cue);
+   if(cue==="gol"){
+    if(!isMutedRef.current)audio.current?.goal();
+    if("vibrate" in navigator)navigator.vibrate([90,50,140,60,190]);
+   }else if(!isMutedRef.current)audio.current?.pulse(cue==="centro"?800:540);
+  },()=>{
+   modeRef.current="victory";setMode("victory");
+  });
  },[]);
  const action=useCallback((id:GameAction)=>{
   if(modeRef.current!=="playing")return;
@@ -170,10 +195,11 @@ export default function LaUltimaJugada(){
   const p=id as Puzzle;if(s[p]){notify("Esa prueba ya está resuelta. Seguí hacia el siguiente objetivo.");return;}
   setModal(p);setSelection("C1");setEvidence("");setConfirm("");
  },[advance,notify,win]);
- useEffect(()=>{engine.current?.setGameplayActive(!modal&&!cinematic);},[modal,cinematic]);
+ useEffect(()=>{engine.current?.setGameplayActive(!modal&&!cinematic&&mode==="playing");},[modal,cinematic,mode]);
  useEffect(()=>{isMutedRef.current=isMuted;if(audio.current?.gain&&audio.current.ctx)audio.current.gain.gain.setTargetAtTime(isMuted?0:chapter===2?.54:.22,audio.current.ctx.currentTime,.2);},[isMuted,chapter]);
+ const sceneActive=mode==="playing"||mode==="finale";
  useEffect(()=>{
-  if(mode!=="playing"||!canvas.current)return;
+  if(!sceneActive||!canvas.current)return;
   let disposed=false;
   (async()=>{
    try{
@@ -184,7 +210,7 @@ export default function LaUltimaJugada(){
    }catch{if(!disposed){modeRef.current="unsupported";setMode("unsupported");}}
   })();
   return()=>{disposed=true;engine.current?.dispose();engine.current=null;};
- },[mode,chapter,action]);
+ },[sceneActive,chapter,action]);
  useEffect(()=>{
   if(mode!=="playing")return;
   const ticker=setInterval(()=>{
@@ -206,7 +232,7 @@ export default function LaUltimaJugada(){
   isMutedRef.current=false;setIsMuted(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
   solvedRef.current={...EMPTY};setModal(null);setFocus("");setHintLevel(-1);setHintVisible(false);setTime(900);
   setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");
-  announcements.current.clear();setCinematic("");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
+  announcements.current.clear();setCinematic("");setFinaleCue("apertura");startStamp.current=performance.now();modeRef.current="playing";setMode("playing");
   notify("MINUTO 87 · Argentina 1 - 1 Inglaterra. Encontrá la grabación auténtica.");
  };
  const verify=()=>{
@@ -237,7 +263,7 @@ export default function LaUltimaJugada(){
  const move=(x:number,z:number)=>{moveRef.current={x,z};engine.current?.movement(x,z);};
  const btn=(icon:string,x:number,z:number,cls:string)=> <button type="button" className={"lj-pad "+cls} aria-label={cls} onPointerDown={e=>{e.preventDefault();move(x,z);(e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId)}} onPointerUp={()=>move(0,0)} onPointerCancel={()=>move(0,0)} onLostPointerCapture={()=>move(0,0)}>{icon}</button>;
  const close=()=>setModal(null);
- return <main className="lj-root">
+ return <main className={"lj-root lj-root-"+mode}>
   {mode==="intro"&&<section className="lj-intro">
    <div className="lj-intro-content">
     <span className="lj-kicker">VIRALIO ORIGINALS / MISIÓN 004</span>
@@ -251,9 +277,10 @@ export default function LaUltimaJugada(){
     <a className="lj-back" href="/#experiencias">← Volver a Viralio Escape</a>
    </div><div className="lj-hero-shine" aria-hidden="true"/>
   </section>}
-  {mode==="playing"&&<>
+  {sceneActive&&<>
    <div className="lj-canvas-frame"><canvas ref={canvas} aria-label="Escenario tridimensional explorable: usá WASD para caminar, arrastrá para mirar y tocá los objetos para examinarlos."/></div>
    <div className="lj-vignette" aria-hidden="true"/>
+   {mode==="finale"&&<div className={"lj-finale-banner lj-finale-"+finaleCue} role="status" key={finaleCue}><small>LA ÚLTIMA JUGADA</small><strong>{finaleCue==="apertura"?"EL ENTRENADOR RECIBIÓ LA INFORMACIÓN":finaleCue==="pase"?"EL 7 SE ESCAPA POR LA BANDA DERECHA":finaleCue==="centro"?"CENTRO AL PRIMER PALO…":"¡¡GOOOOOOOL DE ARGENTINA!!"}</strong><span>{finaleCue==="gol"?"ARGENTINA 2 — 1 INGLATERRA":"LA FINAL SE DEFINE AHORA"}</span></div>}
    {cinematic&&<div className={"lj-cinematic lj-cinematic-"+cinematic} aria-live="assertive"><span>{cinematic==="var"?"¡GOL DE INGLATERRA!":cinematic==="blackout"?"COMUNICACIÓN INTERRUMPIDA":"TE HAN ENGAÑADO"}</span><strong>{cinematic==="var"?"REVISIÓN VAR · GOL ANULADO":cinematic==="blackout"?"SISTEMA BLOQUEADO · RESTAURANDO ENLACE":"EL OPERADOR DE RADIO ERA EL SABOTEADOR"}</strong></div>}
    <header className="lj-hud">
     <div className="lj-brand">V / <strong>LA ÚLTIMA JUGADA</strong><small>{titles[chapter]}</small></div>
