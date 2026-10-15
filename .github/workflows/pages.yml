@@ -59,6 +59,41 @@ jobs:
           test -s showcase/rescate-mauro/audio/mauro-voice.webm
           test -s showcase/rescate-mauro/models/stalker-skeletal.glb
           test -s showcase/rescate-mauro/audio/suspense.wav
+      # Playtest only: the production Next.js application and checkout stay
+      # untouched. Build the football game as an additional static directory
+      # while preserving the current UMBRAL and Rescate Mauro experiences.
+      - name: Fetch validated football game from development branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/la-ultima-jugada-inglaterra-20261015
+          path: football-source
+
+      - name: Publish independent premium football playtest
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s showcase/escape/app.js
+          test -s showcase/rescate-mauro/app.js
+          rm -rf src/app/la-ultima-jugada
+          cp -R football-source/src/app/la-ultima-jugada src/app/la-ultima-jugada
+          cp -R football-source/public/la-ultima-jugada public/la-ultima-jugada
+          # Copy only the selected 3D assets, not all 171 catalog models.
+          rm -rf public/viralio-3d
+          cp -R football-source/public/viralio-3d public/viralio-3d
+          cp football-source/scripts/build-la-ultima-jugada-standalone.mjs scripts/
+          cp football-source/scripts/la-ultima-jugada-standalone-entry.tsx scripts/
+          node scripts/build-la-ultima-jugada-standalone.mjs
+          test -s showcase/la-ultima-jugada/index.html
+          test -s showcase/la-ultima-jugada/app.js
+          test -s showcase/la-ultima-jugada/app.css
+          test -s showcase/la-ultima-jugada/models/player-quaternius.glb
+          test -s showcase/viralio-3d/models/npc-sam-locomotion.glb
+          test -s showcase/viralio-3d/models/steel-office-desk.glb
+          node --check showcase/la-ultima-jugada/app.js
+          # The other published escape rooms remain intact in this artifact.
+          test -s showcase/escape/app.js
+          test -s showcase/rescate-mauro/app.js
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Validate static showcase
