@@ -648,11 +648,20 @@ export class FootballWorld {
   box(7.7,.09,.17,0,4.04,-4.78,raceway,this.root);
   for(const x of [-3.64,0,3.64])
    box(.07,.18,.16,x,4.14,-4.78,frame,this.root);
-  // Framed scouting prints, equipment cabinets and labelled document racks.
-  for(const dx of [-4.9,-3.2]){
-   box(1.26,1.06,.10,dx,2.16,6.48,trim,this.root);
-   box(1.13,.93,.03,dx,2.16,6.57,slate,this.root);
-   this.label("DOSSIER / ENG",["PRESIÓN ALTA","BANDA DERECHA"],dx,2.16,6.62,1.07,.82);
+  // These two scouting boards are bolted to the inside of the rear wall.
+  // Previously their labels faced OUTSIDE the room behind the concrete.
+  for(const [index,dx] of [-4.9,-3.2].entries()){
+   box(1.26,1.06,.10,dx,2.16,6.37,trim,this.root);
+   box(1.13,.93,.03,dx,2.16,6.29,slate,this.root);
+   const label=this.label(index?"SECUENCIA":"DOSSIER / ENG",
+    index?["CÁMARA 01 / 02 / 03","NO CONFIAR EN COPIAS"]:["REGISTRO INTERVENIDO","FALTAN CUATRO HOJAS"],
+    dx,2.16,6.20,1.07,.82);
+   label.rotation.y=Math.PI;
+   for(const y of [1.69,2.64]){
+    const bolts=mat(0x95a9ac,.79,.42);
+    box(.046,.046,.032,dx-.57,y,6.25,bolts,this.root);
+    box(.046,.046,.032,dx+.57,y,6.25,bolts,this.root);
+   }
   }
   const rackFallback=new THREE.Group();this.root.add(rackFallback);
   for(let i=0;i<4;i++){
