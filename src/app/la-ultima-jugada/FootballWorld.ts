@@ -449,7 +449,7 @@ export class FootballWorld {
    tube(.044,.034,side*6.19,2.65,-6+i*.9,nickel,this.root,8).rotation.z=Math.PI/2;
   }
  }
- private loadFurniture(kind:"desk"|"chair", x:number,z:number,w:number,h:number,d:number,fallback:THREE.Group) {
+ private loadFurniture(kind:"desk"|"chair"|"shelf"|"lamp", x:number,z:number,w:number,h:number,d:number,fallback:THREE.Group,baseY=0) {
   const url=FOOTBALL_ASSETS[kind];
   loadFootballModel(url).then(gltf=>{
    if(this.destroyed)return;
@@ -459,7 +459,7 @@ export class FootballWorld {
    if(dimensions.x<.01||dimensions.y<.01||dimensions.z<.01)return;
    obj.scale.multiplyScalar(Math.min(w/dimensions.x,h/dimensions.y,d/dimensions.z));
    const b=new THREE.Box3().setFromObject(obj),center=b.getCenter(new THREE.Vector3());
-   obj.position.set(x-center.x,-b.min.y,z-center.z);
+   obj.position.set(x-center.x,baseY-b.min.y,z-center.z);
    obj.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
    this.root.add(obj);fallback.visible=false;
   }).catch(()=>{});
@@ -529,15 +529,26 @@ export class FootballWorld {
    box(1.13,.93,.03,dx,2.16,6.57,slate,this.root);
    this.label("DOSSIER / ENG",["PRESIÓN ALTA","BANDA DERECHA"],dx,2.16,6.62,1.07,.82);
   }
+  const rackFallback=new THREE.Group();this.root.add(rackFallback);
   for(let i=0;i<4;i++){
    const z=-2.8+i*.94;
-   box(.58,2.18,.83,5.3,1.12,z,plastic,this.root);
-   box(.56,.04,.78,5.3,1.83,z,trim,this.root);
-   box(.41,.06,.05,5.25,1.02,z+.44,copper,this.root);
+   box(.58,2.18,.83,5.3,1.12,z,plastic,rackFallback);
+   box(.56,.04,.78,5.3,1.83,z,trim,rackFallback);
+   box(.41,.06,.05,5.25,1.02,z+.44,copper,rackFallback);
    for(let t=0;t<3;t++){
-    box(.38,.28,.06,5.25,1.35-t*.35,z+.45,mat(t===0?0x96b9c4:t===1?0xc9b996:0x5a6f83,.19,.65),this.root);
+    box(.38,.28,.06,5.25,1.35-t*.35,z+.45,mat(t===0?0x96b9c4:t===1?0xc9b996:0x5a6f83,.19,.65),rackFallback);
    }
   }
+  this.loadFurniture("shelf",5.24,-1.4,1.4,2.2,2.4,rackFallback);
+  // Task light with warm practical glow over the source documents. GLB
+  // detail replaces a functional fallback once assets have loaded.
+  const lampFallback=new THREE.Group();this.root.add(lampFallback);
+  tube(.17,.035,.75,1.05,.65,trim,lampFallback);
+  tube(.035,.31,.75,1.28,.65,trim,lampFallback);
+  const shade=new THREE.Mesh(new THREE.CylinderGeometry(.13,.24,.19,18),copper);
+  shade.position.set(.75,1.49,.65);lampFallback.add(shade);
+  this.loadFurniture("lamp",.75,.65,.54,.64,.54,lampFallback,.96);
+  this.glow(.75,1.64,.65,0xffcc89,3.8,2.1);
   // Monitor desk peripherals: keyboard keys, articulated lamps, cable loops.
   for(const x of [-3.4,-1.55,.4,1.6]){
    box(.87,.07,.27,x,1.08,-1.15,plastic,this.root);
