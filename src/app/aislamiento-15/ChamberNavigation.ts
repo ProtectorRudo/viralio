@@ -8,12 +8,17 @@ import * as THREE from "three";
 export type RoomIndex = 0|1|2;
 export type Footprint = { x:number; z:number; hw:number; hd:number };
 const Z = [0,-13,-26] as const;
+// One authoritative first-room layout for both visible fixtures and player/stalker collisions.
+export const EMERGENCY_LAYOUT = {
+  locker: { x: -4.45, z: -4.45 },
+  fuse: { x: -3.09, z: 3.14 },
+} as const;
 const solids: ReadonlyArray<ReadonlyArray<Footprint>> = [
   [
     {x:-2.95,z:2.55,hw:.68,hd:1.4}, // reception desk (rotated)
     {x:2.85,z:2.0,hw:.76,hd:1.25}, // bed
     {x:3.0,z:-2.68,hw:.78,hd:1.32}, // bed
-    {x:-4.3,z:-2.3,hw:.47,hd:.93}, // metal locker
+    {x:EMERGENCY_LAYOUT.locker.x,z:EMERGENCY_LAYOUT.locker.z,hw:.47,hd:.93}, // locker clear of F-08 wall switchboard
   ],
   [
     {x:-4.04,z:-10.8,hw:1.05,hd:.53},
