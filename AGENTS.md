@@ -34,3 +34,7 @@ Cuando el usuario pida buscar, ampliar o incorporar mobiliario, personajes, canc
 
 ## Objetos de fútbol CC0 verificados
 Para elegir **solamente assets** de fútbol, leer `docs/VIRALIO_3D_FOOTBALL_PREMIUM_ASSETS.md`, consultar `data/viralio-3d/polyhaven-football-models.json` y confirmar ambos balones fotoescaneados en `public/viralio-3d/index.json` (`football-polyhaven-dirty` y `football-polyhaven-worn`). Hay 171 modelos GLB y 26 materiales PBR; 12 props nuevos de vestuario, fisioterapia y figuras deportivas estáticas. Los packs son listas opcionales: **no construir juegos ni modificar salas sin pedido explícito**.
+
+
+## Biblioteca Universal Core — objetos cotidianos fotorrealistas
+Cuando la tarea sea buscar sillas, mesas, sofás, heladeras, comida, vajilla, armarios, objetos domésticos o decoración para futuras salas, consultar primero `docs/VIRALIO_3D_UNIVERSAL_CORE.md` y `data/viralio-3d/universal-core.json` (32 seleccionados, 18 PBR Innerscene y 14 fotoescaneados Poly Haven). `data/viralio-3d/polyhaven-universal-models.json` conserva las fichas CC0 de Poly Haven y `scripts/build-polyhaven-universal.mjs` importa GLB optimizados. Registrar toda descarga y verificar `public/viralio-3d/index.json` antes de contar modelos disponibles. Utilizar los cinco materiales PBR de madera/cuero de `data/viralio-3d/materials.json`. Calidad: priorizar hero para primer plano, support en medio; no confundir PBR con fotorrealismo certificado. **Este inventario NO autoriza crear, editar o publicar ningún juego.**
