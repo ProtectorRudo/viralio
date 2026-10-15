@@ -14,7 +14,10 @@ export class FinaleDirector {
  private finished=false;
  private startPosition=new THREE.Vector3();
  private fov:number;
- constructor(private world:THREE.Group, private camera:THREE.PerspectiveCamera,private hook:Hook){
+ private athletes:Array<{actor:THREE.Group;original:THREE.Vector3}>=[];
+ private goalFlash:THREE.PointLight;
+ constructor(private world:THREE.Group, private camera:THREE.PerspectiveCamera,private hook:Hook,players:THREE.Group[]=[]){
+  this.athletes=players.map(actor=>({actor,original:actor.position.clone()}));
   this.startPosition.copy(camera.position);
   this.fov=camera.fov;
   this.ball=new THREE.Group();
@@ -29,6 +32,8 @@ export class FinaleDirector {
    pentagon.lookAt(0,0,0);pentagon.rotateY(Math.PI);this.ball.add(pentagon);
   }
   this.world.add(this.ball);
+  this.goalFlash=new THREE.PointLight(0xc8ecff,0,42,2);
+  this.goalFlash.position.set(0,8,-99);this.world.add(this.goalFlash);
   const geo=new THREE.PlaneGeometry(.14,.075);
   const mat=new THREE.MeshBasicMaterial({side:THREE.DoubleSide,color:0xffffff,depthWrite:false,transparent:true,opacity:.88});
   this.confetti=new THREE.InstancedMesh(geo,mat,380);
@@ -36,7 +41,7 @@ export class FinaleDirector {
   let seed=492171;
   const random=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
   for(let i=0;i<380;i++){
-   this.confettiXYZ.push({x:(random()-.5)*26,y:10+random()*13,z:-27-random()*16,speed:.55+random()*2.4,spin:random()*9});
+   this.confettiXYZ.push({x:(random()-.5)*26,y:7+random()*13,z:-81-random()*24,speed:.55+random()*2.4,spin:random()*9});
    this.confetti.setColorAt(i,new THREE.Color(colors[i%4]));
   }
   this.confetti.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -50,6 +55,7 @@ export class FinaleDirector {
   if(this.finished)return;
   this.elapsed+=dt;
   const t=this.elapsed;
+  this.animateAthletes(t);
   this.cue("apertura",.3);this.cue("pase",2.65);this.cue("centro",5.1);this.cue("gol",7.6);
   const approach=THREE.MathUtils.smoothstep(t,0,2.5);
   let cx=THREE.MathUtils.lerp(this.startPosition.x,6,approach);
@@ -60,6 +66,7 @@ export class FinaleDirector {
   cy=THREE.MathUtils.lerp(cy,5,shot);
   cz=THREE.MathUtils.lerp(cz,-78,shot);
   if(t>=7.6){
+   this.goalFlash.intensity=5+10*Math.exp(-Math.max(0,t-7.6)*1.5);
    const celebration=THREE.MathUtils.smoothstep(t,7.6,10);
    cy+=celebration*7;cz-=celebration*4;cx+=celebration*2;
    this.confetti.visible=true;
@@ -86,8 +93,24 @@ export class FinaleDirector {
   this.camera.lookAt(look);
   if(t>=10.8){this.finished=true;this.hook.complete();}
  }
+ private animateAthletes(t:number){
+  // The rehearsed instruction is enacted on the real field:
+  // No teleporting/static mannequins while the ball flies into the net.
+  const attack=THREE.MathUtils.smoothstep(t,2.2,7.55);
+  const anticipation=THREE.MathUtils.smoothstep(t,.6,3.1);
+  for(let i=0;i<this.athletes.length;i++){
+   const item=this.athletes[i],p=item.original,blue=i%2===0;
+   const pursuit=blue?attack:anticipation*.75+attack*.25;
+   const ix=i%12;
+   const destX=blue?([2,6,10].includes(ix)?(ix===2?15:ix===6?10:0):p.x+5):p.x*.55+7;
+   const destZ=blue?([6,10].includes(ix)?-96:-82):-88;
+   item.actor.position.set(THREE.MathUtils.lerp(p.x,destX,pursuit),0,THREE.MathUtils.lerp(p.z,destZ,pursuit));
+   if(i%2===0)item.actor.rotation.y=THREE.MathUtils.lerp(0,-.21,attack);
+  }
+ }
  dispose(){
-  this.world.remove(this.ball);this.world.remove(this.confetti);
+  this.world.remove(this.ball);this.world.remove(this.confetti);this.world.remove(this.goalFlash);
+  this.goalFlash.dispose();
   this.ball.traverse(o=>{if(o instanceof THREE.Mesh){o.geometry.dispose();const ms=Array.isArray(o.material)?o.material:[o.material];ms.forEach(m=>m.dispose());}});
   this.confetti.geometry.dispose();(this.confetti.material as THREE.Material).dispose();
  }
