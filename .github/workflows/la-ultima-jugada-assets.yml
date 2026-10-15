@@ -1,0 +1,66 @@
+name: La Última Jugada - Import CC0 Assets
+
+on:
+  push:
+    branches:
+      - feat/la-ultima-jugada-inglaterra-20261015
+    paths:
+      - .github/workflows/la-ultima-jugada-assets.yml
+
+permissions:
+  contents: write
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out approved feature branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+
+      - name: Import immutable licensed assets with hash verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/la-ultima-jugada/models
+          dir=public/la-ultima-jugada/models
+
+          curl --fail --location --silent --show-error --retry 3 --max-time 45 \
+            "https://raw.githubusercontent.com/kendrekaran/striker-3d/57847f87ff3d924712a1bb37df9dae391aedc315/assets/player.glb" \
+            --output "$dir/player-quaternius.glb"
+          curl --fail --location --silent --show-error --retry 3 --max-time 45 \
+            "https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/617d6073a557cbc2f0f2ac917916e01b9c4b631b/public/assets/glb/desk-kari.glb" \
+            --output "$dir/desk-kari.glb"
+          curl --fail --location --silent --show-error --retry 3 --max-time 45 \
+            "https://raw.githubusercontent.com/yadneshSalvi/hearth-webmcp/617d6073a557cbc2f0f2ac917916e01b9c4b631b/public/assets/glb/chair-olve.glb" \
+            --output "$dir/chair-olve.glb"
+
+          test "$(git hash-object "$dir/player-quaternius.glb")" = "2faab1ed245bbe2b28153151d3b301913a216f69"
+          test "$(git hash-object "$dir/desk-kari.glb")" = "5afd20527a55c0e635c384d5fd02ad9e323726b3"
+          test "$(git hash-object "$dir/chair-olve.glb")" = "68ad09133116b5a5eb25dc5940ac855aec2812ba"
+
+          cat > "$dir/CREDITS-CC0.md" <<'CREDITS'
+          # Creative Commons Zero 1.0 Universal
+
+          All models were sourced for the fictional stadium escape experience.
+
+          - player-quaternius.glb: Quaternius CC0 1.0, https://github.com/kendrekaran/striker-3d/blob/main/assets/LICENSE-quaternius.txt
+          - desk-kari.glb: CC0 1.0, https://github.com/yadneshSalvi/hearth-webmcp/blob/main/public/assets/CREDITS.md
+          - chair-olve.glb: CC0 1.0, https://github.com/yadneshSalvi/hearth-webmcp/blob/main/public/assets/CREDITS.md
+
+          Immutable source commits:
+          striker-3d 57847f87ff3d924712a1bb37df9dae391aedc315
+          hearth-webmcp 617d6073a557cbc2f0f2ac917916e01b9c4b631b
+
+          All Git blob SHA-1 hashes were verified at import time.
+          CREDITS
+
+          git add "$dir"
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "assets(football): vendor verified CC0 rigged player and furniture GLBs"
+            git push origin HEAD:refs/heads/feat/la-ultima-jugada-inglaterra-20261015
+          fi
