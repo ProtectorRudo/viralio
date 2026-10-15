@@ -440,3 +440,24 @@
  .ve-trial-steps h3{margin:10px 0}
  .ve-trial-steps p{margin:5px 0}
 }
+
+/* Acceso comercial individual: mensaje explícito hasta integrar checkout verificable. */
+.ve-room-access-note{
+ display:grid;
+ gap:10px;
+ padding:23px 24px;
+ border:1px solid rgba(211,176,122,.45);
+ background:linear-gradient(130deg,rgba(201,168,121,.12),rgba(16,18,22,.4));
+}
+.ve-room-access-note strong{
+ color:#eed3a4;
+ font:600 18px/1.35 Georgia,"Times New Roman",serif;
+}
+.ve-room-access-note span{
+ color:#c9c2b7;
+ font:13px/1.65 Arial,Helvetica,sans-serif;
+}
+@media(max-width:580px){
+ .ve-room-access-note{padding:19px}
+ .ve-room-access-note strong{font-size:17px}
+}

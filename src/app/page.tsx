@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { experiences, collections } from "./escape-platform/catalog";
 import ExperienceCatalog from "./escape-platform/ExperienceCatalog";
-import { RealGameplayShowcase } from "./escape-platform/RealGameplayShowcase";
 import { SiteHeader, SiteFooter } from "./escape-platform/SiteShell";
 import "./escape-platform/escape-premium.css";
 
@@ -31,8 +30,7 @@ export default function Home(){
          <h1 id="ve-hero-title">La realidad termina<br/> donde empieza <em>tu historia.</em></h1>
          <p>Explorá mundos 3D, resolvé misterios y viví historias que no se pueden contar. Porque no estás mirando la aventura: estás dentro de ella.</p>
          <div className="ve-actions">
-           <Link href="/probar" className="ve-button ve-button-primary">Probar gratis <span aria-hidden="true">↗</span></Link>
-           <a href="#trailer" className="ve-button ve-button-ghost"><span className="ve-play-symbol" aria-hidden="true">▷</span> Ver juego real</a>
+           <a href="#experiencias" className="ve-button ve-button-primary">Explorar experiencias <span aria-hidden="true">↗</span></a>
          </div>
        </div>
        <div className="ve-hero-foot ve-container">
@@ -59,7 +57,6 @@ export default function Home(){
          </Link>
        </div>
      </section>
-     <RealGameplayShowcase/>
      <ExperienceCatalog/>
      <section className="ve-section ve-collections" id="colecciones">
        <div className="ve-container">
@@ -90,7 +87,7 @@ export default function Home(){
      <section className="ve-faq ve-section" aria-label="Preguntas frecuentes">
        <div className="ve-container ve-faq-layout"><div><span className="ve-overline ve-metal">04 / LO QUE TENÉS QUE SABER</span><h2>Antes de <em>entrar.</em></h2></div>
        <div>
-         <details><summary>¿Puedo probar una experiencia gratis?</summary><p>Sí. Estamos en una etapa de pruebas abiertas: podés entrar sin registrarte a las experiencias disponibles. Actualmente se ofrece acceso completo de prueba; todavía no hay un cobro integrado en este catálogo.</p></details>
+         <details><summary>¿Cómo accedo a una sala?</summary><p>Podés conocer todas las historias y sus características en el catálogo. La compra de partidas individuales aún no está habilitada; publicaremos sus precios y condiciones cuando esté disponible.</p></details>
          <details><summary>¿Necesito descargar una aplicación?</summary><p>No. Las experiencias disponibles se abren desde el navegador; necesitás conexión a internet y un dispositivo compatible con gráficos 3D.</p></details>
          <details><summary>¿Puedo jugar desde mi celular?</summary><p>Sí, en celulares compatibles con WebGL2. Recomendamos un navegador actualizado, una conexión estable y utilizar auriculares.</p></details>
          <details><summary>¿Todas las experiencias son de terror?</summary><p>No. Viralio también desarrolla aventuras, misterios y experiencias pensadas para emocionar y sorprender.</p></details>

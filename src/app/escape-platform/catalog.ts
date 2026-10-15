@@ -21,8 +21,6 @@ export type EscapeExperience = {
   tagline: string;
   synopsis: string;
   story: string[];
-  playUrl: string;
-  trailerUrl?: string;
   featured?: boolean;
 };
 export const experiences: readonly EscapeExperience[] = [
@@ -41,8 +39,7 @@ export const experiences: readonly EscapeExperience[] = [
     mode: "Individual",
     tagline: "Alguien desapareció. El reloj ya está corriendo.",
     synopsis: "Una habitación cerrada. Tres evidencias. Seis cifras. Y la certeza de que alguien podría regresar antes de que encuentres la salida.",
-    story: ["Una desaparición te conduce a un lugar que no debería existir.", "Explorá la habitación, reuní las evidencias y abrí el candado antes de que el tiempo se termine.", "Pero prestá atención: la habitación también te está observando."],
-    playUrl: "https://tehiceesto.com/escape-play/caso-m/"
+    story: ["Una desaparición te conduce a un lugar que no debería existir.", "Explorá la habitación, reuní las evidencias y abrí el candado antes de que el tiempo se termine.", "Pero prestá atención: la habitación también te está observando."]
   },
   {
     slug: "la-ultima-funcion",
@@ -60,7 +57,6 @@ export const experiences: readonly EscapeExperience[] = [
     tagline: "La función terminó en 1968. Tu entrada acaba de llegar.",
     synopsis: "Ochenta y tres espectadores desaparecieron del teatro Belladonna. Nadie volvió a entrar. Hasta esta noche.",
     story: ["El teatro Belladonna cerró sus puertas en 1968, cuando 83 personas desaparecieron en plena función.", "Encontrá tu butaca, devolvé la luz al escenario y descifrá el misterio de la última proyección.", "El Acomodador no quiere que nadie abandone el teatro."],
-    playUrl: "https://la-ultima-funcion.vercel.app/",
     featured: true
   },
   {
@@ -78,8 +74,7 @@ export const experiences: readonly EscapeExperience[] = [
     mode: "Individual",
     tagline: "Hay secretos que sólo florecen a tiempo.",
     synopsis: "Un jardín que empieza a marchitarse, una carta sellada y una cuenta regresiva. Descubrí qué historia se esconde entre las flores.",
-    story: ["Un jardín detenido en el tiempo guarda una última carta.", "Investigá cada rincón, seguí las pistas y encontrá el camino hacia una revelación personal.", "Cada campanada cambia lo que está en juego."],
-    playUrl: "https://la-ultima-campanada-desafio-v6.vercel.app/"
+    story: ["Un jardín detenido en el tiempo guarda una última carta.", "Investigá cada rincón, seguí las pistas y encontrá el camino hacia una revelación personal.", "Cada campanada cambia lo que está en juego."]
   },
   {
     slug: "aislamiento-15",
@@ -96,9 +91,7 @@ export const experiences: readonly EscapeExperience[] = [
     mode: "Individual · Primera persona",
     tagline: "Tenés quince minutos para salir del hospital. Algo quiere salir con vos.",
     synopsis: "Tres sectores de un hospital sellado, un protocolo irreversible y una anomalía capaz de imitar voces humanas. Escapá antes del último minuto.",
-    story: ["Despertás en una instalación médica donde los altavoces anuncian la activación del Protocolo 015.", "Investigá Urgencias, restablecé la presión en Aislamiento y descubrí quién intenta engañarte desde Contención.", "El enemigo está dentro del edificio. Cada error consume segundos reales."],
-    playUrl: "https://protectorrudo.github.io/aislamiento-15/",
-    trailerUrl: "https://protectorrudo.github.io/aislamiento-15/media/trailer-real.mp4"
+    story: ["Despertás en una instalación médica donde los altavoces anuncian la activación del Protocolo 015.", "Investigá Urgencias, restablecé la presión en Aislamiento y descubrí quién intenta engañarte desde Contención.", "El enemigo está dentro del edificio. Cada error consume segundos reales."]
   },
 ]; 
 export const collections = [
