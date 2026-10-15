@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  AmbientLight, Box3, Color, DirectionalLight,
+  AmbientLight, AnimationMixer, Box3, Clock, Color, DirectionalLight,
   HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -20,6 +20,8 @@ function Preview({ id }: {id:string}) {
     let renderer:WebGLRenderer|null=null;
     let controls:OrbitControls|null=null;
     let observer:ResizeObserver|null=null;
+    let mixer:AnimationMixer|null=null;
+    const clock=new Clock();
     try{
       renderer=new WebGLRenderer({antialias:true,alpha:false,powerPreference:"high-performance"});
       renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.7));
@@ -47,7 +49,7 @@ function Preview({ id }: {id:string}) {
         rendererRef.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
       };
       observer=new ResizeObserver(resize);observer.observe(host);resize();
-      loadViralio3DAsset(id).then(({scene:object})=>{
+      loadViralio3DAsset(id).then(({scene:object,animations})=>{
         if(!alive)return;
         const bounds=new Box3().setFromObject(object);
         const size=new Vector3(),center=new Vector3();
@@ -56,6 +58,11 @@ function Preview({ id }: {id:string}) {
         object.position.sub(center);
         object.position.y+=size.y/2;
         scene.add(object);
+        if(animations.length){
+          mixer=new AnimationMixer(object);
+          const idle=animations.find(clip=>/idle/i.test(clip.name))??animations[0];
+          mixer.clipAction(idle).play();
+        }
         const span=Math.max(size.x,size.y,size.z,.5);
         camera.position.set(span*1.65,span*1.0,span*1.7);
         camera.near=Math.max(.005,span/1000);camera.far=span*100;camera.updateProjectionMatrix();
@@ -64,6 +71,7 @@ function Preview({ id }: {id:string}) {
       const frame=()=>{
         if(!alive)return;
         controlsRef.update();
+        mixer?.update(Math.min(.1,clock.getDelta()));
         rendererRef.render(scene,camera);
         raf=requestAnimationFrame(frame);
       };
