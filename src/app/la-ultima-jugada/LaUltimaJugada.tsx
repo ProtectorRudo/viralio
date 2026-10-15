@@ -170,6 +170,7 @@ export default function LaUltimaJugada(){
   const p=id as Puzzle;if(s[p]){notify("Esa prueba ya está resuelta. Seguí hacia el siguiente objetivo.");return;}
   setModal(p);setSelection("C1");setEvidence("");setConfirm("");
  },[advance,notify,win]);
+ useEffect(()=>{engine.current?.setGameplayActive(!modal&&!cinematic);},[modal,cinematic]);
  useEffect(()=>{isMutedRef.current=isMuted;if(audio.current?.gain&&audio.current.ctx)audio.current.gain.gain.setTargetAtTime(isMuted?0:chapter===2?.54:.22,audio.current.ctx.currentTime,.2);},[isMuted,chapter]);
  useEffect(()=>{
   if(mode!=="playing"||!canvas.current)return;
