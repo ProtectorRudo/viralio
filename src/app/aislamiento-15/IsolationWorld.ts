@@ -64,9 +64,13 @@ function gridTexture() {
 
 function signTexture(lines: string[], width = 600, height = 260, accent = "#d7e9dc") {
   const canvas = document.createElement("canvas");
-  canvas.width = width; canvas.height = height;
+  // Render the lettering at 1.5x resolution. Mobile players can walk up to
+  // the same physical sign, with an accessible transcribed inspection action.
+  const dpr = 1.5;
+  canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
   const c = canvas.getContext("2d");
   if (!c) return null;
+  c.scale(dpr, dpr);
   c.fillStyle = "#102124"; c.fillRect(0, 0, width, height);
   c.fillStyle = "#244347"; c.fillRect(0, 0, width, 5);
   c.fillStyle = accent; c.font = "700 32px monospace";
@@ -74,6 +78,7 @@ function signTexture(lines: string[], width = 600, height = 260, accent = "#d7e9
   for (let i = 0; i < 9; i++) { c.fillStyle = "rgba(150,230,212,.08)"; c.fillRect(0, 18 + i * 28, width, 1); }
   const t = new THREE.CanvasTexture(canvas);
   t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
   return t;
 }
 
@@ -114,6 +119,7 @@ export class IsolationWorld {
   won = false;
   enemyMode: "dormant" | "roaming" | "hunting" = "dormant";
   private raycaster = new THREE.Raycaster();
+  private signage = new Map<string, string[]>();
   private pickupMeshes: THREE.Object3D[] = [];
   readonly enemy: THREE.Group;
   private enemyMixer?: THREE.AnimationMixer;
@@ -222,7 +228,15 @@ export class IsolationWorld {
     const texture = signTexture(lines, 640, 255, accent);
     if (!texture) return;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }));
-    m.position.set(x, y, z); this.scene.add(m); return m;
+    m.position.set(x, y, z); this.scene.add(m);
+    if (lines.length > 0) {
+      const id = "sign-" + this.signage.size;
+      this.signage.set(id, [...lines]);
+      const nearest = CENTER.reduce((best, center, index) =>
+        Math.abs(z-center) < Math.abs(z-CENTER[best]) ? index : best, 0) as Chamber;
+      this.target(id, "Leer cartel: " + lines[0], m, nearest, 4.4);
+    }
+    return m;
   }
 
   private target(id: string, label: string, mesh: THREE.Object3D, room: Chamber, range = 3.25) {
@@ -753,6 +767,21 @@ export class IsolationWorld {
         void loader.loadAsync("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb").then(attach).catch(()=>{});
       });
     });
+  }
+
+  getSignText(id: string): string[] | null {
+    return this.signage.get(id) ?? null;
+  }
+
+  getPerformanceSnapshot() {
+    return {
+      dpr: this.renderer.getPixelRatio(),
+      drawCalls: this.renderer.info.render.calls,
+      triangles: this.renderer.info.render.triangles,
+      webgl2: this.renderer.capabilities.isWebGL2,
+      software: this.softwareRenderer,
+      chamber: this.room + 1
+    };
   }
 
   getFocus(): Focus | null { return this.hitAt(0, 0); }
