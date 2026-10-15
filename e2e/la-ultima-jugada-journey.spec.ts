@@ -62,6 +62,9 @@ test("full Argentina–England investigation physically reaches every room and t
  await reachAction(page,/corredor/i);
  await reachAction(page,/comunicaciones/i);
  await expect(page.locator(".lj-brand small")).toHaveText("CORREDOR RESTRINGIDO");
+ await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
+ await page.waitForTimeout(900);
+ await page.screenshot({path:"test-results/la-ultima-jugada-corredor-3d.png",fullPage:true});
  await reachAction(page,/cámaras/i,true);
  await page.getByRole("button",{name:"Cambiar ROJO"}).click();
  await page.getByRole("button",{name:"Cambiar AZUL"}).click();
@@ -72,6 +75,9 @@ test("full Argentina–England investigation physically reaches every room and t
  await solve(page);
  await reachAction(page,/Verificá la táctica/i);
  await expect(page.locator(".lj-brand small")).toHaveText("TÚNEL DE LA FINAL");
+ await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
+ await page.waitForTimeout(900);
+ await page.screenshot({path:"test-results/la-ultima-jugada-tunel-3d.png",fullPage:true});
  await reachAction(page,/entrenador/i,true);
  await page.getByRole("button",{name:/Atraer la marca al centro/}).click();
  await solve(page);
