@@ -69,6 +69,13 @@ export class FinaleDirector {
    this.goalFlash.intensity=5+10*Math.exp(-Math.max(0,t-7.6)*1.5);
    const celebration=THREE.MathUtils.smoothstep(t,7.6,10);
    cy+=celebration*7;cz-=celebration*4;cx+=celebration*2;
+   // The final victory screen inherits a *wide broadcast camera*, never
+   // a player's close-up. A player stood directly in front of the previous
+   // camera at z=-82 and occluded half the winning scene on phones.
+   const broadcast=THREE.MathUtils.smoothstep(t,9.1,10.8);
+   cx=THREE.MathUtils.lerp(cx,23,broadcast);
+   cy=THREE.MathUtils.lerp(cy,14,broadcast);
+   cz=THREE.MathUtils.lerp(cz,-68,broadcast);
    this.confetti.visible=true;
    for(let i=0;i<this.confettiXYZ.length;i++){
     const c=this.confettiXYZ[i];
