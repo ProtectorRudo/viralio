@@ -16,7 +16,7 @@ function Preview({ id }: {id:string}) {
     const host=root.current;
     if(!host || !id)return;
     let alive=true,raf=0;
-    setError("");
+    queueMicrotask(()=>{if(alive)setError("");});
     let renderer:WebGLRenderer|null=null;
     let controls:OrbitControls|null=null;
     let observer:ResizeObserver|null=null;
@@ -68,7 +68,7 @@ function Preview({ id }: {id:string}) {
         raf=requestAnimationFrame(frame);
       };
       frame();
-    }catch(e){setError(String(e));}
+    }catch(e){queueMicrotask(()=>{if(alive)setError(String(e));});}
     return ()=>{
       alive=false;cancelAnimationFrame(raf);observer?.disconnect();controls?.dispose();
       if(renderer){
