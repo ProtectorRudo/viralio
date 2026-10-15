@@ -98,3 +98,15 @@
 }
 @media(max-width:420px){.lj-progress span{letter-spacing:0}.lj-brand small{max-width:150px}.lj-modal-backdrop{align-items:flex-start}.lj-terminal{margin:auto 0}.lj-end-score{padding:13px;gap:10px}.lj-end-score span{font-size:10px}.lj-score-intro{margin:20px 0}.lj-features{gap:10px}}
 @media(prefers-reduced-motion:reduce){.lj-root *, .lj-root *:before,.lj-root *:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* Progress-triggered narrative shocks do not halt the 15-minute clock. */
+.lj-cinematic{position:absolute;inset:0;z-index:11;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:25px;text-align:center;pointer-events:none;animation:lj-shock 3.8s ease both}
+.lj-cinematic span{font-size:clamp(33px,8.2vw,94px);font-weight:950;letter-spacing:-.06em;line-height:1.05;color:#f7fbfe;text-shadow:0 5px 35px #000}
+.lj-cinematic strong{font-size:clamp(11px,1.5vw,22px);letter-spacing:.2em;color:#f3c681;line-height:1.6}
+.lj-cinematic-var{background:linear-gradient(180deg,rgba(7,24,34,.88),rgba(8,23,33,.68));border-block:8px solid rgba(107,187,237,.6)}
+.lj-cinematic-blackout{background:#010306}
+.lj-cinematic-blackout:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 7px,rgba(255,255,255,.05) 8px 9px);animation:lj-noise .11s steps(2) infinite}
+.lj-cinematic-blackout span{color:#f76b68}.lj-cinematic-betrayal{background:radial-gradient(circle,rgba(91,9,23,.94),rgba(3,6,12,.97))}
+.lj-cinematic-betrayal span{color:#ff9b95}
+@keyframes lj-shock{0%{opacity:0;filter:blur(12px)}10%{opacity:1;filter:blur(0)}82%{opacity:1}100%{opacity:0}}
+@keyframes lj-noise{0%{transform:translateY(1px)}50%{transform:translateY(-1px)}100%{transform:translateY(0)}}
