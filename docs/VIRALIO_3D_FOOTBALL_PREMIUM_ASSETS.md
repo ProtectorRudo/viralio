@@ -4,8 +4,8 @@
 
 ## Recuento comprobable
 
-- Biblioteca general: verificar `public/viralio-3d/index.json`; 157 modelos antes de esta tanda, +12 GLB de Innerscene procesados y validados en GitHub Actions.
-- Fotogrametría exclusiva de fútbol: `data/viralio-3d/polyhaven-football-models.json` registra **dos balones CC0**. La descarga desde Poly Haven, la conversión y la optimización las realiza `scripts/build-football-polyhaven.mjs`. **Solo están realmente integrados cuando aparecen en el índice materializado de GLB y en el reporte** `data/viralio-3d/polyhaven-football-report.json`. El catálogo de Innerscene no incluye automáticamente estos dos modelos.
+- Biblioteca general: verificar `public/viralio-3d/index.json`; 157 modelos antes de esta tanda, +12 GLB de Innerscene procesados y validados en GitHub Actions = 169 modelos. El segundo proceso añadió 2 balones Poly Haven = **171 modelos GLB verificados**, 26 sets PBR.
+- Fotogrametría exclusiva de fútbol: `data/viralio-3d/polyhaven-football-models.json` registra **dos balones CC0**. La descarga desde Poly Haven, la conversión y la optimización las realiza `scripts/build-football-polyhaven.mjs`. **Ambos quedaron verificados (sin fallos, cada uno de ~624 KB) en el índice materializado y en el reporte** `data/viralio-3d/polyhaven-football-report.json`. El catálogo de Innerscene no incluye automáticamente estos dos modelos.
 - 26 sets de materiales PBR base ya disponibles; no se alteran.
 - Todos los nuevos modelos de Innerscene están bajo CC0; no usar las fotografías promocionales como sustituto de los GLB.
 - Marcadores y tribunas de Innerscene tienen texturas PBR, pero su detalle y realismo **no son equivalentes a un estadio fotográfico profesional**. Reservar elementos complejos para revisiones visuales.
@@ -32,7 +32,7 @@
 1. [Dirty Football — Rohit Seervi](https://polyhaven.com/a/dirty_football): pelota de fútbol gastada, CC0, referencia de alta calidad con costuras, suciedad y cuero. El archivo original tiene versiones de muy alta resolución que no deben enviarse sin conversión al teléfono.
 2. [Football — Amal Kumar](https://polyhaven.com/a/football): pelota vintage con aspecto gastado y parcialmente desinflada, CC0.
 
-El script utiliza el endpoint público oficial `https://api.polyhaven.com/files/{id}` y sus dependencias, toma la variante glTF de **1K**, y genera una copia **GLB autoconclusiva** mediante glTF-Transform; valida la cabecera, mallas, integridad, tamaño y SHA-256 antes de registrarla. Si falla, el reporte indica qué quedó pendiente; **no contarla como materializada sin salida verificada**.
+El script utiliza el endpoint público oficial `https://api.polyhaven.com/files/{id}` y sus dependencias, toma la variante glTF de **1K**, y genera una copia **GLB autoconclusiva** mediante glTF-Transform; valida la cabecera, mallas, integridad, tamaño y SHA-256 antes de registrarla. Ambos generaron GLB válidos, compresión y hashes; las futuras reproducciones del pipeline deben confirmar el mismo resultado.
 
 ## Lo que faltó conseguir en CC0 premium
 
