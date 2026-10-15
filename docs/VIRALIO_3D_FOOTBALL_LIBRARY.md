@@ -1,6 +1,6 @@
 # VIRALIO ESCAPE — Biblioteca de fútbol: cancha, vestuario, manga, táctica y videoanálisis
 
-**Actualización:** 2026-10-15. **Estado:** inventario oficial de modelos CC0 / arte modular; comprobar la publicación efectiva en `public/viralio-3d/index.json` y `materials/index.json`.
+**Actualización:** 2026-10-15. **Descargas locales verificadas al cerrar la compilación (consultar índice).** **Estado:** inventario oficial de modelos CC0 / arte modular; comprobar la publicación efectiva en `public/viralio-3d/index.json` y `materials/index.json`.
 
 ## Visión de dirección artística
 
@@ -8,7 +8,7 @@
 
 - Las escenas interiores deben verse como vestuarios y salas técnicas profesionales, no oficinas genéricas recoloreadas.
 - El jugador debe atravesar **vestuario → manga de entrada → cancha**, con sala de videoanálisis como segmento opcional de misterio/pistas.
-- El archivo `football-soccer-club-grounds-starter.glb` representa **una única escena base de 72 piezas geométricas de estética LOW-POLY**, no 72 modelos hiperrealistas. Sirve para la geometría de cancha/tribunas vistas a distancia, layout, gradas, dugout, conos, arcos, pizarra y vestuario. Para primeros planos, elegir objetos PBR de Innerscene y texturas fotoescaneadas.
+- El pack **externo** de 72 piezas de estética LOW-POLY en 3DAssets.dev es una referencia de layout para cancha/tribunas, gradas, dugout, conos, arcos y vestuario. Su CDN no estuvo accesible desde GitHub Actions, por lo tanto **NO existe una copia local ni figura en el catálogo operativo**. Para primeros planos, elegir objetos PBR de Innerscene y texturas fotoescaneadas.
 - Fichas de jugadores de fútbol en poses de correr/rematar son **mallas estáticas sin esqueleto**, NO animaciones jugables. Para un futbolista caminando o corriendo, adaptar de forma artística un modelo con rig + clips de `src/lib/viralio-characters.ts` y crear uniforme original.
 - No confundir un HDRI de estadio con una escena 3D explorable. Es un fondo iluminado y mapa de reflexiones, no arquitectura ni tribuna con colisiones.
 
@@ -19,7 +19,7 @@
 - `football-goal-junior` — arco reducido para entrenamiento.
 - `bleachers-three-row` — grada reutilizable de tres filas.
 - `football-scoreboard` — marcador de estadio.
-- `football-soccer-club-grounds-starter` — escena estructural de 72 modelos LOW-POLY compactos.
+- **Referencia externa solamente:** [pack modular 72 piezas](https://3dassets.dev/packs/football-soccer-club-grounds), sin archivo disponible en producción. Si se vuelve accesible, importarlo y validarlo antes de usar.
 
 **Vestuario y charla técnica**
 - `vent-perforated-locker` — locker metálico perforado detallado, con rail de banco.
