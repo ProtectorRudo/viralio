@@ -5,7 +5,7 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  const errors:string[]=[];page.on("pageerror",err=>errors.push(err.message));
  const glbResponses=new Map<string,number>();
  page.on("response",response=>{
-  const file=response.url().match(/\/la-ultima-jugada\/models\/([^/?]+\.glb)/)?.[1];
+  const file=response.url().match(/\/(?:la-ultima-jugada|viralio-3d)\/models\/([^/?]+\.glb)/)?.[1];
   if(file)glbResponses.set(file,response.status());
  });
  await page.goto("/la-ultima-jugada");
@@ -23,7 +23,7 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0,{timeout:30_000});
- for(const asset of ["player-quaternius.glb","desk-kari.glb","chair-olve.glb"]){
+ for(const asset of ["player-quaternius.glb","steel-office-desk.glb","chair-olve.glb","video-analysis-27inch-monitor.glb","key-grid-mechanical-keyboard.glb"]){
   await expect.poll(()=>glbResponses.get(asset),{
    message:"First-party GLB must load successfully: "+asset,
    timeout:15_000
