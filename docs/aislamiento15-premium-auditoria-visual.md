@@ -63,3 +63,16 @@ La segunda inspección encontró que las ruedas de purga aún parecían discos d
 **Ver evidencias de QA:**
 - https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38639232956
 - https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38639238559
+
+## Pase de legibilidad móvil y diagnóstico (15/10/2026)
+
+**Problema comprobado:** los avisos y órdenes técnicos leídos desde la cámara se volvían pequeños en orientación vertical, aun cuando los dispositivos GLB ya estaban optimizados.
+
+**Mejoras implementadas:**
+- Inspección directa de carteles dentro de la escena 3D, con transcripción ampliada que no revela ningún código secreto automáticamente si el jugador no se acerca al cartel.
+- CanvasTexture de cartelería clínica dibujado a 1,5× de resolución y anisotropía 4.
+- Pinch-to-zoom con dos dedos, manteniendo los controles de desplazamiento sin una cámara 2D; modifica exclusivamente la matriz de proyección, sin reasignar el framebuffer WebGL a cada gesto.
+- Diagnóstico WebGL opt-in desde Ayuda: FPS observado, resolución interna, llamadas de dibujo, número de triángulos y estado de la ruta de software.
+- Tests automatizados para lectura de un cartel y HUD de rendimiento, recorrido completo de Urgencias → Aislamiento → Contención, capturas 3D en 1280 × 720 y vertical 390 × 844, y eventos táctiles reales del zoom.
+
+**Evidencia:** flujo de ruta [QA #38659884550](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38659884550) satisfactorio y [auditoría visual/táctil #38659910066](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38659910066), que registró cambio real del FOV de 72° a 59,085° sin errores JavaScript. **Ninguna de estas mediciones sustituye pruebas físicas sostenidas de 15 minutos en Android/iOS.**
