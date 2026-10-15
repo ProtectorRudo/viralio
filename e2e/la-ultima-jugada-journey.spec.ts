@@ -53,6 +53,10 @@ test("full Argentina–England investigation physically reaches every room and t
  const errors:string[]=[];page.on("pageerror",err=>errors.push(err.message));
  await page.goto("/la-ultima-jugada");
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
+ await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
+ await expect(page.getByText("Las tres cámaras parecen iguales, pero no lo son.")).toBeVisible();
+ await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
+ await expect(page.getByRole("dialog",{name:"Orden de misión"})).toHaveCount(0);
  await expect(page.locator(".lj-canvas-frame canvas")).toBeVisible();
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position"),{timeout:20_000}).not.toBeNull();
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
@@ -63,6 +67,9 @@ test("full Argentina–England investigation physically reaches every room and t
  await reachAction(page,/Reconstruí la jugada/i,true);
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-replay-terminal.png",fullPage:false});
  await page.getByRole("button",{name:/CÁMARA 2/}).click();
+ for(const name of ["La pelota aparece de golpe en otra zona","Veo dos pelotas al mismo tiempo","Hay una cámara con movimiento continuo"]){
+  await page.getByRole("button",{name:new RegExp(name)}).click();
+ }
  await solve(page);
  await expect(page.locator(".lj-objective p")).toContainText("pizarra");
  await reachAction(page,/informe/i,true);
@@ -72,16 +79,28 @@ test("full Argentina–England investigation physically reaches every room and t
    await page.getByRole("button",{name:"Mover jugador "+player+" a "+slot}).click();
  }
  await solve(page);
+ for(let index=1;index<=4;index++){
+  await reachAction(page,index<4?new RegExp("\\("+index+"\\/4\\)"): /Ordená los cuatro fragmentos/i);
+ }
+ await reachAction(page,/ordená los cuatro fragmentos/i,true);
+ for(const label of ["PLANO","SELLO","RUTA","FIRMA"]){
+  await page.getByRole("button",{name:new RegExp(label+"$")}).click();
+ }
+ await solve(page);
  await reachAction(page,/corredor/i);
  await reachAction(page,/comunicaciones/i);
  await expect(page.locator(".lj-brand small")).toHaveText("CORREDOR RESTRINGIDO");
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  await page.waitForTimeout(900);
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-corredor-3d.png",fullPage:false});
- await reachAction(page,/cámaras/i,true);
+ await reachAction(page,/llave/i,true);
+ await page.getByRole("button",{name:/CASILLERO 04/}).click();
+ await page.getByRole("textbox",{name:"Código del casillero"}).fill("247");
+ await solve(page);
+ await reachAction(page,/Repará la central/i,true);
  await page.getByRole("button",{name:"Cambiar ROJO"}).click();
- await page.getByRole("button",{name:"Cambiar AZUL"}).click();
- await page.getByRole("button",{name:"Cambiar AZUL"}).click();
+ for(let n=0;n<3;n++)await page.getByRole("button",{name:"Cambiar AZUL"}).click();
+ for(let n=0;n<2;n++)await page.getByRole("button",{name:"Cambiar VERDE"}).click();
  await solve(page);
  await reachAction(page,/saboteador/i,true);
  await page.getByRole("button",{name:"CREDENCIAL 09"}).click();
@@ -92,7 +111,10 @@ test("full Argentina–England investigation physically reaches every room and t
  await page.waitForTimeout(900);
  await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-tunel-3d.png",fullPage:false});
  await reachAction(page,/entrenador/i,true);
- await page.getByRole("button",{name:/Atraer la marca al centro/}).click();
+ await page.getByRole("button",{name:/La ruta que coincide con las fichas/i}).click();
+ for(const stamp of ["C2","04","ROJO"]){
+  await page.getByRole("button",{name:stamp,exact:true}).click();
+ }
  await solve(page);
  // Regression guard: the terminal must restore first-person movement.
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-gameplay-active"),{timeout:5000}).toBe("true");
