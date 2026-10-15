@@ -56,7 +56,9 @@ function verifyGlb(buf) {
 }
 
 async function download(item) {
-  if (!/^https:\/\/www\.innerscene\.com\/api\/library\/[a-z0-9-]+\/download$/.test(item.source)) {
+  const innersceneCC0=/^https:\/\/www\.innerscene\.com\/api\/library\/[a-z0-9-]+\/download$/;
+  const clubKitCC0=/^https:\/\/cdn\.3dassets\.dev\/assets\/19143\/v1\/model\.glb$/;
+  if (!innersceneCC0.test(item.source) && !(item.id==="football-soccer-club-grounds-starter" && clubKitCC0.test(item.source))) {
     throw Error("Unapproved source URL");
   }
   let err;
@@ -126,6 +128,7 @@ async function worker(){
       const hash=sha(readFileSync(target));
       const entry={
         id:item.id,title:item.title,category:item.category,tier:item.tier,
+        ...(item.sourceModelCount?{sourceModelCount:item.sourceModelCount}:{}),
         quality:item.quality,license:item.license,sourcePage:item.sourcePage,
         author:item.author,path:relative,
         byteSize:size,sha256:hash,
