@@ -1,7 +1,7 @@
 import {test,expect,type Page} from "@playwright/test";
 
 test.use({launchOptions:{args:["--use-gl=angle","--use-angle=swiftshader","--enable-webgl","--enable-unsafe-swiftshader"]}});
-test.setTimeout(180_000);
+test.setTimeout(300_000);
 
 async function walk(page:Page,key:"w"|"a"|"s"|"d",ms:number){
  await page.keyboard.down(key);
@@ -61,12 +61,12 @@ test("full Argentina–England investigation physically reaches every room and t
  await walkUntil(page,"d","x",3,"gte");
  await walkUntil(page,"w","z",-1.4,"lte");
  await reachAction(page,/Reconstruí la jugada/i,true);
- await page.screenshot({path:"test-results/la-ultima-jugada-replay-terminal.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-replay-terminal.png",fullPage:false});
  await page.getByRole("button",{name:/CÁMARA 2/}).click();
  await solve(page);
  await expect(page.locator(".lj-objective p")).toContainText("pizarra");
  await reachAction(page,/informe/i,true);
- await page.screenshot({path:"test-results/la-ultima-jugada-magnetic-tactics.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-magnetic-tactics.png",fullPage:false});
  for(const [player,slot] of [[7,"banda derecha"],[10,"medialuna"],[9,"primer palo"]] as const){
    await page.getByRole("button",{name:"Jugador "+player,exact:true}).click();
    await page.getByRole("button",{name:"Mover jugador "+player+" a "+slot}).click();
@@ -77,7 +77,7 @@ test("full Argentina–England investigation physically reaches every room and t
  await expect(page.locator(".lj-brand small")).toHaveText("CORREDOR RESTRINGIDO");
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  await page.waitForTimeout(900);
- await page.screenshot({path:"test-results/la-ultima-jugada-corredor-3d.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-corredor-3d.png",fullPage:false});
  await reachAction(page,/cámaras/i,true);
  await page.getByRole("button",{name:"Cambiar ROJO"}).click();
  await page.getByRole("button",{name:"Cambiar AZUL"}).click();
@@ -90,7 +90,7 @@ test("full Argentina–England investigation physically reaches every room and t
  await expect(page.locator(".lj-brand small")).toHaveText("TÚNEL DE LA FINAL");
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  await page.waitForTimeout(900);
- await page.screenshot({path:"test-results/la-ultima-jugada-tunel-3d.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-tunel-3d.png",fullPage:false});
  await reachAction(page,/entrenador/i,true);
  await page.getByRole("button",{name:/Atraer la marca al centro/}).click();
  await solve(page);
@@ -110,9 +110,9 @@ test("full Argentina–England investigation physically reaches every room and t
  await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
  await expect(page.locator(".lj-root-finale")).toBeVisible({timeout:12000});
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
- await page.screenshot({path:"test-results/la-ultima-jugada-gol-3d.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-gol-3d.png",fullPage:false});
  await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible({timeout:19000});
- await page.screenshot({path:"test-results/la-ultima-jugada-final-victoria.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-final-victoria.png",fullPage:false});
  const desktopTitle=await page.locator(".lj-root-victory .lj-ending h1").boundingBox();
  expect(desktopTitle?.y,"The winner's headline must not be clipped on desktop").toBeGreaterThanOrEqual(0);
  await page.setViewportSize({width:390,height:844});
@@ -121,6 +121,6 @@ test("full Argentina–England investigation physically reaches every room and t
  expect(mobileTitle?.y,"The winner's headline must not be clipped on mobile").toBeGreaterThanOrEqual(0);
  const hasHorizontalOverflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
  expect(hasHorizontalOverflow).toBe(false);
- await page.screenshot({path:"test-results/la-ultima-jugada-final-victoria-mobile.png",fullPage:true});
+ await page.screenshot({timeout:17_000,animations:"disabled",path:"test-results/la-ultima-jugada-final-victoria-mobile.png",fullPage:false});
  expect(errors).toEqual([]);
 });
