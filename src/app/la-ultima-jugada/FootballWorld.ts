@@ -254,9 +254,12 @@ export class FootballWorld {
    "https://raw.githubusercontent.com/kendrekaran/striker-3d/main/assets/player.glb",
    gltf=>{
     if(this.destroyed)return;
-    lineUp.filter((_,i)=>i%2===0).forEach(({x,z,proxy,blue},index)=>{
+    lineUp.forEach(({x,z,proxy,blue},index)=>{
      const character=cloneRig(gltf.scene);
-     character.position.set(x,0,z);character.scale.setScalar(.95);
+     const modelSize=new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
+     character.scale.setScalar(modelSize.y>0.05?1.85/modelSize.y:.95);
+     const extents=new THREE.Box3().setFromObject(character);
+     character.position.set(x,-extents.min.y,z);
      character.rotation.y=(index%3-1)*.4;
      character.traverse(obj=>{
       if(obj instanceof THREE.Mesh){
@@ -265,14 +268,14 @@ export class FootballWorld {
        else obj.material=obj.material.clone();
        const materials=Array.isArray(obj.material)?obj.material:[obj.material];
        materials.forEach(m=>{
-        if(m instanceof THREE.MeshStandardMaterial&&/shirt|jersey|uniform|top/i.test(m.name)){
-         m.color.setHex(blue?0xa6ddf5:0xf0eeee);
+        if(m instanceof THREE.MeshStandardMaterial&&/shirt|jersey|uniform|top|chest|torso|sweater/i.test(m.name+" "+obj.name)){
+         m.color.setHex(blue?0xa6ddf5:0xf1efec);
         }
        });
       }
      });
      this.root.add(character);proxy.visible=false;
-     this.stadiumPlayers.push({actor:character,index:index*2});
+     this.stadiumPlayers.push({actor:character,index});
      const mixer=new THREE.AnimationMixer(character);
      const clip=gltf.animations.find(a=>/idle|jog|run|walk/i.test(a.name))||gltf.animations[0];
      if(clip){mixer.clipAction(clip).play();this.mixers.push(mixer);}
