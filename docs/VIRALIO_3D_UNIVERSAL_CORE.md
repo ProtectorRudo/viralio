@@ -4,14 +4,14 @@
 
 ## Estrategia profesional: universal antes que temático
 
-Colección curada de **32 modelos CC0** reutilizables en casas, hoteles, hospitales, restaurantes, cafeterías, oficinas, comedores, vestuarios y escenas de misterio. Complementa los 171 modelos y 26 sets PBR preexistentes.
+Colección curada de **32 modelos CC0** reutilizables en casas, hoteles, hospitales, restaurantes, cafeterías, oficinas, comedores, vestuarios y escenas de misterio. Complementa los 171 modelos y 26 sets PBR preexistentes: **después de importar los 32 objetos y cinco superficies, el total verificado es 203 GLB y 31 sets PBR.**
 
 - **14 modelos fotorrealistas Poly Haven**, desde su API oficial en glTF 1K, convertidos a GLB autoconclusivo, con compresión, control de tamaño y hash. Manifest: `data/viralio-3d/polyhaven-universal-models.json`.
 - **18 modelos PBR Innerscene**, descargados como GLB con materiales, escala real y licencia CC0: `data/viralio-3d/catalog.json`.
 - **5 nuevos sets PBR** de madera y cuero para variar el mobiliario: `wood_table`, `wood_table_001`, `wood_table_large`, `fabric_leather_01`, `fabric_leather_02`.
 - **Índice editorial de selección:** `data/viralio-3d/universal-core.json`.
 
-> IMPORTANTE: el manifest y los índices editoriales son declaraciones de candidatos. La fuente verificable de archivos efectivamente descargados es `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json`. Revisar `data/viralio-3d/polyhaven-universal-report.json` y el workflow correspondiente antes de afirmar disponibilidad de todos los modelos.
+> ESTADO CONFIRMADO: los 32 archivos fueron descargados correctamente y figuran en el índice; los 14 modelos de Poly Haven pasaron la importación glTF 1K a GLB, con errores 0. El manifest y los índices editoriales representan la procedencia. La fuente verificable de archivos efectivamente descargados es `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json`. Revisar `data/viralio-3d/polyhaven-universal-report.json` y el workflow correspondiente para auditar la disponibilidad y trazabilidad de los modelos.
 
 ## Modelos seleccionados
 
