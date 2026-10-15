@@ -176,3 +176,12 @@
  .lj-magnet-board{height:205px}
  .lj-magnet-guide button{font-size:8px!important}.lj-magnet-guide button b{font-size:8px}
 }
+
+.lj-loading-scene{position:absolute;inset:0;z-index:20;background:radial-gradient(ellipse at center,#193648,#07111d 76%);
+ display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;text-align:center;letter-spacing:.2em;padding:20px}
+.lj-loading-scene span{font-weight:800;font-size:12px;color:#e6c890}
+.lj-loading-scene strong{font-weight:950;font-size:clamp(20px,5vw,46px);color:#eff8fc;letter-spacing:.07em}
+.lj-loading-scene small{font-size:11px;color:#afd0dc;letter-spacing:.13em}
+.lj-loading-scene:after{content:"";width:160px;height:3px;margin-top:14px;
+ background:linear-gradient(90deg,transparent,#e2c389,transparent);animation:lj-scan-load 1s ease-in-out infinite alternate}
+@keyframes lj-scan-load{from{opacity:.3;transform:scaleX(.34)}to{opacity:1;transform:scaleX(1)}}
