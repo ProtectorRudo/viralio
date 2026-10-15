@@ -25,8 +25,14 @@ async function walkUntil(page:Page,key:"w"|"a"|"s"|"d",axis:"x"|"z",goal:number,
 }
 
 async function orient(page:Page){
- await page.getByRole("button",{name:"Mostrar u ocultar pista"}).click();
- await page.getByRole("button",{name:/ORIENTARME/}).click();
+ const open=page.getByRole("dialog",{name:"Acertijo interactivo"});
+ if(await open.isVisible().catch(()=>false)){
+  const title=await open.locator("h2").innerText().catch(()=>"desconocido");
+  const objective=await page.locator(".lj-objective p").innerText().catch(()=>"desconocido");
+  throw new Error("Unexpected modal opened while navigating: "+title+" / objective="+objective);
+ }
+ await page.getByRole("button",{name:"Mostrar u ocultar pista"}).click({timeout:6000});
+ await page.getByRole("button",{name:/ORIENTARME/}).click({timeout:6000});
 }
 async function reachAction(page:Page,nextText:RegExp,puzzle=false){
  for(let attempt=0;attempt<13;attempt++){
