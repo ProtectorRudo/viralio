@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import {FOOTBALL_ASSETS,loadFootballModel} from "./AssetLibrary";
+import {FOOTBALL_ASSETS,FOOTBALL_PREMIUM,loadFootballModel} from "./AssetLibrary";
 import {clone as cloneRig} from "three/examples/jsm/utils/SkeletonUtils.js";
 
 /** Original player rig provided CC0 by Quaternius; fallback keeps roles recognizable offline. */
-const CHARACTER_GLB=FOOTBALL_ASSETS.player;
+// Staff uses a real skinned MakeHuman GLB; stadium footballers keep the lighter rig.
 type Actor={group:THREE.Group;update:(t:number)=>void;dispose:()=>void};
 
 function humanFallback(group:THREE.Group,color:number){
@@ -37,7 +37,7 @@ function humanFallback(group:THREE.Group,color:number){
  return {group:local,arm:shoulderR};
 }
 function attachRig(group:THREE.Group,tint:number,isCoach:boolean,ready:()=>boolean){
- loadFootballModel(CHARACTER_GLB).then(gltf=>{
+ loadFootballModel(isCoach?FOOTBALL_PREMIUM.coach:FOOTBALL_ASSETS.player).then(gltf=>{
   if(!ready())return;
   const rig=cloneRig(gltf.scene);
   const box=new THREE.Box3().setFromObject(rig);
