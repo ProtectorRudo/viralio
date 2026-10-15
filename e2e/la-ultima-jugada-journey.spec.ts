@@ -94,6 +94,9 @@ test("full Argentina–England investigation physically reaches every room and t
  await reachAction(page,/entrenador/i,true);
  await page.getByRole("button",{name:/Atraer la marca al centro/}).click();
  await solve(page);
+ // Regression guard: the terminal must restore first-person movement.
+ await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-gameplay-active"),{timeout:5000}).toBe("true");
+ await walkUntil(page,"w","z",2.5,"lte");
  for(let attempt=0;attempt<13;attempt++){
    if(await page.locator(".lj-root-finale").isVisible())break;
    await orient(page);
