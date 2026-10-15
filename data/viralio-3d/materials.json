@@ -451,6 +451,30 @@
         "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/brick_moss_001/brick_moss_001_nor_gl_1k.png",
         "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/brick_moss_001/brick_moss_001_arm_1k.png"
       }
+    },
+    {
+      "id": "dirty_concrete",
+      "title": "Hormigón sucio, restos y barro",
+      "category": "crimen-exteriores",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/dirty_concrete",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/dirty_concrete/dirty_concrete_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/dirty_concrete/dirty_concrete_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/dirty_concrete/dirty_concrete_arm_1k.png"
+      }
+    },
+    {
+      "id": "rusty_metal",
+      "title": "Metal oxidado de persiana industrial",
+      "category": "crimen-deposito",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rusty_metal",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rusty_metal/rusty_metal_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rusty_metal/rusty_metal_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rusty_metal/rusty_metal_arm_1k.png"
+      }
     }
   ]
 }
