@@ -1,0 +1,146 @@
+{
+  "title": "Viralio Escape — Biblioteca de Investigación Criminal",
+  "version": "1.0.0",
+  "curatedAt": "2026-10-15",
+  "license": "CC0-1.0",
+  "purpose": "Selección de modelos GLB, NO niveles, jugabilidad ni narrativa definitiva",
+  "catalog": "data/viralio-3d/catalog.json",
+  "verifiedIndex": "public/viralio-3d/index.json",
+  "collections": [
+    {
+      "id": "crime-scene",
+      "name": "Escena del crimen",
+      "assetIds": [
+        "crime-barrier-tape",
+        "crime-clipboard",
+        "crime-photo-frame",
+        "crime-vintage-camera",
+        "crime-police-officer-static",
+        "cctv-security-camera",
+        "horror-standalone-candle",
+        "premium-ph-magnifier",
+        "investigation-open-notebook",
+        "premium-ph-telephone-clock"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "detective-office",
+      "name": "Oficina de detectives",
+      "assetIds": [
+        "crime-detective-partner-desk",
+        "crime-office-chair",
+        "crime-voice-recorder",
+        "crime-field-recorder",
+        "crime-reel-tape-recorder",
+        "crime-filing-cabinet-lateral",
+        "index-42-mobile-filing-cabinet",
+        "crime-banker-lamp",
+        "crime-ink-printer",
+        "crime-paper-trays",
+        "premium-ph-victorian-books",
+        "investigation-open-notebook",
+        "crime-office-printer-stand"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "interrogation",
+      "name": "Sala de interrogatorio",
+      "assetIds": [
+        "steel-office-desk",
+        "crime-office-chair",
+        "school-chair",
+        "crime-field-recorder",
+        "crime-voice-recorder",
+        "ceiling-dome-security-camera",
+        "workshop-industrial-steel-door",
+        "crime-gooseneck-lamp",
+        "crime-clipboard",
+        "crime-reel-tape-recorder"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "forensics",
+      "name": "Laboratorio forense",
+      "assetIds": [
+        "crime-lab-researcher-static",
+        "crime-examination-table",
+        "crime-patient-bedside",
+        "patient-transport-stretcher",
+        "mobile-examination-light",
+        "crime-label-printer",
+        "crime-iv-pole",
+        "crime-manual-wheelchair",
+        "clinical-examination-table",
+        "three-shelf-medical-supply-cart",
+        "vital-signs-monitor-on-roll-stand",
+        "crime-gloves-sign"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "victims-room",
+      "name": "Vivienda u hotel de la víctima",
+      "assetIds": [
+        "crime-hotel-desk-chair",
+        "universal-ph-leather-sofa",
+        "universal-fridge-premium",
+        "universal-ph-red-apple",
+        "universal-ph-wooden-table",
+        "crime-photo-frame",
+        "investigation-open-notebook",
+        "universal-ph-painted-cabinet",
+        "universal-ph-wooden-bowl"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "suspects",
+      "name": "Sospechosos y testigos (estáticos o con clips básicos)",
+      "assetIds": [
+        "crime-police-officer-static",
+        "premium-guard-drew",
+        "premium-worker-clipboard-taylor",
+        "crime-lab-researcher-static",
+        "premium-chef-sam",
+        "premium-courier-owen",
+        "npc-harper-locomotion",
+        "npc-jordan-locomotion"
+      ],
+      "selectionOnly": true
+    },
+    {
+      "id": "night-alley",
+      "name": "Callejón / depósito / exteriores",
+      "assetIds": [
+        "crime-police-suv",
+        "crime-police-sedan",
+        "crime-barrier-tape",
+        "cctv-security-camera",
+        "workshop-industrial-steel-door",
+        "premium-ph-metal-toolbox",
+        "premium-ph-hand-truck",
+        "industrial-wall-sconce",
+        "grille-security-grille-gate"
+      ],
+      "selectionOnly": true
+    }
+  ],
+  "qualityNotes": [
+    "Figuras policiales y de laboratorio de Innerscene son estáticas sin animación.",
+    "Las grabadoras son geometría; no reproducen audio por sí solas.",
+    "La cinta sobre postes es de perímetro genérico, NO cinta policial impresa.",
+    "La mesa clínica no sustituye una mesa de autopsias real.",
+    "Las 7 colecciones referencian modelos reutilizables y no descargan assets repetidos."
+  ],
+  "pending": [
+    "marcadores numerados de evidencia",
+    "bolsas transparentes de prueba",
+    "huellas y otros decals forenses bajo licencia clara",
+    "tablero realista de fotos y cuerdas",
+    "mesas y armarios mortuorios específicos",
+    "personajes detectives animados y expresivos profesionales"
+  ]
+}
