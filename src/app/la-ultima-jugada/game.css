@@ -402,3 +402,26 @@
   .lj-mission-first p { line-height: 1.4; }
   .lj-mission-footer { margin-top: 8px; }
 }
+
+
+/* User testing: completion time and wrong-answer count are explicit,
+   so difficulty can be judged from play sessions instead of promises. */
+.lj-run-report{
+ width:min(620px,100%);display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;
+ margin:13px auto 13px;
+}
+.lj-run-report>div{
+ background:rgba(5,24,33,.82);border-top:1px solid rgba(209,186,129,.6);
+ padding:12px 8px;display:flex;flex-direction:column;gap:4px;
+}
+.lj-run-report small{
+ font-size:9px;font-weight:900;letter-spacing:.1em;color:#a8c1ca;
+}
+.lj-run-report strong{font:900 clamp(16px,2.5vw,29px)/1.2 ui-monospace,monospace;color:#f0d19b}
+@media(max-width:540px){
+ .lj-run-report{gap:4px}
+ .lj-run-report>div{padding:10px 4px}
+ .lj-run-report small{font-size:7px}
+ .lj-run-report strong{font-size:18px}
+}
