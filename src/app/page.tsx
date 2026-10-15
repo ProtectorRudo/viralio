@@ -47,7 +47,7 @@ export default function Home(){
          <div className="ve-small-heading"><span className="ve-overline ve-metal">EN PRIMER PLANO</span><span>VIRALIO ORIGINALS — 002</span></div>
          <Link href={`/salas/${featured.slug}`} className="ve-featured" style={{backgroundImage:`linear-gradient(90deg,rgba(6,8,11,.95) 0%, rgba(6,8,11,.72) 43%, rgba(6,8,11,.05) 100%), url("${featured.cover}")`}}>
            <span className="ve-featured-inner"><span className="ve-overline ve-metal">EXPERIENCIA DESTACADA / TERROR PARANORMAL</span><strong>{featured.title}</strong><span className="ve-featured-sub">{featured.subtitle}</span><span className="ve-featured-description">{featured.tagline}</span>
-           <span className="ve-featured-intensity" aria-label="Intensidades orientativas: dificultad ${featured.intensity.difficulty} de 5; sustos ${featured.intensity.scares} de 5; sorpresa ${featured.intensity.surprise} de 5; tensión ${featured.intensity.tension} de 5">
+           <span className="ve-featured-intensity" aria-label="Intensidades editoriales orientativas de la experiencia destacada">
              <span>Dificultad <b>{featured.intensity.difficulty}/5</b></span>
              <span>Sustos <b>{featured.intensity.scares}/5</b></span>
              <span>Sorpresa <b>{featured.intensity.surprise}/5</b></span>
