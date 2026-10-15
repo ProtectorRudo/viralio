@@ -49,8 +49,28 @@ test("La Última Jugada remains navigable in a vertical mobile viewport",async({
  await expect(page.getByRole("button",{name:"Interactuar con el objeto enfocado"})).toBeVisible();
  await page.getByRole("button",{name:"Mostrar u ocultar pista"}).tap();
  await expect(page.getByText("PISTA / 01")).toBeVisible();
- await page.waitForTimeout(1100);
- await page.screenshot({path:"test-results/la-ultima-jugada-mobile.png",fullPage:true});
+ await page.getByRole("button",{name:"Cerrar ×"}).tap();
+ const canvas=page.locator(".lj-canvas-frame canvas");
+ await expect.poll(()=>canvas.getAttribute("data-player-position"),{timeout:16000}).not.toBeNull();
+ const firstZ=Number((await canvas.getAttribute("data-player-position"))?.split(",")[1]);
+ const touch=await context.newCDPSession(page);
+ const forward=await page.getByRole("button",{name:"lj-forward"}).boundingBox();
+ if(!forward)throw new Error("Mobile forward control missing");
+ const fx=forward.x+forward.width/2,fy=forward.y+forward.height/2;
+ await touch.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x:fx,y:fy}]});
+ await page.waitForTimeout(1050);
+ await touch.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+ await expect.poll(async()=>Number((await canvas.getAttribute("data-player-position"))?.split(",")[1]),{timeout:7000}).toBeLessThan(firstZ-.13);
+ // Native Chromium touch inputs prove that mobile two-finger zoom affects
+ // actual Three.js camera FOV, without opening a puzzle accidentally.
+ const beforeZoom=Number(await canvas.getAttribute("data-camera-fov"));
+ await touch.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x:220,y:445},{x:275,y:445}]});
+ await touch.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:185,y:445},{x:310,y:445}]});
+ await page.waitForTimeout(320);
+ await touch.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+ await expect.poll(async()=>Number(await canvas.getAttribute("data-camera-fov")),{timeout:7000}).toBeLessThan(beforeZoom);
+ await page.waitForTimeout(400);
+ await page.screenshot({path:"test-results/la-ultima-jugada-mobile.png",fullPage:false,timeout:17000});
  expect(errors).toEqual([]);
  await context.close();
 });
