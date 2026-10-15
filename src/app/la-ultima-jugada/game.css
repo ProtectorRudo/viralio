@@ -384,3 +384,21 @@
 }
 
 @media(max-width:650px){.lj-pressure-top span{display:none}.lj-pressure-top{justify-content:center}.lj-pressure-track{width:85%;margin:5px auto 0}.lj-pressure small{font-size:8px}}
+
+
+/* Screenshot QA 1280x720: keep the mission CTA fully in the initial viewport.
+   Compress vertical rhythm instead of asking a new player to discover scroll. */
+@media (min-width: 651px) and (max-height: 800px) {
+  .lj-mission-backdrop { padding: 10px 18px; }
+  .lj-mission-sheet { padding: 20px 31px 21px; }
+  .lj-mission-classified { margin: 12px 0 6px; }
+  .lj-mission-sheet h2 { font-size: clamp(43px, 8vh, 62px); margin: 0 0 12px; line-height: .9; }
+  .lj-mission-score { padding: 7px 0; }
+  .lj-mission-sheet>p:not(.lj-mission-classified) { margin: 11px 0; line-height: 1.43; }
+  .lj-mission-steps { margin: 12px 0 13px; }
+  .lj-mission-steps>div { min-height: 42px; padding: 8px 9px; }
+  .lj-mission-first { padding: 10px 15px; margin: 0 0 12px; }
+  .lj-mission-first strong { margin: 5px 0; font-size: 18px; }
+  .lj-mission-first p { line-height: 1.4; }
+  .lj-mission-footer { margin-top: 8px; }
+}
