@@ -86,6 +86,19 @@ test("full Argentina–England investigation physically reaches every room and t
  }
  await solve(page);
  for(let index=1;index<=4;index++){
+  // Navigate AROUND the center analysis desk. Walking in a direct line from
+  // piece 1 on the left wall to piece 2 on the right gets blocked by real
+  // furniture collision, just as it would for a player.
+  if(index===2){
+   await orient(page);
+   await walkUntil(page,"a","z",-2.4,"lte");
+   await walkUntil(page,"w","x",0,"gte");
+  }
+  if(index===3){
+   await orient(page);
+   await walkUntil(page,"d","z",-2.4,"lte");
+   await walkUntil(page,"w","x",0,"lte");
+  }
   await reachAction(page,index<4?new RegExp("\\("+index+"\\/4\\)"): /Ordená los cuatro fragmentos/i);
  }
  await reachAction(page,/ordená los cuatro fragmentos/i,true);
