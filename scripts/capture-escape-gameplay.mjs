@@ -10,7 +10,7 @@ import path from "node:path";
 
 const rooms = [
   { id: "caso-m", url: "https://tehiceesto.com/escape-play/caso-m/" },
-  { id: "la-ultima-funcion", url: "https://la-ultima-funcion.vercel.app/" },
+  { id: "la-ultima-funcion", url: "https://protectorrudo.github.io/la-ultima-funcion/" },
   { id: "la-ultima-campanada", url: "https://la-ultima-campanada-desafio-v6.vercel.app/" },
 ];
 const out = path.resolve("trailer-review");
