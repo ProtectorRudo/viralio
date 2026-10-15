@@ -270,10 +270,13 @@ export class FootballWorld {
   // Two actual scanned-material finishes instead of flat generated tiles.
   this.upgradePbr([ground],chapter===0?"old_linoleum_flooring_01":"rubber_tiles",4,chapter===0?0x879bb1:0x929ca5);
   this.upgradePbr(walls,"concrete_tiles",3,0x728da4);
-  for(let x=-4.5;x<6;x+=3){
-   box(.085,.05,13,x,4.1,0,steel,this.root);
-   for(let z=-5.2;z<6;z+=3.1){
-    box(.83,.045,1.45,x,4.065,z,mat(0xbcd3e1,.25,.5,0xa1daff,.45),this.root);
+  // Six large studio luminaires instead of sixteen white floating plates.
+  // The visible luminous panels sit inside a dark anodized recessed bezel.
+  const fixtureFrame=mat(0x273946,.63,.38),diffuser=mat(0xd0e4e8,.04,.66,0x93c5e2,.53);
+  for(const x of [-3.6,0,3.6]){
+   for(const z of [-3.55,2.15]){
+    box(1.22,.055,1.96,x,4.065,z,fixtureFrame,this.root);
+    box(1.08,.012,1.81,x,4.027,z,diffuser,this.root).castShadow=false;
    }
   }
   for(let z=-5.6;z<=5.8;z+=2.1)box(.08,4.1,.12,-6.23,1.98,z,steel,this.root);
