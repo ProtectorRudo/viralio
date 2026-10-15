@@ -1,0 +1,26 @@
+{
+  "name": "Poly Haven — photoreal football scans for Viralio Escape",
+  "updatedAt": "2026-10-15",
+  "license": "CC0-1.0",
+  "notes": "Photogrammetric hero items only. GLB binaries materialized by scripts/build-football-polyhaven.mjs from the provider's official files API; not downloadable or integrated before CI.",
+  "assets": [
+    {
+      "id": "football-polyhaven-dirty",
+      "assetId": "dirty_football",
+      "title": "Balón de fútbol vintage fotoescaneado, costuras y barro",
+      "quality": "Poly Haven CC0 photogrammetry, PBR source 8K; optimize 1K for mobile",
+      "author": "Rohit Seervi",
+      "sourcePage": "https://polyhaven.com/a/dirty_football",
+      "priority": "first-person hero prop"
+    },
+    {
+      "id": "football-polyhaven-worn",
+      "assetId": "football",
+      "title": "Balón de fútbol deteriorado parcialmente desinflado",
+      "quality": "Poly Haven CC0 photo-real PBR 4K source, worn/partially deflated soccer ball; optimized 1K",
+      "author": "Amal Kumar",
+      "sourcePage": "https://polyhaven.com/a/football",
+      "priority": "locker/backstory object"
+    }
+  ]
+}
