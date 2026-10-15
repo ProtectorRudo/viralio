@@ -39,7 +39,8 @@ test("full Argentina–England investigation physically reaches every room and t
  await page.goto("/la-ultima-jugada");
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.locator(".lj-canvas-frame canvas")).toBeVisible();
- await page.waitForTimeout(800);
+ await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position"),{timeout:20_000}).not.toBeNull();
+ await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  // Move around the analysis desk instead of walking through solid furniture.
  await walk(page,"d",1300);
  // Use the aisle next to the furniture before turning toward the rear monitors.
