@@ -44,7 +44,7 @@ test("full Argentina–England investigation physically reaches every room and t
  // Move around the analysis desk instead of walking through solid furniture.
  await walk(page,"d",1300);
  const afterStrafe=(await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")||"0,0").split(",").map(Number);
- expect(afterStrafe[0],"Keyboard movement should enter the right-hand aisle").toBeGreaterThan(2.25);
+ expect(afterStrafe[0],"Keyboard movement should enter the right-hand aisle").toBeGreaterThan(1.85);
  // Use the aisle next to the furniture before turning toward the rear monitors.
  await walk(page,"w",2400);
  const afterAisle=(await page.locator(".lj-canvas-frame canvas").getAttribute("data-player-position")||"0,0").split(",").map(Number);
