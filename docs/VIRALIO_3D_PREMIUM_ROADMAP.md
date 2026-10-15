@@ -4,8 +4,8 @@
 
 ## 0. Estado de partida y límites de la promesa
 
-- Catálogo base: 81 GLB / 14 materiales PBR, incorporados en `public/viralio-3d/` (confirmar `index.json`).
-- La ampliación de octubre suma **cuatro personajes con rig y 7 clips** y utilería complementaria al catálogo: ver `data/viralio-3d/catalog.json`. **No considerar cualquier recurso como descargado hasta verificar su presencia en `public/viralio-3d/index.json`.**
+- Catálogo operativo: **139 GLB / 20 materiales PBR** presentes y verificados en `public/viralio-3d/` (confirmado en GitHub Actions, 15/10/2026).
+- La ampliación de octubre incluye **cuatro personajes con rig y 7 clips** y 28 objetos adicionales de arquitectura, escenografía, figuras estáticas y utilería. Consultar `data/viralio-3d/catalog.json`. **No considerar cualquier recurso como descargado hasta verificar su presencia en `public/viralio-3d/index.json`.**
 - El objetivo es **fotorealismo perceptual**, no solo objetos con muchos polígonos: textura, escala, iluminación, animación y diseño narrativo deben ser coherentes.
 - Los humanos CC0 basados en MakeHuman son una base técnica reutilizable, **no** personajes de calidad cinematográfica certificada. No llamar a una sala "hiperrealista" antes de verla en el teléfono.
 
@@ -113,3 +113,7 @@ Para todos los modelos nuevos: GLB v2 válido, hash SHA-256, límites de peso, n
 
 > Antes de crear o modificar una sala de Viralio Escape consulta `docs/VIRALIO_3D_PREMIUM_ROADMAP.md`, `docs/VIRALIO_3D_OPERATIONAL_LIBRARY.md`, `public/viralio-3d/index.json` y `src/lib/viralio-characters.ts`. Prioriza recursos CC0, usa modelos locales optimizados, integra objetos interactivos y selecciona un NPC con clip real si la historia lo pide. Toda sala debe superar una revisión en Android. No des por hecha la calidad hiperrealista sin una comparación visual del resultado; no compres activos sin autorización. Documenta origen, licencia y consecuencias para rendimiento.
 
+
+## Tanda de arquitectura y terror aprobada
+
+Ver [`VIRALIO_3D_ARCH_HORROR_EXPANSION.md`](VIRALIO_3D_ARCH_HORROR_EXPANSION.md) y `data/viralio-3d/experience-packs.json` para cinco grupos temáticos. La biblioteca incluye 139 modelos y 20 materiales; 28 nuevos modelos son adicionales, sin contar duplicados ya presentes. El escaneo de monstruo alado es una escultura estática, no una entidad animada. El resultado final en navegador y móvil aún requiere auditoría visual.
