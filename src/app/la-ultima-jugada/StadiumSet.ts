@@ -135,6 +135,10 @@ export function buildStadiumSet(root:THREE.Group,mobile:boolean):SceneAssets{
  // Technical benches and field-facing broadcast cameras, all real 3D.
  bench(root,-11,-20,false);bench(root,11,-20,true);
  cameraRig(root,-7.4,-13.5);cameraRig(root,7.4,-13.5);
+ const turfEdge=make(0x3b714e,.06,.92);
+ box(root,turfEdge,26,.11,9,0,-.36,-27.2);
+ const threshold=make(0xd6e4df,.17,.57);
+ box(root,threshold,26,.022,.09,0,-.287,-23.0);
  const runner=make(0x273842,.16,.85),line=make(0xd7ded0,.12,.76),
  ribbon=make(0x7cc5e5,.19,.28,0x2b89ac,.75),metal=make(0x6f8794,.73,.41);
  // Team technical area floor is physically distinct from the pitch.
