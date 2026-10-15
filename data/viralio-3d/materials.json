@@ -144,6 +144,66 @@
         "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_concrete/rough_concrete_nor_gl_1k.png",
         "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/rough_concrete/rough_concrete_arm_1k.png"
       }
+    },
+    {
+      "id": "plastered_wall",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/plastered_wall",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/plastered_wall/plastered_wall_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/plastered_wall/plastered_wall_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/plastered_wall/plastered_wall_arm_1k.png"
+      }
+    },
+    {
+      "id": "dirty_tiles",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/dirty_tiles",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/dirty_tiles/dirty_tiles_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/dirty_tiles/dirty_tiles_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/dirty_tiles/dirty_tiles_arm_1k.png"
+      }
+    },
+    {
+      "id": "old_wood_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/old_wood_floor",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/old_wood_floor/old_wood_floor_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/old_wood_floor/old_wood_floor_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/old_wood_floor/old_wood_floor_arm_1k.png"
+      }
+    },
+    {
+      "id": "wood_floor_worn",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_floor_worn",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor_worn/wood_floor_worn_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor_worn/wood_floor_worn_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor_worn/wood_floor_worn_arm_1k.png"
+      }
+    },
+    {
+      "id": "wood_floor",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/wood_floor",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor/wood_floor_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor/wood_floor_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/wood_floor/wood_floor_arm_1k.png"
+      }
+    },
+    {
+      "id": "old_wooden_floor_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/old_wooden_floor_01",
+      "maps": {
+        "color": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/old_wooden_floor_01/old_wooden_floor_01_diff_1k.png",
+        "normal": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/old_wooden_floor_01/old_wooden_floor_01_nor_gl_1k.png",
+        "arm": "https://dl.polyhaven.org/file/ph-assets/Textures/png/1k/old_wooden_floor_01/old_wooden_floor_01_arm_1k.png"
+      }
     }
   ]
 }
