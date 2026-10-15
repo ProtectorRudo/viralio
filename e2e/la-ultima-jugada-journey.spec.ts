@@ -97,14 +97,14 @@ test("full Argentina–England investigation physically reaches every room and t
  // Regression guard: the terminal must restore first-person movement.
  await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-gameplay-active"),{timeout:5000}).toBe("true");
  await walkUntil(page,"w","z",2.5,"lte");
- for(let attempt=0;attempt<13;attempt++){
-   if(await page.locator(".lj-root-finale").isVisible())break;
-   await orient(page);
-   await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
-   if(await page.locator(".lj-root-finale").isVisible())break;
-   await walk(page,"w",680);
- }
- await expect(page.locator(".lj-root-finale")).toBeVisible();
+ // Approach the coach physically, then aim at him and deliver the report.
+ // Unlike the previous retry loop, this asserts the actual 3D proximity and
+ // fails with telemetry rather than waiting for the whole test timeout.
+ await walkUntil(page,"w","z",-3.4,"lte");
+ await orient(page);
+ await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-focus-target"),{timeout:6000}).toBe("entrega");
+ await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
+ await expect(page.locator(".lj-root-finale")).toBeVisible({timeout:12000});
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
  await page.screenshot({path:"test-results/la-ultima-jugada-gol-3d.png",fullPage:true});
  await expect(page.getByText("CAMPEONES DEL MUNDO")).toBeVisible({timeout:19000});
