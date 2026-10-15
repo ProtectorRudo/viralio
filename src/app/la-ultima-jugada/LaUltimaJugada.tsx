@@ -201,6 +201,12 @@ export default function LaUltimaJugada(){
   setModal(p);setSelection("C1");setEvidence("");setConfirm("");
  },[advance,notify,win]);
  useEffect(()=>{engine.current?.setGameplayActive(!modal&&!cinematic&&mode==="playing");},[modal,cinematic,mode]);
+ useEffect(()=>{
+   if(!modal)return;
+   const closeOnEscape=(e:KeyboardEvent)=>{if(e.key==="Escape")setModal(null);};
+   window.addEventListener("keydown",closeOnEscape);
+   return()=>window.removeEventListener("keydown",closeOnEscape);
+ },[modal]);
  useEffect(()=>{isMutedRef.current=isMuted;if(audio.current?.gain&&audio.current.ctx)audio.current.gain.gain.setTargetAtTime(isMuted?0:chapter===2?.54:.22,audio.current.ctx.currentTime,.2);},[isMuted,chapter]);
  const sceneActive=mode==="playing"||mode==="finale";
  useEffect(()=>{
@@ -302,7 +308,7 @@ export default function LaUltimaJugada(){
    <div className="lj-touchpad" aria-label="Controles de desplazamiento">
     {btn("▲",0,-1,"lj-forward")}{btn("◀",-1,0,"lj-left")}{btn("▼",0,1,"lj-backward")}{btn("▶",1,0,"lj-right")}
    </div>
-   <div className="lj-control-info">ARRASTRÁ PARA MIRAR · WASD PARA CAMINAR</div>
+   <div className="lj-control-info">ARRASTRÁ PARA MIRAR · WASD PARA CAMINAR · E PARA INTERACTUAR</div>
    <button className="lj-interact" onClick={()=>engine.current?.interactCenter()} aria-label="Interactuar con el objeto enfocado">INTERACTUAR <span>◎</span></button>
    {modal&&<div className="lj-modal-backdrop"><section className="lj-terminal" role="dialog" aria-modal="true" aria-label="Acertijo interactivo">
     <div className="lj-terminal-header"><span>VIRALIO / TERMINAL DE INVESTIGACIÓN</span><button onClick={close} aria-label="Cerrar acertijo">×</button></div>
