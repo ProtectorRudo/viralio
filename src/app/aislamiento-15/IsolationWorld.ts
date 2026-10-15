@@ -823,7 +823,9 @@ export class IsolationWorld {
       if (node) node.rotation.z = 0;
     }
   }
+  private inspecting = false;
   private panelSafetyCooldown = -100;
+  setInspecting(active: boolean) { this.inspecting = active; }
   holdAtPanel(seconds = 10) {
     if (this.room === 0 || this.elapsed - this.panelSafetyCooldown < 22) return;
     this.panelSafetyCooldown = this.elapsed;
@@ -920,6 +922,12 @@ export class IsolationWorld {
       this.enemy.visible=false;this.enemyMode="dormant";return;
     }
     this.enemy.visible=true;
+    // Reading a physical document or typing at a medical terminal cannot
+    // produce an unavoidable off-screen hit. The 15-minute clock continues.
+    if (this.inspecting) {
+      this.enemyMixer?.update(Math.min(dt, .05) * .25);
+      return;
+    }
     const target=new THREE.Vector3(this.player.x,0,this.player.z);
     const self=new THREE.Vector3(this.enemy.position.x,0,this.enemy.position.z);
     const dist=self.distanceTo(target);
