@@ -1,4 +1,5 @@
 import {describe,expect,it} from "vitest";
+import {tacticsFrame} from "../src/app/la-ultima-jugada/TacticSimulation";
 import {verifyFootballPuzzle,canEnterCorridor,canEnterTunnel,canFinish,FOOTBALL_GAME_LENGTH_SECONDS,FOOTBALL_ROOM_COUNT,type PuzzleInput} from "../src/app/la-ultima-jugada/rules";
 
 const right:PuzzleInput={selection:"C2",moves:["banda derecha","medialuna","primer palo"],relays:[2,3,1],evidence:"09",confirm:"derecha"};
@@ -25,5 +26,23 @@ describe("La Última Jugada",()=>{
   expect(canEnterCorridor({informe:true})).toBe(true);
   expect(canEnterTunnel({relay:true,cctv:false})).toBe(false);
   expect(canEnterTunnel({relay:true,cctv:true})).toBe(true);
+ });
+});
+
+
+describe("Three-camera evidence integrity",()=>{
+ it("shows real continuous ball motion on original C2",()=>{
+  const before=tacticsFrame("C2",.42),after=tacticsFrame("C2",.45);
+  expect(Math.hypot(after.ball.x-before.ball.x,after.ball.y-before.ball.y)).toBeLessThan(4);
+  expect(before.duplicate).toBeUndefined();
+  expect(after.duplicate).toBeUndefined();
+ });
+ it("renders a detectable impossible spatial leap in C1",()=>{
+  const before=tacticsFrame("C1",.42),after=tacticsFrame("C1",.45);
+  expect(Math.hypot(after.ball.x-before.ball.x,after.ball.y-before.ball.y)).toBeGreaterThan(20);
+ });
+ it("renders a second ball only in corrupted C3",()=>{
+  expect(tacticsFrame("C3",.51).duplicate).toBeDefined();
+  expect(tacticsFrame("C3",.30).duplicate).toBeUndefined();
  });
 });
