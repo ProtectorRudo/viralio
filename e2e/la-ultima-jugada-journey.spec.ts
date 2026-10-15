@@ -101,8 +101,12 @@ test("full Argentina–England investigation physically reaches every room and t
  // Unlike the previous retry loop, this asserts the actual 3D proximity and
  // fails with telemetry rather than waiting for the whole test timeout.
  await walkUntil(page,"w","z",-3.4,"lte");
+ // The previous puzzle can finish against the left-hand wall. Turning to
+ // face the coach is not sufficient: walk across the physical tunnel aisle.
  await orient(page);
- await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-focus-target"),{timeout:6000}).toBe("entrega");
+ await walkUntil(page,"w","x",-1,"gte");
+ await orient(page);
+ await expect.poll(()=>page.locator(".lj-canvas-frame canvas").getAttribute("data-focus-target"),{timeout:6500}).toBe("entrega");
  await page.getByRole("button",{name:"Interactuar con el objeto enfocado"}).click();
  await expect(page.locator(".lj-root-finale")).toBeVisible({timeout:12000});
  await expect(page.getByText("¡¡GOOOOOOOL DE ARGENTINA!!")).toBeVisible({timeout:17000});
