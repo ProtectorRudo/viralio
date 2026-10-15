@@ -370,3 +370,73 @@
  .ve-featured-intensity>span{padding:9px;font-size:9px}
  .ve-featured-intensity b{font-size:10px;margin-left:5px}
 }
+
+
+/* 2026 — ACTUAL WEBGL FILM + OPEN PLAYTEST.
+   Real footage only; never use stock images as a fake gameplay trailer. */
+.ve-realfilm{position:relative;padding:90px 0 94px;background:radial-gradient(ellipse at 77% 12%,rgba(72,100,92,.16),transparent 50%),linear-gradient(180deg,#101515,#070c0f);border-top:1px solid rgba(216,201,176,.13);border-bottom:1px solid rgba(216,201,176,.13)}
+.ve-realfilm-layout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(32px,6vw,100px);align-items:center}
+.ve-realfilm-copy h2,.ve-trial-intro h1,.ve-trial-help h2{font:400 clamp(38px,5.1vw,73px)/1.02 Georgia,serif;letter-spacing:-.046em;color:#f7f0e4;margin:19px 0 24px}
+.ve-realfilm-copy h2 em,.ve-trial-intro h1 em,.ve-trial-help h2 em{font-weight:400;color:#c4a17b}
+.ve-realfilm-copy p,.ve-trial-intro>p{font:400 clamp(14px,1.3vw,17px)/1.85 Arial,sans-serif;color:#b5bcb8;max-width:480px}
+.ve-realfilm-copy p strong{font-weight:650;color:#e2d7c7}
+.ve-realfilm-facts{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0}
+.ve-realfilm-facts span{font:700 9px/1.25 monospace;letter-spacing:.07em;color:#c1c7bd;border:1px solid rgba(200,206,196,.24);padding:8px 10px}
+.ve-realfilm-actions{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.ve-realfilm-actions .ve-text-link{font-size:12px}
+.ve-realfilm-stage{background:#060a0b;padding:10px;border:1px solid rgba(224,199,164,.36);box-shadow:0 26px 90px rgba(0,0,0,.48),inset 0 0 15px rgba(232,192,139,.04);min-width:0}
+.ve-realfilm-topline,.ve-realfilm-caption{display:flex;align-items:center;justify-content:space-between;gap:14px;min-width:0;font:600 9px/1.3 monospace;letter-spacing:.11em;color:#b5b5a8}
+.ve-realfilm-topline{padding:8px 8px 13px;color:#c0a991}
+.ve-realfilm-caption{padding:13px 8px 5px;font-size:8px;color:#89918f}
+.ve-realfilm-caption span{display:inline-flex;gap:8px;align-items:center}
+.ve-record-dot{width:6px;height:6px;flex:none;background:#c26e59;border-radius:50%;box-shadow:0 0 12px #b4554480}
+.ve-realfilm-video{width:100%;aspect-ratio:16/9;display:block;background:#0b1214;object-fit:contain;max-height:calc(100vh - 170px);border:1px solid rgba(222,212,193,.17)}
+.ve-realfilm-video:focus-visible{outline:2px solid #d2af7d;outline-offset:3px}
+.ve-realfilm-compact{padding:64px 0}
+.ve-realfilm-compact .ve-realfilm-copy h2{font-size:clamp(33px,4.3vw,61px)}
+.ve-trial-hero{position:relative;padding:clamp(90px,9vw,140px) 0 90px;background:radial-gradient(ellipse at 80% 18%,rgba(53,93,81,.25),transparent 50%),linear-gradient(155deg,#161f20,#070b0d);border-bottom:1px solid rgba(215,188,157,.14)}
+.ve-trial-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(35px,6vw,95px);align-items:center}
+.ve-trial-intro h1{font-size:clamp(50px,7vw,103px);margin:24px 0}
+.ve-trial-intro .ve-room-back{display:inline-block;margin:0 0 34px}
+.ve-trial-intro>p{font-size:16px;max-width:570px}
+.ve-trial-intro>p strong{color:#e2d7c7}
+.ve-trial-conditions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 19px;margin:26px 0 32px;max-width:480px}
+.ve-trial-conditions span{font:700 11px/1.5 Arial,sans-serif;color:#e0d2bd;letter-spacing:.02em}
+.ve-trial-intro .ve-trial-honesty{font-size:11px;max-width:530px;line-height:1.6;color:#939e9a;margin-top:23px}
+.ve-trial-intro .ve-trial-honesty strong{color:#cfc7b9}
+.ve-trial-poster{min-height:490px;background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;padding:34px;border:1px solid rgba(210,188,152,.36);box-shadow:0 30px 80px #0008}
+.ve-trial-poster>span{font:700 10px monospace;letter-spacing:.15em;color:#ddc5a2}
+.ve-trial-poster strong{font:400 clamp(32px,4vw,52px)/1.1 Georgia,serif;letter-spacing:-.035em;color:#f8f0e5}
+.ve-trial-poster small{font:400 14px Arial,sans-serif;color:#c3cfce}
+.ve-trial-poster a{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:21px;color:#e9dcc8;text-decoration:none;font:700 11px Arial,sans-serif;letter-spacing:.1em;border-top:1px solid rgba(243,224,189,.43);padding-top:16px}
+.ve-trial-help{background:#101515}
+.ve-trial-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin:40px 0 28px}
+.ve-trial-steps article{border-top:1px solid #766654;padding:22px 4px}
+.ve-trial-steps article>span{font:700 10px monospace;letter-spacing:.1em;color:#c5a47d}
+.ve-trial-steps h3{font:400 clamp(22px,2.5vw,32px)/1.25 Georgia,serif;color:#eee2d5;margin:18px 0 10px}
+.ve-trial-steps p,.ve-trial-requirements{font:14px/1.75 Arial,sans-serif;color:#a7b5b1}
+.ve-trial-requirements{max-width:750px;margin-bottom:25px}
+@media(max-width:950px){
+ .ve-realfilm-layout,.ve-trial-layout{grid-template-columns:1fr;gap:35px}
+ .ve-realfilm{padding:65px 0}
+ .ve-realfilm-copy p{max-width:690px}
+ .ve-trial-poster{min-height:350px}
+}
+@media(max-width:600px){
+ .ve-realfilm{padding:46px 0}
+ .ve-realfilm-stage{padding:6px}
+ .ve-realfilm-topline{font-size:8px;padding:7px 5px}
+ .ve-realfilm-caption{font-size:7px;gap:6px;flex-wrap:wrap;padding:12px 5px 4px}
+ .ve-realfilm-facts{gap:5px}
+ .ve-realfilm-facts span{font-size:8px;padding:7px}
+ .ve-realfilm-actions{gap:15px}
+ .ve-trial-hero{padding:75px 0 50px}
+ .ve-trial-intro .ve-room-back{margin-bottom:25px}
+ .ve-trial-conditions{gap:13px 12px}
+ .ve-trial-conditions span{font-size:10px}
+ .ve-trial-poster{min-height:300px;padding:23px}
+ .ve-trial-steps{grid-template-columns:1fr;gap:6px;margin-top:25px}
+ .ve-trial-steps article{padding:16px 0}
+ .ve-trial-steps h3{margin:10px 0}
+ .ve-trial-steps p{margin:5px 0}
+}
