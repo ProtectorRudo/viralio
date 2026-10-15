@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { experiences, getExperience } from "../../escape-platform/catalog";
+import { ExperienceIntensity } from "../../escape-platform/ExperienceIntensity";
 import { SiteFooter, SiteHeader } from "../../escape-platform/SiteShell";
 import "../../escape-platform/escape-premium.css";
 
@@ -49,7 +50,7 @@ export default async function ExperiencePage({params}:Props) {
          <aside className="ve-room-panel">
            <span className="ve-overline ve-metal">TU PRÓXIMO DESAFÍO</span>
            <p><strong>Duración:</strong> {room.duration}</p>
-           <p><strong>Dificultad:</strong> {room.difficulty}</p>
+           <ExperienceIntensity room={room} variant="detail"/>
            <p><strong>Dispositivos:</strong> celular o computadora compatibles con gráficos 3D (WebGL2).</p>
            <p><strong>Recomendación:</strong> jugá con auriculares y en un lugar tranquilo.</p>
            <a className="ve-button ve-button-primary" href={room.playUrl} target="_blank" rel="noopener noreferrer">Entrar a la sala <span aria-hidden="true">↗</span></a>
