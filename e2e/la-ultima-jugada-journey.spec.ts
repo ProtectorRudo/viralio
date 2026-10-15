@@ -87,8 +87,7 @@ test("full Argentina–England investigation physically reaches every room and t
   await page.getByRole("button",{name:new RegExp(label+"$")}).click();
  }
  await solve(page);
- await reachAction(page,/corredor/i);
- await reachAction(page,/comunicaciones/i);
+ await reachAction(page,/Descifrá qué casillero/i);
  await expect(page.locator(".lj-brand small")).toHaveText("CORREDOR RESTRINGIDO");
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0);
  await page.waitForTimeout(900);
