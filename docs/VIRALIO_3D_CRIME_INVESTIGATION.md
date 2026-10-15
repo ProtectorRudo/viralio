@@ -91,7 +91,7 @@ En el workflow final, los 251 modelos Innerscene del catálogo fueron descargado
 
 ## Segunda ampliación: 17 utilerías de apoyo CC0 (15/10/2026)
 
-Se agregaron **17 fuentes GLB sin duplicaciones** a `data/viralio-3d/catalog.json` para materialización mediante GitHub Actions. **Estado inicial: curadas, sin declarar descargadas hasta comprobar el índice publicado.** El catálogo pasa de 251 a 268 modelos Innerscene (más 34 GLB adicionales de bibliotecas Poly Haven externas, previamente verificados). El objetivo verificado, si no hay fallos, sería **302 GLB**.
+Se agregaron **17 fuentes GLB sin duplicaciones** a `data/viralio-3d/catalog.json` para materialización mediante GitHub Actions. **Estado final confirmado: 17/17 GLB descargados y validados, cero fallos.** El catálogo pasó de 251 a 268 modelos Innerscene (más 34 GLB adicionales de bibliotecas Poly Haven externas). El índice físico contiene **302 GLB**.
 
 ### Recursos incorporados al catálogo
 
@@ -125,3 +125,7 @@ Tres selecciones opcionales se suman a `crime-investigation-core.json`: recepci�
 - Diferenciar alta en catálogo (`curated-source`) de materialización real y optimización.
 - Verificar específicamente transparencia del pouch, luminaria y polígonos de muebles en navegador Android.
 - Mantener objetivos móviles y no introducir estos 17 GLB juntos en una misma escena.
+
+### Cierre de validación — GitHub Actions
+
+Workflow `viralio-3d-library.yml`, run [38787176285](https://github.com/ProtectorRudo/viralio/actions/runs/38787176285): job `materialize` **success**, 268/268 GLB Innerscene válidos, 34 GLB Poly Haven complementarios, 17 nuevos presentes bajo `public/viralio-3d/models/investigation-*.glb`, índice `public/viralio-3d/index.json` **302**, PBR **44**, y `data/viralio-3d/build-report.json` **0 errores**. Esta validación verifica formato GLB/índice, **no** implica QA visual cinematográfico o FPS Android.
