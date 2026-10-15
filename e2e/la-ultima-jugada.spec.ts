@@ -13,6 +13,7 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  await expect(page.getByText("INGLATERRA",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
+ await page.screenshot({path:"test-results/la-ultima-jugada-mision-desktop.png",timeout:17000,fullPage:false});
  await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.locator(".lj-loading-scene")).toHaveCount(0,{timeout:30_000});
@@ -47,6 +48,7 @@ test("La Última Jugada remains navigable in a vertical mobile viewport",async({
  await expect(page.getByRole("button",{name:/INICIAR MISIÓN/})).toBeVisible();
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).tap();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
+ await page.screenshot({path:"test-results/la-ultima-jugada-mision-mobile.png",timeout:17000,fullPage:false});
  await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).tap();
  await expect(page.locator("canvas")).toBeVisible();
  await expect(page.getByRole("button",{name:"lj-forward"})).toBeVisible();
