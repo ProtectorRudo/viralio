@@ -545,19 +545,21 @@ export class FootballWorld {
  }
  private maintenanceLockers(){
   const steel=mat(0x253645,.74,.4),edge=mat(0x8a9ba2,.83,.29),blue=mat(0x527993,.5,.52),gold=mat(0xe8be70,.42,.41);
+  const puzzleLockersFallback=new THREE.Group();this.root.add(puzzleLockersFallback);
   for(let i=0;i<4;i++){
    const x=-4.34+i*1.03,z=3.74;
-   box(.91,1.65,.56,x,.85,z,steel,this.root);
-   box(.83,1.46,.045,x,.89,z+.293,i===3?blue:steel,this.root);
-   box(.07,.30,.08,x+.28,1.06,z+.34,edge,this.root);
-   box(.53,.115,.04,x,1.5,z+.331,gold,this.root);
+   box(.91,1.65,.56,x,.85,z,steel,puzzleLockersFallback);
+   box(.83,1.46,.045,x,.89,z+.293,i===3?blue:steel,puzzleLockersFallback);
+   box(.07,.30,.08,x+.28,1.06,z+.34,edge,puzzleLockersFallback);
+   box(.53,.115,.04,x,1.5,z+.331,gold,puzzleLockersFallback);
    this.label("0"+(i+1),["ALMACÉN"],x,1.47,z+.363,.48,.33);
-   for(let k=0;k<4;k++)box(.31,.018,.05,x,.48+k*.07,z+.34,edge,this.root);
+   for(let k=0;k<4;k++)box(.31,.018,.05,x,.48+k*.07,z+.34,edge,puzzleLockersFallback);
    this.obstacles.push({minX:x-.47,maxX:x+.47,minZ:z-.30,maxZ:z+.33});
   }
   this.interactive("casillero",-2.8,1.15,4.11,4.0,1.85,.20);
-  this.premiumProp(FOOTBALL_PREMIUM.fourLocker,-2.8,0,3.55,1.23,1.78,.7);
+  this.premiumProp(FOOTBALL_PREMIUM.fourLocker,-2.79,.01,3.74,3.9,1.77,.7,0,puzzleLockersFallback);
   this.premiumProp(FOOTBALL_PREMIUM.keypad,-.8,1.31,-6.23,.3,.47,.19);
+  this.premiumProp(FOOTBALL_PREMIUM.locker,5.0,.03,2.7,1.04,1.92,.72,Math.PI/2);
   this.premiumProp(FOOTBALL_PREMIUM.camera,-5.6,3.34,-5.22,.52,.4,.7,Math.PI/2);
   this.glow(-2.7,2.2,2.72,0xffbb76,7,5);
  }
@@ -618,7 +620,7 @@ export class FootballWorld {
   this.premiumProp(FOOTBALL_PREMIUM.camera,-5.61,3.1,-4.45,.5,.45,.8,Math.PI/2);
   this.premiumProp(FOOTBALL_PREMIUM.duffel,4.65,.03,2.65,.83,.54,.57,Math.PI/2);
   this.premiumProp(FOOTBALL_PREMIUM.backpack,5.1,.03,4.5,.53,.8,.41,-Math.PI/2);
-  this.premiumProp(FOOTBALL_PREMIUM.football,3.8,1.05,1.3,.32,.32,.32);
+  this.premiumProp(FOOTBALL_PREMIUM.football,4.75,.02,1.65,.32,.32,.32);
   // Floor tactile strips and a bright path indicating the required exit.
   for(let z=1;z>-5.8;z-=.6)box(.05,.012,.37,4.15,.018,z,copper,this.root);
   box(2.15,.03,.2,4.83,.018,-5.46,copper,this.root);
