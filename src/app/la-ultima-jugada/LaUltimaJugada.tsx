@@ -300,7 +300,7 @@ export default function LaUltimaJugada(){
     <p className="lj-synopsis">Sos un investigador externo de la selección. Faltan minutos para que termine la final del mundo. Alguien manipuló los informes del entrenador y bloqueó las comunicaciones. Recuperá la estrategia auténtica, cruzá el estadio y entregala antes del pitazo final.</p>
     <div className="lj-features"><span>◷ 15 MINUTOS</span><span>◇ 3 ESCENARIOS 3D</span><span>⌁ AURICULARES RECOMENDADOS</span></div>
     <button className="lj-mainbutton" onClick={start}>INICIAR MISIÓN <span>↗</span></button>
-    <p className="lj-note">Exploración en primera persona · Controles táctiles y teclado · Ficción deportiva no oficial</p>
+    <p className="lj-note">Exploración en primera persona · Pellizcá con dos dedos para acercarte · Controles táctiles y teclado · Ficción deportiva no oficial</p>
     <a className="lj-back" href="/#experiencias">← Volver a Viralio Escape</a>
    </div><div className="lj-hero-shine" aria-hidden="true"/>
   </section>}
