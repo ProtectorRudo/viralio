@@ -4,7 +4,7 @@
 
 ## Objetivo de esta tanda
 
-Ampliar la biblioteca existente de **227 GLB, 37 materiales PBR, 7 HDRI y 6 sprites VFX** con **29 modelos nuevos** (23 GLB Innerscene + 6 fotogrametrías/recursos de Poly Haven) y **5 nuevos materiales PBR** de exterior. Las cifras definitivas solo quedan confirmadas cuando GitHub Actions materialice e indexe los modelos.
+Ampliar la biblioteca existente de **227 GLB, 37 materiales PBR, 7 HDRI y 6 sprites VFX** con **29 modelos nuevos** (23 GLB Innerscene + 6 fotogrametrías/recursos de Poly Haven) y **5 nuevos materiales PBR** de exterior. **Verificación concluida:** GitHub Actions descargó y validó los 29 nuevos modelos y los cinco materiales, sin fallos. Recuento actual: **256 GLB, 42 PBR, 7 HDRI y 6 sprites VFX**.
 
 Las fuentes de catálogo y descarga están en:
 - `data/viralio-3d/catalog.json`: 23 modelos CC0 de Innerscene.
@@ -61,8 +61,8 @@ Cada material proviene de Poly Haven CC0 y se importa a WebP 1K con color, norma
 
 ## Verificación y criterios premium
 
-1. GLB y PBR se cuentan como incorporados **solo** si figuran en `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json`, y si la compilación termina bien.
-2. Los objetos con piel/rig conservarán `skins>0` tras optimización. El humanoide base NO tiene clips.
+1. **Validado en este lote:** GLB y PBR figuran en `public/viralio-3d/index.json` y `public/viralio-3d/materials/index.json`, y si la compilación termina bien.
+2. El humanoide base **conservó 1 skin** tras optimización y **0 clips**; no confundir rig con personaje animado.
 3. Revisar visualmente **el alfa de los helechos y plantas**; sin alfa correcto parecen cartones opacos. Una validación sintáctica de GLB no demuestra calidad de hojas.
 4. Medir FPS y memoria de un móvil real antes de colocar varios animales o plantas simultáneamente.
 5. Las dos estatuas y maniquíes son **utilería inerte**, no personajes con IA.
