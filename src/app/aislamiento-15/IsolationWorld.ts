@@ -866,7 +866,15 @@ export class IsolationWorld {
     this.renderer.setSize(w, h, false);
   }
 
-  setZoom(fov: number) { this.zoom = THREE.MathUtils.clamp(fov, 51, 83); this.resize(); }
+  setZoom(fov: number) {
+    const next = THREE.MathUtils.clamp(fov, 51, 83);
+    if (Math.abs(next - this.zoom) < .1) return;
+    this.zoom = next;
+    // Pinch gestures can emit 60-120 updates per second; changing the camera
+    // projection does not require reallocating the WebGL render target.
+    this.camera.fov = next;
+    this.camera.updateProjectionMatrix();
+  }
 
   private walk(dt: number) {
     let right = Number(this.keys.has("KeyD") || this.keys.has("ArrowRight")) - Number(this.keys.has("KeyA") || this.keys.has("ArrowLeft")) + this.mobileVector.x;
