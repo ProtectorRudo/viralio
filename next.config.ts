@@ -14,7 +14,7 @@ const contentSecurityPolicy = [
   `connect-src 'self' blob: https://raw.githubusercontent.com https://efvvadfxuyieswdqnsjg.supabase.co${development ? " ws: wss:" : ""}`,
   "frame-src 'self' https://viralio.net https://la-ultima-funcion.vercel.app https://la-ultima-campanada-desafio-v6.vercel.app",
   "manifest-src 'self'",
-  "media-src 'self' blob: https://efvvadfxuyieswdqnsjg.supabase.co",
+  "media-src 'self' blob: https://protectorrudo.github.io https://efvvadfxuyieswdqnsjg.supabase.co",
   "worker-src 'self' blob:",
 ].join("; ");
 
