@@ -13,8 +13,12 @@ test("La Última Jugada runs the 3D match investigation on desktop",async({page}
  await expect(page.getByText("INGLATERRA",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.locator("canvas")).toBeVisible();
+ await expect(page.locator(".lj-loading-scene")).toHaveCount(0,{timeout:30_000});
  for(const asset of ["player-quaternius.glb","desk-kari.glb","chair-olve.glb"]){
-  expect(glbResponses.get(asset),"First-party GLB must load successfully: "+asset).toBe(200);
+  await expect.poll(()=>glbResponses.get(asset),{
+   message:"First-party GLB must load successfully: "+asset,
+   timeout:15_000
+  }).toBe(200);
  }
  await expect(page.getByText("OBJETIVO ACTUAL")).toBeVisible();
  await expect(page.getByText("TIEMPO RESTANTE")).toBeVisible();
