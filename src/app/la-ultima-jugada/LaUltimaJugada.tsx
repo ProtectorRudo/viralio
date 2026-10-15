@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Chapter, GameAction } from "./FootballWorld";
 import { verifyFootballPuzzle, canEnterCorridor, canEnterTunnel, canFinish } from "./rules";
+import TacticalReplay from "./TacticalReplay";
 import "./game.css";
 
 type Puzzle = "monitores" | "pizarra" | "relay" | "cctv" | "prueba";
@@ -273,8 +274,7 @@ export default function LaUltimaJugada(){
    {modal&&<div className="lj-modal-backdrop"><section className="lj-terminal" role="dialog" aria-modal="true" aria-label="Acertijo interactivo">
     <div className="lj-terminal-header"><span>VIRALIO / TERMINAL DE INVESTIGACIÓN</span><button onClick={close} aria-label="Cerrar acertijo">×</button></div>
     {modal==="monitores"&&<><h2>La grabación alterada</h2><p>Las tres cámaras registraron el mismo ataque. Una tiene saltos de continuidad. Encontrá la secuencia verdadera.</p>
-     <TacticalPitch kind="video"/>
-     <div className="lj-options lj-option-three">{[["C1","El balón cambia de posición entre cuadros."],["C2","La pelota y las sombras mantienen continuidad."],["C3","Aparecen dos balones en el mismo instante."]].map(([id,detail])=><button key={id} onClick={()=>setSelection(id)} className={selection===id?"selected":""}><b>{id}</b><small>{detail}</small></button>)}</div>
+     <TacticalReplay selection={selection} onSelect={setSelection}/>
     </>}
     {modal==="pizarra"&&<><h2>Reconstruí la jugada</h2><p>El 10 arrastra la marca inglesa hacia adentro. Acomodá los tres movimientos para explotar el espacio que deja libre.</p>
      <TacticalPitch kind="board"/>
