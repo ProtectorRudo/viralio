@@ -12,7 +12,9 @@ const BASE="/la-ultima-jugada/models/";
 export const FOOTBALL_ASSETS={
  player:BASE+"player-quaternius.glb",
  desk:BASE+"desk-kari.glb",
- chair:BASE+"chair-olve.glb"
+ chair:BASE+"chair-olve.glb",
+ shelf:BASE+"shelf-kant.glb",
+ lamp:BASE+"table-lamp-ember.glb"
 } as const;
 
 export function loadFootballModel(url:string):Promise<GLTF>{
