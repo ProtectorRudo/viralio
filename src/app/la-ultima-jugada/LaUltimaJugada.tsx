@@ -86,6 +86,11 @@ class StadiumAudio {
  stop(){try{this.noise?.stop();void this.ctx?.close();}catch{}this.ctx=null;this.noise=null;this.gain=null;this.panner=null;}
 }
 function format(seconds:number){const s=Math.max(0,Math.floor(seconds));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function targetAction(chapter:Chapter,s:Solved):GameAction {
+ if(chapter===0)return !s.monitores?"monitores":!s.pizarra?"pizarra":!s.informe?"informe":"salida1";
+ if(chapter===1)return !s.relay?"relay":!s.cctv?"cctv":"salida2";
+ return !s.prueba?"prueba":"entrega";
+}
 function nextObjective(chapter:Chapter, s:Solved){
  if(chapter===0){
   if(!s.monitores)return "Compará las grabaciones de las tres cámaras.";
@@ -293,7 +298,7 @@ export default function LaUltimaJugada(){
    <div className="lj-objective"><small>OBJETIVO ACTUAL</small><p>{nextObjective(chapter,solved)}</p></div>
    {alert&&<div className="lj-alert" role="status"><span className="lj-alert-beep">●</span>{alert}</div>}
    <div className="lj-topactions"><button onClick={()=>setHintVisible(!hintVisible)} aria-label="Mostrar u ocultar pista">? PISTA</button><button onClick={()=>setIsMuted(m=>!m)} aria-label={isMuted?"Activar sonido":"Silenciar"}>{isMuted?"♫ OFF":"♫ ON"}</button></div>
-   {hintVisible&&<div className="lj-hintbox"><strong>PISTA / {String(Math.max(1,hintLevel+2)).padStart(2,"0")}</strong><p>{hintFor(chapter,solved,Math.max(0,hintLevel))}</p><button onClick={()=>setHintLevel(i=>Math.min(1,i+1))}>Pista más clara ↗</button><button onClick={()=>setHintVisible(false)}>Cerrar ×</button></div>}
+   {hintVisible&&<div className="lj-hintbox"><strong>PISTA / {String(Math.max(1,hintLevel+2)).padStart(2,"0")}</strong><p>{hintFor(chapter,solved,Math.max(0,hintLevel))}</p><button onClick={()=>setHintLevel(i=>Math.min(1,i+1))}>Pista más clara ↗</button><button onClick={()=>{if(engine.current?.orientToward(targetAction(chapter,solved)))setHintVisible(false);}}>ORIENTARME ◎</button><button onClick={()=>setHintVisible(false)}>Cerrar ×</button></div>}
    <div className="lj-touchpad" aria-label="Controles de desplazamiento">
     {btn("▲",0,-1,"lj-forward")}{btn("◀",-1,0,"lj-left")}{btn("▼",0,1,"lj-backward")}{btn("▶",1,0,"lj-right")}
    </div>
