@@ -62,6 +62,10 @@ export class FootballWorld {
  private keys=new Set<string>();
  private touchMove={x:0,z:0};
  private dragging=false;
+ private pointerPositions=new Map<number,{x:number;y:number}>();
+ private pinching=false;
+ private pinchStartDistance=1;
+ private pinchStartFov=69;
  private start={x:0,y:0};
  private previous={x:0,y:0};
  private pointerTravel=0;
@@ -89,15 +93,54 @@ export class FootballWorld {
  private stadiumPlayers:Array<{actor:THREE.Object3D;index:number}>=[];
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
- private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
+ private onDown=(e:PointerEvent)=>{
+  if(!this.gameplayActive)return;
+  this.pointerPositions.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  this.renderer.domElement.setPointerCapture(e.pointerId);
+  if(this.pointerPositions.size>=2){
+   const [p,q]=Array.from(this.pointerPositions.values());
+   this.pinching=true;this.dragging=false;
+   this.pinchStartDistance=Math.max(10,Math.hypot(p.x-q.x,p.y-q.y));
+   this.pinchStartFov=this.camera.fov;
+   return;
+  }
+  this.dragging=true;
+  this.start={x:e.clientX,y:e.clientY};
+  this.previous={...this.start};this.pointerTravel=0;
+ };
  private onMove=(e:PointerEvent)=>{
-  if(!this.dragging||!this.gameplayActive)return;
+  if(!this.gameplayActive)return;
+  if(this.pointerPositions.has(e.pointerId))
+   this.pointerPositions.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(this.pinching&&this.pointerPositions.size>=2){
+   const [p,q]=Array.from(this.pointerPositions.values());
+   const distance=Math.max(10,Math.hypot(p.x-q.x,p.y-q.y));
+   this.camera.fov=THREE.MathUtils.clamp(this.pinchStartFov*this.pinchStartDistance/distance,43,80);
+   this.camera.updateProjectionMatrix();
+   return;
+  }
+  if(!this.dragging||this.pinching)return;
   const dx=e.clientX-this.previous.x,dy=e.clientY-this.previous.y;
   this.pointerTravel+=Math.abs(dx)+Math.abs(dy);
   if(this.pointerTravel>7)this.look(dx,dy);
   this.previous={x:e.clientX,y:e.clientY};
  };
- private onUp=(e:PointerEvent)=>{if(!this.dragging||!this.gameplayActive)return;this.dragging=false;if(this.pointerTravel<12)this.tap(e.clientX,e.clientY);};
+ private onUp=(e:PointerEvent)=>{
+  this.pointerPositions.delete(e.pointerId);
+  if(this.pinching){
+   if(!this.pointerPositions.size)this.pinching=false;
+   this.dragging=false;return;
+  }
+  if(!this.dragging||!this.gameplayActive)return;
+  this.dragging=false;
+  if(this.pointerTravel<12)this.tap(e.clientX,e.clientY);
+ };
+ private onWheel=(e:WheelEvent)=>{
+  if(!this.gameplayActive)return;
+  e.preventDefault();
+  this.camera.fov=THREE.MathUtils.clamp(this.camera.fov+Math.sign(e.deltaY)*2.4,43,80);
+  this.camera.updateProjectionMatrix();
+ };
  constructor(canvas:HTMLCanvasElement, chapter:Chapter, handlers:Handlers){
   this.chapter=chapter;this.handlers=handlers;
   this.renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance",alpha:false});
@@ -131,6 +174,7 @@ export class FootballWorld {
   canvas.addEventListener("pointermove",this.onMove);
   canvas.addEventListener("pointerup",this.onUp);
   canvas.addEventListener("pointercancel",this.onUp);
+  canvas.addEventListener("wheel",this.onWheel,{passive:false});
   this.last=performance.now();this.loop(this.last);
  }
  private glow(x:number,y:number,z:number,color:number,intensity:number,dist:number) {
@@ -518,6 +562,8 @@ export class FootballWorld {
    this.keys.clear();
    this.touchMove={x:0,z:0};
    this.dragging=false;
+   this.pointerPositions.clear();
+   this.pinching=false;
   }
  }
 
@@ -603,6 +649,7 @@ export class FootballWorld {
   }else this.headSway=THREE.MathUtils.lerp(this.headSway,0,Math.min(1,dt*6));
   this.camera.position.y=1.68+this.headSway;
   this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
+  this.renderer.domElement.dataset.cameraFov=this.camera.fov.toFixed(1);
   this.focusElapsed+=dt;
   if(this.focusElapsed>0.14){this.focusElapsed=0;
    this.renderer.domElement.dataset.playerPosition=this.camera.position.x.toFixed(2)+","+this.camera.position.z.toFixed(2);
@@ -638,6 +685,7 @@ export class FootballWorld {
   const c=this.renderer.domElement;
   c.removeEventListener("pointerdown",this.onDown);c.removeEventListener("pointermove",this.onMove);
   c.removeEventListener("pointerup",this.onUp);c.removeEventListener("pointercancel",this.onUp);
+  c.removeEventListener("wheel",this.onWheel);
   this.root.traverse(obj=>{
    if(obj instanceof THREE.Mesh || obj instanceof THREE.InstancedMesh){
     obj.geometry.dispose();
