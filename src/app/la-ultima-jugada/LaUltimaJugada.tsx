@@ -463,7 +463,13 @@ export default function LaUltimaJugada(){
    <span className="lj-kicker">LA INFORMACIÓN LLEGÓ A TIEMPO</span><h1>HICISTE<br/><em>HISTORIA.</em></h1>
    <p className="lj-goal">GOOOOOOL DE ARGENTINA</p>
    <div className="lj-end-score"><span>ARGENTINA</span><strong>2 : 1</strong><span>INGLATERRA</span></div>
-   <h2>CAMPEONES DEL MUNDO</h2><p>El 10 atrajo la marca. El 7 se abrió a la derecha. El 9 atacó el primer palo. Esa jugada que reconstruiste fue el gol del campeonato.</p>
+   <h2>CAMPEONES DEL MUNDO</h2>
+   <div className="lj-run-report" aria-label="Resultado de la misión">
+    <div><small>TIEMPO DE RESOLUCIÓN</small><strong>{String(Math.floor(Math.max(0,900-time-mistakes*12)/60)).padStart(2,"0")}:{String(Math.max(0,900-time-mistakes*12)%60).padStart(2,"0")}</strong></div>
+    <div><small>RESPUESTAS INCORRECTAS</small><strong>{mistakes}</strong></div>
+    <div><small>PENALIZACIÓN DE TIEMPO</small><strong>{Math.min(90,mistakes*12)} s</strong></div>
+   </div>
+   <p>Descubriste las pruebas, reconstruiste el informe y se lo entregaste al técnico a tiempo. Así ayudaste a hacer posible el gol del campeonato.</p>
    <div className="lj-victory-quote">«No hiciste el gol. Hiciste posible la jugada»</div>
    <button className="lj-mainbutton" onClick={start}>VOLVER A JUGAR ↗</button><a href="/#experiencias" className="lj-back">Explorar otras salas</a>
   </section>}
