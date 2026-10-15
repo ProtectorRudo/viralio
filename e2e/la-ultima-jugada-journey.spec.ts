@@ -45,10 +45,10 @@ test("full Argentina–England investigation physically reaches every room and t
  await solve(page);
  await expect(page.locator(".lj-objective p")).toContainText("pizarra");
  await reachAction(page,/informe/i,true);
- const moves=page.locator(".lj-selectors select");
- await moves.nth(0).selectOption("banda derecha");
- await moves.nth(1).selectOption("medialuna");
- await moves.nth(2).selectOption("primer palo");
+ for(const [player,slot] of [[7,"banda derecha"],[10,"medialuna"],[9,"primer palo"]] as const){
+   await page.getByRole("button",{name:"Jugador "+player,exact:true}).click();
+   await page.getByRole("button",{name:"Mover jugador "+player+" a "+slot}).click();
+ }
  await solve(page);
  await reachAction(page,/corredor/i);
  await reachAction(page,/comunicaciones/i);
