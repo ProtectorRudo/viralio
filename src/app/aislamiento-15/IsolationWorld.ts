@@ -232,8 +232,9 @@ export class IsolationWorld {
     if (lines.length > 0) {
       const id = "sign-" + this.signage.size;
       this.signage.set(id, [...lines]);
-      const nearest = CENTER.reduce((best, center, index) =>
-        Math.abs(z-center) < Math.abs(z-CENTER[best]) ? index : best, 0) as Chamber;
+      let nearest: Chamber = 0;
+      if (Math.abs(z - CENTER[1]) < Math.abs(z - CENTER[nearest])) nearest = 1;
+      if (Math.abs(z - CENTER[2]) < Math.abs(z - CENTER[nearest])) nearest = 2;
       this.target(id, "Leer cartel: " + lines[0], m, nearest, 4.4);
     }
     return m;
