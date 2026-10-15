@@ -165,6 +165,7 @@ export class FootballWorld {
   key.shadow.camera.left=-14;key.shadow.camera.right=14;key.shadow.camera.top=14;key.shadow.camera.bottom=-14;
   key.shadow.bias=-.0005;this.scene.add(key);
   this.makeRoom(chapter);
+  this.renderer.domElement.dataset.gameplayActive="true";
   this.crisis=new CrisisDirector(this.root,hemisphere,ambient,key);
   this.resize();
   window.addEventListener("resize",this.boundResize);
@@ -558,6 +559,7 @@ export class FootballWorld {
  }
  setGameplayActive(value:boolean){
   this.gameplayActive=value;
+  this.renderer.domElement.dataset.gameplayActive=String(value);
   if(!value){
    this.keys.clear();
    this.touchMove={x:0,z:0};
