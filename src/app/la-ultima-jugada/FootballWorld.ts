@@ -449,7 +449,7 @@ export class FootballWorld {
   this.ray.setFromCamera(new THREE.Vector2(nx,ny),this.camera);
   const hits=this.ray.intersectObjects(this.targets,false);
   for(const hit of hits){
-   if(hit.distance<=7.2){
+   if(hit.distance<=3.5){
     const target=hit.object as Target;
     if(target.userData.action)return target.userData.action;
    }
