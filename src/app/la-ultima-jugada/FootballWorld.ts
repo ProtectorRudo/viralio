@@ -92,6 +92,13 @@ export class FootballWorld {
  private stadiumGoal:(()=>void)|null=null;
  private lifetime=0;
  private stadiumPlayers:Array<{actor:THREE.Object3D;index:number}>=[];
+ private evidenceMeshes=new Map<GameAction,THREE.Group>();
+ collectEvidence(id:GameAction){
+  const model=this.evidenceMeshes.get(id);
+  if(model)model.visible=false;
+  const target=this.targets.find(t=>t.userData.action===id);
+  if(target)target.visible=false;
+ }
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{
@@ -474,6 +481,7 @@ export class FootballWorld {
    box(.18,.014,.018,-.08,.028,.05,ink,holder);
    box(.075,.035,.08,.17,.04,-.11,clip,holder);
    this.interactive(id,x,y+.04,z,.67,.42,.58);
+   this.evidenceMeshes.set(id,holder);
   });
  }
  private maintenanceLockers(){
@@ -481,14 +489,14 @@ export class FootballWorld {
   for(let i=0;i<4;i++){
    const x=-4.34+i*1.03,z=3.74;
    box(.91,1.65,.56,x,.85,z,steel,this.root);
-   box(.83,1.46,.045,x,.89,z-.293,i===3?blue:steel,this.root);
-   box(.07,.30,.08,x+.28,1.06,z-.34,edge,this.root);
-   box(.53,.115,.04,x,1.5,z-.331,gold,this.root);
-   this.label("0"+(i+1),["ALMACÉN"],x,1.47,z-.363,.48,.33);
-   for(let k=0;k<4;k++)box(.31,.018,.05,x,.48+k*.07,z-.34,edge,this.root);
+   box(.83,1.46,.045,x,.89,z+.293,i===3?blue:steel,this.root);
+   box(.07,.30,.08,x+.28,1.06,z+.34,edge,this.root);
+   box(.53,.115,.04,x,1.5,z+.331,gold,this.root);
+   this.label("0"+(i+1),["ALMACÉN"],x,1.47,z+.363,.48,.33);
+   for(let k=0;k<4;k++)box(.31,.018,.05,x,.48+k*.07,z+.34,edge,this.root);
    this.obstacles.push({minX:x-.47,maxX:x+.47,minZ:z-.30,maxZ:z+.33});
   }
-  this.interactive("casillero",-2.8,1.15,3.39,4.0,1.85,.20);
+  this.interactive("casillero",-2.8,1.15,4.11,4.0,1.85,.20);
   this.glow(-2.7,2.2,2.72,0xffbb76,7,5);
  }
  private detailAnalysisRoom() {
