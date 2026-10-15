@@ -55,6 +55,18 @@ class StadiumAudio {
    noise.start();this.noise=noise;this.gain=g;
   }catch{}
  }
+ impact(){
+  if(!this.ctx)return;
+  const ctx=this.ctx,o=ctx.createOscillator(),gain=ctx.createGain();
+  o.type="sawtooth";o.frequency.setValueAtTime(135,ctx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(37,ctx.currentTime+.31);
+  gain.gain.setValueAtTime(.001,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.055,ctx.currentTime+.014);
+  gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.43);
+  const low=ctx.createBiquadFilter();low.type="lowpass";low.frequency.value=260;
+  o.connect(low);low.connect(gain);gain.connect(ctx.destination);
+  o.start();o.stop(ctx.currentTime+.48);
+ }
  pulse(f=490){
   if(!this.ctx)return;
   const c=this.ctx, o=c.createOscillator(),g=c.createGain();
@@ -169,6 +181,7 @@ export default function LaUltimaJugada(){
  const startStamp=useRef(0);
  const announcements=useRef(new Set<number>());
  const crisisTriggered=useRef(false);
+ const surpriseScenes=useRef(new Set<Chapter>());
  const alertTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const cinematicTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const modeRef=useRef<Mode>("intro");
@@ -222,6 +235,7 @@ export default function LaUltimaJugada(){
    const p=id as FragmentPickup;
    if(foundRef.current.includes(p)){notify("Ya recogiste este fragmento.");return;}
    const updated=[...foundRef.current,p];foundRef.current=updated;setFound(updated);
+   engine.current?.collectEvidence(p);
    notify("HOJA ENCONTRADA · "+updated.length+"/4. "+(updated.length===4?"Ya podés ordenar el expediente.":"Buscá las restantes."));
    if(!isMutedRef.current)audio.current?.pulse(920);
    return;
@@ -285,6 +299,19 @@ export default function LaUltimaJugada(){
     notify("INTERFERENCIA · Alguien controla las luces. Apareció un mensaje en las paredes.");
     if("vibrate" in navigator)navigator.vibrate([95,65,150]);
    }
+   if(chapterRef.current>0&&!surpriseScenes.current.has(chapterRef.current)&&engine.current){
+    surpriseScenes.current.add(chapterRef.current);
+    engine.current.triggerCrisis();
+    notify(chapterRef.current===1?
+     "¡GOLPE METÁLICO! Alguien cerró un armario detrás tuyo. No estás solo.":
+     "¡SE ABRE EL TÚNEL! Una voz grita desde la cancha. El técnico te espera.");
+    if(!isMutedRef.current)audio.current?.impact();
+    if("vibrate" in navigator)navigator.vibrate([130,90,190]);
+   }
+   if(remaining<=180&&remaining>0&&elapsed%12===0&&!announcements.current.has(1000+elapsed)){
+    announcements.current.add(1000+elapsed);
+    if(!isMutedRef.current)audio.current?.pulse(110);
+   }
    for(const item of stories){
     if(elapsed>=item.time&&!announcements.current.has(item.time)){
      announcements.current.add(item.time);notify(item.text);
@@ -301,7 +328,7 @@ export default function LaUltimaJugada(){
   isMutedRef.current=false;setIsMuted(false);setWorldReady(false);setChapter(0);chapterRef.current=0;setSolved({...EMPTY});
   solvedRef.current={...EMPTY};setModal(null);setFocus("");setHintLevel(-1);setHintVisible(false);setTime(900);
   setMoves(["centro","banda izquierda","segundo palo"]);setRelays([1,1,1]);setEvidence("");setFound([]);foundRef.current=[];setDifferences([]);setFragmentOrder([]);setLocker("01");setLockerPin("");setFinalSequence([]);setMistakes(0);timeDebt.current=0;
-  announcements.current.clear();crisisTriggered.current=false;setCinematic("");setFinaleCue("apertura");
+  announcements.current.clear();crisisTriggered.current=false;surpriseScenes.current.clear();setCinematic("");setFinaleCue("apertura");
   startStamp.current=0;setBriefing(true);modeRef.current="playing";setMode("playing");
   notify("RADIO RECIBIDA · Confirmá la misión para iniciar la cuenta regresiva.");
  };
@@ -354,7 +381,7 @@ export default function LaUltimaJugada(){
      <div className="lj-mission-score"><span>FINAL DEL MUNDO · MINUTO 87</span><strong>ARGENTINA 1 — 1 INGLATERRA</strong></div>
      <p>Alguien alteró el informe que puede cambiar esta final. Sos la única persona capaz de recuperar las pruebas antes del pitazo.</p>
      <div className="lj-mission-steps"><div><b>01</b><span>OBSERVÁ LAS PRUEBAS</span></div><div><b>02</b><span>RECONSTRUÍ EL INFORME</span></div><div><b>03</b><span>ENTREGALO EN EL TÚNEL</span></div></div>
-     <div className="lj-mission-first"><small>PRIMERA PISTA / SIN SABER DE FÚTBOL</small><strong>Las tres cámaras parecen iguales, pero no lo son.</strong><p>Buscá tres anomalías: una pelota que salta, otra que se duplica y una grabación que continúa normalmente. Elegí la auténtica.</p></div>
+     <div className="lj-mission-first"><small>PRIMERA PISTA / SIN SABER DE FÚTBOL</small><strong>¿Cuál de las tres cámaras muestra la grabación auténtica?</strong><p>Pausá los videos, mirá qué cambia entre fotogramas y anotá las tres anomalías. Una grabación conserva la continuidad; las otras fueron alteradas.</p></div>
      <button className="lj-mainbutton" onClick={()=>{
       startStamp.current=performance.now();
       setBriefing(false);
