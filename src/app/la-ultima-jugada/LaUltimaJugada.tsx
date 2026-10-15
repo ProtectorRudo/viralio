@@ -114,7 +114,7 @@ function hintFor(chapter:Chapter,s:Solved,level:number){
   !s.cctv?["El saboteador aparece varias veces en el monitor de seguridad.","Su acreditación termina en 09."]:
   ["La puerta de salida da al túnel que conduce al campo.","Seguí hasta el portón TÚNEL DE CAMPO."]:
  !s.prueba?["El video auténtico muestra a los defensores cerrando el centro.","El plan correcto es atacar por derecha tras atraer la marca al centro."]:
- ["La salida al campo está frente a vos.","Caminá hacia el estadio y tocá SALIDA AL BANCO."];
+ ["El entrenador te está esperando bajo la entrada al campo.","Acercate al hombre del cuerpo técnico y entregale el informe verificado."];
  return texts[Math.min(level,1)];
 }
 export default function LaUltimaJugada(){
