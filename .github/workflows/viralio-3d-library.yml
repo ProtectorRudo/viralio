@@ -51,23 +51,28 @@ jobs:
             data/viralio-3d/build-report.json
           retention-days: 30
       - name: Incorporar los GLB al repositorio
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/viralio-3d data/viralio-3d/build-report.json
-          if git diff --cached --quiet; then
-            echo "Assets unchanged"
-          else
-            git commit -m "assets: materialize curated CC0 Viralio 3D library"
-            for attempt in 1 2 3; do
-              if git push origin HEAD:main; then
-                echo "Library committed to main"
-                exit 0
-              fi
-              echo "Main advanced; rebasing asset-only commit ($attempt)"
-              git fetch origin main
-              git rebase origin/main
-            done
-            echo "Unable to publish GLBs after three retries"
-            exit 1
-          fi
+          # Los binarios locales optimizados son la fuente de esta publicación.
+          # Reestablecemos solo HEAD/index al último remoto (no el working tree):
+          # así cambios paralelos en índices generados no provocan conflictos de rebase.
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --mixed origin/main
+            git add public/viralio-3d data/viralio-3d/build-report.json
+            if git diff --cached --quiet; then
+              echo "Library already current"
+              exit 0
+            fi
+            git commit -m "assets: publish verified reusable Viralio 3D models and PBR textures"
+            if git push origin HEAD:main; then
+              echo "Published verified library"
+              exit 0
+            fi
+            echo "Another commit landed during publish; retrying from remote ($attempt)"
+          done
+          echo "Failed to update asset branch after retry"
+          exit 1
