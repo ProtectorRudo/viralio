@@ -210,7 +210,7 @@ export default function LaUltimaJugada(){
    return()=>window.removeEventListener("keydown",closeOnEscape);
  },[modal]);
  useEffect(()=>{isMutedRef.current=isMuted;if(audio.current?.gain&&audio.current.ctx)audio.current.gain.gain.setTargetAtTime(isMuted?0:chapter===2?.54:.22,audio.current.ctx.currentTime,.2);},[isMuted,chapter]);
- const sceneActive=mode==="playing"||mode==="finale";
+ const sceneActive=mode==="playing"||mode==="finale"||mode==="victory";
  useEffect(()=>{
   if(!sceneActive||!canvas.current)return;
   let disposed=false;setWorldReady(false);
