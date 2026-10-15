@@ -22,6 +22,7 @@
 - **Referencia externa solamente:** [pack modular 72 piezas](https://3dassets.dev/packs/football-soccer-club-grounds), sin archivo disponible en producción. Si se vuelve accesible, importarlo y validarlo antes de usar.
 
 **Vestuario y charla técnica**
+- Nuevos props CC0: `football-duffel-bag`, `football-backpack`, `football-toiletry-kit`, `football-mudroom-bench`, `football-changing-bench`, `football-tilted-shoe-rack`, `football-foam-roller`, y `football-hardcase-suitcase`. Consultar `docs/VIRALIO_3D_FOOTBALL_PREMIUM_ASSETS.md` para clasificación PBR y límites.
 - `vent-perforated-locker` — locker metálico perforado detallado, con rail de banco.
 - `four-compartment-locker` y `lock-3-office-locker-bank` — almacenamiento compartimentado.
 - `football-coat-stand` — perchero auxiliar.
@@ -48,12 +49,14 @@
 
 El archivo `data/viralio-3d/experience-packs.json` define cuatro conjuntos de escenas reutilizables: `futbol-vestuario`, `futbol-manga`, `futbol-videoanalisis`, `futbol-cancha-estadio`. Cada uno tiene héroes, soportes, material y recorrido de tres etapas. Son direcciones artísticas, no salas programadas.
 
-## Recursos hiperrealistas CC0 recomendados, todavía externos
+## Recursos fotorrealistas CC0 y referencias externas
 
-No declararlos parte del `public/` hasta que tengamos GLB/HDRI optimizados, hash, tamaño y prueba móvil:
+**Los dos balones siguientes YA tienen GLB optimizado y SHA-256 en `public/viralio-3d/index.json`, descargados desde la API oficial Poly Haven (1K):**
 
-1. [Poly Haven — Dirty Football](https://polyhaven.com/a/dirty_football) — fotogrametría de una pelota de fútbol gastada, CC0; excelente prop héroe. Publicado con descarga glTF, requerirá conversión/optimización.
-2. [Poly Haven — Football](https://polyhaven.com/a/football) — balón azul deteriorado parcialmente desinflado, CC0.
+1. [Poly Haven — Dirty Football](https://polyhaven.com/a/dirty_football) — id local `football-polyhaven-dirty`, fotogrametría CC0 optimizada.
+2. [Poly Haven — Football](https://polyhaven.com/a/football) — id local `football-polyhaven-worn`, balón parcialmente desinflado CC0 optimizado.
+**Las siguientes son referencias EXTERNAS: no son archivos GLB locales ni escenas listas para jugar.**
+
 3. [Poly Haven — Orlando Stadium HDRI](https://polyhaven.com/a/orlando_stadium) — estadio soleado, cielo e iluminación, CC0. Usar 1K/2K convertido a formato web, NO 24K.
 4. [Poly Haven — Stadium 01 HDRI](https://polyhaven.com/a/stadium_01) — estadio al atardecer, CC0.
 5. [Poly Haven — Suburban Soccer Park HDRI](https://polyhaven.com/a/suburban_soccer_park) — práctica diurna, CC0.
