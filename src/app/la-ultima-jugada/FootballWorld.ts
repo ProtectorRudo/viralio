@@ -9,7 +9,7 @@ import {proceduralSurface} from "./MaterialLibrary";
 import {CrisisDirector} from "./CrisisDirector";
 
 export type Chapter = 0 | 1 | 2;
-export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
+export type GameAction = "monitores" | "pizarra" | "informe" | "pieza1" | "pieza2" | "pieza3" | "pieza4" | "salida1" | "casillero" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
 type Handlers = { action:(id:GameAction)=>void; focus:(label:string)=>void; position?:(x:number,y:number,z:number,yaw:number)=>void; failure:()=>void };
 type Target = THREE.Object3D & {userData:{action?:GameAction,label?:string}};
 
@@ -18,8 +18,9 @@ const palette = {
  gold:0xf3c777, deep:0x0c1823, red:0xe44c4e, cream:0xeee4ce
 };
 const names:Record<GameAction,string>={
- monitores:"Examinar las tres cámaras",pizarra:"Reconstruir la pizarra",informe:"Recuperar el informe",
- salida1:"Acceder al corredor",relay:"Restaurar el enlace",cctv:"Examinar seguridad",
+ monitores:"Examinar las tres cámaras",pizarra:"Reconstruir la pizarra",informe:"Ordenar los cuatro fragmentos",
+ pieza1:"Recoger fragmento 1",pieza2:"Recoger fragmento 2",pieza3:"Recoger fragmento 3",pieza4:"Recoger fragmento 4",
+ salida1:"Acceder al corredor",casillero:"Examinar casilleros de mantenimiento",relay:"Restaurar el enlace",cctv:"Examinar seguridad",
  salida2:"Entrar al túnel",prueba:"Verificar la jugada",entrega:"Entregar al entrenador"
 };
 function mat(color:number,metalness=.25,roughness=.6,emissive=0,emissiveIntensity=0) {
@@ -216,7 +217,8 @@ export class FootballWorld {
    }
   }
   for(let z=-5.6;z<=5.8;z+=2.1)box(.08,4.1,.12,-6.23,1.98,z,steel,this.root);
-  for(let i=0;i<12;i++)box(.03,.02,13,-5.9+i*1.07,.018,0,steel,this.root);
+  // Thin flush floor joints, not twelve heavy black lines.
+  for(let i=0;i<5;i++)box(.012,.005,12,-5+i*2.45,.012,0,steel,this.root);
   this.glow(-3.5,2.9,1.8,0xa6dfff,18,13);
   this.glow(4.5,2.8,-1.4,chapter===1?0xf7b8a2:0xffe3b6,13,12);
   this.glow(0,3.5,-3,0xeaf7ff,11,10);
@@ -375,16 +377,18 @@ export class FootballWorld {
    this.desk(-1,0.5,4.5);this.chair(-2,1.9);this.chair(1,1.85);
    this.panel(-2,2.1,-6.38,3.55,1.85,"ANÁLISIS MULTICÁMARA",["CÁMARAS 01 / 02 / 03","FEED ALTERADO - REVISAR"],"monitores");
    this.createReplayWall();
-   this.panel(2.2,2.1,-6.36,3.15,1.85,"PIZARRA TÁCTICA",["MOVIMIENTO DE ATAQUE","7 / 10 / 9"],"pizarra");
+   this.panel(2.2,2.1,-6.36,3.15,1.85,"ROMPECABEZAS TÁCTICO",["ORDENAR FICHAS","7 / 10 / 9"],"pizarra");
    box(.97,.11,.65,-2.15,1,0.5,mat(0xb1ac9f,.16,.81),this.root);
-   this.label("EXPEDIENTE 2030",["DOCUMENTO ORIGINAL"],-2.15,1.09,1.12,1.45,.78,"#f8c57e");
+   this.label("EXPEDIENTE 2030",["4 HOJAS / ORDENAR"],-2.15,1.09,1.12,1.45,.78,"#f8c57e");
    this.interactive("informe",-2.15,1.04,.78,1.65,.32,.85);
+   this.evidenceFragments();
    for(let i=0;i<4;i++){const x=-4+i*1.05;box(.8,.62,.46,x,1.2,-1.7,mat(0x182a37,.62,.4),this.root);box(.65,.36,.03,x,1.25,-1.46,mat(0x57b5cf,.32,.51,0x1c7190,.5),this.root);}
    this.door(4.9,-6.48,"salida1","SECTOR INTERNO");
    this.detailAnalysisRoom();
    this.label("ARG 1 - 1 ENG",["MINUTO 87 · FINAL"],0,3.64,-6.39,3.25,.78);
   }else if(chapter===1){
-   this.panel(2.2,1.74,-6.36,2.75,2.12,"CENTRAL DE ENLACE",["TERMINALES A / B / C","PROTOCOLO 031"],"relay");
+   this.panel(2.2,1.74,-6.36,2.75,2.12,"CENTRAL DE ENLACE",["CONTEO DE SÍMBOLOS","2 / 4 / 3"],"relay");
+   this.maintenanceLockers();
    this.panel(-2.5,1.72,-6.36,2.6,2.1,"CIRCUITO CERRADO",["REGISTRO ACCESOS","CÁMARA 09"],"cctv");
    // Service trays are anchored to the wall instead of floating across
    // the player's field of view as they did in the earlier prototype.
@@ -425,9 +429,10 @@ export class FootballWorld {
    this.desk(-2.3,.65,2.9);
    this.panel(-2.25,1.87,1.43,2.32,1.36,"INFORME FINAL",["VERIFICAR LA PRUEBA","FUENTE ORIGINAL"],"prueba");
    this.actors.push(createCoach(this.root,()=>!this.destroyed));
-   this.label("CUERPO TÉCNICO",["ENTREGÁ EL INFORME"],.75,2.6,-6.26,2.0,.68,"#f8c57e");
-   // The raycast target surrounds a tangible coach instead of an invisible door.
-   this.interactive("entrega",.85,1.52,-6.29,1.5,2.36,.43);
+   // Coach is fully INSIDE the safe tunnel: the stadium stands cannot pass
+   // through his head. No character geometry overlaps the grandstand rings.
+   this.label("CUERPO TÉCNICO",["ENTREGÁ EL INFORME"],.67,2.89,-5.71,2.2,.57,"#f8c57e");
+   this.interactive("entrega",.48,1.48,-5.06,1.22,2.36,.38);
    for(let i=0;i<6;i++){const z=4.5-i*1.45;box(.075,.03,9,0,.025,z,mat(0xe4bd79,.41,.55,0xa27622,.14),this.root);}
    this.glow(0,2.7,-7,0xd5f3ff,19,16);
   }
@@ -452,21 +457,63 @@ export class FootballWorld {
    this.root.add(obj);fallback.visible=false;
   }).catch(()=>{});
  }
+ private evidenceFragments(){
+  const paper=mat(0xe5d6aa,.02,.94),ink=mat(0x384c5a,.17,.71),clip=mat(0xbe9957,.81,.31);
+  const locations:[GameAction,number,number,number,number][]=[
+   ["pieza1",-4.65,1.27,1.78,0],
+   ["pieza2",4.56,1.46,.65,0],
+   ["pieza3",-4.55,1.45,-2.15,0],
+   ["pieza4",3.68,1.56,-3.88,0]
+  ];
+  locations.forEach(([id,x,y,z,r],index)=>{
+   const holder=new THREE.Group();holder.position.set(x,y,z);holder.rotation.y=r;this.root.add(holder);
+   const sheet=box(.49,.04,.33,0,0,0,paper,holder);
+   sheet.rotation.z=(index-1.5)*.075;
+   box(.36,.014,.025,0,.028,-.09,ink,holder);
+   box(.3,.014,.021,-.03,.028,-.02,ink,holder);
+   box(.18,.014,.018,-.08,.028,.05,ink,holder);
+   box(.075,.035,.08,.17,.04,-.11,clip,holder);
+   this.interactive(id,x,y+.04,z,.67,.42,.58);
+  });
+ }
+ private maintenanceLockers(){
+  const steel=mat(0x253645,.74,.4),edge=mat(0x8a9ba2,.83,.29),blue=mat(0x527993,.5,.52),gold=mat(0xe8be70,.42,.41);
+  for(let i=0;i<4;i++){
+   const x=-4.34+i*1.03,z=3.74;
+   box(.91,1.65,.56,x,.85,z,steel,this.root);
+   box(.83,1.46,.045,x,.89,z-.293,i===3?blue:steel,this.root);
+   box(.07,.30,.08,x+.28,1.06,z-.34,edge,this.root);
+   box(.53,.115,.04,x,1.5,z-.331,gold,this.root);
+   this.label("0"+(i+1),["ALMACÉN"],x,1.47,z-.363,.48,.33);
+   for(let k=0;k<4;k++)box(.31,.018,.05,x,.48+k*.07,z-.34,edge,this.root);
+   this.obstacles.push({minX:x-.47,maxX:x+.47,minZ:z-.30,maxZ:z+.33});
+  }
+  this.interactive("casillero",-2.8,1.15,3.39,4.0,1.85,.20);
+  this.glow(-2.7,2.2,2.72,0xffbb76,7,5);
+ }
  private detailAnalysisRoom() {
   const trim=mat(0x99aab5,.78,.3),slate=mat(0x243946,.66,.51),
   copper=mat(0xb3a18d,.6,.4),plastic=mat(0x3a4e5b,.34,.72),
   glass=mat(0xaed8ec,.15,.17);
-  // Acoustic wall slats, joined with recessed uplighting and brass rails.
+  // Wide composite acoustic panels with discreet seams and inlaid edges.
+  // The old prototype had nine repeated black pillars on every wall.
+  const panelMaterial=mat(0x3b5769,.28,.79);
+  const bronze=mat(0xb29a6f,.74,.36);
   for(const wall of [-1,1]){
-   for(let n=0;n<9;n++){
-    const z=-4.95+n*1.12;
-    box(.12,2.45,.062,wall*6.14,1.75,z,slate,this.root);
-    box(.044,.055,.78,wall*6.05,.53,z,trim,this.root);
+   for(let bay=0;bay<4;bay++){
+    const z=-4.65+bay*2.9;
+    box(.042,2.52,2.53,wall*6.11,1.86,z,panelMaterial,this.root);
+    box(.072,2.68,.028,wall*6.04,1.86,z-1.28,bronze,this.root);
+    box(.075,.034,2.51,wall*6.04,.57,z,bronze,this.root);
+    box(.062,.036,2.51,wall*6.04,3.13,z,bronze,this.root);
    }
-   for(let n=0;n<6;n++){
-    const z=-4.9+n*1.85;
-    box(.05,.12,1.3,wall*6.02,3.25,z,copper,this.root);
-   }
+  }
+  // Suspended fixture frames, broadcast tally indicators and colored cable trays.
+  const glowBlue=mat(0x7de0f2,.1,.19,0x42b7de,2.1);
+  for(let i=0;i<4;i++){
+   const x=-4.45+i*2.9;
+   box(1.2,.065,.06,x,3.91,-4.65,glowBlue,this.root);
+   box(.035,.12,.07,x,3.84,-4.65,bronze,this.root);
   }
   // Framed scouting prints, equipment cabinets and labelled document racks.
   for(const dx of [-4.9,-3.2]){
