@@ -487,7 +487,7 @@ export class FootballWorld {
  }
  private loop=(time:number)=>{
   this.frame=requestAnimationFrame(this.loop);
-  const dt=Math.min(.05,(time-this.last)/1000||.016);this.last=time;
+  const dt=Math.min(.2,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
   this.animateReplay(dt);
   this.finale?.update(dt);
@@ -507,14 +507,17 @@ export class FootballWorld {
   const inputZ=Number(this.keys.has("KeyS")||this.keys.has("ArrowDown"))-Number(this.keys.has("KeyW")||this.keys.has("ArrowUp"))+this.touchMove.z;
   const length=Math.hypot(inputX,inputZ);
   if(length>0&&this.gameplayActive){
-   const speed=2.65*dt/Math.max(1,length);
+   // Stable walk speed even below 20 FPS; substep collision so slow phones
+   // cannot tunnel through furniture during a long render frame.
+   const steps=Math.max(1,Math.ceil(dt/.025));
+   const speed=2.65*(dt/steps)/Math.max(1,length);
    const dx=(Math.cos(this.yaw)*inputX+Math.sin(this.yaw)*inputZ)*speed;
    const dz=(-Math.sin(this.yaw)*inputX+Math.cos(this.yaw)*inputZ)*speed;
-   const x=this.camera.position.x,z=this.camera.position.z;
-   // Axis-separated capsule-on-ground collision: slide alongside tables
-   // rather than walking through them, even if the model arrives later.
-   if(this.canWalk(x+dx,z))this.camera.position.x=x+dx;
-   if(this.canWalk(this.camera.position.x,z+dz))this.camera.position.z=z+dz;
+   for(let i=0;i<steps;i++){
+    const x=this.camera.position.x,z=this.camera.position.z;
+    if(this.canWalk(x+dx,z))this.camera.position.x=x+dx;
+    if(this.canWalk(this.camera.position.x,z+dz))this.camera.position.z=z+dz;
+   }
    this.walkingPhase+=dt*11;
    this.headSway=Math.sin(this.walkingPhase)*.018;
   }else this.headSway=THREE.MathUtils.lerp(this.headSway,0,Math.min(1,dt*6));
