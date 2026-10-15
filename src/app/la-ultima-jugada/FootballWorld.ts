@@ -4,7 +4,7 @@ import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
-type Handlers = { action:(id:GameAction)=>void; focus:(label:string)=>void; failure:()=>void };
+type Handlers = { action:(id:GameAction)=>void; focus:(label:string)=>void; position?:(x:number,y:number,z:number,yaw:number)=>void; failure:()=>void };
 type Target = THREE.Object3D & {userData:{action?:GameAction,label?:string}};
 
 const palette = {
@@ -326,7 +326,7 @@ export class FootballWorld {
   }
   this.camera.rotation.set(this.pitch,this.yaw,0,"YXZ");
   this.focusElapsed+=dt;
-  if(this.focusElapsed>0.14){this.focusElapsed=0;const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
+  if(this.focusElapsed>0.14){this.focusElapsed=0;this.handlers.position?.(this.camera.position.x,this.camera.position.y,this.camera.position.z,this.yaw);const next=this.actionAt(0,0);if(next!==this.active){this.active=next;this.handlers.focus(next?names[next]:"");}}
  }
  resize(){
   const canvas=this.renderer.domElement;const parent=canvas.parentElement;
