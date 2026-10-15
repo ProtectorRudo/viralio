@@ -54,7 +54,7 @@ test("full Argentina–England investigation physically reaches every room and t
  await page.goto("/la-ultima-jugada");
  await page.getByRole("button",{name:/INICIAR MISIÓN/}).click();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toBeVisible();
- await expect(page.getByText("Las tres cámaras parecen iguales, pero no lo son.")).toBeVisible();
+ await expect(page.getByText("¿Cuál de las tres cámaras muestra la grabación auténtica?")).toBeVisible();
  await page.getByRole("button",{name:/COMENZAR CUENTA REGRESIVA/}).click();
  await expect(page.getByRole("dialog",{name:"Orden de misión"})).toHaveCount(0);
  await expect(page.locator(".lj-canvas-frame canvas")).toBeVisible();
