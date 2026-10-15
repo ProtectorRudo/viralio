@@ -373,7 +373,7 @@ export default function LaUltimaJugada(){
    <div className="lj-canvas-frame"><canvas ref={canvas} aria-label="Escenario tridimensional explorable: usá WASD para caminar, arrastrá para mirar y tocá los objetos para examinarlos."/></div>
    <div className="lj-vignette" aria-hidden="true"/>
    {!worldReady&&<div className="lj-loading-scene" role="status"><span>V / VIRALIO ORIGINALS</span><strong>PREPARANDO EL ESTADIO</strong><small>Cargando escena 3D y controles…</small></div>}
-   {briefing&&worldReady&&<section className="lj-mission-backdrop" role="dialog" aria-modal="true" aria-label="Orden de misión" >
+   {briefing&&<section className="lj-mission-backdrop" role="dialog" aria-modal="true" aria-label="Orden de misión" >
     <div className="lj-mission-sheet">
      <span className="lj-mission-kicker"><span className="lj-live-dot"/> TRANSMISIÓN ENCRIPTADA / INFORME 87</span>
      <p className="lj-mission-classified">CONFIDENCIAL — CUERPO TÉCNICO ARGENTINO</p>
@@ -382,12 +382,13 @@ export default function LaUltimaJugada(){
      <p>Alguien alteró el informe que puede cambiar esta final. Sos la única persona capaz de recuperar las pruebas antes del pitazo.</p>
      <div className="lj-mission-steps"><div><b>01</b><span>OBSERVÁ LAS PRUEBAS</span></div><div><b>02</b><span>RECONSTRUÍ EL INFORME</span></div><div><b>03</b><span>ENTREGALO EN EL TÚNEL</span></div></div>
      <div className="lj-mission-first"><small>PRIMERA PISTA / SIN SABER DE FÚTBOL</small><strong>¿Cuál de las tres cámaras muestra la grabación auténtica?</strong><p>Pausá los videos, mirá qué cambia entre fotogramas y anotá las tres anomalías. Una grabación conserva la continuidad; las otras fueron alteradas.</p></div>
-     <button className="lj-mainbutton" onClick={()=>{
+     <button className="lj-mainbutton" disabled={!worldReady} onClick={()=>{
+      if(!worldReady||!engine.current)return;
       startStamp.current=performance.now();
       setBriefing(false);
-      engine.current?.orientToward("monitores");
+      engine.current.orientToward("monitores");
       notify("MISIÓN ACTIVADA · Buscá las diferencias en las tres cámaras.");
-     }}>COMENZAR CUENTA REGRESIVA <span>↗</span></button>
+     }}>{worldReady?"COMENZAR CUENTA REGRESIVA":"PREPARANDO ESTADIO Y MODELOS 3D…"} <span>{worldReady?"↗":"◌"}</span></button>
      <small className="lj-mission-footer">15 MINUTOS · 3 ESCENARIOS · 7 PRUEBAS · EL RELOJ NO SE DETIENE</small>
     </div>
    </section>}
