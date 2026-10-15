@@ -1,0 +1,86 @@
+{
+  "title": "Viralio — CC0 photographic HDR lighting environments",
+  "version": "1.0.0",
+  "source": "Official Poly Haven API",
+  "license": "CC0-1.0",
+  "updatedAt": "2026-10-15",
+  "sources": [
+    {
+      "id": "cinema-vintage",
+      "assetId": "pretville_cinema",
+      "title": "Cine clásico con lámparas cálidas y butacas rojas",
+      "category": "interior-escenico",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/pretville_cinema",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    },
+    {
+      "id": "cinema-lobby",
+      "assetId": "cinema_lobby",
+      "title": "Lobby de cine con luz artificial fría",
+      "category": "interior-escenico",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/cinema_lobby",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    },
+    {
+      "id": "abandoned-warehouse",
+      "assetId": "abandoned_construction",
+      "title": "Galpón industrial abandonado y polvo",
+      "category": "interior-industrial",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/abandoned_construction",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    },
+    {
+      "id": "abandoned-tile-room",
+      "assetId": "abandoned_tiled_room",
+      "title": "Sala de azulejos deteriorada con rayos de sol",
+      "category": "interior-horror",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/abandoned_tiled_room",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    },
+    {
+      "id": "victorian-old-hall",
+      "assetId": "old_hall",
+      "title": "Salón victoriano abandonado",
+      "category": "interior-horror",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/old_hall",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    },
+    {
+      "id": "forest-mist",
+      "assetId": "misty_pines",
+      "title": "Bosque de pinos con neblina real",
+      "category": "exterior-neblina",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/misty_pines",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    },
+    {
+      "id": "abandoned-games-room",
+      "assetId": "abandoned_games_room_02",
+      "title": "Sala de juegos abandonada",
+      "category": "interior-horror",
+      "format": "HDR Radiance",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/abandoned_games_room_02",
+      "resolution": "1k",
+      "role": "Environment/reflection light and atmosphere reference; NOT a 3D scene or real fog/particles."
+    }
+  ]
+}
