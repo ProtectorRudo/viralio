@@ -3,6 +3,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import {paintTacticalFeed,type ReplayCamera} from "./TacticSimulation";
 import {FinaleDirector} from "./FinaleDirector";
+import {buildStadiumSet} from "./StadiumSet";
+import {createCoach,createIntruder} from "./Actors";
 
 export type Chapter = 0 | 1 | 2;
 export type GameAction = "monitores" | "pizarra" | "informe" | "salida1" | "relay" | "cctv" | "salida2" | "prueba" | "entrega";
@@ -76,6 +78,9 @@ export class FootballWorld {
  private mixers:THREE.AnimationMixer[]=[];
  private destroyed=false;
  private finale:FinaleDirector|null=null;
+ private actors:Array<{update:(dt:number)=>void;dispose:()=>void}>=[];
+ private stadiumAnimations:Array<(t:number)=>void>=[];
+ private lifetime=0;
  private onKeyDown=(e:KeyboardEvent)=>{if(!this.gameplayActive)return;if(e.code==="KeyE"){e.preventDefault();this.interactCenter();return;}if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code)){this.keys.add(e.code);e.preventDefault();}};
  private onKeyUp=(e:KeyboardEvent)=>this.keys.delete(e.code);
  private onDown=(e:PointerEvent)=>{if(!this.gameplayActive)return;this.dragging=true;this.start={x:e.clientX,y:e.clientY};this.previous={...this.start};this.pointerTravel=0;this.renderer.domElement.setPointerCapture(e.pointerId);};
@@ -198,13 +203,12 @@ export class FootballWorld {
   const line=mat(0xe1f4ed,.15,.67);box(64,.03,.15,0,-.31,-32,line,this.root);box(64,.03,.15,0,-.31,-100,line,this.root);
   for(const x of [-32,32])box(.13,.03,68,x,-.31,-66,line,this.root);
   const grand=mat(0x162c3c,.25,.9);const crowdColors=[0xc5e8f1,0x55a4d4,0xf0ede1,0xc3b79c,0x465e77,0x8ba9c3];
-  for(let side=0;side<3;side++){
-   const grp=new THREE.Group();this.root.add(grp);
-   for(let tier=0;tier<12;tier++){
-    const r=57+tier*1.9,y=1.5+tier*.75;
-    const geo=new THREE.TorusGeometry(r,.48,5,110,Math.PI*1.5);
-    const arc=new THREE.Mesh(geo,grand);arc.position.set(0,y,-68);arc.rotation.x=Math.PI/2;grp.add(arc);
-   }
+  // One stand per tier. Earlier versions unknowingly tripled identical rings.
+  const stand=new THREE.Group();this.root.add(stand);
+  for(let tier=0;tier<12;tier++){
+   const r=57+tier*1.9,y=1.5+tier*.75;
+   const geo=new THREE.TorusGeometry(r,.48,5,110,Math.PI*1.5);
+   const arc=new THREE.Mesh(geo,grand);arc.position.set(0,y,-68);arc.rotation.x=Math.PI/2;stand.add(arc);
   }
   const count=3000;const g=new THREE.BoxGeometry(.22,.18,.12);const inst=new THREE.InstancedMesh(g,new THREE.MeshBasicMaterial({vertexColors:false,color:0xffffff}),count);
   const dummy=new THREE.Object3D();const col=new THREE.Color();
@@ -217,7 +221,10 @@ export class FootballWorld {
   inst.instanceMatrix.needsUpdate=true;this.root.add(inst);
   for(let i=0;i<7;i++){
    const x=-41+i*14;
-   const lt=new THREE.PointLight(0xe2f5ff,38,100,1);lt.position.set(x,25,-37);this.root.add(lt);
+   // Visible light bars are emissive; only a few emit actual GPU lights.
+   if(i%3===0&&!this.mobile){
+    const lt=new THREE.PointLight(0xe2f5ff,14,85,2);lt.position.set(x,25,-37);this.root.add(lt);
+   }
    box(3.3,.4,.5,x,25,-37,mat(0xf3faff,.14,.6,0xccefff,1.8),this.root);
   }
   const goal=mat(0xf5fbff,.57,.3);
@@ -261,6 +268,9 @@ export class FootballWorld {
     });
    },undefined,()=>{}
   );
+  const set=buildStadiumSet(this.root,this.mobile);
+  this.disposableTextures.push(...set.textures);
+  this.stadiumAnimations.push(...set.animated);
  }
  private makeRoom(chapter:Chapter){
   this.shell(chapter);
@@ -290,6 +300,7 @@ export class FootballWorld {
    }
    this.door(0,-6.48,"salida2","TÚNEL DE CAMPO");
    this.detailServiceRoom();
+   this.actors.push(createIntruder(this.root,()=>!this.destroyed));
    this.glow(0,3,-6,0xfd7459,9,7);
    this.label("AUTORIZACIÓN",["CREDENCIAL REVOCADA"],-4.2,2.0,-6.32,2.1,1.2,"#ed7779");
    for(const side of [-1,1]){
@@ -304,8 +315,10 @@ export class FootballWorld {
    box(4.6,3.0,.32,3.95,1.6,-6.52,mat(0x1c2933,.68,.42),this.root);
    this.desk(-2.3,.65,2.9);
    this.panel(-2.25,1.87,1.43,2.32,1.36,"INFORME FINAL",["VERIFICAR LA PRUEBA","FUENTE ORIGINAL"],"prueba");
-   this.label("SALIDA AL BANCO",["ENTRENADOR / CAMPO"],.05,2.43,-6.29,3.43,.86,"#f8c57e");
-   this.interactive("entrega",.12,1.6,-6.28,2.4,2.28,.42);
+   this.actors.push(createCoach(this.root,()=>!this.destroyed));
+   this.label("CUERPO TÉCNICO",["ENTREGÁ EL INFORME"],.75,2.6,-6.26,2.0,.68,"#f8c57e");
+   // The raycast target surrounds a tangible coach instead of an invisible door.
+   this.interactive("entrega",.85,1.52,-6.29,1.5,2.36,.43);
    for(let i=0;i<6;i++){const z=4.5-i*1.45;box(.075,.03,9,0,.025,z,mat(0xe4bd79,.41,.55,0xa27622,.14),this.root);}
    this.glow(0,2,-5,0xa3dffd,9,12);
   }
@@ -490,6 +503,9 @@ export class FootballWorld {
   const dt=Math.min(.5,(time-this.last)/1000||.016);this.last=time;
   this.update(dt);
   this.animateReplay(dt);
+  this.lifetime+=dt;
+  this.stadiumAnimations.forEach(a=>a(this.lifetime));
+  this.actors.forEach(a=>a(dt));
   this.finale?.update(dt);
   this.fpsTime+=dt;this.fpsFrames++;
   if(this.fpsTime>4.5){
@@ -543,6 +559,7 @@ export class FootballWorld {
  }
  dispose(){
   this.finale?.dispose();this.finale=null;
+  this.actors.forEach(a=>a.dispose());this.actors=[];
   this.destroyed=true;
   cancelAnimationFrame(this.frame);
   window.removeEventListener("resize",this.boundResize);
