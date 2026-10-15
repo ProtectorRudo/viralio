@@ -2,8 +2,8 @@
 
 ## Qué existe realmente
 
-- **203 assets CC0 materializados y verificados** en `data/viralio-3d/catalog.json`. Incluye más de 30 modelos fotorrealistas de Poly Haven, cuatro humanoides con rig y siete clips cada uno, mobiliario, puertas, ventanas, equipamiento médico, figuras estáticas, accesorios de terror y una escultura escaneada de bronce. El carácter fotorrealista de cada escena completa aún depende de iluminación, materiales y QA en móvil.
-- **31 materiales PBR CC0** de Poly Haven en `data/viralio-3d/materials.json`: 3 mapas (base color, normal OpenGL y ARM) por material, 93 mapas publicados y validados.
+- **227 assets CC0 materializados y verificados** en `data/viralio-3d/catalog.json`. Incluye más de 30 modelos fotorrealistas de Poly Haven, cuatro humanoides con rig y siete clips cada uno, mobiliario, puertas, ventanas, equipamiento médico, figuras estáticas, accesorios de terror y una escultura escaneada de bronce. El carácter fotorrealista de cada escena completa aún depende de iluminación, materiales y QA en móvil.
+- **37 materiales PBR CC0** de Poly Haven en `data/viralio-3d/materials.json`: 3 mapas (base color, normal OpenGL y ARM) por material, 111 mapas publicados y validados.
 - **Construcción reproducible** con `scripts/build-viralio-3d-library.mjs` y `scripts/build-viralio-materials.mjs`, desplegados por `.github/workflows/viralio-3d-library.yml`.
 - **Archivos GLB ya materializados** se sirven bajo `public/viralio-3d/models/*.glb`. El índice definitivo con archivos realmente disponibles es `public/viralio-3d/index.json`. El índice de materiales publicados será `public/viralio-3d/materials/index.json`.
 - **Helpers de juego** `src/lib/viralio-3d.ts` para búsqueda, carga perezosa, reutilización de mallas sin descargar dos veces el mismo modelo y clonación de rigs.
@@ -40,7 +40,7 @@ Los props y paredes son **base artística**: el desarrollo de cada sala debe inc
 - Crear variaciones de iluminación, desgaste, focos, voces, sonido ambiente, distancia de cámara y objetos narrativos.
 - No repetir los mismos 4 props hero en salas contiguas, ni reutilizar la misma disposición de muebles. Las figuras anatómicas, maniquíes, pacientes y la escultura de monstruo alado SON ESTÁTICOS, no NPCs.
 - Reservar fotorrealismo/alta resolución para objetos cercanos al jugador; muebles secundarios pueden usar 1K.
-- No cargar automáticamente los 203 modelos ni 26 materiales en cada visita. Cada sala selecciona solo los que efectivamente usa.
+- No cargar automáticamente los 227 modelos ni 26 materiales en cada visita. Cada sala selecciona solo los que efectivamente usa.
 
 ## Fuentes y licencia
 
@@ -84,8 +84,14 @@ Si algún modelo falla, el reporte indica los ausentes; no afirmar integración 
 
 ## Balones y vestuario de fútbol
 
-Última selección: 12 props CC0 e instalaciones y dos balones Poly Haven fotoescaneados, convertidos y verificados. Ver `docs/VIRALIO_3D_FOOTBALL_PREMIUM_ASSETS.md`, manifest `data/viralio-3d/polyhaven-football-models.json` e índice `public/viralio-3d/index.json`. Total 171 GLB y 31 materiales PBR. Los jugadores de fondo de esta colección son figuras estáticas; no construir escenas o juegos sin solicitud.
+Última selección: 12 props CC0 e instalaciones y dos balones Poly Haven fotoescaneados, convertidos y verificados. Ver `docs/VIRALIO_3D_FOOTBALL_PREMIUM_ASSETS.md`, manifest `data/viralio-3d/polyhaven-football-models.json` e índice `public/viralio-3d/index.json`. Total 171 GLB y 37 materiales PBR. Los jugadores de fondo de esta colección son figuras estáticas; no construir escenas o juegos sin solicitud.
 
 ## Universal Core fotorrealista — última incorporación
 
-Se importaron y validaron 32 modelos: 18 Innerscene PBR y 14 Poly Haven fotorrealistas, con cinco materiales adicionales de madera y cuero; biblioteca actual **203 GLB y 31 materiales PBR**. Ver `docs/VIRALIO_3D_UNIVERSAL_CORE.md` e índice de selección `data/viralio-3d/universal-core.json`. Es un catálogo de recursos, no un juego; evitar cargar todos los modelos simultáneamente en móviles. La validación del binario no sustituye pruebas visuales.
+Se importaron y validaron 32 modelos: 18 Innerscene PBR y 14 Poly Haven fotorrealistas, con cinco materiales adicionales de madera y cuero; biblioteca actual **227 GLB y 37 materiales PBR**. Ver `docs/VIRALIO_3D_UNIVERSAL_CORE.md` e índice de selección `data/viralio-3d/universal-core.json`. Es un catálogo de recursos, no un juego; evitar cargar todos los modelos simultáneamente en móviles. La validación del binario no sustituye pruebas visuales.
+
+## Cinematic Premium: personajes, artefactos, HDRI y VFX
+
+Última ampliación verificada: **24 GLB nuevos** (9 figuras humanas estáticas, 2 figuras animadas con un clip, 1 parlante y 12 modelos fotorrealistas de Poly Haven). Además **6 materiales PBR** nuevos de desgaste/madera/metal, **7 HDRI RGBE 1K** y **6 máscaras alfa 2D** para componer humo, polvo, bruma, destellos y haces de luz.
+
+Ver `docs/VIRALIO_3D_CINEMATIC_PREMIUM.md`, `data/viralio-3d/cinematic-core.json`, `public/viralio-3d/hdri/index.json`, `public/viralio-3d/vfx/index.json` y `public/viralio-3d/index.json`. Estado confirmado: **227 GLB, 37 materiales PBR, 7 HDRI, 6 máscaras VFX**. Los HDRI no son escenas 3D, y las máscaras no simulan niebla volumétrica por sí solas. No se modificó ningún juego.
