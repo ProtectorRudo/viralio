@@ -1,7 +1,7 @@
 {
   "name": "Viralio PBR Material Library",
-  "createdAt": "2026-10-15T17:03:30.118Z",
-  "total": 20,
+  "createdAt": "2026-10-15T17:14:48.742Z",
+  "total": 26,
   "license": "CC0-1.0",
   "materials": [
     {
@@ -441,6 +441,138 @@
           "path": "/viralio-3d/materials/old_wooden_floor_01-arm.webp",
           "bytes": 90108,
           "sha256": "796276a8fe7640235eb1ebf9aa731e34c2b1de03b0fbc3423e4a833f6a932404"
+        }
+      }
+    },
+    {
+      "id": "grass_ground",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/grass_ground",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/grass_ground-color.webp",
+          "bytes": 239436,
+          "sha256": "d33884dcaa4db2dc75274a11f10b5575ee62dfb951fd7ecb3726e164c3088e9b"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/grass_ground-normal.webp",
+          "bytes": 2155728,
+          "sha256": "839a54e2b2ba24adb4bf0a7b56ffd7cd71f5bc307b61538be1d775c95e56da19"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/grass_ground-arm.webp",
+          "bytes": 216878,
+          "sha256": "9655327642c8e3c6d2e404b0ad9a90649c2c95e3382ea072cba8d52320c82e6c"
+        }
+      }
+    },
+    {
+      "id": "sparse_grass",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/sparse_grass",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/sparse_grass-color.webp",
+          "bytes": 256688,
+          "sha256": "866d65db657b714645ff4fae59ea203e147b4af628ecdc2307c843a45ef2bef1"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/sparse_grass-normal.webp",
+          "bytes": 2646468,
+          "sha256": "e6907fb9ace681fa29c231dfd002fd2e2b3c189949d65f0ab7cfac29b15016be"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/sparse_grass-arm.webp",
+          "bytes": 255364,
+          "sha256": "5f2070281bb521cee42be28a02944831ccafea99e14b91453ba4da58ed884fdc"
+        }
+      }
+    },
+    {
+      "id": "concrete_tiles",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/concrete_tiles",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/concrete_tiles-color.webp",
+          "bytes": 246248,
+          "sha256": "4e87e1b8a7d0de64c54f2970fae9bb3a5cf093aa854d2c676fefb9c1a44abc44"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/concrete_tiles-normal.webp",
+          "bytes": 1755350,
+          "sha256": "e1c15a871cbf7f57bf0707d0acee68ea28ccc8d7412fb92b89a7b0ab924d5c5d"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/concrete_tiles-arm.webp",
+          "bytes": 138838,
+          "sha256": "38628909127e7e7c468eb2218897b191f906bba2b62fef311d55c56658e6784c"
+        }
+      }
+    },
+    {
+      "id": "rubber_tiles",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/rubber_tiles",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/rubber_tiles-color.webp",
+          "bytes": 8458,
+          "sha256": "ca053c6ccea1033919d84f29a25af6401402389940624462002152bd95b7158c"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/rubber_tiles-normal.webp",
+          "bytes": 1022144,
+          "sha256": "58372a7fd61ceac9408e8883b4a18f93ab4b538716d11a1f3ecf53f7318b0926"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/rubber_tiles-arm.webp",
+          "bytes": 42700,
+          "sha256": "b5f69138e625a78ae3fc5fff2f9555f1cea3d0027a8b767c7e2ca83d7f571557"
+        }
+      }
+    },
+    {
+      "id": "old_linoleum_flooring_01",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/old_linoleum_flooring_01",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/old_linoleum_flooring_01-color.webp",
+          "bytes": 96698,
+          "sha256": "dc87dfedddaab10afb3eb64b039a95f29885256a91d5f60dbf0668400fc624d1"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/old_linoleum_flooring_01-normal.webp",
+          "bytes": 704810,
+          "sha256": "5fe088f9eaed2219ce4bb991247a37e6db31fe984d720d82aa33ecb0b1b75306"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/old_linoleum_flooring_01-arm.webp",
+          "bytes": 35392,
+          "sha256": "1994f6c493a6b1106d215e75743f4ef39be71318dad8c9b9c2adfc71858ced78"
+        }
+      }
+    },
+    {
+      "id": "grass_path_2",
+      "license": "CC0-1.0",
+      "sourcePage": "https://polyhaven.com/a/grass_path_2",
+      "maps": {
+        "color": {
+          "path": "/viralio-3d/materials/grass_path_2-color.webp",
+          "bytes": 330402,
+          "sha256": "8ca49b2a0ab0ca1ee6ff8736b04d5040da1586fecdd4c25b7509882cce1b9399"
+        },
+        "normal": {
+          "path": "/viralio-3d/materials/grass_path_2-normal.webp",
+          "bytes": 1746118,
+          "sha256": "698b89b069cdf7eda42675a6a5e3dadeed30b534649885a21e3aafad1a4d5ac4"
+        },
+        "arm": {
+          "path": "/viralio-3d/materials/grass_path_2-arm.webp",
+          "bytes": 164494,
+          "sha256": "1428839e7e01ddca2fa3d1206026b5c4cff4724ebff27006a52592d799783398"
         }
       }
     }
