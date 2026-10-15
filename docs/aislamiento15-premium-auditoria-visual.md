@@ -76,3 +76,16 @@ La segunda inspección encontró que las ruedas de purga aún parecían discos d
 - Tests automatizados para lectura de un cartel y HUD de rendimiento, recorrido completo de Urgencias → Aislamiento → Contención, capturas 3D en 1280 × 720 y vertical 390 × 844, y eventos táctiles reales del zoom.
 
 **Evidencia:** flujo de ruta [QA #38659884550](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38659884550) satisfactorio y [auditoría visual/táctil #38659910066](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38659910066), que registró cambio real del FOV de 72° a 59,085° sin errores JavaScript. **Ninguna de estas mediciones sustituye pruebas físicas sostenidas de 15 minutos en Android/iOS.**
+
+## Pase de integridad comercial — 15/10/2026
+
+**Correcciones implementadas:**
+
+- El Celador no aplica ataques inevitables mientras el jugador inspecciona archivos, carteles o mecanismos que abren una interfaz; el contador sigue corriendo. No es una pausa gratuita del reto.
+- Si el navegador móvil entra en segundo plano, se detiene la simulación 3D y se concede una **única tolerancia de hasta 45 segundos por interrupción** (máximo aplicado a cada interrupción; no es un modo de pausa manual). Al volver, el reloj retoma con el tiempo restante ajustado y el audio vuelve al estado de preferencia anterior.
+- La interfaz ahora ofrece pistas graduales por objetivo, de menor a mayor precisión. Pedir reiteradamente una pista ya agotada no contabiliza una ayuda adicional.
+- Nueva prueba automatizada que busca posiciones sin colisiones desde las cuales sea posible seleccionar **cada uno de los 22 mecanismos físicos de las tres salas**, en lugar de activar directamente las acciones de React sin comprobar la exploración.
+
+**Pruebas:** [recorrido completo + alcanzabilidad #38662134216](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38662134216) y [pistas, suspensión y protecciones + recorrido #38662457238](https://github.com/ProtectorRudo/ProtectorRudo.github.io/actions/runs/38662457238). El despliegue exclusivo en GitHub Pages pasó su verificación de build y de integridad.
+
+**Puertas de calidad todavía abiertas**: ensayo prolongado de 15 minutos en celulares Android/iPhone físicos, FPS/temperatura medidos en dispositivos de gama media, duración y tasa de resolución para jugadores nuevos, y prueba comercial de flujo de pago real. La batería de navegador automatizada no puede acreditar estas pruebas por sí sola.
