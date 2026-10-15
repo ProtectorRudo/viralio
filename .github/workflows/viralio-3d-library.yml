@@ -12,6 +12,10 @@ on:
       - 'scripts/build-football-polyhaven.mjs'
       - 'data/viralio-3d/polyhaven-universal-models.json'
       - 'scripts/build-polyhaven-universal.mjs'
+      - 'data/viralio-3d/polyhaven-cinematic-models.json'
+      - 'scripts/build-polyhaven-cinematic.mjs'
+      - 'data/viralio-3d/polyhaven-hdri.json'
+      - 'scripts/build-polyhaven-hdri.mjs'
       - '.github/workflows/viralio-3d-library.yml'
   workflow_dispatch:
 
@@ -50,6 +54,10 @@ jobs:
         run: node scripts/build-football-polyhaven.mjs
       - name: Importar mobiliario y comida fotorrealistas Poly Haven (CC0)
         run: node scripts/build-polyhaven-universal.mjs
+      - name: Incorporar artefactos vintage fotorrealistas Poly Haven
+        run: node scripts/build-polyhaven-cinematic.mjs
+      - name: Incorporar 7 HDRI reales para atmosferas cinematograficas
+        run: node scripts/build-polyhaven-hdri.mjs
       - name: Adjuntar reporte y biblioteca
         uses: actions/upload-artifact@v4
         with:
@@ -59,6 +67,8 @@ jobs:
             data/viralio-3d/build-report.json
             data/viralio-3d/polyhaven-football-report.json
             data/viralio-3d/polyhaven-universal-report.json
+            data/viralio-3d/polyhaven-cinematic-report.json
+            data/viralio-3d/hdri-report.json
           retention-days: 30
       - name: Incorporar los GLB al repositorio
         shell: bash
@@ -72,7 +82,7 @@ jobs:
           for attempt in 1 2 3 4; do
             git fetch origin main
             git reset --mixed origin/main
-            git add public/viralio-3d data/viralio-3d/build-report.json data/viralio-3d/polyhaven-football-report.json data/viralio-3d/polyhaven-universal-report.json
+            git add public/viralio-3d data/viralio-3d/build-report.json data/viralio-3d/polyhaven-football-report.json data/viralio-3d/polyhaven-universal-report.json data/viralio-3d/polyhaven-cinematic-report.json data/viralio-3d/hdri-report.json
             if git diff --cached --quiet; then
               echo "Library already current"
               exit 0
