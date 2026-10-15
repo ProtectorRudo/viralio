@@ -577,7 +577,24 @@ export class FootballWorld {
     const target=hit.object as Target;
     if(target.userData.action)return target.userData.action;
    }
-  }return null;
+  }
+  // The coach stands slightly outside the tunnel threshold. An invisible
+  // interaction collider is easy for raycasting to miss through a narrow
+  // moving opening on portrait phones. Permit the same physical 3.5 m
+  // interaction distance when the player faces the coach directly.
+  // This is NOT a distant hotspot: the player must walk over to the exit.
+  if(this.chapter===2&&Math.abs(nx)<.12&&Math.abs(ny)<.12){
+   const coach=this.targets.find(t=>t.userData.action==="entrega");
+   if(coach){
+    const toward=coach.getWorldPosition(new THREE.Vector3()).sub(this.camera.position);
+    const meters=toward.length();
+    if(meters<=3.5&&meters>.01){
+     const forward=this.camera.getWorldDirection(new THREE.Vector3());
+     if(forward.dot(toward.multiplyScalar(1/meters))>.77)return "entrega";
+    }
+   }
+  }
+  return null;
  }
  tap(clientX:number,clientY:number){
   if(!this.gameplayActive)return;
