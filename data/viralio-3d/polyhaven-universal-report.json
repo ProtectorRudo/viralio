@@ -1,19 +1,6 @@
 {
   "selected": 14,
-  "successful": 11,
-  "failed": 3,
-  "errors": [
-    {
-      "id": "universal-ph-wooden-table",
-      "error": "Invalid asset id"
-    },
-    {
-      "id": "universal-ph-worn-coffee-table",
-      "error": "Invalid asset id"
-    },
-    {
-      "id": "universal-ph-leather-ottoman",
-      "error": "Invalid asset id"
-    }
-  ]
+  "successful": 14,
+  "failed": 0,
+  "errors": []
 }
