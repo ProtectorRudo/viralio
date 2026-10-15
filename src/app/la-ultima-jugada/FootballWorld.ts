@@ -514,7 +514,7 @@ export class FootballWorld {
   this.animateReplay(dt);
   this.lifetime+=dt;
   this.stadiumAnimations.forEach(a=>a(this.lifetime));
-  this.actors.forEach(a=>a.update(dt));
+  this.actors.forEach(a=>a.update(this.lifetime));
   this.finale?.update(dt);
   this.fpsTime+=dt;this.fpsFrames++;
   if(this.fpsTime>4.5){
