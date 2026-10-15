@@ -22,6 +22,7 @@ export type EscapeExperience = {
   synopsis: string;
   story: string[];
   playUrl: string;
+  trailerUrl?: string;
   featured?: boolean;
 };
 export const experiences: readonly EscapeExperience[] = [
@@ -96,7 +97,8 @@ export const experiences: readonly EscapeExperience[] = [
     tagline: "Tenés quince minutos para salir del hospital. Algo quiere salir con vos.",
     synopsis: "Tres sectores de un hospital sellado, un protocolo irreversible y una anomalía capaz de imitar voces humanas. Escapá antes del último minuto.",
     story: ["Despertás en una instalación médica donde los altavoces anuncian la activación del Protocolo 015.", "Investigá Urgencias, restablecé la presión en Aislamiento y descubrí quién intenta engañarte desde Contención.", "El enemigo está dentro del edificio. Cada error consume segundos reales."],
-    playUrl: "https://protectorrudo.github.io/aislamiento-15/"
+    playUrl: "https://protectorrudo.github.io/aislamiento-15/",
+    trailerUrl: "https://protectorrudo.github.io/aislamiento-15/media/trailer-real.mp4"
   },
 ]; 
 export const collections = [
