@@ -206,9 +206,10 @@ export class FootballWorld {
  private interactive(id:GameAction,x:number,y:number,z:number,w:number,h:number,depth=.36) {
   const hit=box(w,h,depth,x,y,z,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),this.root) as Target;
   hit.userData.action=id;hit.userData.label=names[id];this.targets.push(hit);
-  const trim=mat(palette.gold,.75,.28,0x6a3b10,.12);
-  box(w+.04,.04,.08,x,y+h/2,z+depth/2,trim,this.root);
-  box(w+.04,.04,.08,x,y-h/2,z+depth/2,trim,this.root);
+  // Hitboxes are invisible. Formerly this method added two golden beams
+  // to EVERY object, including floating pickup papers, and caused the
+  // disconnected shelves visible in user screenshots.
+  // Real frames and hardware are authored by the objects themselves.
  }
  /** From the shared Viralio CC0 library. Keep procedural surfaces until all
       three PBR maps load successfully; never block the WebGL first frame. */
@@ -268,7 +269,9 @@ export class FootballWorld {
   if(chapter!==2)walls.push(box(13,4.35,.28,0,2.05,-6.7,concrete,this.root));
   walls.push(box(13,4.35,.28,0,2.05,6.7,concrete,this.root));
   // Two actual scanned-material finishes instead of flat generated tiles.
-  this.upgradePbr([ground],chapter===0?"old_linoleum_flooring_01":"rubber_tiles",4,chapter===0?0x879bb1:0x929ca5);
+  // Dark, low-contrast athletic floor: bright repeating linoleum tiles drew
+  // more attention than the puzzles in the actual player screenshots.
+  this.upgradePbr([ground],"rubber_tiles",3,chapter===0?0x596771:0x78818a);
   this.upgradePbr(walls,"concrete_tiles",3,0x728da4);
   // Six large studio luminaires instead of sixteen white floating plates.
   // The visible luminous panels sit inside a dark anodized recessed bezel.
@@ -279,9 +282,12 @@ export class FootballWorld {
     box(1.08,.012,1.81,x,4.027,z,diffuser,this.root).castShadow=false;
    }
   }
-  for(let z=-5.6;z<=5.8;z+=2.1)box(.08,4.1,.12,-6.23,1.98,z,steel,this.root);
-  // Thin flush floor joints, not twelve heavy black lines.
-  for(let i=0;i<5;i++)box(.012,.005,12,-5+i*2.45,.012,0,steel,this.root);
+  // Actual perimeter structure, not a repeated forest of decorative bars.
+  for(const z of [-5.8,5.8]){
+   for(const x of [-6.19,6.19])box(.105,3.97,.12,x,2.05,z,steel,this.root);
+  }
+  const skirting=mat(0x263743,.72,.5);
+  for(const x of [-6.21,6.21])box(.07,.17,13.6,x,.085,0,skirting,this.root);
   this.glow(-3.5,2.9,1.8,0xa6dfff,18,13);
   this.glow(4.5,2.8,-1.4,chapter===1?0xf7b8a2:0xffe3b6,13,12);
   this.glow(0,3.5,-3,0xeaf7ff,11,10);
@@ -310,9 +316,14 @@ export class FootballWorld {
   this.obstacles.push({minX:x-w/2,maxX:x+w/2,minZ:z-.67,maxZ:z+.67});
  }
  private panel(x:number,y:number,z:number,w:number,h:number,title:string,lines:string[],id?:GameAction){
-  box(w+.15,h+.15,.2,x,y,z,mat(0x0c111a,.79,.25),this.root);
-  this.label(title,lines,x,y,z+.15,w,h);
-  if(id)this.interactive(id,x,y,z+.18,w,h,.3);
+  const frame=mat(0x263d4d,.7,.38),screws=mat(0x9da9ac,.76,.38);
+  box(w+.13,h+.13,.16,x,y,z,frame,this.root);
+  this.label(title,lines,x,y,z+.135,w,h);
+  // Visible mounting rails join each display to the rear structural wall.
+  for(const dx of [-w*.43,w*.43]){
+   box(.06,.13,.19,x+dx,y,z-.22,screws,this.root);
+  }
+  if(id)this.interactive(id,x,y,z+.19,w,h,.22);
  }
  private chair(x:number,z:number){
   const local=new THREE.Group();this.root.add(local);
@@ -445,11 +456,17 @@ export class FootballWorld {
    this.panel(-2,2.1,-6.38,3.55,1.85,"ANÁLISIS MULTICÁMARA",["CÁMARAS 01 / 02 / 03","FEED ALTERADO - REVISAR"],"monitores");
    this.createReplayWall();
    this.panel(2.2,2.1,-6.36,3.15,1.85,"ROMPECABEZAS TÁCTICO",["ORDENAR FICHAS","7 / 10 / 9"],"pizarra");
-   box(.97,.11,.65,-2.15,1,0.5,mat(0xb1ac9f,.16,.81),this.root);
-   this.label("EXPEDIENTE 2030",["4 HOJAS / ORDENAR"],-2.15,1.09,1.12,1.45,.78,"#f8c57e");
-   this.interactive("informe",-2.15,1.04,.78,1.65,.32,.85);
+   // The dossier is a physical clipboard on the analyst's actual desk.
+   const folio=mat(0xe2d5af,.09,.85),clip=mat(0xbda478,.76,.37);
+   box(.98,.045,.67,-2.15,1.125,.64,folio,this.root);
+   box(.24,.036,.065,-2.15,1.158,.37,clip,this.root);
+   const dossier=plane(.84,.54,-2.15,1.157,.65,
+    new THREE.MeshBasicMaterial({map:makeTexture("EXPEDIENTE",["4 HOJAS / ORDENAR"],"#f8c57e"),side:THREE.DoubleSide}),this.root);
+   dossier.rotation.x=-Math.PI/2;
+   this.interactive("informe",-2.15,1.16,.68,1.15,.25,.8);
    this.evidenceFragments();
-   for(let i=0;i<4;i++){const x=-4+i*1.05;box(.8,.62,.46,x,1.2,-1.7,mat(0x182a37,.62,.4),this.root);box(.65,.36,.03,x,1.25,-1.46,mat(0x57b5cf,.32,.51,0x1c7190,.5),this.root);}
+   // Removed four primitive floating "screens" over the central circulation
+   // aisle. The real video-wall and premium operator monitor remain.
    this.door(4.9,-6.48,"salida1","SECTOR INTERNO");
    this.detailAnalysisRoom();
    this.label("ARG 1 - 1 ENG",["MINUTO 87 · FINAL"],0,3.64,-6.39,3.25,.78);
@@ -532,13 +549,25 @@ export class FootballWorld {
  }
  private evidenceFragments(){
   const paper=mat(0xe5d6aa,.02,.94),ink=mat(0x384c5a,.17,.71),clip=mat(0xbe9957,.81,.31);
+  // Four clues now rest on physical, low storage consoles reachable
+  // from either aisle. Their X/Z locations stay intact for puzzle navigation.
   const locations:[GameAction,number,number,number,number][]=[
-   ["pieza1",-4.65,1.27,1.78,0],
-   ["pieza2",4.56,1.46,.65,0],
-   ["pieza3",-4.55,1.45,-2.15,0],
-   ["pieza4",3.68,1.56,-3.88,0]
+   ["pieza1",-4.65,1.04,1.78,0],
+   ["pieza2",4.56,1.04,.65,0],
+   ["pieza3",-4.55,1.04,-2.15,0],
+   ["pieza4",3.68,1.04,-3.88,0]
   ];
   locations.forEach(([id,x,y,z,r],index)=>{
+   const plinth=mat(index%2?0x394b55:0x38424a,.64,.61);
+   const top=mat(0x65747b,.67,.47),handle=mat(0x9daeb2,.79,.38);
+   box(.88,.93,.64,x,.465,z,plinth,this.root);
+   box(.94,.075,.73,x,1.005,z,top,this.root);
+   for(let row=0;row<2;row++){
+    box(.72,.30,.014,x,.72-row*.36,z+.325,plinth,this.root);
+    box(.28,.025,.026,x,.70-row*.36,z+.346,handle,this.root);
+   }
+   box(.10,.15,.68,x-.36,.075,z,plinth,this.root);
+   box(.10,.15,.68,x+.36,.075,z,plinth,this.root);
    const holder=new THREE.Group();holder.position.set(x,y,z);holder.rotation.y=r;this.root.add(holder);
    const sheet=box(.49,.04,.33,0,0,0,paper,holder);
    sheet.rotation.z=(index-1.5)*.075;
@@ -546,7 +575,7 @@ export class FootballWorld {
    box(.3,.014,.021,-.03,.028,-.02,ink,holder);
    box(.18,.014,.018,-.08,.028,.05,ink,holder);
    box(.075,.035,.08,.17,.04,-.11,clip,holder);
-   this.interactive(id,x,y+.04,z,.67,.42,.58);
+   this.interactive(id,x,y+.06,z,.68,.35,.65);
    this.evidenceMeshes.set(id,holder);
   });
  }
@@ -567,33 +596,50 @@ export class FootballWorld {
   this.premiumProp(FOOTBALL_PREMIUM.fourLocker,-2.79,.01,3.74,3.9,1.77,.7,0,puzzleLockersFallback);
   this.premiumProp(FOOTBALL_PREMIUM.keypad,-.8,1.31,-6.23,.3,.47,.19);
   this.premiumProp(FOOTBALL_PREMIUM.locker,5.0,.03,2.7,1.04,1.92,.72,Math.PI/2);
-  this.premiumProp(FOOTBALL_PREMIUM.camera,-5.6,3.34,-5.22,.52,.4,.7,Math.PI/2);
+  this.mountCctv(-5.6,3.34,-5.22,.52,.4,.7);
   this.glow(-2.7,2.2,2.72,0xffbb76,7,5);
+ }
+ private mountCctv(x:number,y:number,z:number,w:number,h:number,d:number){
+  // The wall bracket must make physical contact with the CCTV housing.
+  const steel=mat(0x66747c,.79,.44);
+  box(.095,.42,.24,-6.17,y+.08,z,steel,this.root);
+  const arm=tube(.043,.61,-5.91,y+.08,z,steel,this.root,12);
+  arm.rotation.z=Math.PI/2;
+  tube(.12,.045,-5.62,y+.04,z,steel,this.root,12);
+  this.premiumProp(FOOTBALL_PREMIUM.camera,x,y,z,w,h,d,Math.PI/2);
  }
  private detailAnalysisRoom() {
   const trim=mat(0x99aab5,.78,.3),slate=mat(0x243946,.66,.51),
   copper=mat(0xb3a18d,.6,.4),plastic=mat(0x3a4e5b,.34,.72),
   glass=mat(0xaed8ec,.15,.17);
-  // Wide composite acoustic panels with discreet seams and inlaid edges.
-  // The old prototype had nine repeated black pillars on every wall.
-  const panelMaterial=mat(0x3b5769,.28,.79);
-  const bronze=mat(0xb29a6f,.74,.36);
-  for(const wall of [-1,1]){
+  // Dark acoustic felt on real wall mounts, NOT eight large bright
+  // blue free-standing boards. The concrete remains visible between bays.
+  const felt=mat(0x23323a,.05,.97),seam=mat(0x111d25,.13,.9);
+  const frame=mat(0x55646d,.65,.55),bolt=mat(0x9fa9a8,.81,.32);
+  for(const side of [-1,1]){
+   const x=side*6.18;
    for(let bay=0;bay<4;bay++){
-    const z=-4.65+bay*2.9;
-    box(.042,2.52,2.53,wall*6.11,1.86,z,panelMaterial,this.root);
-    box(.072,2.68,.028,wall*6.04,1.86,z-1.28,bronze,this.root);
-    box(.075,.034,2.51,wall*6.04,.57,z,bronze,this.root);
-    box(.062,.036,2.51,wall*6.04,3.13,z,bronze,this.root);
+    const z=-4.9+bay*2.95;
+    box(.07,1.52,2.22,x,2.45,z,felt,this.root);
+    for(let slat=0;slat<9;slat++){
+     const zz=z-1.0+slat*.25;
+     box(.078,1.43,.014,x-side*.045,2.45,zz,seam,this.root);
+    }
+    for(const dz of [-1.13,1.13]){
+     box(.082,1.58,.035,x-side*.058,2.45,z+dz,frame,this.root);
+     for(const y of [1.76,3.13])
+      tube(.018,.024,x-side*.108,y,z+dz,bolt,this.root,8).rotation.z=Math.PI/2;
+    }
+    // Fixed rails reach the structural wall at x=±6.26.
+    box(.16,.07,2.32,side*6.21,1.63,z,frame,this.root);
    }
   }
-  // Suspended fixture frames, broadcast tally indicators and colored cable trays.
-  const glowBlue=mat(0x7de0f2,.1,.19,0x42b7de,2.1);
-  for(let i=0;i<4;i++){
-   const x=-4.45+i*2.9;
-   box(1.2,.065,.06,x,3.91,-4.65,glowBlue,this.root);
-   box(.035,.12,.07,x,3.84,-4.65,bronze,this.root);
-  }
+  // A fixed ceiling raceway with end supports, not decorative rods
+  // hovering independently above the operators.
+  const raceway=mat(0x33424a,.77,.51);
+  box(7.7,.09,.17,0,4.04,-4.78,raceway,this.root);
+  for(const x of [-3.64,0,3.64])
+   box(.07,.18,.16,x,4.14,-4.78,frame,this.root);
   // Framed scouting prints, equipment cabinets and labelled document racks.
   for(const dx of [-4.9,-3.2]){
    box(1.26,1.06,.10,dx,2.16,6.48,trim,this.root);
@@ -624,7 +670,7 @@ export class FootballWorld {
   // The operator's equipment is real glTF/PBR, with natural silhouettes.
   this.premiumProp(FOOTBALL_PREMIUM.keyboard,.32,1,.83,.65,.085,.27);
   this.premiumProp(FOOTBALL_PREMIUM.monitor,.33,.99,.12,.72,.78,.41);
-  this.premiumProp(FOOTBALL_PREMIUM.camera,-5.61,3.1,-4.45,.5,.45,.8,Math.PI/2);
+  this.mountCctv(-5.61,3.1,-4.45,.5,.45,.8);
   this.premiumProp(FOOTBALL_PREMIUM.duffel,4.65,.03,2.65,.83,.54,.57,Math.PI/2);
   this.premiumProp(FOOTBALL_PREMIUM.backpack,5.1,.03,4.5,.53,.8,.41,-Math.PI/2);
   this.premiumProp(FOOTBALL_PREMIUM.football,4.75,.02,1.65,.32,.32,.32);
