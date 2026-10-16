@@ -45,13 +45,36 @@ jobs:
             alpha=alpha.filter(ImageFilter.GaussianBlur(.38))
             rgba=image.convert("RGBA")
             rgba.putalpha(alpha)
-            # Preserve subject; pad without enlargement on a 1050x1050 canvas.
-            ratio=min(1020/rgba.width,1020/rgba.height)
-            nw,nh=round(rgba.width*ratio),round(rgba.height*ratio)
-            if (nw,nh)!=(rgba.width,rgba.height):
-              rgba=rgba.resize((nw,nh),Image.Resampling.LANCZOS)
-            out=Image.new("RGBA",(1050,1050),(0,0,0,0))
-            out.alpha_composite(rgba,((1050-nw)//2,(1050-nh)//2))
+            # Crop excess black photography backdrop, NOT the rose itself.
+            # The previous centered square made the flower fill less than half
+            # the screen; use flower-color pixels to calculate a stable crop.
+            px=rgba.load()
+            color_mask=Image.new("L",rgba.size,0)
+            color_pixels=color_mask.load()
+            for yy in range(rgba.height):
+              for xx in range(rgba.width):
+                rr,gg,bb,aa=px[xx,yy]
+                if aa>90 and (
+                  (rr>65 and rr>gg*1.18 and rr>bb*1.22)
+                  or (gg>60 and gg>rr*1.12 and gg>bb*1.20)
+                ):
+                  color_pixels[xx,yy]=255
+            area=color_mask.getbbox()
+            if not area: raise ValueError("Cannot locate rose in "+name)
+            left,top,right,bottom=area
+            ww,hh=right-left,bottom-top
+            center_x=(left+right)/2
+            # Include the short sepal/stem on the closed rose, while
+            # keeping the open flower at the same optical centre.
+            center_y=(top+bottom)/2+(hh*.12 if "closed" in name else 0)
+            square=max(ww*1.43,hh*(1.63 if "closed" in name else 1.36))
+            if square<220: raise ValueError("Unexpected tiny rose mask: "+name)
+            bounds=(round(center_x-square/2),round(center_y-square/2),
+                    round(center_x+square/2),round(center_y+square/2))
+            rgba=rgba.crop(bounds)
+            print(name,"rose crop",area,"crop bounds",bounds)
+            rgba=rgba.resize((1050,1050),Image.Resampling.LANCZOS)
+            out=rgba
             out.save(os.path.join(root,name),"WEBP",quality=90,method=6)
             print(name,"original",image.size,"final",out.size,"bytes",os.path.getsize(os.path.join(root,name)))
           with open(os.path.join(root,"PHOTO-CREDITS.txt"),"w") as f:
