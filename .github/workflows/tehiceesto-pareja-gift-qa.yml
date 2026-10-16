@@ -1,0 +1,92 @@
+name: Te Hice Esto · Pareja gift visual QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-pareja-gift-qa.yml"
+      - "src/app/tehiceesto/CoupleGiftIntro.tsx"
+      - "src/app/tehiceesto/CoupleGiftIntro.css"
+      - "src/app/tehiceesto/ExperienceEngine.tsx"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-gift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build source
+        run: npm run build
+      - name: Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start app
+        run: |
+          npm start -- -H 127.0.0.1 -p 3000 >/tmp/pareja-gift-app.log 2>&1 &
+          for i in {1..45}; do
+            curl -fsS http://127.0.0.1:3000/experiencias/pareja >/dev/null && exit 0
+            sleep 2
+          done
+          cat /tmp/pareja-gift-app.log
+          exit 1
+      - name: Test closed, unwrap and revealed mobile/desktop
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from "@playwright/test";
+          import fs from "node:fs/promises";
+          await fs.mkdir("gift-visual-qa",{recursive:true});
+          const browser=await chromium.launch({headless:true});
+          for(const [name,width,height] of [["mobile",390,844],["desktop",1440,960]]){
+            const context=await browser.newContext({viewport:{width,height},isMobile:name==="mobile",hasTouch:name==="mobile"});
+            const page=await context.newPage();
+            const errors=[];
+            page.on("pageerror",e=>errors.push(e.message));
+            const response=await page.goto("http://127.0.0.1:3000/experiencias/pareja",{waitUntil:"domcontentloaded",timeout:30000});
+            if(response?.status()!==200)throw Error("Pareja HTTP "+response?.status());
+            await page.locator(".couple-gift-intro.gift-phase-closed").waitFor({timeout:12000});
+            if(!(await page.locator(".couple-gift-continue").isDisabled()))throw Error("CTA enabled before unwrap");
+            await page.waitForTimeout(750);
+            await page.screenshot({path:"gift-visual-qa/"+name+"-closed.png",fullPage:false});
+            const before=await page.evaluate(()=>({
+              box:document.querySelector(".couple-gift-box-base")?.getBoundingClientRect().toJSON(),
+              label:document.querySelector(".couple-gift-tag")?.getBoundingClientRect().toJSON(),
+              hint:document.querySelector(".couple-gift-tap-hint")?.getBoundingClientRect().toJSON(),
+              overflow:document.documentElement.scrollWidth-window.innerWidth,
+              scheme:getComputedStyle(document.querySelector(".couple-gift-intro")).getPropertyValue("--gift-box")
+            }));
+            if(!before.box || !before.hint || before.hint.top<before.box.bottom-4)throw Error("Instruction overlaps gift box: "+JSON.stringify(before));
+            if(!before.label || before.label.height<60)throw Error("Unwrap tag unreadable: "+JSON.stringify(before));
+            if(before.overflow>3)throw Error("Horizontal overflow: "+before.overflow);
+            if(before.scheme.includes("#d38d9b"))throw Error("Old pink box still active");
+            await page.locator(".couple-gift-unseal").click();
+            await page.locator(".gift-phase-untying").waitFor({timeout:3000});
+            await page.locator(".gift-phase-opening").waitFor({timeout:5000});
+            await page.locator(".gift-phase-revealed").waitFor({timeout:5000});
+            await page.waitForTimeout(1050);
+            if(await page.locator(".couple-gift-continue").isDisabled())throw Error("CTA never enabled");
+            if(!(await page.locator(".couple-gift-reveal h1").textContent())?.trim())throw Error("Recipient vanished");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-revealed.png",fullPage:false});
+            await page.locator(".couple-gift-continue").click();
+            await page.locator("main.thi-experience[data-scene='door']").waitFor({timeout:8000});
+            if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
+            console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
+            await context.close();
+          }
+          await browser.close();
+          NODE
+      - name: Upload screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pareja-midnight-gift-mobile-desktop
+          path: gift-visual-qa/
+          retention-days: 7
