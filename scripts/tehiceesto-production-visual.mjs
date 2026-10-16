@@ -37,6 +37,20 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
   if(route.startsWith("/experiencias/")){
     scene=await page.locator("main.thi-experience").getAttribute("data-scene");
     if(advanceDemo&&scene==="intro"){
+      if(route==="/experiencias/pareja"){
+        const gift=page.locator(".couple-gift-intro.gift-phase-closed");
+        await gift.waitFor({timeout:15000});
+        if(!(await page.locator(".couple-gift-continue").isDisabled()))
+          throw new Error("Gift CTA unexpectedly enabled before unwrapping");
+        await page.screenshot({path:path.join(outDir,`pareja-gift-closed-${mode}.png`),fullPage:false});
+        await page.locator(".couple-gift-unseal").click();
+        await page.locator(".gift-phase-revealed").waitFor({timeout:8000});
+        await page.waitForTimeout(650);
+        if(await page.locator(".couple-gift-continue").isDisabled())
+          throw new Error("Gift opening did not enable Entrá despacio");
+        await page.screenshot({path:path.join(outDir,`pareja-gift-revealed-${mode}.png`),fullPage:false});
+        console.log("PASS: Pareja gift ribbon, lid, personal message and gated CTA ("+mode+")");
+      }
       const advance=page.locator('[data-action="advance"]').first();
       if(await advance.count()&&await advance.isVisible()){
         await advance.click();
