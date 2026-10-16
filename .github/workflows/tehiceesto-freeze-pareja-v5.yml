@@ -1,0 +1,55 @@
+name: Freeze Pareja premium-v5 snapshot
+on:
+  push:
+    paths:
+      - ".github/workflows/tehiceesto-freeze-pareja-v5.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Finish independent versioned source and artwork
+        run: |
+          set -eu
+          cd src/app/tehiceesto
+          mkdir -p template-v5
+          for name in ExperienceEngine.tsx data.ts experienceCopy.ts sceneText.ts mediaRouting.ts effectiveRecipe.ts privateGiftVisuals.ts premiumMoments.ts scratchCoverThemes.ts BirthdayLantern.tsx BirthdayVoices.tsx CandleBlow.tsx ChildLightQuest.tsx CoupleGiftIntro.tsx CoupleGiftIntro.css FriendSignaturePad.tsx FriendshipScenes.tsx HoldReveal.tsx LightReveal.tsx PairCinematicUmbral.tsx PairCinematicUmbral.css PairEverydayScene.tsx PairHeartConstellation.tsx PairHeartConstellation.css PairMemoryLight.tsx PairMemoryLight.css PairRoseFinaleCinematic.tsx PairVoicePremium.tsx PairVoicePremium.css RubyHeart.tsx ScratchReveal.tsx; do
+            if [ ! -f "template-v5/$name" ] || [ "$name" = mediaRouting.ts ]; then
+              cp "$name" "template-v5/$name"
+            fi
+          done
+          # Scope new engine with an additional version marker; retain legacy
+          # live class to preserve pixel-for-pixel parity with the final demo.
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("template-v5/ExperienceEngine.tsx")
+          s=p.read_text()
+          s=s.replace("thi-template-live","thi-template-live thi-template-v5")
+          p.write_text(s)
+          PY
+          for name in tehiceesto-pair-rose-finale.css tehiceesto-pair-finale-cinema.css tehiceesto-pair-finale-sharp.css tehiceesto-ruby-heart.css tehiceesto-everyday.css tehiceesto-constellation-live.css; do
+            cp "$name" "template-v5/$name"
+          done
+          cat > template-v5/model-v5.css <<'EOF'
+          /* Versioned Pareja visual snapshot: all six signature scenes from the approved demo. */
+          @import "./tehiceesto-pair-rose-finale.css";
+          @import "./tehiceesto-pair-finale-cinema.css";
+          @import "./tehiceesto-pair-finale-sharp.css";
+          @import "./tehiceesto-ruby-heart.css";
+          @import "./tehiceesto-everyday.css";
+          @import "./tehiceesto-constellation-live.css";
+          EOF
+      - name: Commit v5 source archive (leave old sold gifts untouched)
+        run: |
+          git config user.name "TeHiceEsto Release Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/app/tehiceesto/template-v5
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "feat(pareja): complete frozen premium-v5 source [skip ci]"
+          git push origin HEAD:main
