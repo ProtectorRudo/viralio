@@ -359,6 +359,13 @@ jobs:
             if(await page.locator('.thi-pair-finale-create').isVisible())
               throw Error("Sales action interrupts unopened rose");
             await page.waitForTimeout(800);
+            const finalePosition=await page.evaluate(()=>{
+              const title=document.querySelector(".thi-pair-finale > h2")?.getBoundingClientRect();
+              return {y:window.scrollY,top:title?.top??-1};
+            });
+            if(name==="mobile"&&(finalePosition.y>8||finalePosition.top<95))
+              throw Error("Finale title clipped on mobile: "+JSON.stringify(finalePosition));
+            console.log("ROSE_VISUAL_ASSET_CHECK",name,JSON.stringify({roseAssets,physicalOrigin,finalePosition}));
             await page.screenshot({path:"gift-visual-qa/"+name+"-rose-bud.png",fullPage:false});
             await page.locator('[data-action="rose-open"]').click();
             await page.locator('.prc-root[data-rose-stage="letter"]').waitFor({timeout:5600});
