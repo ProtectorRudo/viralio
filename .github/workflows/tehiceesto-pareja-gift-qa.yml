@@ -237,6 +237,13 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-initial.png",fullPage:false});
             await page.locator('[data-action="everyday-window"]').click();
             if(!(await page.locator(".thi-everyday-story").innerText()).includes("LA VENTANA"))throw Error("Window dedication not revealed");
+            await page.waitForTimeout(1050);
+            const narrativeVisibility=await page.locator(".thi-everyday-message").evaluate(el=>{
+              const r=el.getBoundingClientRect();
+              return {opacity:Number(getComputedStyle(el).opacity),top:r.top,bottom:r.bottom,viewport:innerHeight};
+            });
+            if(narrativeVisibility.opacity<.97||narrativeVisibility.bottom>narrativeVisibility.viewport-25)
+              throw Error("Everyday message is not fully visible on "+name+": "+JSON.stringify(narrativeVisibility));
             const overlap=await page.evaluate(()=>{
               const p=document.querySelector(".thi-everyday-message p");
               const c=document.querySelector("a.floating-create-cta.floating-whatsapp--experience");
@@ -253,6 +260,13 @@ jobs:
             await page.locator('[data-action="everyday-frame"]').click();
             await page.locator('[data-everyday-complete="true"]').waitFor({timeout:4000});
             if(!(await page.locator(".thi-everyday-continue").isVisible()))throw Error("Continue missing after all three discoveries");
+            await page.waitForTimeout(1200);
+            const endingVisibility=await page.locator(".thi-everyday-ending").evaluate(el=>{
+              const r=el.getBoundingClientRect();
+              return {opacity:Number(getComputedStyle(el).opacity),top:r.top,bottom:r.bottom,viewport:innerHeight};
+            });
+            if(endingVisibility.opacity<.97||endingVisibility.bottom>endingVisibility.viewport-25)
+              throw Error("Everyday ending not fully visible on "+name+": "+JSON.stringify(endingVisibility));
             await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-finale.png",fullPage:false});
             await page.locator(".thi-everyday-continue").click();
             await page.locator("main.thi-experience[data-scene='scratch']").waitFor({timeout:8000});
