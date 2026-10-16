@@ -17,7 +17,7 @@ on:
       - "src/app/tehiceesto/PairHeartConstellation.tsx"
       - "src/app/tehiceesto/PairHeartConstellation.css"
       - "src/app/tehiceesto/tehiceesto-everyday.css"
-      - "public/tehiceesto/everyday-cinematic.webp"
+      - "public/tehiceesto/everyday-cinematic-hd.avif"
   workflow_dispatch:
 
 permissions:
@@ -230,8 +230,8 @@ jobs:
             const room=page.locator(".thi-pair-everyday .thi-everyday-room");
             if(!(await room.isVisible()))throw Error("Photographic everyday room missing");
             const bg=await room.evaluate(el=>getComputedStyle(el).backgroundImage);
-            if(!bg.includes("everyday-cinematic.webp"))throw Error("Approved photographic room not used");
-            const imgResp=await page.request.get("http://127.0.0.1:3000/tehiceesto/everyday-cinematic.webp");
+            if(!bg.includes("everyday-cinematic-hd.avif"))throw Error("Approved photographic room not used");
+            const imgResp=await page.request.get("http://127.0.0.1:3000/tehiceesto/everyday-cinematic-hd.avif");
             if(!imgResp.ok())throw Error("Everyday room photography returned "+imgResp.status());
             if(await page.locator(".thi-everyday-hotspot").count()!==3)throw Error("Three interactive memories missing");
             await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-initial.png",fullPage:false});
