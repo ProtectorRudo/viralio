@@ -1,0 +1,206 @@
+/* PAREJA · ENCONTRALO (05/11)
+   Cinematic full-bleed photographic reveal, scoped to current Pareja model.
+   No box boundaries; photo is softly feathered into the scene background. */
+.thi-template-live.thi-theme-pareja[data-scene="light"] .thi-scene.pair-memory-light{
+  position:relative!important;isolation:isolate;display:flex!important;
+  align-items:center!important;justify-content:center!important;
+  width:100%!important;min-height:100svh!important;
+  overflow:hidden!important;padding:115px 0 115px!important;
+  background:
+    radial-gradient(ellipse 55% 46% at 10% 22%,rgba(109,39,51,.45),transparent 86%),
+    radial-gradient(ellipse 57% 46% at 95% 83%,rgba(63,25,64,.26),transparent 85%),
+    linear-gradient(158deg,#290e18 0%,#160a12 41%,#0a070d 100%)!important;
+  color:#f8e9e2!important;
+}
+.pair-memory-light .pml-atmosphere{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  opacity:.75;
+  background:
+    radial-gradient(1px 1px at 17% 19%,rgba(240,182,160,.65),transparent),
+    radial-gradient(2px 2px at 83% 65%,rgba(253,194,142,.53),transparent),
+    radial-gradient(1px 1px at 24% 80%,rgba(237,195,176,.58),transparent);
+}
+.pair-memory-light .pml-atmosphere:before{
+  content:"";position:absolute;width:min(116vw,730px);
+  aspect-ratio:1;border:1px solid rgba(223,167,152,.065);
+  left:50%;top:47%;border-radius:50%;transform:translate(-50%,-50%);
+}
+.pair-memory-light .pml-layout{
+  position:relative;z-index:2;display:flex;align-items:center;flex-direction:column;
+  width:100%;max-width:960px;margin:0 auto;
+}
+.pair-memory-light .pml-heading{
+  z-index:4;width:100%;text-align:center;position:relative;padding:0 14px;
+  pointer-events:none;
+}
+.pair-memory-light .pml-kicker{
+  color:#d7aeb1!important;text-transform:uppercase;
+  letter-spacing:.24em;font:600 10px/1.55 "DM Sans",Arial,sans-serif!important;
+  margin:0 auto 12px!important;
+}
+.thi-template-live.thi-theme-pareja[data-scene="light"] .pair-memory-light .pml-heading h2{
+  font:italic 400 clamp(62px,11vw,118px)/.98 "Instrument Serif",Georgia,serif!important;
+  letter-spacing:-.061em!important;text-align:center!important;
+  color:#fff3eb!important;margin:0 auto!important;
+  text-shadow:0 9px 32px rgba(32,6,16,.37);
+}
+.pair-memory-light .pml-stage{
+  --pml-x:50%;--pml-y:49%;--pml-explored:0;
+  position:relative!important;isolation:isolate;overflow:visible!important;
+  flex-shrink:0!important;display:block!important;
+  margin:-13px auto 0!important;padding:0!important;
+  width:100%!important;max-width:960px!important;
+  height:clamp(465px,61svh,660px)!important;min-height:0!important;
+  border:0!important;border-radius:0!important;cursor:crosshair;
+  background:transparent!important;color:inherit!important;
+  box-shadow:none!important;text-align:initial!important;
+  touch-action:none;-webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
+}
+.pair-memory-light .pml-stage:focus-visible{
+  outline:2px solid rgba(248,213,183,.86);outline-offset:-9px;
+}
+.pair-memory-light .pml-photo{
+  position:absolute;inset:0;display:block;pointer-events:none;
+  overflow:hidden;opacity:1;z-index:1;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 17%,#000 80%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 17%,#000 80%,transparent 100%);
+}
+.pair-memory-light .pml-photo img{
+  width:100%;height:100%;display:block;
+  object-fit:cover;object-position:center;
+  user-select:none;-webkit-user-drag:none;pointer-events:none;
+  transform:scale(1.035);transition:transform 1.8s ease,filter 1.6s ease;
+}
+.pair-memory-light .pml-photo-shadow{z-index:1;opacity:.9}
+.pair-memory-light .pml-photo-shadow img{
+  filter:brightness(.10) saturate(.69) contrast(1.16) sepia(.13);
+}
+.pair-memory-light .pml-photo-spot{
+  z-index:2;
+  -webkit-mask-image:
+    radial-gradient(circle clamp(160px,23vw,235px) at var(--pml-x) var(--pml-y),
+      #000 0%,rgba(0,0,0,.99) 16%,rgba(0,0,0,.93) 37%,rgba(0,0,0,.65) 64%,transparent 100%),
+    linear-gradient(180deg,transparent,#000 14%,#000 82%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    radial-gradient(circle clamp(160px,23vw,235px) at var(--pml-x) var(--pml-y),
+      #000 0%,rgba(0,0,0,.99) 16%,rgba(0,0,0,.93) 37%,rgba(0,0,0,.65) 64%,transparent 100%),
+    linear-gradient(180deg,transparent,#000 14%,#000 82%,transparent);
+  mask-composite:intersect;
+  opacity:1;transition:opacity 1.05s ease;
+}
+.pair-memory-light .pml-photo-spot img{
+  filter:brightness(1.13) saturate(.92) contrast(1.13) sepia(.09);
+}
+.pair-memory-light .pml-photo-finale{
+  z-index:3;opacity:0;transform:scale(.995);
+  transition:opacity 1.6s ease .25s,transform 1.6s ease;
+}
+.pair-memory-light .pml-photo-finale img{filter:brightness(.8) saturate(.90) sepia(.08)}
+.pair-memory-light.is-revealed .pml-photo-finale{opacity:1;transform:none}
+.pair-memory-light.is-revealed .pml-photo-spot{opacity:0}
+.pair-memory-light.is-revealed .pml-photo-finale img{transform:scale(1)}
+.pair-memory-light .pml-photo-color{
+  position:absolute;z-index:4;pointer-events:none;inset:0;opacity:.62;
+  background:
+    radial-gradient(ellipse 32% 29% at 54% 43%,rgba(255,197,127,.16),transparent 84%),
+    linear-gradient(180deg,rgba(19,9,17,.45) 0%,transparent 21%,transparent 69%,rgba(16,8,16,.50) 96%);
+  mix-blend-mode:screen;
+}
+.pair-memory-light .pml-beam{
+  position:absolute;z-index:5;pointer-events:none;
+  width:clamp(320px,50vw,510px);height:clamp(320px,50vw,510px);
+  left:var(--pml-x);top:var(--pml-y);border-radius:50%;
+  transform:translate(-50%,-50%);mix-blend-mode:screen;
+  background:
+    radial-gradient(circle,
+      rgba(255,251,227,.15) 0%,rgba(255,226,179,.12) 21%,
+      rgba(242,167,126,.08) 39%,rgba(201,113,109,.027) 60%,transparent 77%);
+  filter:blur(9px);opacity:calc(.64 + var(--pml-explored) * .25);
+  transition:opacity .7s ease;
+}
+.pair-memory-light.is-revealed .pml-beam{opacity:0}
+.pair-memory-light .pml-dust{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.65;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 29%,#000 76%,transparent 99%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 29%,#000 76%,transparent 99%)}
+.pair-memory-light .pml-dust i{
+  --dx:calc(mod(var(--pml-i)*31,93)*1%);
+  position:absolute;left:calc(7% + var(--pml-i)*5.35%);top:calc(19% + mod(var(--pml-i)*13,58)*1%);
+  width:2px;height:2px;border-radius:50%;background:#ffdfb5;
+  box-shadow:0 0 11px rgba(255,208,155,.89);
+  opacity:.45;animation:pml-float calc(4s + var(--pml-i)*.14s) ease-in-out infinite alternate;
+}
+@keyframes pml-float{from{transform:translateY(8px);opacity:.2}to{transform:translateY(-16px);opacity:.75}}
+.pair-memory-light .pml-instruction{
+  position:absolute;z-index:8;pointer-events:none;left:6%;right:6%;bottom:10%;
+  text-align:center;display:flex;flex-direction:column;align-items:center;gap:15px;
+  font:600 10px/1.55 "DM Sans",Arial,sans-serif;
+  letter-spacing:.22em;text-transform:uppercase;color:#e6cbc7;
+  text-shadow:0 2px 13px rgba(0,0,0,.95);
+}
+.pair-memory-light .pml-instruction i{
+  width:45px;height:1px;display:block;
+  background:linear-gradient(90deg,transparent,#f7dfc0 45%,transparent);
+  box-shadow:0 0 6px rgba(247,201,158,.7);
+}
+.pair-memory-light .pml-reveal-message{
+  display:block;position:absolute;z-index:7;left:10%;right:10%;bottom:24%;
+  opacity:0;transform:translateY(19px);pointer-events:none;text-align:center;
+  font:italic 400 clamp(23px,3.4vw,37px)/1.25 "Instrument Serif",Georgia,serif;
+  color:#fff1e4;text-shadow:0 4px 17px #16090d,0 3px 36px #11070c;
+  transition:opacity .9s ease 1s,transform .9s ease 1s;
+}
+.pair-memory-light.is-revealed .pml-reveal-message{opacity:1;transform:translateY(0)}
+.pair-memory-light .pml-continue{
+  z-index:10;display:flex;align-items:center;justify-content:center;gap:20px;
+  min-height:54px;width:min(320px,80vw);
+  margin:-9px auto 10px;padding:12px 25px;border-radius:999px;
+  border:1px solid rgba(234,167,158,.58);
+  background:linear-gradient(130deg,rgba(122,54,74,.77),rgba(65,29,49,.78));
+  color:#fff1e7;font:normal 23px/1.2 "Instrument Serif",Georgia,serif;
+  box-shadow:0 13px 28px rgba(0,0,0,.26),inset 0 1px rgba(255,221,207,.19);
+  cursor:pointer;animation:pml-button-in .75s ease both;
+}
+.pair-memory-light .pml-continue b{font-weight:400}
+@keyframes pml-button-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.pair-memory-light .pml-continue:focus-visible{outline:2px solid #f3d4ad;outline-offset:4px}
+@media(max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="light"] .thi-scene.pair-memory-light{
+   padding:112px 0 102px!important;min-height:100svh!important;
+ }
+ .pair-memory-light .pml-heading{padding:0 12px}
+ .pair-memory-light .pml-kicker{font-size:9px;letter-spacing:.19em}
+ .thi-template-live.thi-theme-pareja[data-scene="light"] .pair-memory-light .pml-heading h2{
+   font-size:clamp(68px,17vw,97px)!important;line-height:1.04!important;
+ }
+ .pair-memory-light .pml-stage{
+   margin:-8px auto 0!important;
+   width:100vw!important;max-width:100vw!important;
+   height:clamp(400px,52svh,550px)!important;
+ }
+ .pair-memory-light .pml-photo-spot{
+   -webkit-mask-image:
+     radial-gradient(circle 174px at var(--pml-x) var(--pml-y),
+       #000 0%,rgba(0,0,0,.99) 18%,rgba(0,0,0,.91) 36%,rgba(0,0,0,.55) 65%,transparent 100%),
+     linear-gradient(180deg,transparent,#000 15%,#000 82%,transparent);
+   mask-image:
+     radial-gradient(circle 174px at var(--pml-x) var(--pml-y),
+       #000 0%,rgba(0,0,0,.99) 18%,rgba(0,0,0,.91) 36%,rgba(0,0,0,.55) 65%,transparent 100%),
+     linear-gradient(180deg,transparent,#000 15%,#000 82%,transparent);
+ }
+ .pair-memory-light .pml-instruction{bottom:10%;font-size:9px;letter-spacing:.16em}
+ .pair-memory-light .pml-reveal-message{font-size:clamp(22px,6vw,28px);left:13%;right:13%;bottom:27%}
+ .pair-memory-light .pml-continue{margin:-3px auto 18px;min-height:51px;font-size:22px}
+}
+@media(max-width:380px){
+ .thi-template-live.thi-theme-pareja[data-scene="light"] .pair-memory-light .pml-heading h2{
+   font-size:clamp(61px,17vw,72px)!important;
+ }
+ .pair-memory-light .pml-stage{height:clamp(380px,52svh,500px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .pair-memory-light *, .pair-memory-light *::before,.pair-memory-light *::after{
+   animation:none!important;transition-duration:.01ms!important;
+ }
+}
