@@ -254,3 +254,40 @@
     mask-composite:intersect;
   }
 }
+
+
+/* Final edge correction. A vertical radius close to half the stage height
+   makes the photographic layers reach 0 alpha BEFORE the stage boundary. */
+.pair-memory-light .pml-photo-shadow,
+.pair-memory-light .pml-photo-finale{
+  -webkit-mask-image:radial-gradient(ellipse 54% 51% at 50% 49%,
+    #000 0 40%,rgba(0,0,0,.96) 53%,rgba(0,0,0,.50) 75%,transparent 98%);
+  mask-image:radial-gradient(ellipse 54% 51% at 50% 49%,
+    #000 0 40%,rgba(0,0,0,.96) 53%,rgba(0,0,0,.50) 75%,transparent 98%);
+}
+.pair-memory-light .pml-photo-spot{
+  -webkit-mask-image:
+    radial-gradient(circle clamp(160px,23vw,235px) at var(--pml-x) var(--pml-y),
+      #000 0%,rgba(0,0,0,.98) 18%,rgba(0,0,0,.91) 39%,rgba(0,0,0,.60) 65%,transparent 100%),
+    radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    radial-gradient(circle clamp(160px,23vw,235px) at var(--pml-x) var(--pml-y),
+      #000 0%,rgba(0,0,0,.98) 18%,rgba(0,0,0,.91) 39%,rgba(0,0,0,.60) 65%,transparent 100%),
+    radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+  mask-composite:intersect;
+}
+@media(max-width:650px){
+  .pair-memory-light .pml-photo-spot{
+    -webkit-mask-image:
+      radial-gradient(circle 174px at var(--pml-x) var(--pml-y),
+        #000 0%,rgba(0,0,0,.98) 18%,rgba(0,0,0,.91) 39%,rgba(0,0,0,.55) 65%,transparent 100%),
+      radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+    -webkit-mask-composite:source-in;
+    mask-image:
+      radial-gradient(circle 174px at var(--pml-x) var(--pml-y),
+        #000 0%,rgba(0,0,0,.98) 18%,rgba(0,0,0,.91) 39%,rgba(0,0,0,.55) 65%,transparent 100%),
+      radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+    mask-composite:intersect;
+  }
+}
