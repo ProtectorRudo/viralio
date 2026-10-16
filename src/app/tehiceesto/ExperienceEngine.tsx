@@ -34,6 +34,7 @@ import CoupleGiftIntro from "./CoupleGiftIntro";
 import PairCinematicUmbral from "./PairCinematicUmbral";
 import PairVoicePremium from "./PairVoicePremium";
 import PairMemoryLight from "./PairMemoryLight";
+import PairHeartConstellation from "./PairHeartConstellation";
 
 export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType};
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
@@ -382,7 +383,26 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           {lightRevealed&&<button data-action="advance" className="thi-bday-light-next" onClick={next}>{token(copy.light.cta)} →</button>}
         </section>
         :<section className={`thi-scene thi-scene-light thi-scene-rich ${experience.slug==="pareja"?"thi-pair-light-scene":""}`}><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><LightReveal accent={experience.accent} kicker={token(copy.light.kicker)} title={token(copy.light.title)} secret={token(copy.light.secret)} hint={token(copy.light.hint)} revealedLabel={token(copy.light.revealedLabel)} ariaLabel={token(copy.light.ariaLabel)} revealed={lightRevealed} cinematic={experience.slug==="pareja"} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className={`thi-primary ${experience.slug==="pareja"?"thi-pair-light-continue":""}`} onClick={next}>{token(copy.light.cta)}</button>}</section>;
-      case"stars":return experience.slug==="hijos" ? <section className="thi-scene thi-child-stars thi-scene-rich">
+      case"stars":
+        if(experience.slug==="pareja")return <PairHeartConstellation
+          key={runId+"-heart-constellation"}
+          kicker={token(copy.stars.kicker)}
+          title={copy.stars.title.map(line=>token(line))}
+          lines={starLines.map(line=>token(line))}
+          opened={stars}
+          lastStar={lastStar}
+          giver={token("{giver}")}
+          cta={token(copy.stars.cta)}
+          onStar={index=>{
+            if(stars.includes(index)||index!==stars.length)return;
+            setStars(previous=>previous.includes(index)?previous:[...previous,index]);
+            setLastStar(index);
+            haptic([7,18,9]);
+            playFx("chime");
+          }}
+          onContinue={next}
+        />;
+        return experience.slug==="hijos" ? <section className="thi-scene thi-child-stars thi-scene-rich">
           <div className="thi-child-sky-dust" aria-hidden="true"/><div className={`thi-child-meteor-shower ${stars.length===starLines.length?"is-celebrating":""}`} aria-hidden="true">{Array.from({length:23},(_,i)=><i key={i} style={{"--meteor-i":i,"--meteor-delay":`${(i*0.73)%8}s`,"--meteor-x":`${(i*43+11)%100}%`,"--meteor-length":`${40+(i%4)*19}px`} as CSSProperties}/>)}</div>
           <p className="thi-kicker">{token(copy.stars.kicker)}</p>
           <h2>{titleLines(copy.stars.title)}</h2>

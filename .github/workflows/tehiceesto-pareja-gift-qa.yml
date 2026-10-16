@@ -14,6 +14,8 @@ on:
       - "src/app/tehiceesto/PairVoicePremium.css"
       - "src/app/tehiceesto/PairMemoryLight.tsx"
       - "src/app/tehiceesto/PairMemoryLight.css"
+      - "src/app/tehiceesto/PairHeartConstellation.tsx"
+      - "src/app/tehiceesto/PairHeartConstellation.css"
   workflow_dispatch:
 
 permissions:
@@ -189,6 +191,39 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-light-after.png",fullPage:false});
             await page.locator(".pml-continue").click();
             await page.locator("main.thi-experience[data-scene='stars']").waitFor({timeout:8000});
+            await page.locator(".pair-heart-cinema[data-pair-heart='cinematic-v1']").waitFor({timeout:5000});
+            await page.waitForTimeout(1450);
+            const cosmic=page.locator(".pair-heart-cinema");
+            const headline=page.locator(".phc-heading h2");
+            if(!(await headline.isVisible()))throw Error("Heart headline not visible");
+            if(await page.locator(".phc-star").count()!==5)throw Error("Heart must have exactly five stars");
+            if(await page.locator(".phc-cta").count())throw Error("Heart CTA appears before five discoveries");
+            const initialCount=await page.locator(".phc-story small").innerText();
+            if(!initialCount.includes("00")||!initialCount.includes("05"))throw Error("Initial heart progress invalid: "+initialCount);
+            await page.screenshot({path:"gift-visual-qa/"+name+"-heart-initial.png",fullPage:false});
+            for(let i=0;i<5;i++){
+              const activeStar=page.locator(".phc-star.is-active");
+              if(await activeStar.count()!==1)throw Error("Expected one active star at "+i);
+              await activeStar.click();
+              await page.locator(".phc-star.is-found").nth(i).waitFor({timeout:3000});
+              const narrative=await page.locator(".phc-story blockquote").innerText();
+              if(!narrative.trim())throw Error("Personalized message missing at star "+i);
+            }
+            await page.locator(".pair-heart-cinema.is-complete").waitFor({timeout:3500});
+            await page.waitForTimeout(1580);
+            if(!(await page.locator(".phc-cta").isVisible()))throw Error("Heart continue missing");
+            if(!(await page.locator(".phc-finale").isVisible()))throw Error("Heart final dedication missing");
+            const ctaOverlap=await page.evaluate(()=>{
+              const starText=document.querySelector(".phc-story blockquote");
+              const conversion=document.querySelector("a.floating-create-cta.floating-whatsapp--experience");
+              if(!starText||!conversion)return false;
+              const a=starText.getBoundingClientRect(),b=conversion.getBoundingClientRect();
+              return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+            });
+            if(ctaOverlap)throw Error("Conversion CTA overlaps heart dedication on "+name);
+            await page.screenshot({path:"gift-visual-qa/"+name+"-heart-final.png",fullPage:false});
+            await page.locator(".phc-cta").click();
+            await page.locator("main.thi-experience[data-scene='everyday']").waitFor({timeout:8000});
             if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
             console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
             await context.close();

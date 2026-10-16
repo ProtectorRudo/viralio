@@ -1,0 +1,204 @@
+/* Pareja / LO QUE ELIJO — scene 06/11; cinematic heart with five real discoveries. */
+.thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-scene.pair-heart-cinema {
+  position:relative!important;isolation:isolate;overflow:hidden!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:center!important;width:100%!important;min-height:100svh!important;
+  padding:115px 18px 128px!important;color:#fff1e7!important;
+  background:radial-gradient(ellipse 65% 43% at 0% 24%,rgba(148,43,57,.47),transparent 90%),
+    radial-gradient(ellipse 59% 45% at 109% 80%,rgba(92,33,79,.49),transparent 92%),
+    radial-gradient(ellipse 63% 56% at 52% 53%,rgba(115,41,62,.19),transparent 84%),
+    linear-gradient(162deg,#270c16 0%,#160710 51%,#140819 100%)!important;
+}
+.pair-heart-cinema .phc-sky {
+  position:absolute;z-index:0;inset:0;pointer-events:none;overflow:hidden;
+  background:radial-gradient(2px 2px at 8% 21%,rgba(255,221,192,.76),transparent),
+    radial-gradient(2px 2px at 94% 14%,rgba(255,218,180,.73),transparent),
+    radial-gradient(2px 2px at 88% 79%,rgba(255,205,178,.73),transparent);
+}
+.pair-heart-cinema .phc-nebula {position:absolute;width:75%;height:49%;border-radius:50%;
+  filter:blur(38px);mix-blend-mode:screen;opacity:.36;animation:phc-cloud 14s ease-in-out infinite alternate}
+.pair-heart-cinema .phc-nebula-left{left:-42%;top:21%;
+ background:radial-gradient(ellipse at 66% 45%,rgba(211,72,88,.64),rgba(115,30,48,.38) 43%,transparent 72%)}
+.pair-heart-cinema .phc-nebula-right{width:85%;height:47%;right:-56%;top:46%;animation-delay:-7s;
+ background:radial-gradient(ellipse at 31% 51%,rgba(192,71,87,.56),rgba(112,27,75,.33) 48%,transparent 75%)}
+.pair-heart-cinema .phc-nebula-bottom{width:92%;height:27%;left:5%;bottom:-15%;animation-delay:-4s;
+ background:radial-gradient(ellipse at 50% 50%,rgba(188,67,77,.36),transparent 76%)}
+@keyframes phc-cloud{from{transform:scale(.96) translateY(-9px)}to{transform:scale(1.07) translateY(9px)}}
+.pair-heart-cinema .phc-background-star{position:absolute;width:2px;height:2px;display:block;border-radius:50%;
+ background:#ffe8d8;box-shadow:0 0 6px rgba(255,189,154,.95),0 0 18px rgba(238,138,135,.27);
+ animation:phc-twinkle 4.2s ease-in-out infinite alternate}
+.pair-heart-cinema .phc-background-star.is-bright{width:3px;height:3px;
+ box-shadow:0 0 8px #fff3d1,0 0 24px rgba(245,178,146,.65)}
+@keyframes phc-twinkle{from{transform:scale(.75);filter:brightness(.7)}to{transform:scale(1.34);filter:brightness(1.4)}}
+.pair-heart-cinema .phc-layout{position:relative;z-index:2;width:min(100%,750px);margin:auto;
+ display:flex;flex-direction:column;align-items:center;text-align:center}
+.pair-heart-cinema .phc-heading{position:relative;z-index:3;width:100%;max-width:730px;margin:0 auto 10px}
+.pair-heart-cinema .phc-eyebrow{margin:0 auto 10px!important;
+ font:600 10px/1.5 "DM Sans",Arial,sans-serif!important;
+ letter-spacing:.27em;text-transform:uppercase;color:#eeb6ac!important}
+.thi-template-live.thi-theme-pareja[data-scene="stars"] .pair-heart-cinema .phc-heading h2{
+ font:italic 400 clamp(54px,7.9vw,83px)/.99 "Instrument Serif",Georgia,serif!important;
+ text-align:center!important;color:#fff1e8!important;
+ letter-spacing:-.048em!important;text-wrap:balance;
+ margin:0 auto!important;max-width:680px!important;
+ text-shadow:0 5px 28px rgba(246,142,141,.13)}
+.pair-heart-cinema .phc-heading h2 span{display:block}
+.pair-heart-cinema .phc-skyline{position:relative;isolation:isolate;flex-shrink:0;
+ width:min(500px,86vw);aspect-ratio:400/340;margin:3px auto -3px}
+.pair-heart-cinema .phc-skyline::before,.pair-heart-cinema .phc-skyline::after{
+ content:"";position:absolute;pointer-events:none;z-index:0;
+ border-radius:50%;border:1px solid rgba(245,177,155,.14);
+ inset:14% -2% 14% -2%;transform:rotate(-14deg)}
+.pair-heart-cinema .phc-skyline::after{inset:21% -1% 17% -1%;
+ border:1px dashed rgba(255,184,163,.1);transform:rotate(17deg)}
+.pair-heart-cinema .phc-aura{position:absolute;inset:10%;z-index:0;pointer-events:none;
+ background:radial-gradient(ellipse at 50% 46%,rgba(245,140,134,.11),rgba(137,39,63,.11) 39%,transparent 70%);
+ opacity:.75;filter:blur(19px);transition:opacity 1.3s,filter 1.3s}
+.pair-heart-cinema.is-complete .phc-aura{opacity:1;filter:blur(25px);animation:phc-aura-pulse 3.3s ease-in-out infinite alternate}
+@keyframes phc-aura-pulse{to{transform:scale(1.07);filter:blur(30px)}}
+.pair-heart-cinema .phc-illustration{position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible;pointer-events:none}
+.pair-heart-cinema .phc-orbit{fill:none;stroke:rgba(233,154,149,.18);stroke-width:.7}
+.pair-heart-cinema .phc-orbit-two{stroke:rgba(238,166,163,.11);stroke-dasharray:2.2 6}
+.pair-heart-cinema .phc-guide{fill:none;stroke:rgba(250,191,174,.16);stroke-dasharray:3.5 6;stroke-width:1.1}
+.pair-heart-cinema .phc-trace,.pair-heart-cinema .phc-glow-path{
+ fill:none;stroke:url(#phc-gold-trace);stroke-linecap:round;stroke-linejoin:round;
+ stroke-dasharray:100;transition:stroke-dashoffset 1.28s cubic-bezier(.19,.68,.21,1)}
+.pair-heart-cinema .phc-glow-path{stroke-width:7;opacity:.66;filter:blur(5px) drop-shadow(0 0 12px rgba(244,142,105,.75))}
+.pair-heart-cinema .phc-trace{stroke-width:2.6;
+ filter:drop-shadow(0 0 3px rgba(255,217,175,.8)) drop-shadow(0 0 10px rgba(237,152,119,.55))}
+.pair-heart-cinema .phc-final-shimmer{fill:none;stroke:rgba(255,239,205,.6);stroke-width:1.3;
+ stroke-dasharray:1 17;filter:drop-shadow(0 0 5px rgba(255,222,179,.68));
+ animation:phc-shimmer 12s linear infinite}
+@keyframes phc-shimmer{to{stroke-dashoffset:-360}}
+.pair-heart-cinema .phc-star{position:absolute;z-index:5;display:grid;place-items:center;
+ width:52px;height:52px;padding:0;border:0;border-radius:50%;
+ transform:translate(-50%,-50%);cursor:pointer;touch-action:manipulation;
+ background:transparent!important;-webkit-tap-highlight-color:transparent;transition:filter .4s}
+.pair-heart-cinema .phc-star:focus-visible{outline:2px solid #fce4be;outline-offset:2px}
+.pair-heart-cinema .phc-star:disabled{cursor:default}
+.pair-heart-cinema .phc-star-light{width:7px;height:7px;border-radius:50%;display:block;
+ background:#ad7275;box-shadow:0 0 7px rgba(240,173,151,.24);
+ transition:background .6s,box-shadow .6s,transform .6s}
+.pair-heart-cinema .phc-star.is-found .phc-star-light,
+.pair-heart-cinema .phc-star.is-active .phc-star-light{
+ background:#fff6df;box-shadow:0 0 10px #fff0d2,0 0 23px rgba(255,192,128,.96),
+ 0 0 43px rgba(253,149,132,.68)}
+.pair-heart-cinema .phc-star.is-active .phc-star-light{
+ transform:scale(1.3);animation:phc-next-star 1.9s ease-in-out infinite alternate}
+@keyframes phc-next-star{to{transform:scale(1.9);box-shadow:0 0 9px #fff6d7,0 0 24px #ffb897,0 0 53px rgba(255,140,123,.8)}}
+.pair-heart-cinema .phc-star-ring{position:absolute;inset:12px;border-radius:50%;
+ border:1px solid rgba(255,198,160,0);transform:scale(.5);
+ transition:transform .65s,border-color .65s}
+.pair-heart-cinema .phc-star.is-found .phc-star-ring{border-color:rgba(255,223,181,.28);transform:scale(1)}
+.pair-heart-cinema .phc-star.is-active .phc-star-ring{
+ border-color:rgba(255,212,168,.48);transform:scale(1);
+ animation:phc-ring 2.5s ease-in-out infinite}
+@keyframes phc-ring{50%{transform:scale(1.28);opacity:.45}}
+.pair-heart-cinema .phc-star-cross{position:absolute;opacity:0;pointer-events:none;
+ width:28px;height:28px;background:
+ linear-gradient(90deg,transparent 45%,rgba(255,235,197,.9) 50%,transparent 55%),
+ linear-gradient(0deg,transparent 45%,rgba(255,235,197,.9) 50%,transparent 55%);
+ -webkit-mask-image:radial-gradient(circle,#000 0%,transparent 74%);
+ mask-image:radial-gradient(circle,#000 0%,transparent 74%);transition:opacity .65s}
+.pair-heart-cinema .phc-star.is-found .phc-star-cross,
+.pair-heart-cinema .phc-star.is-active .phc-star-cross{opacity:.8}
+.pair-heart-cinema.is-complete .phc-star-light{animation:phc-complete-pulse 2.8s ease-in-out infinite alternate}
+@keyframes phc-complete-pulse{to{transform:scale(1.45);box-shadow:0 0 12px #fff5d5,0 0 40px rgba(252,169,127,.86)}}
+.pair-heart-cinema .phc-sparkles,.pair-heart-cinema .phc-meteor-shower{
+ position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none}
+.pair-heart-cinema .phc-sparkles i{position:absolute;width:2px;height:2px;border-radius:50%;opacity:.55;
+ background:#ffd3a7;box-shadow:0 0 6px rgba(255,211,171,.72);
+ animation:phc-speck 3.6s ease-in-out infinite alternate}
+@keyframes phc-speck{to{opacity:.08;transform:translateY(-10px)}}
+.pair-heart-cinema .phc-meteor-shower{opacity:0;transition:opacity 1s}
+.pair-heart-cinema.is-complete .phc-meteor-shower{opacity:.95}
+.pair-heart-cinema .phc-meteor-shower i{position:absolute;top:-25%;width:2px;height:32px;opacity:0;
+ border-radius:99px;transform:rotate(26deg);
+ background:linear-gradient(180deg,transparent,rgba(255,214,187,.27),#ffeacc);
+ animation:phc-meteor 3.5s linear infinite}
+@keyframes phc-meteor{0%{opacity:0;transform:translate3d(20px,-20px,0) rotate(26deg)}
+ 24%{opacity:.6}70%{opacity:.55}
+ 100%{opacity:0;transform:translate3d(-45px,440px,0) rotate(26deg)}}
+.pair-heart-cinema .phc-breath{position:absolute;inset:13%;z-index:0;pointer-events:none;
+ border-radius:50%;background:radial-gradient(circle,rgba(247,160,150,.10),transparent 67%);
+ opacity:0;transition:opacity 1.6s}
+.pair-heart-cinema.is-complete .phc-breath{opacity:1;animation:phc-aura-pulse 3.2s ease-in-out infinite alternate}
+.pair-heart-cinema .phc-story{position:relative;z-index:4;max-width:640px;width:100%;min-height:110px;margin:0 auto}
+.pair-heart-cinema .phc-story>small{display:block;letter-spacing:.32em;color:#dab7ac;
+ font:500 11px/1.2 "DM Sans",Arial,sans-serif}
+.pair-heart-cinema .phc-story blockquote{
+ margin:20px auto 0;padding:0;border:0;color:#fff1e6;
+ font:italic 400 clamp(30px,4.5vw,45px)/1.14 "Instrument Serif",Georgia,serif!important;
+ text-align:center;text-wrap:balance;letter-spacing:-.025em;
+ text-shadow:0 6px 20px rgba(28,7,17,.26);
+ animation:phc-story-enter .65s cubic-bezier(.16,.7,.18,1) both}
+@keyframes phc-story-enter{from{opacity:0;transform:translateY(11px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+.pair-heart-cinema .phc-instruction{margin:17px auto 0;
+ font:500 10px/1.6 "DM Sans",Arial,sans-serif!important;
+ color:rgba(229,179,163,.8);letter-spacing:.18em;text-transform:uppercase}
+.pair-heart-cinema .phc-finale{margin:21px auto 0;animation:phc-story-enter 1s ease both}
+.pair-heart-cinema .phc-finale strong{display:block;font:italic 400 29px/1.15 "Instrument Serif",Georgia,serif;color:#edb8a8}
+.pair-heart-cinema .phc-finale p{margin:9px auto 0;font:500 9px/1.55 "DM Sans",Arial,sans-serif;
+ text-transform:uppercase;letter-spacing:.16em;color:#d8a8a0;text-wrap:balance}
+.pair-heart-cinema .phc-cta{z-index:4;position:relative;display:flex;align-items:center;
+ justify-content:center;gap:24px;width:min(360px,84vw);min-height:57px;
+ margin:25px auto 0;padding:12px 30px;border-radius:999px;
+ border:1px solid rgba(247,185,163,.76);cursor:pointer;color:#fff5e8;
+ background:linear-gradient(120deg,rgba(104,32,57,.86),rgba(54,18,39,.95))!important;
+ box-shadow:0 0 22px rgba(234,123,116,.13),inset 0 1px rgba(255,222,204,.29),0 12px 32px rgba(7,1,12,.36);
+ font:400 25px/1.2 "Instrument Serif",Georgia,serif;
+ animation:phc-story-enter .75s ease both;transition:box-shadow .25s,transform .25s}
+.pair-heart-cinema .phc-cta:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(234,123,116,.25),0 13px 32px rgba(7,1,12,.46)}
+.pair-heart-cinema .phc-cta b{font-weight:400;color:#f1ba9e}
+.pair-heart-cinema .phc-cta:focus-visible{outline:2px solid #fff0d2;outline-offset:4px}
+@media(max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-scene.pair-heart-cinema{
+   padding:112px 17px 120px!important;min-height:100svh!important}
+ .pair-heart-cinema .phc-heading{margin-bottom:1px}
+ .pair-heart-cinema .phc-eyebrow{font-size:9px;letter-spacing:.18em;margin-bottom:8px!important}
+ .thi-template-live.thi-theme-pareja[data-scene="stars"] .pair-heart-cinema .phc-heading h2{
+   font-size:clamp(44px,10.8vw,67px)!important;line-height:1.01!important;
+   max-width:calc(100vw - 32px)!important}
+ .pair-heart-cinema .phc-skyline{width:min(340px,88vw);margin:5px auto -2px}
+ .pair-heart-cinema .phc-story{min-height:91px}
+ .pair-heart-cinema .phc-story>small{font-size:10px}
+ .pair-heart-cinema .phc-story blockquote{
+   font-size:clamp(25px,6.8vw,35px)!important;line-height:1.13!important;
+   margin:11px auto 0;max-width:calc(100vw - 38px)}
+ .pair-heart-cinema .phc-finale{margin:14px auto 0}
+ .pair-heart-cinema .phc-finale strong{font-size:25px}
+ .pair-heart-cinema .phc-finale p{font-size:8px;max-width:300px}
+ .pair-heart-cinema .phc-instruction{font-size:9px;margin-top:12px}
+ .pair-heart-cinema .phc-cta{min-height:54px;margin-top:21px;font-size:24px;width:min(300px,80vw)}
+}
+@media(max-width:380px){
+ .thi-template-live.thi-theme-pareja[data-scene="stars"] .pair-heart-cinema .phc-heading h2{
+   font-size:clamp(41px,10.7vw,52px)!important}
+ .pair-heart-cinema .phc-skyline{width:87vw}
+ .pair-heart-cinema .phc-story blockquote{font-size:clamp(23px,6.3vw,29px)!important}
+}
+@media(max-height:745px) and (max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="stars"] .thi-scene.pair-heart-cinema{
+   padding-top:96px!important;padding-bottom:105px!important}
+ .pair-heart-cinema .phc-skyline{width:min(306px,82vw)}
+ .pair-heart-cinema .phc-story blockquote{font-size:26px!important}
+ .pair-heart-cinema .phc-finale{margin-top:11px}
+ .pair-heart-cinema .phc-cta{margin-top:14px}
+}
+/* Only on 06/11, relocate floating purchase CTA away from the actual dedication. */
+@media(max-width:650px){
+ .thi-root:has(.thi-demo-page .thi-template-live[data-scene="stars"] .pair-heart-cinema)>a.floating-create-cta.floating-whatsapp--experience{
+   position:fixed!important;top:108px!important;bottom:auto!important;
+   right:11px!important;left:auto!important;max-width:46px!important;
+   width:46px!important;min-width:46px!important;min-height:46px!important;height:46px!important;
+   border-radius:50%!important;padding:5px!important;display:flex!important;
+   align-items:center!important;justify-content:center!important}
+ .thi-root:has(.thi-demo-page .thi-template-live[data-scene="stars"] .pair-heart-cinema)>a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-copy,
+ .thi-root:has(.thi-demo-page .thi-template-live[data-scene="stars"] .pair-heart-cinema)>a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-arrow{display:none!important}
+ .thi-root:has(.thi-demo-page .thi-template-live[data-scene="stars"] .pair-heart-cinema)>a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-icon{
+   width:32px!important;height:32px!important;margin:0!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .pair-heart-cinema *, .pair-heart-cinema *::before, .pair-heart-cinema *::after{
+   animation:none!important;transition-duration:.01ms!important}
+}
