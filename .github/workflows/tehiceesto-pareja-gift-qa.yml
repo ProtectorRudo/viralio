@@ -151,6 +151,16 @@ jobs:
             const photo=page.locator(".pml-photo-spot img");
             if(!(await stage.isVisible())||!(await photo.isVisible()))throw Error("Cinematic light photograph missing");
             if(await page.locator(".pml-continue").count())throw Error("Light CTA shown before exploration");
+            const initialLight=await page.evaluate(()=>{
+              const spot=document.querySelector(".pml-photo-spot");
+              const torch=document.querySelector(".pml-beam");
+              const shadow=document.querySelector(".pml-photo-shadow img");
+              return {spot:Number(getComputedStyle(spot).opacity),torch:Number(getComputedStyle(torch).opacity),filter:getComputedStyle(shadow).filter};
+            });
+            if(initialLight.spot>.03||initialLight.torch>.03)
+              throw Error("Memory picture visible before touch: "+JSON.stringify(initialLight));
+            if(!initialLight.filter.includes("brightness(0.017)"))
+              throw Error("Base photo not sufficiently shadowed: "+JSON.stringify(initialLight));
             const photoLoaded=await photo.evaluate(el=>el.complete && el.naturalWidth>0);
             if(!photoLoaded)console.log("NOTE:",name,"external image inaccessible in CI, verify fallback on production");
             const stageBg=await stage.evaluate(el=>getComputedStyle(el).backgroundColor);
@@ -160,6 +170,10 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-light-before.png",fullPage:false});
             await page.mouse.move(stageBox.x+stageBox.width*.2,stageBox.y+stageBox.height*.43);
             await page.mouse.down();
+            await page.locator(".pml-stage.has-interacted").waitFor({timeout:3000});
+            await page.waitForTimeout(550);
+            const litOpacity=await page.locator(".pml-photo-spot").evaluate(el=>Number(getComputedStyle(el).opacity));
+            if(litOpacity<.8)throw Error("Flashlight did not turn on after intentional touch: "+litOpacity);
             for(let row=0;row<4;row++){
               const fromX=stageBox.x+stageBox.width*(row%2===0?.16:.84);
               const toX=stageBox.x+stageBox.width*(row%2===0?.84:.16);

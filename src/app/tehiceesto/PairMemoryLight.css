@@ -291,3 +291,72 @@
     mask-composite:intersect;
   }
 }
+
+
+/* PAREJA · LATENT MEMORY / deep black pre-exploration, Oct 2026.
+   Keep the memory genuinely hidden until the first intentional gesture.
+   On first contact the warm light fades in; full reveal is unchanged. */
+.pair-memory-light:not(.is-revealed) .pml-photo-shadow{
+  opacity:.68!important;
+}
+.pair-memory-light:not(.is-revealed) .pml-photo-shadow img{
+  filter:brightness(.017) saturate(.23) contrast(1.18) sepia(.12)!important;
+}
+/* The photo must NOT be visible through the default centered torch on load. */
+.pair-memory-light:not(.is-revealed) .pml-photo-spot {
+  opacity:0!important;
+  transition:opacity .42s ease!important;
+}
+.pair-memory-light:not(.is-revealed) .pml-stage.has-interacted .pml-photo-spot {
+  opacity:1!important;
+}
+.pair-memory-light:not(.is-revealed) .pml-beam {
+  opacity:0!important;
+  transition:opacity .43s ease!important;
+}
+.pair-memory-light:not(.is-revealed) .pml-stage.has-interacted .pml-beam {
+  opacity:calc(.48 + var(--pml-explored) * .24)!important;
+}
+.pair-memory-light:not(.is-revealed) .pml-photo-color {
+  opacity:0!important;
+  transition:opacity .48s ease!important;
+}
+.pair-memory-light:not(.is-revealed) .pml-stage.has-interacted .pml-photo-color {
+  opacity:.65!important;
+}
+/* Refine the real spotlight; its warm core is now tighter and its feather darker. */
+.pair-memory-light:not(.is-revealed) .pml-photo-spot{
+  -webkit-mask-image:
+    radial-gradient(circle 181px at var(--pml-x) var(--pml-y),
+      #000 0%,rgba(0,0,0,.98) 15%,rgba(0,0,0,.89) 32%,
+      rgba(0,0,0,.38) 62%,transparent 92%),
+    radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    radial-gradient(circle 181px at var(--pml-x) var(--pml-y),
+      #000 0%,rgba(0,0,0,.98) 15%,rgba(0,0,0,.89) 32%,
+      rgba(0,0,0,.38) 62%,transparent 92%),
+    radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+  mask-composite:intersect;
+}
+.pair-memory-light:not(.is-revealed) .pml-photo-spot img{
+  filter:brightness(.93) saturate(1.06) contrast(1.12) sepia(.16)!important;
+}
+.pair-memory-light.is-revealed .pml-photo-spot,
+.pair-memory-light.is-revealed .pml-beam{opacity:0!important;}
+@media(max-width:650px){
+  .pair-memory-light:not(.is-revealed) .pml-photo-spot{
+    -webkit-mask-image:
+      radial-gradient(circle 138px at var(--pml-x) var(--pml-y),
+        #000 0%,rgba(0,0,0,.97) 16%,rgba(0,0,0,.87) 33%,
+        rgba(0,0,0,.34) 64%,transparent 92%),
+      radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+    -webkit-mask-composite:source-in;
+    mask-image:
+      radial-gradient(circle 138px at var(--pml-x) var(--pml-y),
+        #000 0%,rgba(0,0,0,.97) 16%,rgba(0,0,0,.87) 33%,
+        rgba(0,0,0,.34) 64%,transparent 92%),
+      radial-gradient(ellipse 54% 51% at 50% 49%,#000 0 61%,transparent 98%);
+    mask-composite:intersect;
+  }
+}

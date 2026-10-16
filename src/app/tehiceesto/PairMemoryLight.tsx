@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import "./PairMemoryLight.css";
 
 type Props = {
@@ -17,6 +17,7 @@ export default function PairMemoryLight({
   photoUrl, photoPosition = "center", revealed, onReveal, onContinue
 }: Props) {
   const stageRef = useRef<HTMLButtonElement | null>(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const gestureRef = useRef<{ id: number | null; last: { x: number; y: number } | null; distance: number; cells: Set<string> }>({
     id: null, last: null, distance: 0, cells: new Set()
   });
@@ -55,6 +56,7 @@ export default function PairMemoryLight({
 
   const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (completedRef.current) return;
+    setHasInteracted(true);
     const g = gestureRef.current;
     g.id = event.pointerId;
     g.last = null;
@@ -83,7 +85,7 @@ export default function PairMemoryLight({
           <h2>{title}</h2>
         </header>
         <button
-          ref={stageRef} type="button" className="pml-stage"
+          ref={stageRef} type="button" className={"pml-stage" + (hasInteracted ? " has-interacted" : "")}
           data-action="light-reveal" aria-label={ariaLabel || hint} aria-pressed={revealed}
           onPointerDown={onPointerDown} onPointerMove={onPointerMove}
           onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd}
