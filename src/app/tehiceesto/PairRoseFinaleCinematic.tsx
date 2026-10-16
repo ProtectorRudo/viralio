@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useRef,useState} from "react";
+import {useEffect,useLayoutEffect,useRef,useState} from "react";
 // Rose stills are rendered from full-resolution local assets with independent frames.
 
 type Stage="bud"|"bloom"|"envelope"|"letter"|"farewell";
@@ -36,6 +36,23 @@ export default function PairRoseFinaleCinematic({message,subtitle,lead}:Props){
   const started=useRef(false);
   const schedule=(callback:()=>void,ms:number)=>timers.current.push(window.setTimeout(callback,ms));
   useEffect(()=>()=>{for(const t of timers.current)window.clearTimeout(t)},[]);
+  // Navigating from the previous letter can preserve its scroll offset on Android.
+  // Set the next scene to its actual beginning, even through view transitions.
+  useLayoutEffect(()=>{
+    const reset=()=>{
+      if(typeof window==="undefined")return;
+      window.scrollTo(0,0);
+      const scrolling=document.scrollingElement;
+      if(scrolling)scrolling.scrollTop=0;
+      for(const el of document.querySelectorAll<HTMLElement>(".thi-demo-page,.thi-scene-stage")){
+        if(el.scrollTop>0)el.scrollTop=0;
+      }
+    };
+    reset();
+    const frame=window.requestAnimationFrame(reset);
+    const timeout=window.setTimeout(reset,140);
+    return()=>{window.cancelAnimationFrame(frame);window.clearTimeout(timeout)};
+  },[]);
 
   const bloom=()=>{
     if(started.current)return;
