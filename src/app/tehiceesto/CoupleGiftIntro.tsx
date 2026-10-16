@@ -75,7 +75,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
   const revealed = phase === "revealed";
   const activated = phase !== "closed";
   return (
-    <section className={"thi-scene couple-gift-intro gift-phase-" + phase} aria-label="Un regalo pensado para vos">
+    <section className={"thi-scene couple-gift-intro gift-phase-" + phase} data-gift-design="satin-bow-v3" aria-label="Un regalo pensado para vos">
       <div className="couple-gift-backdrop" aria-hidden="true">
         <span className="couple-gift-halo" />
         <span className="couple-gift-ambient ambient-one" />
