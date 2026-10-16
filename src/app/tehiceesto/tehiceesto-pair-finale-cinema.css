@@ -310,3 +310,17 @@
 }
 /* The personalized card is on a separate physical plane from the flower. */
 .prc-root[data-rose-stage="letter"] .prc-letter{z-index:10;box-shadow:0 15px 48px rgba(0,0,0,.66),inset 0 0 0 8px rgba(255,255,241,.32)}
+
+/* The last act gives the story, not the checkout, visual priority. */
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale > .thi-pair-finale-create{
+  min-width:0!important;width:max-content!important;
+  max-width:min(240px,86vw)!important;
+  gap:12px!important;
+  font-size:14px!important;
+  padding:12px 17px!important;
+}
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale > .thi-pair-finale-restart{
+  min-width:0!important;max-width:min(350px,94vw)!important;
+}
+.prc-root[data-rose-stage="letter"] .prc-letter{background-color:#f9ebda!important}
+.prc-root[data-rose-stage="farewell"] .prc-petals{opacity:.45}
