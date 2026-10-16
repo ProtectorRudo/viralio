@@ -118,11 +118,56 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
               <i className="couple-gift-lid-top" />
               <i className="couple-gift-lid-front" />
               <i className="couple-gift-lid-ribbon" />
-              <i className="couple-gift-bow bow-left" />
-              <i className="couple-gift-bow bow-right" />
-              <i className="couple-gift-knot" />
-              <i className="couple-gift-tail tail-left" />
-              <i className="couple-gift-tail tail-right" />
+              <svg className="couple-gift-satin-bow" viewBox="0 0 320 174" role="presentation" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="coupleSilkGold" x1="0" x2="1" y1=".12" y2=".86">
+                    <stop offset="0" stopColor="#7b6243" />
+                    <stop offset=".12" stopColor="#ddc59a" />
+                    <stop offset=".28" stopColor="#fff3d7" />
+                    <stop offset=".49" stopColor="#c2a277" />
+                    <stop offset=".7" stopColor="#ecd7ad" />
+                    <stop offset=".88" stopColor="#94734b" />
+                    <stop offset="1" stopColor="#645038" />
+                  </linearGradient>
+                  <linearGradient id="coupleSilkEdge" x1="0" x2=".9" y1="0" y2="1">
+                    <stop offset="0" stopColor="#e2c99b"/>
+                    <stop offset=".43" stopColor="#866943"/>
+                    <stop offset="1" stopColor="#f5deb4"/>
+                  </linearGradient>
+                  <radialGradient id="coupleSilkInner" cx=".55" cy=".46" r=".7">
+                    <stop offset="0" stopColor="#443929"/>
+                    <stop offset=".6" stopColor="#7f694a"/>
+                    <stop offset="1" stopColor="#cfb68c"/>
+                  </radialGradient>
+                </defs>
+                <g className="couple-silk-tail couple-silk-tail-left">
+                  <path d="M154 91 C139 101 107 109 80 139 C72 149 59 150 48 163 L65 116 C80 95 118 83 146 75 Z" fill="url(#coupleSilkGold)" stroke="#977a55" strokeWidth="1.4"/>
+                  <path d="M145 85 Q99 102 72 136" fill="none" stroke="#fff5d7" strokeWidth="2.6" opacity=".59"/>
+                  <path d="M137 91 Q108 108 60 148" fill="none" stroke="#634d37" strokeWidth="5" opacity=".2"/>
+                </g>
+                <g className="couple-silk-tail couple-silk-tail-right">
+                  <path d="M167 89 C185 100 219 108 246 139 L264 160 C250 154 238 155 229 163 C218 133 193 102 174 76 Z" fill="url(#coupleSilkEdge)" stroke="#977a55" strokeWidth="1.4"/>
+                  <path d="M176 88 Q214 101 246 142" fill="none" stroke="#fff2d3" strokeWidth="2.6" opacity=".58"/>
+                  <path d="M182 89 Q217 117 255 148" fill="none" stroke="#514331" strokeWidth="5" opacity=".18"/>
+                </g>
+                <g className="couple-silk-loop couple-silk-loop-left">
+                  <path d="M153 79 C119 57 95 30 61 30 C25 27 15 58 28 79 C47 106 95 98 153 85 Z" fill="url(#coupleSilkGold)" stroke="#dfc59a" strokeWidth="2"/>
+                  <path d="M147 78 C109 66 88 45 63 47 C42 48 36 65 47 76 C62 91 105 83 147 82 Z" fill="url(#coupleSilkInner)" opacity=".92"/>
+                  <path d="M34 66 C46 34 85 41 111 61" fill="none" stroke="#fff6d9" strokeWidth="5" opacity=".34" strokeLinecap="round"/>
+                  <path d="M116 75 Q92 92 47 81" fill="none" stroke="#705539" strokeWidth="5" opacity=".24"/>
+                </g>
+                <g className="couple-silk-loop couple-silk-loop-right">
+                  <path d="M166 77 C204 50 231 29 260 33 C295 38 300 67 285 86 C264 108 215 92 165 85 Z" fill="url(#coupleSilkEdge)" stroke="#dfc59a" strokeWidth="2"/>
+                  <path d="M175 78 C211 61 238 48 259 50 C279 53 277 72 264 81 C246 92 214 82 175 82 Z" fill="url(#coupleSilkInner)" opacity=".92"/>
+                  <path d="M203 57 Q241 37 273 54" fill="none" stroke="#fff6d9" strokeWidth="5" opacity=".4" strokeLinecap="round"/>
+                  <path d="M195 79 Q233 94 272 82" fill="none" stroke="#675137" strokeWidth="5" opacity=".22"/>
+                </g>
+                <g className="couple-silk-knot">
+                  <path d="M146 63 Q158 56 173 62 Q184 75 177 89 Q161 101 144 89 Q137 78 146 63 Z" fill="url(#coupleSilkGold)" stroke="#e2c99b" strokeWidth="1.4"/>
+                  <path d="M150 66 Q158 60 162 70 Q164 78 155 91" fill="none" stroke="#fff8df" strokeWidth="4" strokeLinecap="round" opacity=".48"/>
+                  <path d="M173 67 Q169 80 175 86" fill="none" stroke="#675034" strokeWidth="5" opacity=".34"/>
+                </g>
+              </svg>
             </span>
           </div>
           <button
