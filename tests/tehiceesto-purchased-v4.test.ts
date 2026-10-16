@@ -44,7 +44,7 @@ describe("Frozen personalized Pareja with tactile rose and secret paper",()=>{
     const page=file("r/[code]/page.tsx");
     const editor=file("admin/AdminGiftEditor.tsx");
     expect(page).toContain('templateVersion==="premium-v4"');
-    expect(page).toContain("frozenV4?PremiumV4Engine:ExperienceEngine");
+    expect(page).toContain("frozenV4?PremiumV4Engine:frozenV5?PremiumV5Engine:ExperienceEngine");
     expect(editor).toContain('gift?.template_version==="premium-v4"');
     expect(editor).toContain("getPremiumV4ExperienceCopy");
     expect(page).toContain("<Engine customerGift");
