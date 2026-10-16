@@ -19,6 +19,7 @@ import "./tehiceesto-mama-voices-fix.css";
 import "./tehiceesto-amistad-live.css";
 import "./tehiceesto-availability.css";
 import "./tehiceesto-pair-rose-finale.css";
+import "./tehiceesto-pair-finale-cinema.css";
 import "./tehiceesto-ruby-heart.css";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 
