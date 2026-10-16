@@ -144,7 +144,7 @@ export default function MyGifts(){
           for(const gift of account.gifts||[]){
             if(!/^[a-f0-9]{18}$/.test(gift.code))continue;
             const localEditorToken=window.localStorage.getItem(editorAccessKey(gift.code))||"";
-            if(!localEditorToken){
+            if(!localEditorToken && gift.templateVersion!=="premium-v5"){
               try{
                 const opened=await giftAccountCall<AccountOpenPayload>("open",{code:gift.code},accountToken);
                 if(opened.editorToken){
@@ -251,7 +251,7 @@ export default function MyGifts(){
       {accessError&&<p role="alert" className="account-alert">El enlace de acceso venció o ya fue utilizado. Pedí uno nuevo más abajo; tu compra sigue guardada.</p>}
       <h1>{gifts.length?"Acá están tus regalos.":"Recuperá tus regalos."}</h1>
       <p>{gifts.length
-        ?"Podés editarlos, abrir los que ya publicaste y volver a compartirlos cuando quieras."
+        ?"Encontrá tus pedidos, seguí la preparación y abrí los regalos que ya estén listos."
         :"Ingresá el email con el que compraste y te mandamos un acceso privado. No necesitás recordar ningún código."}</p>
       {accountEmail&&<small>Acceso verificado con {accountEmail}</small>}
     </section>
