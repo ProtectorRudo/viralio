@@ -187,6 +187,9 @@ export default function HoldReveal({
       <b aria-hidden="true"/>
     </button>
     {heartbeat&&!revealed&&<span className="thi-ruby-meter" aria-hidden="true"><i/></span>}
+    {!revealed
+      ? <div className="thi-hold-copy"><strong>{mainLabel}</strong><small>{subLabel}</small></div>
+      : <p>{reveal}</p>}
     {heartbeat&&!revealed&&<button
       type="button"
       className="thi-ruby-audio-toggle"
@@ -194,8 +197,5 @@ export default function HoldReveal({
       aria-pressed={soundEnabled}
       onClick={()=>{if(soundEnabled)stopHeartbeat();setSoundEnabled(value=>!value)}}
     >{soundEnabled?"♪ Sonido":"♪ Silenciado"}</button>}
-    {!revealed
-      ? <div className="thi-hold-copy"><strong>{mainLabel}</strong><small>{subLabel}</small></div>
-      : <p>{reveal}</p>}
   </div>;
 }
