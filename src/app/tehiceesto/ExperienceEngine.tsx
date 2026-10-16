@@ -29,7 +29,7 @@ import { getExperienceCopy,type DeepPartial,type ExperienceCopy } from "./experi
 import { mediaBelongsToScene } from "./mediaRouting";
 import type { SceneTextOverrides } from "./sceneText";
 import FriendshipScenes from "./FriendshipScenes";
-import PairRoseFinale from "./PairRoseFinale";
+import PairRoseFinale from "./PairRoseFinaleCinematic";
 import CoupleGiftIntro from "./CoupleGiftIntro";
 import PairCinematicUmbral from "./PairCinematicUmbral";
 import PairVoicePremium from "./PairVoicePremium";
