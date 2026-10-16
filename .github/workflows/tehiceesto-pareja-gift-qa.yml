@@ -8,6 +8,8 @@ on:
       - "src/app/tehiceesto/CoupleGiftIntro.tsx"
       - "src/app/tehiceesto/CoupleGiftIntro.css"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
+      - "src/app/tehiceesto/PairCinematicUmbral.tsx"
+      - "src/app/tehiceesto/PairCinematicUmbral.css"
   workflow_dispatch:
 
 permissions:
@@ -89,6 +91,26 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-revealed.png",fullPage:false});
             await page.locator(".couple-gift-continue").click();
             await page.locator("main.thi-experience[data-scene='door']").waitFor({timeout:8000});
+            const threshold=page.locator(".pair-cinematic-umbral");
+            await page.locator(".pair-cinematic-umbral.is-closed").waitFor({timeout:6000});
+            const door=page.locator(".pcu-door-closed-leaf");
+            if(await door.count()!==1)throw Error("Physical closed door missing");
+            if(await page.locator(".pcu-invitation [data-action='advance']").count())throw Error("Continue displayed before door opened");
+            await page.waitForTimeout(350);
+            await page.screenshot({path:"gift-visual-qa/"+name+"-threshold-closed.png",fullPage:false});
+            await page.locator("[data-action='open-door']").click();
+            await page.locator(".pair-cinematic-umbral.is-opening").waitFor({timeout:2500});
+            await page.waitForTimeout(550);
+            if((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="door")throw Error("Opening incorrectly skipped the threshold");
+            await page.locator(".pair-cinematic-umbral.is-open").waitFor({timeout:4500});
+            const style=await door.evaluate(el=>getComputedStyle(el).transform);
+            if(style==="none")throw Error("Door failed to rotate");
+            await page.waitForTimeout(400);
+            await page.screenshot({path:"gift-visual-qa/"+name+"-threshold-open.png",fullPage:false});
+            const advance=page.locator(".pcu-invitation [data-action='advance']");
+            if(!(await advance.isVisible()))throw Error("Continue not shown after opening");
+            await advance.click();
+            await page.locator("main.thi-experience[data-scene='memories']").waitFor({timeout:8000});
             if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
             console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
             await context.close();
