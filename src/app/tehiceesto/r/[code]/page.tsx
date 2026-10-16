@@ -16,9 +16,13 @@ import { fillPrivateGiftPhotos as fillV3GiftPhotos } from "../../template-v3/pri
 import AffiliateRedirect from "./AffiliateRedirect";
 import PremiumV3Engine from "../../template-v3/ExperienceEngine";
 import PremiumV4Engine from "../../template-v4/ExperienceEngine";
+import PremiumV5Engine from "../../template-v5/ExperienceEngine";
 import { getExperience as getPremiumV4Experience } from "../../template-v4/data";
+import { getExperience as getPremiumV5Experience } from "../../template-v5/data";
 import { normalizeSceneTextOverrides as normalizePremiumV4SceneTextOverrides } from "../../template-v4/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV5SceneTextOverrides } from "../../template-v5/sceneText";
 import { fillPrivateGiftPhotos as fillV4GiftPhotos } from "../../template-v4/privateGiftVisuals";
+import { fillPrivateGiftPhotos as fillV5GiftPhotos } from "../../template-v5/privateGiftVisuals";
 import { effectiveRecipeForMedia } from "../../effectiveRecipe";
 import { effectiveRecipeForMedia as effectivePremiumV1RecipeForMedia } from "../../template-v1/effectiveRecipe";
 import { effectiveRecipeForMedia as effectivePremiumV2RecipeForMedia } from "../../template-v2/effectiveRecipe";
@@ -50,13 +54,13 @@ export default async function PublishedGiftPage({
   const response=await fetch(`${SUPABASE_URL}/functions/v1/gift-read?code=${encodeURIComponent(code)}`,{headers:{apikey:PUBLISHABLE_KEY,accept:"application/json"},cache:"no-store"});
   if(response.status===404)notFound();if(!response.ok)throw new Error("gift_read_failed");
   const payload=(await response.json()) as {gift:EdgeGift;media:EdgeMedia[]};if(payload.gift.experience_slug.startsWith("escape-"))redirect("/escape-r/"+code);
-  const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const frozenV2=templateVersion==="premium-v2";const frozenV3=templateVersion==="premium-v3";const frozenV4=templateVersion==="premium-v4";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):frozenV2?getPremiumV2Experience(payload.gift.experience_slug):frozenV3?getPremiumV3Experience(payload.gift.experience_slug):frozenV4?getPremiumV4Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
+  const templateVersion=payload.gift.template_version||"premium-v1";const frozenV1=templateVersion==="premium-v1";const frozenV2=templateVersion==="premium-v2";const frozenV3=templateVersion==="premium-v3";const frozenV4=templateVersion==="premium-v4";const frozenV5=templateVersion==="premium-v5";const base=frozenV1?getPremiumV1Experience(payload.gift.experience_slug):frozenV2?getPremiumV2Experience(payload.gift.experience_slug):frozenV3?getPremiumV3Experience(payload.gift.experience_slug):frozenV4?getPremiumV4Experience(payload.gift.experience_slug):frozenV5?getPremiumV5Experience(payload.gift.experience_slug):getExperience(payload.gift.experience_slug);if(!base)notFound();
   const ordered=[...(payload.media||[])].sort((a,b)=>a.sort_order-b.sort_order);
   const hasPhoto=ordered.some(item=>item.kind==="image"&&item.url);
   const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
   const hasVoice=ordered.some(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack");
   const hasLightPhoto=ordered.some(item=>item.kind==="image"&&item.url&&item.metadata?.scene==="light");
-  const storedRecipe=(frozenV3||frozenV4)
+  const storedRecipe=(frozenV3||frozenV4||frozenV5)
     ?base.recipe // Sold model is a fixed journey. Missing media never removes a scene.
     :Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?payload.gift.scene_recipe:base.recipe;
   const recipeResolver=frozenV1
@@ -64,7 +68,7 @@ export default async function PublishedGiftPage({
     :frozenV2
       ?effectivePremiumV2RecipeForMedia
       :effectiveRecipeForMedia;
-  const effectiveRecipe=(frozenV3||frozenV4)?[...base.recipe] as typeof base.recipe:recipeResolver(storedRecipe,{
+  const effectiveRecipe=(frozenV3||frozenV4||frozenV5)?[...base.recipe] as typeof base.recipe:recipeResolver(storedRecipe,{
     // Missing photos get anonymous artwork rather than deleting visual scenes.
     hasPhoto:hasPhoto||storedRecipe.includes("memories"),
     hasVoice,
@@ -76,7 +80,7 @@ export default async function PublishedGiftPage({
     demo:{...base.demo,photos:[]},
     demoGiver:payload.gift.giver_name,demoRecipient:payload.gift.recipient_name,opening:payload.gift.opening_text||base.opening,closing:payload.gift.closing_text||base.closing,
     recipe:effectiveRecipe,accent:payload.gift.theme_data?.accent||base.accent};
-  const personalizedPhotos=(frozenV3?fillV3GiftPhotos:frozenV4?fillV4GiftPhotos:fillLegacyGiftPhotos)(
+  const personalizedPhotos=(frozenV3?fillV3GiftPhotos:frozenV4?fillV4GiftPhotos:frozenV5?fillV5GiftPhotos:fillLegacyGiftPhotos)(
     payload.gift.experience_slug,effectiveRecipe,
     ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({
       url:item.url as string,caption:item.caption||undefined,
@@ -86,7 +90,7 @@ export default async function PublishedGiftPage({
   );
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
   // Frozen engines are selected at runtime with their own stored recipe. The live-only everyday scene cannot belong to those recipes.
-  const Engine=(frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:frozenV3?PremiumV3Engine:frozenV4?PremiumV4Engine:ExperienceEngine) as typeof ExperienceEngine;
+  const Engine=(frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:frozenV3?PremiumV3Engine:frozenV4?PremiumV4Engine:frozenV5?PremiumV5Engine:ExperienceEngine) as typeof ExperienceEngine;
   const sceneTextOverrides=frozenV1
     ?normalizePremiumV1SceneTextOverrides(payload.gift.story_data?.sceneContent)
     :frozenV2
@@ -95,7 +99,9 @@ export default async function PublishedGiftPage({
         ?normalizePremiumV3SceneTextOverrides(payload.gift.story_data?.sceneContent)
         :frozenV4
           ?normalizePremiumV4SceneTextOverrides(payload.gift.story_data?.sceneContent)
-          :normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent);
+          :frozenV5
+            ?normalizePremiumV5SceneTextOverrides(payload.gift.story_data?.sceneContent)
+            :normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent);
   // Gift pages have no sales UI. Keep a route-level guard independent of the template version.
   return <div className="thi-purchased-experience" data-purchased-gift="true" style={{display:"contents"}}><Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
     photoMedia={personalizedPhotos}
