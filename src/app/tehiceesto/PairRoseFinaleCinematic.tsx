@@ -3,7 +3,7 @@ import {useEffect,useLayoutEffect,useRef,useState} from "react";
 // Rose stills are rendered from full-resolution local assets with independent frames.
 
 type Stage="bud"|"bloom"|"envelope"|"letter"|"farewell";
-type Props={message:string;subtitle:string;lead:string};
+type Props={message:string;subtitle:string;lead:string; roseKicker?:string; roseTapLabel?:string; roseTapHint?:string; roseBloomHint?:string; roseEnvelopeHint?:string; roseSaveLabel?:string; roseFarewellKicker?:string; roseFarewellTitle?:string};
 
 function haptic(pattern:number|number[]){
   try{if(typeof navigator!=="undefined" && "vibrate" in navigator)navigator.vibrate(pattern)}catch{}
@@ -30,7 +30,7 @@ function softChime(){
 }
 
 /** Pair finale model. Only message and subtitle vary from gift to gift. */
-export default function PairRoseFinaleCinematic({message,subtitle,lead}:Props){
+export default function PairRoseFinaleCinematic({message,subtitle,lead,roseKicker="Un secretito para vos",roseTapLabel="Tocá la rosa",roseTapHint="Hay algo más para vos",roseBloomHint="Un momento más…",roseEnvelopeHint="Un secreto para vos…",roseSaveLabel="Guardar este instante",roseFarewellKicker="Un final que permanece",roseFarewellTitle="Gracias por llegar hasta acá."}:Props){
   const [stage,setStage]=useState<Stage>("bud");
   const timers=useRef<number[]>([]);
   const started=useRef(false);
@@ -88,17 +88,17 @@ export default function PairRoseFinaleCinematic({message,subtitle,lead}:Props){
           <span className="prc-envelope-seal">♥</span>
         </div>
         <div className="prc-letter">
-          <span className="prc-letter-kicker">UN SECRETITO PARA VOS</span>
+          <span className="prc-letter-kicker">{roseKicker}</span>
           <strong>{message}</strong>
           <span className="prc-letter-footer">{subtitle}</span>
           <span className="prc-letter-flourish">♥</span>
         </div>
       </div>
     </div>
-    {stage==="bud"&&<div className="prc-instruction"><span>Tocá la rosa</span><small>HAY ALGO MÁS PARA VOS</small></div>}
-    {stage==="bloom"&&<div className="prc-instruction prc-instruction-bloom"><span>Un momento más…</span><i aria-hidden="true"/></div>}
-    {stage==="envelope"&&<div className="prc-instruction"><span>Un secreto para vos…</span></div>}
-    {stage==="letter"&&<div className="prc-letter-action"><p>{lead}</p><button type="button" data-action="rose-farewell" onClick={farewell}>Guardar este instante <span aria-hidden="true">→</span></button></div>}
-    {stage==="farewell"&&<div className="prc-farewell" aria-live="polite"><span className="prc-farewell-kicker">UN FINAL QUE PERMANECE</span><h3>Gracias por llegar hasta acá.</h3><p>{lead}</p><span className="prc-farewell-heart" aria-hidden="true">♥</span></div>}
+    {stage==="bud"&&<div className="prc-instruction"><span>{roseTapLabel}</span><small>{roseTapHint}</small></div>}
+    {stage==="bloom"&&<div className="prc-instruction prc-instruction-bloom"><span>{roseBloomHint}</span><i aria-hidden="true"/></div>}
+    {stage==="envelope"&&<div className="prc-instruction"><span>{roseEnvelopeHint}</span></div>}
+    {stage==="letter"&&<div className="prc-letter-action"><p>{lead}</p><button type="button" data-action="rose-farewell" onClick={farewell}>{roseSaveLabel} <span aria-hidden="true">→</span></button></div>}
+    {stage==="farewell"&&<div className="prc-farewell" aria-live="polite"><span className="prc-farewell-kicker">{roseFarewellKicker}</span><h3>{roseFarewellTitle}</h3><p>{lead}</p><span className="prc-farewell-heart" aria-hidden="true">♥</span></div>}
   </div>;
 }
