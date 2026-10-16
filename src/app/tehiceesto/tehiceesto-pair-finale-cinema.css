@@ -324,3 +324,49 @@
 }
 .prc-root[data-rose-stage="letter"] .prc-letter{background-color:#f9ebda!important}
 .prc-root[data-rose-stage="farewell"] .prc-petals{opacity:.45}
+
+
+/* Final art lock: 2-frame rose sprite cropped from the approved visual.
+   Each gift uses the same stage artwork; only live HTML lettering varies. */
+.thi-theme-pareja[data-scene="finale"] .prc-rose-photograph{
+  top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;
+  width:min(310px,81vw)!important;
+  height:clamp(286px,40svh,357px)!important;
+  display:block!important;
+  background-size:100% 200%!important;
+  background-repeat:no-repeat!important;
+  border-radius:0!important;
+  -webkit-mask-image:radial-gradient(ellipse 60% 53% at 50% 50%,#000 38%,rgba(0,0,0,.99) 62%,rgba(0,0,0,.25) 88%,transparent 100%)!important;
+  mask-image:radial-gradient(ellipse 60% 53% at 50% 50%,#000 38%,rgba(0,0,0,.99) 62%,rgba(0,0,0,.25) 88%,transparent 100%)!important;
+  filter:drop-shadow(0 17px 38px rgba(6,0,3,.53))!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-rose-closed{
+  background-position:50% 0%!important;
+  transform:translate(-50%,-50%) scale(.99)!important;
+  opacity:1;
+  animation:prcApprovedBreath 5.8s ease-in-out infinite alternate!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-rose-bloom{
+  background-position:50% 100%!important;
+  transform:translate(-50%,-50%) scale(.83)!important;
+  opacity:0;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root:not([data-rose-stage="bud"]) .prc-rose-closed{
+  transform:translate(-50%,-50%) scale(1.14)!important;
+  opacity:0;
+  animation:none!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root:not([data-rose-stage="bud"]) .prc-rose-bloom{
+  transform:translate(-50%,-50%) scale(1.12)!important;
+  opacity:1;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="farewell"] .prc-rose-bloom{
+  transform:translate(-50%,-50%) scale(.96)!important;
+}
+@keyframes prcApprovedBreath{
+  from{transform:translate(-50%,-50%) scale(.97)}
+  to{transform:translate(-50%,-51%) scale(1.018)}
+}
+@media(prefers-reduced-motion:reduce){
+ .thi-theme-pareja[data-scene="finale"] .prc-rose-closed{animation:none!important}
+}
