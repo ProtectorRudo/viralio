@@ -1,0 +1,338 @@
+
+/* Te Hice Esto · Pareja · Escena 09: cristal rubí. Scoped to avoid altering model variants. */
+.thi-theme-pareja[data-scene="hold"] {
+  background:
+    radial-gradient(ellipse at 50% 47%,rgba(138,20,39,.30),transparent 43%),
+    radial-gradient(ellipse at 14% 13%,rgba(106,29,47,.20),transparent 34%),
+    radial-gradient(ellipse at 90% 88%,rgba(83,12,46,.20),transparent 35%),
+    linear-gradient(180deg,#1b070c 0%,#12050a 47%,#08050b 100%) !important;
+}
+.thi-theme-pareja[data-scene="hold"] .thi-scene-hold {
+  box-sizing:border-box;
+  min-height:100svh;
+  padding:clamp(108px,12.5svh,146px) 18px 70px;
+  justify-content:flex-start;
+  gap:0;
+  overflow:visible;
+}
+.thi-theme-pareja[data-scene="hold"] .thi-scene-hold > .thi-kicker {
+  font-size:clamp(9px,1.6vw,12px) !important;
+  letter-spacing:.31em;
+  font-weight:500;
+  color:#e2a8b2 !important;
+  margin:0 0 17px !important;
+  text-align:center;
+}
+.thi-theme-pareja[data-scene="hold"] .thi-scene-hold > h2 {
+  width:min(660px,92vw) !important;
+  font-family:var(--thi-serif),Georgia,serif;
+  font-size:clamp(28px,4.1vw,45px) !important;
+  font-weight:400;
+  font-style:italic;
+  line-height:1.12;
+  letter-spacing:-.022em;
+  max-width:680px;
+  color:#fff0ec;
+  text-wrap:balance;
+  text-align:center;
+  margin:0 auto 4px !important;
+  text-shadow:0 7px 30px rgba(0,0,0,.55);
+}
+.thi-theme-pareja[data-scene="hold"] .thi-hold-reveal.ruby {
+  --hold-progress-ratio:0;
+  box-sizing:border-box;
+  width:min(680px,100%) !important;
+  min-height:0 !important;
+  margin:0 auto 4px !important;
+  padding:0 0 40px;
+  display:flex;
+  align-items:center;
+  flex-direction:column;
+  justify-content:flex-start;
+  overflow:visible;
+  isolation:isolate;
+  position:relative;
+}
+.thi-hold-reveal.ruby .thi-hold-rings {display:none !important}
+.thi-hold-reveal.ruby .thi-hold-atmosphere {
+  inset:-8% -10% 0 !important;
+  background:radial-gradient(circle at 50% 50%,rgba(190,18,53,.20),transparent 49%) !important;
+  filter:blur(17px) !important;
+  opacity:calc(.45 + var(--hold-progress-ratio,0) * .55);
+}
+.thi-hold-reveal.ruby .thi-ruby-light-field {
+  pointer-events:none;
+  position:absolute;
+  z-index:1;
+  width:min(650px,120%);
+  height:370px;
+  left:50%;
+  top:-17px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at 50% 49%,rgba(235,34,70,.13),transparent 47%);
+  opacity:calc(.55 + var(--hold-progress-ratio,0) * .45);
+}
+.thi-hold-reveal.ruby .thi-ruby-light-field::before,
+.thi-hold-reveal.ruby .thi-ruby-light-field::after {
+  content:"";
+  display:block;
+  position:absolute;
+  left:50%;
+  top:48%;
+  width:clamp(250px,69%,420px);
+  height:clamp(90px,29%,155px);
+  transform:translate(-50%,-50%) rotate(-19deg);
+  border:1px solid rgba(255,113,125,.16);
+  border-radius:50%;
+  box-shadow:0 0 16px rgba(255,78,100,.07),inset 0 0 16px rgba(255,78,100,.03);
+  animation:thiRubyOrbit 16s ease-in-out infinite alternate;
+}
+.thi-hold-reveal.ruby .thi-ruby-light-field::after {
+  height:27%;
+  width:76%;
+  transform:translate(-50%,-50%) rotate(27deg);
+  border-color:rgba(255,184,148,.13);
+  animation-delay:-8s;
+}
+.thi-hold-reveal.ruby .thi-ruby-light-field i {
+  position:absolute;
+  width:3px;height:3px;
+  background:#ffcfb6;
+  border-radius:50%;
+  box-shadow:0 0 14px 3px rgba(255,92,100,.53);
+  opacity:.74;
+  animation:thiRubySpark 4.2s ease-in-out infinite alternate;
+}
+.thi-hold-reveal.ruby .thi-ruby-light-field i:nth-child(1){left:17%;top:30%;animation-delay:.8s}
+.thi-hold-reveal.ruby .thi-ruby-light-field i:nth-child(2){left:83%;top:31%;animation-delay:1.3s}
+.thi-hold-reveal.ruby .thi-ruby-light-field i:nth-child(3){left:19%;top:71%;animation-delay:1.9s}
+.thi-hold-reveal.ruby .thi-ruby-light-field i:nth-child(4){left:72%;top:75%;animation-delay:2.7s}
+.thi-hold-reveal.ruby .thi-ruby-light-field i:nth-child(5){left:57%;top:5%;animation-delay:3.6s}
+.thi-hold-reveal.ruby .thi-ruby-light-field i:nth-child(6){left:40%;top:92%;animation-delay:.4s}
+.thi-hold-reveal.ruby button.thi-hold-core,
+.thi-hold-reveal.ruby.phase-holding button.thi-hold-core,
+.thi-hold-reveal.ruby.phase-almost button.thi-hold-core,
+.thi-hold-reveal.ruby.phase-there button.thi-hold-core {
+  box-sizing:border-box;
+  position:relative;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:min(370px,86vw) !important;
+  height:clamp(258px,32svh,370px) !important;
+  min-height:240px;
+  margin:0 auto;
+  padding:0;
+  border:0 !important;
+  outline-offset:5px;
+  border-radius:32%;
+  background:transparent !important;
+  box-shadow:none !important;
+  cursor:pointer;
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  animation:none !important;
+}
+.thi-hold-reveal.ruby button.thi-hold-core::before,
+.thi-hold-reveal.ruby button.thi-hold-core::after,
+.thi-hold-reveal.ruby button.thi-hold-core > i,
+.thi-hold-reveal.ruby button.thi-hold-core > b {display:none !important}
+.thi-hold-reveal.ruby .thi-hold-heart {
+  width:min(340px,82vw);
+  max-height:100%;
+  display:block !important;
+  z-index:4;
+  position:relative;
+  background:none !important;
+  -webkit-text-fill-color:initial;
+  color:inherit;
+  text-shadow:none !important;
+  filter:none !important;
+  transform:scale(var(--hold-heart-scale,.95)) !important;
+  transition:transform .13s linear,opacity .55s ease;
+  pointer-events:none;
+}
+.thi-hold-reveal.ruby .thi-hold-heart::after {display:none !important}
+.thi-hold-reveal.ruby .thi-ruby-art {
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:340px;
+  overflow:visible;
+  transform:translateY(1px);
+  filter:drop-shadow(0 0 27px rgba(245,24,62,.38)) drop-shadow(0 24px 35px rgba(15,0,9,.57));
+  animation:thiRubyFloat 3.7s ease-in-out infinite;
+}
+.thi-hold-reveal.ruby.phase-holding .thi-ruby-art,
+.thi-hold-reveal.ruby.phase-almost .thi-ruby-art,
+.thi-hold-reveal.ruby.phase-there .thi-ruby-art {
+  animation:thiRubyBeat .76s ease-in-out infinite;
+  filter:drop-shadow(0 0 var(--hold-glow,70px) rgba(255,51,78,.52)) drop-shadow(0 13px 25px rgba(16,0,8,.5));
+}
+.thi-hold-reveal.ruby .thi-ruby-ember {
+  opacity:calc(.55 + var(--hold-progress-ratio,0) * .45);
+}
+.thi-hold-reveal.ruby .thi-ruby-spark{animation:thiRubySpark 2.2s ease-in-out infinite alternate;transform-origin:center}
+.thi-hold-reveal.ruby .thi-ruby-meter{
+  position:relative;
+  z-index:7;
+  display:block;
+  width:min(155px,37vw);
+  height:2px;
+  border-radius:99px;
+  background:rgba(253,203,191,.20);
+  box-shadow:0 0 6px rgba(244,112,111,.12);
+  overflow:hidden;
+  margin-top:0;
+}
+.thi-hold-reveal.ruby .thi-ruby-meter > i {
+  display:block;
+  height:100%;
+  width:100%;
+  transform-origin:left center;
+  transform:scaleX(var(--hold-progress-ratio,0));
+  background:linear-gradient(90deg,#ff5578,#fff3cf);
+  box-shadow:0 0 16px rgba(255,123,141,.85);
+}
+.thi-hold-reveal.ruby .thi-hold-copy {
+  margin:19px 0 0 !important;
+  min-height:63px;
+  text-align:center;
+  z-index:7;
+}
+.thi-hold-reveal.ruby .thi-hold-copy > strong{
+  font-family:var(--thi-serif),Georgia,serif;
+  font-size:clamp(25px,4.2vw,35px) !important;
+  font-weight:400;
+  line-height:1.2;
+  color:#fff0e9 !important;
+  letter-spacing:-.02em;
+}
+.thi-hold-reveal.ruby .thi-hold-copy > small {
+  margin-top:8px !important;
+  font-size:9px !important;
+  text-transform:lowercase;
+  letter-spacing:.24em;
+  color:#d69eaa !important;
+}
+.thi-hold-reveal.ruby .thi-ruby-audio-toggle{
+  position:relative;
+  z-index:8;
+  margin:2px auto 0;
+  padding:7px 13px;
+  min-height:32px;
+  border:1px solid rgba(248,184,178,.22);
+  border-radius:30px;
+  background:rgba(21,4,12,.68);
+  color:#ddacb5;
+  font:500 10px/1.2 sans-serif;
+  letter-spacing:.06em;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.thi-hold-reveal.ruby.revealed button.thi-hold-core{
+  height:clamp(150px,24svh,230px) !important;
+  min-height:0;
+}
+.thi-hold-reveal.ruby.revealed .thi-hold-heart{
+  transform:scale(.64) !important;
+  opacity:.8;
+}
+.thi-hold-reveal.ruby.revealed .thi-ruby-art {
+  animation:thiRubyRevelation 1.25s ease-out both;
+}
+.thi-hold-reveal.ruby.revealed > p {
+  position:relative;
+  z-index:9;
+  font-family:var(--thi-serif),Georgia,serif;
+  font-size:clamp(23px,4.1vw,36px) !important;
+  font-weight:400;
+  font-style:italic;
+  line-height:1.28;
+  color:#fff0e9;
+  max-width:670px;
+  margin:12px 0 0 !important;
+  padding:0 16px;
+  text-wrap:balance;
+  animation:thiRubyWords 1.15s .32s both;
+}
+.thi-theme-pareja[data-scene="hold"] .thi-scene-hold > .thi-primary {
+  position:relative;
+  z-index:7;
+  margin:0 auto 30px;
+  background:linear-gradient(145deg,#451121,#21070f) !important;
+  color:#fff0e9 !important;
+  border:1px solid rgba(255,186,173,.58) !important;
+  border-radius:99px;
+  box-shadow:0 9px 33px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,240,222,.09);
+  animation:thiRubyWords .8s 1.2s both;
+}
+.thi-root:has(.thi-theme-pareja[data-scene="hold"] .thi-hold-reveal.phase-holding) .floating-create-cta,
+.thi-root:has(.thi-theme-pareja[data-scene="hold"] .thi-hold-reveal.phase-almost) .floating-create-cta,
+.thi-root:has(.thi-theme-pareja[data-scene="hold"] .thi-hold-reveal.phase-there) .floating-create-cta{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+@keyframes thiRubyFloat{
+  0%,100%{transform:translateY(1px) scale(.99)}
+  50%{transform:translateY(-7px) scale(1.01)}
+}
+@keyframes thiRubyBeat{
+  0%,100%{transform:translateY(-1px) scale(1)}
+  14%{transform:translateY(-1px) scale(1.055)}
+  26%{transform:translateY(-1px) scale(1.01)}
+  39%{transform:translateY(-1px) scale(1.045)}
+  57%{transform:translateY(-1px) scale(1)}
+}
+@keyframes thiRubySpark{from{opacity:.17;transform:scale(.65)}to{opacity:.83;transform:scale(1.45)}}
+@keyframes thiRubyOrbit{from{filter:blur(1px);opacity:.42}to{filter:blur(2px);opacity:.95}}
+@keyframes thiRubyWords{from{opacity:0;transform:translateY(17px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes thiRubyRevelation{
+  0%{transform:scale(1.14);filter:drop-shadow(0 0 70px rgba(255,110,117,.78))}
+  50%{transform:scale(1.2);filter:drop-shadow(0 0 95px rgba(255,95,98,.8))}
+  100%{transform:scale(.9);filter:drop-shadow(0 0 34px rgba(251,42,77,.25))}
+}
+@media(max-width:650px){
+  .thi-theme-pareja[data-scene="hold"] .thi-scene-hold{
+    padding-top:clamp(96px,12.5svh,127px) !important;
+    padding-bottom:56px !important;
+    padding-inline:16px !important;
+  }
+  .thi-theme-pareja[data-scene="hold"] .thi-scene-hold > h2{
+    font-size:clamp(28px,7vw,37px) !important;
+    line-height:1.13;
+    max-width:380px;
+  }
+  .thi-theme-pareja[data-scene="hold"] .thi-hold-reveal.ruby{
+    width:100% !important;
+    margin-top:5px !important;
+    padding-bottom:16px;
+  }
+  .thi-hold-reveal.ruby button.thi-hold-core{
+    height:clamp(245px,35svh,345px) !important;
+    width:min(360px,94vw) !important;
+  }
+  .thi-hold-reveal.ruby .thi-hold-heart{width:min(315px,82vw)}
+  .thi-hold-reveal.ruby .thi-ruby-light-field{height:320px;top:-10px}
+  .thi-hold-reveal.ruby .thi-hold-copy{margin-top:16px !important;min-height:52px}
+  .thi-hold-reveal.ruby .thi-hold-copy > strong{font-size:clamp(24px,7vw,32px) !important}
+  .thi-hold-reveal.ruby.revealed button.thi-hold-core{height:170px !important}
+  .thi-hold-reveal.ruby.revealed > p{max-width:360px;font-size:clamp(22px,6vw,28px) !important}
+  .thi-theme-pareja[data-scene="hold"] .thi-scene-hold > .thi-primary{margin-bottom:40px}
+}
+@media(max-height:690px) and (max-width:650px){
+  .thi-theme-pareja[data-scene="hold"] .thi-scene-hold{padding-top:79px !important}
+  .thi-theme-pareja[data-scene="hold"] .thi-scene-hold > .thi-kicker{margin-bottom:10px !important}
+  .thi-theme-pareja[data-scene="hold"] .thi-hold-reveal.ruby button.thi-hold-core{height:236px !important}
+  .thi-hold-reveal.ruby .thi-hold-heart{width:min(260px,73vw)}
+  .thi-hold-reveal.ruby .thi-ruby-light-field{height:250px}
+  .thi-hold-reveal.ruby .thi-hold-copy > strong{font-size:23px !important}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-hold-reveal.ruby .thi-ruby-art,
+  .thi-hold-reveal.ruby .thi-ruby-light-field::before,
+  .thi-hold-reveal.ruby .thi-ruby-light-field::after,
+  .thi-hold-reveal.ruby .thi-ruby-light-field i,
+  .thi-hold-reveal.ruby .thi-ruby-spark{animation:none !important}
+}

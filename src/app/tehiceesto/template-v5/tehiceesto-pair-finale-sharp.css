@@ -1,0 +1,151 @@
+/* Pareja 11/11 — 16 oct 2026: sharp isolated bloom + physically anchored envelope.
+   Full-resolution local WebP assets (1050x1050). All selectors scoped to Pareja finale. */
+.thi-theme-pareja[data-scene="finale"] .prc-stage{
+  height:clamp(308px,41svh,424px);
+  width:min(460px,100%);
+  position:relative;
+  isolation:isolate;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-rose-photograph{
+  top:50%!important;left:50%!important;bottom:auto!important;right:auto!important;
+  width:min(420px,95vw)!important;
+  height:min(420px,45svh)!important;
+  min-height:290px;
+  background-size:contain!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  -webkit-mask-image:none!important;mask-image:none!important;
+  border:0!important;border-radius:0!important;
+  filter:drop-shadow(0 14px 30px rgba(0,0,0,.3))!important;
+  will-change:transform,opacity;
+  opacity:0;
+  transition:opacity .95s ease,transform 1.18s cubic-bezier(.17,.82,.19,1)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-rose-closed{
+  background-image:url("/tehiceesto/pareja/finale/rose-closed.webp")!important;
+  opacity:1;
+  animation:prcSharpFloat 5s ease-in-out infinite alternate!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-rose-bloom{
+  background-image:url("/tehiceesto/pareja/finale/rose-open.webp")!important;
+  opacity:0;
+  transform:translate(-50%,-47%) scale(.80)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root:not([data-rose-stage="bud"]) .prc-rose-closed{
+  animation:none!important;
+  transform:translate(-50%,-50%) scale(1.07)!important;
+  opacity:0;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root:not([data-rose-stage="bud"]) .prc-rose-bloom{
+  transform:translate(-50%,-50%) scale(1.02)!important;
+  opacity:1;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="farewell"] .prc-rose-bloom{
+  transform:translate(-50%,-50%) scale(.92)!important;
+  filter:drop-shadow(0 18px 29px rgba(0,0,0,.40))!important;
+}
+@keyframes prcSharpFloat{
+  from{transform:translate(-50%,-49%) scale(.98)}
+  to{transform:translate(-50%,-51%) scale(1.015)}
+}
+/* Light is tied to the flower's actual centre instead of the scene rectangle. */
+.thi-theme-pareja[data-scene="finale"] .prc-bloom-core{
+  position:absolute;z-index:6;pointer-events:none;
+  left:50%;top:43%;
+  width:93px;height:93px;border-radius:50%;
+  transform:translate(-50%,-50%) scale(.22);
+  background:radial-gradient(circle,rgba(255,243,202,.57),rgba(251,98,89,.25) 35%,transparent 75%);
+  mix-blend-mode:screen;
+  filter:blur(9px);
+  opacity:0;
+  transition:transform 1.4s cubic-bezier(.19,.8,.19,1),opacity .65s ease;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="bloom"] .prc-bloom-core{
+  opacity:1;transform:translate(-50%,-50%) scale(2.2);
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="envelope"] .prc-bloom-core{
+  opacity:.93;transform:translate(-50%,-50%) scale(1.35);
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="letter"] .prc-bloom-core{
+  opacity:.3;transform:translate(-50%,-50%) scale(.94);
+}
+/* All coordinates for envelope and letter are relative to a single zero-sized
+   origin located at the real bloom core. No view-height-based misalignment. */
+.thi-theme-pareja[data-scene="finale"] .prc-secret{
+  position:absolute!important;z-index:8!important;
+  left:50%!important;top:43%!important;
+  width:0!important;height:0!important;
+  transform:none!important;perspective:980px;
+  opacity:1!important;pointer-events:none;
+  overflow:visible!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-envelope{
+  position:absolute!important;
+  top:0!important;left:0!important;
+  width:151px!important;height:104px!important;
+  transform:translate(-50%,-50%) scale(.035) rotate(-9deg)!important;
+  transform-origin:50% 50%;
+  opacity:0!important;
+  filter:blur(6px);
+  transition:transform 1.05s cubic-bezier(.17,.85,.18,1),
+             opacity .38s ease,filter .82s ease!important;
+  box-shadow:0 18px 38px rgba(0,0,0,.48),0 0 21px rgba(255,174,130,.11)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="envelope"] .prc-envelope{
+  opacity:1!important;filter:blur(0);
+  transform:translate(-50%,-82%) scale(1) rotate(-4deg)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="letter"] .prc-envelope{
+  opacity:0!important;filter:blur(2px);
+  transform:translate(-50%,-114%) scale(.98) rotate(1deg)!important;
+}
+/* Letter emerges from that SAME origin, not from under a separate layer. */
+.thi-theme-pareja[data-scene="finale"] .prc-letter{
+  position:absolute!important;left:0!important;top:0!important;
+  inset:auto!important;
+  width:min(280px,76vw)!important;
+  height:166px!important;
+  opacity:0!important;
+  transform:translate(-50%,-50%) scale(.025) rotate(-7deg)!important;
+  transform-origin:center center;
+  filter:blur(7px);
+  transition:transform 1.05s cubic-bezier(.2,.82,.19,1),
+             opacity .68s ease,filter .72s ease!important;
+  background:linear-gradient(135deg,#fffaf0,#f5e2c9 60%,#e6c5a8)!important;
+  border:1px solid rgba(252,241,218,.95)!important;
+  box-shadow:0 16px 42px rgba(0,0,0,.54),
+             inset 0 0 0 8px rgba(255,255,244,.28)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-root[data-rose-stage="letter"] .prc-letter{
+  opacity:1!important;filter:none;
+  transform:translate(-50%,-63%) scale(1) rotate(-3deg)!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-letter strong{
+  font-size:clamp(40px,10vw,57px);
+  color:#852a48!important;
+}
+.thi-theme-pareja[data-scene="finale"] .prc-letter-footer{
+  color:#715147!important;
+}
+/* Story first: shopping appears only after the intimate finale. */
+@media(max-width:650px){
+  .thi-theme-pareja[data-scene="finale"] .prc-stage{
+    height:clamp(302px,42svh,380px)!important;
+    width:100%;
+  }
+  .thi-theme-pareja[data-scene="finale"] .prc-rose-photograph{
+    width:min(390px,97vw)!important;
+    height:min(390px,44svh)!important;
+  }
+  .thi-theme-pareja[data-scene="finale"] .prc-secret,
+  .thi-theme-pareja[data-scene="finale"] .prc-bloom-core{top:43%!important}
+  .thi-theme-pareja[data-scene="finale"] .prc-letter{height:159px!important}
+  .thi-theme-pareja[data-scene="finale"] .prc-instruction{margin-top:-5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-theme-pareja[data-scene="finale"] .prc-rose-closed{animation:none!important}
+  .thi-theme-pareja[data-scene="finale"] .prc-rose-photograph,
+  .thi-theme-pareja[data-scene="finale"] .prc-bloom-core,
+  .thi-theme-pareja[data-scene="finale"] .prc-envelope,
+  .thi-theme-pareja[data-scene="finale"] .prc-letter{transition:none!important}
+}
