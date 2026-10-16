@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useRef,useState} from "react";
+import ROSE_CINEMA_ASSET from "./roseCinematicAsset";
 
 type Stage="bud"|"bloom"|"envelope"|"letter"|"farewell";
 type Props={message:string;subtitle:string;lead:string};
@@ -59,8 +60,8 @@ export default function PairRoseFinaleCinematic({message,subtitle,lead}:Props){
         aria-label={stage==="bud"?"Tocá la rosa para descubrir el último mensaje":"La rosa ya reveló su secreto"}
         disabled={stage!=="bud"} onClick={bloom}
       >
-        <span className="prc-rose-photograph prc-rose-closed" aria-hidden="true"/>
-        <span className="prc-rose-photograph prc-rose-bloom" aria-hidden="true"/>
+        <span className="prc-rose-photograph prc-rose-closed" style={{backgroundImage:`url("${ROSE_CINEMA_ASSET}")`}} aria-hidden="true"/>
+        <span className="prc-rose-photograph prc-rose-bloom" style={{backgroundImage:`url("${ROSE_CINEMA_ASSET}")`}} aria-hidden="true"/>
         <span className="prc-rose-light" aria-hidden="true"/>
       </button>
       <div className="prc-secret" aria-hidden={stage!=="envelope"&&stage!=="letter"}>
