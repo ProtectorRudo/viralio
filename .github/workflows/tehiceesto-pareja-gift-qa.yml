@@ -10,6 +10,8 @@ on:
       - "src/app/tehiceesto/ExperienceEngine.tsx"
       - "src/app/tehiceesto/PairRoseFinaleCinematic.tsx"
       - "src/app/tehiceesto/tehiceesto-pair-finale-cinema.css"
+      - "src/app/tehiceesto/tehiceesto-pair-finale-sharp.css"
+      - "public/tehiceesto/pareja/finale/**"
       - "src/app/tehiceesto/RubyHeart.tsx"
       - "src/app/tehiceesto/HoldReveal.tsx"
       - "src/app/tehiceesto/tehiceesto-ruby-heart.css"
@@ -334,6 +336,26 @@ jobs:
             await page.locator('.prc-root[data-rose-stage="bud"]').waitFor({timeout:5500});
             if(!(await page.locator('.prc-rose-photograph.prc-rose-closed').count()))
               throw Error("Photographic rose asset layer is missing");
+            const roseAssets=await page.evaluate(async()=>{
+              const urls=["/tehiceesto/pareja/finale/rose-closed.webp","/tehiceesto/pareja/finale/rose-open.webp"];
+              return await Promise.all(urls.map(src=>new Promise(resolve=>{
+                const img=new Image();
+                img.onload=()=>resolve({src,width:img.naturalWidth,height:img.naturalHeight});
+                img.onerror=()=>resolve({src,error:"not-loaded"});
+                img.src=src;
+              })));
+            });
+            for(const rose of roseAssets){
+              if(rose.error||rose.width<1000||rose.height<1000)
+                throw Error("Rose is still low-resolution or missing: "+JSON.stringify(roseAssets));
+            }
+            const physicalOrigin=await page.evaluate(()=>{
+              const stage=document.querySelector(".prc-stage")?.getBoundingClientRect();
+              const anchor=document.querySelector(".prc-secret")?.getBoundingClientRect();
+              return stage&&anchor?{x:(anchor.left-stage.left)/stage.width,y:(anchor.top-stage.top)/stage.height}:null;
+            });
+            if(!physicalOrigin||Math.abs(physicalOrigin.x-.5)>.025||Math.abs(physicalOrigin.y-.43)>.05)
+              throw Error("Envelope does not originate at bloom's core: "+JSON.stringify(physicalOrigin));
             if(await page.locator('.thi-pair-finale-create').isVisible())
               throw Error("Sales action interrupts unopened rose");
             await page.waitForTimeout(800);
