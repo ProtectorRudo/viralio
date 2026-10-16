@@ -22,7 +22,7 @@ export default function PairMemoryLight({
     id: null, last: null, distance: 0, cells: new Set()
   });
   const completedRef = useRef(revealed);
-  completedRef.current = revealed;
+  useEffect(()=>{completedRef.current=revealed},[revealed]);
   const style = { objectPosition: photoPosition } as CSSProperties;
 
   useEffect(() => {
