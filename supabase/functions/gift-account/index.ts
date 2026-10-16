@@ -267,7 +267,7 @@ Deno.serve(async(req:Request)=>{
 
     const {data:gifts,error:giftsError}=await db
       .from("gifts")
-      .select("id,public_code,status,experience_slug,giver_name,recipient_name,published_at,created_at")
+      .select("id,public_code,status,template_version,experience_slug,giver_name,recipient_name,published_at,created_at")
       .in("id",ids);
     if(giftsError)return json(origin,{error:"account_list_failed"},500);
 
@@ -279,6 +279,7 @@ Deno.serve(async(req:Request)=>{
         code:gift.public_code,
         status:gift.status,
         experienceSlug:gift.experience_slug,
+        templateVersion:gift.template_version||"premium-v1",
         giverName:gift.giver_name,
         recipientName:gift.recipient_name,
         publishedAt:gift.published_at,
