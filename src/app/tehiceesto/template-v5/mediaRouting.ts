@@ -1,0 +1,1 @@
+export { mediaBelongsToScene } from "../mediaRouting";
