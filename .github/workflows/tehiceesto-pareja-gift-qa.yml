@@ -95,6 +95,15 @@ jobs:
             await page.locator(".pair-cinematic-umbral.is-closed").waitFor({timeout:6000});
             const door=page.locator(".pcu-door-closed-leaf");
             if(await door.count()!==1)throw Error("Physical closed door missing");
+            const materials=await page.evaluate(()=>{
+              const interior=document.querySelector(".pcu-door-picture");
+              const leaf=document.querySelector(".pcu-door-closed-leaf");
+              return {interior:getComputedStyle(interior).backgroundImage,leaf:getComputedStyle(leaf).backgroundImage,interiorOpacity:getComputedStyle(interior).opacity};
+            });
+            if(materials.interior.includes("url(")||materials.leaf.includes("url("))
+              throw Error("Duplicated photo of doorway still exists: "+JSON.stringify(materials));
+            if(Number(materials.interiorOpacity)>.05)
+              throw Error("Light interior revealed before the single door opens: "+JSON.stringify(materials));
             if(await page.locator(".pcu-invitation [data-action='advance']").count())throw Error("Continue displayed before door opened");
             await page.waitForTimeout(350);
             await page.screenshot({path:"gift-visual-qa/"+name+"-threshold-closed.png",fullPage:false});
@@ -103,6 +112,8 @@ jobs:
             await page.waitForTimeout(550);
             if((await page.locator("main.thi-experience").getAttribute("data-scene"))!=="door")throw Error("Opening incorrectly skipped the threshold");
             await page.locator(".pair-cinematic-umbral.is-open").waitFor({timeout:4500});
+            const openedInterior=await page.locator(".pcu-door-picture").evaluate(el=>getComputedStyle(el).opacity);
+            if(Number(openedInterior)<.95)throw Error("Lit interior not revealed after opening: "+openedInterior);
             const style=await door.evaluate(el=>getComputedStyle(el).transform);
             if(style==="none")throw Error("Door failed to rotate");
             await page.waitForTimeout(400);
