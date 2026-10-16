@@ -12,6 +12,8 @@ on:
       - "src/app/tehiceesto/PairCinematicUmbral.css"
       - "src/app/tehiceesto/PairVoicePremium.tsx"
       - "src/app/tehiceesto/PairVoicePremium.css"
+      - "src/app/tehiceesto/PairMemoryLight.tsx"
+      - "src/app/tehiceesto/PairMemoryLight.css"
   workflow_dispatch:
 
 permissions:
@@ -143,6 +145,36 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-voice-after.png",fullPage:false});
             await page.locator(".pvp-keep").click();
             await page.locator("main.thi-experience[data-scene='light']").waitFor({timeout:8000});
+            await page.locator(".pair-memory-light[data-pair-light='cinematic-v2']").waitFor({timeout:5000});
+            await page.waitForTimeout(1550);
+            const stage=page.locator(".pml-stage");
+            const photo=page.locator(".pml-photo-spot img");
+            if(!(await stage.isVisible())||!(await photo.isVisible()))throw Error("Cinematic light photograph missing");
+            if(await page.locator(".pml-continue").count())throw Error("Light CTA shown before exploration");
+            const photoLoaded=await photo.evaluate(el=>el.complete && el.naturalWidth>0);
+            if(!photoLoaded)console.log("NOTE:",name,"external image inaccessible in CI, verify fallback on production");
+            const stageBg=await stage.evaluate(el=>getComputedStyle(el).backgroundColor);
+            if(stageBg==="rgb(0, 0, 0)")throw Error("Old black photograph rectangle remains");
+            const stageBox=await stage.boundingBox();
+            if(!stageBox)throw Error("Light touch area has no bounds");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-light-before.png",fullPage:false});
+            await page.mouse.move(stageBox.x+stageBox.width*.2,stageBox.y+stageBox.height*.43);
+            await page.mouse.down();
+            for(let row=0;row<4;row++){
+              const fromX=stageBox.x+stageBox.width*(row%2===0?.16:.84);
+              const toX=stageBox.x+stageBox.width*(row%2===0?.84:.16);
+              const y=stageBox.y+stageBox.height*(.29+row*.12);
+              await page.mouse.move(fromX,y,{steps:3});
+              await page.mouse.move(toX,y,{steps:18});
+            }
+            await page.mouse.up();
+            await page.locator(".pair-memory-light.is-revealed").waitFor({timeout:6000});
+            await page.waitForTimeout(950);
+            if(!(await page.locator(".pml-reveal-message").isVisible()))throw Error("Personalized message missing after discovery");
+            if(!(await page.locator(".pml-continue").isVisible()))throw Error("Continue missing after discovery");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-light-after.png",fullPage:false});
+            await page.locator(".pml-continue").click();
+            await page.locator("main.thi-experience[data-scene='stars']").waitFor({timeout:8000});
             if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
             console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
             await context.close();
