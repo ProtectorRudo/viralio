@@ -1713,6 +1713,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             <PairRoseFinale
               message={token(copy.finale.roseMessage||"Te amo")}
               subtitle={token(copy.finale.roseSubtitle||"Y te volvería a elegir.")}
+              lead={token(copy.finale.lead)}
             />
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
             {!customerGift&&<Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>}
