@@ -1,0 +1,769 @@
+/* PAREJA INTRO · The Gift
+   Isolated editorial art direction.  The six remaining scenes remain unchanged. */
+.experience-shell--pareja .couple-gift-intro,
+.couple-gift-intro {
+  --gift-rose:#bd7887;
+  --gift-champagne:#f2ca9c;
+  --gift-cloth:linear-gradient(119deg,#67303d 0%,#a95f70 7%,#dc9bab 16%,#b77385 24%,#eeb5bd 32%,#8d495d 52%,#d58d9d 66%,#f1b7bd 79%,#8e4659 100%);
+  --gift-box:linear-gradient(118deg,#6b2b3c 0%,#b46b7b 12%,#d38d9b 30%,#975267 52%,#db91a1 78%,#7c364c 100%);
+  min-height:100svh;
+  padding:80px 18px 100px;
+  background:#10090d;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  isolation:isolate;
+  color:#f6e9e5;
+  font-family:"DM Sans",sans-serif;
+}
+.couple-gift-intro::before,
+.couple-gift-intro::after {content:"";position:absolute;pointer-events:none;inset:0;z-index:-1}
+.couple-gift-intro::before{
+  background:
+    radial-gradient(ellipse 49% 43% at 50% 62%,rgba(145,43,65,.37),transparent 84%),
+    radial-gradient(ellipse 60% 62% at 3% 15%,rgba(117,34,53,.54),transparent 82%),
+    radial-gradient(ellipse 44% 38% at 98% 95%,rgba(67,26,61,.43),transparent 80%),
+    linear-gradient(137deg,#270f19 2%,#160c12 46%,#09070b 100%);
+}
+.couple-gift-intro::after {
+  background:linear-gradient(180deg,rgba(0,0,0,.07),transparent 35%,rgba(0,0,0,.27)),
+   repeating-radial-gradient(circle at 24% 41%,rgba(244,209,184,.06) 0 .5px,transparent .9px 6px);
+  opacity:.45;
+}
+.couple-gift-backdrop{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.couple-gift-halo{position:absolute;width:min(106vw,850px);aspect-ratio:1;border:1px solid rgba(229,179,168,.055);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 110px rgba(235,171,157,.013),0 0 0 240px rgba(235,171,157,.007)}
+.couple-gift-ambient{position:absolute;border-radius:50%;filter:blur(85px);opacity:.42}
+.couple-gift-ambient.ambient-one{width:330px;height:340px;left:-185px;top:10%;background:#85334f}
+.couple-gift-ambient.ambient-two{width:300px;height:260px;right:-160px;bottom:3%;background:#82344b}
+.couple-gift-ambient.ambient-three{width:270px;height:270px;left:35%;bottom:18%;background:#9d4657;opacity:.15}
+.couple-gift-grain{position:absolute;inset:0;opacity:.15;pointer-events:none;background-image:repeating-linear-gradient(23deg,rgba(255,231,202,.085) 0 .65px,transparent .8px 3px);mix-blend-mode:soft-light}
+.couple-gift-content{
+  width:min(100%,840px);min-height:min(670px,calc(100svh - 180px));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;z-index:4;
+}
+.couple-gift-prelude{font:600 10px/1.4 "DM Sans",sans-serif;letter-spacing:.23em;color:rgba(245,211,193,.65);text-align:center;margin:6px 0 2px;transition:opacity .46s,transform .6s}
+.couple-gift-prelude.folded-away{opacity:0;transform:translateY(-12px)}
+.couple-gift-theatre{position:relative;width:min(510px,94vw);height:clamp(320px,52svh,470px);perspective:1000px;transform-style:preserve-3d}
+.couple-gift-object{position:absolute;left:0;right:0;bottom:0;width:100%;height:74%;pointer-events:none;perspective:850px;transform-style:preserve-3d;filter:drop-shadow(0 18px 22px rgba(3,0,0,.18));transition:transform 1.1s cubic-bezier(.2,.8,.15,1)}
+.couple-gift-floor-shadow{position:absolute;left:11%;right:11%;bottom:1%;height:21%;border-radius:50%;background:#000;filter:blur(20px);opacity:.65;transform:scaleY(.46)}
+.couple-gift-box-interior{position:absolute;bottom:26%;left:17%;width:66%;height:29%;background:radial-gradient(ellipse at 50% 15%,#fff0c7 0%,#bf877e 20%,#50252f 68%,#1a0b12 100%);border:9px solid #7d4652;transform:perspective(700px) rotateX(54deg);transform-origin:bottom;box-shadow:inset 0 12px 32px #1b070f,0 0 21px #ad61546b}
+.couple-gift-paper{position:absolute;bottom:29%;width:33%;height:32%;z-index:2;opacity:0;transition:opacity .75s 1.1s,transform 1.3s 1s;clip-path:polygon(5% 100%,0 34%,27% 43%,20% 5%,66% 20%,96% 8%,80% 71%,100% 100%);background:linear-gradient(135deg,rgba(255,248,236,.9),rgba(232,191,172,.64) 55%,rgba(157,94,94,.3)),repeating-linear-gradient(53deg,transparent 0 8px,rgba(136,86,66,.08) 8px 9px);filter:drop-shadow(2px 7px 6px #52293370)}
+.couple-gift-paper.tissue-left{left:15%;transform:translateY(33px) rotate(-13deg)}
+.couple-gift-paper.tissue-right{right:16%;transform:translateY(33px) scaleX(-1) rotate(-16deg)}
+.couple-gift-box-base{
+ position:absolute;bottom:12%;left:15%;width:70%;height:42%;z-index:3;
+ border-radius:2px 2px 7px 7px;
+ background:
+  linear-gradient(90deg,rgba(18,6,10,.42),transparent 10%,rgba(254,219,194,.24) 35%,transparent 56%,rgba(11,5,8,.42)),
+  repeating-linear-gradient(178deg,rgba(255,228,212,.035) 0 1px,transparent 1px 5px),
+  var(--gift-box);
+ box-shadow:inset 1px 2px 3px #e9c1b349,inset -4px -10px 18px #3d12258e,0 30px 38px #05030670;
+ transform:perspective(1100px) rotateX(3deg);
+ transition:transform 1.5s ease,filter 1.5s;
+}
+.couple-gift-box-base::after{content:"";position:absolute;inset:0;border:1px solid rgba(255,207,194,.23);border-radius:inherit;box-shadow:inset 0 2px 0 rgba(251,200,179,.12)}
+.couple-gift-face-edge{position:absolute;top:1px;bottom:1px;width:8%;opacity:.6;background:linear-gradient(90deg,rgba(17,5,11,.5),transparent,#f3ccbd49)}
+.couple-gift-face-edge.edge-left{left:0}.couple-gift-face-edge.edge-right{right:0;transform:scaleX(-1)}
+.couple-gift-base-ribbon{position:absolute;left:45%;width:16%;height:100%;background:var(--gift-cloth);box-shadow:inset -2px 0 4px #23071280,inset 2px 0 3px #ffe0cc85,2px 0 4px #0005;transition:transform .88s ease .14s,opacity .75s .12s}
+.couple-gift-base-metallic{position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,#e5a6ab,#d69e82,transparent);opacity:.7}
+.couple-gift-lid{position:absolute;left:11%;width:78%;height:21%;bottom:50%;z-index:6;transform-style:preserve-3d;transform-origin:50% 92%;filter:drop-shadow(2px 15px 8px #12040998);transition:transform 1.15s cubic-bezier(.18,.7,.23,1),opacity .75s ease .8s}
+.couple-gift-lid-top{position:absolute;top:0;left:0;width:100%;height:75%;background:
+  linear-gradient(98deg,rgba(255,234,205,.10),transparent 47%,rgba(6,0,3,.23)),
+  repeating-linear-gradient(171deg,transparent 0 2px,rgba(255,235,220,.018) 2px 3px),
+  linear-gradient(132deg,#b77282 4%,#e2a5ac 33%,#d28e9d 53%,#9c5268 89%);
+  border:1px solid rgba(255,212,189,.5);box-shadow:inset 0 1px 0 #ffe2c5a8,inset 0 -8px 18px #50172e85,0 11px 19px #080305a0;
+  transform:perspective(650px) rotateX(40deg);transform-origin:bottom}
+.couple-gift-lid-front{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(95deg,#793849,#d08e9c 23%,#c27b8d 54%,#743447);border:1px solid #e2b4b149;box-shadow:inset 0 3px 8px #ffdaca36,inset 0 -5px 11px #4113228a}
+.couple-gift-lid-ribbon{position:absolute;z-index:2;top:0;bottom:0;left:42%;width:17%;transform:perspective(650px) rotateX(36deg);transform-origin:bottom;background:var(--gift-cloth);box-shadow:inset 2px 0 3px rgba(255,235,229,.44),inset -2px 0 5px #35141c8c,2px 0 4px #10040977;transition:transform .88s ease,opacity .65s .19s}
+.couple-gift-bow{position:absolute;z-index:5;bottom:83%;width:32%;height:82%;border:11px solid #bd7184;border-radius:10% 75% 37% 79%;background:
+ linear-gradient(127deg,#703143 4%,#f0b5bd 19%,#d391a2 36%,#683445 65%,#c98194 83%,#ffd2cd);
+ box-shadow:inset 5px 4px 11px rgba(255,238,221,.42),inset -10px -10px 14px #4317268a,0 12px 13px #17040d75;
+ transform-origin:90% 90%;
+ transition:transform .9s cubic-bezier(.18,.8,.2,1),opacity .5s .35s;
+}
+.couple-gift-bow::after{content:"";position:absolute;inset:2px;border:1px solid rgba(255,224,189,.48);border-radius:inherit;pointer-events:none}
+.couple-gift-bow.bow-left{left:19%;transform:rotate(-27deg) skew(-12deg,8deg)}
+.couple-gift-bow.bow-right{right:18%;transform:scaleX(-1) rotate(-27deg) skew(-12deg,8deg)}
+.couple-gift-knot{position:absolute;z-index:7;left:44%;bottom:87%;width:14%;height:37%;border-radius:40% 43% 38% 45%;background:linear-gradient(130deg,#ffe2da 0%,#df9aa7 28%,#9d4d64 82%);box-shadow:0 5px 10px #2a0b16ae,inset 2px 2px 5px #ffe1cf;transition:transform .8s,opacity .6s}
+.couple-gift-tail{position:absolute;bottom:70%;z-index:4;width:14%;height:155%;border:1px solid #f4c2aa38;background:linear-gradient(90deg,#8b4158,#e6a8ad 30%,#a85c74 54%,#edafaf 85%,#6b2d44);box-shadow:inset 2px 0 6px #ffe8d266,0 10px 12px #15050c8c;clip-path:polygon(0 0,100% 0,87% 100%,50% 87%,5% 100%);transform-origin:50% 0;transition:transform 1.15s cubic-bezier(.23,.62,.24,1),opacity .7s .3s}
+.couple-gift-tail.tail-left{left:40%;transform:rotate(33deg)}
+.couple-gift-tail.tail-right{right:40%;transform:rotate(-33deg)}
+.couple-gift-unseal{position:absolute;inset:13% 10% 5%;z-index:30;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;touch-action:pan-y;color:#493025}
+.couple-gift-unseal:disabled{cursor:default;pointer-events:none}
+.couple-gift-tag{
+  position:absolute;right:4%;top:18%;width:101px;height:121px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  background:linear-gradient(152deg,#fce4c9,#e9c4a3 46%,#d5aa89 100%);
+  border:1px solid rgba(255,247,228,.62);border-radius:4px 4px 11px 5px;
+  box-shadow:2px 11px 16px #210e1777,inset 2px 2px 2px #fff5e888;
+  transform:rotate(11deg);
+  font:italic 23px/1.04 "Instrument Serif",Georgia,serif;color:#4d302c;
+  transition:opacity .35s,transform .8s;
+}
+.couple-gift-tag::before{content:"";position:absolute;top:-4px;left:14%;width:10px;height:10px;border-radius:50%;border:2px solid #b78a60;box-shadow:inset 0 0 2px #fff}
+.couple-gift-tag i{position:absolute;left:calc(14% + 6px);top:-65px;width:1px;height:68px;transform:rotate(-10deg);transform-origin:bottom;background:linear-gradient(#cb9c73,#f7d5a9 65%,#87572b)}
+.couple-gift-tag b{font:normal 20px Georgia,serif}
+.couple-gift-tap-hint{position:absolute;bottom:5%;font:500 11px/1.3 "DM Sans",sans-serif;letter-spacing:.13em;color:#dcc0bc;text-transform:uppercase;text-shadow:0 2px 8px #080408}
+.couple-gift-unseal:hover .couple-gift-tag{transform:rotate(6deg) translateY(-5px)}
+.couple-gift-unseal:focus-visible{outline:1px solid #ffe1cf;outline-offset:-8px;border-radius:12px}
+.couple-gift-bloom{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);width:60%;height:34%;z-index:3;border-radius:50%;opacity:0;pointer-events:none;background:radial-gradient(ellipse,#fff3c9 0%,#e3b08a7a 27%,#ce7b7f55 54%,transparent 75%);filter:blur(15px);transition:opacity 1.2s .2s,height 1s .2s}
+.couple-gift-dust{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity .8s}
+.couple-gift-dust span{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffe0bb;box-shadow:0 0 10px 2px #ffd1b3;left:calc(11% + (var(--i, 1) * 4.9%));top:72%;animation:coupleGiftSpark 2.7s ease-in-out infinite;animation-delay:calc(var(--i, 1) * -105ms)}
+.couple-gift-dust span:nth-child(1){--i:1}.couple-gift-dust span:nth-child(2){--i:2}.couple-gift-dust span:nth-child(3){--i:3}.couple-gift-dust span:nth-child(4){--i:4}.couple-gift-dust span:nth-child(5){--i:5}.couple-gift-dust span:nth-child(6){--i:6}.couple-gift-dust span:nth-child(7){--i:7}.couple-gift-dust span:nth-child(8){--i:8}.couple-gift-dust span:nth-child(9){--i:9}.couple-gift-dust span:nth-child(10){--i:10}.couple-gift-dust span:nth-child(11){--i:11}.couple-gift-dust span:nth-child(12){--i:12}.couple-gift-dust span:nth-child(13){--i:13}.couple-gift-dust span:nth-child(14){--i:14}.couple-gift-dust span:nth-child(15){--i:15}.couple-gift-dust span:nth-child(16){--i:16}.couple-gift-dust span:nth-child(17){--i:17}.couple-gift-dust span:nth-child(18){--i:18}.couple-gift-dust span:nth-child(19){--i:19}
+@keyframes coupleGiftSpark{0%{opacity:0;transform:translate3d(0,30px,0) scale(.4)}26%{opacity:.8}100%{opacity:0;transform:translate3d(17px,-150px,0) scale(1.25)}}
+.couple-gift-reveal{
+  position:absolute;left:-13%;right:-13%;top:0;z-index:12;
+  text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transform:translateY(44px) scale(.97);filter:blur(12px);
+  transition:opacity 1.25s ease .1s,transform 1.25s cubic-bezier(.17,.8,.2,1) .1s,filter 1.1s ease .1s;
+}
+.couple-gift-dedication{font:600 10px/1.45 "DM Sans",sans-serif;color:#e6bec0;letter-spacing:.23em;text-transform:uppercase;text-wrap:balance;margin:0}
+.couple-gift-reveal h1{font-family:"Instrument Serif",Georgia,serif!important;font-weight:400!important;line-height:.93;letter-spacing:-.065em;color:#fff3ed;font-size:clamp(84px,14vw,156px);margin:6px 0 9px;text-shadow:0 0 38px rgba(250,177,180,.19)}
+.couple-gift-subtitle{display:flex;align-items:center;gap:11px;margin:0 auto 6px}
+.couple-gift-subtitle i{width:26px;height:1px;background:linear-gradient(90deg,transparent,#bd8582,transparent);flex-shrink:0}
+.couple-gift-subtitle p{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:clamp(19px,3vw,27px);line-height:1.14;max-width:380px;color:#d7b3b3;margin:0}
+.couple-gift-opening{max-width:400px;font-family:"Instrument Serif",Georgia,serif;font-size:clamp(20px,3.1vw,29px);line-height:1.24;text-wrap:balance;color:#f0ded7;margin:12px 0 0}
+.couple-gift-footer{display:flex;flex-direction:column;align-items:center;gap:11px;min-height:99px;opacity:0;transform:translateY(17px);pointer-events:none;transition:opacity .7s ease .3s,transform .7s ease .3s;position:relative;z-index:30}
+.couple-gift-footer.is-visible{opacity:1;transform:none;pointer-events:auto}
+.experience-shell .couple-gift-footer .couple-gift-continue{
+  margin:0;min-height:54px;min-width:min(280px,80vw);
+  display:flex;align-items:center;justify-content:center;gap:28px;
+  border-radius:999px!important;padding:13px 27px!important;
+  color:#fff5f2;background:linear-gradient(145deg,#d4889b,#ab5c76);
+  border:1px solid #f5bbc3a8;box-shadow:0 16px 40px #15030c77,inset 0 1px 1px #ffe0e2a0;
+  font:normal 23px/1.2 "Instrument Serif",Georgia,serif;cursor:pointer;
+  transition:filter .25s,transform .25s;
+}
+.couple-gift-footer .couple-gift-continue:disabled{pointer-events:none}
+.couple-gift-footer .couple-gift-continue:not(:disabled):hover{transform:translateY(-3px);filter:brightness(1.13)}
+.couple-gift-footer small{font:500 9px/1.4 "DM Sans",sans-serif;color:#af8b8e;letter-spacing:.12em;text-align:center;margin:0}
+/* Act I — satin loosens and slips before the lid moves. */
+.gift-phase-untying .couple-gift-bow.bow-left,
+.gift-phase-opening .couple-gift-bow.bow-left,
+.gift-phase-revealed .couple-gift-bow.bow-left{transform:translate(-62px,-24px) rotate(-103deg) scale(.56);opacity:0}
+.gift-phase-untying .couple-gift-bow.bow-right,
+.gift-phase-opening .couple-gift-bow.bow-right,
+.gift-phase-revealed .couple-gift-bow.bow-right{transform:translate(62px,-24px) rotate(103deg) scaleX(-.56);opacity:0}
+.gift-phase-untying .couple-gift-tail.tail-left,
+.gift-phase-opening .couple-gift-tail.tail-left,
+.gift-phase-revealed .couple-gift-tail.tail-left{transform:translate(-138px,90px) rotate(115deg) scale(.8);opacity:0}
+.gift-phase-untying .couple-gift-tail.tail-right,
+.gift-phase-opening .couple-gift-tail.tail-right,
+.gift-phase-revealed .couple-gift-tail.tail-right{transform:translate(138px,90px) rotate(-115deg) scale(.8);opacity:0}
+.gift-phase-untying .couple-gift-lid-ribbon,
+.gift-phase-opening .couple-gift-lid-ribbon,
+.gift-phase-revealed .couple-gift-lid-ribbon{transform:translateY(-35px) scaleX(.75);opacity:0}
+.gift-phase-untying .couple-gift-base-ribbon,
+.gift-phase-opening .couple-gift-base-ribbon,
+.gift-phase-revealed .couple-gift-base-ribbon{transform:translateY(45px) scaleX(.6);opacity:0}
+.gift-phase-untying .couple-gift-knot,
+.gift-phase-opening .couple-gift-knot,
+.gift-phase-revealed .couple-gift-knot{transform:translateY(-23px) scale(.7);opacity:0}
+.gift-phase-untying .couple-gift-tag,.gift-phase-opening .couple-gift-tag,.gift-phase-revealed .couple-gift-tag{transform:translate(85px,-30px) rotate(31deg);opacity:0}
+.gift-phase-untying .couple-gift-tap-hint,.gift-phase-opening .couple-gift-tap-hint,.gift-phase-revealed .couple-gift-tap-hint{opacity:0}
+/* Act II — lid moves like a real hinged piece; light is only revealed beneath it. */
+.gift-phase-opening .couple-gift-lid,.gift-phase-revealed .couple-gift-lid{transform:translateY(-135px) rotate(-12deg) rotateX(-23deg) scale(.92);opacity:0}
+.gift-phase-opening .couple-gift-paper,.gift-phase-revealed .couple-gift-paper{opacity:.93;transform:translateY(-1px) rotate(-10deg)}
+.gift-phase-opening .couple-gift-paper.tissue-right,.gift-phase-revealed .couple-gift-paper.tissue-right{transform:translateY(-1px) scaleX(-1) rotate(-10deg)}
+.gift-phase-opening .couple-gift-bloom,.gift-phase-revealed .couple-gift-bloom{opacity:.93}
+.gift-phase-opening .couple-gift-dust,.gift-phase-revealed .couple-gift-dust{opacity:1}
+.gift-phase-revealed .couple-gift-reveal{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+.gift-phase-revealed .couple-gift-object{transform:translateY(9%) scale(.9)}
+/* More room for a discreet product CTA at the right on phones. */
+@media(max-width:650px){
+  .couple-gift-intro{padding:72px 10px 105px;min-height:100svh}
+  .couple-gift-content{min-height:min(640px,calc(100svh - 150px))}
+  .couple-gift-prelude{max-width:78vw;font-size:9px;letter-spacing:.17em}
+  .couple-gift-theatre{width:min(410px,96vw);height:clamp(330px,51svh,440px)}
+  .couple-gift-tag{right:1%;top:20%;width:84px;height:103px;font-size:20px}
+  .couple-gift-reveal{left:-1%;right:-1%;top:0}
+  .couple-gift-reveal h1{font-size:clamp(75px,22vw,116px);margin:9px 0}
+  .couple-gift-dedication{font-size:8px;letter-spacing:.17em}
+  .couple-gift-subtitle p{font-size:21px;max-width:245px}
+  .couple-gift-subtitle i{width:15px}
+  .couple-gift-opening{font-size:21px;line-height:1.2;max-width:310px;margin-top:10px}
+  .couple-gift-bow{border-width:8px}
+  .couple-gift-object{height:71%}
+  .couple-gift-footer{min-height:87px}
+  .experience-shell .couple-gift-footer .couple-gift-continue{min-width:225px;min-height:50px;font-size:22px}
+}
+@media(max-width:650px) and (max-height:740px){
+  .couple-gift-intro{padding-top:66px;padding-bottom:70px}
+  .couple-gift-prelude{margin-top:0}
+  .couple-gift-theatre{height:clamp(300px,49svh,360px)}
+  .couple-gift-reveal h1{font-size:76px}
+  .couple-gift-opening{font-size:19px}
+  .couple-gift-subtitle p{font-size:19px}
+  .couple-gift-footer small{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .couple-gift-intro *, .couple-gift-intro *::before,.couple-gift-intro *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+/* Live engine compatibility — match the reference typography without
+   affecting any other template or previously sold frozen version. */
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .thi-scene.couple-gift-intro{
+  background:transparent!important;
+  width:100%;
+  min-height:100svh;
+  padding:78px 12px 98px;
+  overflow:hidden;
+}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-reveal h1{
+  font-family:"Instrument Serif",Georgia,serif!important;
+  font-weight:400!important;
+  font-size:clamp(78px,14vw,156px)!important;
+  line-height:.93!important;
+  letter-spacing:-.063em!important;
+  margin:6px 0 9px!important;
+}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-footer small {
+  margin:0;
+  color:#af8b8e;
+}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-footer .couple-gift-continue{
+  border-radius:999px!important;
+  min-height:54px!important;
+  padding:13px 27px!important;
+  background:linear-gradient(145deg,#d4889b,#ab5c76)!important;
+  font:normal 23px/1.2 "Instrument Serif",Georgia,serif!important;
+  color:#fff5f2!important;
+  border:1px solid #f5bbc3a8!important;
+  box-shadow:0 16px 40px #15030c77,inset 0 1px 1px #ffe0e2a0!important;
+}
+@media(max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-reveal h1{
+   font-size:clamp(75px,22vw,116px)!important;
+ }
+}
+
+
+/* ==============================================================
+   PAREJA V2 · UNIVERSAL LUXURY MATERIAL STUDY
+   Midnight ink + champagne silk. No gender-coded pink packaging.
+   Scoped to the current reusable live template only.
+   ============================================================== */
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .thi-scene.couple-gift-intro {
+  --gift-cloth:linear-gradient(95deg,#64503b 0%,#a88a63 9%,#ddc69e 20%,#f3dfb7 30%,#c3a67d 44%,#7d684e 57%,#e7d1a7 71%,#bb9e73 86%,#66513a 100%);
+  --gift-box:linear-gradient(108deg,#151f23 0%,#334044 16%,#29383d 35%,#1f2c32 63%,#344146 84%,#162025 100%);
+  color:#f1e9da;
+  background:
+    radial-gradient(ellipse 65% 45% at 51% 44%,rgba(132,107,72,.18),transparent 76%),
+    radial-gradient(ellipse 55% 61% at 8% 14%,rgba(64,75,82,.18),transparent 80%),
+    radial-gradient(ellipse 46% 54% at 100% 86%,rgba(46,57,63,.17),transparent 83%),
+    linear-gradient(148deg,#1b2428,#11171b 42%,#080c10 100%)!important;
+}
+.couple-gift-intro:before {
+ background:
+ radial-gradient(ellipse 31% 31% at 48% 47%,rgba(211,182,126,.065),transparent 80%),
+ linear-gradient(180deg,rgba(3,5,9,.07),transparent 48%,rgba(5,7,10,.28));
+}
+.couple-gift-intro:after {
+  background:repeating-linear-gradient(108deg,rgba(255,255,255,.032) 0 .7px,transparent 1px 7px);
+  opacity:.22;
+}
+.couple-gift-backdrop .couple-gift-halo{
+  border-color:rgba(204,173,122,.042);
+  box-shadow:0 0 0 110px rgba(233,208,150,.006),0 0 0 220px rgba(223,196,146,.004);
+}
+.couple-gift-backdrop .couple-gift-ambient.ambient-one{background:#6b6554;opacity:.18}
+.couple-gift-backdrop .couple-gift-ambient.ambient-two{background:#283e49;opacity:.16}
+.couple-gift-backdrop .couple-gift-ambient.ambient-three{background:#b69c69;opacity:.12}
+.couple-gift-intro .couple-gift-grain{
+  background:repeating-linear-gradient(29deg,rgba(242,219,188,.09) 0 .55px,transparent .75px 4px);
+  opacity:.07;
+}
+.couple-gift-intro .couple-gift-prelude{
+  color:#c8b99e;font-size:10px;letter-spacing:.19em;
+  max-width:min(90vw,520px);
+}
+.couple-gift-intro .couple-gift-theatre {
+  width:min(480px,94vw);
+  height:clamp(325px,49svh,456px);
+}
+.couple-gift-intro .couple-gift-object{
+  height:72%;filter:drop-shadow(0 24px 18px rgba(0,0,0,.28));
+}
+.couple-gift-intro .couple-gift-floor-shadow {
+  bottom:4%;left:15%;right:15%;height:15%;background:#030508;
+  opacity:.8;filter:blur(15px);
+}
+.couple-gift-intro .couple-gift-box-base{
+  left:18%;width:64%;bottom:18%;height:36%;
+  border:1px solid rgba(221,201,164,.23);border-radius:2px 2px 6px 6px;
+  background-image:
+    linear-gradient(94deg,rgba(0,0,0,.58),transparent 11%,rgba(242,226,196,.12) 39%,transparent 60%,rgba(2,8,11,.62)),
+    url("/viralio-3d/materials/fabric_leather_01-color.webp"),
+    var(--gift-box);
+  background-size:cover,250px 250px,cover;
+  background-blend-mode:normal,soft-light,normal;
+  background-color:#243036;
+  box-shadow:
+    inset 0 1px 1px rgba(244,225,192,.19),
+    inset 0 -18px 32px rgba(0,0,0,.42),
+    inset 7px 1px 20px rgba(6,10,13,.4),
+    8px 21px 30px rgba(0,0,0,.4),0 35px 80px rgba(0,0,0,.34);
+  transform:perspective(800px) rotateX(2deg);
+}
+.couple-gift-intro .couple-gift-box-base::after{
+  border:1px solid rgba(217,196,156,.15);
+  box-shadow:inset 0 1px rgba(255,255,255,.08);
+}
+.couple-gift-intro .couple-gift-face-edge {
+  opacity:.75;background:linear-gradient(90deg,#0a1215,rgba(226,205,168,.1),transparent);
+}
+.couple-gift-intro .couple-gift-base-ribbon{
+  left:45%;width:10%;height:100%;
+  background:var(--gift-cloth);
+  box-shadow:inset 1px 0 3px rgba(255,245,224,.35),inset -3px 0 5px rgba(41,30,19,.65),2px 0 5px rgba(0,0,0,.38);
+}
+.couple-gift-intro .couple-gift-base-metallic{
+  background:linear-gradient(90deg,#1d2628,rgba(241,220,184,.36) 25%,rgba(240,219,176,.58) 50%,rgba(34,43,46,.7));
+  height:2px;opacity:1;
+}
+.couple-gift-intro .couple-gift-emboss{
+  position:absolute;left:5%;bottom:17%;z-index:2;
+  font:600 7px/1.2 "DM Sans",sans-serif;letter-spacing:.23em;
+  color:rgba(218,196,159,.60);text-shadow:0 1px rgba(0,0,0,.58);
+}
+.couple-gift-intro .couple-gift-box-interior{
+  left:18%;width:64%;height:19%;bottom:48%;
+  border:6px solid #1b2428;background:radial-gradient(ellipse at 50% 38%,#c9ad7c,#544839 36%,#131d20 75%,#090e12);
+  box-shadow:inset 0 14px 25px #070b0fe8,0 0 17px rgba(198,167,112,.24);
+}
+.couple-gift-intro .couple-gift-lid{
+  left:15%;width:70%;height:19%;bottom:53%;
+  filter:drop-shadow(0 14px 10px rgba(0,0,0,.49));
+  transform-origin:50% 86%;
+  transition:transform 1.22s cubic-bezier(.16,.73,.13,1),opacity .8s ease .85s;
+}
+.couple-gift-intro .couple-gift-lid-top{
+  height:83%;
+  background-image:
+    linear-gradient(112deg,rgba(0,0,0,.42),rgba(240,224,189,.13) 42%,rgba(0,0,0,.42)),
+    url("/viralio-3d/materials/fabric_leather_01-color.webp"),
+    linear-gradient(115deg,#253036,#475357,#253137);
+  background-size:cover,250px 250px,cover;
+  background-blend-mode:normal,soft-light,normal;
+  border:1px solid rgba(228,208,172,.24);
+  box-shadow:inset 0 2px 2px rgba(241,222,196,.15),inset 0 -7px 11px rgba(0,0,0,.57),0 13px 21px #050a0ccc;
+  transform:perspective(720px) rotateX(48deg);
+}
+.couple-gift-intro .couple-gift-lid-front{
+  height:42%;
+  background:linear-gradient(98deg,#172126,#364448 20%,#243238 63%,#111c21);
+  border:1px solid rgba(211,189,153,.18);
+  box-shadow:inset 0 2px 4px rgba(255,235,193,.14),inset 0 -5px 14px rgba(0,0,0,.51);
+}
+.couple-gift-intro .couple-gift-lid-ribbon{
+  left:45%;width:10%;
+  background:var(--gift-cloth);
+  box-shadow:inset 1px 0 3px rgba(255,244,224,.51),inset -2px 0 6px rgba(50,37,22,.5),2px 0 5px #070e11a8;
+}
+.couple-gift-intro .couple-gift-bow{
+  bottom:79%;width:26%;height:67%;
+  border:9px solid transparent;
+  border-radius:67% 32% 62% 38% / 66% 53% 54% 53%;
+  background:
+    radial-gradient(ellipse at 23% 18%,rgba(255,243,213,.4),transparent 49%) padding-box,
+    linear-gradient(125deg,#a18154 3%,#f2dfb6 25%,#9c7d52 52%,#e1c79c 83%,#6b5135 100%) border-box;
+  box-shadow:
+    inset 3px 4px 7px rgba(255,247,226,.38),
+    inset -7px -10px 16px rgba(48,35,23,.59),
+    0 9px 11px rgba(0,0,0,.36);
+  transform-origin:88% 86%;
+}
+.couple-gift-intro .couple-gift-bow:after {
+  inset:4px;border-radius:inherit;border:1px solid rgba(243,220,172,.33);
+  background:radial-gradient(ellipse at 57% 55%,rgba(12,23,25,.50),rgba(42,45,38,.27) 62%,transparent);
+  box-shadow:inset 0 3px 7px rgba(0,0,0,.36);
+}
+.couple-gift-intro .couple-gift-bow.bow-left{
+  left:23%;transform:rotate(-16deg) skew(-5deg,4deg);
+}
+.couple-gift-intro .couple-gift-bow.bow-right{
+  right:23%;transform:scaleX(-1) rotate(-16deg) skew(-5deg,4deg);
+}
+.couple-gift-intro .couple-gift-knot{
+  bottom:82%;left:45%;width:11%;height:34%;
+  background:linear-gradient(122deg,#fff0c7 0%,#d8bb8d 39%,#876843 87%);
+  box-shadow:0 3px 8px rgba(0,0,0,.56),inset 2px 2px 6px rgba(255,255,255,.40);
+}
+.couple-gift-intro .couple-gift-tail{
+  bottom:67%;width:11%;height:126%;
+  border:1px solid rgba(239,218,174,.29);
+  background:linear-gradient(90deg,#947449,#eddab0 32%,#9a805a 58%,#f1dfb4 79%,#796042);
+  box-shadow:inset 2px 0 6px rgba(255,246,218,.5),0 8px 13px rgba(0,0,0,.4);
+}
+.couple-gift-intro .couple-gift-tail.tail-left{left:41%;transform:rotate(28deg)}
+.couple-gift-intro .couple-gift-tail.tail-right{right:41%;transform:rotate(-28deg)}
+.couple-gift-intro .couple-gift-tag{
+  right:11%;top:24%;width:80px;height:99px;
+  font-size:18px;line-height:1.06;color:#433626;gap:5px;
+  border:1px solid rgba(255,251,233,.59);
+  background:
+     repeating-linear-gradient(95deg,rgba(128,95,59,.028) 0 1px,transparent 1px 5px),
+     linear-gradient(130deg,#f9efd9,#ead6b7 66%,#d0af87);
+  box-shadow:2px 8px 16px rgba(0,0,0,.48),inset 1px 1px 1px #fffdf0;
+  transform:rotate(7deg);
+}
+.couple-gift-intro .couple-gift-tag:before{border-color:#9b815d}
+.couple-gift-intro .couple-gift-tag i{
+  background:linear-gradient(#94734d,#e5c79c 50%,#826644);
+  height:49px;top:-49px;
+}
+.couple-gift-intro .couple-gift-tag b{
+  font:normal 18px Georgia,serif;color:#957850;
+}
+.couple-gift-intro .couple-gift-tag span{font-weight:400}
+.couple-gift-intro .couple-gift-tap-hint {
+  position:absolute;bottom:0;left:50%;right:auto;
+  transform:translateX(-50%);width:max-content;max-width:85%;
+  z-index:25;pointer-events:none;text-align:center;
+  color:#d9c4a4;font-size:10px;letter-spacing:.16em;text-shadow:0 2px 14px rgba(0,0,0,.6);
+  white-space:nowrap;
+}
+.couple-gift-intro .couple-gift-tap-hint i{margin-left:8px;font-style:normal;color:#e4c897}
+.couple-gift-intro .couple-gift-unseal{inset:7% 10% 10%}
+.couple-gift-intro .couple-gift-bloom{
+  background:radial-gradient(ellipse,#fff3ce 0%,rgba(239,198,126,.59) 24%,rgba(141,137,105,.22) 59%,transparent 77%);
+  filter:blur(18px);
+}
+.couple-gift-intro .couple-gift-paper {
+  bottom:43%;height:22%;width:31%;
+  background:linear-gradient(117deg,rgba(255,252,238,.9),rgba(224,211,186,.79) 54%,rgba(141,133,105,.29));
+  filter:drop-shadow(1px 6px 6px #0a0b0c99);
+}
+.couple-gift-intro .couple-gift-paper.tissue-left{left:21%}
+.couple-gift-intro .couple-gift-paper.tissue-right{right:21%}
+.couple-gift-intro .couple-gift-reveal{
+  left:-4%;right:-4%;top:3%;
+}
+.couple-gift-intro .couple-gift-dedication{color:#d4c29f}
+.couple-gift-intro .couple-gift-reveal h1{
+  color:#f9f3e6;text-shadow:0 0 36px rgba(231,200,149,.15);
+}
+.couple-gift-intro .couple-gift-subtitle i{
+ background:linear-gradient(90deg,transparent,#ad9673,transparent);
+}
+.couple-gift-intro .couple-gift-subtitle p{color:#d0bc9d}
+.couple-gift-intro .couple-gift-opening{color:#e5e0d4}
+.couple-gift-intro .couple-gift-footer small{color:#af9f89}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-footer .couple-gift-continue{
+  border:1px solid rgba(237,213,177,.45)!important;
+  color:#1c272a!important;
+  background:linear-gradient(130deg,#ead5b3,#c2a274 52%,#f5dfba)!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.29),inset 0 1px rgba(255,249,226,.69)!important;
+}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-footer .couple-gift-continue:not(:disabled):hover{
+ background:linear-gradient(130deg,#fff0cd,#d8b687 52%,#f9e6c6)!important;
+}
+.gift-phase-untying .couple-gift-tap-hint,
+.gift-phase-opening .couple-gift-tap-hint,
+.gift-phase-revealed .couple-gift-tap-hint{
+  opacity:0;transition:opacity .35s;
+}
+.gift-phase-opening .couple-gift-lid,
+.gift-phase-revealed .couple-gift-lid{
+  transform:translateY(-115px) rotate(-8deg) rotateX(-42deg) scale(.94);
+}
+.gift-phase-revealed .couple-gift-object{
+ transform:translateY(12%) scale(.92);
+}
+@media(max-width:650px) {
+  .thi-template-live.thi-theme-pareja[data-scene="intro"] .thi-scene.couple-gift-intro{
+    padding-top:85px;padding-bottom:96px;
+  }
+  .couple-gift-intro .couple-gift-theatre{
+    width:min(390px,94vw);height:clamp(320px,49svh,426px);
+  }
+  .couple-gift-intro .couple-gift-object{height:72%}
+  .couple-gift-intro .couple-gift-tag{
+    right:6%;top:23%;width:73px;height:90px;font-size:17px;
+  }
+  .couple-gift-intro .couple-gift-bow{border-width:7px}
+  .couple-gift-intro .couple-gift-tap-hint{font-size:9px;bottom:1%}
+  .couple-gift-intro .couple-gift-reveal{top:1%}
+  .couple-gift-intro .couple-gift-emboss{font-size:6px}
+}
+@media(max-width:375px) {
+  .couple-gift-intro .couple-gift-tag{right:2%}
+  .couple-gift-intro .couple-gift-prelude{font-size:8px}
+}
+
+
+/* Couture finishing: supple tails, attachment thread and correct unwrapping
+   precedence. The previous base-material selectors overrode phase transforms. */
+.couple-gift-intro .couple-gift-tail{
+  bottom:64%;height:68%;width:10%;border:0;
+  clip-path:polygon(6% 0,94% 0,89% 78%,48% 97%,8% 83%);
+  background:linear-gradient(90deg,#725a37 0%,#c6ad7c 15%,#f7e9bf 35%,#b99b6b 59%,#edd9aa 84%,#785e39 100%);
+  box-shadow:2px 8px 9px rgba(0,0,0,.32);
+}
+.couple-gift-intro .couple-gift-tail.tail-left{
+  left:42%;transform:rotate(61deg) translate(-7px,7px);
+}
+.couple-gift-intro .couple-gift-tail.tail-right{
+  right:42%;transform:rotate(-61deg) translate(7px,7px);
+}
+.couple-gift-intro .couple-gift-bow{
+  height:69%;width:28%;bottom:86%;
+  border-width:8px;border-radius:62% 37% 58% 43% / 61% 55% 56% 58%;
+}
+.couple-gift-intro .couple-gift-bow:after{
+  inset:6px;background:linear-gradient(110deg,rgba(31,40,41,.58),rgba(110,103,81,.13) 70%);
+  box-shadow:inset 0 3px 8px rgba(5,10,12,.32);
+}
+.couple-gift-intro .couple-gift-bow.bow-left{
+  left:22%;transform:rotate(-20deg) skew(-3deg,3deg);
+}
+.couple-gift-intro .couple-gift-bow.bow-right{
+  right:22%;transform:scaleX(-1) rotate(-20deg) skew(-3deg,3deg);
+}
+.couple-gift-intro .couple-gift-tag{
+  right:10%;top:23%;transform:rotate(5deg);
+}
+.couple-gift-intro .couple-gift-tag i{
+  left:-71px;top:13px;width:84px;height:1px;
+  transform:rotate(-18deg);transform-origin:right center;
+  background:linear-gradient(90deg,#9a855f,#e9cfa1,#a98e65);
+  filter:drop-shadow(0 1px 1px #0008);
+}
+.couple-gift-intro .couple-gift-tag:before{
+  top:8px;left:8px;width:7px;height:7px;border-width:1px;
+  border-color:#b69b73;background:#e9d5b1;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-bow.bow-left,
+.couple-gift-intro.gift-phase-opening .couple-gift-bow.bow-left,
+.couple-gift-intro.gift-phase-revealed .couple-gift-bow.bow-left{
+  transform:translate(-83px,-12px) rotate(-103deg) scale(.56);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-bow.bow-right,
+.couple-gift-intro.gift-phase-opening .couple-gift-bow.bow-right,
+.couple-gift-intro.gift-phase-revealed .couple-gift-bow.bow-right{
+  transform:translate(83px,-12px) rotate(103deg) scaleX(-.56);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-tail.tail-left,
+.couple-gift-intro.gift-phase-opening .couple-gift-tail.tail-left,
+.couple-gift-intro.gift-phase-revealed .couple-gift-tail.tail-left{
+  transform:translate(-112px,46px) rotate(115deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-tail.tail-right,
+.couple-gift-intro.gift-phase-opening .couple-gift-tail.tail-right,
+.couple-gift-intro.gift-phase-revealed .couple-gift-tail.tail-right{
+  transform:translate(112px,46px) rotate(-115deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-knot,
+.couple-gift-intro.gift-phase-opening .couple-gift-knot,
+.couple-gift-intro.gift-phase-revealed .couple-gift-knot{
+  transform:translateY(-25px) rotate(-10deg) scale(.52);opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-lid-ribbon,
+.couple-gift-intro.gift-phase-opening .couple-gift-lid-ribbon,
+.couple-gift-intro.gift-phase-revealed .couple-gift-lid-ribbon{
+  transform:translateY(-34px) scaleX(.79);opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-base-ribbon,
+.couple-gift-intro.gift-phase-opening .couple-gift-base-ribbon,
+.couple-gift-intro.gift-phase-revealed .couple-gift-base-ribbon{
+  transform:translateY(46px) scaleX(.72);opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-tag,
+.couple-gift-intro.gift-phase-opening .couple-gift-tag,
+.couple-gift-intro.gift-phase-revealed .couple-gift-tag{
+  transform:translate(63px,20px) rotate(39deg);opacity:0;
+}
+.couple-gift-intro.gift-phase-opening .couple-gift-paper,
+.couple-gift-intro.gift-phase-revealed .couple-gift-paper{
+  opacity:.4;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-paper{
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-object{
+  transform:translateY(20%) scale(.84);
+  opacity:.62;
+}
+
+
+/* PAREJA · FINISHING PASS 2026-10-15
+   Organic satin loops, more editorial whitespace, breathing room below the box.
+   Kept entirely inside CoupleGiftIntro, preserving the model's other scenes. */
+.couple-gift-intro .couple-gift-satin-bow {
+  position:absolute;
+  z-index:9;
+  left:0;
+  width:100%;
+  height:225%;
+  bottom:18%;
+  overflow:visible;
+  pointer-events:none;
+  filter:drop-shadow(0 7px 7px rgba(2,7,9,.45));
+}
+.couple-gift-satin-bow .couple-silk-loop,
+.couple-gift-satin-bow .couple-silk-tail,
+.couple-gift-satin-bow .couple-silk-knot {
+  transform-box:fill-box;
+  transform-origin:center center;
+  transition:transform 1.08s cubic-bezier(.18,.82,.25,1),opacity .8s ease;
+  will-change:transform,opacity;
+}
+.couple-gift-satin-bow .couple-silk-tail {
+  transition-delay:.09s;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-loop-left,
+.couple-gift-intro.gift-phase-opening .couple-silk-loop-left,
+.couple-gift-intro.gift-phase-revealed .couple-silk-loop-left {
+  transform:translate(-52px,-13px) rotate(-28deg) scale(.76);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-loop-right,
+.couple-gift-intro.gift-phase-opening .couple-silk-loop-right,
+.couple-gift-intro.gift-phase-revealed .couple-silk-loop-right {
+  transform:translate(52px,-13px) rotate(28deg) scale(.76);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-tail-left,
+.couple-gift-intro.gift-phase-opening .couple-silk-tail-left,
+.couple-gift-intro.gift-phase-revealed .couple-silk-tail-left {
+  transform:translate(-68px,20px) rotate(32deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-tail-right,
+.couple-gift-intro.gift-phase-opening .couple-silk-tail-right,
+.couple-gift-intro.gift-phase-revealed .couple-silk-tail-right {
+  transform:translate(68px,20px) rotate(-32deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-knot,
+.couple-gift-intro.gift-phase-opening .couple-silk-knot,
+.couple-gift-intro.gift-phase-revealed .couple-silk-knot {
+  transform:translateY(-23px) scale(.69) rotate(-8deg);
+  opacity:0;
+}
+/* The gift tag is attached by an oblique string to the centre knot. */
+.couple-gift-intro .couple-gift-tag {
+  right:8%;
+  top:26%;
+  transform:rotate(5deg);
+}
+.couple-gift-intro .couple-gift-tag i {
+  left:-73px;
+  top:15px;
+  height:1px;
+  width:83px;
+  transform:rotate(12deg);
+  transform-origin:right center;
+  background:linear-gradient(90deg,rgba(202,170,112,.7),#e5d09f,#9b7c4d);
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.5));
+}
+.couple-gift-intro .couple-gift-theatre {
+  margin-bottom:16px;
+}
+.couple-gift-intro .couple-gift-tap-hint {
+  bottom:-20px;
+  color:#e4d4b5;
+  letter-spacing:.19em;
+  font-weight:500;
+  font-size:10px;
+}
+/* Reveal should read like an editorial dedication, not typography squeezed
+   against a remnant of the box. Box dissolves only after the opening. */
+.couple-gift-intro .couple-gift-reveal {
+  top:0;
+  left:0;
+  right:0;
+  padding:3px 9px 0;
+  gap:0;
+}
+.couple-gift-intro .couple-gift-dedication {
+  margin-bottom:12px;
+  line-height:1.55;
+  letter-spacing:.2em;
+}
+.couple-gift-intro .couple-gift-reveal h1 {
+  margin:7px 0 20px!important;
+  line-height:1.02!important;
+  letter-spacing:-.052em!important;
+}
+.couple-gift-intro .couple-gift-subtitle {
+  margin:0 auto 17px;
+  gap:15px;
+}
+.couple-gift-intro .couple-gift-subtitle p {
+  line-height:1.28;
+  text-wrap:balance;
+}
+.couple-gift-intro .couple-gift-opening {
+  margin:14px auto 0;
+  line-height:1.38;
+  max-width:445px;
+  text-wrap:balance;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-object {
+  opacity:0;
+  transform:translateY(24%) scale(.8);
+  filter:blur(7px);
+  transition:transform 1.15s ease,filter 1.05s ease,opacity 1.15s ease;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-reveal {
+  transform:translateY(0) scale(1);
+}
+@media(max-width:650px){
+  .couple-gift-intro .couple-gift-satin-bow {
+    height:220%;
+    bottom:19%;
+  }
+  .couple-gift-intro .couple-gift-tag {right:5%;top:26%;transform:rotate(6deg)}
+  .couple-gift-intro .couple-gift-tag i {left:-68px;width:78px}
+  .couple-gift-intro .couple-gift-theatre {margin-bottom:20px}
+  .couple-gift-intro .couple-gift-tap-hint {
+    bottom:-23px;
+    font-size:9px;
+    letter-spacing:.15em;
+  }
+  .couple-gift-intro .couple-gift-reveal {
+    top:0;
+    padding:0 8px;
+  }
+  .couple-gift-intro .couple-gift-dedication {
+    margin-bottom:12px;
+    font-size:9px;
+    line-height:1.55;
+  }
+  .thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-reveal h1 {
+    font-size:clamp(66px,19.5vw,105px)!important;
+    margin:8px 0 18px!important;
+    line-height:1.03!important;
+  }
+  .couple-gift-intro .couple-gift-subtitle {
+    gap:10px;
+    margin:0 auto 16px;
+  }
+  .couple-gift-intro .couple-gift-subtitle p {
+    font-size:clamp(20px,5vw,23px);
+    line-height:1.24;
+    max-width:265px;
+  }
+  .couple-gift-intro .couple-gift-opening {
+    margin:13px auto 0;
+    max-width:305px;
+    font-size:clamp(19px,5vw,23px);
+    line-height:1.32;
+  }
+}
+@media(max-height:700px) and (max-width:650px){
+  .couple-gift-intro .couple-gift-dedication {margin-bottom:6px}
+  .thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-reveal h1 {margin:3px 0 10px!important;font-size:67px!important}
+  .couple-gift-intro .couple-gift-subtitle {margin-bottom:8px}
+  .couple-gift-intro .couple-gift-opening {margin-top:8px;font-size:18px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .couple-gift-satin-bow .couple-silk-loop,
+  .couple-gift-satin-bow .couple-silk-tail,
+  .couple-gift-satin-bow .couple-silk-knot {transition:none!important}
+}
