@@ -1,0 +1,143 @@
+/* PAREJA / UMBRAL
+   Cinematic doorway art from approved source image. Only modifies this live scene.
+   Portrait art is a reusable fixed asset; copy stays dynamic in ExperienceEngine. */
+.thi-template-live.thi-theme-pareja[data-scene="door"] .pair-cinematic-umbral {
+  position:relative!important;isolation:isolate;display:flex!important;
+  width:100%!important;min-height:100svh!important;overflow:hidden!important;
+  padding:116px 18px 112px!important;
+  justify-content:center!important;align-items:center!important;
+  background:
+    radial-gradient(ellipse 70% 47% at 49% 61%,rgba(153,58,61,.25),transparent 75%),
+    radial-gradient(ellipse 45% 51% at 7% 15%,rgba(138,41,54,.29),transparent 80%),
+    radial-gradient(ellipse 45% 52% at 94% 83%,rgba(76,36,78,.35),transparent 88%),
+    linear-gradient(160deg,#330f1b 0%,#1e0c14 47%,#140c18 100%)!important;
+  color:#fff0e9;
+}
+.pair-cinematic-umbral .pcu-atmosphere{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.pair-cinematic-umbral .pcu-orbit{
+  position:absolute;top:50%;left:50%;width:min(125vw,680px);aspect-ratio:1;
+  border:1px solid rgba(214,157,144,.13);border-radius:50%;transform:translate(-50%,-50%);
+}
+.pair-cinematic-umbral .pcu-orbit-two{width:min(93vw,520px);border-color:rgba(220,160,151,.075);transform:translate(-50%,-47%) rotate(17deg)}
+.pair-cinematic-umbral .pcu-airlight{position:absolute;inset:0;opacity:.59;background:
+ radial-gradient(1.5px 1.5px at 12% 22%,#e8bca4,transparent 100%),
+ radial-gradient(2px 2px at 79% 41%,#ffd2af,transparent 100%),
+ radial-gradient(1px 1px at 32% 78%,#df9a8a,transparent 100%),
+ radial-gradient(2px 2px at 87% 82%,#ebaa96,transparent 100%),
+ radial-gradient(1px 1px at 65% 13%,#fff0d2,transparent 100%);
+}
+.pair-cinematic-umbral .pcu-content{
+  position:relative;z-index:2;width:min(100%,700px);margin:0 auto;min-height:690px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.pair-cinematic-umbral .pcu-heading{position:relative;z-index:5;text-align:center;width:100%;flex-shrink:0}
+.pair-cinematic-umbral .pcu-eyebrow{
+  font-family:"DM Sans",Arial,sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.24em;text-transform:uppercase;color:#dcbab0;
+  margin:0 auto 14px;line-height:1.5;
+}
+.pair-cinematic-umbral .pcu-heading h2 {
+  font-family:"Instrument Serif",Georgia,serif!important;font-size:clamp(54px,9vw,89px)!important;
+  font-weight:400!important;font-style:italic!important;line-height:.96!important;
+  letter-spacing:-.034em!important;text-align:center!important;text-wrap:balance;
+  color:#fff1e9!important;margin:0 auto 0!important;max-width:670px!important;
+  text-shadow:0 7px 32px rgba(210,137,123,.1);
+}
+.pair-cinematic-umbral .pcu-heading h2 span{display:block}
+.pair-cinematic-umbral .pcu-door-hit{
+  position:relative;z-index:3;display:block!important;background:transparent!important;
+  width:min(350px,82vw);height:clamp(320px,42svh,440px);flex-shrink:0;
+  margin:12px auto 5px!important;padding:0!important;cursor:pointer;
+  border:0!important;touch-action:manipulation;overflow:visible!important;
+  -webkit-tap-highlight-color:transparent;
+}
+.pair-cinematic-umbral .pcu-door-hit:focus-visible{
+  outline:2px solid #f4c0a4;outline-offset:7px;border-radius:7px;
+}
+.pair-cinematic-umbral .pcu-door-scene{
+  display:block;position:absolute;inset:0;perspective:900px;
+  transform:translateZ(0);overflow:visible;
+  -webkit-mask-image:radial-gradient(ellipse 58% 65% at 49% 51%,#000 46%,rgba(0,0,0,.93) 70%,transparent 100%);
+  mask-image:radial-gradient(ellipse 58% 65% at 49% 51%,#000 46%,rgba(0,0,0,.93) 70%,transparent 100%);
+}
+.pair-cinematic-umbral .pcu-door-picture{
+  display:block;position:absolute;inset:0;
+  background:url("/tehiceesto/umbral-cinematico.webp") center 52%/contain no-repeat;
+  filter:contrast(1.07) saturate(.91);
+  transform:scale(.985);transform-origin:center 53%;
+  transition:transform 1.28s cubic-bezier(.22,.61,.16,1),filter 1.2s,opacity 1.2s;
+  animation:pcu-breathe 5.4s ease-in-out infinite alternate;
+}
+@keyframes pcu-breathe{from{filter:brightness(.95) saturate(.86)}to{filter:brightness(1.12) saturate(1)}}
+.pair-cinematic-umbral .pcu-door-bloom{
+  position:absolute;z-index:0;left:21%;right:15%;top:19%;bottom:14%;
+  background:radial-gradient(ellipse at 54% 64%,rgba(255,225,191,.55),rgba(235,139,108,.26) 40%,transparent 70%);
+  filter:blur(35px);opacity:.76;transition:transform 1.2s,opacity 1.2s;
+}
+.pair-cinematic-umbral .pcu-threshold-glimmer{
+  position:absolute;z-index:2;bottom:6%;left:20%;right:22%;height:25%;
+  background:radial-gradient(ellipse at 50% 19%,rgba(255,220,167,.16),transparent 67%);
+  pointer-events:none;
+}
+.pair-cinematic-umbral .pcu-invitation{z-index:5;display:flex;flex-direction:column;align-items:center;width:100%}
+.pair-cinematic-umbral .pcu-invitation>p{
+  font-family:"Instrument Serif",Georgia,serif;font-style:italic;
+  font-size:clamp(24px,3.5vw,32px);line-height:1.2;color:#e9c5bc;
+  text-align:center;margin:0 auto 20px;max-width:520px;text-wrap:balance;
+}
+.pair-cinematic-umbral .pcu-invitation>button{
+  width:min(330px,78vw);min-height:59px;padding:13px 28px;
+  display:flex;align-items:center;justify-content:center;gap:22px;
+  border-radius:999px;border:1px solid rgba(233,153,145,.58);cursor:pointer;
+  background:linear-gradient(135deg,rgba(119,44,61,.78),rgba(73,31,47,.7))!important;
+  backdrop-filter:blur(14px);color:#f9e7df!important;
+  font-family:"Instrument Serif",Georgia,serif;font-size:24px;
+  box-shadow:inset 0 1px rgba(253,204,189,.22),0 12px 32px rgba(0,0,0,.22);
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.pair-cinematic-umbral .pcu-invitation>button:hover:not(:disabled){
+  transform:translateY(-3px);border-color:#f6c8ae;
+  box-shadow:0 15px 38px rgba(182,71,71,.26);
+}
+.pair-cinematic-umbral .pcu-invitation>button:focus-visible{outline:2px solid #f5cfaf;outline-offset:4px}
+.pair-cinematic-umbral .pcu-invitation>button b{font-weight:400;color:#edc0b3}
+.pair-cinematic-umbral .pcu-veil{
+  position:absolute;inset:0;z-index:12;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 62%,#fff2d8,#dfa98a 30%,#40212e 72%,#200f1c);
+  opacity:0;transform:scale(1);transition:opacity 1.13s ease,transform 1.25s;
+}
+.pair-cinematic-umbral.is-entering .pcu-door-picture{
+  animation:none;transform:scale(1.75) translateY(8%);filter:brightness(1.65) blur(1px);opacity:.88;
+}
+.pair-cinematic-umbral.is-entering .pcu-door-bloom{transform:scale(2.25);opacity:1}
+.pair-cinematic-umbral.is-entering .pcu-veil{opacity:1;transform:scale(1.08);transition-delay:.6s}
+.pair-cinematic-umbral.is-entering .pcu-heading,.pair-cinematic-umbral.is-entering .pcu-invitation{
+  opacity:0;transform:translateY(-8px);transition:opacity .55s ease,transform .55s ease;
+}
+@media(max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="door"] .pair-cinematic-umbral{
+   padding:112px 13px 108px!important;
+   min-height:100svh!important;
+ }
+ .pair-cinematic-umbral .pcu-content{width:100%;min-height:0}
+ .pair-cinematic-umbral .pcu-eyebrow{font-size:9px;letter-spacing:.21em;margin-bottom:12px}
+ .pair-cinematic-umbral .pcu-heading h2{
+   font-size:clamp(46px,10.7vw,68px)!important;line-height:.98!important;max-width:calc(100vw - 30px)!important
+ }
+ .pair-cinematic-umbral .pcu-door-hit{
+   height:clamp(275px,39svh,395px);width:min(325px,90vw);margin:0 auto 0!important;
+ }
+ .pair-cinematic-umbral .pcu-invitation>p{font-size:clamp(23px,6.3vw,27px);margin:0 auto 20px}
+ .pair-cinematic-umbral .pcu-invitation>button{min-height:55px;font-size:22px;width:min(290px,78vw)}
+}
+@media(max-height:740px) and (max-width:650px){
+ .pair-cinematic-umbral .pcu-heading h2{font-size:clamp(41px,9.3vw,53px)!important}
+ .pair-cinematic-umbral .pcu-door-hit{height:clamp(228px,34svh,295px)}
+ .pair-cinematic-umbral .pcu-invitation>p{font-size:22px;margin-bottom:12px}
+ .pair-cinematic-umbral .pcu-invitation>button{min-height:50px}
+}
+@media(prefers-reduced-motion:reduce){
+ .pair-cinematic-umbral *, .pair-cinematic-umbral *::before,.pair-cinematic-umbral *::after{
+  animation:none!important;transition-duration:.01ms!important;
+ }
+}
