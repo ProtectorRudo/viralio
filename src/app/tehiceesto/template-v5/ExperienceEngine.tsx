@@ -1714,6 +1714,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
               message={token(copy.finale.roseMessage||"Te amo")}
               subtitle={token(copy.finale.roseSubtitle||"Y te volvería a elegir.")}
               lead={token(copy.finale.lead)}
+              roseKicker={token(copy.finale.roseKicker||"Un secretito para vos")}
+              roseTapLabel={token(copy.finale.roseTapLabel||"Tocá la rosa")}
+              roseTapHint={token(copy.finale.roseTapHint||"Hay algo más para vos")}
+              roseBloomHint={token(copy.finale.roseBloomHint||"Un momento más…")}
+              roseEnvelopeHint={token(copy.finale.roseEnvelopeHint||"Un secreto para vos…")}
+              roseSaveLabel={token(copy.finale.roseSaveLabel||"Guardar este instante")}
+              roseFarewellKicker={token(copy.finale.roseFarewellKicker||"Un final que permanece")}
+              roseFarewellTitle={token(copy.finale.roseFarewellTitle||"Gracias por llegar hasta acá.")}
             />
             <button data-action="restart" className="thi-pair-finale-restart" onClick={restart}>{token(copy.finale.restartLabel)} <span>↺</span></button>
             {!customerGift&&<Link data-action="create-story" className="thi-pair-finale-create" href={`/tehiceesto/crear?experiencia=${experience.slug}`}><span>Quiero una así</span><b>→</b></Link>}
