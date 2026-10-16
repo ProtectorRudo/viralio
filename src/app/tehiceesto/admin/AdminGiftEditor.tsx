@@ -678,9 +678,9 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       <div className="thi-admin-scenes" id="thi-recorrido">
         <div className="thi-admin-panel-heading"><div><p className="thi-kicker">Recorrido</p><h2>Escenas</h2></div></div>
         <div className="thi-scene-editor">
-          {gift.scene_recipe.map((scene,index)=><div className="thi-scene-row" key={`${scene}-${index}`}><span>{String(index+1).padStart(2,"0")}</span><strong>{scenes.find(x=>x.type===scene)?.label||scene}</strong><div><button disabled={!index} onClick={()=>moveScene(index,-1)}>↑</button><button disabled={index===gift.scene_recipe.length-1} onClick={()=>moveScene(index,1)}>↓</button><button onClick={()=>removeScene(index)}>×</button></div></div>)}
+          {gift.scene_recipe.map((scene,index)=><div className="thi-scene-row" key={`${scene}-${index}`}><span>{String(index+1).padStart(2,"0")}</span><strong>{scenes.find(x=>x.type===scene)?.label||scene}</strong>{gift.template_version!=="premium-v5"&&<div><button disabled={!index} onClick={()=>moveScene(index,-1)}>↑</button><button disabled={index===gift.scene_recipe.length-1} onClick={()=>moveScene(index,1)}>↓</button><button onClick={()=>removeScene(index)}>×</button></div>}</div>)}
         </div>
-        <div className="thi-scene-add"><select value={selectedScene} onChange={e=>setSelectedScene(e.target.value as SceneType)}>{scenes.map(x=><option key={x.type} value={x.type}>{x.label}</option>)}</select><button className="thi-ghost" onClick={addScene}>+ Agregar escena</button></div>
+        {gift.template_version==="premium-v5"?<p className="thi-admin-sub">Recorrido fijo de Pareja v5: mantenemos sus 11 escenas y personalizamos únicamente los contenidos.</p>:<div className="thi-scene-add"><select value={selectedScene} onChange={e=>setSelectedScene(e.target.value as SceneType)}>{scenes.map(x=><option key={x.type} value={x.type}>{x.label}</option>)}</select><button className="thi-ghost" onClick={addScene}>+ Agregar escena</button></div>}
       </div>
 
       <div className="thi-admin-save-row"><span>{message}</span><button className="thi-primary" disabled={saving} onClick={save}>{saving?"Guardando…":"Guardar cambios"}</button></div>
