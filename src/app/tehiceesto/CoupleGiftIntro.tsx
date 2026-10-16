@@ -112,6 +112,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
               <i className="couple-gift-face-edge edge-right" />
               <i className="couple-gift-base-ribbon" />
               <i className="couple-gift-base-metallic" />
+              <i className="couple-gift-emboss">HECHO PARA VOS</i>
             </span>
             <span className="couple-gift-lid">
               <i className="couple-gift-lid-top" />
@@ -143,8 +144,8 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
               <span>Abrí<br />el regalo</span>
               <b aria-hidden="true">♡</b>
             </span>
-            <span className="couple-gift-tap-hint">Tocá el lazo para abrir</span>
           </button>
+          <span className="couple-gift-tap-hint" aria-hidden="true">Tocá el lazo para abrir <i>↗</i></span>
         </div>
         <div className={"couple-gift-footer" + (revealed ? " is-visible" : "")}>
           <button data-action="advance" className="couple-gift-continue" onClick={onContinue} disabled={!revealed}>

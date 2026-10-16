@@ -236,3 +236,257 @@
    font-size:clamp(75px,22vw,116px)!important;
  }
 }
+
+
+/* ==============================================================
+   PAREJA V2 · UNIVERSAL LUXURY MATERIAL STUDY
+   Midnight ink + champagne silk. No gender-coded pink packaging.
+   Scoped to the current reusable live template only.
+   ============================================================== */
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .thi-scene.couple-gift-intro {
+  --gift-cloth:linear-gradient(95deg,#64503b 0%,#a88a63 9%,#ddc69e 20%,#f3dfb7 30%,#c3a67d 44%,#7d684e 57%,#e7d1a7 71%,#bb9e73 86%,#66513a 100%);
+  --gift-box:linear-gradient(108deg,#151f23 0%,#334044 16%,#29383d 35%,#1f2c32 63%,#344146 84%,#162025 100%);
+  color:#f1e9da;
+  background:
+    radial-gradient(ellipse 65% 45% at 51% 44%,rgba(132,107,72,.18),transparent 76%),
+    radial-gradient(ellipse 55% 61% at 8% 14%,rgba(64,75,82,.18),transparent 80%),
+    radial-gradient(ellipse 46% 54% at 100% 86%,rgba(46,57,63,.17),transparent 83%),
+    linear-gradient(148deg,#1b2428,#11171b 42%,#080c10 100%)!important;
+}
+.couple-gift-intro:before {
+ background:
+ radial-gradient(ellipse 31% 31% at 48% 47%,rgba(211,182,126,.065),transparent 80%),
+ linear-gradient(180deg,rgba(3,5,9,.07),transparent 48%,rgba(5,7,10,.28));
+}
+.couple-gift-intro:after {
+  background:repeating-linear-gradient(108deg,rgba(255,255,255,.032) 0 .7px,transparent 1px 7px);
+  opacity:.22;
+}
+.couple-gift-backdrop .couple-gift-halo{
+  border-color:rgba(204,173,122,.042);
+  box-shadow:0 0 0 110px rgba(233,208,150,.006),0 0 0 220px rgba(223,196,146,.004);
+}
+.couple-gift-backdrop .couple-gift-ambient.ambient-one{background:#6b6554;opacity:.18}
+.couple-gift-backdrop .couple-gift-ambient.ambient-two{background:#283e49;opacity:.16}
+.couple-gift-backdrop .couple-gift-ambient.ambient-three{background:#b69c69;opacity:.12}
+.couple-gift-intro .couple-gift-grain{
+  background:repeating-linear-gradient(29deg,rgba(242,219,188,.09) 0 .55px,transparent .75px 4px);
+  opacity:.07;
+}
+.couple-gift-intro .couple-gift-prelude{
+  color:#c8b99e;font-size:10px;letter-spacing:.19em;
+  max-width:min(90vw,520px);
+}
+.couple-gift-intro .couple-gift-theatre {
+  width:min(480px,94vw);
+  height:clamp(325px,49svh,456px);
+}
+.couple-gift-intro .couple-gift-object{
+  height:72%;filter:drop-shadow(0 24px 18px rgba(0,0,0,.28));
+}
+.couple-gift-intro .couple-gift-floor-shadow {
+  bottom:4%;left:15%;right:15%;height:15%;background:#030508;
+  opacity:.8;filter:blur(15px);
+}
+.couple-gift-intro .couple-gift-box-base{
+  left:18%;width:64%;bottom:18%;height:36%;
+  border:1px solid rgba(221,201,164,.23);border-radius:2px 2px 6px 6px;
+  background-image:
+    linear-gradient(94deg,rgba(0,0,0,.58),transparent 11%,rgba(242,226,196,.12) 39%,transparent 60%,rgba(2,8,11,.62)),
+    url("/viralio-3d/materials/fabric_leather_01-color.webp"),
+    var(--gift-box);
+  background-size:cover,250px 250px,cover;
+  background-blend-mode:normal,soft-light,normal;
+  background-color:#243036;
+  box-shadow:
+    inset 0 1px 1px rgba(244,225,192,.19),
+    inset 0 -18px 32px rgba(0,0,0,.42),
+    inset 7px 1px 20px rgba(6,10,13,.4),
+    8px 21px 30px rgba(0,0,0,.4),0 35px 80px rgba(0,0,0,.34);
+  transform:perspective(800px) rotateX(2deg);
+}
+.couple-gift-intro .couple-gift-box-base::after{
+  border:1px solid rgba(217,196,156,.15);
+  box-shadow:inset 0 1px rgba(255,255,255,.08);
+}
+.couple-gift-intro .couple-gift-face-edge {
+  opacity:.75;background:linear-gradient(90deg,#0a1215,rgba(226,205,168,.1),transparent);
+}
+.couple-gift-intro .couple-gift-base-ribbon{
+  left:45%;width:10%;height:100%;
+  background:var(--gift-cloth);
+  box-shadow:inset 1px 0 3px rgba(255,245,224,.35),inset -3px 0 5px rgba(41,30,19,.65),2px 0 5px rgba(0,0,0,.38);
+}
+.couple-gift-intro .couple-gift-base-metallic{
+  background:linear-gradient(90deg,#1d2628,rgba(241,220,184,.36) 25%,rgba(240,219,176,.58) 50%,rgba(34,43,46,.7));
+  height:2px;opacity:1;
+}
+.couple-gift-intro .couple-gift-emboss{
+  position:absolute;left:5%;bottom:17%;z-index:2;
+  font:600 7px/1.2 "DM Sans",sans-serif;letter-spacing:.23em;
+  color:rgba(218,196,159,.60);text-shadow:0 1px rgba(0,0,0,.58);
+}
+.couple-gift-intro .couple-gift-box-interior{
+  left:18%;width:64%;height:19%;bottom:48%;
+  border:6px solid #1b2428;background:radial-gradient(ellipse at 50% 38%,#c9ad7c,#544839 36%,#131d20 75%,#090e12);
+  box-shadow:inset 0 14px 25px #070b0fe8,0 0 17px rgba(198,167,112,.24);
+}
+.couple-gift-intro .couple-gift-lid{
+  left:15%;width:70%;height:19%;bottom:53%;
+  filter:drop-shadow(0 14px 10px rgba(0,0,0,.49));
+  transform-origin:50% 86%;
+  transition:transform 1.22s cubic-bezier(.16,.73,.13,1),opacity .8s ease .85s;
+}
+.couple-gift-intro .couple-gift-lid-top{
+  height:83%;
+  background-image:
+    linear-gradient(112deg,rgba(0,0,0,.42),rgba(240,224,189,.13) 42%,rgba(0,0,0,.42)),
+    url("/viralio-3d/materials/fabric_leather_01-color.webp"),
+    linear-gradient(115deg,#253036,#475357,#253137);
+  background-size:cover,250px 250px,cover;
+  background-blend-mode:normal,soft-light,normal;
+  border:1px solid rgba(228,208,172,.24);
+  box-shadow:inset 0 2px 2px rgba(241,222,196,.15),inset 0 -7px 11px rgba(0,0,0,.57),0 13px 21px #050a0ccc;
+  transform:perspective(720px) rotateX(48deg);
+}
+.couple-gift-intro .couple-gift-lid-front{
+  height:42%;
+  background:linear-gradient(98deg,#172126,#364448 20%,#243238 63%,#111c21);
+  border:1px solid rgba(211,189,153,.18);
+  box-shadow:inset 0 2px 4px rgba(255,235,193,.14),inset 0 -5px 14px rgba(0,0,0,.51);
+}
+.couple-gift-intro .couple-gift-lid-ribbon{
+  left:45%;width:10%;
+  background:var(--gift-cloth);
+  box-shadow:inset 1px 0 3px rgba(255,244,224,.51),inset -2px 0 6px rgba(50,37,22,.5),2px 0 5px #070e11a8;
+}
+.couple-gift-intro .couple-gift-bow{
+  bottom:79%;width:26%;height:67%;
+  border:9px solid transparent;
+  border-radius:67% 32% 62% 38% / 66% 53% 54% 53%;
+  background:
+    radial-gradient(ellipse at 23% 18%,rgba(255,243,213,.4),transparent 49%) padding-box,
+    linear-gradient(125deg,#a18154 3%,#f2dfb6 25%,#9c7d52 52%,#e1c79c 83%,#6b5135 100%) border-box;
+  box-shadow:
+    inset 3px 4px 7px rgba(255,247,226,.38),
+    inset -7px -10px 16px rgba(48,35,23,.59),
+    0 9px 11px rgba(0,0,0,.36);
+  transform-origin:88% 86%;
+}
+.couple-gift-intro .couple-gift-bow:after {
+  inset:4px;border-radius:inherit;border:1px solid rgba(243,220,172,.33);
+  background:radial-gradient(ellipse at 57% 55%,rgba(12,23,25,.50),rgba(42,45,38,.27) 62%,transparent);
+  box-shadow:inset 0 3px 7px rgba(0,0,0,.36);
+}
+.couple-gift-intro .couple-gift-bow.bow-left{
+  left:23%;transform:rotate(-16deg) skew(-5deg,4deg);
+}
+.couple-gift-intro .couple-gift-bow.bow-right{
+  right:23%;transform:scaleX(-1) rotate(-16deg) skew(-5deg,4deg);
+}
+.couple-gift-intro .couple-gift-knot{
+  bottom:82%;left:45%;width:11%;height:34%;
+  background:linear-gradient(122deg,#fff0c7 0%,#d8bb8d 39%,#876843 87%);
+  box-shadow:0 3px 8px rgba(0,0,0,.56),inset 2px 2px 6px rgba(255,255,255,.40);
+}
+.couple-gift-intro .couple-gift-tail{
+  bottom:67%;width:11%;height:126%;
+  border:1px solid rgba(239,218,174,.29);
+  background:linear-gradient(90deg,#947449,#eddab0 32%,#9a805a 58%,#f1dfb4 79%,#796042);
+  box-shadow:inset 2px 0 6px rgba(255,246,218,.5),0 8px 13px rgba(0,0,0,.4);
+}
+.couple-gift-intro .couple-gift-tail.tail-left{left:41%;transform:rotate(28deg)}
+.couple-gift-intro .couple-gift-tail.tail-right{right:41%;transform:rotate(-28deg)}
+.couple-gift-intro .couple-gift-tag{
+  right:11%;top:24%;width:80px;height:99px;
+  font-size:18px;line-height:1.06;color:#433626;gap:5px;
+  border:1px solid rgba(255,251,233,.59);
+  background:
+     repeating-linear-gradient(95deg,rgba(128,95,59,.028) 0 1px,transparent 1px 5px),
+     linear-gradient(130deg,#f9efd9,#ead6b7 66%,#d0af87);
+  box-shadow:2px 8px 16px rgba(0,0,0,.48),inset 1px 1px 1px #fffdf0;
+  transform:rotate(7deg);
+}
+.couple-gift-intro .couple-gift-tag:before{border-color:#9b815d}
+.couple-gift-intro .couple-gift-tag i{
+  background:linear-gradient(#94734d,#e5c79c 50%,#826644);
+  height:49px;top:-49px;
+}
+.couple-gift-intro .couple-gift-tag b{
+  font:normal 18px Georgia,serif;color:#957850;
+}
+.couple-gift-intro .couple-gift-tag span{font-weight:400}
+.couple-gift-intro .couple-gift-tap-hint {
+  position:absolute;bottom:0;left:50%;right:auto;
+  transform:translateX(-50%);width:max-content;max-width:85%;
+  z-index:25;pointer-events:none;text-align:center;
+  color:#d9c4a4;font-size:10px;letter-spacing:.16em;text-shadow:0 2px 14px rgba(0,0,0,.6);
+  white-space:nowrap;
+}
+.couple-gift-intro .couple-gift-tap-hint i{margin-left:8px;font-style:normal;color:#e4c897}
+.couple-gift-intro .couple-gift-unseal{inset:7% 10% 10%}
+.couple-gift-intro .couple-gift-bloom{
+  background:radial-gradient(ellipse,#fff3ce 0%,rgba(239,198,126,.59) 24%,rgba(141,137,105,.22) 59%,transparent 77%);
+  filter:blur(18px);
+}
+.couple-gift-intro .couple-gift-paper {
+  bottom:43%;height:22%;width:31%;
+  background:linear-gradient(117deg,rgba(255,252,238,.9),rgba(224,211,186,.79) 54%,rgba(141,133,105,.29));
+  filter:drop-shadow(1px 6px 6px #0a0b0c99);
+}
+.couple-gift-intro .couple-gift-paper.tissue-left{left:21%}
+.couple-gift-intro .couple-gift-paper.tissue-right{right:21%}
+.couple-gift-intro .couple-gift-reveal{
+  left:-4%;right:-4%;top:3%;
+}
+.couple-gift-intro .couple-gift-dedication{color:#d4c29f}
+.couple-gift-intro .couple-gift-reveal h1{
+  color:#f9f3e6;text-shadow:0 0 36px rgba(231,200,149,.15);
+}
+.couple-gift-intro .couple-gift-subtitle i{
+ background:linear-gradient(90deg,transparent,#ad9673,transparent);
+}
+.couple-gift-intro .couple-gift-subtitle p{color:#d0bc9d}
+.couple-gift-intro .couple-gift-opening{color:#e5e0d4}
+.couple-gift-intro .couple-gift-footer small{color:#af9f89}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-footer .couple-gift-continue{
+  border:1px solid rgba(237,213,177,.45)!important;
+  color:#1c272a!important;
+  background:linear-gradient(130deg,#ead5b3,#c2a274 52%,#f5dfba)!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.29),inset 0 1px rgba(255,249,226,.69)!important;
+}
+.thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-footer .couple-gift-continue:not(:disabled):hover{
+ background:linear-gradient(130deg,#fff0cd,#d8b687 52%,#f9e6c6)!important;
+}
+.gift-phase-untying .couple-gift-tap-hint,
+.gift-phase-opening .couple-gift-tap-hint,
+.gift-phase-revealed .couple-gift-tap-hint{
+  opacity:0;transition:opacity .35s;
+}
+.gift-phase-opening .couple-gift-lid,
+.gift-phase-revealed .couple-gift-lid{
+  transform:translateY(-115px) rotate(-8deg) rotateX(-42deg) scale(.94);
+}
+.gift-phase-revealed .couple-gift-object{
+ transform:translateY(12%) scale(.92);
+}
+@media(max-width:650px) {
+  .thi-template-live.thi-theme-pareja[data-scene="intro"] .thi-scene.couple-gift-intro{
+    padding-top:85px;padding-bottom:96px;
+  }
+  .couple-gift-intro .couple-gift-theatre{
+    width:min(390px,94vw);height:clamp(320px,49svh,426px);
+  }
+  .couple-gift-intro .couple-gift-object{height:72%}
+  .couple-gift-intro .couple-gift-tag{
+    right:6%;top:23%;width:73px;height:90px;font-size:17px;
+  }
+  .couple-gift-intro .couple-gift-bow{border-width:7px}
+  .couple-gift-intro .couple-gift-tap-hint{font-size:9px;bottom:1%}
+  .couple-gift-intro .couple-gift-reveal{top:1%}
+  .couple-gift-intro .couple-gift-emboss{font-size:6px}
+}
+@media(max-width:375px) {
+  .couple-gift-intro .couple-gift-tag{right:2%}
+  .couple-gift-intro .couple-gift-prelude{font-size:8px}
+}
