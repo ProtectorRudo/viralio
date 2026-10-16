@@ -8,6 +8,7 @@ import { ACCOUNT_TOKEN_KEY,giftAccountCall,requestGiftAccountLink } from "../gif
 import { SUPABASE_PUBLISHABLE_KEY,SUPABASE_URL } from "../creatorApi";
 
 type GiftRow={
+  templateVersion?:string;
   code:string;
   status:string;
   experienceSlug:string;
@@ -26,6 +27,7 @@ type OpenPayload={
 };
 
 type AccountGift={
+  templateVersion?:string;
   code:string;
   status:string;
   experienceSlug:string;
@@ -153,6 +155,7 @@ export default function MyGifts(){
               }
             }
             merged.set(gift.code,{
+              templateVersion:gift.templateVersion,
               code:gift.code,
               status:gift.status,
               experienceSlug:gift.experienceSlug,
@@ -264,10 +267,12 @@ export default function MyGifts(){
             <div className="account-gift-copy">
               <small>{title.toUpperCase()}</small>
               <h2>Para {recipient}</h2>
-              <p>{gift.status==="published"?"Publicado y listo para compartir":"En edición"}</p>
+              <p>{gift.status==="published"?"Publicado y listo para compartir":gift.templateVersion==="premium-v5"?"Nuestro equipo está preparando tu regalo":"En edición"}</p>
             </div>
             <div className="account-gift-actions">
-              <a className="studio-main-button compact" href={publicEditorPath(gift.code)}>Editar <b>→</b></a>
+              {gift.templateVersion==="premium-v5"
+                ?<a className="studio-main-button compact" href={publicHomePath("/pedido/"+gift.code)}>Seguir mi regalo <b>→</b></a>
+                :<a className="studio-main-button compact" href={publicEditorPath(gift.code)}>Editar <b>→</b></a>}
               {gift.publishedAt&&<a className="studio-secondary-button" href={publicGiftPath(gift.code)}>Ver regalo</a>}
             </div>
           </article>;
