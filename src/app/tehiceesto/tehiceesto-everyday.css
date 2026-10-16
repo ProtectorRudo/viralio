@@ -659,3 +659,145 @@
     min-height:96px!important;margin:8px auto 2px!important;
   }
 }
+
+
+/* REAL-TIME PHOTOGRAPHIC RESPONSE — 07/11 (restores VFX lost when
+   the flat window and flat cups were correctly hidden for the photo).
+   VFX are layers ABOVE the background but BELOW interactive hotspots. */
+.thi-pair-everyday .thi-everyday-window-fx,
+.thi-pair-everyday .thi-everyday-coffee-fx{
+  position:absolute;z-index:6;pointer-events:none;overflow:hidden;
+  box-sizing:border-box;isolation:isolate;
+}
+.thi-pair-everyday .thi-everyday-window-fx{
+  top:1.8%;left:8.3%;width:52.8%;height:60.3%;
+  border-radius:3px 3px 10px 10px;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 9%,#000 89%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 9%,#000 89%,transparent 100%);
+  mix-blend-mode:screen;
+}
+.thi-pair-everyday .thi-ewfx-reflection,
+.thi-pair-everyday .thi-ewfx-glass-light{position:absolute;inset:0;display:block;pointer-events:none}
+.thi-pair-everyday .thi-ewfx-reflection{
+  background:linear-gradient(106deg,transparent 14%,rgba(255,237,209,.035) 33%,
+    transparent 49%,rgba(255,204,174,.07) 60%,transparent 76%);
+  opacity:.42;
+}
+.thi-pair-everyday .thi-everyday-window-fx.is-awake .thi-ewfx-reflection{
+  opacity:.94;animation:thi-window-sheen 1.65s cubic-bezier(.19,.52,.32,1) both;
+}
+@keyframes thi-window-sheen{
+  0%{transform:translateX(-65%);opacity:0}
+  40%{opacity:.94}100%{transform:translateX(50%);opacity:.6}
+}
+.thi-pair-everyday .thi-ewfx-glass-light{
+  background:radial-gradient(ellipse 48% 45% at 49% 55%,
+    rgba(236,218,203,.12),rgba(255,189,145,.09) 38%,transparent 82%);
+  opacity:0;
+}
+.thi-pair-everyday .thi-everyday-window-fx.is-awake .thi-ewfx-glass-light{
+  animation:thi-window-light 2.1s ease-out both;
+}
+@keyframes thi-window-light{
+  0%{opacity:0;transform:scale(.72)}40%{opacity:.96;transform:scale(1)}
+  100%{opacity:.28;transform:scale(1.1)}
+}
+.thi-pair-everyday .thi-ewfx-drop{
+  position:absolute;left:var(--ew-drop-x);top:-24%;width:1.1px;height:16%;
+  display:block;border-radius:50%;opacity:.27;
+  background:linear-gradient(180deg,transparent,rgba(232,224,220,.85) 42%,
+    rgba(255,242,223,.92) 76%,transparent);
+  box-shadow:0 0 3px rgba(255,244,219,.2);
+  transform:rotate(8deg);
+  animation:thi-window-drop var(--ew-drop-time) linear infinite;
+  animation-delay:var(--ew-drop-delay);
+}
+.thi-pair-everyday .thi-everyday-window-fx.is-awake .thi-ewfx-drop{
+  opacity:.77;filter:drop-shadow(0 0 2px rgba(255,223,205,.8));
+  animation-duration:calc(var(--ew-drop-time)*.56);
+}
+@keyframes thi-window-drop{
+  0%{transform:translateY(-10px) rotate(8deg);opacity:0}
+  12%{opacity:.6}82%{opacity:.7}
+  100%{transform:translateY(550%) rotate(8deg);opacity:0}
+}
+.thi-pair-everyday .thi-ewfx-ripple{
+  position:absolute;left:49%;top:53%;width:14%;aspect-ratio:1;border-radius:50%;
+  border:1.5px solid rgba(251,229,208,.72);box-shadow:0 0 14px rgba(255,215,184,.3);
+  transform:translate(-50%,-50%) scale(.1);opacity:0;display:block;
+}
+.thi-pair-everyday .thi-everyday-window-fx.is-awake .thi-ewfx-ripple{
+  animation:thi-glass-ripple 1.8s ease-out both;
+}
+.thi-pair-everyday .thi-everyday-window-fx.is-awake .ripple-2{animation-delay:.22s}
+.thi-pair-everyday .thi-everyday-window-fx.is-awake .ripple-3{animation-delay:.45s}
+@keyframes thi-glass-ripple{
+  0%{transform:translate(-50%,-50%) scale(.2);opacity:0}
+  18%{opacity:.8}100%{transform:translate(-50%,-50%) scale(3.2);opacity:0}
+}
+/* Coffee: steam continuously rises from the two photo-real cups,
+   then brightens with a warm transient bloom and rising light motes on touch. */
+.thi-pair-everyday .thi-everyday-coffee-fx{
+  top:53%;left:15%;width:52%;height:44%;overflow:visible;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 16%,#000 94%,transparent);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 16%,#000 94%,transparent);
+}
+.thi-pair-everyday .thi-ecfx-cup-glow{
+  position:absolute;left:4%;right:5%;bottom:3%;height:86%;display:block;
+  background:radial-gradient(ellipse 56% 42% at 50% 64%,rgba(255,219,170,.32),rgba(245,140,86,.13) 48%,transparent 79%);
+  opacity:.02;filter:blur(9px);
+}
+.thi-pair-everyday .thi-everyday-coffee-fx.is-awake .thi-ecfx-cup-glow{
+  animation:thi-coffee-warmth 2.1s ease-out both;
+}
+@keyframes thi-coffee-warmth{
+  0%{opacity:0;transform:scale(.72)}
+  35%{opacity:.95;transform:scale(1.04)}
+  100%{opacity:.17;transform:scale(1.11)}
+}
+.thi-pair-everyday .thi-ecfx-steam{
+  position:absolute;display:block;top:0;left:var(--ec-steam-x);
+  width:11px;height:47%;border-radius:70% 45% 60% 80%;
+  border-left:2px solid rgba(255,243,225,.5);
+  background:linear-gradient(100deg,transparent 35%,rgba(255,236,218,.15),transparent 83%);
+  opacity:.3;filter:blur(2.5px);
+  transform-origin:center bottom;
+  animation:thi-coffee-steam 3.1s ease-in-out infinite;
+  animation-delay:var(--ec-steam-delay);
+}
+.thi-pair-everyday .thi-everyday-coffee-fx.is-awake .thi-ecfx-steam{
+  border-left-color:rgba(255,249,227,.9);opacity:.95;
+  filter:blur(2px) drop-shadow(0 0 4px rgba(255,233,183,.46));
+  animation-duration:2.2s;
+}
+@keyframes thi-coffee-steam{
+  0%{transform:translate3d(0,26px,0) rotate(-8deg) scale(.65);opacity:0}
+  22%{opacity:.42}65%{opacity:.38}
+  100%{transform:translate3d(11px,-48px,0) rotate(16deg) scale(1.23);opacity:0}
+}
+.thi-pair-everyday .thi-ecfx-spark{
+  position:absolute;display:block;left:var(--ec-spark-x);bottom:22%;
+  width:3px;height:3px;border-radius:50%;
+  background:#ffe9bd;box-shadow:0 0 9px 3px rgba(255,181,135,.45);
+  opacity:0;transform:translateY(0);
+}
+.thi-pair-everyday .thi-everyday-coffee-fx.is-awake .thi-ecfx-spark{
+  animation:thi-coffee-spark 1.7s ease-out both;
+  animation-delay:var(--ec-spark-delay);
+}
+@keyframes thi-coffee-spark{
+  0%{opacity:0;transform:translate3d(0,10px,0) scale(.2)}
+  19%{opacity:.95;transform:translate3d(var(--ec-spark-shift),-7px,0) scale(1)}
+  100%{opacity:0;transform:translate3d(var(--ec-spark-shift),-105px,0) scale(.15)}
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-pair-everyday .thi-ewfx-drop,
+  .thi-pair-everyday .thi-ecfx-steam,
+  .thi-pair-everyday .thi-ewfx-reflection,
+  .thi-pair-everyday .thi-ewfx-glass-light,
+  .thi-pair-everyday .thi-ewfx-ripple,
+  .thi-pair-everyday .thi-ecfx-cup-glow,
+  .thi-pair-everyday .thi-ecfx-spark{animation:none!important;}
+  .thi-pair-everyday .thi-everyday-window-fx.is-awake .thi-ewfx-glass-light,
+  .thi-pair-everyday .thi-everyday-coffee-fx.is-awake .thi-ecfx-cup-glow{opacity:.55}
+}

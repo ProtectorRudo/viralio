@@ -37,6 +37,7 @@ export default function PairEverydayScene({
 }){
   const [opened,setOpened]=useState<Spot[]>([]);
   const [focused,setFocused]=useState<Spot|null>(null);
+  const [effectCycle,setEffectCycle]=useState(0);
   const [rainPlaying,setRainPlaying]=useState(false);
   const rainAudioRef=useRef<{context:AudioContext;source:AudioBufferSourceNode}|null>(null);
   const total=SPOTS.length;
@@ -72,6 +73,7 @@ export default function PairEverydayScene({
   };
 
   const discover=(index:Spot)=>{
+    setEffectCycle(previous=>previous+1);
     setFocused(index);
     setOpened(previous=>previous.includes(index)?previous:[...previous,index]);
     onTouch?.();
@@ -139,6 +141,32 @@ export default function PairEverydayScene({
         </span>
       )}
 
+      {/* Reusable real-time VFX laid over the photographic set.
+          A changed key restarts the celebration even when a discovered hotspot is retouched. */}
+      <div key={focused===1?"rain-"+effectCycle:"rain-rest"} className={"thi-everyday-window-fx"+(focused===1?" is-awake":"")} aria-hidden="true">
+        <span className="thi-ewfx-reflection"/>
+        <span className="thi-ewfx-glass-light"/>
+        {Array.from({length:27},(_,i)=><i className="thi-ewfx-drop" key={i} style={{
+          "--ew-drop-x":((i*41+13)%96)+"%",
+          "--ew-drop-time":(2+(i%7)*.34)+"s",
+          "--ew-drop-delay":(i*-.31)+"s"
+        } as CSSProperties}/>)}
+        <span className="thi-ewfx-ripple ripple-1"/>
+        <span className="thi-ewfx-ripple ripple-2"/>
+        <span className="thi-ewfx-ripple ripple-3"/>
+      </div>
+      <div key={focused===0?"coffee-"+effectCycle:"coffee-rest"} className={"thi-everyday-coffee-fx"+(focused===0?" is-awake":"")} aria-hidden="true">
+        <span className="thi-ecfx-cup-glow"/>
+        {Array.from({length:6},(_,i)=><i className="thi-ecfx-steam" key={i} style={{
+          "--ec-steam-x":(19+(i%3)*9+(i>2?46:0))+"%",
+          "--ec-steam-delay":(i*-.54)+"s"
+        } as CSSProperties}/>)}
+        {Array.from({length:13},(_,i)=><b className="thi-ecfx-spark" key={i} style={{
+          "--ec-spark-x":(9+(i*37)%84)+"%",
+          "--ec-spark-delay":(i*.09)+"s",
+          "--ec-spark-shift":((i%2===0?1:-1)*(12+(i%5)*9))+"px"
+        } as CSSProperties}/>)}
+      </div>
       <div className="thi-everyday-room-vignette" aria-hidden="true"/>
       <div className="thi-everyday-room-caption" aria-hidden="true">LOS DÍAS QUE TAMBIÉN SON NUESTROS</div>
     </div>
