@@ -1,0 +1,155 @@
+/* Pareja / TU VOZ (04/11). Premium responsive player with real audio. */
+.thi-template-live.thi-theme-pareja[data-scene="voices"] .thi-scene.pair-voice-premium{
+  isolation:isolate;position:relative;display:flex!important;align-items:center!important;
+  justify-content:center!important;flex-direction:column!important;
+  width:100%;min-height:100svh!important;padding:118px 16px 126px!important;
+  overflow:hidden!important;color:#f7e9e7!important;
+  background:radial-gradient(ellipse 62% 48% at 15% 33%,rgba(111,36,55,.37),transparent 86%),
+    radial-gradient(ellipse 51% 38% at 87% 66%,rgba(62,30,67,.42),transparent 85%),
+    radial-gradient(ellipse 36% 33% at 53% 61%,rgba(179,76,83,.10),transparent 85%),
+    linear-gradient(145deg,#2f101a 0%,#180b15 50%,#110b1b 100%)!important;
+}
+.pair-voice-premium .pvp-atmosphere{
+  pointer-events:none;position:absolute;inset:0;overflow:hidden;z-index:0;
+  background:radial-gradient(1px 1px at 13% 22%,#df9e9a,transparent),
+    radial-gradient(2px 2px at 83% 36%,#ffd0b6,transparent),
+    radial-gradient(2px 2px at 26% 76%,#e8b6a5,transparent),
+    radial-gradient(1px 1px at 73% 85%,#e5bdaf,transparent),
+    radial-gradient(2px 2px at 46% 19%,#f0b3ae,transparent);opacity:.69;
+}
+.pair-voice-premium .pvp-atmosphere::before,.pair-voice-premium .pvp-atmosphere::after{
+ content:"";position:absolute;left:50%;top:47%;border:1px solid rgba(213,135,143,.075);
+ border-radius:50%;aspect-ratio:1;width:min(128vw,820px);transform:translate(-50%,-50%);
+}
+.pair-voice-premium .pvp-atmosphere::after{width:min(92vw,570px);top:44%;border-color:rgba(208,140,144,.045)}
+.pair-voice-premium .pvp-atmosphere i{position:absolute;width:160px;height:150px;filter:blur(42px);
+ opacity:.12;border-radius:50%;background:radial-gradient(circle,#f69b9e,#822c4c 60%,transparent 90%);
+ animation:pvp-shimmer 8s ease-in-out infinite alternate}
+.pair-voice-premium .pvp-atmosphere i:nth-child(1){left:-90px;top:26%}
+.pair-voice-premium .pvp-atmosphere i:nth-child(2){right:-100px;top:55%;animation-delay:-3s}
+.pair-voice-premium .pvp-atmosphere i:nth-child(3){left:30%;bottom:14%;animation-delay:-5s}
+.pair-voice-premium .pvp-atmosphere i:nth-child(4){left:45%;top:21%;animation-delay:-7s;opacity:.07}
+@keyframes pvp-shimmer{from{transform:translateY(-12px) scale(.95)}to{transform:translateY(24px) scale(1.18)}}
+.pair-voice-premium .pvp-layout{position:relative;z-index:2;width:min(100%,660px);margin:auto;
+ display:flex;flex-direction:column;align-items:center}
+.pair-voice-premium .pvp-header{text-align:center;margin:0 auto 33px;width:100%}
+.pair-voice-premium .pvp-eyebrow{font:600 10px/1.5 "DM Sans",sans-serif!important;text-transform:uppercase;
+ letter-spacing:.24em;color:#e9b7bd!important;margin:0 auto 12px!important}
+.thi-template-live.thi-theme-pareja[data-scene="voices"] .pair-voice-premium .pvp-header h2{
+ font-family:"Instrument Serif",Georgia,serif!important;font-weight:400!important;font-style:italic!important;
+ font-size:clamp(54px,8.3vw,82px)!important;letter-spacing:-.042em!important;line-height:1!important;
+ max-width:660px!important;color:#fff0ed!important;text-wrap:balance;text-align:center;
+ margin:0 auto!important;text-shadow:0 2px 32px rgba(200,115,130,.20);
+}
+.pair-voice-premium .pvp-header h2 span{display:block}
+.pair-voice-premium .pvp-player{position:relative;width:100%;box-sizing:border-box;
+ border:1px solid rgba(231,147,151,.58);border-radius:26px;padding:32px 29px 22px;
+ background:radial-gradient(ellipse at 99% 4%,rgba(236,133,145,.12),transparent 48%),
+    radial-gradient(ellipse at 2% 100%,rgba(183,73,98,.21),transparent 48%),
+    linear-gradient(133deg,rgba(93,37,57,.46),rgba(39,17,35,.85) 60%,rgba(61,26,46,.65));
+ box-shadow:0 22px 57px rgba(12,3,14,.5),inset 0 1px rgba(255,201,192,.24),
+ inset 1px 0 25px rgba(225,125,135,.05),0 0 39px rgba(152,66,84,.10);
+ backdrop-filter:blur(18px);overflow:hidden;transition:border-color .6s,box-shadow .6s;
+}
+.pair-voice-premium .pvp-player::before{content:"";position:absolute;inset:0;pointer-events:none;
+ opacity:.38;background:repeating-linear-gradient(115deg,transparent 0 4px,rgba(249,211,207,.02) 5px 5.5px)}
+.pair-voice-premium .pvp-edge-light{pointer-events:none;position:absolute;inset:1px;
+ border:1px solid rgba(254,190,179,.1);border-radius:25px;
+ box-shadow:inset 0 0 23px rgba(240,130,151,.04)}
+.pair-voice-premium.is-playing .pvp-player{border-color:rgba(255,192,177,.86);
+ box-shadow:0 26px 66px rgba(12,3,14,.55),0 0 47px rgba(229,106,138,.21),inset 0 1px rgba(255,208,194,.32)}
+.pair-voice-premium .pvp-card-top{position:relative;display:grid;
+ grid-template-columns:73px minmax(0,1fr) 70px;align-items:center;gap:20px}
+.pair-voice-premium .pvp-avatar{width:73px;height:73px;border-radius:50%;
+ display:grid;place-items:center;flex-shrink:0;font:400 40px/1 "Instrument Serif",Georgia,serif;color:#eaaab8;
+ background:radial-gradient(circle at 35% 30%,rgba(174,74,93,.32),rgba(35,12,28,.91));
+ border:1px solid rgba(224,152,157,.61);box-shadow:inset 0 0 13px rgba(234,116,143,.12),0 5px 15px rgba(8,2,13,.34)}
+.pair-voice-premium .pvp-track-heading{min-width:0;text-align:left}
+.pair-voice-premium .pvp-track-heading p{letter-spacing:.15em;text-transform:uppercase;
+ font:500 10px/1.5 "DM Sans",sans-serif;color:#cf9fa8;margin:0 0 5px;overflow-wrap:anywhere}
+.pair-voice-premium .pvp-track-heading h3{font:italic 400 clamp(24px,4vw,34px)/1.08 "Instrument Serif",Georgia,serif!important;
+ letter-spacing:-.015em;color:#fff1ec!important;margin:0!important}
+.pair-voice-premium .pvp-play{display:grid;place-items:center;min-width:62px;min-height:62px;width:66px;height:66px;
+ border-radius:50%;cursor:pointer;color:#ffe7df;
+ background:radial-gradient(circle at 35% 26%,rgba(254,188,185,.28),rgba(153,60,79,.76) 70%,rgba(88,26,49,.94));
+ border:1px solid #f0b9b5;box-shadow:0 0 0 6px rgba(208,105,120,.14),0 9px 23px rgba(17,5,14,.4),
+ inset 0 1px rgba(255,235,219,.47);transition:transform .22s,box-shadow .24s}
+.pair-voice-premium .pvp-play svg{width:26px;height:26px}
+.pair-voice-premium .pvp-play:hover:not(:disabled){transform:scale(1.06);box-shadow:0 0 0 7px rgba(208,105,120,.23),0 11px 26px rgba(17,5,14,.42)}
+.pair-voice-premium .pvp-play:focus-visible,.pair-voice-premium .pvp-keep:focus-visible{outline:2px solid #f9c5be;outline-offset:4px}
+.pair-voice-premium .pvp-sound-bars{display:flex;align-items:center;justify-content:space-between;gap:2px;
+ width:100%;height:82px;margin:10px 0 9px;overflow:hidden}
+.pair-voice-premium .pvp-sound-bars i{display:block;flex:1;max-width:7px;min-width:2px;
+ height:var(--bar-h);border-radius:99px;
+ background:linear-gradient(0deg,rgba(160,75,102,.44),rgba(240,152,165,.74),rgba(196,88,115,.51));
+ transform-origin:center;opacity:.66}
+.pair-voice-premium .pvp-sound-bars i.has-played{background:linear-gradient(0deg,#b96483,#ffe8df 49%,#ee9eaf);
+ opacity:1;box-shadow:0 0 7px rgba(255,171,191,.36)}
+.pair-voice-premium.is-playing .pvp-sound-bars i{animation:pvp-wave calc(.7s + var(--bar-i) * .025s) ease-in-out infinite alternate;
+ animation-delay:calc(var(--bar-i) * -.045s)}
+@keyframes pvp-wave{0%{transform:scaleY(.64);opacity:.55}100%{transform:scaleY(1.16);opacity:1}}
+.pair-voice-premium .pvp-seek{display:grid;grid-template-columns:35px minmax(0,1fr) 40px;align-items:center;gap:12px}
+.pair-voice-premium .pvp-time{font:400 11px/1.4 "DM Sans",sans-serif;font-variant-numeric:tabular-nums;color:#d6b7bd}
+.pair-voice-premium .pvp-duration{text-align:right}
+.pair-voice-premium .pvp-seek input{-webkit-appearance:none;appearance:none;display:block;min-width:0;width:100%;
+ height:19px;margin:0;outline-offset:4px;cursor:pointer;background:transparent}
+.pair-voice-premium .pvp-seek input::-webkit-slider-runnable-track{height:3px;border-radius:5px;
+ background:linear-gradient(90deg,#fa9eae 0 var(--voice-progress),rgba(255,214,209,.21) var(--voice-progress) 100%)}
+.pair-voice-premium .pvp-seek input::-moz-range-track{height:3px;background:rgba(255,214,209,.25);border-radius:5px}
+.pair-voice-premium .pvp-seek input::-moz-range-progress{background:#fa9eae;height:3px}
+.pair-voice-premium .pvp-seek input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;
+ margin-top:-5px;border-radius:50%;background:#fff7ef;border:1px solid #f2a8b1;box-shadow:0 0 10px #ed8498b5b5}
+.pair-voice-premium .pvp-seek input::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff7ef;border:1px solid #f2a8b1}
+.pair-voice-premium .pvp-seek input:disabled{cursor:default;opacity:.57}
+.pair-voice-premium .pvp-error{font:400 12px/1.45 "DM Sans",sans-serif;color:#ffd5c6;margin:10px 0 0;text-align:center}
+.pair-voice-premium .pvp-multiple{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.pair-voice-premium .pvp-multiple button{border:1px solid rgba(218,143,148,.32);border-radius:99px;
+ background:rgba(36,16,33,.59);padding:8px 13px;color:#dec3bd;font:500 11px/1.3 "DM Sans",sans-serif;cursor:pointer}
+.pair-voice-premium .pvp-multiple button.active{border-color:#e9aab2;color:#fff1ec;background:rgba(139,59,88,.38)}
+.pair-voice-premium .pvp-keep{display:flex;align-items:center;justify-content:center;gap:20px;
+ margin:34px 0 0;width:min(300px,85vw);min-height:57px;padding:11px 24px;
+ background:linear-gradient(120deg,rgba(49,16,34,.66),rgba(90,34,57,.33))!important;
+ border:1px solid rgba(228,140,150,.65)!important;border-radius:8px;
+ box-shadow:inset 0 1px rgba(255,194,190,.12),0 11px 30px rgba(6,2,12,.25);
+ font:400 25px/1.1 "Instrument Serif",Georgia,serif!important;color:#f4cbd0!important;
+ cursor:pointer;transition:transform .25s,background .25s,opacity .25s}
+.pair-voice-premium .pvp-keep b{font:400 22px/1 "Instrument Serif",Georgia,serif}
+.pair-voice-premium .pvp-keep:disabled{opacity:.48;cursor:default}
+.pair-voice-premium .pvp-keep:not(:disabled):hover{transform:translateY(-3px);background:rgba(116,49,74,.62)!important}
+@media(max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="voices"] .thi-scene.pair-voice-premium{
+   padding:106px 18px 108px!important;min-height:100svh!important}
+ .pair-voice-premium .pvp-layout{width:100%}
+ .pair-voice-premium .pvp-header{margin-bottom:27px}
+ .pair-voice-premium .pvp-eyebrow{font-size:9px;margin-bottom:12px!important}
+ .thi-template-live.thi-theme-pareja[data-scene="voices"] .pair-voice-premium .pvp-header h2{
+   font-size:clamp(48px,11vw,70px)!important;line-height:1.01!important}
+ .pair-voice-premium .pvp-player{border-radius:23px;padding:23px 18px 19px}
+ .pair-voice-premium .pvp-card-top{grid-template-columns:54px minmax(0,1fr) 55px;gap:12px}
+ .pair-voice-premium .pvp-avatar{width:54px;height:54px;font-size:32px}
+ .pair-voice-premium .pvp-track-heading p{font-size:8px;letter-spacing:.12em}
+ .pair-voice-premium .pvp-track-heading h3{font-size:clamp(24px,6.5vw,31px)!important}
+ .pair-voice-premium .pvp-play{min-height:53px;min-width:53px;height:53px;width:53px;
+   box-shadow:0 0 0 4px rgba(208,105,120,.13),0 6px 15px rgba(17,5,14,.35)}
+ .pair-voice-premium .pvp-play svg{width:23px;height:23px}
+ .pair-voice-premium .pvp-sound-bars{height:65px;margin:15px 0 11px;gap:2px}
+ .pair-voice-premium .pvp-seek{grid-template-columns:32px minmax(0,1fr) 34px;gap:8px}
+ .pair-voice-premium .pvp-keep{margin-top:28px;min-height:55px;font-size:23px!important}
+}
+@media(max-width:365px){
+ .pair-voice-premium .pvp-card-top{grid-template-columns:48px minmax(0,1fr) 50px;gap:9px}
+ .pair-voice-premium .pvp-avatar{width:48px;height:48px}
+ .pair-voice-premium .pvp-play{min-height:48px;min-width:48px;width:48px;height:48px}
+ .pair-voice-premium .pvp-player{padding:22px 13px 16px}
+ .thi-template-live.thi-theme-pareja[data-scene="voices"] .pair-voice-premium .pvp-header h2{font-size:clamp(42px,10.6vw,61px)!important}
+}
+@media(max-height:700px) and (max-width:650px){
+ .thi-template-live.thi-theme-pareja[data-scene="voices"] .thi-scene.pair-voice-premium{padding-top:98px;padding-bottom:90px!important}
+ .pair-voice-premium .pvp-header{margin-bottom:18px}
+ .thi-template-live.thi-theme-pareja[data-scene="voices"] .pair-voice-premium .pvp-header h2{font-size:46px!important}
+ .pair-voice-premium .pvp-keep{margin-top:18px}
+}
+@media(prefers-reduced-motion:reduce){
+ .pair-voice-premium *, .pair-voice-premium *::before,.pair-voice-premium *::after{
+ animation:none!important;transition-duration:.01ms!important}
+}

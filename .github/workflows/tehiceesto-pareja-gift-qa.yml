@@ -10,6 +10,8 @@ on:
       - "src/app/tehiceesto/ExperienceEngine.tsx"
       - "src/app/tehiceesto/PairCinematicUmbral.tsx"
       - "src/app/tehiceesto/PairCinematicUmbral.css"
+      - "src/app/tehiceesto/PairVoicePremium.tsx"
+      - "src/app/tehiceesto/PairVoicePremium.css"
   workflow_dispatch:
 
 permissions:
@@ -122,6 +124,23 @@ jobs:
             if(!(await advance.isVisible()))throw Error("Continue not shown after opening");
             await advance.click();
             await page.locator("main.thi-experience[data-scene='memories']").waitFor({timeout:8000});
+            const memoryAdvance=page.locator("main.thi-experience[data-scene='memories'] [data-action='advance']").first();
+            await memoryAdvance.click();
+            await page.locator("main.thi-experience[data-scene='voices']").waitFor({timeout:8000});
+            await page.locator(".pair-voice-premium[data-pair-voice='premium-v1']").waitFor({timeout:5000});
+            const voiceCard=page.locator(".pvp-player");
+            const voicePlay=page.locator(".pvp-play");
+            if(!(await voiceCard.isVisible())||!(await voicePlay.isVisible()))throw Error("Premium voice card missing");
+            if(await page.locator(".pvp-keep").isEnabled())throw Error("Voice CTA enabled before playback");
+            if(await page.locator(".pvp-sound-bars i").count()<25)throw Error("Premium voice waveform missing");
+            if(await page.locator(".pvp-duration").textContent()==="0:38")throw Error("Hard-coded demo duration detected");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-voice-before.png",fullPage:false});
+            // Trigger media's real onPlay handler in Chromium (AAC decode support differs in CI).
+            await page.locator(".pvp-player audio").evaluate(el=>el.dispatchEvent(new Event("play")));
+            if(!(await page.locator(".pvp-keep").isEnabled()))throw Error("Voice CTA stayed disabled after audio play");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-voice-after.png",fullPage:false});
+            await page.locator(".pvp-keep").click();
+            await page.locator("main.thi-experience[data-scene='light']").waitFor({timeout:8000});
             if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
             console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
             await context.close();

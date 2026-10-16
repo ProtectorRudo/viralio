@@ -32,6 +32,7 @@ import FriendshipScenes from "./FriendshipScenes";
 import PairRoseFinale from "./PairRoseFinale";
 import CoupleGiftIntro from "./CoupleGiftIntro";
 import PairCinematicUmbral from "./PairCinematicUmbral";
+import PairVoicePremium from "./PairVoicePremium";
 
 export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType};
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
@@ -494,6 +495,22 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       case"balloons":return <section className="thi-scene thi-scene-balloons thi-scene-rich"><p className="thi-kicker">{token(copy.balloons.kicker)}</p><h2>{titleLines(copy.balloons.title)}</h2><div className={experience.slug==="cumpleanos"?"thi-balloons thi-birthday-balloons":"thi-balloons"}>{balloonLines.map((line,i)=><button data-action="balloon" key={line} className={popped.includes(i)?"pop":""} disabled={experience.slug==="cumpleanos"&&!popped.includes(i)&&popped.length>=3} onClick={()=>{if(experience.slug==="cumpleanos"&&(popped.includes(i)||popped.length>=3))return;setPopped(v=>v.includes(i)?v:experience.slug==="cumpleanos"&&v.length>=3?v:[...v,i]);haptic(10);playFx("pop")}}><span>{popped.includes(i)?token(line):""}</span><i>{popped.includes(i)?"✦":token(copy.balloons.popLabel)}</i></button>)}</div>{experience.slug==="cumpleanos"&&<p className="thi-birthday-balloons-count">{popped.length>=3?"Tres sorpresas elegidas. Las otras quedan guardadas.":`Elegí tres globos · ${3-popped.length} por descubrir`}</p>}<button data-action="advance" className="thi-primary" disabled={popped.length<3} onClick={next}>{popped.length<3?countText(copy.balloons.remainingOne,copy.balloons.remainingMany,3-popped.length):token(copy.balloons.cta)}</button></section>;
       case"timeline":return experience.slug==="hijos"?<section className="thi-scene thi-scene-timeline thi-child-timeline thi-scene-rich"><div className="thi-child-story-mist" aria-hidden="true"/><p className="thi-kicker">{token(copy.timeline.kicker)}</p><h2>{titleLines(copy.timeline.title)}</h2><p className="thi-child-section-lead">Cuatro capítulos de un amor que empezó el día que llegaste.</p><div className="thi-timeline"><div className="thi-timeline-line" aria-hidden="true"/>{timelineEntries.map((entry,index)=><article key={entry.title} style={{"--story-i":index} as CSSProperties}><span>{String(index+1).padStart(2,"0")}</span><div className="thi-child-timeline-photo">{scenePhotos.length>0&&<img loading="lazy" src={(scenePhotos[index%scenePhotos.length]).url} alt="" style={{objectPosition:scenePhotos[index%scenePhotos.length].position||"center"}}/>}<i aria-hidden="true"/></div><div className="thi-child-timeline-copy"><strong>{token(entry.title)}</strong><p>{token(entry.body)}</p></div><b aria-hidden="true">✦</b></article>)}</div><button data-action="advance" className="thi-child-cta" onClick={next}><span>{token(copy.timeline.cta)}</span><b>→</b></button></section>:<section className="thi-scene thi-scene-timeline thi-scene-rich"><p className="thi-kicker">{token(copy.timeline.kicker)}</p><h2>{titleLines(copy.timeline.title)}</h2><div className="thi-timeline"><div className="thi-timeline-line" aria-hidden="true"/>{timelineEntries.map((entry,index)=><article key={entry.title}><span>{String(index+1).padStart(2,"0")}</span><i/><strong>{token(entry.title)}</strong><p>{token(entry.body)}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.timeline.cta)}</button></section>;
       case"voices":{
+        if(experience.slug==="pareja")return <PairVoicePremium
+          key={runId+"-pair-voice"}
+          kicker={token(copy.voices.kicker)}
+          title={copy.voices.title.map(line=>token(line))}
+          tracks={currentAudios.length
+            ?currentAudios.map((a,i)=>({src:a.url,name:token(a.caption||voiceEntries[i]?.name||experience.demoGiver)}))
+            :customerGift?[]:[{src:"/tehiceesto-pareja-demo-v1.m4a",name:token(voiceEntries[0]?.name||experience.demoGiver)}]}
+          noteLabel={token(copy.voices.noteLabel)}
+          playLabel={token(copy.voices.playLabel)}
+          cta={token(copy.voices.cta)}
+          heard={voicesPlayed}
+          onHeard={i=>{setVoicesPlayed(v=>v.includes(i)?v:[...v,i]);haptic(6)}}
+          onSoundStart={duckSoundtrack}
+          onSoundStop={restoreSoundtrack}
+          onContinue={next}
+        />;
         if(experience.slug==="cumpleanos"){
           const birthdayVoices=currentAudios.length
             ?currentAudios.map((entry,i)=>({name:token(entry.caption||`Mensaje ${i+1}`),message:"",url:entry.url}))
