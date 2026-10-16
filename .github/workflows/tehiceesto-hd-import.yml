@@ -1,0 +1,52 @@
+name: TeHiceEsto · HD photo import test
+on:
+  push:
+    paths:
+      - .github/workflows/tehiceesto-hd-import.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch HD media and validate dimensions
+        env:
+          CANDIDATE_URL: "https://media.canva.com/v2/image-resize/format:PNG/height:1147/quality:100/uri:ifs%3A%2F%2FM%2Fdcdae10c-4809-4ad6-b780-8b7fa74ef7c0/watermark:F/width:1371?csig=AAAAAAAAAAAAAAAAAAAAAPc0Cymkl8nVgN1pfo-ACFC_IPwUFKdBdzqfkUsZtd9k&exp=1792170501&osig=AAAAAAAAAAAAAAAAAAAAAFHZ7J0INWYQPKvz_L0CUbzTRFeWidb-8XrQhyb8-GE-&signer=media-rpc&token=AAIAAU0AJGRjZGFlMTBjLTQ4MDktNGFkNi1iNzgwLThiN2ZhNzRlZjdjMAAAAAABoUWvo4hQg5pnrIwtj1TXWtOAtjZ7U9Jzo9W7IA-NGiQFSreJGg&x-canva-quality=original"
+        run: |
+          python - <<'PY'
+          import urllib.request, os
+          url=os.environ["CANDIDATE_URL"]
+          try:
+            with urllib.request.urlopen(url,timeout=18) as response:
+              raw=response.read()
+              print("HTTP",response.status,"length",len(raw),"type",response.headers.get("Content-Type"))
+            open("/tmp/tehiceesto-hd.png","wb").write(raw)
+          except Exception as exc:
+            print("Full-size media fetch rejected:",str(exc))
+            raise
+          PY
+      - name: Validate image and publish high-quality WebP
+        run: |
+          python -m pip install --quiet Pillow
+          python - <<'PY'
+          from PIL import Image, ImageFilter
+          p="/tmp/tehiceesto-hd.png"
+          im=Image.open(p).convert("RGB")
+          print("asset received", im.size)
+          if im.width<1300 or im.height<1080:
+             raise RuntimeError("Generated high-res file not returned")
+          im=im.filter(ImageFilter.UnsharpMask(radius=1.2,percent=105,threshold=2))
+          im.save("public/tehiceesto/everyday-cinematic-hd.webp",quality=88,method=6)
+          print("HD WebP bytes",__import__("os").path.getsize("public/tehiceesto/everyday-cinematic-hd.webp"))
+          PY
+      - name: Commit original HD artwork
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/tehiceesto/everyday-cinematic-hd.webp
+          git diff --cached --quiet || (git commit -m "assets(pareja): import verified 1371px HD rainy-room artwork" && git push)
