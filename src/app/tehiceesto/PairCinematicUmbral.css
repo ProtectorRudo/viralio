@@ -62,7 +62,7 @@
 }
 .pair-cinematic-umbral .pcu-door-picture{
   display:block;position:absolute;inset:0;
-  background:url("/tehiceesto/umbral-cinematico.webp") center 52%/contain no-repeat;
+  background:radial-gradient(ellipse at 50% 40%,#ffebc9 0%,#dba77b 29%,#74504e 65%,#291921 100%);
   filter:contrast(1.07) saturate(.91);
   transform:scale(.985);transform-origin:center 53%;
   transition:transform 1.28s cubic-bezier(.22,.61,.16,1),filter 1.2s,opacity 1.2s;
@@ -159,7 +159,7 @@
   border-radius:2px;
   background-image:
     linear-gradient(90deg,rgba(13,5,8,.46) 0%,transparent 13%,rgba(233,164,130,.07) 46%,rgba(12,5,7,.36) 100%),
-    url("/tehiceesto/umbral-cinematico.webp");
+    repeating-linear-gradient(94deg,rgba(20,7,10,.16) 0 2px,rgba(178,103,74,.085) 3px 4px,transparent 5px 16px);
   background-size:100% 100%,340% 135%;
   background-position:center,28% 47%;
   background-repeat:no-repeat;
@@ -292,4 +292,88 @@
   .pair-cinematic-umbral .pcu-door-scene::before{
     border-width:6px;
   }
+}
+
+
+/* ONE PHYSICAL DOOR · No photographed second doorway.
+   The only door in this scene is .pcu-door-closed-leaf. Behind its
+   opening is a warm perspective interior made entirely from light. */
+.pair-cinematic-umbral .pcu-door-picture {
+  z-index:1;
+  position:absolute;
+  inset:auto;
+  top:15.7%;
+  left:22.5%;
+  width:54.6%;
+  height:70.5%;
+  overflow:hidden;
+  box-sizing:border-box;
+  border:0;
+  background-image:
+    radial-gradient(ellipse 43% 52% at 53% 52%,rgba(255,250,223,.96) 0%,rgba(255,226,176,.88) 21%,rgba(255,179,137,.42) 54%,transparent 89%),
+    linear-gradient(99deg,rgba(41,19,26,.83) 0%,rgba(125,75,65,.42) 26%,rgba(249,196,155,.14) 47%,rgba(95,48,46,.31) 76%,rgba(39,18,28,.86) 100%),
+    linear-gradient(180deg,#583540 0%,#b08175 40%,#e5bd9d 70%,#68444a 100%);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  box-shadow:inset 12px 0 28px rgba(20,8,16,.62),inset -12px 0 32px rgba(22,8,18,.56),inset 0 14px 22px rgba(35,14,23,.46);
+  transform:scale(1);
+  opacity:0;
+  filter:brightness(.95) saturate(.91);
+  transition:opacity .58s ease .10s,filter 1.05s ease,transform 1.22s ease;
+  animation:none;
+}
+/* Architecture only — ceiling and floor, with no doorway or door silhouette. */
+.pair-cinematic-umbral .pcu-door-picture::before {
+  content:"";
+  position:absolute;
+  z-index:2;
+  top:0;left:0;right:0;height:44%;
+  background:linear-gradient(155deg,rgba(43,21,30,.72),rgba(255,222,177,.05) 51%,rgba(40,20,29,.51));
+  clip-path:polygon(0 0,100% 0,62% 100%,39% 100%);
+  opacity:.52;
+}
+.pair-cinematic-umbral .pcu-door-picture::after {
+  content:"";
+  position:absolute;
+  z-index:3;
+  bottom:-3%;left:-13%;right:-13%;height:36%;
+  clip-path:polygon(41% 0,59% 0,100% 100%,0 100%);
+  background:
+    repeating-linear-gradient(179deg,rgba(94,61,52,.10) 0 1px,transparent 2px 14px),
+    linear-gradient(180deg,rgba(255,247,213,.87) 0%,rgba(240,171,135,.55) 45%,rgba(70,37,42,.26) 100%);
+  filter:blur(1px);
+  opacity:.9;
+}
+.pair-cinematic-umbral.is-opening .pcu-door-picture,
+.pair-cinematic-umbral.is-open .pcu-door-picture {
+  opacity:1;
+  animation:none;
+}
+.pair-cinematic-umbral .pcu-door-closed-leaf {
+  background-image:
+    linear-gradient(93deg,rgba(7,2,5,.57) 0%,rgba(139,77,59,.10) 15%,rgba(232,166,118,.13) 43%,rgba(19,7,10,.45) 100%),
+    repeating-linear-gradient(94deg,rgba(43,16,17,.24) 0 1px,rgba(200,119,76,.07) 2px 4px,transparent 5px 15px),
+    linear-gradient(110deg,#2e141c 0%,#5b302d 27%,#35191c 63%,#1f0e16 100%);
+  background-size:100% 100%,100% 100%,100% 100%;
+  background-position:center;
+  box-shadow:inset 1px 0 2px rgba(244,178,138,.15),inset 0 0 26px rgba(8,2,5,.58),9px 4px 18px rgba(19,5,10,.52),0 0 0 1px rgba(83,39,38,.7);
+}
+/* Prevent the door leaf from visually duplicating into the interior. */
+.pair-cinematic-umbral.is-opening .pcu-door-closed-leaf,
+.pair-cinematic-umbral.is-open .pcu-door-closed-leaf,
+.pair-cinematic-umbral.is-entering .pcu-door-closed-leaf {
+  transform:rotateY(-105deg);
+  opacity:1;
+}
+.pair-cinematic-umbral.is-entering .pcu-door-picture {
+  animation:none;
+  opacity:1;
+  transform:scale(1.32);
+  filter:brightness(1.9) blur(2px);
+}
+@media(prefers-reduced-motion:reduce){
+ .pair-cinematic-umbral.is-opening .pcu-door-closed-leaf,
+ .pair-cinematic-umbral.is-open .pcu-door-closed-leaf,
+ .pair-cinematic-umbral.is-entering .pcu-door-closed-leaf {transform:rotateY(-105deg)}
 }
