@@ -490,3 +490,101 @@
   .couple-gift-intro .couple-gift-tag{right:2%}
   .couple-gift-intro .couple-gift-prelude{font-size:8px}
 }
+
+
+/* Couture finishing: supple tails, attachment thread and correct unwrapping
+   precedence. The previous base-material selectors overrode phase transforms. */
+.couple-gift-intro .couple-gift-tail{
+  bottom:64%;height:68%;width:10%;border:0;
+  clip-path:polygon(6% 0,94% 0,89% 78%,48% 97%,8% 83%);
+  background:linear-gradient(90deg,#725a37 0%,#c6ad7c 15%,#f7e9bf 35%,#b99b6b 59%,#edd9aa 84%,#785e39 100%);
+  box-shadow:2px 8px 9px rgba(0,0,0,.32);
+}
+.couple-gift-intro .couple-gift-tail.tail-left{
+  left:42%;transform:rotate(61deg) translate(-7px,7px);
+}
+.couple-gift-intro .couple-gift-tail.tail-right{
+  right:42%;transform:rotate(-61deg) translate(7px,7px);
+}
+.couple-gift-intro .couple-gift-bow{
+  height:69%;width:28%;bottom:86%;
+  border-width:8px;border-radius:62% 37% 58% 43% / 61% 55% 56% 58%;
+}
+.couple-gift-intro .couple-gift-bow:after{
+  inset:6px;background:linear-gradient(110deg,rgba(31,40,41,.58),rgba(110,103,81,.13) 70%);
+  box-shadow:inset 0 3px 8px rgba(5,10,12,.32);
+}
+.couple-gift-intro .couple-gift-bow.bow-left{
+  left:22%;transform:rotate(-20deg) skew(-3deg,3deg);
+}
+.couple-gift-intro .couple-gift-bow.bow-right{
+  right:22%;transform:scaleX(-1) rotate(-20deg) skew(-3deg,3deg);
+}
+.couple-gift-intro .couple-gift-tag{
+  right:10%;top:23%;transform:rotate(5deg);
+}
+.couple-gift-intro .couple-gift-tag i{
+  left:-71px;top:13px;width:84px;height:1px;
+  transform:rotate(-18deg);transform-origin:right center;
+  background:linear-gradient(90deg,#9a855f,#e9cfa1,#a98e65);
+  filter:drop-shadow(0 1px 1px #0008);
+}
+.couple-gift-intro .couple-gift-tag:before{
+  top:8px;left:8px;width:7px;height:7px;border-width:1px;
+  border-color:#b69b73;background:#e9d5b1;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-bow.bow-left,
+.couple-gift-intro.gift-phase-opening .couple-gift-bow.bow-left,
+.couple-gift-intro.gift-phase-revealed .couple-gift-bow.bow-left{
+  transform:translate(-83px,-12px) rotate(-103deg) scale(.56);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-bow.bow-right,
+.couple-gift-intro.gift-phase-opening .couple-gift-bow.bow-right,
+.couple-gift-intro.gift-phase-revealed .couple-gift-bow.bow-right{
+  transform:translate(83px,-12px) rotate(103deg) scaleX(-.56);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-tail.tail-left,
+.couple-gift-intro.gift-phase-opening .couple-gift-tail.tail-left,
+.couple-gift-intro.gift-phase-revealed .couple-gift-tail.tail-left{
+  transform:translate(-112px,46px) rotate(115deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-tail.tail-right,
+.couple-gift-intro.gift-phase-opening .couple-gift-tail.tail-right,
+.couple-gift-intro.gift-phase-revealed .couple-gift-tail.tail-right{
+  transform:translate(112px,46px) rotate(-115deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-knot,
+.couple-gift-intro.gift-phase-opening .couple-gift-knot,
+.couple-gift-intro.gift-phase-revealed .couple-gift-knot{
+  transform:translateY(-25px) rotate(-10deg) scale(.52);opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-lid-ribbon,
+.couple-gift-intro.gift-phase-opening .couple-gift-lid-ribbon,
+.couple-gift-intro.gift-phase-revealed .couple-gift-lid-ribbon{
+  transform:translateY(-34px) scaleX(.79);opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-base-ribbon,
+.couple-gift-intro.gift-phase-opening .couple-gift-base-ribbon,
+.couple-gift-intro.gift-phase-revealed .couple-gift-base-ribbon{
+  transform:translateY(46px) scaleX(.72);opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-gift-tag,
+.couple-gift-intro.gift-phase-opening .couple-gift-tag,
+.couple-gift-intro.gift-phase-revealed .couple-gift-tag{
+  transform:translate(63px,20px) rotate(39deg);opacity:0;
+}
+.couple-gift-intro.gift-phase-opening .couple-gift-paper,
+.couple-gift-intro.gift-phase-revealed .couple-gift-paper{
+  opacity:.4;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-paper{
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-object{
+  transform:translateY(20%) scale(.84);
+  opacity:.62;
+}
