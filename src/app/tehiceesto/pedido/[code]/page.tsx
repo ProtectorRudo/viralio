@@ -23,6 +23,7 @@ type StatusPayload={
   stage:"received"|"payment"|"personalize"|"ready";
   giftStatus:string;
   experienceSlug:string;
+  templateVersion?:string;
   giverName:string;
   recipientName:string;
   createdAt:string;
@@ -115,6 +116,44 @@ export default async function OrderStatusPage({
         <Link href={href("/pedido/"+data.code)}>Actualizar estado ↻</Link>
         <OrderStatusAutoRefresh active={!ready}/>
       </footer>
+    </main>;
+  }
+
+  // New premium-v5 Pareja purchases are bespoke and produced by TeHiceEsto,
+  // while v1-v4 orders retain the editing journeys sold to those customers.
+  if(data.experienceSlug==="pareja"&&data.templateVersion==="premium-v5"){
+    const contactText=encodeURIComponent("Hola, compré Pareja en Te Hice Esto. Mi código de pedido es "+data.code.toUpperCase()+". Quiero coordinar los nombres, frases, fotos y audios personalizados.");
+    const support="https://wa.me/5492215653163?text="+contactText;
+    return <main className="order-status-shell">
+      <header className="order-status-top"><Link href={href("/")} className="order-status-brand">TE HICE ESTO</Link><span>PAREJA · PERSONALIZACIÓN ASISTIDA</span></header>
+      <section className="order-status-hero">
+        <span className="order-status-kicker">PEDIDO · {data.code.toUpperCase()}</span>
+        <h1>{ready?"Nuestra historia ya está lista.":paid?"Ahora empieza lo más especial.":"Tu sorpresa ya está reservada."}</h1>
+        <p>Elegiste Pareja. Conservamos cada escena, sonido y animación del modelo premium que conociste.</p>
+        <div className={`order-status-live ${ready?"ready":paid?"production":"payment"}`}><i/><span>{ready?"LISTA PARA REGALAR":paid?"PAGO CONFIRMADO · PREPARACIÓN A CARGO DE NUESTRO EQUIPO":"ESPERANDO CONFIRMACIÓN DE PAGO"}</span></div>
+      </section>
+      <section className="order-status-waiting">
+        <div><span>{ready?"TU EXPERIENCIA PRIVADA":paid?"SIGUIENTE PASO":"PAGO SEGURO"}</span>
+        <h2>{ready?"Ya podés sorprender.":paid?"Nosotros la hacemos personal.":"Primero confirmamos tu compra."}</h2>
+        <p>{ready?"Abrí tu enlace privado y compartilo con esa persona especial. Si necesitás ajustar algún detalle, escribinos.":paid?"No tenés que editar ni diseñar nada. Escribinos con tu código: nos contás nombres, recuerdos, frases, fotografías y audios. Nosotros armamos, revisamos y publicamos la experiencia, sin cambiar su diseño.":"Conservamos tu elección. Cuando se confirme el pago te ayudamos personalmente a preparar cada recuerdo."}</p></div>
+        <div className="order-status-actions">
+          {ready&&<Link href={href("/r/"+data.code)} className="order-status-pay">Abrir mi regalo terminado <b>↗</b></Link>}
+          {!paid&&!ready&&data.order?.checkoutUrl&&<a href={data.order.checkoutUrl} className="order-status-pay" rel="nofollow">Completar el pago <b>↗</b></a>}
+          <a href={support} className="order-status-whatsapp" target="_blank" rel="noopener noreferrer">{paid?"Coordinar personalización":"Consultar por WhatsApp"} <b>↗</b></a>
+        </div>
+      </section>
+      <section className="order-status-timeline">
+        {[
+          ["01","Elegiste Pareja","Guardamos el modelo premium elegido y tus datos de compra."],
+          ["02","Pago acreditado","Mercado Pago confirma el pago de forma segura."],
+          ["03","Nos contás vuestra historia","Nuestro equipo recibe los textos y archivos, personaliza y revisa cada detalle."],
+          ["04","Experiencia lista","Te entregamos un enlace privado para compartir."]
+        ].map(([number,title,copy],index)=><article key={number} className={index<current||ready?"done":index===current?"active":""}>
+          <div className="order-status-index">{index<current||ready?"✓":number}</div>
+          <div><strong>{title}</strong><p>{copy}</p></div><span className="order-status-line"/>
+        </article>)}
+      </section>
+      <footer className="order-status-footer"><Link href={href("/pedido/"+data.code)}>Actualizar estado ↻</Link><OrderStatusAutoRefresh active={!ready}/></footer>
     </main>;
   }
 
