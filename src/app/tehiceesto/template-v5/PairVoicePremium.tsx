@@ -112,7 +112,7 @@ export default function PairVoicePremium({
             {track.name||"Voz "+(i+1)}
           </button>)}
         </div>}
-        <button data-action="advance" type="button" className="pvp-keep" disabled={!heard.length}
+        <button data-action="advance" type="button" className="pvp-keep" disabled={playable&&!heard.length}
           onClick={onContinue} aria-label={cta.replace(/\s*→\s*$/,"")}>
           <span>{cta.replace(/\s*→\s*$/,"")}</span><b aria-hidden="true">→</b>
         </button>
