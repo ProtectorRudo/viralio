@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from "react";
 
 type Stage="bud"|"bloom"|"envelope"|"letter"|"farewell";
-type Props={message:string;subtitle:string};
+type Props={message:string;subtitle:string;lead:string};
 
 function haptic(pattern:number|number[]){
   try{if(typeof navigator!=="undefined" && "vibrate" in navigator)navigator.vibrate(pattern)}catch{}
@@ -29,7 +29,7 @@ function softChime(){
 }
 
 /** Pair finale model. Only message and subtitle vary from gift to gift. */
-export default function PairRoseFinaleCinematic({message,subtitle}:Props){
+export default function PairRoseFinaleCinematic({message,subtitle,lead}:Props){
   const [stage,setStage]=useState<Stage>("bud");
   const timers=useRef<number[]>([]);
   const started=useRef(false);
@@ -50,7 +50,6 @@ export default function PairRoseFinaleCinematic({message,subtitle}:Props){
     setStage("farewell");
     haptic(12);
   };
-  const opening=stage==="bloom"||stage==="envelope"||stage==="letter";
   return <div className="prc-root" data-rose-stage={stage}>
     <div className="prc-stage" aria-label="La última rosa, una sorpresa para vos">
       <div className="prc-glow" aria-hidden="true"/>
@@ -80,7 +79,7 @@ export default function PairRoseFinaleCinematic({message,subtitle}:Props){
     {stage==="bud"&&<div className="prc-instruction"><span>Tocá la rosa</span><small>HAY ALGO MÁS PARA VOS</small></div>}
     {stage==="bloom"&&<div className="prc-instruction prc-instruction-bloom"><span>Un momento más…</span><i aria-hidden="true"/></div>}
     {stage==="envelope"&&<div className="prc-instruction"><span>Un secreto para vos…</span></div>}
-    {stage==="letter"&&<div className="prc-letter-action"><p>Lo demás lo seguimos haciendo afuera de esta pantalla.</p><button type="button" data-action="rose-farewell" onClick={farewell}>Guardar este instante <span aria-hidden="true">→</span></button></div>}
-    {stage==="farewell"&&<div className="prc-farewell" aria-live="polite"><span className="prc-farewell-kicker">UN FINAL QUE PERMANECE</span><h3>Gracias por llegar hasta acá.</h3><p>Y por ser parte de todo lo hermoso que viene.</p><span className="prc-farewell-heart" aria-hidden="true">♥</span></div>}
+    {stage==="letter"&&<div className="prc-letter-action"><p>{lead}</p><button type="button" data-action="rose-farewell" onClick={farewell}>Guardar este instante <span aria-hidden="true">→</span></button></div>}
+    {stage==="farewell"&&<div className="prc-farewell" aria-live="polite"><span className="prc-farewell-kicker">UN FINAL QUE PERMANECE</span><h3>Gracias por llegar hasta acá.</h3><p>{lead}</p><span className="prc-farewell-heart" aria-hidden="true">♥</span></div>}
   </div>;
 }
