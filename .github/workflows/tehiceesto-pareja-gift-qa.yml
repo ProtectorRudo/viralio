@@ -8,6 +8,9 @@ on:
       - "src/app/tehiceesto/CoupleGiftIntro.tsx"
       - "src/app/tehiceesto/CoupleGiftIntro.css"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
+      - "src/app/tehiceesto/RubyHeart.tsx"
+      - "src/app/tehiceesto/HoldReveal.tsx"
+      - "src/app/tehiceesto/tehiceesto-ruby-heart.css"
       - "src/app/tehiceesto/PairCinematicUmbral.tsx"
       - "src/app/tehiceesto/PairCinematicUmbral.css"
       - "src/app/tehiceesto/PairVoicePremium.tsx"
@@ -283,6 +286,44 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-finale.png",fullPage:false});
             await page.locator(".thi-everyday-continue").click();
             await page.locator("main.thi-experience[data-scene='scratch']").waitFor({timeout:8000});
+            await page.waitForTimeout(1000);
+            await page.locator('[data-action="scratch-canvas"]').click();
+            await page.locator('[data-action="scratch-fallback"]').click({force:true});
+            await page.locator('main.thi-experience[data-scene="scratch"] [data-action="advance"]').click();
+            await page.locator("main.thi-experience[data-scene='hold']").waitFor({timeout:8000});
+            await page.waitForTimeout(1200);
+            const ruby=page.locator(".thi-hold-reveal.ruby .thi-ruby-art");
+            if(!(await ruby.isVisible()))throw Error("Premium ruby crystal missing from Pareja scene");
+            if(await page.locator(".thi-hold-reveal.ruby .thi-hold-rings").isVisible())
+              throw Error("Obsolete concentric UI rings still visible");
+            const holdGeometry=await page.evaluate(()=>{
+              const heart=document.querySelector('.thi-ruby-art')?.getBoundingClientRect();
+              const title=document.querySelector('.thi-scene-hold h2')?.getBoundingClientRect();
+              return {heart:heart?.toJSON(),title:title?.toJSON(),overflow:document.documentElement.scrollWidth-innerWidth};
+            });
+            if(!holdGeometry.heart||holdGeometry.heart.width<190)throw Error("Ruby heart too small: "+JSON.stringify(holdGeometry));
+            if(holdGeometry.overflow>4)throw Error("Ruby scene horizontal overflow: "+JSON.stringify(holdGeometry));
+            if(name==="mobile"&&holdGeometry.title?.height>160)
+              throw Error("Hold title dominates mobile screen: "+JSON.stringify(holdGeometry));
+            await page.screenshot({path:"gift-visual-qa/"+name+"-ruby-idle.png",fullPage:false});
+            const holdButton=page.locator('.thi-hold-reveal.ruby [data-action="hold"]');
+            const target=await holdButton.boundingBox();
+            if(!target)throw Error("Ruby heart is not pressable");
+            await page.mouse.move(target.x+target.width/2,target.y+target.height/2);
+            await page.mouse.down();
+            await page.waitForTimeout(1510);
+            if(!(await page.locator('.thi-hold-reveal.ruby').getAttribute('data-hold-phase'))?.match(/almost|there/))
+              throw Error("Hold interaction did not progress");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-ruby-holding.png",fullPage:false});
+            await page.waitForTimeout(1560);
+            await page.mouse.up();
+            await page.locator('.thi-hold-reveal.ruby.revealed').waitFor({timeout:3500});
+            await page.waitForTimeout(1350);
+            const dedication=await page.locator(".thi-hold-reveal.ruby > p").innerText();
+            if(!dedication.trim())throw Error("Emotional reveal copy missing");
+            if(!(await page.locator('.thi-scene-hold > .thi-primary').isVisible()))
+              throw Error("Continue CTA missing after crystal reveal");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-ruby-revealed.png",fullPage:false});
             if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
             console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
             await context.close();
