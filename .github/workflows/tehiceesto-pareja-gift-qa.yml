@@ -63,7 +63,7 @@ jobs:
               overflow:document.documentElement.scrollWidth-window.innerWidth,
               scheme:getComputedStyle(document.querySelector(".couple-gift-intro")).getPropertyValue("--gift-box")
             }));
-            if(!before.box || !before.hint || before.hint.top<before.box.bottom-4)throw Error("Instruction overlaps gift box: "+JSON.stringify(before));
+            if(!before.box || !before.hint || before.hint.top<before.box.bottom+18)throw Error("Instruction needs more separation from box: "+JSON.stringify(before));
             if(!before.label || before.label.height<60)throw Error("Unwrap tag unreadable: "+JSON.stringify(before));
             if(before.overflow>3)throw Error("Horizontal overflow: "+before.overflow);
             if(before.scheme.includes("#d38d9b"))throw Error("Old pink box still active");
@@ -72,6 +72,18 @@ jobs:
             await page.locator(".gift-phase-opening").waitFor({timeout:5000});
             await page.locator(".gift-phase-revealed").waitFor({timeout:5000});
             await page.waitForTimeout(1050);
+            const revealSpacing=await page.evaluate(()=>{
+              const title=document.querySelector(".couple-gift-reveal h1");
+              const subtitle=document.querySelector(".couple-gift-subtitle");
+              const paragraph=document.querySelector(".couple-gift-opening");
+              const box=document.querySelector(".couple-gift-object");
+              return {titleBottom:title?.getBoundingClientRect().bottom,subtitleTop:subtitle?.getBoundingClientRect().top,
+                subtitleBottom:subtitle?.getBoundingClientRect().bottom,paragraphTop:paragraph?.getBoundingClientRect().top,
+                boxOpacity:box?Number(getComputedStyle(box).opacity):1};
+            });
+            if((revealSpacing.subtitleTop??0)-(revealSpacing.titleBottom??0)<8)throw Error("Name and subtitle too tight: "+JSON.stringify(revealSpacing));
+            if((revealSpacing.paragraphTop??0)-(revealSpacing.subtitleBottom??0)<8)throw Error("Subtitle and letter too tight: "+JSON.stringify(revealSpacing));
+            if(revealSpacing.boxOpacity>.08)throw Error("Opened gift obscures personalized dedication: "+JSON.stringify(revealSpacing));
             if(await page.locator(".couple-gift-continue").isDisabled())throw Error("CTA never enabled");
             if(!(await page.locator(".couple-gift-reveal h1").textContent())?.trim())throw Error("Recipient vanished");
             await page.screenshot({path:"gift-visual-qa/"+name+"-revealed.png",fullPage:false});
