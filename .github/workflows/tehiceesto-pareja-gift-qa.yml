@@ -124,10 +124,12 @@ jobs:
             if(!(await advance.isVisible()))throw Error("Continue not shown after opening");
             await advance.click();
             await page.locator("main.thi-experience[data-scene='memories']").waitFor({timeout:8000});
+            await page.waitForTimeout(1450); // Wait for the view-transition overlay to fully clear
             const memoryAdvance=page.locator("main.thi-experience[data-scene='memories'] [data-action='advance']").first();
             await memoryAdvance.click();
             await page.locator("main.thi-experience[data-scene='voices']").waitFor({timeout:8000});
             await page.locator(".pair-voice-premium[data-pair-voice='premium-v1']").waitFor({timeout:5000});
+            await page.waitForTimeout(1600); // Capture the settled voice design, not the prior memories transition
             const voiceCard=page.locator(".pvp-player");
             const voicePlay=page.locator(".pvp-play");
             if(!(await voiceCard.isVisible())||!(await voicePlay.isVisible()))throw Error("Premium voice card missing");
