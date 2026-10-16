@@ -33,9 +33,9 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
     expect(frozenCSS).toContain(".thi-template-v3");
     expect(frozenCSS).not.toContain(".thi-template-live");
   });
-  it("preserves v3 for previously sold gifts and creates new Pareja orders from frozen v4",()=>{
+  it("preserves v3 for previously sold gifts and creates new Pareja orders from frozen v5",()=>{
     const src=read("supabase/functions/order-create/index.ts");
-    expect(src).toContain('slug==="pareja"?"premium-v4":"premium-v3"');
+    expect(src).toContain('slug==="pareja"?"premium-v5":"premium-v3"');
     expect(src).toContain("template_version:versionForNewGift(experienceSlug)");
     expect(src).toContain("templateVersion:templateVersion||");
     for(const model of liveModels){
@@ -47,18 +47,18 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
     for(const model of liveModels){
       expect(src).toContain(`${model.slug}: ${JSON.stringify(model.recipe)}`);
     }
-    expect(src).toContain('["premium-v3","premium-v4"].includes(gift.template_version)');
+    expect(src).toContain('["premium-v3","premium-v4","premium-v5"].includes(gift.template_version)');
     expect(src).toContain("? [...canonical]");
-    expect(src).toContain('!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVoice');
-    expect(src).toContain('!["premium-v3","premium-v4"].includes(gift.template_version) && !hasPhoto');
-    expect(src).toContain('!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVideo');
+    expect(src).toContain('!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasVoice');
+    expect(src).toContain('!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasPhoto');
+    expect(src).toContain('!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasVideo');
   });
   it("renders published gifts and both editors from the same frozen model",()=>{
     const page=read("src/app/tehiceesto/r/[code]/page.tsx");
     const customer=read("src/app/tehiceesto/editar/CustomerStudio.tsx");
     const admin=read("src/app/tehiceesto/admin/AdminGiftEditor.tsx");
     expect(page).toContain("frozenV3?PremiumV3Engine");
-    expect(page).toContain("(frozenV3||frozenV4)?[...base.recipe]");
+    expect(page).toContain("(frozenV3||frozenV4||frozenV5)?[...base.recipe]");
     expect(page).toContain("frozenV4?PremiumV4Engine");
     expect(customer).toContain("recipe:[...base.recipe]");
     expect(customer).toContain("<PremiumV3Engine");
@@ -67,6 +67,7 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
     expect(read("src/app/tehiceesto/r/[code]/layout.tsx")).toContain("tehiceesto-premium-v3.css");
     expect(read("src/app/tehiceesto/editar/layout.tsx")).toContain("tehiceesto-premium-v3.css");
   });
+  it("includes the complete version-five rose, heart and editor integration",()=>{const engine=read("src/app/tehiceesto/template-v5/ExperienceEngine.tsx");expect(engine).toContain("thi-template-v5");expect(engine).toContain("./PairRoseFinaleCinematic");expect(engine).toContain("const scenes=experience.recipe;");expect(read("src/app/tehiceesto/admin/ScriptEditor.tsx")).toContain("finale.roseMessage");expect(read("src/app/tehiceesto/pedido/[code]/page.tsx")).toContain('templateVersion==="premium-v5"');});
   it("never traps recipients or displays demo voices when a purchased gift has no audio",()=>{
     const engine=read("src/app/tehiceesto/template-v3/ExperienceEngine.tsx");
     const css=read("src/app/tehiceesto/tehiceesto-premium-v3.css");
