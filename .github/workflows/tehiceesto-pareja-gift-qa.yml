@@ -16,6 +16,8 @@ on:
       - "src/app/tehiceesto/PairMemoryLight.css"
       - "src/app/tehiceesto/PairHeartConstellation.tsx"
       - "src/app/tehiceesto/PairHeartConstellation.css"
+      - "src/app/tehiceesto/tehiceesto-everyday.css"
+      - "public/tehiceesto/everyday-cinematic.webp"
   workflow_dispatch:
 
 permissions:
@@ -224,6 +226,36 @@ jobs:
             await page.screenshot({path:"gift-visual-qa/"+name+"-heart-final.png",fullPage:false});
             await page.locator(".phc-cta").click();
             await page.locator("main.thi-experience[data-scene='everyday']").waitFor({timeout:8000});
+            await page.waitForTimeout(1400);
+            const room=page.locator(".thi-pair-everyday .thi-everyday-room");
+            if(!(await room.isVisible()))throw Error("Photographic everyday room missing");
+            const bg=await room.evaluate(el=>getComputedStyle(el).backgroundImage);
+            if(!bg.includes("everyday-cinematic.webp"))throw Error("Approved photographic room not used");
+            const imgResp=await page.request.get("http://127.0.0.1:3000/tehiceesto/everyday-cinematic.webp");
+            if(!imgResp.ok())throw Error("Everyday room photography returned "+imgResp.status());
+            if(await page.locator(".thi-everyday-hotspot").count()!==3)throw Error("Three interactive memories missing");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-initial.png",fullPage:false});
+            await page.locator('[data-action="everyday-window"]').click();
+            if(!(await page.locator(".thi-everyday-story").innerText()).includes("LA VENTANA"))throw Error("Window dedication not revealed");
+            const overlap=await page.evaluate(()=>{
+              const p=document.querySelector(".thi-everyday-message p");
+              const c=document.querySelector("a.floating-create-cta.floating-whatsapp--experience");
+              if(!p||!c)return false;
+              const a=p.getBoundingClientRect(),b=c.getBoundingClientRect();
+              return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+            });
+            if(overlap)throw Error("Buy button overlaps intimate memories on "+name);
+            await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-window.png",fullPage:false});
+            await page.locator(".thi-everyday-rain-toggle").click();
+            if((await page.locator(".thi-everyday-rain-toggle").getAttribute("aria-pressed"))!=="true")throw Error("Rain sound failed to start");
+            await page.locator(".thi-everyday-rain-toggle").click();
+            await page.locator('[data-action="everyday-cups"]').click();
+            await page.locator('[data-action="everyday-frame"]').click();
+            await page.locator('[data-everyday-complete="true"]').waitFor({timeout:4000});
+            if(!(await page.locator(".thi-everyday-continue").isVisible()))throw Error("Continue missing after all three discoveries");
+            await page.screenshot({path:"gift-visual-qa/"+name+"-everyday-finale.png",fullPage:false});
+            await page.locator(".thi-everyday-continue").click();
+            await page.locator("main.thi-experience[data-scene='scratch']").waitFor({timeout:8000});
             if(errors.length)throw Error("JS errors: "+errors.join(" ; "));
             console.log("PASS",name,JSON.stringify({box:before.box,hint:before.hint,overflow:before.overflow,scene:"door"}));
             await context.close();

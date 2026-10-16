@@ -392,3 +392,220 @@
     scroll-behavior:auto!important;transition-duration:.001ms!important;
   }
 }
+
+
+/* PREMIUM ROOM 07/11 — Real photographic image from approved concept.
+   The three hotspots, personalized photo and rain sound remain functional. */
+.thi-template-live.thi-theme-pareja[data-scene="everyday"] .thi-pair-everyday{
+  padding:118px 16px 120px!important;
+  min-height:100svh!important;justify-content:center!important;
+  background:radial-gradient(ellipse 70% 46% at 0 28%,#74334645,transparent 88%),
+    radial-gradient(ellipse 60% 49% at 100% 83%,#5c2d584c,transparent 86%),
+    linear-gradient(160deg,#290e1a 0%,#170b16 48%,#0e0a12 100%)!important;
+}
+.thi-pair-everyday .thi-everyday-heading{
+  margin:0 auto 18px!important;width:min(700px,100%)!important;
+}
+.thi-pair-everyday .thi-everyday-heading .thi-kicker{
+  font:600 10px/1.5 "DM Sans",Arial,sans-serif!important;
+  letter-spacing:.24em!important;color:#ebb79e!important;
+  margin:0 0 10px!important;
+}
+.thi-template-live.thi-theme-pareja[data-scene="everyday"] .thi-pair-everyday .thi-everyday-heading h2{
+  font:400 clamp(37px,6.5vw,64px)/1.03 "Instrument Serif",Georgia,serif!important;
+  letter-spacing:-.04em!important;text-wrap:balance;color:#fff0e5!important;
+  max-width:680px!important;margin:0 auto!important;
+}
+.thi-pair-everyday .thi-everyday-hint{
+  font:400 clamp(12px,2.2vw,16px)/1.5 "DM Sans",Arial,sans-serif!important;
+  letter-spacing:0!important;color:#d7b4ac!important;
+  max-width:620px!important;margin:13px auto 0!important;
+}
+.thi-template-live.thi-theme-pareja[data-scene="everyday"] .thi-pair-everyday .thi-everyday-room{
+  width:min(705px,100%)!important;height:auto!important;
+  aspect-ratio:857/717!important;border-radius:15px!important;
+  margin:0 auto!important;
+  background:url("/tehiceesto/everyday-cinematic.webp") center/100% 100% no-repeat!important;
+  border:1px solid rgba(250,189,145,.66)!important;
+  box-shadow:0 26px 76px rgba(5,3,10,.7),
+    0 0 44px rgba(228,132,91,.10),inset 0 0 1px rgba(255,223,178,.7)!important;
+}
+/* Remove the previous CSS illustration. */
+.thi-pair-everyday .thi-everyday-ceiling,
+.thi-pair-everyday .thi-everyday-wallglow,
+.thi-pair-everyday .thi-everyday-baseboard,
+.thi-pair-everyday .thi-everyday-lamp,
+.thi-pair-everyday .thi-everyday-table,
+.thi-pair-everyday .thi-everyday-window,
+.thi-pair-everyday .thi-everyday-cupset,
+.thi-pair-everyday .thi-everyday-dust{display:none!important}
+.thi-pair-everyday .thi-everyday-room::before{
+  content:"";display:block!important;position:absolute;z-index:2;
+  inset:0;pointer-events:none;opacity:.18;
+  background:repeating-linear-gradient(100deg,transparent 0 11px,rgba(250,224,202,.36) 11px 12px,transparent 12px 41px);
+  -webkit-mask-image:linear-gradient(180deg,transparent 1%,#000 9%,#000 43%,transparent 60%);
+  mask-image:linear-gradient(180deg,transparent 1%,#000 9%,#000 43%,transparent 60%);
+  animation:thi-everyday-photo-rain 5s linear infinite;
+}
+@keyframes thi-everyday-photo-rain{0%{transform:translateY(-48px)}100%{transform:translateY(52px)}}
+.thi-pair-everyday .thi-everyday-room::after{
+  background:linear-gradient(0deg,#180d1982,transparent 20%,transparent 83%,#160e1947)!important;
+}
+.thi-pair-everyday .thi-everyday-room-vignette{
+  box-shadow:0 0 29px 2px rgba(15,7,17,.3) inset!important;z-index:5;
+}
+.thi-pair-everyday .thi-everyday-room-caption{
+  bottom:8px!important;font-size:8px!important;letter-spacing:.2em!important;
+  color:#f5cdb8!important;text-shadow:0 2px 9px #0a0714!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot{
+  z-index:7!important;filter:none!important;background:transparent!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--window{
+  top:5%!important;left:7%!important;width:51%!important;height:59%!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--cups{
+  top:60%!important;left:15%!important;width:55%!important;height:38%!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--frame{
+  top:50%!important;right:4%!important;width:33%!important;height:38%!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot .thi-everyday-touchmark{
+  display:grid!important;place-items:center!important;
+  width:clamp(33px,4.8vw,43px)!important;height:clamp(33px,4.8vw,43px)!important;
+  min-width:33px!important;min-height:33px!important;
+  border:1px solid #f8d5aa!important;border-radius:50%!important;
+  background:rgba(52,26,28,.84)!important;
+  box-shadow:0 0 0 5px rgba(249,190,141,.08),0 0 24px rgba(250,186,130,.65),inset 0 0 11px #f7c3aa28!important;
+  transform:translate(50%,50%)!important;opacity:1!important;
+  color:#ffe5c3!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--window .thi-everyday-touchmark{
+  right:50%!important;bottom:51%!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--cups .thi-everyday-touchmark{
+  right:40%!important;bottom:34%!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--frame .thi-everyday-touchmark{
+  right:34%!important;bottom:18%!important;
+}
+.thi-pair-everyday .thi-everyday-touchmark b{
+  color:#ffe6ba!important;font:400 22px/1 Georgia,serif!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot.is-discovered .thi-everyday-touchmark{
+  background:rgba(255,228,193,.94)!important;border-color:#fff0d2!important;
+  animation:none!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot.is-discovered .thi-everyday-touchmark b{font-size:0!important}
+.thi-pair-everyday .thi-everyday-hotspot.is-discovered .thi-everyday-touchmark b::after{
+  content:"✓"!important;font:700 18px/1 Arial,sans-serif!important;
+  color:#5b3029!important;
+}
+/* The image inside the photo frame remains the client's uploaded photograph. */
+.thi-pair-everyday .thi-everyday-hotspot--frame .thi-everyday-photo{
+  inset:0!important;transform:none!important;filter:none!important;
+  pointer-events:none!important;
+}
+.thi-pair-everyday .thi-everyday-photo-border{
+  position:absolute!important;top:10%!important;left:15%!important;
+  width:72%!important;height:81%!important;
+  padding:0!important;border:2px solid #ecc59b7e!important;
+  background:#2f1d29!important;
+  overflow:hidden!important;transform:rotate(-5deg)!important;
+  box-shadow:0 1px 8px #0c091acc,inset 0 0 3px #ffd8ad6b!important;
+  transition:transform .8s,box-shadow .8s!important;
+}
+.thi-pair-everyday .thi-everyday-photo-border img{
+  width:100%!important;height:100%!important;object-fit:cover!important;
+  filter:sepia(.1) saturate(.96)!important;border:0!important;
+}
+.thi-pair-everyday .thi-everyday-hotspot--frame.is-focused .thi-everyday-photo-border{
+  transform:rotate(-4deg) translateY(-8px) scale(1.045)!important;
+  box-shadow:0 15px 23px #07050fd1,0 0 19px #ffca8760!important;
+}
+.thi-pair-everyday .thi-everyday-photo-base{display:none!important}
+.thi-pair-everyday .thi-everyday-story{
+  width:min(700px,100%)!important;height:auto!important;
+  min-height:142px!important;margin:20px auto 9px!important;
+  display:grid!important;place-items:center!important;
+}
+.thi-pair-everyday .thi-everyday-message>small,
+.thi-pair-everyday .thi-everyday-ending>small{
+  color:#eeb89c!important;font-size:10px!important;letter-spacing:.21em!important;
+  margin-bottom:11px!important;
+}
+.thi-pair-everyday .thi-everyday-message>p{
+  font:400 clamp(26px,3.9vw,37px)/1.13 "Instrument Serif",Georgia,serif!important;
+  max-width:680px!important;color:#fff1e7!important;text-wrap:balance;
+}
+.thi-pair-everyday .thi-everyday-ending>p{
+  font:400 clamp(27px,4.2vw,40px)/1.14 "Instrument Serif",Georgia,serif!important;
+  max-width:680px!important;color:#fff1e7!important;text-wrap:balance;
+}
+.thi-pair-everyday .thi-everyday-footer{
+  display:flex!important;justify-content:space-around!important;flex-wrap:wrap!important;
+  align-items:center!important;gap:14px!important;min-height:48px!important;
+}
+.thi-pair-everyday .thi-everyday-discovery i{width:31px!important;height:3px!important}
+.thi-pair-everyday .thi-everyday-rain-toggle{
+  font:400 17px/1.2 "Instrument Serif",Georgia,serif!important;
+  color:#f6d2ae!important;padding:12px 9px!important;
+}
+.thi-pair-everyday .thi-everyday-rain-toggle>span{
+  display:inline-grid!important;place-items:center!important;
+  margin-right:12px!important;width:30px!important;height:30px!important;
+  font-size:18px!important;border-radius:50%!important;
+  border:1px solid #e9ae82a8!important;box-shadow:0 0 13px #dfa87b37!important;
+}
+.thi-pair-everyday .thi-everyday-continue{
+  border-radius:99px!important;padding:14px 25px!important;
+  font:400 21px/1.2 "Instrument Serif",Georgia,serif!important;
+  color:#f9e5cd!important;min-height:54px!important;
+  background:linear-gradient(130deg,#642c48,#341b31)!important;
+  border:1px solid #edbd9da8!important;
+}
+@media(max-width:650px){
+  .thi-template-live.thi-theme-pareja[data-scene="everyday"] .thi-pair-everyday{
+    padding:118px 14px 113px!important;justify-content:center!important;
+  }
+  .thi-template-live.thi-theme-pareja[data-scene="everyday"] .thi-pair-everyday .thi-everyday-heading h2{
+    font-size:clamp(34px,8.4vw,44px)!important;max-width:calc(100vw - 30px)!important;
+  }
+  .thi-pair-everyday .thi-everyday-heading{
+    margin:0 auto 14px!important;
+  }
+  .thi-pair-everyday .thi-everyday-heading .thi-kicker{font-size:9px!important}
+  .thi-pair-everyday .thi-everyday-hint{font-size:12px!important;margin-top:10px!important}
+  .thi-pair-everyday .thi-everyday-room{
+    aspect-ratio:857/717!important;height:auto!important;min-height:0!important;
+    width:100%!important;border-radius:11px!important;
+  }
+  .thi-pair-everyday .thi-everyday-room-caption{font-size:7px!important;letter-spacing:.13em!important}
+  .thi-pair-everyday .thi-everyday-story{min-height:126px!important;margin:14px auto 5px!important}
+  .thi-pair-everyday .thi-everyday-message>p{font-size:clamp(23px,6.4vw,29px)!important}
+  .thi-pair-everyday .thi-everyday-ending>p{font-size:clamp(24px,6.7vw,31px)!important}
+  .thi-pair-everyday .thi-everyday-rain-toggle{font-size:15px!important}
+  .thi-pair-everyday .thi-everyday-discovery i{width:22px!important}
+  .thi-root:has(.thi-template-live[data-scene="everyday"] .thi-pair-everyday) > a.floating-create-cta.floating-whatsapp--experience{
+    top:104px!important;right:12px!important;bottom:auto!important;left:auto!important;
+    width:46px!important;height:46px!important;
+    min-width:46px!important;max-width:46px!important;min-height:46px!important;
+    padding:5px!important;border-radius:50%!important;
+    display:grid!important;place-items:center!important;
+  }
+  .thi-root:has(.thi-template-live[data-scene="everyday"] .thi-pair-everyday) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-copy,
+  .thi-root:has(.thi-template-live[data-scene="everyday"] .thi-pair-everyday) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-arrow{
+    display:none!important;
+  }
+  .thi-root:has(.thi-template-live[data-scene="everyday"] .thi-pair-everyday) > a.floating-create-cta.floating-whatsapp--experience .floating-whatsapp-icon{
+    width:32px!important;height:32px!important;margin:0!important;
+  }
+}
+@media(max-height:720px) and (max-width:650px){
+  .thi-template-live.thi-theme-pareja[data-scene="everyday"] .thi-pair-everyday{
+    padding:102px 14px 96px!important;justify-content:flex-start!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-pair-everyday .thi-everyday-room::before{animation:none!important}
+}
