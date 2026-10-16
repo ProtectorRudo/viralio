@@ -50,7 +50,7 @@ Deno.serve(async (req: Request) => {
   const giftQuery = new URL(`${SUPABASE_URL}/rest/v1/gifts`);
   giftQuery.searchParams.set(
     "select",
-    "id,public_code,status,experience_slug,giver_name,recipient_name,story_data,created_at,updated_at,published_at"
+    "id,public_code,status,template_version,experience_slug,giver_name,recipient_name,story_data,created_at,updated_at,published_at"
   );
   giftQuery.searchParams.set("public_code", `eq.${code}`);
   giftQuery.searchParams.set("limit", "1");
@@ -114,6 +114,7 @@ Deno.serve(async (req: Request) => {
     stage,
     giftStatus: gift.status,
     experienceSlug: gift.experience_slug,
+    templateVersion: gift.template_version||"premium-v1",
     giverName: gift.giver_name,
     recipientName: gift.recipient_name,
     createdAt: gift.created_at,
