@@ -1,5 +1,6 @@
 "use client";
 import { useEffect,useRef,useState } from "react";
+import RubyHeart from "./RubyHeart";
 
 type HoldPhase="idle"|"holding"|"almost"|"there"|"complete";
 
@@ -99,6 +100,7 @@ export default function HoldReveal({
     button?.style.setProperty("--hold-heart-scale",(.95+progress*.11).toFixed(3));
     button?.style.setProperty("--hold-halo-opacity",(.18+progress*.7).toFixed(3));
     button?.parentElement?.style.setProperty("--hold-atmosphere-scale",(.92+progress*.13).toFixed(3));
+    button?.parentElement?.style.setProperty("--hold-progress-ratio",progress.toFixed(3));
   };
 
   const reset=()=>{
@@ -161,12 +163,13 @@ export default function HoldReveal({
     : instruction;
 
   return <div
-    className={`thi-hold-reveal ${cinematic?"cinematic ":""}phase-${phase} ${revealed?"revealed":""}`}
+    className={`thi-hold-reveal ${cinematic?"cinematic ":""}${heartbeat?"ruby ":""}phase-${phase} ${revealed?"revealed":""}`}
     style={{"--hold-accent":accent} as React.CSSProperties}
     data-hold-phase={phase}
   >
     <span className="thi-hold-atmosphere" aria-hidden="true"><i/><i/><i/><i/></span>
     <span className="thi-hold-rings" aria-hidden="true"><i/><i/><i/></span>
+    {heartbeat&&<span className="thi-ruby-light-field" aria-hidden="true"><i/><i/><i/><i/><i/><i/></span>}
     <button
       data-action="hold"
       ref={buttonRef}
@@ -179,17 +182,18 @@ export default function HoldReveal({
       onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();finish()}}}
       aria-label={revealed?reveal:mainLabel}
     >
-      <span className="thi-hold-heart">{symbol}</span>
+      <span className="thi-hold-heart">{heartbeat?<RubyHeart/>:symbol}</span>
       <i aria-hidden="true"/>
       <b aria-hidden="true"/>
     </button>
+    {heartbeat&&!revealed&&<span className="thi-ruby-meter" aria-hidden="true"><i/></span>}
     {heartbeat&&!revealed&&<button
       type="button"
+      className="thi-ruby-audio-toggle"
       aria-label={soundEnabled?"Silenciar los latidos":"Activar los latidos"}
       aria-pressed={soundEnabled}
       onClick={()=>{if(soundEnabled)stopHeartbeat();setSoundEnabled(value=>!value)}}
-      style={{position:"absolute",right:8,bottom:0,zIndex:8,border:"1px solid rgba(245,202,207,.28)",borderRadius:30,background:"rgba(20,6,13,.55)",color:"#f3cbd0",fontSize:12,padding:"8px 12px",cursor:"pointer",letterSpacing:".025em",backdropFilter:"blur(8px)"}}
-    >{soundEnabled?"♫ Latidos activados":"♫ Activar latidos"}</button>}
+    >{soundEnabled?"♪ Sonido":"♪ Silenciado"}</button>}
     {!revealed
       ? <div className="thi-hold-copy"><strong>{mainLabel}</strong><small>{subLabel}</small></div>
       : <p>{reveal}</p>}
