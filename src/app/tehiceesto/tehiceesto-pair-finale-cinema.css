@@ -278,3 +278,35 @@
   .prc-rose-photograph,.prc-envelope,.prc-letter,.prc-glow{transition:none!important}
   .prc-petals{display:none!important}
 }
+
+
+/* QA refinement: eliminate the rectangular stock-photo backdrop and reveal a
+   single flower emerging from darkness, without dark-green photo surroundings. */
+.prc-rose-photograph{
+  inset:-3% 3% !important;
+  background-size:cover !important;
+  background-position:50% 45% !important;
+  -webkit-mask-image:radial-gradient(ellipse 47% 44% at 50% 48%,#000 36%,rgba(0,0,0,.94) 53%,rgba(0,0,0,.44) 75%,transparent 99%) !important;
+  mask-image:radial-gradient(ellipse 47% 44% at 50% 48%,#000 36%,rgba(0,0,0,.94) 53%,rgba(0,0,0,.44) 75%,transparent 99%) !important;
+}
+.prc-rose-closed{
+  filter:saturate(1.12) contrast(1.12) brightness(.84)
+         drop-shadow(0 11px 30px rgba(6,0,4,.68));
+}
+.prc-root:not([data-rose-stage="bud"]) .prc-rose-bloom{
+  transform:scale(1.23) translateY(-1%);
+  filter:brightness(1.05) saturate(1.32) contrast(1.15)
+         drop-shadow(0 0 30px rgba(236,43,63,.34));
+}
+.prc-root[data-rose-stage="farewell"] .prc-rose-bloom{
+  transform:scale(1.05) translateY(-4%);
+}
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale:has(.prc-root[data-rose-stage="farewell"]) > .thi-pair-finale-restart,
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale:has(.prc-root[data-rose-stage="farewell"]) > .thi-pair-finale-create,
+.thi-theme-pareja[data-scene="finale"] .thi-pair-finale:has(.prc-root[data-rose-stage="farewell"]) > .thi-pair-finale-signature{
+  opacity:1 !important;
+  transform:none !important;
+  animation:prcTextEnter .68s .14s both !important;
+}
+/* The personalized card is on a separate physical plane from the flower. */
+.prc-root[data-rose-stage="letter"] .prc-letter{z-index:10;box-shadow:0 15px 48px rgba(0,0,0,.66),inset 0 0 0 8px rgba(255,255,241,.32)}
