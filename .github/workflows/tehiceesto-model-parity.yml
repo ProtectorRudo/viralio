@@ -15,6 +15,7 @@ on:
       - "src/app/tehiceesto/**"
       - "supabase/functions/order-create/**"
       - "supabase/functions/creator-api/**"
+      - ".github/workflows/tehiceesto-model-parity.yml"
 
 concurrency:
   group: tehiceesto-parity-${{ github.ref }}
