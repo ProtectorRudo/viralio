@@ -131,6 +131,8 @@ async function assertStudioAccess(
   if (error || !gift) throw new Error("studio_not_found");
   // Escape-room customers receive an assisted experience, not an editable template.
   if (String(gift.experience_slug||"").startsWith("escape-")) throw new Error("studio_not_found");
+  // Pareja v5 is assembled by our team. Existing paid editable gifts remain unaffected.
+  if (gift.template_version === "premium-v5") throw new Error("studio_not_found");
 
   const story = storyObject(gift.story_data);
   const creator = storyObject(story.creator);
@@ -445,7 +447,7 @@ Deno.serve(async (req: Request) => {
 
     try {
       const { gift, story } = await assertStudioAccess(supabase, code, body.editorToken);
-      const recipe = (["premium-v3","premium-v4"].includes(gift.template_version))
+      const recipe = (["premium-v3","premium-v4","premium-v5"].includes(gift.template_version))
         ? canonicalRecipeForGift(gift, story) // Preserve every model scene: personalization changes content, not layout.
         : cleanStudioRecipe(canonicalRecipeForGift(gift, story), body.sceneRecipe);
       if (recipe.length < 2) return json(origin, { error: "recipe_too_short" }, 400);
@@ -807,15 +809,15 @@ Deno.serve(async (req: Request) => {
       );
       const hasVideo = (publishMedia || []).some((item) => item.kind === "video");
       const canonical = canonicalRecipeForGift(gift, story);
-      let publishRecipe = (["premium-v3","premium-v4"].includes(gift.template_version))
+      let publishRecipe = (["premium-v3","premium-v4","premium-v5"].includes(gift.template_version))
         ? [...canonical] // The purchased demo's full journey is guaranteed.
         : Array.isArray(gift.scene_recipe)
           ? gift.scene_recipe.map(String)
           : [...canonical];
 
-      if (!["premium-v3","premium-v4"].includes(gift.template_version) && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
-      if (!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
-      if (!["premium-v3","premium-v4"].includes(gift.template_version) && !hasVideo) publishRecipe = publishRecipe.filter((scene) => scene !== "video");
+      if (!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
+      if (!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
+      if (!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasVideo) publishRecipe = publishRecipe.filter((scene) => scene !== "video");
       if (canonical.includes("intro") && !publishRecipe.includes("intro")) publishRecipe.unshift("intro");
       const terminal = canonical.includes("proposal") ? "proposal" : canonical.includes("finale") ? "finale" : canonical[canonical.length - 1];
       if (terminal && !publishRecipe.includes(terminal)) publishRecipe.push(terminal);
@@ -909,7 +911,7 @@ Deno.serve(async (req: Request) => {
         .update({
           status: "awaiting_payment",
           experience_slug: experienceSlug,
-          template_version: experienceSlug==="pareja" ? "premium-v4" : "premium-v3",
+          template_version: experienceSlug==="pareja" ? "premium-v5" : "premium-v3",
           giver_name: giverName,
           recipient_name: recipientName,
           feeling: feeling || null,
