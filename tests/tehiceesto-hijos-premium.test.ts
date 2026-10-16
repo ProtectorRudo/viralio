@@ -28,7 +28,7 @@ describe("Hijos · Desde que llegaste · release gate",()=>{
   });
   it("renders a genuine five-star heart that must be completed",()=>{
     const engine=read("ExperienceEngine.tsx");
-    expect(engine).toContain('case"stars":return experience.slug==="hijos"');
+    expect(engine).toContain('case"stars":return experience.slug==="pareja"||experience.slug==="hijos"');
     expect(engine).toContain("thi-child-heart-trace");
     expect(engine).toContain("thi-child-star-node");
     expect(engine).toContain('stars.length<starLines.length');
