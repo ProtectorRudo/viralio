@@ -12,7 +12,7 @@ function envDefault(name:string){
 const SECRET=envDefault("SUPABASE_SECRET_KEYS");
 // SYNCHRONIZED with frozen premium-v3 demo snapshot. Tests guard all nine journeys.
 function versionForNewGift(slug:string){
-  return slug.startsWith("escape-")?"escape-v1":slug==="pareja"?"premium-v4":"premium-v3";
+  return slug.startsWith("escape-")?"escape-v1":slug==="pareja"?"premium-v5":"premium-v3";
 }
 
 const recipes:Record<string,string[]>={
@@ -353,7 +353,7 @@ Deno.serve(async(req:Request)=>{
     .insert({
       status:"awaiting_payment",
       experience_slug:experienceSlug,
-      // Freeze this purchase to its own model; all pre-v4 gifts keep their original engine.
+      // Freeze each purchase. Pareja v5 matches the finalized demo; v1-v4 gifts remain unchanged.
       template_version:versionForNewGift(experienceSlug),
       giver_name:customerName,
       recipient_name:"A definir",
