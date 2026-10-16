@@ -363,7 +363,7 @@
 .pair-cinematic-umbral.is-opening .pcu-door-closed-leaf,
 .pair-cinematic-umbral.is-open .pcu-door-closed-leaf,
 .pair-cinematic-umbral.is-entering .pcu-door-closed-leaf {
-  transform:rotateY(-105deg);
+  transform:rotateY(-78deg);
   opacity:1;
 }
 .pair-cinematic-umbral.is-entering .pcu-door-picture {
@@ -375,5 +375,5 @@
 @media(prefers-reduced-motion:reduce){
  .pair-cinematic-umbral.is-opening .pcu-door-closed-leaf,
  .pair-cinematic-umbral.is-open .pcu-door-closed-leaf,
- .pair-cinematic-umbral.is-entering .pcu-door-closed-leaf {transform:rotateY(-105deg)}
+ .pair-cinematic-umbral.is-entering .pcu-door-closed-leaf {transform:rotateY(-78deg)}
 }
