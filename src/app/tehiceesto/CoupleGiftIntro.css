@@ -588,3 +588,182 @@
   transform:translateY(20%) scale(.84);
   opacity:.62;
 }
+
+
+/* PAREJA · FINISHING PASS 2026-10-15
+   Organic satin loops, more editorial whitespace, breathing room below the box.
+   Kept entirely inside CoupleGiftIntro, preserving the model's other scenes. */
+.couple-gift-intro .couple-gift-satin-bow {
+  position:absolute;
+  z-index:9;
+  left:0;
+  width:100%;
+  height:225%;
+  bottom:18%;
+  overflow:visible;
+  pointer-events:none;
+  filter:drop-shadow(0 7px 7px rgba(2,7,9,.45));
+}
+.couple-gift-satin-bow .couple-silk-loop,
+.couple-gift-satin-bow .couple-silk-tail,
+.couple-gift-satin-bow .couple-silk-knot {
+  transform-box:fill-box;
+  transform-origin:center center;
+  transition:transform 1.08s cubic-bezier(.18,.82,.25,1),opacity .8s ease;
+  will-change:transform,opacity;
+}
+.couple-gift-satin-bow .couple-silk-tail {
+  transition-delay:.09s;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-loop-left,
+.couple-gift-intro.gift-phase-opening .couple-silk-loop-left,
+.couple-gift-intro.gift-phase-revealed .couple-silk-loop-left {
+  transform:translate(-52px,-13px) rotate(-28deg) scale(.76);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-loop-right,
+.couple-gift-intro.gift-phase-opening .couple-silk-loop-right,
+.couple-gift-intro.gift-phase-revealed .couple-silk-loop-right {
+  transform:translate(52px,-13px) rotate(28deg) scale(.76);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-tail-left,
+.couple-gift-intro.gift-phase-opening .couple-silk-tail-left,
+.couple-gift-intro.gift-phase-revealed .couple-silk-tail-left {
+  transform:translate(-68px,20px) rotate(32deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-tail-right,
+.couple-gift-intro.gift-phase-opening .couple-silk-tail-right,
+.couple-gift-intro.gift-phase-revealed .couple-silk-tail-right {
+  transform:translate(68px,20px) rotate(-32deg);
+  opacity:0;
+}
+.couple-gift-intro.gift-phase-untying .couple-silk-knot,
+.couple-gift-intro.gift-phase-opening .couple-silk-knot,
+.couple-gift-intro.gift-phase-revealed .couple-silk-knot {
+  transform:translateY(-23px) scale(.69) rotate(-8deg);
+  opacity:0;
+}
+/* The gift tag is attached by an oblique string to the centre knot. */
+.couple-gift-intro .couple-gift-tag {
+  right:8%;
+  top:26%;
+  transform:rotate(5deg);
+}
+.couple-gift-intro .couple-gift-tag i {
+  left:-73px;
+  top:15px;
+  height:1px;
+  width:83px;
+  transform:rotate(12deg);
+  transform-origin:right center;
+  background:linear-gradient(90deg,rgba(202,170,112,.7),#e5d09f,#9b7c4d);
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.5));
+}
+.couple-gift-intro .couple-gift-theatre {
+  margin-bottom:16px;
+}
+.couple-gift-intro .couple-gift-tap-hint {
+  bottom:-20px;
+  color:#e4d4b5;
+  letter-spacing:.19em;
+  font-weight:500;
+  font-size:10px;
+}
+/* Reveal should read like an editorial dedication, not typography squeezed
+   against a remnant of the box. Box dissolves only after the opening. */
+.couple-gift-intro .couple-gift-reveal {
+  top:0;
+  left:0;
+  right:0;
+  padding:3px 9px 0;
+  gap:0;
+}
+.couple-gift-intro .couple-gift-dedication {
+  margin-bottom:12px;
+  line-height:1.55;
+  letter-spacing:.2em;
+}
+.couple-gift-intro .couple-gift-reveal h1 {
+  margin:7px 0 20px!important;
+  line-height:1.02!important;
+  letter-spacing:-.052em!important;
+}
+.couple-gift-intro .couple-gift-subtitle {
+  margin:0 auto 17px;
+  gap:15px;
+}
+.couple-gift-intro .couple-gift-subtitle p {
+  line-height:1.28;
+  text-wrap:balance;
+}
+.couple-gift-intro .couple-gift-opening {
+  margin:14px auto 0;
+  line-height:1.38;
+  max-width:445px;
+  text-wrap:balance;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-object {
+  opacity:0;
+  transform:translateY(24%) scale(.8);
+  filter:blur(7px);
+  transition:transform 1.15s ease,filter 1.05s ease,opacity 1.15s ease;
+}
+.couple-gift-intro.gift-phase-revealed .couple-gift-reveal {
+  transform:translateY(0) scale(1);
+}
+@media(max-width:650px){
+  .couple-gift-intro .couple-gift-satin-bow {
+    height:220%;
+    bottom:19%;
+  }
+  .couple-gift-intro .couple-gift-tag {right:5%;top:26%;transform:rotate(6deg)}
+  .couple-gift-intro .couple-gift-tag i {left:-68px;width:78px}
+  .couple-gift-intro .couple-gift-theatre {margin-bottom:20px}
+  .couple-gift-intro .couple-gift-tap-hint {
+    bottom:-23px;
+    font-size:9px;
+    letter-spacing:.15em;
+  }
+  .couple-gift-intro .couple-gift-reveal {
+    top:0;
+    padding:0 8px;
+  }
+  .couple-gift-intro .couple-gift-dedication {
+    margin-bottom:12px;
+    font-size:9px;
+    line-height:1.55;
+  }
+  .thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-reveal h1 {
+    font-size:clamp(66px,19.5vw,105px)!important;
+    margin:8px 0 18px!important;
+    line-height:1.03!important;
+  }
+  .couple-gift-intro .couple-gift-subtitle {
+    gap:10px;
+    margin:0 auto 16px;
+  }
+  .couple-gift-intro .couple-gift-subtitle p {
+    font-size:clamp(20px,5vw,23px);
+    line-height:1.24;
+    max-width:265px;
+  }
+  .couple-gift-intro .couple-gift-opening {
+    margin:13px auto 0;
+    max-width:305px;
+    font-size:clamp(19px,5vw,23px);
+    line-height:1.32;
+  }
+}
+@media(max-height:700px) and (max-width:650px){
+  .couple-gift-intro .couple-gift-dedication {margin-bottom:6px}
+  .thi-template-live.thi-theme-pareja[data-scene="intro"] .couple-gift-reveal h1 {margin:3px 0 10px!important;font-size:67px!important}
+  .couple-gift-intro .couple-gift-subtitle {margin-bottom:8px}
+  .couple-gift-intro .couple-gift-opening {margin-top:8px;font-size:18px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .couple-gift-satin-bow .couple-silk-loop,
+  .couple-gift-satin-bow .couple-silk-tail,
+  .couple-gift-satin-bow .couple-silk-knot {transition:none!important}
+}
