@@ -363,8 +363,19 @@ jobs:
               const title=document.querySelector(".thi-pair-finale > h2")?.getBoundingClientRect();
               return {y:window.scrollY,top:title?.top??-1};
             });
-            if(name==="mobile"&&(finalePosition.y>8||finalePosition.top<95))
-              throw Error("Finale title clipped on mobile: "+JSON.stringify(finalePosition));
+            if(name==="mobile"&&(finalePosition.y>8||finalePosition.top<95)){
+              const ancestors=await page.evaluate(()=>{
+                const nodes=[];let el=document.querySelector(".thi-pair-finale > h2");
+                while(el&&nodes.length<14){
+                  const cs=getComputedStyle(el),r=el.getBoundingClientRect();
+                  nodes.push({tag:el.tagName,cls:el.className,top:Math.round(r.top),scroll:el.scrollTop,overflow:cs.overflowY,transform:cs.transform});
+                  el=el.parentElement;
+                }
+                return nodes;
+              });
+              await page.screenshot({path:"gift-visual-qa/"+name+"-rose-debug-entry.png",fullPage:false});
+              throw Error("Finale title clipped on mobile: "+JSON.stringify({finalePosition,ancestors}));
+            }
             console.log("ROSE_VISUAL_ASSET_CHECK",name,JSON.stringify({roseAssets,physicalOrigin,finalePosition}));
             await page.screenshot({path:"gift-visual-qa/"+name+"-rose-bud.png",fullPage:false});
             await page.locator('[data-action="rose-open"]').click();
