@@ -236,6 +236,16 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
   finale:[
     {path:"finale.kicker",label:"Frase superior",kind:"text"},
     {path:"finale.title",label:"Frase final",kind:"textarea"},
+    {path:"finale.roseMessage",label:"Mensaje dentro de la rosa",kind:"text"},
+    {path:"finale.roseSubtitle",label:"Dedicatoria de la carta escondida",kind:"textarea"},
+    {path:"finale.roseKicker",label:"Encabezado de la carta pequeña",kind:"text"},
+    {path:"finale.roseTapLabel",label:"Invitación a tocar la rosa",kind:"text"},
+    {path:"finale.roseTapHint",label:"Pista bajo la rosa",kind:"text"},
+    {path:"finale.roseBloomHint",label:"Texto mientras abre la rosa",kind:"text"},
+    {path:"finale.roseEnvelopeHint",label:"Texto al aparecer el sobre",kind:"text"},
+    {path:"finale.roseSaveLabel",label:"Botón para guardar el instante",kind:"text"},
+    {path:"finale.roseFarewellKicker",label:"Encabezado de despedida",kind:"text"},
+    {path:"finale.roseFarewellTitle",label:"Título de despedida",kind:"text"},
     {path:"finale.lead",label:"Texto debajo",kind:"textarea"},
     {path:"finale.reactions",label:"Reacciones",kind:"lines",hint:"Una por renglón."},
     {path:"finale.restartLabel",label:"Botón para volver a empezar",kind:"text"},
@@ -359,7 +369,7 @@ export default function ScriptEditor({experience,recipe,value,onChange,onPreview
         </header>
         <div className="thi-script-token-hint"><span>Variables disponibles</span><code>{"{giver}"}</code><code>{"{recipient}"}</code><code>{"{count}"}</code><small>Se reemplazan solas al publicar.</small></div>
         <div className="thi-script-fields">
-          {(fields[section]||[]).map(field=>{
+          {(fields[section]||[]).filter(field=>experience.slug==="pareja"||!field.path.startsWith("finale.rose")).map(field=>{
             const current=readPath(resolved,field.path);
             return <label key={field.path} className={field.kind==="textarea"||field.kind==="lines"?"wide":""}>
               <span>{field.label}</span>
