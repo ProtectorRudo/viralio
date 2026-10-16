@@ -33,7 +33,7 @@ jobs:
         run: |
           npm start -- -H 127.0.0.1 -p 3000 >/tmp/pareja-gift-app.log 2>&1 &
           for i in {1..45}; do
-            curl -fsS http://127.0.0.1:3000/experiencias/pareja >/dev/null && exit 0
+            curl -fsS http://127.0.0.1:3000/tehiceesto/experiencias/pareja >/dev/null && exit 0
             sleep 2
           done
           cat /tmp/pareja-gift-app.log
@@ -50,7 +50,7 @@ jobs:
             const page=await context.newPage();
             const errors=[];
             page.on("pageerror",e=>errors.push(e.message));
-            const response=await page.goto("http://127.0.0.1:3000/experiencias/pareja",{waitUntil:"domcontentloaded",timeout:30000});
+            const response=await page.goto("http://127.0.0.1:3000/tehiceesto/experiencias/pareja",{waitUntil:"domcontentloaded",timeout:30000});
             if(response?.status()!==200)throw Error("Pareja HTTP "+response?.status());
             await page.locator(".couple-gift-intro.gift-phase-closed").waitFor({timeout:12000});
             if(!(await page.locator(".couple-gift-continue").isDisabled()))throw Error("CTA enabled before unwrap");
