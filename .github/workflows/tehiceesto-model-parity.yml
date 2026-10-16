@@ -44,7 +44,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser test Ailin attribution, cookies, retry and clean redirect
         run: npx playwright test e2e/tehiceesto-affiliate-launch.spec.ts
-      - name: Visual smoke production: all 9 demos, mobile and desktop
+      - name: "Visual smoke production: all 9 demos, mobile and desktop"
         continue-on-error: true
         run: node scripts/tehiceesto-production-visual.mjs
       - name: Preserve TeHiceEsto production visual evidence
