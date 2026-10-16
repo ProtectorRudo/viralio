@@ -20,7 +20,16 @@ export default async function StudioPage({params}:{params:Promise<{code:string}>
     headers:{apikey:"sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN",accept:"application/json"},cache:"no-store"
   });
   if(response.ok){
-    const gift=await response.json() as {experienceSlug?:string};
+    const gift=await response.json() as {experienceSlug?:string;templateVersion?:string};
+    if(gift.experienceSlug==="pareja"&&gift.templateVersion==="premium-v5"){
+      const url="https://wa.me/5492215653163?text="+encodeURIComponent("Hola, compré Pareja en Te Hice Esto. Código: "+code.toUpperCase()+". Quiero coordinar la personalización.");
+      return <main className="order-status-shell">
+        <section className="order-status-hero"><h1>La personalización la hacemos nosotros.</h1><p>Tu experiencia ya está diseñada. Coordinamos los nombres, fotografías, audios y dedicatorias para entregártela lista para compartir.</p></section>
+        <section className="order-status-waiting"><div><h2>Contanos tu historia.</h2><p>Tené a mano tu código de compra.</p></div>
+          <div className="order-status-actions"><a className="order-status-pay" href={url} target="_blank" rel="noopener noreferrer">Escribirnos por WhatsApp ↗</a><Link href={"/tehiceesto/pedido/"+code} className="order-status-whatsapp">Ver pedido</Link></div>
+        </section>
+      </main>;
+    }
     const room=gift.experienceSlug?.startsWith("escape-")?getEscapeRoom(gift.experienceSlug.slice(7)):undefined;
     if(room){
       const message=encodeURIComponent("Hola, compré "+room.title+" y quiero coordinar la personalización. Código: "+code.toUpperCase());
