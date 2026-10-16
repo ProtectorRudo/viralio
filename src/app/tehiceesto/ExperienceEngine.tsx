@@ -33,6 +33,7 @@ import PairRoseFinale from "./PairRoseFinale";
 import CoupleGiftIntro from "./CoupleGiftIntro";
 import PairCinematicUmbral from "./PairCinematicUmbral";
 import PairVoicePremium from "./PairVoicePremium";
+import PairMemoryLight from "./PairMemoryLight";
 
 export type ThiPhoto={url:string;caption?:string;fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:SceneType};
 export type ThiAudio={url:string;caption?:string;scene?:SceneType};
@@ -355,6 +356,22 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         }
         return <section className={`thi-scene thi-scene-memories thi-scene-rich ${experience.slug==="hijos"?"thi-child-memories":""}`}><p className="thi-kicker">{token(copy.memories.kicker)}</p><h2>{titleLines(copy.memories.title)}</h2>{storyDateLabel&&<p className="thi-memory-date-stamp">{storyDateLabel}</p>}<div className="thi-film">{(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).map((item,i)=><article className={`thi-memory m${(i%3)+1}`} key={item.url||item.caption||i}><div className="thi-memory-photo">{item.url&&<img src={item.url} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" style={{objectFit:item.fit||"cover",objectPosition:item.position||"center"}}/>}<span>{String(i+1).padStart(2,"0")}</span><i className="thi-photo-sheen"/></div><p>{token(item.caption||memoryLines[i%memoryLines.length])}</p></article>)}</div><button data-action="advance" className="thi-primary" onClick={next}>{token(copy.memories.cta)}</button></section>;
       }
+      case"light":
+        if(experience.slug==="pareja")return <PairMemoryLight
+          key={runId+"-pair-light"}
+          kicker={token(copy.light.kicker)}
+          title={token(copy.light.title)}
+          secret={token(copy.light.secret)}
+          hint={token(copy.light.hint)}
+          revealedLabel={token(copy.light.revealedLabel)}
+          ariaLabel={token(copy.light.ariaLabel)}
+          cta={token(copy.light.cta)}
+          revealed={lightRevealed}
+          photoUrl={(scenePhotos[1]||scenePhotos[0])?.url}
+          photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"}
+          onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}
+          onContinue={next}
+        />;
       case"light":return experience.slug==="hijos"?<section className="thi-scene thi-child-light-scene thi-scene-rich"><div className="thi-child-light-atmosphere" aria-hidden="true"/><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2><ChildLightQuest secret={token(copy.light.secret)} hint="Deslizá el dedo. Buscá las tres luces escondidas." revealed={lightRevealed} photoUrl={(scenePhotos[1]||scenePhotos[0])?.url} photoPosition={(scenePhotos[1]||scenePhotos[0])?.position||"center"} onReveal={()=>{setLightRevealed(true);haptic([7,20,10]);playFx("chime")}}/>{lightRevealed&&<button data-action="advance" className="thi-child-cta" onClick={next}><span>{token(copy.light.cta)}</span><b>→</b></button>}</section>:experience.slug==="cumpleanos"
         ?<section className="thi-scene thi-bday-light-scene"><p className="thi-kicker">{token(copy.light.kicker)}</p><h2>{token(copy.light.title)}</h2>
           <BirthdayLantern clues={(copy.light.clues||[]).map(token)} closing={token(copy.light.secret)}
