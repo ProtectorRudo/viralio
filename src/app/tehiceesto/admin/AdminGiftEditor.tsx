@@ -10,16 +10,19 @@ import PremiumV1Engine from "../template-v1/ExperienceEngine";
 import PremiumV2Engine from "../template-v2/ExperienceEngine";
 import PremiumV3Engine from "../template-v3/ExperienceEngine";
 import PremiumV4Engine from "../template-v4/ExperienceEngine";
+import PremiumV5Engine from "../template-v5/ExperienceEngine";
 import { getExperience, type SceneType } from "../data";
 import { getExperience as getPremiumV1Experience } from "../template-v1/data";
 import { getExperience as getPremiumV2Experience } from "../template-v2/data";
 import { getExperience as getPremiumV3Experience } from "../template-v3/data";
 import { getExperience as getPremiumV4Experience } from "../template-v4/data";
+import { getExperience as getPremiumV5Experience } from "../template-v5/data";
 import { getExperienceCopy, type DeepPartial, type ExperienceCopy } from "../experienceCopy";
 import { getExperienceCopy as getPremiumV1ExperienceCopy } from "../template-v1/experienceCopy";
 import { getExperienceCopy as getPremiumV2ExperienceCopy } from "../template-v2/experienceCopy";
 import { getExperienceCopy as getPremiumV3ExperienceCopy } from "../template-v3/experienceCopy";
 import { getExperienceCopy as getPremiumV4ExperienceCopy } from "../template-v4/experienceCopy";
+import { getExperienceCopy as getPremiumV5ExperienceCopy } from "../template-v5/experienceCopy";
 import { defaultSceneForMedia } from "../mediaRouting";
 import { defaultSceneForMedia as defaultPremiumV1SceneForMedia } from "../template-v1/mediaRouting";
 import { defaultSceneForMedia as defaultPremiumV2SceneForMedia } from "../template-v2/mediaRouting";
@@ -30,6 +33,7 @@ import { normalizeSceneTextOverrides as normalizePremiumV1SceneTextOverrides } f
 import { normalizeSceneTextOverrides as normalizePremiumV2SceneTextOverrides } from "../template-v2/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV3SceneTextOverrides } from "../template-v3/sceneText";
 import { normalizeSceneTextOverrides as normalizePremiumV4SceneTextOverrides } from "../template-v4/sceneText";
+import { normalizeSceneTextOverrides as normalizePremiumV5SceneTextOverrides } from "../template-v5/sceneText";
 import { adminCall, SESSION_KEY, uploadSignedFile } from "./api";
 import { AudioUploadError, prepareCompatibleAudio } from "../audioUpload";
 
@@ -187,6 +191,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
   const frozenV2Base=gift?getPremiumV2Experience(gift.experience_slug):undefined;
   const frozenV3Base=gift?getPremiumV3Experience(gift.experience_slug):undefined;
   const frozenV4Base=gift?getPremiumV4Experience(gift.experience_slug):undefined;
+  const frozenV5Base=gift?getPremiumV5Experience(gift.experience_slug):undefined;
   const base=gift?.template_version==="premium-v1"
     ?frozenV1Base
     :gift?.template_version==="premium-v2"
@@ -195,7 +200,9 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         ?frozenV3Base
         :gift?.template_version==="premium-v4"
           ?frozenV4Base
-          :liveBase;
+          :gift?.template_version==="premium-v5"
+            ?frozenV5Base
+            :liveBase;
   const PreviewEngine=(gift?.template_version==="premium-v1"
     ?PremiumV1Engine
     :gift?.template_version==="premium-v2"
@@ -204,7 +211,9 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         ?PremiumV3Engine
         :gift?.template_version==="premium-v4"
           ?PremiumV4Engine
-          :ExperienceEngine) as typeof ExperienceEngine;
+          :gift?.template_version==="premium-v5"
+            ?PremiumV5Engine
+            :ExperienceEngine) as typeof ExperienceEngine;
   const normalizePreviewSceneText=gift?.template_version==="premium-v1"
     ?normalizePremiumV1SceneTextOverrides
     :gift?.template_version==="premium-v2"
@@ -213,7 +222,9 @@ export default function AdminGiftEditor({ code }: { code: string }) {
         ?normalizePremiumV3SceneTextOverrides
         :gift?.template_version==="premium-v4"
           ?normalizePremiumV4SceneTextOverrides
-          :normalizeSceneTextOverrides;
+          :gift?.template_version==="premium-v5"
+            ?normalizePremiumV5SceneTextOverrides
+            :normalizeSceneTextOverrides;
   const creatorContact=gift?.story_data?.creator?.contact;
   const creatorWhatsApp=String(creatorContact?.whatsapp||"").replace(/\D/g,"");
   const creatorMessage=gift
@@ -231,7 +242,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
       closing:gift.closing_text||base.closing,
-      recipe:["premium-v3","premium-v4"].includes(gift.template_version||"")?[...base.recipe]:(gift.scene_recipe?.length?gift.scene_recipe:base.recipe),
+      recipe:["premium-v3","premium-v4","premium-v5"].includes(gift.template_version||"")?[...base.recipe]:(gift.scene_recipe?.length?gift.scene_recipe:base.recipe),
       accent:gift.theme_data?.accent||base.accent,
     };
   },[gift,base]);
@@ -242,6 +253,7 @@ export default function AdminGiftEditor({ code }: { code: string }) {
     if(gift.template_version==="premium-v2")return getPremiumV2ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
     if(gift.template_version==="premium-v3")return getPremiumV3ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
     if(gift.template_version==="premium-v4")return getPremiumV4ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
+    if(gift.template_version==="premium-v5")return getPremiumV5ExperienceCopy(previewExperience as never,gift.story_data?.script as never);
     return getExperienceCopy(previewExperience,gift.story_data?.script);
   },[previewExperience,gift]);
 
