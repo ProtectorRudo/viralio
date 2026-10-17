@@ -313,7 +313,7 @@ function Preview({
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
       closing:gift.closing_text||base.closing,
-      recipe:[...base.recipe] as PremiumV3SceneType[],
+      recipe:base.recipe.filter(scene=>gift.scene_recipe.includes(scene)||scene==="intro"||scene==="finale"||scene==="proposal") as PremiumV3SceneType[],
       accent:gift.theme_data?.accent||base.accent,
     };
     return <PremiumV3Engine
@@ -342,7 +342,7 @@ function Preview({
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
       closing:gift.closing_text||base.closing,
-      recipe:[...base.recipe] as PremiumV4SceneType[],
+      recipe:base.recipe.filter(scene=>gift.scene_recipe.includes(scene)||scene==="intro"||scene==="finale"||scene==="proposal") as PremiumV4SceneType[],
       accent:gift.theme_data?.accent||base.accent,
     };
     return <PremiumV4Engine
@@ -371,7 +371,7 @@ function Preview({
       demoRecipient:gift.recipient_name,
       opening:gift.opening_text||base.opening,
       closing:gift.closing_text||base.closing,
-      recipe:[...base.recipe] as PremiumV5SceneType[],
+      recipe:base.recipe.filter(scene=>gift.scene_recipe.includes(scene)||scene==="intro"||scene==="finale"||scene==="proposal") as PremiumV5SceneType[],
       accent:gift.theme_data?.accent||base.accent,
     };
     return <PremiumV5Engine
@@ -861,6 +861,7 @@ export default function CustomerStudio({code}:{code:string}){
   const photos=media.filter(item=>item.kind==="image");
   const lightPhotos=photos.filter(item=>item.metadata?.scene==="light");
   const memoryPhotos=photos.filter(item=>item.metadata?.scene!=="light");
+  const photoDestinations=canonical.filter(scene=>["memories","childhood","origin","sacrifices","voices","lessons","presence","inheritance"].includes(scene));
   const lightPhoto=lightPhotos[0];
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
@@ -871,7 +872,7 @@ export default function CustomerStudio({code}:{code:string}){
       ?effectivePremiumV2RecipeForMedia
       :effectiveRecipeForMedia;
   const effectiveRecipe=["premium-v3","premium-v4","premium-v5"].includes(gift?.template_version||"")
-    ?[...canonical]
+    ?canonical.filter(scene=>gift?.scene_recipe.includes(scene)||scene==="intro"||scene==="finale"||scene==="proposal")
     :recipeResolver(gift?.scene_recipe||[],{
     hasPhoto:memoryPhotos.length>0||canonical.includes("memories"),
     hasVoice:voiceAudios.length>0,
@@ -1041,7 +1042,7 @@ export default function CustomerStudio({code}:{code:string}){
       </div>}
 
       {step===1&&<div className="studio-panel">
-        <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Las mejores casi siempre son las que significan algo.</p></header>
+        <header><p className="studio-eyebrow">TUS RECUERDOS</p><h1>Elegí las fotos que cuentan la historia.</h1><p>No hace falta que sean perfectas. Si subís varias, aparecen en el álbum y también se reutilizan en las otras escenas que necesitan fotos. No van a aparecer fotos de desconocidos.</p></header>
         <button className="studio-upload-hero" type="button" disabled={uploading.length>0} onClick={()=>fileInputRef.current?.click()}>
           <span>＋</span><div><strong>{memoryPhotos.length?"Agregar más fotos":"Elegir fotos"}</strong><small>{memoryPhotos.length?`${memoryPhotos.length} fotos para tus recuerdos`:"Podés elegir varias de una sola vez · hasta 20"}</small></div><b>→</b>
         </button>
@@ -1050,6 +1051,7 @@ export default function CustomerStudio({code}:{code:string}){
         {memoryPhotos.length>0?<div className="studio-photo-grid">{memoryPhotos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
           <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Podés escribir una frase acá · opcional"/>
+          {photoDestinations.length>1&&<label className="studio-photo-placement"><span>Foto principal en</span><select value={item.metadata?.scene&&photoDestinations.includes(item.metadata.scene)?item.metadata.scene:"memories"} onChange={event=>void updateMedia(item,{scene:event.target.value})}>{photoDestinations.map(scene=><option key={scene} value={scene}>{SCENE_LABELS[scene]?.title||scene}</option>)}</select></label>}
           <div className="studio-media-primary-actions">
             <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar foto</button>
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
@@ -1164,7 +1166,7 @@ export default function CustomerStudio({code}:{code:string}){
           <span>✓</span>
           <div><strong>La estructura ya está resuelta</strong><p>Las partes están ordenadas para que la emoción crezca de principio a fin.</p></div>
         </div>
-        {["premium-v3","premium-v4","premium-v5"].includes(gift.template_version||"")?<p className="studio-fixed-journey-note">Tu experiencia conserva el recorrido completo del demo. Podés personalizar fotos, audios y palabras sin perder ninguna escena.</p>:<details className="studio-parts-details">
+        <p className="studio-fixed-journey-note">El diseño y los efectos de cada escena se mantienen intactos. Podés quitar una parte opcional sin perderla: también podés recuperarla cuando quieras.</p><details className="studio-parts-details">
           <summary><span>Quiero quitar o recuperar una parte</span><small>opcional</small><b>＋</b></summary>
           <div className="studio-section-list">{canonical.map((scene,index)=>{
             const terminal=scene==="finale"||scene==="proposal";
@@ -1174,16 +1176,14 @@ export default function CustomerStudio({code}:{code:string}){
             const needsVoice=scene==="voices"&&voiceAudios.length===0;
             const needsVideo=scene==="video"&&videos.length===0;
             const missingMedia=needsPhoto||needsLightPhoto||needsVoice||needsVideo;
-            const visible=gift.scene_recipe.includes(scene)&&!missingMedia;
+            const visible=gift.scene_recipe.includes(scene);
             const meta=SCENE_LABELS[scene]||{title:"Una parte de la experiencia",copy:"Un momento del recorrido."};
             return <article key={scene} className={visible?"visible":missingMedia?"needs-media":""}>
               <span className="studio-section-index">{String(index+1).padStart(2,"0")}</span>
-              <div><strong>{meta.title}</strong><p>{missingMedia?(needsLightPhoto?"Se activa cuando elegís la foto de la linterna.":needsPhoto?"Se activa cuando agregás al menos una foto.":needsVoice?"Se activa cuando agregás un mensaje de voz.":"Se activa cuando agregás un video."):meta.copy}</p></div>
+              <div><strong>{meta.title}</strong><p>{visible?meta.copy:"Esta parte está oculta en tu regalo."}{visible&&missingMedia?" Podés agregar "+(needsVoice?"un audio":needsVideo?"un video":"una foto")+" para personalizarla.":""}</p></div>
               {locked
                 ?<span className="studio-section-required">ESENCIAL</span>
-                :missingMedia
-                  ?<button type="button" className="studio-section-add" onClick={()=>goToStep(needsVoice?2:1)}>+ {needsVoice?"Audio":needsVideo?"Video":needsLightPhoto?"Foto de linterna":"Foto"}</button>
-                  :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Visible":"Oculta"}</span></button>}
+                :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} aria-label={visible?`Quitar sección ${meta.title}`:`Recuperar sección ${meta.title}`} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Quitar":"Recuperar"}</span></button>}
             </article>;
           })}</div>
         </details>}
