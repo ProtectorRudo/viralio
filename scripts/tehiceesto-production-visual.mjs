@@ -31,6 +31,7 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
   page.on("console",onConsole);
 
   const response=await page.goto(base+route,{waitUntil:"domcontentloaded",timeout:60000});
+  if(route==="/mis-regalos") await page.getByRole("button",{name:"Entrar a mi cuenta"}).waitFor({timeout:20000});
   await page.waitForTimeout(1100);
 
   let scene=null;
@@ -174,6 +175,26 @@ for(const viewport of viewports){
   });
   const page=await context.newPage();
 
+  const accountEntry=await inspect(page,"/mis-regalos",viewport.name,{fullPage:false});
+  const customerAccount=await page.evaluate(()=>{
+    const heading=document.querySelector(".account-login-intro h1");
+    const form=document.querySelector(".account-signin-form");
+    const signIn=document.querySelector(".account-signin-form button[type=submit]");
+    const recovery=[...document.querySelectorAll(".account-subtle-link")].some(button=>button.textContent.includes("Recuperar acceso"));
+    const color=heading?getComputedStyle(heading).color:null;
+    const cardColor=form?getComputedStyle(form).color:null;
+    const overlay=!!document.querySelector(".floating-create-cta");
+    return {heading:heading?.textContent||"",signIn:signIn?.textContent||"",color,cardColor,recovery,overlay};
+  });
+  if(accountEntry.status!==200||
+     !customerAccount.heading.includes("Tus regalos")||
+     !customerAccount.signIn.includes("Entrar a mi cuenta")||
+     customerAccount.color!=="rgb(45, 34, 39)"||
+     !customerAccount.recovery||
+     customerAccount.overlay){
+    throw new Error("Customer login is not a visible, readable, isolated login portal: "+JSON.stringify(customerAccount));
+  }
+  console.log("PASS: distinct high-contrast customer login, recovery secondary, no conversion overlay ("+viewport.name+")");
   await inspect(page,"/",viewport.name,{fullPage:true});
   const coverAudit=await page.evaluate(()=>{
     const collection=document.querySelector("#escapes");
