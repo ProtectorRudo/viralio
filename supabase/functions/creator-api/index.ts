@@ -911,7 +911,7 @@ Deno.serve(async (req: Request) => {
         .update({
           status: "awaiting_payment",
           experience_slug: experienceSlug,
-          template_version: experienceSlug==="pareja" ? "premium-v5" : "premium-v3",
+          template_version: ["pareja","mama"].includes(experienceSlug) ? "premium-v5" : "premium-v3",
           giver_name: giverName,
           recipient_name: recipientName,
           feeling: feeling || null,
@@ -964,7 +964,7 @@ Deno.serve(async (req: Request) => {
       .insert({
         status: "awaiting_payment",
         experience_slug: experienceSlug,
-        template_version: experienceSlug==="pareja" ? "premium-v4" : "premium-v3",
+        template_version: experienceSlug==="pareja" ? "premium-v4" : experienceSlug==="mama" ? "premium-v5" : "premium-v3",
         giver_name: giverName,
         recipient_name: recipientName,
         feeling: feeling || null,
