@@ -49,7 +49,8 @@ export default function StudioPhotoEditor({
       if(!source)return;
       const selected=media.find(item=>item.url===source);
       // Generic illustrations and demo-only images are not editable photographs.
-      if(!selected && !target.closest("img,[style*='background']"))return;
+      // Do not mistake a scene-wide decorative background for a selectable photo.
+      if(!selected && !target.closest("img,.origin-photo,.childhood-photo,[class*='-photo'],[class*='photo-'],[class*='-portrait'],[class*='portrait-'],[class*='-frame'],[class*='frame-']"))return;
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
       const possible=[...root.querySelectorAll("img,[style*='backgroundImage'],[style*='background-image']")]
         .filter(node=>{const url=photoSource(node,root);return !!url&&(media.some(photo=>photo.url===url)||url===source)});
