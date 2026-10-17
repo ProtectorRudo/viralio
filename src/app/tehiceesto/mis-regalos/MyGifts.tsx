@@ -148,7 +148,7 @@ export default function MyGifts() {
           // Direct-access emails can still open their specific gift safely.
           if (validCode(requestedCode) && rows.some(gift => gift.code === requestedCode)) {
             const target = rows.find(gift => gift.code === requestedCode)!;
-            if (target.templateVersion !== "premium-v5") {
+            if (!(target.templateVersion === "premium-v5" && target.experienceSlug === "pareja")) {
               try {
                 const opened = await giftAccountCall<AccountOpenPayload>("open", { code: requestedCode }, accessToken);
                 if (opened.editorToken) {
@@ -199,7 +199,7 @@ export default function MyGifts() {
 
   async function openGift(gift: GiftRow) {
     if (openingCode) return;
-    if (gift.templateVersion === "premium-v5") {
+    if (gift.templateVersion === "premium-v5" && gift.experienceSlug === "pareja") {
       window.location.assign(publicPath("/pedido/" + gift.code));
       return;
     }
@@ -240,7 +240,7 @@ export default function MyGifts() {
   }
 
   const giftCard = (gift: GiftRow, index: number) => {
-    const isAssisted = gift.templateVersion === "premium-v5";
+    const isAssisted = gift.templateVersion === "premium-v5" && gift.experienceSlug === "pareja";
     const experience = getExperience(gift.experienceSlug);
     const isMama = gift.experienceSlug === "mama";
     const recipient = gift.recipientName && gift.recipientName !== "A definir"
