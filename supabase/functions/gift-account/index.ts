@@ -165,7 +165,7 @@ async function sendCustomAccessEmail(email:string,redirect:string,code:string,or
   const brandedAccess=new URL("https://tehiceesto.com/mis-regalos");
   if(gift?.public_code&&code)brandedAccess.searchParams.set("regalo",gift.public_code);
   brandedAccess.hash=new URLSearchParams({token_hash:hashedToken,type:"magiclink"}).toString();
-  const assisted=gift?.template_version==="premium-v5";
+  const assisted=gift?.template_version==="premium-v5"&&gift?.experience_slug==="pareja";
   const mail=premiumMail(String(gift?.giver_name||""),String(gift?.experience_slug||""),
     brandedAccess.toString(),Boolean(code),assisted);
   const sender=(Deno.env.get("TEHICEESTO_EMAIL_FROM")||"Te Hice Esto <hola@tehiceesto.com>").trim();
