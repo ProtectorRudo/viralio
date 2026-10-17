@@ -51,11 +51,15 @@ describe("Te Hice Esto post-purchase onboarding wiring",()=>{
   });
   it("exchanges email token hashes securely on the website and handles expiry",()=>{
     const client=readFileSync(join(root,"src","app","tehiceesto","mis-regalos","MyGifts.tsx"),"utf8");
-    expect(client).toContain('type:"magiclink"');
+    expect(client).toContain('type: "magiclink"');
     expect(client).toContain('/auth/v1/verify');
-    expect(client).toContain('if(fromNewLink)');
+    expect(client).toContain('if (hasMagicLink)');
     expect(client).toContain('clearAuthResponseFromUrl();');
-    expect(client).toContain('El enlace de acceso venció o ya fue utilizado');
+    expect(client).toContain('El enlace anterior venció o ya se utilizó');
+    expect(client).toContain('setScreen("account")');
+    expect(client).toContain('Entrar a mi cuenta');
+    expect(client).toContain('Cerrar sesión');
+    expect(client).toContain('if (key.startsWith("thi_editor_access:"))');
   });
   it("offers recovery after a failed post-purchase send",()=>{
     const src=file("order-status");
