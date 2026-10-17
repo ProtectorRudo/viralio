@@ -24,6 +24,7 @@ import { normalizeSceneTextOverrides as normalizePremiumV5SceneTextOverrides } f
 import { fillPrivateGiftPhotos as fillV4GiftPhotos } from "../../template-v4/privateGiftVisuals";
 import { fillPrivateGiftPhotos as fillV5GiftPhotos } from "../../template-v5/privateGiftVisuals";
 import { effectiveRecipeForMedia } from "../../effectiveRecipe";
+import {applyPhotoSlotChoices,type PhotoSlots} from "../../photoSlots";
 import { effectiveRecipeForMedia as effectivePremiumV1RecipeForMedia } from "../../template-v1/effectiveRecipe";
 import { effectiveRecipeForMedia as effectivePremiumV2RecipeForMedia } from "../../template-v2/effectiveRecipe";
 
@@ -32,10 +33,10 @@ const PUBLISHABLE_KEY="sb_publishable_nzbFJECAwVxyMfQUuLXRXQ_gqYvGeYN";
 
 type EdgeGift={
   template_version:string|null;experience_slug:string;giver_name:string;recipient_name:string;opening_text:string|null;letter_text:string|null;closing_text:string|null;scene_recipe:string[]|null;
-  story_data:{relationship?:string;keyDate?:string;anecdote?:string;script?:DeepPartial<ExperienceCopy>;sceneContent?:SceneTextOverrides}|null;
+  story_data:{relationship?:string;keyDate?:string;anecdote?:string;script?:DeepPartial<ExperienceCopy>;sceneContent?:SceneTextOverrides;photoSlots?:PhotoSlots}|null;
   theme_data:{accent?:string}|null;
 };
-type EdgeMedia={kind:"image"|"audio"|"video";caption:string|null;sort_order:number;metadata:{fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:import("../../data").SceneType;role?:"voice"|"soundtrack"}|null;url:string|null};
+type EdgeMedia={id?:string;kind:"image"|"audio"|"video";caption:string|null;sort_order:number;metadata:{fit?:"cover"|"contain";position?:"center"|"top"|"bottom"|"left"|"right";scene?:import("../../data").SceneType;role?:"voice"|"soundtrack"}|null;url:string|null};
 
 export default async function PublishedGiftPage({
   params,
@@ -90,6 +91,7 @@ export default async function PublishedGiftPage({
       scene:item.metadata?.scene,
     })),
   );
+  const arrangedPhotos=applyPhotoSlotChoices(personalizedPhotos,ordered.filter(item=>item.kind==="image").map(item=>({id:item.id||"",url:item.url,caption:item.caption})),payload.gift.story_data?.photoSlots);
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
   // Frozen engines are selected at runtime with their own stored recipe. The live-only everyday scene cannot belong to those recipes.
   const Engine=(frozenV1?PremiumV1Engine:frozenV2?PremiumV2Engine:frozenV3?PremiumV3Engine:frozenV4?PremiumV4Engine:frozenV5?PremiumV5Engine:ExperienceEngine) as typeof ExperienceEngine;
@@ -106,7 +108,7 @@ export default async function PublishedGiftPage({
             :normalizeSceneTextOverrides(payload.gift.story_data?.sceneContent);
   // Gift pages have no sales UI. Keep a route-level guard independent of the template version.
   return <div className="thi-purchased-experience" data-purchased-gift="true" style={{display:"contents"}}><Engine customerGift experience={experience} copyOverride={payload.gift.story_data?.script} letterText={payload.gift.letter_text||undefined}
-    photoMedia={personalizedPhotos}
+    photoMedia={arrangedPhotos}
     audioMedia={ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({url:item.url as string,caption:item.caption||undefined,scene:item.metadata?.scene}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     storyContext={{keyDate:payload.gift.story_data?.keyDate,anecdote:payload.gift.story_data?.anecdote}}
