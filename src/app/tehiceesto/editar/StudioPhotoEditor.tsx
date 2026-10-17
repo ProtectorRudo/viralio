@@ -5,9 +5,10 @@ import {useEffect,useRef,useState,type PointerEvent as ReactPointerEvent} from "
 import {createPortal} from "react-dom";
 import {creatorCall} from "../creatorApi";
 import {type PhotoSlots,type PhotoSlotChoice} from "../photoSlots";
+import {PRIVATE_PHOTO_SLOTS} from "../privateGiftVisuals";
 
-type Photo={id:string;url:string;caption:string;fit?:"cover"|"contain";position?:string};
-type Editing={scene:string;slot:number;mediaId:string;fit:"cover"|"contain";x:number;y:number};
+type Photo={id:string;url:string;caption:string;fit?:"cover"|"contain";position?:string;scene?:string};
+type Editing={scene:string;slot:number;maxSlots:number;mediaId:string;fit:"cover"|"contain";x:number;y:number};
 const limit=(n:number)=>Math.min(100,Math.max(0,Math.round(n)));
 function coords(position:string|undefined){
   if(position==="top")return {x:50,y:0};
@@ -56,11 +57,16 @@ export default function StudioPhotoEditor({
         .filter(node=>{const url=photoSource(node,root);return !!url&&(media.some(photo=>photo.url===url)||url===source)});
       const clicked=target.closest("img,[style*='backgroundImage'],[style*='background-image']")||target;
       const index=Math.max(0,possible.findIndex(node=>node===clicked));
-      const slot=Math.min(19,index);
+      const slotCount=scene==="memories"
+        ?Math.min(20,Math.max(3,possible.length))
+        :Math.min(20,PRIVATE_PHOTO_SLOTS[scene]||Math.max(1,possible.length));
+      // Some scenes mirror the same image in a large card and a small thumbnail.
+      // Both controls must edit the same underlying slot, not a phantom image.
+      const slot=Math.min(19,index%slotCount);
       const current=slots[scene+":"+slot];
       const chosen=media.find(photo=>photo.id===current?.mediaId)||selected||media[0];
       const position=coords(current?.position||chosen.position);
-      setEditing({scene,slot,mediaId:chosen.id,fit:current?.fit||chosen.fit||"cover",...position});
+      setEditing({scene,slot,maxSlots:slotCount,mediaId:chosen.id,fit:current?.fit||chosen.fit||"cover",...position});
       setError("");
     };
     document.addEventListener("click",onClick,true);
@@ -114,7 +120,7 @@ export default function StudioPhotoEditor({
         </div>
         <label className="studio-photo-slot-choice"><span>Espacio de esta escena</span>
           <select value={editing.slot} onChange={event=>{const slot=Number(event.target.value);const existing=slots[editing.scene+":"+slot];const match=media.find(m=>m.id===existing?.mediaId);const pos=coords(existing?.position||match?.position);setPart({slot,mediaId:match?.id||editing.mediaId,fit:existing?.fit||match?.fit||"cover",...pos})}}>
-            {Array.from({length:Math.min(12,Math.max(3,media.length))},(_,i)=><option key={i} value={i}>{i===0?"Foto principal":`Foto ${i+1}`}</option>)}
+            {Array.from({length:editing.maxSlots},(_,i)=><option key={i} value={i}>{i===0?"Foto principal":`Foto ${i+1}`}</option>)}
           </select>
         </label>
         <div className="studio-photo-crop-viewport" onPointerDown={dragStart} onPointerMove={dragMove}
