@@ -2,6 +2,7 @@
 "use client";
 
 import {useEffect,useRef,useState,type PointerEvent as ReactPointerEvent} from "react";
+import {createPortal} from "react-dom";
 import {creatorCall} from "../creatorApi";
 import {type PhotoSlots,type PhotoSlotChoice} from "../photoSlots";
 
@@ -104,7 +105,7 @@ export default function StudioPhotoEditor({
       <small>{enabled?"Tocá una foto de la vista previa":"Tocá para habilitar la edición"}</small>
     </button>
     {enabled&&<p className="studio-photo-tip">Tocá cualquier foto del recorrido para reemplazarla por otra de tu galería, desplazar el encuadre o mostrarla completa. La elección se guarda solo para ese lugar.</p>}
-    {editing&&<div className="studio-photo-modal-backdrop" role="presentation" onPointerDown={event=>{if(event.target===event.currentTarget&&!saving)setEditing(null)}}>
+    {editing&&createPortal(<div className="studio-photo-modal-backdrop" role="presentation" onPointerDown={event=>{if(event.target===event.currentTarget&&!saving)setEditing(null)}}>
       <div className="studio-photo-modal" role="dialog" aria-modal="true" aria-labelledby="studio-photo-modal-title">
         <div className="studio-photo-modal-heading">
           <div><small>PERSONALIZAR LA IMAGEN</small><h2 id="studio-photo-modal-title">Elegí el recuerdo perfecto</h2></div>
@@ -142,6 +143,6 @@ export default function StudioPhotoEditor({
           <button type="button" onClick={()=>void save()} disabled={saving}>{saving?"Guardando…":"Guardar esta foto ✓"}</button>
         </div>
       </div>
-    </div>}
+    </div>,document.body)}
   </section>;
 }
