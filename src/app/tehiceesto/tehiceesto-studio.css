@@ -569,3 +569,39 @@
  .studio-photo-library button{flex-basis:68px;width:68px;height:67px}
 }
 @media(prefers-reduced-motion:reduce){.studio-photo-modal-backdrop{backdrop-filter:none}}
+
+/* Los textos y las fotos permanecen listos para editar; ninguna barra de modo
+   debe interrumpir la navegación táctil de las experiencias. */
+.studio-copy-tools .studio-copy-always-active{
+  cursor:default;
+  min-height:68px;
+  padding:10px 14px;
+  grid-template-columns:41px minmax(0,1fr) 29px;
+  gap:10px;
+  border-radius:16px;
+  box-shadow:0 12px 30px rgba(39,26,33,.13);
+  transition:none;
+}
+.studio-copy-tools .studio-copy-always-active:hover{
+  transform:none;
+  border-color:#2d2528;
+  box-shadow:0 12px 30px rgba(39,26,33,.13);
+}
+.studio-copy-tools .studio-copy-always-active>span{
+  width:41px;height:41px;border-radius:12px;font-size:15px;
+}
+.studio-copy-tools .studio-copy-always-active strong{font-size:13px;line-height:1.35}
+.studio-copy-tools .studio-copy-always-active>b{width:29px;height:29px}
+.studio-copy-tools .studio-copy-always-active small{font-size:9px}
+.studio-copy-tools .studio-copy-always-active .studio-copy-description{font-size:10px}
+@media(max-width:680px){
+  .studio-copy-tools{top:8px;z-index:120}
+  .studio-copy-tools .studio-copy-always-active{
+    min-height:59px;padding:8px 10px;
+    grid-template-columns:34px minmax(0,1fr) 24px;gap:8px;
+  }
+  .studio-copy-tools .studio-copy-always-active>span{width:34px;height:34px}
+  .studio-copy-tools .studio-copy-always-active>b{width:24px;height:24px;font-size:12px}
+  .studio-copy-tools .studio-copy-always-active strong{font-size:12px}
+  .studio-copy-tools .studio-copy-always-active .studio-copy-description{font-size:9px}
+}
