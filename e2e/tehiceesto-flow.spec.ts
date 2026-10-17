@@ -17,7 +17,7 @@ async function advanceOne(page:Page){
     if(current==="letter"){await page.locator('[data-action="letter-open"]').click();await page.locator('.friend-letter-scene [data-action="advance"]').click();return}
     if(current==="pact"){for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();await page.locator('.friend-pact-scene [data-action="advance"]').click();await page.locator('.friend-pact-scene [data-action="advance"]').click();return}
   }
-  if(current==="intro")await page.locator('[data-action="advance"]').click();
+  if(current==="intro"){const gift=page.locator(".couple-gift-intro.gift-phase-closed");if(await gift.count()){await page.locator(".couple-gift-unseal").click();await page.locator(".gift-phase-revealed").waitFor({timeout:8000})}await page.locator('[data-action="advance"]').click()}
   else if(current==="door"){await page.locator('[data-action="open-door"]').click();await page.locator('[data-action="advance"]').click()}
   else if(current==="memories"){
     const mamaNext=page.locator(".thi-mama-memory-local-nav > button").last();
@@ -594,29 +594,31 @@ test("mama voices are a premium listening room with resilient playback and three
 });
 
 
-test("mama intro is premium, story-first and has no headphone prompt",async({page})=>{
+test("Mamá opens the physical satin gift before revealing her words, without losing the journey",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/mama");
   await waitForScene(page,"intro");
-
-  await expect(page.locator(".thi-mama-intro")).toBeVisible();
-  await expect(page.getByText("Tus hijos hicieron algo para vos",{exact:false})).toBeVisible();
-  await expect(page.getByRole("heading",{name:"Mamá"})).toBeVisible();
-  await expect(page.getByText(/Hay una edad en la que uno cree que mamá puede con todo/i)).toBeVisible();
-  await expect(page.getByText(/Mejor con auriculares/i)).toHaveCount(0);
-
+  const gift=page.locator(".couple-gift-intro.mama-gift-intro");
+  await expect(gift).toBeVisible();
+  await expect(gift).toHaveAttribute("data-gift-occasion","mama");
+  await expect(gift).toHaveClass(/gift-phase-closed/);
+  await expect(page.locator(".couple-gift-satin-bow")).toBeVisible();
+  await expect(page.locator(".couple-gift-unseal")).toBeEnabled();
+  await expect(page.locator(".couple-gift-continue")).toBeDisabled();
+  await expect(page.locator(".couple-gift-reveal")).toHaveCSS("opacity","0");
   await expect(page.locator(".floating-whatsapp--experience")).toBeHidden();
   await expect(page.locator(".thi-progress-premium")).toBeHidden();
-  await expect(page.locator(".thi-reset-journey")).toBeHidden();
-  await expect(page.locator(".thi-scene-meta")).toBeHidden();
-
-  const open=page.getByRole("button",{name:/Abrir regalo/i});
-  await expect(open).toBeVisible();
-
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 
-  await open.click();
+  await page.locator(".couple-gift-unseal").click();
+  await expect(gift).toHaveClass(/gift-phase-revealed/);
+  await expect(page.locator(".couple-gift-reveal")).toHaveCSS("opacity","1",{timeout:9000});
+  await expect(page.getByRole("heading",{name:"Mamá"})).toBeVisible();
+  await expect(page.getByText("Tus hijos hicieron algo para vos",{exact:false})).toBeVisible();
+  await expect(page.locator(".couple-gift-opening")).toBeVisible();
+  await expect(page.locator(".couple-gift-continue")).toBeEnabled();
+  await page.locator(".couple-gift-continue").click();
   await waitForScene(page,"childhood");
 });
 
