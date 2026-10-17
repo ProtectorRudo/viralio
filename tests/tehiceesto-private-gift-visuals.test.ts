@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe,expect,it } from "vitest";
 import { experiences } from "../src/app/tehiceesto/data";
+import {fillPrivateGiftPhotos as fillV5GiftPhotos} from "../src/app/tehiceesto/template-v5/privateGiftVisuals";
 import {
   fillPrivateGiftPhotos,
   privateGiftVisualUrl,
@@ -60,6 +61,26 @@ describe("private customer gifts use anonymous artwork for missing photos",()=>{
     expect(result).toHaveLength(total);
     for(const scene of scenes)expect(result.filter(photo=>photo.scene===scene)).toHaveLength(PRIVATE_PHOTO_SLOTS[scene]);
     expect(result.some(photo=>photo.scene==="intro"||photo.scene==="finale")).toBe(false);
+  });
+
+  it("uses all seven uploaded family photos across the full Mama gift, not demo placeholders",()=>{
+    const seven=Array.from({length:7},(_,i)=>({
+      url:`https://example.test/family-photo-${i+1}.jpg`,
+      scene:"memories" as const,caption:`Recuerdo ${i+1}`,
+    }));
+    const route=["intro","childhood","memories","care","sacrifices","voices","letter","finale"];
+    const photos=fillV5GiftPhotos("mama",route,seven);
+    expect(photos.filter(p=>p.scene==="memories")).toHaveLength(7);
+    expect(photos.filter(p=>p.scene==="childhood")).toHaveLength(1);
+    expect(photos.filter(p=>p.scene==="sacrifices")).toHaveLength(4);
+    expect(photos.filter(p=>p.scene==="voices")).toHaveLength(3);
+    expect(photos.every(p=>p.url.startsWith("https://example.test/family-photo-"))).toBe(true);
+    for(let i=0;i<seven.length;i++)expect(photos[i]).toEqual(seven[i]);
+    expect(photos.filter(p=>p.scene!=="memories").every(p=>p.caption===undefined)).toBe(true);
+    const chosen=[...seven,{url:"https://example.test/specific-childhood.jpg",scene:"childhood" as const}];
+    const withAssignment=fillV5GiftPhotos("mama",route,chosen);
+    expect(withAssignment.filter(p=>p.scene==="childhood")).toHaveLength(1);
+    expect(withAssignment.find(p=>p.scene==="childhood")?.url).toContain("specific-childhood");
   });
 
   it("is restricted to gifts and keeps the three original model engines unchanged",()=>{
