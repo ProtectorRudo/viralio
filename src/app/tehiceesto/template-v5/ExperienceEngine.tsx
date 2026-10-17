@@ -137,7 +137,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const demoPhotos=(experience.demo.photos||[]).map((item,index)=>({url:item.url,caption:memoryLines[index]||undefined,fit:"cover" as const,position:item.position||"center" as const}));
   const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos:customerGift?[]:demoPhotos):[];
   const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos;
-  const hasAttachedMedia=(current!=="memories"&&currentPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
+  // En Mamá, las fotografías ya están integradas dentro de Infancia, Recuerdos,
+  // Sacrificios y Voces. No duplicarlas como polaroids flotantes encima de los CTA.
+  // Esto aplica tanto a la vista previa como a cada regalo publicado premium-v5.
+  const attachedPhotos=customerGift&&experience.slug==="mama"?[]:currentPhotos;
+  const hasAttachedMedia=(current!=="memories"&&attachedPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
 
   const fadeSoundtrack=(target:number,duration=650)=>{
     const audio=soundtrackRef.current;if(!audio)return;
@@ -1759,7 +1763,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     {sceneIndex>0&&<button data-action="back" className="thi-global-back-nav" type="button" onClick={prev} disabled={transitioning} aria-label="Volver a la pantalla anterior"><span>←</span><small>Atrás</small></button>}
     <div className={`thi-scene-stage ${transitioning?"leaving":""} ${direction} ${hasAttachedMedia?"has-attached-media":""}`} key={`${runId}-${sceneIndex}-${current}`}>
       {scene(current)}
-      <AttachedSceneMedia scene={current} photos={currentPhotos} audios={currentAudios} videos={currentVideos}/>
+      <AttachedSceneMedia scene={current} photos={attachedPhotos} audios={currentAudios} videos={currentVideos}/>
     </div>
     <div className="thi-progress thi-progress-premium"><button data-action="previous" onClick={prev} disabled={!sceneIndex||transitioning} aria-label={token(copy.ui.previousAria)}>←</button><div><span style={{width:`${progress}%`}}/></div><small>{Math.round(progress)}%</small><button data-action="next" className="thi-progress-next" onClick={next} disabled={!canAdvance()||sceneIndex>=total-1} aria-label={token(copy.ui.nextAria)}>→</button></div>
   </main>;
