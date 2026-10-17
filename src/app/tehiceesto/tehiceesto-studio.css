@@ -500,3 +500,16 @@
   .account-shell .account-collection-card{transition:none}
   .account-shell .account-collection-card:hover{transform:none}
 }
+
+/* Customer-controlled chapters + photo placement: only the personal editor. */
+.studio-photo-placement{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 11px;margin-top:8px;background:#f8f5f1;border:1px solid rgba(99,63,77,.12);border-radius:11px}
+.studio-photo-placement span{font-size:10px;font-weight:800;color:#5a4550}
+.studio-photo-placement select{width:auto;max-width:65%;min-height:36px;border:1px solid #ddccd0;border-radius:9px;background:#fff;color:#352731;font-size:11px;font-weight:750;padding:8px}
+.studio-section-list .studio-switch{width:105px;min-height:39px;justify-content:space-between;flex-shrink:0}
+.studio-section-list .studio-switch span{font-size:10px}
+.studio-section-list .studio-switch.on{background:#49313d}
+.studio-section-list .studio-switch:not(.on){background:#e4ecdf}
+.studio-section-list .studio-switch:not(.on) span{color:#41634c}
+.studio-section-list .studio-switch:focus-visible,.studio-photo-placement select:focus-visible{outline:3px solid #b05e77;outline-offset:2px}
+.studio-section-list article:not(.visible){opacity:1;background:#f8f6f4;border-style:dashed}
+@media(max-width:520px){.studio-section-list article{grid-template-columns:26px 1fr auto;gap:8px;padding:12px 10px}.studio-section-list .studio-switch{width:97px}.studio-photo-placement{flex-wrap:wrap}.studio-photo-placement select{max-width:100%}}
