@@ -584,7 +584,6 @@ Deno.serve(async (req: Request) => {
         .eq("gift_id", gift.id);
       if ((count || 0) >= 30) return json(origin, { error: "media_limit" }, 400);
 
-      const recipe = Array.isArray(gift.scene_recipe) ? gift.scene_recipe.map(String) : [];
       const canonical = canonicalRecipeForGift(gift);
       const requestedScene = cleanText(body.scene, 80);
       const scene = requestedScene && canonical.includes(requestedScene)
