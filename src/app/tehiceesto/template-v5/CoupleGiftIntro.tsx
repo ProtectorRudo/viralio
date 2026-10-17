@@ -14,6 +14,7 @@ type Props = {
   initiallyOpened?: boolean;
   onOpened?: () => void;
   onContinue: () => void;
+  variant?: "pareja" | "mama";
 };
 
 function makeUnwrapSound() {
@@ -45,7 +46,7 @@ function makeUnwrapSound() {
   }
 }
 
-export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, cta, initiallyOpened = false, onOpened, onContinue }: Props) {
+export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, cta, initiallyOpened = false, onOpened, onContinue, variant = "pareja" }: Props) {
   const [phase, setPhase] = useState<Phase>(initiallyOpened ? "revealed" : "closed");
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const started = useRef(initiallyOpened);
@@ -74,8 +75,9 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
 
   const revealed = phase === "revealed";
   const activated = phase !== "closed";
+  const forMama = variant === "mama";
   return (
-    <section className={"thi-scene couple-gift-intro gift-phase-" + phase} data-gift-design="satin-bow-v3" aria-label="Un regalo pensado para vos">
+    <section className={"thi-scene couple-gift-intro gift-phase-" + phase + (forMama ? " mama-gift-intro" : "")} data-gift-design="satin-bow-v3" data-gift-occasion={variant} aria-label={forMama ? "Un regalo para mamá" : "Un regalo pensado para vos"}>
       <div className="couple-gift-backdrop" aria-hidden="true">
         <span className="couple-gift-halo" />
         <span className="couple-gift-ambient ambient-one" />
@@ -85,16 +87,16 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
       </div>
 
       <div className="couple-gift-content">
-        <p className={"couple-gift-prelude" + (activated ? " folded-away" : "")}>ALGUIEN PREPARÓ ALGO QUE ES SÓLO PARA VOS</p>
+        <p className={"couple-gift-prelude" + (activated ? " folded-away" : "")}>{forMama ? "HAY ALGO QUE GUARDAMOS PARA VOS, MAMÁ" : "ALGUIEN PREPARÓ ALGO QUE ES SÓLO PARA VOS"}</p>
         <div className="couple-gift-theatre">
           <div className="couple-gift-reveal" aria-hidden={!revealed}>
             <p className="couple-gift-dedication">{kicker}</p>
             <h1>{recipient}</h1>
-            <div className="couple-gift-subtitle">
+            {footnote && <div className="couple-gift-subtitle">
               <i aria-hidden="true" />
               <p>{footnote}</p>
               <i aria-hidden="true" />
-            </div>
+            </div>}
             <p className="couple-gift-opening">{opening}</p>
           </div>
 
@@ -112,7 +114,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
               <i className="couple-gift-face-edge edge-right" />
               <i className="couple-gift-base-ribbon" />
               <i className="couple-gift-base-metallic" />
-              <i className="couple-gift-emboss">HECHO PARA VOS</i>
+              <i className="couple-gift-emboss">{forMama ? "PARA VOS, MAMÁ" : "HECHO PARA VOS"}</i>
             </span>
             <span className="couple-gift-lid">
               <i className="couple-gift-lid-top" />
@@ -182,11 +184,11 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
             }}
             onPointerCancel={() => { pointerStart.current = null; }}
             disabled={activated}
-            aria-label="Abrí el regalo: deslizá el lazo o tocá la caja"
+            aria-label={forMama ? "Mamá, abrí tu regalo: deslizá el lazo o tocá la caja" : "Abrí el regalo: deslizá el lazo o tocá la caja"}
           >
             <span className="couple-gift-tag">
               <i aria-hidden="true" />
-              <span>Abrí<br />el regalo</span>
+              <span>Abrí<br />{forMama ? "tu regalo" : "el regalo"}</span>
               <b aria-hidden="true">♡</b>
             </span>
           </button>
@@ -196,7 +198,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
           <button data-action="advance" className="couple-gift-continue" onClick={onContinue} disabled={!revealed}>
             {cta} <span aria-hidden="true">→</span>
           </button>
-          <small>Un recorrido hecho para una sola persona.</small>
+          <small>{forMama ? "Una historia hecha con amor para vos." : "Un recorrido hecho para una sola persona."}</small>
         </div>
       </div>
     </section>
