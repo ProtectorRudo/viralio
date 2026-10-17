@@ -105,7 +105,7 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
     expect(v5Data).toContain('slug:"mama"');
     expect(giftPage).toContain('frozenV5?PremiumV5Engine:ExperienceEngine');
     expect(studio).toContain('gift.template_version==="premium-v5"&&gift.experience_slug==="mama"');
-    expect(studio).toContain('photoMedia={fillV5GiftPhotos(');
+    expect(studio).toContain('photoMedia={withChoices(fillV5GiftPhotos(');
     expect(account).toContain('gift.templateVersion === "premium-v5" && gift.experienceSlug === "pareja"');
     expect(creator).toContain('gift.template_version === "premium-v5" && gift.experience_slug === "pareja"');
     expect(accountEdge).toContain('gift?.template_version==="premium-v5"&&gift?.experience_slug==="pareja"');
