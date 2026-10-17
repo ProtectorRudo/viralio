@@ -60,15 +60,17 @@ export default async function PublishedGiftPage({
   const hasVideo=ordered.some(item=>item.kind==="video"&&item.url);
   const hasVoice=ordered.some(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack");
   const hasLightPhoto=ordered.some(item=>item.kind==="image"&&item.url&&item.metadata?.scene==="light");
+  const selectedScenes=Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length
+    ?payload.gift.scene_recipe:base.recipe;
   const storedRecipe=(frozenV3||frozenV4||frozenV5)
-    ?base.recipe // Sold model is a fixed journey. Missing media never removes a scene.
-    :Array.isArray(payload.gift.scene_recipe)&&payload.gift.scene_recipe.length?payload.gift.scene_recipe:base.recipe;
+    ?base.recipe.filter(scene=>selectedScenes.includes(scene)||scene==="intro"||scene==="finale"||scene==="proposal")
+    :selectedScenes;
   const recipeResolver=frozenV1
     ?effectivePremiumV1RecipeForMedia
     :frozenV2
       ?effectivePremiumV2RecipeForMedia
       :effectiveRecipeForMedia;
-  const effectiveRecipe=(frozenV3||frozenV4||frozenV5)?[...base.recipe] as typeof base.recipe:recipeResolver(storedRecipe,{
+  const effectiveRecipe=(frozenV3||frozenV4||frozenV5)?[...storedRecipe] as typeof base.recipe:recipeResolver(storedRecipe,{
     // Missing photos get anonymous artwork rather than deleting visual scenes.
     hasPhoto:hasPhoto||storedRecipe.includes("memories"),
     hasVoice,
