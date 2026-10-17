@@ -513,3 +513,59 @@
 .studio-section-list .studio-switch:focus-visible,.studio-photo-placement select:focus-visible{outline:3px solid #b05e77;outline-offset:2px}
 .studio-section-list article:not(.visible){opacity:1;background:#f8f6f4;border-style:dashed}
 @media(max-width:520px){.studio-section-list article{grid-template-columns:26px 1fr auto;gap:8px;padding:12px 10px}.studio-section-list .studio-switch{width:97px}.studio-photo-placement{flex-wrap:wrap}.studio-photo-placement select{max-width:100%}}
+
+
+/* TE HICE ESTO · Selección y encuadre de fotos en la vista previa
+   Herramienta de cliente independiente de las plantillas congeladas. */
+.studio-photo-tools{position:relative;z-index:3;width:min(1060px,calc(100% - 22px));margin:14px auto 16px;padding:14px 17px;border:1px solid rgba(158,99,114,.23);border-radius:17px;background:linear-gradient(124deg,#fffaf7,#f9efeb);box-shadow:0 10px 24px rgba(46,25,34,.055)}
+.studio-photo-mode{width:100%;min-height:56px;display:flex;align-items:center;gap:11px;text-align:left;border:0;background:transparent;cursor:pointer;color:#392b34}
+.studio-photo-mode>span{width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;border-radius:12px;background:#f0d9df;color:#8a455b;font-size:22px}
+.studio-photo-mode strong{font-family:Georgia,"Times New Roman",serif;font-size:22px;font-weight:500}
+.studio-photo-mode small{margin-left:auto;color:#805368;font-size:11px;font-weight:800}
+.studio-photo-mode.active>span{color:white;background:#8e5065}
+.studio-photo-tip{font-size:12px;color:#79646c;line-height:1.6;margin:2px 0 0 52px}
+.studio-photo-modal-backdrop{position:fixed;z-index:9999;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(18,10,16,.82);backdrop-filter:blur(14px);padding:clamp(7px,3vw,20px);box-sizing:border-box}
+.studio-photo-modal{display:flex;flex-direction:column;gap:14px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;width:min(640px,100%);padding:clamp(17px,3vw,27px);border:1px solid rgba(217,183,172,.33);border-radius:24px;background:#fffcf9;color:#392a31;box-shadow:0 35px 100px rgba(0,0,0,.4);box-sizing:border-box}
+.studio-photo-modal-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.studio-photo-modal-heading small{font-size:10px;letter-spacing:.2em;font-weight:850;color:#a5526c}
+.studio-photo-modal-heading h2{font-family:Georgia,"Times New Roman",serif;color:#302229;font-size:clamp(27px,4vw,37px);font-weight:400;line-height:1.1;margin:9px 0 0}
+.studio-photo-modal-heading>button{flex:none;width:36px;height:36px;border:1px solid #e8d8dc;background:#fff;border-radius:50%;color:#69485a;cursor:pointer}
+.studio-photo-slot-choice{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#614d59;font-size:12px;font-weight:750}
+.studio-photo-slot-choice select{border:1px solid #ddcbd0;border-radius:11px;background:#fff;padding:9px 12px;min-height:42px;color:#4f3543;font-size:12px}
+.studio-photo-crop-viewport{position:relative;display:grid;place-items:center;flex:none;width:100%;height:clamp(180px,30dvh,300px);overflow:hidden;border-radius:18px;border:1px solid #ead6d5;background:linear-gradient(140deg,#272029,#52424b);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.studio-photo-crop-viewport:active{cursor:grabbing}
+.studio-photo-crop-viewport>img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.studio-photo-crop-viewport>span{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;white-space:nowrap;background:rgba(25,17,26,.73);border:1px solid rgba(255,255,255,.19);border-radius:99px;padding:8px 12px;pointer-events:none}
+.studio-photo-crop-controls{display:grid;gap:10px}
+.studio-photo-fit-actions{display:flex;gap:8px}
+.studio-photo-fit-actions button{flex:1;border:1px solid #ddcbd0;border-radius:10px;background:#fff;color:#6a5360;min-height:41px;font-size:12px;font-weight:700;cursor:pointer}
+.studio-photo-fit-actions button.selected{border-color:#9f5771;background:#f9e9ee;color:#713a52}
+.studio-photo-crop-controls>label{display:grid;grid-template-columns:85px 1fr 42px;align-items:center;gap:9px;font-size:12px;color:#66515d;font-weight:750}
+.studio-photo-crop-controls>label strong{grid-column:3;grid-row:1;text-align:right;font-size:11px;color:#9a5670}
+.studio-photo-crop-controls>label input{grid-column:2;grid-row:1;width:100%;accent-color:#a75572}
+.studio-photo-library-title{margin:3px 0 -6px;color:#63525b;font-weight:800;font-size:12px}
+.studio-photo-library{display:flex;gap:9px;overflow-x:auto;padding:7px 3px 10px;scroll-snap-type:x mandatory}
+.studio-photo-library button{flex:0 0 79px;width:79px;height:74px;padding:3px;border-radius:12px;background:#fff;border:2px solid #e7d8db;cursor:pointer;scroll-snap-align:start}
+.studio-photo-library button.selected{border-color:#ab536d;box-shadow:0 0 0 3px rgba(171,83,109,.13)}
+.studio-photo-library img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.studio-photo-error{font-size:12px;color:#ac3555}
+.studio-photo-modal-footer{display:flex;gap:10px;margin-top:2px}
+.studio-photo-modal-footer button{flex:1;border:1px solid #e0cad1;background:white;min-height:50px;border-radius:12px;color:#654655;font-size:13px;font-weight:800;cursor:pointer}
+.studio-photo-modal-footer button:last-child{flex:1.6;background:#32232b;color:white;border-color:#32232b}
+.studio-photo-modal-footer button:disabled{opacity:.5;cursor:wait}
+.studio-photo-modal button:focus-visible,.studio-photo-tools button:focus-visible{outline:3px solid #b55c75;outline-offset:3px}
+@media(max-width:650px){
+ .studio-photo-tools{padding:10px 12px}
+ .studio-photo-mode{flex-wrap:wrap;gap:8px;justify-content:flex-start}
+ .studio-photo-mode strong{font-size:19px;flex:1;min-width:150px}
+ .studio-photo-mode small{margin-left:48px;flex-basis:100%;font-size:11px}
+ .studio-photo-tip{margin:5px 2px 2px;font-size:12px}
+ .studio-photo-modal-backdrop{padding:6px;align-items:center}
+ .studio-photo-modal{gap:11px;border-radius:17px;padding:16px 14px;max-height:calc(100dvh - 12px)}
+ .studio-photo-modal-heading h2{font-size:27px}
+ .studio-photo-crop-viewport{height:clamp(175px,28dvh,265px)}
+ .studio-photo-slot-choice{flex-wrap:wrap}
+ .studio-photo-crop-controls>label{grid-template-columns:71px 1fr 35px}
+ .studio-photo-library button{flex-basis:68px;width:68px;height:67px}
+}
+@media(prefers-reduced-motion:reduce){.studio-photo-modal-backdrop{backdrop-filter:none}}
