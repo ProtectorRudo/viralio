@@ -42,7 +42,6 @@ export default function StudioPhotoEditor({
   useEffect(()=>{
     if(!enabled||!media.length)return;
     const onClick=(event:MouseEvent)=>{
-      if(document.documentElement.classList.contains("studio-copy-editing"))return;
       const root=document.querySelector(".studio-preview-stage .thi-experience");
       const target=event.target instanceof Element?event.target:null;
       if(!root||!target||!root.contains(target)||target.closest(".studio-photo-editor,.thi-progress,.thi-global-back-nav,.thi-reset-journey,.soundtrack-control,.thi-attached-audio,audio,video"))return;
