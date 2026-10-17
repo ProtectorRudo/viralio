@@ -1186,7 +1186,7 @@ export default function CustomerStudio({code}:{code:string}){
                 :<button type="button" className={visible?"studio-switch on":"studio-switch"} aria-pressed={visible} aria-label={visible?`Quitar sección ${meta.title}`:`Recuperar sección ${meta.title}`} onClick={()=>toggleScene(scene,!visible)}><i/><span>{visible?"Quitar":"Recuperar"}</span></button>}
             </article>;
           })}</div>
-        </details>}
+        </details>
       </div>}
 
       {step===5&&<div className="studio-preview-wrap">
