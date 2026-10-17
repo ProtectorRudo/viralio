@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { viralio } from "@/application";
 import { merchantExperiencePath } from "@/config/merchant-accounts";
-import { isSameOrigin, verifyOnboardingKey } from "@/security/merchant-auth";
+import { isSameOrigin, operatorSessionFromRequest, verifyOnboardingKey } from "@/security/merchant-auth";
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) {
@@ -10,7 +10,9 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json() as Record<string, unknown>;
-    if (typeof body.onboardingKey !== "string" || !verifyOnboardingKey(body.onboardingKey)) {
+    const operatorAuthenticated = Boolean(operatorSessionFromRequest(request));
+    const keyAuthenticated = typeof body.onboardingKey === "string" && verifyOnboardingKey(body.onboardingKey);
+    if (!operatorAuthenticated && !keyAuthenticated) {
       return NextResponse.json({ error: "Clave de alta inválida" }, { status: 401 });
     }
 

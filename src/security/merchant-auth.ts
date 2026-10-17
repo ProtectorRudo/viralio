@@ -4,9 +4,16 @@ import type { MerchantAccount } from "@/domain/types";
 
 export const MERCHANT_SESSION_COOKIE = "viralio_merchant_session";
 export const MERCHANT_SESSION_SECONDS = 8 * 60 * 60;
+export const OPERATOR_SESSION_COOKIE = "viralio_operator_session";
+export const OPERATOR_SESSION_SECONDS = 8 * 60 * 60;
 
 export interface MerchantSession {
   merchantId: string;
+  expiresAt: number;
+}
+
+export interface OperatorSession {
+  role: "operator";
   expiresAt: number;
 }
 
@@ -61,6 +68,39 @@ function firstHeaderValue(value: string | null): string | undefined {
 function derivePinHash(pin: string, salt: string, environment: NodeJS.ProcessEnv): string {
   const material = `${pin}:${secret(environment)}`;
   return scryptSync(material, Buffer.from(salt, "base64url"), 32).toString("base64url");
+}
+
+function signedPayload(value: object, environment: NodeJS.ProcessEnv): string {
+  const payload = Buffer.from(JSON.stringify(value), "utf8").toString("base64url");
+  return `${payload}.${signature(payload, environment)}`;
+}
+
+function readSignedPayload(token: string | undefined, environment: NodeJS.ProcessEnv): unknown {
+  if (!token) return undefined;
+  const [payload, providedSignature, extra] = token.split(".");
+  if (!payload || !providedSignature || extra) return undefined;
+  const expectedSignature = signature(payload, environment);
+  if (!constantTimeEqual(providedSignature, expectedSignature)) return undefined;
+  try {
+    return JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as unknown;
+  } catch {
+    return undefined;
+  }
+}
+
+function cookieValue(request: Request, name: string): string | undefined {
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const encodedToken = cookieHeader
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`))
+    ?.slice(name.length + 1);
+  if (!encodedToken) return undefined;
+  try {
+    return decodeURIComponent(encodedToken);
+  } catch {
+    return undefined;
+  }
 }
 
 export function createMerchantPinCredentials(
@@ -118,8 +158,7 @@ export function createMerchantSessionToken(
     merchantId,
     expiresAt: nowMs + MERCHANT_SESSION_SECONDS * 1000,
   };
-  const payload = Buffer.from(JSON.stringify(session), "utf8").toString("base64url");
-  return `${payload}.${signature(payload, environment)}`;
+  return signedPayload(session, environment);
 }
 
 export function verifyMerchantSessionToken(
@@ -127,39 +166,46 @@ export function verifyMerchantSessionToken(
   nowMs = Date.now(),
   environment: NodeJS.ProcessEnv = process.env,
 ): MerchantSession | undefined {
-  if (!token) return undefined;
-  const [payload, providedSignature, extra] = token.split(".");
-  if (!payload || !providedSignature || extra) return undefined;
+  const parsed = readSignedPayload(token, environment) as Partial<MerchantSession> | undefined;
+  if (!parsed || typeof parsed.merchantId !== "string" || typeof parsed.expiresAt !== "number") return undefined;
+  if (!Number.isFinite(parsed.expiresAt) || parsed.expiresAt <= nowMs) return undefined;
+  return { merchantId: parsed.merchantId, expiresAt: parsed.expiresAt };
+}
 
-  const expectedSignature = signature(payload, environment);
-  if (!constantTimeEqual(providedSignature, expectedSignature)) return undefined;
+export function createOperatorSessionToken(
+  nowMs = Date.now(),
+  environment: NodeJS.ProcessEnv = process.env,
+): string {
+  const session: OperatorSession = {
+    role: "operator",
+    expiresAt: nowMs + OPERATOR_SESSION_SECONDS * 1000,
+  };
+  return signedPayload(session, environment);
+}
 
-  try {
-    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as Partial<MerchantSession>;
-    if (typeof parsed.merchantId !== "string" || typeof parsed.expiresAt !== "number") return undefined;
-    if (!Number.isFinite(parsed.expiresAt) || parsed.expiresAt <= nowMs) return undefined;
-    return { merchantId: parsed.merchantId, expiresAt: parsed.expiresAt };
-  } catch {
-    return undefined;
-  }
+export function verifyOperatorSessionToken(
+  token: string | undefined,
+  nowMs = Date.now(),
+  environment: NodeJS.ProcessEnv = process.env,
+): OperatorSession | undefined {
+  const parsed = readSignedPayload(token, environment) as Partial<OperatorSession> | undefined;
+  if (!parsed || parsed.role !== "operator" || typeof parsed.expiresAt !== "number") return undefined;
+  if (!Number.isFinite(parsed.expiresAt) || parsed.expiresAt <= nowMs) return undefined;
+  return { role: "operator", expiresAt: parsed.expiresAt };
 }
 
 export function merchantSessionFromRequest(
   request: Request,
   environment: NodeJS.ProcessEnv = process.env,
 ): MerchantSession | undefined {
-  const cookieHeader = request.headers.get("cookie") ?? "";
-  const encodedToken = cookieHeader
-    .split(";")
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(`${MERCHANT_SESSION_COOKIE}=`))
-    ?.slice(MERCHANT_SESSION_COOKIE.length + 1);
-  if (!encodedToken) return undefined;
-  try {
-    return verifyMerchantSessionToken(decodeURIComponent(encodedToken), Date.now(), environment);
-  } catch {
-    return undefined;
-  }
+  return verifyMerchantSessionToken(cookieValue(request, MERCHANT_SESSION_COOKIE), Date.now(), environment);
+}
+
+export function operatorSessionFromRequest(
+  request: Request,
+  environment: NodeJS.ProcessEnv = process.env,
+): OperatorSession | undefined {
+  return verifyOperatorSessionToken(cookieValue(request, OPERATOR_SESSION_COOKIE), Date.now(), environment);
 }
 
 export function merchantCookieOptions(environment: NodeJS.ProcessEnv = process.env) {
@@ -169,6 +215,16 @@ export function merchantCookieOptions(environment: NodeJS.ProcessEnv = process.e
     secure: environment.NODE_ENV === "production",
     path: "/",
     maxAge: MERCHANT_SESSION_SECONDS,
+  };
+}
+
+export function operatorCookieOptions(environment: NodeJS.ProcessEnv = process.env) {
+  return {
+    httpOnly: true,
+    sameSite: "strict" as const,
+    secure: environment.NODE_ENV === "production",
+    path: "/",
+    maxAge: OPERATOR_SESSION_SECONDS,
   };
 }
 
