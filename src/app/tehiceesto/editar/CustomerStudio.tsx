@@ -239,7 +239,7 @@ function Preview({
     url:item.url as string,
     caption:item.caption||undefined,
     fit:item.metadata?.fit||"cover",
-    position:item.metadata?.position||"center",
+    position:(item.metadata?.position||"center") as "center",
     scene:item.metadata?.scene,
   }));
   const audioMedia=ordered.filter(item=>item.kind==="audio"&&item.url&&item.metadata?.role!=="soundtrack").map(item=>({
