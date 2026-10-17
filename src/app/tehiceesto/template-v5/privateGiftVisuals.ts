@@ -97,18 +97,43 @@ export function fillPrivateGiftPhotos<TScene extends string>(
   slug:string,
   recipe:readonly TScene[],
   uploads:readonly PrivateGiftPhoto<TScene>[],
-):PrivateGiftPhoto<TScene>[]{
+):PrivateGiftPhoto<TScene>[] {
   const result:PrivateGiftPhoto<TScene>[]=[...uploads];
-  for(const scene of recipe){
+  // Photos are the customer's: never overlay generic artwork when at least one
+  // real photo has been uploaded. Unassigned batch uploads belong to Recuerdos;
+  // additional photo-bearing chapters reuse those uploads predictably.
+  const realPhotos=uploads.filter(photo=>Boolean(photo.url)&&!photo.url.startsWith("data:"));
+  for(const [sceneIndex,scene] of recipe.entries()){
     const target=PRIVATE_PHOTO_SLOTS[scene]||0;
     if(!target)continue;
-    const already=result.filter(photo=>(photo.scene||"memories")===scene).length;
-    for(let index=already;index<target;index++){
+    const scenePhotos=result.filter(photo=>(photo.scene||"memories")===scene);
+    if(scenePhotos.length>=target)continue;
+    if(realPhotos.length){
+      // Albums show every photo the customer uploaded, not 3 arbitrary choices.
+      // Only an empty album borrows photos from the other chapters.
+      const needed=scene==="memories"
+        ?(scenePhotos.length?0:Math.min(target,realPhotos.length))
+        :Math.max(0,target-scenePhotos.length);
+      const already=new Set(scenePhotos.map(photo=>photo.url));
+      for(let offset=0;offset<needed;offset++){
+        const available=realPhotos.filter(photo=>!already.has(photo.url));
+        const pool=available.length?available:realPhotos;
+        const chosen=pool[(sceneIndex*3+offset)%pool.length];
+        result.push({
+          url:chosen.url,scene,fit:chosen.fit||"cover",
+          position:chosen.position||"center",
+          // A caption written for Recuerdos must not appear in another chapter.
+        });
+        already.add(chosen.url);
+      }
+      continue;
+    }
+    // No personal photos at all: use intentionally anonymous illustrations,
+    // not photographs of unknown people from the public demo.
+    for(let index=scenePhotos.length;index<target;index++){
       result.push({
-        url:privateGiftVisualUrl(slug,recipe.indexOf(scene)*7+index),
-        scene,
-        fit:"cover",
-        position:"center",
+        url:privateGiftVisualUrl(slug,sceneIndex*7+index),
+        scene,fit:"cover",position:"center",
       });
     }
   }
