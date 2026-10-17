@@ -447,9 +447,9 @@ Deno.serve(async (req: Request) => {
 
     try {
       const { gift, story } = await assertStudioAccess(supabase, code, body.editorToken);
-      const recipe = (["premium-v3","premium-v4","premium-v5"].includes(gift.template_version))
-        ? canonicalRecipeForGift(gift, story) // Preserve every model scene: personalization changes content, not layout.
-        : cleanStudioRecipe(canonicalRecipeForGift(gift, story), body.sceneRecipe);
+      // Keep the original scene designs immutable while letting each customer
+      // omit optional chapters. Introduction and finale remain mandatory.
+      const recipe = cleanStudioRecipe(canonicalRecipeForGift(gift, story), body.sceneRecipe);
       if (recipe.length < 2) return json(origin, { error: "recipe_too_short" }, 400);
 
       const { error } = await supabase
@@ -609,14 +609,7 @@ Deno.serve(async (req: Request) => {
       });
       if (error) return json(origin, { error: "media_register_failed" }, 500);
 
-      if (scene && canonical.includes(scene) && !recipe.includes(scene)) {
-        const reactivated = canonical.filter((item) => recipe.includes(item) || item === scene);
-        await supabase
-          .from("gifts")
-          .update({ scene_recipe: reactivated })
-          .eq("id", gift.id);
-      }
-
+      // Uploading a photo must never secretly restore a chapter the customer hid.
       return json(origin, { ok: true });
     } catch (error) {
       const reason = error instanceof Error ? error.message : "media_register_failed";
@@ -809,11 +802,12 @@ Deno.serve(async (req: Request) => {
       );
       const hasVideo = (publishMedia || []).some((item) => item.kind === "video");
       const canonical = canonicalRecipeForGift(gift, story);
-      let publishRecipe = (["premium-v3","premium-v4","premium-v5"].includes(gift.template_version))
-        ? [...canonical] // The purchased demo's full journey is guaranteed.
-        : Array.isArray(gift.scene_recipe)
-          ? gift.scene_recipe.map(String)
-          : [...canonical];
+      // Default to the complete premium model for new purchases, but respect
+      // the optional chapters this customer intentionally turned off.
+      let publishRecipe = cleanStudioRecipe(
+        canonical,
+        Array.isArray(gift.scene_recipe) ? gift.scene_recipe : canonical,
+      );
 
       if (!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasPhoto) publishRecipe = publishRecipe.filter((scene) => scene !== "memories");
       if (!["premium-v3","premium-v4","premium-v5"].includes(gift.template_version) && !hasVoice) publishRecipe = publishRecipe.filter((scene) => scene !== "voices");
