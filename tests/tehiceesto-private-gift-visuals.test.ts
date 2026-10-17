@@ -83,6 +83,27 @@ describe("private customer gifts use anonymous artwork for missing photos",()=>{
     expect(withAssignment.find(p=>p.scene==="childhood")?.url).toContain("specific-childhood");
   });
 
+  it("prevents duplicated floating Mama photos from covering mobile buttons in editor and published gifts",()=>{
+    const root=resolve(process.cwd(),"src/app/tehiceesto");
+    const engine=readFileSync(resolve(root,"template-v5/ExperienceEngine.tsx"),"utf8");
+    const studio=readFileSync(resolve(root,"editar/CustomerStudio.tsx"),"utf8");
+    const published=readFileSync(resolve(root,"r/[code]/page.tsx"),"utf8");
+    // Both entry points use premium-v5 with customerGift=true.
+    expect(studio).toContain("<PremiumV5Engine");
+    expect(studio).toContain("customerGift");
+    expect(published).toContain("frozenV5?PremiumV5Engine");
+    expect(published).toContain("<Engine customerGift");
+    // The scene photos remain available in their designed slots.
+    expect(engine).toContain("const scenePhotos=currentPhotos.length?");
+    expect(engine).toContain('const attachedPhotos=customerGift&&experience.slug==="mama"?[]:currentPhotos;');
+    expect(engine).toContain('current!=="memories"&&attachedPhotos.length>0');
+    expect(engine).toContain('<AttachedSceneMedia scene={current} photos={attachedPhotos}');
+    expect(engine).not.toContain('<AttachedSceneMedia scene={current} photos={currentPhotos}');
+    const css=readFileSync(resolve(root,"tehiceesto.css"),"utf8");
+    expect(css).toContain(".thi-attached-media{position:absolute");
+    expect(css).toContain("bottom:76px");
+  });
+
   it("is restricted to gifts and keeps the three original model engines unchanged",()=>{
     const root=resolve(process.cwd(),"src/app/tehiceesto");
     const published=readFileSync(resolve(root,"r/[code]/page.tsx"),"utf8");
