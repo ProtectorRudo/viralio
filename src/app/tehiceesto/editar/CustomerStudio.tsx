@@ -1202,7 +1202,7 @@ export default function CustomerStudio({code}:{code:string}){
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
         <StudioPhotoEditor
           code={code} editorToken={editorToken} scene={resolvedPreviewScene}
-          media={media.filter(item=>item.kind==="image"&&Boolean(item.url)).map(item=>({id:item.id,url:item.url||"",caption:item.caption||""}))}
+          media={media.filter(item=>item.kind==="image"&&Boolean(item.url)).map(item=>({id:item.id,url:item.url||"",caption:item.caption||"",fit:item.metadata?.fit||"cover",position:item.metadata?.position||"center"}))}
           slots={safePhotoSlots(gift.story_data?.photoSlots)}
           enabled={photoEditorEnabled}
           onToggle={()=>setPhotoEditorEnabled(value=>!value)}
