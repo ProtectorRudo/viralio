@@ -441,6 +441,46 @@ Deno.serve(async (req: Request) => {
     }
   }
 
+  if (action === "saveStudioPhotoSlot") {
+    let code:string;
+    try { code=cleanCode(body.code); } catch { return json(origin,{error:"invalid_code"},400); }
+    try {
+      const {gift,story}=await assertStudioAccess(supabase,code,body.editorToken);
+      const scene=cleanText(body.scene,40);
+      const slot=Number(body.slot);
+      const canonical=canonicalRecipeForGift(gift,story);
+      if(!canonical.includes(scene)||!Number.isInteger(slot)||slot<0||slot>19)
+        return json(origin,{error:"invalid_photo_slot"},400);
+      const mediaId=cleanText(body.mediaId,80);
+      if(mediaId){
+        const {data:photo}=await supabase.from("gift_media")
+          .select("id").eq("gift_id",gift.id).eq("id",mediaId).eq("kind","image").maybeSingle();
+        if(!photo)return json(origin,{error:"photo_not_found"},404);
+      }
+      const fit=body.fit==="contain"?"contain":"cover";
+      const rawPosition=cleanText(body.position,40);
+      const position=["center","top","bottom","left","right"].includes(rawPosition)||
+        /^(100|[0-9]{1,2})% (100|[0-9]{1,2})%$/.test(rawPosition)
+        ?rawPosition:"center";
+      const before=story.photoSlots&&typeof story.photoSlots==="object"&&!Array.isArray(story.photoSlots)
+        ?{...story.photoSlots}:{};
+      const key=scene+":"+slot;
+      if(mediaId)before[key]={mediaId,fit,position};
+      else delete before[key];
+      // Do not let arbitrary client-supplied URLs or unbounded overrides enter story_data.
+      if(Object.keys(before).length>160)return json(origin,{error:"photo_slot_limit"},400);
+      const updated={...story,photoSlots:before,creator:{
+        ...(story.creator||{}),lastEditedAt:new Date().toISOString(),
+      }};
+      const {error}=await supabase.from("gifts").update({story_data:updated}).eq("id",gift.id);
+      if(error)return json(origin,{error:"photo_slot_save_failed"},500);
+      return json(origin,{ok:true,photoSlots:before});
+    }catch(error){
+      const reason=error instanceof Error?error.message:"photo_slot_save_failed";
+      return json(origin,{error:reason},reason==="payment_required"?409:401);
+    }
+  }
+
   if (action === "saveStudioRecipe") {
     let code: string;
     try { code = cleanCode(body.code); } catch { return json(origin, { error: "invalid_code" }, 400); }
