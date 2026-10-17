@@ -7,6 +7,9 @@ import { getExperience as getPremiumV5Experience } from "../../template-v5/data"
 import { getExperience } from "../../data";
 import { isComingSoon } from "../../availability";
 
+// Never cache an older demo: each model must match the currently sold snapshot.
+export const dynamic="force-dynamic";
+
 export default async function ExperiencePage({params}:{params:Promise<{slug:string}>}){
   const {slug}=await params;
   const experience=getExperience(slug);
