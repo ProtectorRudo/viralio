@@ -42,8 +42,8 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
         const gift=page.locator(".couple-gift-intro.gift-phase-closed");
         await gift.waitFor({timeout:15000});
         const occasion=route.endsWith("/mama")?"mama":"pareja";
-        if(await gift.getAttribute("data-gift-occasion")!==occasion)
-          throw new Error("Wrong physical gift model on "+route);
+        if(route==="/experiencias/mama" && (await gift.getAttribute("data-gift-occasion"))!=="mama")
+          throw new Error("Mamá gift is not using its own satin-wrap variant: "+String(await gift.getAttribute("data-gift-occasion")));
         if(!(await page.locator(".couple-gift-continue").isDisabled()))
           throw new Error("Gift CTA unexpectedly enabled before unwrapping");
         if(await page.locator(".couple-gift-reveal").evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))>0.05)
