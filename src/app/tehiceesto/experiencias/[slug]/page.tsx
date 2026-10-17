@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import ExperienceEngine from "../../ExperienceEngine";
+import PremiumV5Engine from "../../template-v5/ExperienceEngine";
+import { getExperience as getPremiumV5Experience } from "../../template-v5/data";
 import { getExperience } from "../../data";
 import { isComingSoon } from "../../availability";
 
@@ -26,8 +28,10 @@ export default async function ExperiencePage({params}:{params:Promise<{slug:stri
   const dedicated=host==="tehiceesto.com"||host==="www.tehiceesto.com";
   const createHref=`${dedicated?"":"/tehiceesto"}/crear?experiencia=${experience.slug}`;
 
+  // Mamá is sold as the same immutable premium-v5 experience shown in this demo.
+  const mamaV5=experience.slug==="mama"?getPremiumV5Experience("mama"):undefined;
   return <div className={`thi-demo-page thi-demo-page-${experience.slug}`}>
     <div className="thi-demo-ribbon"><span>EJEMPLO · {experience.title}</span><Link href={createHref}>Quiero esta →</Link></div>
-    <ExperienceEngine experience={experience}/>
+    {mamaV5?<PremiumV5Engine experience={mamaV5}/>:<ExperienceEngine experience={experience}/>}
   </div>;
 }
