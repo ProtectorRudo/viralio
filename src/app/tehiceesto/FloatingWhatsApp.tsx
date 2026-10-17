@@ -15,6 +15,7 @@ export default function FloatingWhatsApp() {
     pathname.endsWith("/afiliados") ||
     pathname.includes("/afiliados/") ||
     pathname.includes("/pedido/") ||
+    pathname.endsWith("/mis-regalos") ||
     pathname.includes("/editar/") ||
     pathname.endsWith("/crear")
   ) {
