@@ -104,6 +104,25 @@ describe("private customer gifts use anonymous artwork for missing photos",()=>{
     expect(css).toContain("bottom:76px");
   });
 
+  it("globally protects every sold engine from floating media overlays without changing demo styling",()=>{
+    const root=resolve(process.cwd(),"src/app/tehiceesto");
+    const versions=["ExperienceEngine.tsx",...Array.from({length:5},(_,index)=>`template-v${index+1}/ExperienceEngine.tsx`)];
+    for(const file of versions){
+      const engine=readFileSync(resolve(root,file),"utf8");
+      expect(engine).toContain('data-customer-gift={customerGift?"true":undefined}');
+      expect(engine).toContain("has-attached-media");
+      expect(engine).toContain("<AttachedSceneMedia");
+    }
+    const layout=readFileSync(resolve(root,"layout.tsx"),"utf8");
+    expect(layout).toContain('import "./tehiceesto-customer-media.css";');
+    const css=readFileSync(resolve(root,"tehiceesto-customer-media.css"),"utf8");
+    expect(css).toContain('.thi-experience[data-customer-gift="true"] .thi-scene-stage > .thi-attached-media');
+    expect(css).toContain("position:relative;");
+    expect(css).toContain("grid-template-columns:minmax(0,1fr)");
+    expect(css).toContain("padding-bottom:max(120px,");
+    expect(css).not.toContain("display:none!important");
+  });
+
   it("is restricted to gifts and keeps the three original model engines unchanged",()=>{
     const root=resolve(process.cwd(),"src/app/tehiceesto");
     const published=readFileSync(resolve(root,"r/[code]/page.tsx"),"utf8");
