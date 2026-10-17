@@ -4,10 +4,15 @@ import { expect,test } from "@playwright/test";
  * Uses a public demo plus synthetic private media; requires no customer credentials.
  * The same scene engine/CSS is used by the editor and purchased gifts. */
 for(const width of [390,1280]){
-  test(`all nine customer gifts keep uploaded media beneath the scene at ${width}px`,async({page})=>{
+  test(`all active demos keep extra personal media beneath the scene at ${width}px`,async({page})=>{
     await page.setViewportSize({width,height:844});
     for(const slug of ["pareja","cumpleanos","hijos","abuelos","aniversario","propuesta","mama","papa","amistad"]){
       await page.goto(`/tehiceesto/experiencias/${slug}`,{waitUntil:"domcontentloaded"});
+      if(await page.locator("main.thi-coming-page").count()){
+        // Abuelos, Aniversario and Propuesta are not publicly buyable yet.
+        // The versioned engines are still covered by the structural regression test.
+        continue;
+      }
       await expect(page.locator("main.thi-experience .thi-scene-stage")).toBeVisible();
       const geometry=await page.evaluate(()=>{
         const root=document.querySelector<HTMLElement>("main.thi-experience");
