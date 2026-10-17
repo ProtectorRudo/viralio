@@ -1051,7 +1051,7 @@ export default function CustomerStudio({code}:{code:string}){
         {memoryPhotos.length>0?<div className="studio-photo-grid">{memoryPhotos.map((item,index)=><article key={item.id}>
           <div className="studio-photo"><img src={item.url||""} alt={item.caption||"Recuerdo"} style={{objectFit:item.metadata?.fit||"cover",objectPosition:item.metadata?.position||"center"}}/><span>{String(index+1).padStart(2,"0")}</span></div>
           <input defaultValue={item.caption||""} onBlur={event=>updateMedia(item,{caption:event.target.value})} placeholder="Podés escribir una frase acá · opcional"/>
-          {photoDestinations.length>1&&<label className="studio-photo-placement"><span>Foto principal en</span><select value={item.metadata?.scene&&photoDestinations.includes(item.metadata.scene)?item.metadata.scene:"memories"} onChange={event=>void updateMedia(item,{scene:event.target.value})}>{photoDestinations.map(scene=><option key={scene} value={scene}>{SCENE_LABELS[scene]?.title||scene}</option>)}</select></label>}
+          {photoDestinations.length>1&&<label className="studio-photo-placement"><span>Foto principal en</span><select value={item.metadata?.scene&&photoDestinations.some(scene=>scene===item.metadata?.scene)?item.metadata.scene:"memories"} onChange={event=>void updateMedia(item,{scene:event.target.value})}>{photoDestinations.map(scene=><option key={scene} value={scene}>{SCENE_LABELS[scene]?.title||scene}</option>)}</select></label>}
           <div className="studio-media-primary-actions">
             <button type="button" onClick={()=>chooseReplacement(item)}>Cambiar foto</button>
             <button type="button" className="danger" onClick={()=>deleteMedia(item)}>Quitar</button>
