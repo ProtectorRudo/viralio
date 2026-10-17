@@ -37,6 +37,8 @@ import { creatorCall,uploadCreatorFile } from "../creatorApi";
 import { AudioUploadError,prepareCompatibleAudio } from "../audioUpload";
 import { requestGiftAccountLink } from "../giftAccountApi";
 import StudioVisualTextEditor,{type StudioSceneTextOverrides} from "./StudioVisualTextEditor";
+import StudioPhotoEditor from "./StudioPhotoEditor";
+import {applyPhotoSlotChoices,safePhotoSlots,type PhotoSlots} from "../photoSlots";
 
 type MediaKind="image"|"audio"|"video";
 type StudioMedia={
@@ -50,7 +52,7 @@ type StudioMedia={
     mimeType?:string;
     size?:number;
     fit?:"cover"|"contain";
-    position?:"center"|"top"|"bottom"|"left"|"right";
+    position?:string;
     scene?:string;
     role?:"voice"|"soundtrack";
   }|null;
@@ -77,6 +79,7 @@ type StudioGift={
     anecdote?:string;
     script?:unknown;
     sceneContent?:StudioSceneTextOverrides;
+    photoSlots?:PhotoSlots;
     creator?:{contact?:{name?:string;email?:string;whatsapp?:string}};
   }|null;
   theme_data:{accent?:string}|null;
@@ -231,6 +234,7 @@ function Preview({
 }){
   const ordered=[...media].sort((a,b)=>a.sort_order-b.sort_order);
   const soundtrack=ordered.find(item=>item.kind==="audio"&&item.url&&item.metadata?.role==="soundtrack");
+  const withChoices=<T extends {url:string;scene?:string;caption?:string;fit?:"cover"|"contain";position?:string}>(photos:T[])=>applyPhotoSlotChoices(photos,ordered.filter(item=>item.kind==="image").map(item=>({id:item.id,url:item.url,caption:item.caption})),gift.story_data?.photoSlots);
   const photoMedia=ordered.filter(item=>item.kind==="image"&&item.url).map(item=>({
     url:item.url as string,
     caption:item.caption||undefined,
@@ -265,7 +269,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined})))}
+      photoMedia={withChoices(fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumSceneType|undefined}))}
@@ -294,7 +298,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined})))}
+      photoMedia={withChoices(fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV2SceneType|undefined}))}
@@ -323,7 +327,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={fillV3GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV3SceneType|undefined})))}
+      photoMedia={withChoices(fillV3GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV3SceneType|undefined}))))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV3SceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV3SceneType|undefined}))}
@@ -352,7 +356,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={fillV4GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined})))}
+      photoMedia={withChoices(fillV4GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined}))))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV4SceneType|undefined}))}
@@ -381,7 +385,7 @@ function Preview({
       onSceneChange={scene=>onSceneChange(scene)}
       copyOverride={gift.story_data?.script as never}
       letterText={gift.letter_text||undefined}
-      photoMedia={fillV5GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV5SceneType|undefined})))}
+      photoMedia={withChoices(fillV5GiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as PremiumV5SceneType|undefined}))))}
       audioMedia={audioMedia.map(item=>({...item,scene:item.scene as PremiumV5SceneType|undefined}))}
       soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
       videoMedia={videoMedia.map(item=>({...item,scene:item.scene as PremiumV5SceneType|undefined}))}
@@ -409,7 +413,7 @@ function Preview({
     onSceneChange={scene=>onSceneChange(scene)}
     copyOverride={gift.story_data?.script as never}
     letterText={gift.letter_text||undefined}
-    photoMedia={fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as SceneType|undefined})))}
+    photoMedia={withChoices(fillPrivateGiftPhotos(gift.experience_slug,experience.recipe,photoMedia.map(item=>({...item,scene:item.scene as SceneType|undefined}))))}
     audioMedia={audioMedia.map(item=>({...item,scene:item.scene as SceneType|undefined}))}
     soundtrackMedia={soundtrack?{url:soundtrack.url as string,caption:soundtrack.caption||undefined}:undefined}
     videoMedia={videoMedia.map(item=>({...item,scene:item.scene as SceneType|undefined}))}
@@ -450,6 +454,7 @@ export default function CustomerStudio({code}:{code:string}){
   const [recordingSeconds,setRecordingSeconds]=useState(0);
   const [replaceTarget,setReplaceTarget]=useState<StudioMedia|null>(null);
   const [previewScene,setPreviewScene]=useState("");
+  const [photoEditorEnabled,setPhotoEditorEnabled]=useState(true);
 
   const loadStudio=useCallback(async(token:string)=>{
     setLoading(true);setMessage("");
@@ -1195,6 +1200,14 @@ export default function CustomerStudio({code}:{code:string}){
           <div className="studio-preview-actions"><button type="button" className="studio-secondary-button" onClick={()=>goToStep(3)}>← Cambiar palabras</button><button type="button" className="studio-main-button compact" onClick={publishGift}>{published?"Guardar y actualizar":"Publicar mi regalo"} <b>→</b></button></div>
         </div>
         <StudioVisualTextEditor code={code} editorToken={editorToken} initialOverrides={sceneTextOverrides} onChange={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),sceneContent:next}}}:current)}/>
+        <StudioPhotoEditor
+          code={code} editorToken={editorToken} scene={resolvedPreviewScene}
+          media={media.filter(item=>item.kind==="image"&&Boolean(item.url)).map(item=>({id:item.id,url:item.url||"",caption:item.caption||""}))}
+          slots={safePhotoSlots(gift.story_data?.photoSlots)}
+          enabled={photoEditorEnabled}
+          onToggle={()=>setPhotoEditorEnabled(value=>!value)}
+          onSaved={next=>setPayload(current=>current?{...current,gift:{...current.gift,story_data:{...(current.gift.story_data||{}),photoSlots:next}}}:current)}
+        />
         <div className="studio-preview-stage"><Preview gift={{...gift,scene_recipe:effectiveRecipe}} media={media} sceneTextOverrides={sceneTextOverrides} previewScene={resolvedPreviewScene} onSceneChange={scene=>setPreviewScene(scene)}/></div>
         <nav className="studio-preview-journey-nav" aria-label="Navegar por las partes del regalo">
           <button type="button" className="studio-preview-nav-button back" disabled={previewSceneIndex<=0} onClick={()=>movePreviewScene(-1)}>← <span>Anterior</span></button>
