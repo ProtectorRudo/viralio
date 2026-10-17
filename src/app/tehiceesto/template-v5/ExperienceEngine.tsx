@@ -135,7 +135,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const currentAudios=(audioMedia||[]).filter(item=>mediaBelongsToScene("audio",item.scene,current));
   const currentVideos=(videoMedia||[]).filter(item=>mediaBelongsToScene("video",item.scene,current));
   const demoPhotos=(experience.demo.photos||[]).map((item,index)=>({url:item.url,caption:memoryLines[index]||undefined,fit:"cover" as const,position:item.position||"center" as const}));
-  const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos):[];
+  const displayPhotos=current==="memories"?(currentPhotos.length?currentPhotos:customerGift?[]:demoPhotos):[];
   const scenePhotos=currentPhotos.length?currentPhotos.slice(0,8):customerGift?[]:demoPhotos;
   const hasAttachedMedia=(current!=="memories"&&currentPhotos.length>0)||(current!=="voices"&&currentAudios.length>0)||(current!=="video"&&currentVideos.length>0);
 
@@ -268,7 +268,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       case"door":return experience.slug==="pareja"?<PairCinematicUmbral kicker={token(copy.door.kicker)} title={copy.door.title.map(line=>token(line))} cta={token(copy.door.openCta)} onOpen={openDoor} onAdvance={next} />:<section className="thi-scene thi-scene-door thi-scene-rich"><p className="thi-kicker">{token(copy.door.kicker)}</p><h2>{titleLines(copy.door.title)}</h2><div className="thi-door-light" aria-hidden="true"/><div className="thi-door-floor" aria-hidden="true"/><button data-action="open-door" className={`thi-door-wrap ${doorOpen?"opening":""}`} onClick={openDoor}><span className="thi-door-frame"><span className="thi-door"><i/><b/></span><span className="thi-door-world"/></span></button>{!doorOpen?<p className="thi-hint">{token(copy.door.closedHint)}</p>:<button data-action="advance" className="thi-primary thi-door-enter" onClick={next}>{token(copy.door.openCta)}</button>}</section>;
       case"memories":{
         if(experience.slug==="mama"){
-          const mamaMemoryItems=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,3);
+          const mamaMemoryItems=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,customerGift?20:3);
           const safeItems=mamaMemoryItems.length?mamaMemoryItems:[{url:"",caption:memoryLines[0]||"",fit:"cover" as const,position:"center" as const}];
           const active=Math.min(mamaMemoryIndex,safeItems.length-1);
           const labels=["LO COTIDIANO","LO QUE CUIDABA","LO QUE QUEDA"];
