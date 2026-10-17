@@ -36,7 +36,6 @@ export default function StudioVisualTextEditor({
   initialOverrides:StudioSceneTextOverrides;
   onChange:(value:StudioSceneTextOverrides)=>void;
 }){
-  const [enabled,setEnabled]=useState(false);
   const [selection,setSelection]=useState<Selection|null>(null);
   const [value,setValue]=useState("");
   const [saving,setSaving]=useState(false);
@@ -49,18 +48,14 @@ export default function StudioVisualTextEditor({
   );
 
   useEffect(()=>{
-    document.documentElement.classList.toggle("studio-copy-editing",enabled);
-    return()=>document.documentElement.classList.remove("studio-copy-editing");
-  },[enabled]);
-
-  useEffect(()=>{
-    if(!enabled)return;
     const onClick=(event:MouseEvent)=>{
       const target=event.target as Element|null;
-      if(!target||target.closest(".studio-copy-tools"))return;
+      if(!target||target.closest(".studio-copy-tools,.studio-photo-modal-backdrop"))return;
       const root=document.querySelector<HTMLElement>(".studio-preview-stage .thi-experience");
       if(!root||!root.contains(target))return;
-      if(target.closest(".thi-progress,.thi-scene-meta,.thi-reset-journey,.soundtrack-control,audio,video"))return;
+      // Keep scene navigation, gifts, photos and interactive gestures usable.
+      // Those controls should not be hijacked by the always-on text selector.
+      if(target.closest("button,a,[role=button],input,select,textarea,label,img,picture,video,audio,.thi-progress,.thi-scene-meta,.thi-reset-journey,.soundtrack-control,.thi-attached-photo,[class*='-photo'],[class*='photo-'],[class*='-portrait'],[class*='portrait-'],[class*='-frame'],[class*='frame-']"))return;
 
       const textNode=textNodeAtPoint(event.clientX,event.clientY)
         ||firstTextNode(target.closest("button,h1,h2,h3,p,small,strong,span,em,b"));
@@ -81,7 +76,7 @@ export default function StudioVisualTextEditor({
 
     document.addEventListener("click",onClick,true);
     return()=>document.removeEventListener("click",onClick,true);
-  },[enabled,overrides]);
+  },[overrides]);
 
   async function save(){
     if(!selection||!value.trim())return;
@@ -91,7 +86,7 @@ export default function StudioVisualTextEditor({
         code,editorToken,scene:selection.scene,source:selection.source,replacement:value.trim(),
       });
       const next=result.sceneContent||{};
-      setOverrides(next);onChange(next);setSelection(null);setEnabled(false);setMessage("Listo ✓ Ya podés seguir recorriendo.");
+      setOverrides(next);onChange(next);setSelection(null);setMessage("Guardado ✓ Podés editar otra frase cuando quieras.");
     }catch{
       setMessage("No se pudo guardar. Probá otra vez.");
     }finally{setSaving(false)}
@@ -105,32 +100,22 @@ export default function StudioVisualTextEditor({
         code,editorToken,scene:selection.scene,source:selection.source,
       });
       const next=result.sceneContent||{};
-      setOverrides(next);onChange(next);setSelection(null);setEnabled(false);setMessage("Listo ✓ Volvimos al original y ya podés seguir.");
+      setOverrides(next);onChange(next);setSelection(null);setMessage("Restaurado ✓ La edición de textos sigue disponible.");
     }catch{
       setMessage("No se pudo restaurar.");
     }finally{setSaving(false)}
   }
 
   return <div className="studio-copy-tools">
-    <button
-      type="button"
-      className={enabled?"studio-copy-toggle active":"studio-copy-toggle"}
-      onClick={()=>{setEnabled(current=>!current);setSelection(null);setMessage("")}}
-    >
-      <span>{enabled?"✓":"Aa"}</span>
+    <div className="studio-copy-toggle active studio-copy-always-active" role="status" aria-label="Edición de textos siempre activada">
+      <span aria-hidden="true">Aa</span>
       <div>
-        <small>{enabled?"MODO EDICIÓN ACTIVO":count?(count===1?"1 TEXTO CAMBIADO":count+" TEXTOS CAMBIADOS"):"PERSONALIZÁ ESTA PARTE"}</small>
-        <strong>{enabled?"Ahora tocá una frase":"Editar textos"}</strong>
-        <span className="studio-copy-description">{enabled?"Elegí dentro del regalo la frase que querés cambiar.":"Tocá acá y después elegí cualquier texto de esta parte para cambiarlo."}</span>
+        <small>EDICIÓN DE TEXTOS SIEMPRE ACTIVA{count>0?` · ${count} PERSONALIZADOS`:""}</small>
+        <strong>Tocá cualquier frase para editarla</strong>
+        <span className="studio-copy-description">Guardá y seguí recorriendo. Los botones y las fotografías funcionan normalmente.</span>
       </div>
-      <b aria-hidden="true">{enabled?"✓":"→"}</b>
-    </button>
-
-    {enabled&&!selection&&<div className="studio-copy-hint">
-      <strong>Tocá el texto que querés cambiar.</strong>
-      <p>Cuando guardes el cambio, el recorrido se habilita solo.</p>
-      <button type="button" className="studio-copy-done" onClick={()=>{setEnabled(false);setMessage("Listo. Seguí recorriendo el regalo →")}}>Listo, seguir recorriendo →</button>
-    </div>}
+      <b aria-hidden="true">✓</b>
+    </div>
 
     {selection&&<div className="studio-copy-sheet">
       <div className="studio-copy-sheet-head">
