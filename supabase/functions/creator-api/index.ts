@@ -132,7 +132,7 @@ async function assertStudioAccess(
   // Escape-room customers receive an assisted experience, not an editable template.
   if (String(gift.experience_slug||"").startsWith("escape-")) throw new Error("studio_not_found");
   // Pareja v5 is assembled by our team. Existing paid editable gifts remain unaffected.
-  if (gift.template_version === "premium-v5") throw new Error("studio_not_found");
+  if (gift.template_version === "premium-v5" && gift.experience_slug === "pareja") throw new Error("studio_not_found");
 
   const story = storyObject(gift.story_data);
   const creator = storyObject(story.creator);
