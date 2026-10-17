@@ -767,3 +767,170 @@
   .couple-gift-satin-bow .couple-silk-tail,
   .couple-gift-satin-bow .couple-silk-knot {transition:none!important}
 }
+
+
+/* MAMA SATIN OPENING V5 · same tactile stage, ribbon and timings as Pareja.
+   Isolated to Mamá's active v5 model so Pareja and older purchased snapshots never change. */
+.thi-template-v5.thi-theme-mama[data-scene="intro"] .thi-scene.couple-gift-intro.mama-gift-intro{
+  --gift-rose:#d9a5a8;
+  --gift-champagne:#efdcbb;
+  --gift-cloth:linear-gradient(96deg,#947348 0%,#d2b37d 12%,#fff0cc 26%,#e3c896 40%,#9b7849 55%,#f6e1b7 73%,#caa675 87%,#8a6747 100%);
+  --gift-box:linear-gradient(115deg,#784851,#ba7f89 15%,#dba9a9 36%,#9c6571 55%,#d4a09d 80%,#85515e 100%);
+  padding:clamp(72px,10svh,108px) 16px 100px;
+  background:
+    radial-gradient(ellipse 48% 40% at 52% 51%,rgba(196,127,137,.22),transparent 83%),
+    radial-gradient(ellipse 64% 68% at 2% 7%,rgba(153,85,103,.29),transparent 78%),
+    radial-gradient(ellipse 38% 50% at 94% 93%,rgba(157,119,111,.25),transparent 79%),
+    linear-gradient(152deg,#292026 0%,#24191f 41%,#160f15 100%)!important;
+  color:#fbf0e7;
+}
+.mama-gift-intro:before{
+  background:
+    radial-gradient(circle at 48% 43%,rgba(238,189,166,.10),transparent 39%),
+    linear-gradient(180deg,rgba(22,10,16,.04),transparent 45%,rgba(22,10,16,.42));
+}
+.mama-gift-intro:after{opacity:.12}
+.mama-gift-intro .couple-gift-backdrop .couple-gift-halo{
+  border-color:rgba(238,195,167,.10);
+  box-shadow:0 0 0 120px rgba(234,177,170,.02),0 0 0 240px rgba(234,177,170,.011);
+}
+.mama-gift-intro .couple-gift-backdrop .couple-gift-ambient.ambient-one{background:#b27785;opacity:.32}
+.mama-gift-intro .couple-gift-backdrop .couple-gift-ambient.ambient-two{background:#a57d72;opacity:.25}
+.mama-gift-intro .couple-gift-backdrop .couple-gift-ambient.ambient-three{background:#edc8a2;opacity:.16}
+.mama-gift-intro .couple-gift-prelude{
+  color:#e4c7bd;
+  font-size:10px;
+  letter-spacing:.22em;
+  font-weight:700;
+}
+.mama-gift-intro .couple-gift-object{filter:drop-shadow(0 27px 27px rgba(17,5,11,.4))}
+.mama-gift-intro .couple-gift-box-base{
+  background-image:
+    linear-gradient(98deg,rgba(48,17,25,.35),transparent 12%,rgba(255,238,217,.24) 38%,transparent 62%,rgba(51,24,34,.45)),
+    repeating-linear-gradient(178deg,rgba(255,239,227,.045) 0 1px,transparent 1px 5px),
+    var(--gift-box);
+  background-size:cover;
+  background-blend-mode:normal,soft-light,normal;
+  border:1px solid rgba(246,214,199,.29);
+  box-shadow:inset 1px 1px 2px rgba(255,240,220,.5),inset 0 -19px 30px rgba(62,25,39,.36),8px 21px 30px rgba(20,6,13,.3),0 35px 78px rgba(10,4,8,.35);
+}
+.mama-gift-intro .couple-gift-face-edge{
+  background:linear-gradient(90deg,rgba(72,30,43,.64),rgba(255,227,209,.22),transparent);
+}
+.mama-gift-intro .couple-gift-base-ribbon,
+.mama-gift-intro .couple-gift-lid-ribbon{background:var(--gift-cloth)}
+.mama-gift-intro .couple-gift-lid-top{
+  background-image:
+    linear-gradient(104deg,rgba(76,34,48,.27),rgba(255,239,217,.26) 39%,rgba(73,26,43,.25)),
+    repeating-linear-gradient(173deg,rgba(255,228,218,.04) 0 1px,transparent 1px 6px),
+    linear-gradient(115deg,#bd828c 0%,#efc3bb 35%,#cf939e 59%,#a36c7d 100%);
+  background-size:cover;
+  background-blend-mode:normal,soft-light,normal;
+  border-color:rgba(255,231,211,.49);
+  box-shadow:inset 0 2px 3px rgba(255,247,228,.3),inset 0 -9px 16px rgba(94,39,56,.39),0 11px 20px rgba(24,7,15,.45);
+}
+.mama-gift-intro .couple-gift-lid-front{
+  background:linear-gradient(98deg,#996370,#e0acaa 27%,#cc8b99 67%,#8b5361);
+  border-color:rgba(255,225,211,.38);
+  box-shadow:inset 0 2px 3px rgba(255,237,219,.36),inset 0 -6px 14px rgba(74,29,45,.32);
+}
+.mama-gift-intro .couple-gift-box-interior{
+  background:radial-gradient(ellipse at 50% 12%,#fff2da,#e6b6a6 21%,#8b5162 70%,#321924 100%);
+  border-color:#9d6973;
+}
+.mama-gift-intro .couple-gift-bloom{
+  background:radial-gradient(ellipse,rgba(255,241,217,.96),rgba(247,195,174,.70) 25%,rgba(238,151,150,.28) 58%,transparent 77%);
+}
+.mama-gift-intro .couple-gift-dust span{background:#ffe2b8;box-shadow:0 0 12px 3px rgba(255,211,180,.7)}
+.mama-gift-intro .couple-gift-emboss{
+  color:#fbe8d9;
+  text-shadow:0 1px 2px rgba(72,35,48,.65);
+}
+.mama-gift-intro .couple-gift-tag{
+  background:linear-gradient(155deg,#fff9ee,#f0dfce 75%,#e0c3b4);
+  color:#6c3f4d;
+  border-color:rgba(183,126,125,.55);
+  box-shadow:0 8px 18px rgba(36,12,23,.23);
+}
+.mama-gift-intro .couple-gift-tag span{color:#744451}
+.mama-gift-intro .couple-gift-tag::before{border-color:#d9b48b;background:#fff1d9}
+.mama-gift-intro .couple-gift-tap-hint{color:#f4d9c3;text-shadow:0 2px 8px rgba(18,5,9,.55)}
+.mama-gift-intro .couple-gift-reveal{
+  padding:0 12px;
+  max-width:650px;
+  margin-inline:auto;
+}
+.mama-gift-intro .couple-gift-dedication{
+  color:#f2c7bf;
+  font-size:clamp(10px,1vw,12px);
+  letter-spacing:.18em;
+  line-height:1.6;
+  max-width:480px;
+}
+.thi-template-v5.thi-theme-mama[data-scene="intro"] .mama-gift-intro .couple-gift-reveal h1{
+  color:#fff7ed;
+  font-family:"Instrument Serif",Georgia,serif!important;
+  font-size:clamp(76px,13vw,135px)!important;
+  font-weight:400!important;
+  line-height:1.02!important;
+  margin:10px 0 19px!important;
+  letter-spacing:-.055em!important;
+  text-shadow:0 0 45px rgba(255,194,174,.13);
+}
+.thi-template-v5.thi-theme-mama[data-scene="intro"] .mama-gift-intro .couple-gift-opening{
+  max-width:455px;
+  color:#f6e8df;
+  font-family:"Instrument Serif",Georgia,serif;
+  font-size:clamp(21px,2.8vw,28px);
+  line-height:1.34;
+  font-weight:400;
+  text-wrap:balance;
+  margin:8px auto 0;
+}
+.mama-gift-intro .couple-gift-footer{
+  min-height:91px;
+  padding-top:5px;
+}
+.thi-template-v5.thi-theme-mama[data-scene="intro"] .couple-gift-footer .couple-gift-continue{
+  background:linear-gradient(130deg,#efd3b7,#d2ac87 54%,#f7dec0)!important;
+  color:#3f2931!important;
+  border:1px solid rgba(255,240,217,.59)!important;
+  border-radius:999px!important;
+  box-shadow:0 16px 34px rgba(18,6,12,.31),inset 0 1px rgba(255,251,231,.72)!important;
+  font:normal 23px/1.2 "Instrument Serif",Georgia,serif!important;
+  padding:14px 29px!important;
+  min-width:min(310px,87vw);
+  min-height:54px;
+}
+.mama-gift-intro .couple-gift-footer small{color:#d4b7aa;letter-spacing:.10em}
+@media(max-width:650px){
+  .thi-template-v5.thi-theme-mama[data-scene="intro"] .thi-scene.couple-gift-intro.mama-gift-intro{
+    padding:clamp(76px,11svh,100px) 12px 100px;
+  }
+  .mama-gift-intro .couple-gift-content{min-height:min(625px,calc(100svh - 165px))}
+  .mama-gift-intro .couple-gift-theatre{width:min(470px,94vw);height:clamp(310px,47svh,420px)}
+  .mama-gift-intro .couple-gift-reveal{padding:0 14px}
+  .thi-template-v5.thi-theme-mama[data-scene="intro"] .mama-gift-intro .couple-gift-reveal h1{
+    font-size:clamp(72px,19vw,103px)!important;
+    margin:8px 0 14px!important;
+  }
+  .mama-gift-intro .couple-gift-dedication{font-size:9px;max-width:315px;line-height:1.55}
+  .thi-template-v5.thi-theme-mama[data-scene="intro"] .mama-gift-intro .couple-gift-opening{
+    max-width:315px;
+    font-size:clamp(19px,5.1vw,23px);
+    line-height:1.31;
+  }
+  .thi-template-v5.thi-theme-mama[data-scene="intro"] .couple-gift-footer .couple-gift-continue{
+    font-size:22px!important;
+    min-height:52px;
+  }
+}
+@media(max-width:650px) and (max-height:700px){
+  .mama-gift-intro .couple-gift-theatre{height:clamp(295px,46svh,365px)}
+  .thi-template-v5.thi-theme-mama[data-scene="intro"] .mama-gift-intro .couple-gift-reveal h1{font-size:70px!important;margin:5px 0 9px!important}
+  .thi-template-v5.thi-theme-mama[data-scene="intro"] .mama-gift-intro .couple-gift-opening{font-size:18px;line-height:1.3}
+  .mama-gift-intro .couple-gift-dedication{margin-bottom:5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .mama-gift-intro .couple-gift-dust span{animation:none}
+}
