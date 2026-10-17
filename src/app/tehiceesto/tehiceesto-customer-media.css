@@ -1,0 +1,96 @@
+/* Te Hice Esto — medios de regalo sin superposiciones, todas las versiones.
+   Cada motor indica data-customer-gift="true" solamente para regalos reales
+   y vistas previas de edición. Las demos y sus snapshots visuales no cambian.
+   Las fotos, los videos y los audios siguen presentes y se pueden reproducir. */
+
+/* El motor antes reservaba espacio lateral y luego superponía tarjetas flotantes.
+   En regalos personalizados, respetar el padding original de la escena. */
+.thi-experience[data-customer-gift="true"] .thi-scene-stage.has-attached-media > .thi-scene{
+  padding-right:clamp(20px,5vw,76px);
+  padding-bottom:max(90px,env(safe-area-inset-bottom));
+}
+
+/* El contenedor de adjuntos pasa al flujo normal DESPUÉS de la escena:
+   nunca delante de cartas, carruseles, botones o navegaciones móviles. */
+.thi-experience[data-customer-gift="true"] .thi-scene-stage > .thi-attached-media{
+  position:relative;
+  inset:auto;
+  top:auto;
+  bottom:auto;
+  right:auto;
+  left:auto;
+  z-index:1;
+  transform:none;
+  animation:none;
+  filter:none;
+  width:min(780px,calc(100% - 36px));
+  max-width:100%;
+  max-height:none;
+  overflow:visible;
+  margin:24px auto 0;
+  padding:0 0 max(116px,calc(90px + env(safe-area-inset-bottom)));
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));
+  align-items:start;
+  gap:16px;
+  pointer-events:auto;
+  box-sizing:border-box;
+  isolation:isolate;
+}
+.thi-experience[data-customer-gift="true"] .thi-attached-media > .thi-attached-photo,
+.thi-experience[data-customer-gift="true"] .thi-attached-media > .thi-attached-video,
+.thi-experience[data-customer-gift="true"] .thi-attached-media > .thi-attached-audio{
+  position:relative;
+  transform:none;
+  margin:0;
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  animation:none;
+}
+.thi-experience[data-customer-gift="true"] .thi-attached-media .thi-attached-photo img{
+  aspect-ratio:4/3;
+  max-height:330px;
+  width:100%;
+  height:auto;
+  object-fit:cover;
+}
+.thi-experience[data-customer-gift="true"] .thi-attached-media .thi-attached-video video,
+.thi-experience[data-customer-gift="true"] .thi-attached-media .thi-attached-audio audio{
+  display:block;
+  width:100%;
+  max-width:100%;
+}
+@media (max-width:820px){
+  .thi-experience[data-customer-gift="true"] .thi-scene-stage.has-attached-media > .thi-scene{
+    padding-right:clamp(16px,5vw,26px);
+    padding-bottom:max(84px,env(safe-area-inset-bottom));
+  }
+  .thi-experience[data-customer-gift="true"] .thi-scene-stage > .thi-attached-media{
+    position:relative;
+    inset:auto;
+    transform:none;
+    grid-template-columns:minmax(0,1fr);
+    width:min(440px,calc(100% - 36px));
+    margin:22px auto 0;
+    max-height:none;
+    overflow:visible;
+    gap:13px;
+    padding-bottom:max(120px,calc(84px + env(safe-area-inset-bottom)));
+  }
+  .thi-experience[data-customer-gift="true"] .thi-attached-media .thi-attached-photo img{
+    aspect-ratio:4/3;
+    max-height:280px;
+  }
+  .thi-experience[data-customer-gift="true"] .thi-attached-media > .thi-attached-photo,
+  .thi-experience[data-customer-gift="true"] .thi-attached-media > .thi-attached-video,
+  .thi-experience[data-customer-gift="true"] .thi-attached-media > .thi-attached-audio{
+    grid-column:auto;
+    transform:none!important;
+    margin:0!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-experience[data-customer-gift="true"] .thi-attached-media{animation:none;transition:none}
+}
