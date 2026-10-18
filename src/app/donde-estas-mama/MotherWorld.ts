@@ -13,6 +13,11 @@ export class MotherWorld {
   private renderer: THREE.WebGLRenderer;
   private clock = new THREE.Clock();
   private frame = 0;
+  private dpr=1;
+  private readonly maxDpr=Math.min(typeof window==="undefined"?1:window.devicePixelRatio||1,1.6);
+  private frameSample=0;
+  private frameCount=0;
+  private frameQualityHigh=0;
   private running = true;
   private spots: Spot[] = [];
   private eventLights: THREE.PointLight[] = [];
@@ -92,7 +97,8 @@ export class MotherWorld {
     this.scene.background=new THREE.Color(0x121016);
     this.scene.fog=new THREE.FogExp2(0x100d12,.018);
     this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:"high-performance"});
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));
+    this.dpr=this.maxDpr;
+    this.renderer.setPixelRatio(this.dpr);
     this.renderer.outputColorSpace=THREE.SRGBColorSpace;
     this.renderer.toneMapping=THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure=1.27;
@@ -259,7 +265,7 @@ export class MotherWorld {
     this.addGear("cajon",-2.5,.92,centers[2]+1.4,.10);
     this.addGear("estante",2.4,1.48,centers[2]-1.1,.075);
     // A physical frame falls when the child is heard, and a tangible warning materializes on the wall.
-    this.fallenFrame = this.addBox(.075,.88,.68,-3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
+    this.fallenFrame = this.addBox(.075,.88,.68,3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
     this.fallenFrame.rotation.y=-.15;
     const warningCanvas=document.createElement("canvas");warningCanvas.width=512;warningCanvas.height=192;
     const ctx=warningCanvas.getContext("2d");
@@ -494,7 +500,21 @@ export class MotherWorld {
   private animate=()=>{
     if(!this.running)return;
     this.frame=requestAnimationFrame(this.animate);
-    const dt=Math.min(this.clock.getDelta(),.045);
+    const rawDelta=this.clock.getDelta();
+    const dt=Math.min(rawDelta,.045);
+    // Adapt pixel density based on sustained observed frame time, never a single spike.
+    if(rawDelta>0&&rawDelta<.3){
+      this.frameSample+=rawDelta;this.frameCount++;
+      if(this.frameSample>=2.8){
+        const fps=this.frameCount/this.frameSample;
+        if(fps<29&&this.dpr>.9){
+          this.dpr=Math.max(.9,this.dpr-.15);this.renderer.setPixelRatio(this.dpr);this.resize();this.frameQualityHigh=0;
+        }else if(fps>57&&this.dpr<this.maxDpr){
+          if(++this.frameQualityHigh>=2){this.dpr=Math.min(this.maxDpr,this.dpr+.1);this.renderer.setPixelRatio(this.dpr);this.resize();this.frameQualityHigh=0;}
+        }else this.frameQualityHigh=0;
+        this.frameSample=0;this.frameCount=0;
+      }
+    }
     if(this.movement.forward||this.movement.strafe){
       const speed=2.3*dt/Math.max(1,Math.hypot(this.movement.forward,this.movement.strafe));
       const sin=Math.sin(this.yaw),cos=Math.cos(this.yaw);
@@ -526,7 +546,7 @@ export class MotherWorld {
     if(this.fallenFrame&&this.frameFallAt>=0){
       const p=THREE.MathUtils.clamp((t-this.frameFallAt)/.62,0,1);
       const fall=p*p*(3-2*p);
-      this.fallenFrame.position.x=-3.57+.46*fall;
+      this.fallenFrame.position.x=3.57-.46*fall;
       this.fallenFrame.position.y=1.77-1.73*fall;
       this.fallenFrame.rotation.z=-Math.PI/2*fall;
     }
