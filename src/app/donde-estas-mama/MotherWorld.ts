@@ -244,7 +244,7 @@ export class MotherWorld {
     this.addGear("cajon",-2.5,.92,centers[2]+1.4,.10);
     this.addGear("estante",2.4,1.48,centers[2]-1.1,.075);
     // A physical frame falls when the child is heard, and a tangible warning materializes on the wall.
-    this.fallenFrame = this.addBox(.68,.88,.075,-3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
+    this.fallenFrame = this.addBox(.075,.88,.68,-3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
     this.fallenFrame.rotation.y=-.15;
     const warningCanvas=document.createElement("canvas");warningCanvas.width=512;warningCanvas.height=192;
     const ctx=warningCanvas.getContext("2d");
@@ -428,7 +428,7 @@ export class MotherWorld {
     }
     if(elapsed>=170&&!this.sceneMoved.has(170)&&this.sceneSurprise){
       this.sceneMoved.add(170);
-      this.sceneSurprise.position.set(0,1.88,centers[this.stage]-3.59);
+      this.sceneSurprise.position.set(-2.44,1.88,centers[this.stage]-3.59);
       this.sceneSurprise.visible=true;
     }
     if(elapsed>=170&&elapsed<174)this.flickerUntil=performance.now()+300;
