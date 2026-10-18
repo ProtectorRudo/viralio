@@ -33,10 +33,11 @@ export class MotherWorld {
   private pickableItems = new Map<string,THREE.Group>();
   private readonly raycaster = new THREE.Raycaster();
   private readonly pointer = new THREE.Vector2();
-  private readonly cameraBox = new THREE.Box3();
   private shadowFigure: THREE.Group | null = null;
   private apparitionUntil = 0;
   private finalDecorations: THREE.Group | null = null;
+  private revealStartedAt = 0;
+  private wardrobeOriginX = 0;
   private readonly ownedTextures: THREE.Texture[] = [];
   onInteract: (id:string)=>void = ()=>{};
   onFocus: (label:string)=>void = ()=>{};
@@ -274,6 +275,9 @@ export class MotherWorld {
   }
   private revealCelebration(){
     if(this.finalDecorations)return;
+    this.revealStartedAt=this.clock.elapsedTime;
+    const wardrobe=this.dynamicProps.find(o=>o.userData.assetId==="two-door-wardrobe-original-interior-furnishing");
+    this.wardrobeOriginX=wardrobe?.position.x||0;
     const group=new THREE.Group();
     const stageZ=centers[2];
     const colors=[0xf2b0c4,0xf5d998,0xd3b0df,0xd1e6ce];
@@ -456,6 +460,14 @@ export class MotherWorld {
       const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
       if(open(this.camera.position.x,nz))this.camera.position.z=nz;
+    }
+    if(this.celebratory){
+      const wardrobe=this.dynamicProps.find(o=>o.userData.assetId==="two-door-wardrobe-original-interior-furnishing");
+      if(wardrobe){
+        const open=THREE.MathUtils.smoothstep(this.clock.elapsedTime-this.revealStartedAt,0,1.6);
+        wardrobe.position.x=this.wardrobeOriginX+open*2.42;
+        wardrobe.rotation.y=-open*.16;
+      }
     }
     const rect=this.renderer.domElement.getBoundingClientRect();
     const focus=this.ray(rect.left+rect.width/2,rect.top+rect.height/2);
