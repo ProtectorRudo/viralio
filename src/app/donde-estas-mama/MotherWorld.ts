@@ -31,6 +31,7 @@ export class MotherWorld {
   private sceneSurprise: THREE.Mesh | null = null;
   private fallenFrame: THREE.Mesh | null = null;
   private sceneMoved = new Set<number>();
+  private pickableItems = new Map<string,THREE.Group>();
   onInteract: (id:string)=>void = ()=>{};
   onFocus: (label:string)=>void = ()=>{};
   onNotice: (message:string)=>void = ()=>{};
@@ -170,7 +171,7 @@ export class MotherWorld {
       const size=new THREE.Vector3(),center=new THREE.Vector3();
       box.getSize(size);box.getCenter(center);
       if(size.x<.001||size.y<.001||size.z<.001)return;
-      const k=Math.min(a.width/Math.max(size.x,size.z),a.depth? a.depth/Math.max(size.x,size.z):6,2.2/size.y);
+      const k=Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
       scene.scale.setScalar(k);
       const lift = a.id==="desk-call-office-phone" ? .62 : a.id==="mantel-clock" ? .73 : a.id==="crime-photo-frame" ? 1.45 : 0;
       scene.position.set(a.x-center.x*k,-box.min.y*k+.012+lift,centers[a.stage]+a.z-center.z*k);
@@ -187,7 +188,7 @@ export class MotherWorld {
       {id:"desk-call-office-phone",stage:0,x:-2.05,z:.8,width:.42},
       {id:"flush-flush-interior-door",stage:0,x:0,z:-3.64,width:1.48,depth:.3},
       {id:"football-coat-stand",stage:0,x:2.35,z:-1.45,width:.9},
-      {id:"universal-ph-wooden-crate",stage:0,x:1.9,z:.65,width:.9},
+      {id:"football-backpack",stage:0,x:1.9,z:.65,width:.77},
       {id:"oak-side-table",stage:0,x:-2.2,z:-2.3,width:.88},
       {id:"mantel-clock",stage:0,x:-2.2,z:-2.3,width:.65},
       {id:"universal-modular-sofa-set",stage:1,x:-2,z:0,width:2.2,rotate:Math.PI/2},
@@ -205,7 +206,7 @@ export class MotherWorld {
     ];
     for(const a of assets)void this.asset(a);
     this.spot("telefono",0,-2.05,1.1,.8,1.35,"Teléfono");
-    this.spot("caja",0,1.9,.9,.65,1.1,"Caja escolar");
+    this.spot("caja",0,1.9,.8,.65,1.1,"Mochila");
     this.spot("perchero",0,2.35,1.5,-1.45,1.1,"Perchero");
     this.spot("puerta",0,0,1.5,-3.67,1.25,"Puerta de la sala");
     this.spot("foto",1,-2.35,1.65,-3.5,.88,"Fotografía familiar");
@@ -216,6 +217,11 @@ export class MotherWorld {
     this.spot("estante",2,2.4,1.45,-1.1,1,"Estante");
     this.spot("cajamusical",2,1.5,1.05,1.35,1.1,"Caja musical");
     this.spot("armario",2,0,1.5,-2.69,1.4,"Armario cerrado");
+    // Puzzle pieces are physical metal artifacts in the scene, not screen-only icons.
+    this.addKey("key1",2.35,1.17,centers[0]-1.43);
+    this.addGear("juguetes",-2.3,.84,centers[2]-1.4,.13);
+    this.addGear("cajon",-2.5,.92,centers[2]+1.4,.10);
+    this.addGear("estante",2.4,1.48,centers[2]-1.1,.075);
     // A physical frame falls when the child is heard, and a tangible warning materializes on the wall.
     this.fallenFrame = this.addBox(.68,.88,.075,-3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
     this.fallenFrame.rotation.y=-.15;
@@ -236,6 +242,38 @@ export class MotherWorld {
         this.scene.add(p);this.dynamicProps.push(p);
       }
     }
+  }
+  private addKey(id:string,x:number,y:number,z:number){
+    const group=new THREE.Group(),metal=this.mat(0xd4ae66,.85,.27);
+    const handle=new THREE.Mesh(new THREE.TorusGeometry(.105,.03,12,24),metal);
+    handle.position.y=.14;group.add(handle);
+    const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.026,.026,.27,12),metal);
+    shaft.position.y=-.07;group.add(shaft);
+    for(const [dx,dy] of [[.05,-.18],[.06,-.26]]){
+      const tooth=new THREE.Mesh(new THREE.BoxGeometry(.12,.045,.045),metal);
+      tooth.position.set(dx,dy,0);group.add(tooth);
+    }
+    group.position.set(x,y,z);group.rotation.z=.3;
+    this.scene.add(group);this.pickableItems.set(id,group);
+  }
+  private addGear(id:string,x:number,y:number,z:number,r:number){
+    const group=new THREE.Group(),steel=this.mat(0xa49d8e,.8,.32);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(r,.027,10,24),steel);
+    group.add(rim);
+    for(let i=0;i<12;i++){
+      const a=i*Math.PI/6;
+      const tooth=new THREE.Mesh(new THREE.BoxGeometry(.06,.05,.048),steel);
+      tooth.position.set(Math.cos(a)*r,Math.sin(a)*r,0);
+      tooth.rotation.z=a-Math.PI/2;group.add(tooth);
+    }
+    const spindle=new THREE.Mesh(new THREE.TorusGeometry(r*.35,.017,8,16),steel);
+    group.add(spindle);
+    group.position.set(x,y,z);
+    this.scene.add(group);this.pickableItems.set(id,group);
+  }
+  collect(id:string){
+    const piece=this.pickableItems.get(id);
+    if(piece){piece.visible=false;this.pickableItems.delete(id);}
   }
   private spot(id:string,stage:MotherStage,x:number,y:number,z:number,radius:number,label:string){
     const hit=new THREE.Mesh(new THREE.SphereGeometry(radius,10,9),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
