@@ -4,7 +4,7 @@ import { loadViralioPBR } from "@/lib/viralio-rooms";
 
 export type MotherStage = 0 | 1 | 2;
 type Spot = { id: string; mesh: THREE.Object3D; stage: MotherStage; radius: number; enabled: boolean };
-type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string};
+type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string; wallMount?:boolean};
 const centers = [0,-8,-16] as const;
 
 export class MotherWorld {
@@ -233,7 +233,7 @@ export class MotherWorld {
       if(size.x<.001||size.y<.001||size.z<.001)return null;
       const k=a.id==="mother-child-eli"?Math.min(1.19/size.y,a.width/Math.max(size.x,size.z)*1.35):Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
       scene.scale.setScalar(k);
-      let lift=a.id==="crime-photo-frame"?1.45:0;
+      let lift=0;
       if(a.supportId){
         const support=await this.assetLoads.get(a.stage+":"+a.supportId);
         if(!this.running)return null;
@@ -247,7 +247,7 @@ export class MotherWorld {
       // Correct the pivot in the model's rotated coordinates, not the original AABB.
       const angle=a.rotate||0;
       const horizontalCenter=new THREE.Vector3(center.x*k,0,center.z*k).applyAxisAngle(new THREE.Vector3(0,1,0),angle);
-      scene.position.set(a.x-horizontalCenter.x,-box.min.y*k+.012+lift,centers[a.stage]+a.z-horizontalCenter.z);
+      scene.position.set(a.x-horizontalCenter.x,a.wallMount?1.72-center.y*k:-box.min.y*k+.012+lift,centers[a.stage]+a.z-horizontalCenter.z);
       scene.rotation.y=angle;
       scene.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
       this.scene.add(scene);
@@ -299,10 +299,10 @@ export class MotherWorld {
       {id:"universal-modular-sofa-set",stage:1,x:-2.31,z:-.38,width:2.1,rotate:Math.PI/2},
       {id:"universal-ph-stone-coffee-table",stage:1,x:-.63,z:.60,width:.96},
       {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.65,z:-1.33,width:1.08},
-      {id:"crime-photo-frame",stage:1,x:-2.35,z:-3.58,width:.7},
+      {id:"crime-photo-frame",stage:1,x:-2.35,z:-3.54,width:.7,wallMount:true},
       {id:"flush-flush-interior-door",stage:1,x:0,z:-3.64,width:1.48,depth:.3},
       {id:"wingback-armchair",stage:1,x:2.48,z:1.92,width:.86,rotate:-.52},
-      {id:"gilt-landscape-picture-frame",stage:1,x:-3.12,z:1.89,width:.54},
+      {id:"gilt-landscape-picture-frame",stage:1,x:-3.55,z:1.89,width:.70,rotate:Math.PI/2,wallMount:true},
       // 03 · Final room: armario clear as the central goal, props at the periphery.
       {id:"two-door-wardrobe-original-interior-furnishing",stage:2,x:0,z:-2.6,width:2.6},
       {id:"universal-ph-wooden-crate",stage:2,x:-2.55,z:-.93,width:1.04},
@@ -376,16 +376,26 @@ export class MotherWorld {
       const scale=1.79/height;
       scene.scale.setScalar(scale);
       scene.position.y=-bounds.min.y*scale;
-      const shadowMaterial=new THREE.MeshStandardMaterial({
-        color:0x131018,roughness:1,metalness:0,transparent:true,opacity:.9,depthWrite:true
-      });
+      // Preserve the GLB's PBR skin, eyes, garments and textures. The previous
+      // monochrome replacement was the reason the apparition looked all grey.
       scene.traverse(node=>{
-        if(node instanceof THREE.Mesh){node.material=shadowMaterial;node.castShadow=false;node.receiveShadow=false;}
+        if(node instanceof THREE.Mesh){
+          node.castShadow=true;
+          node.receiveShadow=true;
+          if(node.material instanceof THREE.MeshStandardMaterial){
+            node.material=node.material.clone();
+            node.material.roughness=Math.max(.62,node.material.roughness);
+          }
+        }
       });
       const actor=new THREE.Group();
       actor.name="sombra-animada-sam";
       actor.position.set(2.2,0,centers[0]-1.55);
       actor.add(scene);
+      // Brief side light reveals the actual textured actor, without a flat grey body.
+      const accent=new THREE.PointLight(0xe9a995,14,2.7,2);
+      accent.position.set(.55,1.58,.65);
+      actor.add(accent);
       actor.visible=false;
       this.scene.add(actor);
       this.shadowFigure=actor;
@@ -583,8 +593,28 @@ export class MotherWorld {
     const spindle=new THREE.Mesh(new THREE.TorusGeometry(r*.35,.017,8,16),steel);
     group.add(spindle);
     group.position.set(x,y,z);
+    group.rotation.x=-Math.PI/2; // The gears lie on the furniture instead of hovering vertically.
     group.visible=this.stage===2;
     this.scene.add(group);this.pickableItems.set(id,group);
+    const supportName:{[k:string]:string}={
+      juguetes:"universal-ph-wooden-crate",
+      cajon:"slit-bedside-cabinet",
+      estante:"bookshelf-with-bins-original-interior-furnishing"
+    };
+    // Surface heights come from the actual loaded GLB, not approximate constants.
+    void this.assetLoads.get("2:"+supportName[id])?.then(support=>{
+      if(!support||!this.running)return;
+      support.updateMatrixWorld(true);
+      const bounds=new THREE.Box3().setFromObject(support);
+      group.position.y=bounds.max.y+.055;
+      // Front-most placement avoids a gear looking embedded in the back wall.
+      if(id==="estante")group.position.z=centers[2]-.94+.1;
+      for(const spot of this.spots)if(spot.stage===2&&spot.id===id){
+        spot.mesh.position.y=group.position.y;
+        spot.mesh.position.z=group.position.z;
+      }
+    });
+
   }
   collect(id:string){
     const piece=this.pickableItems.get(id);
@@ -648,6 +678,9 @@ export class MotherWorld {
       this.flickerUntil=performance.now()+470;
     }
     if(stage===2)this.flickerUntil=performance.now()+650;
+    // Request finished room meshes before entering so the props and the
+    // physically supported gears stream in together.
+
     if(this.sceneSurprise?.visible)this.sceneSurprise.position.z=centers[stage]-3.59;
     this.yaw=0;this.pitch=-.04;this.setRotation();this.onFocus("");
   }
@@ -721,13 +754,19 @@ export class MotherWorld {
       const sin=Math.sin(this.yaw),cos=Math.cos(this.yaw);
       const nx=THREE.MathUtils.clamp(this.camera.position.x+(-sin*this.movement.forward+cos*this.movement.strafe)*speed,-3.0,3.0);
       const nz=THREE.MathUtils.clamp(this.camera.position.z+(-cos*this.movement.forward-sin*this.movement.strafe)*speed,centers[this.stage]-2.92,centers[this.stage]+3);
-      // Authored collision radii keep the player out of furniture, not only outside the walls.
-      const obstacles=[
-        [[-2.38,1.14,.78],[3.02,2.34,.38],[3.12,.48,.37],[-2.65,-2.3,.49],[2.14,-1.75,1.14],[-1.32,-2.56,.34]],
-        [[-2.31,-.38,1.09],[-.63,.6,.55],[2.65,-1.33,.68],[2.48,1.92,.53]],
-        [[0,-2.6,1.05],[-2.55,-.93,.63],[-2.65,1.68,.45],[2.62,-.94,.68],[2.45,1.63,.55]]
-      ] as const;
-      const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
+      // Only measured, actually loaded furniture can stop movement; no phantom
+      // circles based on old placements. No collision from wall-hung pictures,
+      // clues, small props or decorative supports.
+      const solidIds=new Set([
+        "hotel-bed-with-headboard-and-bench-original-hotel-furnishing",
+        "universal-modular-sofa-set","wingback-armchair",
+        "filled-bookshelf-small-original-interior-furnishing",
+        "two-door-wardrobe-original-interior-furnishing",
+        "bookshelf-with-bins-original-interior-furnishing"
+      ]);
+      const solids=this.assetModels.filter(m=>m.visible&&m.userData.assetStage===this.stage&&solidIds.has(m.userData.assetId));
+      const bounds=solids.map(mesh=>new THREE.Box3().setFromObject(mesh));
+      const open=(x:number,z:number)=>bounds.every(b=>x<b.min.x-.16||x>b.max.x+.16||z<b.min.z-.16||z>b.max.z+.16);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
       if(open(this.camera.position.x,nz))this.camera.position.z=nz;
     }
