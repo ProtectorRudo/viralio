@@ -110,6 +110,14 @@ test("Mother's Day mobile scene starts a real countdown or explains WebGL2 suppo
   }
   await expect(page.locator(".mom-world canvas")).toHaveCount(1);
   await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+  const introCard=page.getByRole("dialog",{name:/Encontrá la llave que abre la primera puerta/});
+  await expect(introCard).toBeVisible();
+  await expect(introCard.getByText("PRIMERA PISTA")).toBeVisible();
+  await expect(page.locator(".mom-time")).toHaveCount(0);
+  // Reading the initial clue must not consume any of the player's five minutes.
+  await page.waitForTimeout(1200);
+  await expect(page.locator(".mom-time")).toHaveCount(0);
+  await introCard.getByRole("button",{name:/EMPEZAR BÚSQUEDA/}).click();
   await expect(page.locator(".mom-time")).toBeVisible();
   const initial=await page.locator(".mom-time").innerText();
   expect(initial).toMatch(/^0[45]:[0-5][0-9]$/);
