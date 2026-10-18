@@ -363,7 +363,7 @@ export default function MotherEscape(){
     <div className="mom-vignette" aria-hidden="true"/>
     {mode==="playing"&&<>
       <header className="mom-hud">
-        <div><span className="mom-brand">VIRALIO / ESCAPE</span><span className="mom-location">{["01 · PASILLO","02 · SALA FAMILIAR","03 · DORMITORIO"][stage]}</span></div>
+        <div><span className="mom-brand">VIRALIO / ESCAPE</span><span className="mom-location">{["01 · CUARTO FAMILIAR","02 · SALA FAMILIAR","03 · DORMITORIO"][stage]}</span></div>
         <div className={"mom-time"+(seconds<=45?" urgent":"")} aria-live={seconds<=20?"assertive":"off"}>{formatTime(seconds)}</div>
         <button className="mom-sound" onClick={()=>{const enabling=muted;sound.current.setEnabled(enabling);setMuted(!enabling);if(enabling)void sound.current.start();}} aria-label={muted?"Activar sonido":"Silenciar"}>{muted?"SONIDO OFF":"♫ ON"}</button>
       </header>
