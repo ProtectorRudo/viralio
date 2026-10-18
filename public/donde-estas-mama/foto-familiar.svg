@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="Fotografía antigua de una madre abrazando a su hijo en casa">
+<defs>
+ <linearGradient id="film" x2="1" y2="1"><stop stop-color="#e4c9a9"/><stop offset=".48" stop-color="#9e8277"/><stop offset="1" stop-color="#594b58"/></linearGradient>
+ <linearGradient id="window" x1=".05" y1="0" x2="1" y2="1"><stop stop-color="#fff3be"/><stop offset=".5" stop-color="#dda77c"/><stop offset="1" stop-color="#aa8186"/></linearGradient>
+ <radialGradient id="sun" cx="60%" cy="18%" r="80%"><stop stop-color="#fff4d6" stop-opacity=".55"/><stop offset="1" stop-color="#372938" stop-opacity=".29"/></radialGradient>
+ <linearGradient id="blouse" x1="0" y1=".1" x2="1" y2="1"><stop stop-color="#d1a59d"/><stop offset=".64" stop-color="#966775"/><stop offset="1" stop-color="#6b5263"/></linearGradient>
+ <linearGradient id="jeans"><stop stop-color="#82909b"/><stop offset="1" stop-color="#3b5166"/></linearGradient>
+ <radialGradient id="face" cx="35%" cy="26%"><stop stop-color="#efc5ab"/><stop offset=".75" stop-color="#c8907e"/><stop offset="1" stop-color="#9b7168"/></radialGradient>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="3" seed="9" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".15"/></feComponentTransfer></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="12"/></filter>
+ <filter id="edge"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<rect width="1000" height="1000" fill="url(#film)"/>
+<rect x="95" y="60" width="760" height="610" rx="30" fill="#6f666b" stroke="#90777a" stroke-width="28"/>
+<rect x="124" y="86" width="700" height="566" fill="url(#window)"/>
+<path d="M470 86V652M125 340H825" stroke="#927979" stroke-width="28"/>
+<ellipse cx="652" cy="274" rx="145" ry="155" fill="#fff4cd" opacity=".35" filter="url(#soft)"/>
+<path d="M125 90Q220 270 120 560L165 650 290 650Q230 380 258 88Z" fill="#ddd0bf" opacity=".85"/>
+<path d="M826 88Q730 290 833 560L790 655 698 653Q745 430 717 86Z" fill="#d1b9b5" opacity=".75"/>
+<rect y="645" width="1000" height="355" fill="#715c5a"/>
+<path d="M0 730Q220 610 440 690L700 670 1000 737 1000 1000H0Z" fill="#a88d7e" opacity=".4"/>
+<ellipse cx="500" cy="897" rx="405" ry="87" fill="#493b42" opacity=".3" filter="url(#soft)"/>
+<!-- mother: rich hair shape and warm knitted sweater -->
+<path d="M290 398Q230 252 304 197Q340 147 431 183Q519 161 534 294L522 506 335 544Z" fill="#30262d"/>
+<path d="M304 245Q300 207 364 194Q425 171 462 220Q512 298 448 377L369 399Q311 376 304 245Z" fill="url(#face)"/>
+<path d="M299 265Q298 167 382 173Q504 153 506 268Q463 257 436 206Q390 251 330 253L320 360 284 392Z" fill="#31262d"/>
+<path d="M345 338Q392 357 437 334" stroke="#ab746d" stroke-width="9" stroke-linecap="round" fill="none"/>
+<path d="M333 301Q344 293 356 301M406 296Q418 291 433 297" stroke="#4f3937" stroke-width="6" stroke-linecap="round"/>
+<path d="M342 398Q240 423 191 515L112 897Q304 969 513 878L575 496Q512 405 439 388Q397 434 342 398Z" fill="url(#blouse)" stroke="#835763" stroke-width="10"/>
+<path d="M298 517Q353 488 399 507M284 622Q357 597 414 631" stroke="#efd5cf" stroke-opacity=".35" stroke-width="15" fill="none"/>
+<!-- child, slightly in front -->
+<path d="M499 456Q490 360 558 336Q651 318 680 411L667 526 527 548Z" fill="#47342f"/>
+<ellipse cx="590" cy="426" rx="88" ry="107" fill="url(#face)"/>
+<path d="M502 414Q478 346 547 332Q653 287 682 386Q658 355 622 360Q561 403 502 414Z" fill="#4e372c"/>
+<path d="M551 445Q561 436 577 443M612 442Q626 431 641 441" stroke="#4d332f" stroke-width="6" fill="none" stroke-linecap="round"/>
+<path d="M570 483Q602 508 631 480" fill="none" stroke="#945e58" stroke-width="7" stroke-linecap="round"/>
+<path d="M526 537Q461 570 449 680L395 945Q592 1020 782 933L741 684Q722 564 655 532Z" fill="url(#jeans)"/>
+<path d="M498 573Q440 552 405 531Q354 503 330 462" stroke="#bd8b80" stroke-width="45" stroke-linecap="round" fill="none"/>
+<path d="M333 451Q325 433 307 441Q287 448 305 480L328 493" fill="url(#face)"/>
+<path d="M678 578Q728 558 741 520Q753 487 761 467" stroke="#bd8b80" stroke-width="39" stroke-linecap="round" fill="none"/>
+<path d="M737 460Q743 433 762 445L781 465 766 487" fill="url(#face)"/>
+<!-- mother arm around child -->
+<path d="M470 538Q522 560 572 632L632 711" stroke="#a77976" stroke-width="58" stroke-linecap="round" fill="none"/>
+<path d="M625 710Q649 693 660 711L665 735 638 742Z" fill="url(#face)"/>
+<rect width="1000" height="1000" fill="url(#sun)"/>
+<rect width="1000" height="1000" filter="url(#grain)" opacity=".28"/>
+<rect x="18" y="18" width="964" height="964" rx="8" fill="none" stroke="#f8e9d0" stroke-width="18" opacity=".75"/>
+<path d="M58 890Q500 944 942 893" fill="none" stroke="#e6d2b5" stroke-width="5" opacity=".4"/>
+</svg>
