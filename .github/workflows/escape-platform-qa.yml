@@ -7,6 +7,8 @@ on:
       - 'src/app/comercios/**'
       - 'src/app/salas/**'
       - 'src/app/escape-platform/**'
+      - 'src/app/donde-estas-mama/**'
+      - 'tests/mother-escape-rules.test.ts'
       - 'e2e/viralio-escape-home.spec.ts'
       - '.github/workflows/escape-platform-qa.yml'
   push:
@@ -16,6 +18,8 @@ on:
       - 'src/app/comercios/**'
       - 'src/app/salas/**'
       - 'src/app/escape-platform/**'
+      - 'src/app/donde-estas-mama/**'
+      - 'tests/mother-escape-rules.test.ts'
       - 'e2e/viralio-escape-home.spec.ts'
       - '.github/workflows/escape-platform-qa.yml'
 permissions:
@@ -35,9 +39,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint changed escape platform
-        run: npx eslint src/app/page.tsx src/app/comercios src/app/salas src/app/escape-platform e2e/viralio-escape-home.spec.ts --max-warnings=0
+        run: npx eslint src/app/page.tsx src/app/comercios src/app/salas src/app/escape-platform src/app/donde-estas-mama tests/mother-escape-rules.test.ts e2e/viralio-escape-home.spec.ts --max-warnings=0
       - name: Check types
         run: npm run typecheck
+      - name: Test Mother's Day puzzles and countdown
+        run: npx vitest run tests/mother-escape-rules.test.ts
       - name: Build complete shared app
         run: npm run build
   browser:
