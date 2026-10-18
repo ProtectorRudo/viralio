@@ -15,7 +15,7 @@ async function expectNoFreeTrialOrTrailer(page: import("@playwright/test").Page)
   expect(await page.locator("video, iframe[src*='trailer'], a[href='/probar'], a[href='#trailer']").count()).toBe(0);
 }
 
-test("Viralio Escape: four rooms remain accessible as product pages without trailers or free promotion", async ({page}) => {
+test("Viralio Escape: original rooms remain accessible as product pages without trailers or free promotion", async ({page}) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: /La realidad termina/ })).toBeVisible();
   await expect(page.locator(".ve-hero-content").getByRole("link", { name: /Explorar experiencias/ })).toHaveAttribute("href", "#experiencias");
@@ -26,9 +26,9 @@ test("Viralio Escape: four rooms remain accessible as product pages without trai
       .toHaveAttribute("href", "/salas/"+room.slug);
   }
   const grid = page.locator(".ve-card-grid");
-  await expect(grid.locator(".ve-card")).toHaveCount(4);
+  await expect(grid.locator(".ve-card")).toHaveCount(5);
   for (const key of ["Dificultad","Sustos","Sorpresa","Tensión"]) {
-    await expect(grid.locator(".ve-intensity-metric-name", { hasText:key })).toHaveCount(4);
+    await expect(grid.locator(".ve-intensity-metric-name", { hasText:key })).toHaveCount(5);
   }
 });
 test("Viralio Escape: detail pages preserve gameplay descriptions but have no free or direct play links", async ({page}) => {
@@ -49,14 +49,14 @@ test("Viralio Escape: retired /probar no longer offers free games",async({page})
   await expect(page.getByRole("heading",{level:1,name:/La realidad termina/})).toBeVisible();
   await expectNoFreeTrialOrTrailer(page);
 });
-test("Viralio Escape: interactive category filters still work with all four games", async ({page})=>{
+test("Viralio Escape: interactive category filters still work with all five games", async ({page})=>{
   await page.goto("/");
   await page.getByRole("button", { name:"Misterio",exact:true }).click();
   await expect(page.getByRole("heading",{name:/Algo nuevo está por abrirse/})).toBeVisible();
   await page.getByRole("button",{name:/Ver experiencias disponibles/}).click();
-  await expect(page.locator(".ve-card")).toHaveCount(4);
+  await expect(page.locator(".ve-card")).toHaveCount(5);
   await page.getByRole("button",{name:"Emociones",exact:true}).click();
-  await expect(page.locator(".ve-card")).toHaveCount(1);
+  await expect(page.locator(".ve-card")).toHaveCount(2);
 });
 test("Viralio Escape: desktop and 320px mobile show no horizontal overflow", async ({page})=>{
   for (const width of [320,360,390,430,768,1024,1440]) {
@@ -78,4 +78,21 @@ test("Existing QR merchant landing remains intact on /comercios", async ({page})
   await expect(page.getByRole("link",{name:/Moka/})).toHaveAttribute("href","/moka");
   await page.goto("/moka");
   await expect(page).not.toHaveURL(/404/);
+});
+
+
+test("Mother's Day rescue is listed with a playable route and a gift composer",async({page})=>{
+  await page.goto("/");
+  await expect(page.getByRole("link",{name:/Conocer la experiencia ¿DÓNDE ESTÁS, MAMÁ\?/})).toHaveAttribute("href","/salas/donde-estas-mama");
+  await page.goto("/salas/donde-estas-mama");
+  await expect(page.getByRole("link",{name:/Jugar ahora/})).toHaveAttribute("href","/donde-estas-mama");
+  await page.goto("/donde-estas-mama");
+  await expect(page.getByRole("heading",{name:/DÓNDE ESTÁS/})).toBeVisible();
+  await expect(page.getByRole("button",{name:/ENTRAR A LA CASA/})).toBeVisible();
+  await page.goto("/donde-estas-mama/preparar");
+  await expect(page.getByRole("heading",{name:/Prepará su/})).toBeVisible();
+  await page.getByPlaceholder("Ej.: Cecilia").fill("Ana");
+  await page.getByPlaceholder("Ej.: Tus hijos, Lautaro, Allegra...").fill("Santi");
+  const link=page.getByRole("link",{name:/Probar la misión/});
+  await expect(link).toHaveAttribute("href",/mama=Ana.*hijo=Santi/);
 });
