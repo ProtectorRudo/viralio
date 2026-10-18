@@ -143,6 +143,7 @@ export default function MotherEscape(){
   const advance=useCallback((next:MotherStage)=>{
     setInspect(null);setStage(next);world.current?.setStage(next);
     sound.current.unlock();
+    if(next===2)sound.current.knock();
     completed.current=Date.now();
     tell("PUERTA ABIERTA",next===1?"Entraste a la sala. Algo se movió detrás de vos.":"La habitación está vacía... pero escuchás golpes dentro del armario.","warning");
   },[tell]);
@@ -159,7 +160,7 @@ export default function MotherEscape(){
       if(id==="telefono"){setInspect("phone");return;}
       if(id==="caja"){prompt("Dentro de la mochila hay una nota: «Donde dejamos los abrigos, dejé lo que necesitás».");return;}
       if(id==="perchero"){
-        if(!key1){world.current?.collect("key1");setKey1(true);tell("ENCONTRASTE UNA LLAVE","Una pequeña llave de bronce estaba escondida entre los abrigos.","success");sound.current.unlock();completed.current=Date.now();}
+        if(!key1){world.current?.collect("key1");world.current?.triggerFrameDrop();if(!muted)sound.current.knock();setKey1(true);tell("ENCONTRASTE UNA LLAVE","Una pequeña llave de bronce estaba escondida entre los abrigos.","success");sound.current.unlock();completed.current=Date.now();}
         else prompt("Ya recuperaste la llave del perchero.");
         return;
       }
