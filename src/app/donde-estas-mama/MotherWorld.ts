@@ -31,6 +31,10 @@ export class MotherWorld {
   private flickerUntil = 0;
   private celebratory = false;
   private warmLights: THREE.PointLight[] = [];
+  private roomShells: THREE.Group[] = [];
+  private shellTarget: THREE.Group | null = null;
+  private assetModels: THREE.Group[] = [];
+  private activeScene = false;
   private dynamicProps: THREE.Object3D[] = [];
   private sceneSurprise: THREE.Mesh | null = null;
   private fallenFrame: THREE.Mesh | null = null;
@@ -129,7 +133,7 @@ export class MotherWorld {
     m.position.set(x,y,z);
     m.receiveShadow=true;
     m.castShadow=shadow;
-    this.scene.add(m);
+    (this.shellTarget||this.scene).add(m);
     return m;
   }
   private makeWall(room:number,wall:"back"|"front"|"left"|"right"){
@@ -149,6 +153,12 @@ export class MotherWorld {
     const floor=this.mat(0x534033),wallpaper=this.mat(0x6c6560),trim=this.mat(0x2f211b);
     for(let s=0;s<3;s++){
       const z=centers[s];
+      const roomGroup=new THREE.Group();
+      roomGroup.name="habitacion-"+(s+1);
+      roomGroup.visible=s===0;
+      this.roomShells.push(roomGroup);
+      this.scene.add(roomGroup);
+      this.shellTarget=roomGroup;
       this.addBox(7.5,.25,7.6,0,-.16,z,floor);
       this.addBox(7.5,.15,7.6,0,3.55,z,this.mat(0x3f3a38));
       this.makeWall(s,"back");this.makeWall(s,"front");this.makeWall(s,"left");this.makeWall(s,"right");
@@ -162,12 +172,13 @@ export class MotherWorld {
       area.position.set(s===0?-1.7:1.2,2.85,z+.35);
       area.castShadow=s===1;
       if(area.castShadow)area.shadow.mapSize.set(512,512);
-      this.scene.add(area);this.eventLights.push(area);
+      roomGroup.add(area);this.eventLights.push(area);
       const fill=new THREE.PointLight(0x9cb5cf,8,9,2);
-      fill.position.set(-2.9,2.4,z-2.5);this.scene.add(fill);
+      fill.position.set(-2.9,2.4,z-2.5);roomGroup.add(fill);
       this.warmLights.push(fill);
       this.addBox(1.7,.025,2.7,0,.012,z+.8,this.mat(s===2?0x655058:0x58504a));
     }
+    this.shellTarget=null;
     // PBR maps sourced from documented local CC0 material index.
     Promise.all([loadViralioPBR("wood_floor",3,3),loadViralioPBR("plastered_wall",3,2)]).then(([wood,wall])=>{
       if(!this.running){wood.dispose();wall.dispose();return;}
@@ -218,6 +229,9 @@ export class MotherWorld {
       scene.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
       this.scene.add(scene);
       scene.userData.assetId=a.id;
+      scene.userData.assetStage=a.stage;
+      scene.visible=a.stage===this.stage;
+      this.assetModels.push(scene);
       this.dynamicProps.push(scene);
       return scene;
     }catch(e){console.warn("Asset CC0 no disponible",a.id,e);return null;}
@@ -247,6 +261,8 @@ export class MotherWorld {
     this.assetSpecs=assets;
     // Stage-aware streaming: load only the entrance immediately.
     this.loadStageAssets(0);
+    this.createContactShadows();
+    this.createFamilyPhoto();
     this.spot("telefono",0,-2.05,1.1,.8,1.35,"Teléfono");
     this.spot("caja",0,1.9,.8,.65,1.1,"Mochila");
     this.spot("perchero",0,2.35,1.5,-1.45,1.1,"Perchero");
@@ -362,6 +378,45 @@ export class MotherWorld {
     group.visible=true;this.scene.add(group);this.finalDecorations=group;
     // The surprise remains physically in the room and is visible during the reveal.
   }
+  /** Physical inset photograph, not an untextured glyph floating near the frame. */
+  private createFamilyPhoto(){
+    const texture=new THREE.TextureLoader().load("/donde-estas-mama/foto-familiar.svg",undefined,undefined,
+      ()=>this.onNotice("No se pudo cargar la fotografía de la familia"));
+    texture.colorSpace=THREE.SRGBColorSpace;
+    this.ownedTextures.push(texture);
+    const panel=new THREE.Mesh(new THREE.PlaneGeometry(.52,.67),
+      new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide,depthWrite:true,toneMapped:false}));
+    panel.name="foto-familiar-fisica";
+    panel.position.set(-2.35,1.77,centers[1]-3.44);
+    this.roomShells[1].add(panel);
+  }
+  /** Contact darkening grounds each furniture GLB without another shadow-casting light. */
+  private createContactShadows(){
+    const cv=document.createElement("canvas");cv.width=64;cv.height=64;
+    const ctx=cv.getContext("2d");
+    if(!ctx)return;
+    const grad=ctx.createRadialGradient(32,32,2,32,32,32);
+    grad.addColorStop(0,"rgba(19,12,10,.54)");
+    grad.addColorStop(.55,"rgba(24,15,15,.29)");
+    grad.addColorStop(1,"rgba(20,14,12,0)");
+    ctx.fillStyle=grad;ctx.fillRect(0,0,64,64);
+    const texture=new THREE.CanvasTexture(cv);this.ownedTextures.push(texture);
+    const footprints:[number,number,number,number,number][]=[
+      [0,-2.05,.8,1.85,1.4],[0,-2.2,-2.3,1.2,1.1],
+      [0,2.35,-1.45,.95,.95],[1,-2,0,2.8,1.55],
+      [1,2.5,-1.3,1.5,1.2],[1,2,1.5,1.5,1.4],
+      [2,0,-2.6,2.8,1.3],[2,-2.5,1.4,1.15,1.15],
+      [2,2.4,-1.1,1.5,1.3],[2,1.5,1.4,1.45,1.45]
+    ];
+    for(const [stage,x,z,w,h] of footprints){
+      const surface=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+        new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:.8,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}));
+      surface.rotation.x=-Math.PI/2;
+      surface.position.set(x,.015,centers[stage]+z);
+      surface.renderOrder=2;
+      this.roomShells[stage].add(surface);
+    }
+  }
   private addKey(id:string,x:number,y:number,z:number){
     const group=new THREE.Group(),metal=this.mat(0xd4ae66,.85,.27);
     const handle=new THREE.Mesh(new THREE.TorusGeometry(.105,.03,12,24),metal);
@@ -388,6 +443,7 @@ export class MotherWorld {
     const spindle=new THREE.Mesh(new THREE.TorusGeometry(r*.35,.017,8,16),steel);
     group.add(spindle);
     group.position.set(x,y,z);
+    group.visible=this.stage===2;
     this.scene.add(group);this.pickableItems.set(id,group);
   }
   collect(id:string){
@@ -440,11 +496,15 @@ export class MotherWorld {
     const target=this.ray(rect.left+rect.width/2,rect.top+rect.height/2);
     if(target?.userData.spot)this.onInteract(target.userData.spot);
   }
+  setActive(active:boolean){this.activeScene=active;}
   setMotion(forward:number,strafe:number){this.movement.forward=forward;this.movement.strafe=strafe;}
   setStage(stage:MotherStage){
     this.loadStageAssets(stage);
     if(stage<2)this.loadStageAssets((stage+1) as MotherStage);
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
+    this.roomShells.forEach((room,index)=>{room.visible=index===stage;});
+    this.assetModels.forEach(model=>{model.visible=model.userData.assetStage===stage;});
+    this.pickableItems.forEach((group,id)=>{group.visible=(id==="key1"?stage===0:stage===2);});
     if(stage===1){
       this.apparitionUntil=performance.now()+1900;
       this.flickerUntil=performance.now()+470;
@@ -479,6 +539,7 @@ export class MotherWorld {
   }
   win(){
     this.celebratory=true;
+    this.activeScene=true;
     this.revealCelebration();
     if(this.shadowFigure)this.shadowFigure.visible=false;
     if(this.sceneSurprise)this.sceneSurprise.visible=false;
@@ -501,6 +562,7 @@ export class MotherWorld {
     if(!this.running)return;
     this.frame=requestAnimationFrame(this.animate);
     const rawDelta=this.clock.getDelta();
+    if(!this.activeScene)return;
     const dt=Math.min(rawDelta,.045);
     // Adapt pixel density based on sustained observed frame time, never a single spike.
     if(rawDelta>0&&rawDelta<.3){
