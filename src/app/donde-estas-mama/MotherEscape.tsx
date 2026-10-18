@@ -72,6 +72,10 @@ export default function MotherEscape(){
   const clueTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const revealTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const moving=useRef({forward:0,strafe:0});
+  const joystickInput=useRef({forward:0,strafe:0});
+  const keyboardInput=useRef(new Set<string>());
+  const joystickPointer=useRef<number|null>(null);
+  const joystickThumb=useRef<HTMLSpanElement>(null);
   const actionRef=useRef<(id:string)=>void>(()=>{});
   const [mode,setMode]=useState<Mode>("intro");
   const [seconds,setSeconds]=useState(START);
@@ -281,28 +285,73 @@ export default function MotherEscape(){
     }
   },[musicDone,gears,gearOrder,prompt,tell]);
   const retry=()=>window.location.reload();
-  const move=useCallback((dir:"forward"|"back"|"left"|"right",on:boolean)=>{
-    if(dir==="forward"||dir==="back")moving.current.forward=on?(dir==="forward"?1:-1):0;
-    else moving.current.strafe=on?(dir==="right"?1:-1):0;
-    world.current?.setMotion(moving.current.forward,moving.current.strafe);
+  const syncMovement=useCallback(()=>{
+    const down=keyboardInput.current;
+    const keyboardForward=Number(down.has("KeyW")||down.has("ArrowUp"))-Number(down.has("KeyS")||down.has("ArrowDown"));
+    const keyboardStrafe=Number(down.has("KeyD")||down.has("ArrowRight"))-Number(down.has("KeyA")||down.has("ArrowLeft"));
+    const forward=Math.max(-1,Math.min(1,joystickInput.current.forward+keyboardForward));
+    const strafe=Math.max(-1,Math.min(1,joystickInput.current.strafe+keyboardStrafe));
+    moving.current={forward,strafe};
+    world.current?.setMotion(forward,strafe);
   },[]);
-  const buttonProps=(dir:"forward"|"back"|"left"|"right")=>({
-    onPointerDown:(e:ReactPointerEvent<HTMLButtonElement>)=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);move(dir,true);},
-    onPointerUp:()=>move(dir,false),
-    onPointerCancel:()=>move(dir,false),
-    onLostPointerCapture:()=>move(dir,false)
-  });
+  const updateJoystick=useCallback((e:ReactPointerEvent<HTMLDivElement>)=>{
+    if(joystickPointer.current!==e.pointerId)return;
+    const rect=e.currentTarget.getBoundingClientRect();
+    const radius=Math.max(32,Math.min(rect.width,rect.height)*.32);
+    const dx=e.clientX-(rect.left+rect.width/2);
+    const dy=e.clientY-(rect.top+rect.height/2);
+    const length=Math.hypot(dx,dy);
+    const scale=length>radius?radius/length:1;
+    const x=dx*scale,y=dy*scale;
+    if(joystickThumb.current)joystickThumb.current.style.transform="translate("+x+"px,"+y+"px)";
+    joystickInput.current={
+      forward:Math.abs(y)<radius*.12?0:-y/radius,
+      strafe:Math.abs(x)<radius*.12?0:x/radius
+    };
+    syncMovement();
+  },[syncMovement]);
+  const resetJoystick=useCallback(()=>{
+    joystickPointer.current=null;
+    joystickInput.current={forward:0,strafe:0};
+    if(joystickThumb.current)joystickThumb.current.style.transform="translate(0px,0px)";
+    syncMovement();
+  },[syncMovement]);
+  const joystickEvents={
+    onPointerDown:(e:ReactPointerEvent<HTMLDivElement>)=>{
+      if(joystickPointer.current!==null)return;
+      e.preventDefault();
+      joystickPointer.current=e.pointerId;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      updateJoystick(e);
+    },
+    onPointerMove:(e:ReactPointerEvent<HTMLDivElement>)=>updateJoystick(e),
+    onPointerUp:(e:ReactPointerEvent<HTMLDivElement>)=>{
+      if(joystickPointer.current===e.pointerId)resetJoystick();
+    },
+    onPointerCancel:(e:ReactPointerEvent<HTMLDivElement>)=>{
+      if(joystickPointer.current===e.pointerId)resetJoystick();
+    },
+    onLostPointerCapture:(e:ReactPointerEvent<HTMLDivElement>)=>{
+      if(joystickPointer.current===e.pointerId)resetJoystick();
+    }
+  };
   useEffect(()=>{
-    const dirs:Record<string,"forward"|"back"|"left"|"right">={KeyW:"forward",ArrowUp:"forward",KeyS:"back",ArrowDown:"back",KeyA:"left",ArrowLeft:"left",KeyD:"right",ArrowRight:"right"};
+    const movementKeys=new Set(["KeyW","KeyS","KeyA","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"]);
     const down=(e:KeyboardEvent)=>{
       if(mode!=="playing"||inspect)return;
       if(e.code==="KeyE"||e.code==="Space"){e.preventDefault();world.current?.interactFocus();}
-      const dir=dirs[e.code];if(dir){e.preventDefault();move(dir,true);}
+      if(movementKeys.has(e.code)){e.preventDefault();keyboardInput.current.add(e.code);syncMovement();}
     };
-    const up=(e:KeyboardEvent)=>{const dir=dirs[e.code];if(dir)move(dir,false);};
-    window.addEventListener("keydown",down);window.addEventListener("keyup",up);
-    return ()=>{window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);world.current?.setMotion(0,0);};
-  },[mode,inspect,move]);
+    const up=(e:KeyboardEvent)=>{
+      if(movementKeys.has(e.code)){keyboardInput.current.delete(e.code);syncMovement();}
+    };
+    const blur=()=>{keyboardInput.current.clear();joystickInput.current={forward:0,strafe:0};world.current?.setMotion(0,0);};
+    window.addEventListener("keydown",down);window.addEventListener("keyup",up);window.addEventListener("blur",blur);
+    return ()=>{
+      window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);
+      window.removeEventListener("blur",blur);blur();
+    };
+  },[mode,inspect,syncMovement]);
   const objective=stage===0?(key1?"ABRÍ LA PUERTA CON TU LLAVE":"ENCONTRÁ LA LLAVE OCULTA")
     :stage===1?(booksDone?"ENTRÁ AL DORMITORIO":portraitDone?"DESCIFRÁ LOS LIBROS DE COLORES":"RECONSTRUÍ LA FOTOGRAFÍA")
     :musicDone?"BUSCÁ A TU HIJO EN EL ARMARIO":gears.length===3?"REPARÁ LA CAJA MUSICAL":"ENCONTRÁ LOS TRES ENGRANAJES";
@@ -314,26 +363,24 @@ export default function MotherEscape(){
     <div className="mom-vignette" aria-hidden="true"/>
     {mode==="playing"&&<>
       <header className="mom-hud">
-        <div><span className="mom-brand">VIRALIO / ESCAPE</span><span className="mom-location">{["01 · PASILLO","02 · SALA FAMILIAR","03 · DORMITORIO"][stage]}</span></div>
+        <div><span className="mom-brand">VIRALIO / ESCAPE</span><span className="mom-location">{["01 · CUARTO FAMILIAR","02 · SALA FAMILIAR","03 · DORMITORIO"][stage]}</span></div>
         <div className={"mom-time"+(seconds<=45?" urgent":"")} aria-live={seconds<=20?"assertive":"off"}>{formatTime(seconds)}</div>
         <button className="mom-sound" onClick={()=>{const enabling=muted;sound.current.setEnabled(enabling);setMuted(!enabling);if(enabling)void sound.current.start();}} aria-label={muted?"Activar sonido":"Silenciar"}>{muted?"SONIDO OFF":"♫ ON"}</button>
       </header>
       <div className="mom-objective"><span>OBJETIVO ACTUAL</span><strong>{objective}</strong></div>
       {message&&<div className={"mom-notice mom-notice-"+message.tone} role="status"><div><span>● {message.title}</span><button onClick={()=>setMessage(null)} aria-label="Cerrar aviso">×</button></div><p>{message.body}</p></div>}
       {clue&&<div className="mom-toast" role="status">{clue}</div>}
-      <div className="mom-reticle" aria-hidden="true">+</div>
-      {focus&&<button className="mom-focus" onClick={()=>world.current?.interactFocus()}>◈ {focus} — TOCAR</button>}
+      {focus&&<div className="mom-reticle" aria-hidden="true">+</div>}
+      {focus&&<button className="mom-focus" onClick={()=>world.current?.interactFocus()}>{focus} · TOCAR</button>}
       <div className="mom-bottom">
-        <div className="mom-pad" aria-label="Moverse">
-          <button className="up" aria-label="Avanzar" {...buttonProps("forward")}>↑</button>
-          <button className="left" aria-label="Izquierda" {...buttonProps("left")}>←</button>
-          <button className="down" aria-label="Retroceder" {...buttonProps("back")}>↓</button>
-          <button className="right" aria-label="Derecha" {...buttonProps("right")}>→</button>
+        <div className="mom-joystick" role="group" aria-label="Joystick circular para moverte" {...joystickEvents}>
+          <span className="mom-joystick-guide" aria-hidden="true"/>
+          <span className="mom-joystick-thumb" ref={joystickThumb} aria-hidden="true"/>
         </div>
         <div className="mom-tools">
           <div className="mom-inventory">{key1&&stage===0?"🔑 Llave":""}{stage===1&&portraitDone?"◈ Fotografía completa":""}{stage===1&&booksDone?"🔑 Segunda llave":""}{stage===2?"⚙ "+gears.length+"/3 piezas":""}</div>
           <button className="mom-hint-button" onClick={()=>{setShowHint(false);prompt(contextualHint);}}>¿PISTA? {showHint?"✦":""}</button>
-          <div className="mom-control-label">ARRASTRÁ PARA MIRAR · TOCÁ LOS OBJETOS BRILLANTES</div>
+          <div className="mom-control-label">DESLIZÁ PARA MIRAR · TOCÁ PARA EXPLORAR</div>
         </div>
       </div>
     </>}
@@ -345,7 +392,7 @@ export default function MotherEscape(){
         <span className="mom-briefing-label">TU PRIMER OBJETIVO</span>
         <h2 id="mom-briefing-title">Encontrá la llave que abre la primera puerta.</h2>
         <div className="mom-briefing-clue"><span>PRIMERA PISTA</span><p>Tu hijo dejó algo entre sus cosas. Examiná los objetos de la habitación: uno de ellos puede decirte por dónde empezar.</p></div>
-        <p className="mom-briefing-instructions">Arrastrá para mirar · Tocá los objetos brillantes · Usá las flechas para moverte.</p>
+        <p className="mom-briefing-instructions">Deslizá para mirar · Tocá los objetos para investigarlos · Usá el joystick circular para moverte.</p>
         <button className="mom-primary mom-briefing-start" onClick={begin}>EMPEZAR BÚSQUEDA <span aria-hidden="true">↗</span></button>
         <div className="mom-briefing-clock">◷ TENÉS 05:00 · EL TIEMPO EMPIEZA AL TOCAR EL BOTÓN</div>
       </div>
