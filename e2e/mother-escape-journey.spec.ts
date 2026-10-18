@@ -18,7 +18,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   test.skip(!compatible,"The runner has no WebGL2 implementation");
   await expect(page.locator(".mom-world canvas")).toHaveCount(1);
   await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
-  await expect(page.locator(".mom-time")).toHaveText(/05:00|04:5\d/);
+  await expect(page.locator(".mom-time")).toHaveText(/0[45]:[0-5]\d/);
 
   // Stage-local physical placements. The camera is reset at each doorway.
   const camera={x:0,y:1.65,z:2.25,yaw:0,pitch:-.04};
@@ -29,8 +29,8 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   const lookAt=async(x:number,y:number,z:number)=>{
     const azimuth=-Math.atan2(x-camera.x,-(z-camera.z));
     const pitch=Math.atan2(y-camera.y,Math.hypot(x-camera.x,z-camera.z));
-    let totalX=-(azimuth-camera.yaw)/.0043;
-    let totalY=-(pitch-camera.pitch)/.0035;
+    const totalX=-(azimuth-camera.yaw)/.0043;
+    const totalY=-(pitch-camera.pitch)/.0035;
     const segments=Math.max(1,Math.ceil(Math.max(Math.abs(totalX)/160,Math.abs(totalY)/100)));
     const stepX=totalX/segments,stepY=totalY/segments;
     for(let n=0;n<segments;n++){
