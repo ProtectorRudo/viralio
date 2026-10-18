@@ -128,11 +128,37 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
     }
   }
   await expect(page.getByRole("heading",{name:/Los fragmentos del recuerdo/})).toBeVisible();
-  for(const [a,b] of [[1,2],[3,4]] as const){
-    await page.getByRole("button",{name:"Seleccionar pieza "+a}).click();
-    await page.getByRole("button",{name:"Seleccionar pieza "+b}).click();
+  const photoButton=(index:number)=>page.getByRole("button",{name:"Seleccionar pieza "+index});
+  const photoCenter=async(index:number)=>{
+    const bounds=await photoButton(index).boundingBox();
+    expect(bounds,"Photo tile must be visible and draggable").not.toBeNull();
+    return {x:bounds!.x+bounds!.width/2,y:bounds!.y+bounds!.height/2};
+  };
+  // Simulated mouse drag: first pair swaps immediately on pointer release.
+  const source1=await photoCenter(1),target2=await photoCenter(2);
+  await page.mouse.move(source1.x,source1.y);
+  await page.mouse.down();
+  await page.mouse.move(target2.x,target2.y,{steps:12});
+  await page.mouse.up();
+  await expect(photoButton(1)).toHaveAttribute("data-piece-id","0");
+  await expect(photoButton(2)).toHaveAttribute("data-piece-id","1");
+  await expect(page.getByRole("heading",{name:/Los fragmentos del recuerdo/})).toBeVisible();
+
+  // Real touch Pointer Events (not HTML5 desktop-only drag-and-drop).
+  const source3=await photoCenter(3),target4=await photoCenter(4);
+  const touch=await page.context().newCDPSession(page);
+  await touch.send("Emulation.setTouchEmulationEnabled",{enabled:true,maxTouchPoints:1});
+  await touch.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[source3]});
+  for(let frame=1;frame<=10;frame++){
+    const factor=frame/10;
+    await touch.send("Input.dispatchTouchEvent",{
+      type:"touchMove",
+      touchPoints:[{x:source3.x+(target4.x-source3.x)*factor,y:source3.y+(target4.y-source3.y)*factor}]
+    });
   }
+  await touch.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
   await expect(page.getByText(/FOTOGRAFÍA RECONSTRUIDA/)).toBeVisible();
+  await touch.detach();
 
   await interact(2.65,1.5,-9.33,/Biblioteca/);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-four-book-riddle.png"});
