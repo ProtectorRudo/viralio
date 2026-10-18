@@ -3,22 +3,13 @@
 import {useCallback,useEffect,useRef,useState} from "react";
 import type {PointerEvent as ReactPointerEvent} from "react";
 import {MotherWorld,type MotherStage} from "./MotherWorld";
+import {BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,photoComplete,enterOrderedItem,timeRemaining,dueMotherBeats,type MotherGear} from "./MotherRules";
 import "./mother-escape.css";
 
 type Mode="intro"|"playing"|"revealing"|"failed"|"won"|"unsupported";
 type Inspect=null|"phone"|"portrait"|"books"|"music";
-type Gear="grande"|"mediano"|"pequeño";
+type Gear=MotherGear;
 const START=300;
-const BOOKS=["rojo","dorado","azul"] as const;
-const GEARS:Gear[]=["grande","mediano","pequeño"];
-const STORY=[
-  {at:12,title:"PASOS",text:"Algo cayó en el pasillo. ¿Hay alguien más en casa?",tone:"warning"},
-  {at:50,title:"NÚMERO DESCONOCIDO",text:"NO SIGAS BUSCANDO.",tone:"danger"},
-  {at:105,title:"NUEVO MENSAJE",text:"ÉL TE ESTÁ ESPERANDO.",tone:"danger"},
-  {at:170,title:"INTERRUPCIÓN ELÉCTRICA",text:"Las luces parpadean. Algo parece haber cambiado de lugar.",tone:"warning"},
-  {at:240,title:"VOZ DESDE LA CASA",text:"«Mamá, apurate... Estoy acá.»",tone:"danger"},
-  {at:280,title:"ÚLTIMA ADVERTENCIA",text:"LA PUERTA NO VA A ESPERAR.",tone:"danger"},
-] as const;
 function formatTime(s:number){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 function clean(value:string,max:number){return value.trim().replace(/[<>]/g,"").slice(0,max);}
 function vibrate(pattern:number|number[]){if(typeof navigator!=="undefined"&&navigator.vibrate)navigator.vibrate(pattern);}
@@ -194,7 +185,7 @@ export default function MotherEscape(){
   useEffect(()=>{
     if(mode!=="playing")return;
     const timer=window.setInterval(()=>{
-      const s=Math.max(0,Math.ceil((endAt.current-performance.now())/1000));
+      const s=timeRemaining(endAt.current,performance.now());
       setSeconds(s);
       const elapsed=START-s;
       world.current?.setSuspense(elapsed);
@@ -202,12 +193,10 @@ export default function MotherEscape(){
         lastSecond.current=s;
         if(s<=45&&!muted)sound.current.tick();
       }
-      for(const ev of STORY){
-        if(elapsed>=ev.at&&!eventsSeen.current.has(ev.at)){
-          eventsSeen.current.add(ev.at);
-          tell(ev.title,ev.text,ev.tone);
-          if(!muted){if(ev.at===12||ev.at===170||ev.at===240)sound.current.knock();else sound.current.message();}
-        }
+      for(const ev of dueMotherBeats(elapsed,eventsSeen.current)){
+        eventsSeen.current.add(ev.at);
+        tell(ev.title,ev.text,ev.tone);
+        if(!muted){if(ev.at===12||ev.at===170||ev.at===240)sound.current.knock();else sound.current.message();}
       }
       if(s===0){setMode("failed");setInspect(null);sound.current.stop();tell("TIEMPO AGOTADO","La última puerta sigue cerrada. Podés volver a intentar el rescate.","danger");}
       if(Date.now()-completed.current>23000)setShowHint(true);
@@ -216,9 +205,9 @@ export default function MotherEscape(){
   },[mode,tell,muted]);
   const turnPiece=(index:number)=>{
     if(portraitDone)return;
-    const next=portrait.map((v,i)=>i===index?(v+1)%4:v);
+    const next=rotatePhotoPiece(portrait,index);
     setPortrait(next);sound.current.click();
-    if(next.every(v=>v===0)){
+    if(photoComplete(next)){
       setPortraitDone(true);setInspect(null);completed.current=Date.now();
       tell("FOTOGRAFÍA RECONSTRUIDA","Detrás aparece una pista: ROJO → DORADO → AZUL. La biblioteca está junto a vos.","success");
       sound.current.unlock();
@@ -226,10 +215,10 @@ export default function MotherEscape(){
   };
   const chooseBook=(color:string)=>{
     if(booksDone)return;
-    const n=[...bookOrder,color];
-    if(BOOKS[n.length-1]!==color){setBookOrder([]);prompt("El mecanismo retrocedió. Observá nuevamente el orden de colores.");sound.current.error();return;}
-    setBookOrder(n);sound.current.click();
-    if(n.length===3){
+    const result=enterOrderedItem(bookOrder,color,BOOK_SEQUENCE);
+    if(result.error){setBookOrder([]);prompt("El mecanismo retrocedió. Observá nuevamente el orden de colores.");sound.current.error();return;}
+    setBookOrder(result.next);sound.current.click();
+    if(result.complete){
       setBooksDone(true);setInspect(null);completed.current=Date.now();
       tell("COMPARTIMIENTO ABIERTO","Una segunda llave acaba de caer detrás de los libros. ¡La puerta del dormitorio está abierta!","success");
       sound.current.unlock();
@@ -237,9 +226,10 @@ export default function MotherEscape(){
   };
   const placeGear=(g:Gear)=>{
     if(musicDone||!gears.includes(g))return;
-    if(GEARS[gearOrder.length]!==g){setGearOrder([]);prompt("Los engranajes se trabaron. Colocalos del más grande al más pequeño.");sound.current.error();return;}
-    const next=[...gearOrder,g];setGearOrder(next);sound.current.click();
-    if(next.length===3){
+    const result=enterOrderedItem(gearOrder,g,GEAR_SEQUENCE);
+    if(result.error){setGearOrder([]);prompt("Los engranajes se trabaron. Colocalos del más grande al más pequeño.");sound.current.error();return;}
+    setGearOrder(result.next);sound.current.click();
+    if(result.complete){
       setMusicDone(true);setInspect(null);completed.current=Date.now();
       tell("LA CAJA MUSICAL FUNCIONA","Una melodía empieza a sonar. Oíste cómo se soltó el cierre del armario.","success");
       sound.current.unlock();
