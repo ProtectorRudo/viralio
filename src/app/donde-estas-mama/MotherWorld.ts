@@ -34,6 +34,12 @@ export class MotherWorld {
   private roomShells: THREE.Group[] = [];
   private shellTarget: THREE.Group | null = null;
   private assetModels: THREE.Group[] = [];
+  private childModel: THREE.Group | null = null;
+  private childMixer: THREE.AnimationMixer | null = null;
+  private childArm: THREE.Bone | null = null;
+  private childHead: THREE.Bone | null = null;
+  private childArmRest = 0;
+  private childHeadRest = 0;
   private activeScene = false;
   private dynamicProps: THREE.Object3D[] = [];
   private sceneSurprise: THREE.Mesh | null = null;
@@ -202,13 +208,13 @@ export class MotherWorld {
   }
   private async asset(a:AssetSpec):Promise<THREE.Group|null>{
     try{
-      const {scene}=await loadViralio3DAsset(a.id);
+      const {scene,animations}=await loadViralio3DAsset(a.id);
       if(!this.running)return null;
       const box=new THREE.Box3().setFromObject(scene);
       const size=new THREE.Vector3(),center=new THREE.Vector3();
       box.getSize(size);box.getCenter(center);
       if(size.x<.001||size.y<.001||size.z<.001)return null;
-      const k=Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
+      const k=a.id==="mother-child-eli"?Math.min(1.19/size.y,a.width/Math.max(size.x,size.z)*1.35):Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
       scene.scale.setScalar(k);
       let lift=a.id==="crime-photo-frame"?1.45:0;
       if(a.supportId){
@@ -230,7 +236,26 @@ export class MotherWorld {
       this.scene.add(scene);
       scene.userData.assetId=a.id;
       scene.userData.assetStage=a.stage;
-      scene.visible=a.stage===this.stage;
+      scene.userData.revealOnly=a.id==="mother-child-eli";
+      scene.visible=a.stage===this.stage&&(!scene.userData.revealOnly||this.celebratory);
+      if(a.id==="mother-child-eli"){
+        this.childModel=scene;
+        const armNames:THREE.Bone[]=[],headNames:THREE.Bone[]=[];
+        scene.traverse(node=>{
+          if(!(node instanceof THREE.Bone))return;
+          if(/(upper.?arm|shoulder|bicep).*(right|[._ -]r$)|^(r.?upper.?arm|right.?arm)/i.test(node.name))armNames.push(node);
+          if(/(^head$|head[._ -]|neck[._ -]?1)/i.test(node.name))headNames.push(node);
+        });
+        this.childArm=armNames[0]||null;
+        this.childHead=headNames[0]||null;
+        this.childArmRest=this.childArm?.rotation.z||0;
+        this.childHeadRest=this.childHead?.rotation.y||0;
+        if(animations.length){
+          this.childMixer=new THREE.AnimationMixer(scene);
+          const idle=animations.find(clip=>/idle|stand|wave|hello/i.test(clip.name))||animations[0];
+          this.childMixer.clipAction(idle).play();
+        }
+      }
       this.assetModels.push(scene);
       this.dynamicProps.push(scene);
       return scene;
@@ -256,7 +281,9 @@ export class MotherWorld {
       {id:"universal-ph-wooden-crate",stage:2,x:-2.5,z:-1.4,width:1.2},
       {id:"slit-bedside-cabinet",stage:2,x:-2.5,z:1.4,width:.85},
       {id:"bookshelf-with-bins-original-interior-furnishing",stage:2,x:2.4,z:-1.1,width:1.15},
-      {id:"universal-ph-round-wood-table",stage:2,x:1.5,z:1.4,width:1.1}
+      {id:"universal-ph-round-wood-table",stage:2,x:1.5,z:1.4,width:1.1},
+      // The child is hidden behind the locked wardrobe until the successful reveal.
+      {id:"mother-child-eli",stage:2,x:-.73,z:-2.66,width:.51,rotate:Math.PI}
     ];
     this.assetSpecs=assets;
     // Stage-aware streaming: load only the entrance immediately.
@@ -503,7 +530,7 @@ export class MotherWorld {
     if(stage<2)this.loadStageAssets((stage+1) as MotherStage);
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
     this.roomShells.forEach((room,index)=>{room.visible=index===stage;});
-    this.assetModels.forEach(model=>{model.visible=model.userData.assetStage===stage;});
+    this.assetModels.forEach(model=>{model.visible=model.userData.assetStage===stage&&(!model.userData.revealOnly||this.celebratory);});
     this.pickableItems.forEach((group,id)=>{group.visible=(id==="key1"?stage===0:stage===2);});
     if(stage===1){
       this.apparitionUntil=performance.now()+1900;
@@ -541,6 +568,7 @@ export class MotherWorld {
     this.celebratory=true;
     this.activeScene=true;
     this.revealCelebration();
+    if(this.childModel)this.childModel.visible=true;
     if(this.shadowFigure)this.shadowFigure.visible=false;
     if(this.sceneSurprise)this.sceneSurprise.visible=false;
     this.eventLights.forEach(light=>{light.color.setHex(0xffc58c);light.intensity=49;});
@@ -591,6 +619,18 @@ export class MotherWorld {
       const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
       if(open(this.camera.position.x,nz))this.camera.position.z=nz;
+    }
+    if(this.celebratory&&this.childModel){
+      this.childMixer?.update(dt);
+      const tick=Math.max(0,this.clock.elapsedTime-this.revealStartedAt);
+      if(this.childArm&&!this.childMixer){
+        // Gentle skeletal greeting from the authentic child rig where supported.
+        const wave=THREE.MathUtils.smoothstep(tick,.55,1.3);
+        this.childArm.rotation.z=this.childArmRest+wave*(.28+.11*Math.sin(tick*6));
+      }
+      if(this.childHead&&!this.childMixer)this.childHead.rotation.y=this.childHeadRest+.085*Math.sin(tick*1.7);
+      // Restrained breathing and a small smile-like lift; no rescaled adult actor.
+      this.childModel.position.y=Math.sin(tick*2.6)*.009;
     }
     if(this.celebratory){
       const wardrobe=this.dynamicProps.find(o=>o.userData.assetId==="two-door-wardrobe-original-interior-furnishing");
