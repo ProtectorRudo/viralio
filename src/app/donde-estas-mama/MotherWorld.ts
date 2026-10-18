@@ -3,7 +3,7 @@ import { loadViralio3DAsset } from "@/lib/viralio-3d";
 import { loadViralioPBR } from "@/lib/viralio-rooms";
 
 export type MotherStage = 0 | 1 | 2;
-type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage; radius: number; enabled: boolean };
+type Spot = { id: string; mesh: THREE.Object3D; stage: MotherStage; radius: number; enabled: boolean };
 type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string};
 const centers = [0,-8,-16] as const;
 
@@ -157,15 +157,20 @@ export class MotherWorld {
       this.addBox(.18,3.5,7.7,wall==="left"?-3.75:3.75,1.74,z,wallMat);
     }else{
       const wz=z+(wall==="back"?3.8:-3.8);
-      if(wall==="front"){
+      if(wall==="front"&&room<2){
         this.addBox(2.55,3.5,.18,-2.45,1.74,wz,wallMat);
         this.addBox(2.55,3.5,.18,2.45,1.74,wz,wallMat);
         this.addBox(2,1,.18,0,3,wz,wallMat);
+        // Finish the doorway with a flush frame, rather than black gaps.
+        for(const x of [-.98,.98])this.addBox(.38,2.6,.18,x,1.3,wz,wallMat);
+        const jamb=this.mat(0x44352e);
+        for(const x of [-.80,.80])this.addBox(.055,2.57,.24,x,1.32,wz+.06,jamb);
+        this.addBox(2.06,.12,.24,0,2.62,wz+.025,jamb);
       }else this.addBox(7.5,3.5,.18,0,1.74,wz,wallMat);
     }
   }
   private buildRooms(){
-    const floor=this.mat(0x534033),wallpaper=this.mat(0x6c6560),trim=this.mat(0x2f211b);
+    const floor=this.mat(0x534033),trim=this.mat(0x2f211b);
     for(let s=0;s<3;s++){
       const z=centers[s];
       const roomGroup=new THREE.Group();
@@ -177,10 +182,10 @@ export class MotherWorld {
       this.addBox(7.5,.25,7.6,0,-.16,z,floor);
       this.addBox(7.5,.15,7.6,0,3.55,z,this.mat(0x3f3a38));
       this.makeWall(s,"back");this.makeWall(s,"front");this.makeWall(s,"left");this.makeWall(s,"right");
-      // Wall battens and skirting add architectural depth without fake 2D backdrops.
+      // Horizontal skirting and dado rail instead of floating vertical strips.
       for(const x of [-3.62,3.62]){
         this.addBox(.14,.18,7.3,x,.14,z,trim);
-        for(let i=0;i<4;i++)this.addBox(.08,2.5,.09,x+(.0),1.58,z-3+i*2,wallpaper);
+        this.addBox(.085,.072,7.23,x,1.07,z,trim);
       }
       for(const zz of [z-3.66,z+3.66])this.addBox(7.2,.17,.1,0,.14,zz,trim);
       const area=new THREE.PointLight(s===2?0xffc6a7:0xffe0b7,s===0?33:27,10,1.65);
@@ -191,7 +196,7 @@ export class MotherWorld {
       const fill=new THREE.PointLight(0x9cb5cf,8,9,2);
       fill.position.set(-2.9,2.4,z-2.5);roomGroup.add(fill);
       this.warmLights.push(fill);
-      this.addBox(1.7,.025,2.7,0,.012,z+.8,this.mat(s===2?0x655058:0x58504a));
+      // No flat rectangular block pretending to be a rug across the walking aisle.
     }
     this.shellTarget=null;
     // PBR maps sourced from documented local CC0 material index.
@@ -541,7 +546,7 @@ export class MotherWorld {
   private setSpotEnabled(id:string,enabled:boolean){
     for(const spot of this.spots)if(spot.stage===0&&spot.id===id){
       spot.enabled=enabled;
-      spot.ring.visible=enabled;
+      // Hit testing remains available without drawn hotspots.
     }
   }
   private addKey(id:string,x:number,y:number,z:number){
@@ -582,11 +587,8 @@ export class MotherWorld {
     hit.position.set(x,y,centers[stage]+z);
     hit.userData.spot=id;hit.userData.label=label;
     this.scene.add(hit);
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.115,.009,8,24),new THREE.MeshBasicMaterial({color:0xffd5a0,transparent:true,opacity:.53,depthTest:false}));
-    ring.position.set(x,y+.31,centers[stage]+z);
-    ring.renderOrder=5;
-    this.scene.add(ring);
-    this.spots.push({id,mesh:hit,ring,stage,radius,enabled:true});
+    // Players discover objects by aiming and touching; no glowing rings.
+    this.spots.push({id,mesh:hit,stage,radius,enabled:true});
   }
   private setRotation(){
     this.camera.rotation.order="YXZ";
@@ -773,10 +775,7 @@ export class MotherWorld {
         this.shadowFigure.position.x=2.1+(1.8-(this.apparitionUntil-performance.now())/1000)*-.62;
       }
     }
-    for(const s of this.spots){
-      s.ring.visible=s.enabled&&s.stage===this.stage&&!this.celebratory;
-      if(s.ring.visible){s.ring.quaternion.copy(this.camera.quaternion);s.ring.scale.setScalar(1+.14*Math.sin(t*3));}
-    }
+    // Object hit targets stay invisible, including on touchscreens.
     const dark=performance.now()<this.flickerUntil;
     this.eventLights.forEach((light,i)=>{if(!this.celebratory)light.intensity=dark?(Math.random()>.65?1:0):i===0?33:27;});
     this.renderer.render(this.scene,this.camera);
