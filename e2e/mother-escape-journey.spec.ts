@@ -52,6 +52,18 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.locator('.mom-joystick')).toBeVisible();
   await expect(page.locator('.mom-pad')).toHaveCount(0);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-1.png"});
+  // Optional hints escalate slowly; early clicks must not disclose the hiding place.
+  const hintButton=page.getByRole("button",{name:/¿PISTA?/});
+  await hintButton.click();
+  await expect(page.locator(".mom-hint-panel")).toContainText("PISTA 1 DE 3");
+  await expect(page.locator(".mom-hint-panel")).not.toContainText(/almohada|cama|perchero/i);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-subtle-hint.png"});
+  await page.getByRole("button",{name:"Cerrar pista"}).click();
+  await hintButton.click();
+  await expect(page.locator(".mom-hint-panel")).toContainText("PISTA 2 DE 3");
+  await expect(page.locator(".mom-hint-panel")).not.toContainText(/almohada|cama|perchero/i);
+  await page.getByRole("button",{name:"Cerrar pista"}).click();
+
 
   // Stage-local physical placements. The camera is reset at each doorway.
   const camera={x:0,y:1.65,z:2.25,yaw:0,pitch:-.04};
@@ -87,7 +99,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
 
   await interact(3.12,.7,.48,/Mochila/);
-  await expect(page.getByText(/donde apoyo la cabeza/)).toBeVisible();
+  await expect(page.getByText(/donde empiezan mis sueños/)).toBeVisible();
   await interact(2.05,.88,-1.08,/Cama desordenada/);
   const bed=page.getByRole("dialog",{name:"Examinar objeto"});
   await expect(bed.getByRole("heading",{name:/Una cama sin hacer/})).toBeVisible();
