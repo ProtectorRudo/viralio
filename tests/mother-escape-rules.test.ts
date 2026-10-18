@@ -1,10 +1,30 @@
 import {describe,expect,it} from "vitest";
+import {nextMotherHint,MOTHER_HINTS,type MotherHintStep} from "../src/app/donde-estas-mama/MotherHints";
 import {
   BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,swapPhotoTiles,photoComplete,
   enterOrderedItem,timeRemaining,dueMotherBeats
 } from "../src/app/donde-estas-mama/MotherRules";
 
 describe("Día de la Madre — acertijos deterministas",()=>{
+  it("ofrece pistas progresivas y no revela la solución en los dos primeros niveles",()=>{
+    const phases:MotherHintStep[]=["find-key","take-key","door1","photo","books","door2","gears","music","wardrobe"];
+    for(const step of phases){
+      expect(MOTHER_HINTS[step]).toHaveLength(3);
+      const a=nextMotherHint(step,0);
+      const b=nextMotherHint(step,a.nextShown);
+      const end=nextMotherHint(step,b.nextShown);
+      expect([a.tier,b.tier,end.tier]).toEqual([1,2,3]);
+      expect(a.text).not.toEqual(b.text);
+      expect(b.text).not.toEqual(end.text);
+      expect(nextMotherHint(step,end.nextShown).tier).toBe(3);
+    }
+    expect(nextMotherHint("find-key",0).text).not.toMatch(/almohada|cama|perchero/i);
+    expect(nextMotherHint("find-key",1).text).not.toMatch(/almohada|cama|perchero/i);
+    expect(nextMotherHint("music",0).text).not.toMatch(/grande|mediano|pequeño/i);
+    expect(nextMotherHint("music",1).text).not.toMatch(/grande|mediano|pequeño/i);
+    expect(nextMotherHint("music",2).text).toMatch(/grande/);
+  });
+
   it("solo resuelve la foto al combinar posiciones correctas Y orientaciones",()=>{
     let pieces=[1,3,2,1],order=[1,0,3,2];
     for(let i=0;i<pieces.length;i++)while(pieces[i]!==0)pieces=rotatePhotoPiece(pieces,i);
