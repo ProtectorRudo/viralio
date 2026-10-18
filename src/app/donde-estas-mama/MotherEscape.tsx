@@ -8,7 +8,7 @@ import {BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,photoComplete,enterOrderedI
 import "./mother-escape.css";
 
 type Mode="intro"|"briefing"|"playing"|"revealing"|"failed"|"won"|"unsupported";
-type Inspect=null|"phone"|"portrait"|"books"|"music";
+type Inspect=null|"phone"|"bed"|"portrait"|"books"|"music";
 type Gear=MotherGear;
 const START=300;
 function formatTime(s:number){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
@@ -81,6 +81,8 @@ export default function MotherEscape(){
   const [message,setMessage]=useState<Notice|null>(null);
   const [clue,setClue]=useState("");
   const [key1,setKey1]=useState(false);
+  const [pillowLifted,setPillowLifted]=useState(false);
+  const [blanketSearched,setBlanketSearched]=useState(false);
   const [portrait,setPortrait]=useState([1,3,2,1]);
   const [portraitDone,setPortraitDone]=useState(false);
   const [bookOrder,setBookOrder]=useState<string[]>([]);
@@ -153,10 +155,25 @@ export default function MotherEscape(){
     sound.current.click();
     if(stage===0){
       if(id==="telefono"){setInspect("phone");return;}
-      if(id==="caja"){prompt("Dentro de la mochila hay una nota: «Donde dejamos los abrigos, dejé lo que necesitás».");return;}
-      if(id==="perchero"){
-        if(!key1){world.current?.collect("key1");world.current?.triggerFrameDrop();if(!muted)sound.current.knock();setKey1(true);tell("ENCONTRASTE UNA LLAVE","Una pequeña llave de bronce estaba escondida entre los abrigos.","success");sound.current.unlock();completed.current=Date.now();}
-        else prompt("Ya recuperaste la llave del perchero.");
+      if(id==="caja"){prompt("En la mochila hay una nota doblada: «Lo dejé cerca de donde apoyo la cabeza cada noche».");return;}
+      if(id==="perchero"){prompt("Solo hay algunos abrigos. Acá no parece haber nada útil.");return;}
+      if(id==="cama"){setInspect("bed");return;}
+      if(id==="almohada"){
+        if(!pillowLifted){
+          world.current?.liftPillow();setPillowLifted(true);
+          tell("ALGO DEBAJO DE LA ALMOHADA","Al apartar la almohada ves un brillo pequeño. Acercate y tocá el objeto.","warning");
+          sound.current.unlock();completed.current=Date.now();
+        }
+        return;
+      }
+      if(id==="llave"){
+        if(!pillowLifted){prompt("Primero necesitás buscar en la cama.");return;}
+        if(!key1){
+          world.current?.collect("key1");setKey1(true);world.current?.triggerFrameDrop();
+          if(!muted)sound.current.knock();
+          tell("ENCONTRASTE UNA LLAVE","Guardaste la llave de bronce. Ahora podés abrir la puerta del fondo.","success");
+          sound.current.unlock();completed.current=Date.now();
+        }
         return;
       }
       if(id==="puerta"){if(key1)advance(1);else prompt("La puerta está cerrada. Necesitás encontrar una llave.");return;}
@@ -177,7 +194,7 @@ export default function MotherEscape(){
       if(id==="cajamusical"){if(gears.length<3)prompt("Faltan "+(3-gears.length)+" engranajes. Revisá la caja de juguetes, la mesa de luz y el estante.");else setInspect("music");return;}
       if(id==="armario"){if(musicDone)winning();else {prompt("El armario sigue bloqueado. La caja musical parece controlar su cierre.");sound.current.knock();}return;}
     }
-  },[mode,inspect,stage,key1,portraitDone,booksDone,gears,musicDone,tell,prompt,advance,winning,muted]);
+  },[mode,inspect,stage,key1,pillowLifted,portraitDone,booksDone,gears,musicDone,tell,prompt,advance,winning,muted]);
   useEffect(()=>{actionRef.current=act;},[act]);
   const openBriefing=()=>{
     // Show the very first clue before starting the five-minute countdown.
@@ -186,6 +203,14 @@ export default function MotherEscape(){
     world.current?.setStage(0);
     setMessage(null);
     setMode("briefing");
+  };
+  const raisePillow=()=>{
+    if(pillowLifted)return;
+    if(world.current?.liftPillow()){
+      setPillowLifted(true);setInspect(null);completed.current=Date.now();
+      sound.current.unlock();
+      tell("ALGO DEBAJO DE LA ALMOHADA","Una pequeña llave brilla sobre el colchón. Mirala y tocala para guardarla.","warning");
+    }
   };
   const begin=()=>{
     setMode("playing");setSeconds(START);
@@ -281,7 +306,7 @@ export default function MotherEscape(){
   const objective=stage===0?(key1?"ABRÍ LA PUERTA CON TU LLAVE":"ENCONTRÁ LA LLAVE OCULTA")
     :stage===1?(booksDone?"ENTRÁ AL DORMITORIO":portraitDone?"DESCIFRÁ LOS LIBROS DE COLORES":"RECONSTRUÍ LA FOTOGRAFÍA")
     :musicDone?"BUSCÁ A TU HIJO EN EL ARMARIO":gears.length===3?"REPARÁ LA CAJA MUSICAL":"ENCONTRÁ LOS TRES ENGRANAJES";
-  const contextualHint=stage===0?(key1?"Ahora podés abrir la puerta del fondo de este pasillo.":"El teléfono y la mochila contienen pistas. Observá dónde se cuelgan los abrigos.")
+  const contextualHint=stage===0?(key1?"Ahora podés abrir la puerta del fondo de este pasillo.":pillowLifted?"Hay algo pequeño debajo de la almohada. Acercate y tocá el objeto.":"En la mochila hay una nota. Pensá en el lugar donde alguien apoya la cabeza al dormir.")
     :stage===1?(booksDone?"Escuchaste una cerradura abrirse: probá la puerta del fondo.":portraitDone?"La foto tenía tres colores en un orden. Probá presionar los libros de esa secuencia.":"Los cuatro fragmentos de la foto están girados. Tocá cada uno hasta ver la escena completa.")
     :musicDone?"La melodía liberó el armario. Ahora podés abrirlo.":gears.length===3?"Acomodá los tres engranajes en el mecanismo musical.":"Revisá la caja de juguetes, la mesa de luz y los estantes.";
   return <main className={"mom-game mom-"+mode}>
@@ -352,6 +377,7 @@ export default function MotherEscape(){
     {inspect&&mode==="playing"&&<div className="mom-inspect-cover" role="presentation">
       <section className="mom-inspect" role="dialog" aria-modal="true" aria-label="Examinar objeto">
         <button className="mom-inspect-close" onClick={()=>setInspect(null)} aria-label="Volver a la habitación">✕</button>
+        {inspect==="bed"&&<><span className="mom-pretitle">OBJETO 01 / CAMA FAMILIAR</span><h2>Una cama sin hacer</h2><p>La manta está arrugada y una almohada quedó corrida hacia la cabecera. ¿Por dónde empezás a buscar?</p><div className="mom-bed-actions"><button onClick={()=>{setBlanketSearched(true);sound.current.click();}}>REVISAR LA MANTA</button><button onClick={raisePillow} disabled={pillowLifted}>LEVANTAR LA ALMOHADA</button></div>{blanketSearched&&<p className="mom-bed-feedback" role="status">Sacudís la manta. No encontrás ninguna llave... pero la almohada parece esconder algo.</p>}<small>Podés volver a tocar la cama para examinarla.</small></>}
         {inspect==="phone"&&<><span className="mom-pretitle">MENSAJE · 01 RECIBIDO</span><h2>Un mensaje de tu hijo</h2><div className="mom-phone"><span>📱 DESCONOCIDO</span><p>«Mamá, no puedo salir. No sé cuánto tiempo tengo. Por favor, vení a buscarme...»</p><small>Entregado hace unos segundos</small></div><p>Antes de cortarse, se escucharon tres golpes desde el fondo de la casa.</p></>}
         {inspect==="portrait"&&<><span className="mom-pretitle">OBJETO 02 / MARCO FAMILIAR</span><h2>Una fotografía rota</h2><p>Girás las cuatro partes para reconstruir el recuerdo. Tocá cada fragmento para rotarlo.</p><div className="mom-photo-grid">{portrait.map((rotation,i)=><button key={i} onClick={()=>turnPiece(i)} aria-label={"Girar pieza "+(i+1)} className="mom-photo-tile"><span style={{transform:"rotate("+(rotation*90)+"deg)"}} className={"mom-photo-art mom-piece-"+i} aria-hidden="true"/></button>)}</div><small>Las cuatro piezas deben quedar derechas. En el reverso hay una secuencia de colores.</small></>}
         {inspect==="books"&&<><span className="mom-pretitle">OBJETO 03 / LIBROS DE COLORES</span><h2>La combinación secreta</h2><p>La fotografía tenía escrito: <strong>ROJO → DORADO → AZUL</strong>. Presioná los libros en ese orden.</p><div className="mom-books">{["azul","rojo","dorado"].map(c=><button key={c} className={"mom-book "+c} onClick={()=>chooseBook(c)} aria-label={"Presionar libro "+c}>{c.toUpperCase()}</button>)}</div><small>Secuencia ingresada: {bookOrder.length}/3</small></>}

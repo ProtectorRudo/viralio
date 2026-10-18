@@ -171,3 +171,11 @@
   .mom-briefing-instructions{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.mom-briefing-card,.mom-briefing-alert{animation:none}}
+
+/* Tactile examination of the first room's actual 3D bed. */
+.mom-bed-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:23px 0 16px}
+.mom-bed-actions button{min-height:59px;white-space:normal;border:1px solid #b69977;padding:14px 12px;background:linear-gradient(160deg,#493b33,#292322);font:700 11px/1.5 Arial,sans-serif;letter-spacing:.08em;color:#f8e7d1;touch-action:manipulation}
+.mom-bed-actions button:last-child{background:linear-gradient(160deg,#e7cda7,#bc9476);color:#231817;border-color:#f2dcbd}
+.mom-bed-actions button:disabled{opacity:.5;cursor:default}
+.mom-bed-feedback{border-left:3px solid #d3af7d;background:#e4bd9120;padding:10px 13px}
+@media(max-width:420px){.mom-bed-actions{grid-template-columns:1fr;gap:9px}.mom-bed-actions button{min-height:48px}}
