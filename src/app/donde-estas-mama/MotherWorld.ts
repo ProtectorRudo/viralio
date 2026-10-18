@@ -39,6 +39,8 @@ export class MotherWorld {
   private revealStartedAt = 0;
   private wardrobeOriginX = 0;
   private readonly ownedTextures: THREE.Texture[] = [];
+  private assetSpecs: AssetSpec[] = [];
+  private requestedStages = new Set<MotherStage>();
   onInteract: (id:string)=>void = ()=>{};
   onFocus: (label:string)=>void = ()=>{};
   onNotice: (message:string)=>void = ()=>{};
@@ -170,6 +172,13 @@ export class MotherWorld {
       });
     }).catch(()=>this.onNotice("Se utilizaron materiales de respaldo para la casa."));
   }
+  private loadStageAssets(stage:MotherStage){
+    if(this.requestedStages.has(stage))return;
+    this.requestedStages.add(stage);
+    for(const spec of this.assetSpecs){
+      if(spec.stage===stage)void this.asset(spec);
+    }
+  }
   private async asset(a:AssetSpec){
     try{
       const {scene}=await loadViralio3DAsset(a.id);
@@ -214,7 +223,9 @@ export class MotherWorld {
       {id:"bookshelf-with-bins-original-interior-furnishing",stage:2,x:2.4,z:-1.1,width:1.15},
       {id:"universal-ph-round-wood-table",stage:2,x:1.5,z:1.4,width:1.1}
     ];
-    for(const a of assets)void this.asset(a);
+    this.assetSpecs=assets;
+    // Stage-aware streaming: load only the entrance immediately.
+    this.loadStageAssets(0);
     this.spot("telefono",0,-2.05,1.1,.8,1.35,"Teléfono");
     this.spot("caja",0,1.9,.8,.65,1.1,"Mochila");
     this.spot("perchero",0,2.35,1.5,-1.45,1.1,"Perchero");
@@ -397,6 +408,8 @@ export class MotherWorld {
   }
   setMotion(forward:number,strafe:number){this.movement.forward=forward;this.movement.strafe=strafe;}
   setStage(stage:MotherStage){
+    this.loadStageAssets(stage);
+    if(stage<2)this.loadStageAssets((stage+1) as MotherStage);
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
     if(this.sceneSurprise?.visible)this.sceneSurprise.position.z=centers[stage]-3.59;
     this.yaw=0;this.pitch=-.04;this.setRotation();this.onFocus("");
