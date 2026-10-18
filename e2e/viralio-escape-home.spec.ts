@@ -96,3 +96,27 @@ test("Mother's Day rescue is listed with a playable route and a gift composer",a
   const link=page.getByRole("link",{name:/Probar la misión/});
   await expect(link).toHaveAttribute("href",/mama=Ana.*hijo=Santi/);
 });
+
+
+test("Mother's Day mobile scene starts a real countdown or explains WebGL2 support",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const uncaught:string[]=[];
+  page.on("pageerror",e=>uncaught.push(e.message));
+  await page.goto("/donde-estas-mama");
+  const webgl2=await page.evaluate(()=>Boolean(document.createElement("canvas").getContext("webgl2")));
+  if(!webgl2){
+    await expect(page.getByText(/Necesitamos/)).toBeVisible();
+    return;
+  }
+  await expect(page.locator(".mom-world canvas")).toHaveCount(1);
+  await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+  await expect(page.locator(".mom-time")).toBeVisible();
+  const initial=await page.locator(".mom-time").innerText();
+  expect(initial).toMatch(/^0[45]:[0-5][0-9]$/);
+  await expect(page.getByText("OBJETIVO ACTUAL")).toBeVisible();
+  await expect(page.getByRole("button",{name:"Avanzar"})).toBeVisible();
+  await page.screenshot({path:"visual-qa-evidence/viralio-escape-mother-mobile.png"});
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+  expect(uncaught).toEqual([]);
+});
