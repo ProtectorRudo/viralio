@@ -48,6 +48,8 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
     return {viewport:resolution,canvasPixels:pixels,framesPerSecondInHeadlessChromium:fps,note:"CI software renderer, not measured on physical phone"};
   });
   writeFileSync("visual-qa-evidence/mother-browser-performance.json",JSON.stringify(renderStats,null,2),"utf8");
+  await expect(page.locator('.mom-joystick')).toBeVisible();
+  await expect(page.locator('.mom-pad')).toHaveCount(0);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-1.png"});
 
   // Stage-local physical placements. The camera is reset at each doorway.
@@ -79,13 +81,13 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   };
 
   // The old perchero is now a decoy, not an instant win.
-  await interact(2.7,1.6,2.25,/Perchero/);
+  await interact(3.02,1.5,2.34,/Perchero/);
   await expect(page.getByText(/Solo hay algunos abrigos/)).toBeVisible();
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
 
-  await interact(1.9,.8,.65,/Mochila/);
+  await interact(3.12,.7,.48,/Mochila/);
   await expect(page.getByText(/donde apoyo la cabeza/)).toBeVisible();
-  await interact(1.74,.89,-1.06,/Cama desordenada/);
+  await interact(2.05,.88,-1.08,/Cama desordenada/);
   const bed=page.getByRole("dialog",{name:"Examinar objeto"});
   await expect(bed.getByRole("heading",{name:/Una cama sin hacer/})).toBeVisible();
   await bed.getByRole("button",{name:/REVISAR LA MANTA/}).click();
@@ -94,7 +96,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(bed).toHaveCount(0);
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-hidden-key-revealed.png"});
-  await interact(2.06,.6,-2.42,/Llave pequeña/);
+  await interact(2.14,.6,-2.42,/Llave pequeña/);
   await expect(page.getByText(/ENCONTRASTE UNA LLAVE/)).toBeVisible();
   await expect(page.locator(".mom-inventory")).toContainText("Llave");
   await interact(0,1.5,-3.67,/Puerta de la sala/);
@@ -110,7 +112,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   }
   await expect(page.getByText(/FOTOGRAFÍA RECONSTRUIDA/)).toBeVisible();
 
-  await interact(2.4,1.5,-9.3,/Biblioteca/);
+  await interact(2.65,1.5,-9.33,/Biblioteca/);
   for(const color of ["rojo","dorado","azul"]){
     await page.getByRole("button",{name:"Presionar libro "+color}).click();
   }
@@ -121,12 +123,12 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   reset(2);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-3.png"});
 
-  await interact(-2.5,1,-17.4,/Caja de juguetes/);
-  await interact(-2.5,1,-14.6,/Mesa de luz/);
-  await interact(2.4,1.45,-17.1,/Estante/);
+  await interact(-2.55,.96,-16.93,/Caja de juguetes/);
+  await interact(-2.65,.98,-14.32,/Mesa de luz/);
+  await interact(2.62,1.45,-16.94,/Estante/);
   await expect(page.locator(".mom-inventory")).toContainText("3/3");
 
-  await interact(1.5,1.05,-14.65,/Caja musical/);
+  await interact(2.45,1.05,-14.37,/Caja musical/);
   for(const gear of ["grande","mediano","pequeño"]){
     await page.getByRole("button",{name:"⚙ "+gear}).click();
   }
