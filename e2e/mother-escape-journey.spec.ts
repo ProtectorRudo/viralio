@@ -13,8 +13,12 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await page.setViewportSize({width:390,height:844});
   const failures:string[]=[];
   const assetErrors:string[]=[];
+  const loadedChildResponses:number[]=[];
   page.on("pageerror",err=>failures.push(err.message));
-  page.on("response",res=>{if(res.url().includes("/viralio-3d/")&&res.status()>=400)assetErrors.push(res.status()+" "+res.url());});
+  page.on("response",res=>{
+    if(res.url().includes("/viralio-3d/")&&res.status()>=400)assetErrors.push(res.status()+" "+res.url());
+    if(res.url().includes("/viralio-3d/models/mother-child-eli.glb"))loadedChildResponses.push(res.status());
+  });
   await page.goto("/donde-estas-mama");
   const compatible=await page.evaluate(()=>Boolean(document.createElement("canvas").getContext("webgl2")));
   expect(compatible,"Chromium must render WebGL2; a skipped 3D test is not a pass").toBe(true);
@@ -104,10 +108,13 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.getByText(/LA CAJA MUSICAL FUNCIONA/)).toBeVisible();
   await interact(0,1.5,-18.69,/Armario cerrado/);
   await expect(page.locator(".mom-reveal")).toBeVisible();
+  // Render after the wardrobe has finished moving: screenshot now includes the child.
+  await page.waitForTimeout(2300);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-reveal.png"});
   await expect(page.getByRole("heading",{name:/Feliz día/})).toBeVisible({timeout:10000});
   await expect(page.getByText(/UNA CARTA PARA VOS/)).toBeVisible();
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-ending.png"});
   expect(failures).toEqual([]);
   expect(assetErrors).toEqual([]);
+  expect(loadedChildResponses,"The published child GLB must really download in the playable scene").toContain(200);
 });
