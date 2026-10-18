@@ -65,7 +65,7 @@ class MotherSound {
 }
 type Notice={title:string;body:string;tone:"warning"|"danger"|"success"};
 const HINTS=[
- "Explorá el teléfono y la caja escolar. La llave está cerca de donde se cuelgan los abrigos.",
+ "Explorá el teléfono y la mochila. La llave está cerca de donde se cuelgan los abrigos.",
  "Tocá la fotografía. Girá sus cuatro partes hasta recomponerla y después observá los colores.",
  "Revisá tres muebles para recuperar los engranajes; la caja musical debe volver a funcionar."
 ];
@@ -147,9 +147,9 @@ export default function MotherEscape(){
     sound.current.click();
     if(stage===0){
       if(id==="telefono"){setInspect("phone");return;}
-      if(id==="caja"){prompt("Dentro hay una nota: «Donde dejamos los abrigos, dejé lo que necesitás».");return;}
+      if(id==="caja"){prompt("Dentro de la mochila hay una nota: «Donde dejamos los abrigos, dejé lo que necesitás».");return;}
       if(id==="perchero"){
-        if(!key1){setKey1(true);tell("ENCONTRASTE UNA LLAVE","Una pequeña llave de bronce estaba escondida entre los abrigos.","success");sound.current.unlock();completed.current=Date.now();}
+        if(!key1){world.current?.collect("key1");setKey1(true);tell("ENCONTRASTE UNA LLAVE","Una pequeña llave de bronce estaba escondida entre los abrigos.","success");sound.current.unlock();completed.current=Date.now();}
         else prompt("Ya recuperaste la llave del perchero.");
         return;
       }
@@ -164,7 +164,7 @@ export default function MotherEscape(){
       const places:Record<string,Gear>={juguetes:"grande",cajon:"mediano",estante:"pequeño"};
       if(places[id]){
         const g=places[id];
-        if(!gears.includes(g)){setGears(p=>[...p,g]);completed.current=Date.now();sound.current.unlock();tell("PIEZA ENCONTRADA","Recuperaste un engranaje "+g+".","success");}
+        if(!gears.includes(g)){world.current?.collect(id);setGears(p=>[...p,g]);completed.current=Date.now();sound.current.unlock();tell("PIEZA ENCONTRADA","Recuperaste un engranaje "+g+".","success");}
         else prompt("Ya revisaste este lugar.");
         return;
       }
