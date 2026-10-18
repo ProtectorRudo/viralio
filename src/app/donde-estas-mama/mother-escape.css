@@ -129,3 +129,10 @@
 .mom-creator-test{font-size:12px;letter-spacing:.08em;color:#eecaa0;text-decoration:underline;text-underline-offset:5px}
 .mom-creator-status{min-height:20px;font-size:13px;color:#cde3be}
 @media(max-width:680px){.mom-creator{padding:35px 18px 60px}.mom-creator h1{font-size:46px}.mom-creator-actions .mom-primary{width:100%;justify-content:space-between}.mom-creator-actions .mom-outline{flex:1}}
+
+
+/* Cinematic beat: the 3D celebration remains visible as the armario opens. */
+.mom-reveal{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(60px,9vh,100px) 16px max(70px,9vh);background:radial-gradient(ellipse at 50% 55%,transparent 38%,#1a0b1460 94%);pointer-events:none;text-align:center;}
+.mom-reveal-line{font:700 clamp(10px,2.5vw,15px)/1.5 Arial,sans-serif;letter-spacing:.3em;color:#ffedd1;text-shadow:0 2px 15px #000;animation:mom-in .75s both;}
+.mom-reveal-message{font:italic clamp(27px,6.7vw,59px)/1.35 Georgia,serif;color:#fff7e7;text-shadow:0 3px 20px #27130e,0 0 23px #492b20;animation:mom-in 1s .9s both;}
+.mom-reveal-message strong{display:inline-block;font-size:1.3em;color:#ffcab2;font-weight:400;margin-top:12px;}
