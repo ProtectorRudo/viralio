@@ -1,5 +1,5 @@
-import {mkdirSync} from "node:fs";
-import {test,expect,type Page} from "@playwright/test";
+import {mkdirSync,writeFileSync} from "node:fs";
+import {test,expect} from "@playwright/test";
 
 mkdirSync("visual-qa-evidence",{recursive:true});
 
@@ -12,13 +12,31 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   test.setTimeout(120_000);
   await page.setViewportSize({width:390,height:844});
   const failures:string[]=[];
+  const assetErrors:string[]=[];
   page.on("pageerror",err=>failures.push(err.message));
+  page.on("response",res=>{if(res.url().includes("/viralio-3d/")&&res.status()>=400)assetErrors.push(res.status()+" "+res.url());});
   await page.goto("/donde-estas-mama");
   const compatible=await page.evaluate(()=>Boolean(document.createElement("canvas").getContext("webgl2")));
   test.skip(!compatible,"The runner has no WebGL2 implementation");
   await expect(page.locator(".mom-world canvas")).toHaveCount(1);
   await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
   await expect(page.locator(".mom-time")).toHaveText(/0[45]:[0-5]\d/);
+  const renderStats=await page.evaluate(async()=>{
+    const canvas=document.querySelector<HTMLCanvasElement>(".mom-world canvas");
+    const pixels={width:canvas?.width||0,height:canvas?.height||0};
+    const resolution={width:canvas?.clientWidth||0,height:canvas?.clientHeight||0};
+    const fps=await new Promise<number>(resolve=>{
+      let frames=0;const start=performance.now();
+      const tick=(now:number)=>{
+        if(now-start>=2000){resolve(Math.round(frames*1000/(now-start)));return;}
+        frames++;requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    return {viewport:resolution,canvasPixels:pixels,framesPerSecondInHeadlessChromium:fps,note:"CI software renderer, not measured on physical phone"};
+  });
+  writeFileSync("visual-qa-evidence/mother-browser-performance.json",JSON.stringify(renderStats,null,2),"utf8");
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-1.png"});
 
   // Stage-local physical placements. The camera is reset at each doorway.
   const camera={x:0,y:1.65,z:2.25,yaw:0,pitch:-.04};
@@ -91,4 +109,5 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.getByText(/UNA CARTA PARA VOS/)).toBeVisible();
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-ending.png"});
   expect(failures).toEqual([]);
+  expect(assetErrors).toEqual([]);
 });
