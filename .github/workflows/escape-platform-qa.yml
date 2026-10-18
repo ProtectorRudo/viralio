@@ -9,6 +9,7 @@ on:
       - 'src/app/escape-platform/**'
       - 'src/app/donde-estas-mama/**'
       - 'tests/mother-escape-rules.test.ts'
+      - 'e2e/mother-escape-journey.spec.ts'
       - 'e2e/viralio-escape-home.spec.ts'
       - '.github/workflows/escape-platform-qa.yml'
   push:
@@ -20,6 +21,7 @@ on:
       - 'src/app/escape-platform/**'
       - 'src/app/donde-estas-mama/**'
       - 'tests/mother-escape-rules.test.ts'
+      - 'e2e/mother-escape-journey.spec.ts'
       - 'e2e/viralio-escape-home.spec.ts'
       - '.github/workflows/escape-platform-qa.yml'
 permissions:
@@ -39,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint changed escape platform
-        run: npx eslint src/app/page.tsx src/app/comercios src/app/salas src/app/escape-platform src/app/donde-estas-mama tests/mother-escape-rules.test.ts e2e/viralio-escape-home.spec.ts --max-warnings=0
+        run: npx eslint src/app/page.tsx src/app/comercios src/app/salas src/app/escape-platform src/app/donde-estas-mama tests/mother-escape-rules.test.ts e2e/viralio-escape-home.spec.ts e2e/mother-escape-journey.spec.ts --max-warnings=0
       - name: Check types
         run: npm run typecheck
       - name: Test Mother's Day puzzles and countdown
@@ -86,11 +88,13 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Escape platform browser and responsive QA
-        run: npx playwright test e2e/viralio-escape-home.spec.ts
+        run: npx playwright test e2e/viralio-escape-home.spec.ts e2e/mother-escape-journey.spec.ts
       - name: Preserve homepage screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: viralio-escape-home-visual
-          path: visual-qa-evidence/viralio-escape-*.png
+          path: |
+            visual-qa-evidence/viralio-escape-*.png
+            visual-qa-evidence/mother-*.png
           if-no-files-found: warn
