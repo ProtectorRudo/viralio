@@ -1,6 +1,7 @@
 "use client";
 
 import {useCallback,useEffect,useRef,useState} from "react";
+import Link from "next/link";
 import type {PointerEvent as ReactPointerEvent} from "react";
 import {MotherWorld,type MotherStage} from "./MotherWorld";
 import {BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,photoComplete,enterOrderedItem,timeRemaining,dueMotherBeats,type MotherGear} from "./MotherRules";
@@ -108,9 +109,7 @@ export default function MotherEscape(){
     // URL personalization is intentionally applied only after hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if(mama)setRecipient(clean(mama,46));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if(hijo)setSender(clean(hijo,46));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if(msg)setDedication(clean(msg,420));
   },[]);
   useEffect(()=>{
@@ -121,19 +120,19 @@ export default function MotherEscape(){
     }
     let game:MotherWorld;
     try{game=new MotherWorld(host.current);}catch(error){console.error("WebGL2 no disponible",error);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMode("unsupported");return;}
     world.current=game;
     game.setActive(false);
     game.onFocus=setFocus;
     game.onInteract=(id)=>actionRef.current(id);
     game.onNotice=(msg)=>console.warn(msg);
+    const activeSound=sound.current;
     return ()=>{
       game.dispose();
       world.current=null;
       if(clueTimer.current)clearTimeout(clueTimer.current);
       if(revealTimer.current)clearTimeout(revealTimer.current);
-      sound.current.dispose();
+      activeSound.dispose();
     };
   },[]);
   const advance=useCallback((next:MotherStage)=>{
@@ -178,8 +177,8 @@ export default function MotherEscape(){
       if(id==="cajamusical"){if(gears.length<3)prompt("Faltan "+(3-gears.length)+" engranajes. Revisá la caja de juguetes, la mesa de luz y el estante.");else setInspect("music");return;}
       if(id==="armario"){if(musicDone)winning();else {prompt("El armario sigue bloqueado. La caja musical parece controlar su cierre.");sound.current.knock();}return;}
     }
-  },[mode,inspect,stage,key1,portraitDone,booksDone,gears,musicDone,tell,prompt,advance,winning]);
-  actionRef.current=act;
+  },[mode,inspect,stage,key1,portraitDone,booksDone,gears,musicDone,tell,prompt,advance,winning,muted]);
+  useEffect(()=>{actionRef.current=act;},[act]);
   const begin=()=>{
     setMode("playing");setSeconds(START);
     setStage(0);world.current?.setActive(true);world.current?.setStage(0);setInspect(null);
@@ -216,7 +215,7 @@ export default function MotherEscape(){
     },180);
     return ()=>clearInterval(timer);
   },[mode,tell,muted]);
-  const turnPiece=(index:number)=>{
+  const turnPiece=useCallback((index:number)=>{
     if(portraitDone)return;
     const next=rotatePhotoPiece(portrait,index);
     setPortrait(next);sound.current.click();
@@ -225,8 +224,8 @@ export default function MotherEscape(){
       tell("FOTOGRAFÍA RECONSTRUIDA","Detrás aparece una pista: ROJO → DORADO → AZUL. La biblioteca está junto a vos.","success");
       sound.current.unlock();
     }
-  };
-  const chooseBook=(color:string)=>{
+  },[portrait,portraitDone,tell]);
+  const chooseBook=useCallback((color:string)=>{
     if(booksDone)return;
     const result=enterOrderedItem(bookOrder,color,BOOK_SEQUENCE);
     if(result.error){setBookOrder([]);prompt("El mecanismo retrocedió. Observá nuevamente el orden de colores.");sound.current.error();return;}
@@ -236,8 +235,8 @@ export default function MotherEscape(){
       tell("COMPARTIMIENTO ABIERTO","Una segunda llave acaba de caer detrás de los libros. ¡La puerta del dormitorio está abierta!","success");
       sound.current.unlock();
     }
-  };
-  const placeGear=(g:Gear)=>{
+  },[booksDone,bookOrder,prompt,tell]);
+  const placeGear=useCallback((g:Gear)=>{
     if(musicDone||!gears.includes(g))return;
     const result=enterOrderedItem(gearOrder,g,GEAR_SEQUENCE);
     if(result.error){setGearOrder([]);prompt("Los engranajes se trabaron. Colocalos del más grande al más pequeño.");sound.current.error();return;}
@@ -247,7 +246,7 @@ export default function MotherEscape(){
       tell("LA CAJA MUSICAL FUNCIONA","Una melodía empieza a sonar. Oíste cómo se soltó el cierre del armario.","success");
       sound.current.unlock();
     }
-  };
+  },[musicDone,gears,gearOrder,prompt,tell]);
   const retry=()=>window.location.reload();
   const move=useCallback((dir:"forward"|"back"|"left"|"right",on:boolean)=>{
     if(dir==="forward"||dir==="back")moving.current.forward=on?(dir==="forward"?1:-1):0;
@@ -315,7 +314,7 @@ export default function MotherEscape(){
       <button className="mom-primary" onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
       <small>Usá auriculares · Tocá para explorar · Deslizá para mirar · Recomendado a partir de 10 años</small>
     </section>}
-    {mode==="unsupported"&&<section className="mom-screen mom-failure"><span className="mom-pretitle">DISPOSITIVO NO COMPATIBLE</span><h1>Necesitamos<br/><em>WebGL2.</em></h1><p>Este navegador no permite mostrar la casa en 3D. Probá con Chrome, Safari o Firefox actualizado en un dispositivo compatible.</p><a className="mom-primary" href="/">VOLVER A VIRALIO ↗</a></section>}
+    {mode==="unsupported"&&<section className="mom-screen mom-failure"><span className="mom-pretitle">DISPOSITIVO NO COMPATIBLE</span><h1>Necesitamos<br/><em>WebGL2.</em></h1><p>Este navegador no permite mostrar la casa en 3D. Probá con Chrome, Safari o Firefox actualizado en un dispositivo compatible.</p><Link className="mom-primary" href="/">VOLVER A VIRALIO ↗</Link></section>}
     {mode==="failed"&&<section className="mom-screen mom-failure">
       <span className="mom-pretitle">00:00 / LA CASA QUEDÓ EN SILENCIO</span><h1>Se acabó<br/><em>el tiempo.</em></h1>
       <p>La puerta no se abrió. Los golpes cesaron. A veces hay que volver a intentar aquello que más importa.</p>
