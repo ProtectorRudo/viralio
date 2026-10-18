@@ -66,3 +66,14 @@
 - Se retiraron falsas molduras verticales y tapetes de cubo fino, se añadió un marco de madera a las puertas, se corrigió la mesa de luz que tapaba una puerta y se cerró el vano sin puerta de la última habitación.
 - Evidencia de QA: `e2e/mother-escape-journey.spec.ts` pasa las tres salas tras sus nuevas ubicaciones; `e2e/viralio-escape-home.spec.ts` verifica joystick y retorno de la palanca al centro.
 - Pendiente no certificable en CI: FPS y ergonomía en dispositivos Android y iOS físicos de gama media.
+
+
+## Auditoría de errores Android — 18/10/2026, segunda pasada
+
+- **Imagen/puzle:** cuatro fragmentos se encuentran intercambiados y rotados. Hay que seleccionar dos trozos para intercambiar su posición, luego girarlos para reconstruir la fotografía real de `public/donde-estas-mama/foto-familiar.svg`. No se valida una fotografía simplemente por enderezar sus cuatro giros: `photoComplete(rotations,positions)` exige ambas condiciones.
+- **Biblioteca:** cuatro tomos en secuencia semántica (verde, rojo, dorado, azul); la solución NO se imprime en el cartel. La pista real es una adivinanza sobre hojas, corazón, sol y cielo. Ayuda contextual opcional sigue disponible para quienes se atasquen.
+- **Movimiento:** se retiraron obstáculos de radio escritos a mano y desconectados de los modelos. Ahora solo se bloquean muebles presentes y cargados, según sus dimensiones `THREE.Box3` reales. Se conserva deslizamiento por ejes para evitar que el jugador quede atrapado contra las esquinas.
+- **Aparición:** se conservan los materiales/texturas PBR del GLB riggeado y `AnimationMixer`; se retiró el material gris uniforme y se añadió una luz breve lateral. No sustituir el personaje por geometría simple.
+- **Escenografía:** el cuadro adicional se monta en pared, sin tocar el suelo, y los tres engranajes quedan horizontales y a la altura superior del mueble GLB tras terminar la carga; mesa con caja musical físicamente visible, madera, herrajes y cilindro, que se abre en la resolución. Se retiraron las motas esféricas brillantes confundidas con círculos interactivos.
+- **HUD:** puntero fino permanente en centro de cámara; cambia de luminosidad solo cuando el objeto seleccionado está efectivamente bajo la mira. No vuelve a introducir círculos grandes sobre los muebles.
+- **Evidencia:** unit tests de rotación/intercambio y cuatro libros; Playwright de tres habitaciones con capturas extra del puzle fotográfico, libros y caja musical. CI usa SwiftShader WebGL2; la FPS real en Android/iPhone queda pendiente de medición manual física. La sesión automatizada no sustituye una auditoría visual de todos los ángulos por un jugador.
