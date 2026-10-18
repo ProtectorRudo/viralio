@@ -122,7 +122,19 @@ test("Mother's Day mobile scene starts a real countdown or explains WebGL2 suppo
   const initial=await page.locator(".mom-time").innerText();
   expect(initial).toMatch(/^0[45]:[0-5][0-9]$/);
   await expect(page.getByText("OBJETIVO ACTUAL")).toBeVisible();
-  await expect(page.getByRole("button",{name:"Avanzar"})).toBeVisible();
+  const stick=page.getByRole("group",{name:"Joystick circular para moverte"});
+  await expect(stick).toBeVisible();
+  await expect(page.locator(".mom-pad")).toHaveCount(0);
+  const rect=await stick.boundingBox();
+  expect(rect).not.toBeNull();
+  if(rect){
+    await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);
+    await page.mouse.down();
+    await page.mouse.move(rect.x+rect.width/2+25,rect.y+rect.height/2-24);
+    await expect(stick.locator(".mom-joystick-thumb")).not.toHaveCSS("transform","matrix(1, 0, 0, 1, 0, 0)");
+    await page.mouse.up();
+    await expect(stick.locator(".mom-joystick-thumb")).toHaveCSS("transform","matrix(1, 0, 0, 1, 0, 0)");
+  }
   await page.screenshot({path:"visual-qa-evidence/viralio-escape-mother-mobile.png"});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
