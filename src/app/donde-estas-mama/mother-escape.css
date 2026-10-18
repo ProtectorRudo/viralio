@@ -143,3 +143,31 @@
 .mom-photo-art.mom-piece-1{background-position:100% 0!important;}
 .mom-photo-art.mom-piece-2{background-position:0 100%!important;}
 .mom-photo-art.mom-piece-3{background-position:100% 100%!important;}
+
+
+/* First-contact briefing. The house stays visible behind it; the rescue timer is not started yet. */
+.mom-briefing-backdrop{position:absolute;inset:0;z-index:12;display:grid;place-items:center;padding:max(18px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;background:radial-gradient(ellipse at 50% 36%,rgba(57,35,33,.45),rgba(7,7,13,.86) 82%);backdrop-filter:blur(5px)}
+.mom-briefing-card{position:relative;width:min(550px,100%);max-height:calc(100dvh - 36px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:clamp(23px,5vw,42px);border:1px solid #b89675;box-shadow:0 27px 100px #000b,0 0 0 5px #1b151b;background:linear-gradient(155deg,#272029,#16151b 57%,#1a1920);animation:mom-in .35s both}
+.mom-briefing-card:before{content:"";position:absolute;inset:7px;border:1px solid #dcb58b24;pointer-events:none}
+.mom-briefing-kicker{display:flex;align-items:center;gap:9px;color:#eed6b6;font:700 10px/1.5 Arial,sans-serif;letter-spacing:.16em}
+.mom-briefing-alert{color:#da555d;animation:mom-pulse 1s infinite alternate}
+.mom-briefing-step{margin-left:auto;color:#ad998d;font-variant-numeric:tabular-nums;letter-spacing:.14em}
+.mom-briefing-voice{font:italic clamp(18px,4.5vw,23px)/1.55 Georgia,serif;color:#f5e8db;margin:27px 0 25px;max-width:455px}
+.mom-briefing-rule{width:100%;height:1px;background:linear-gradient(90deg,#ceab80,transparent);margin:0 0 25px}
+.mom-briefing-label,.mom-briefing-clue>span{color:#dfbc8d;font:800 10px/1.45 Arial,sans-serif;letter-spacing:.17em}
+.mom-briefing-card h2{font:400 clamp(29px,7vw,44px)/1.12 Georgia,serif;letter-spacing:-.025em;color:#fff5e8;margin:10px 0 25px;text-wrap:balance}
+.mom-briefing-clue{border-left:3px solid #cfa97b;background:#f0cda50b;padding:17px 20px}
+.mom-briefing-clue p{font:15px/1.65 Georgia,serif;color:#f1e4d7;margin:8px 0 0}
+.mom-briefing-instructions{color:#c3b6ae;font:11px/1.7 Arial,sans-serif;letter-spacing:.015em;margin:19px 0 21px}
+.mom-briefing-start{width:100%;justify-content:space-between;min-height:56px}
+.mom-briefing-clock{margin-top:17px;font:700 10px/1.5 Arial,sans-serif;letter-spacing:.095em;text-align:center;color:#e2bfa0}
+@media(max-width:680px){
+  .mom-briefing-card{padding:22px 22px 24px}
+  .mom-briefing-voice{margin:22px 0 20px;font-size:18px}
+  .mom-briefing-rule{margin-bottom:20px}
+  .mom-briefing-card h2{font-size:clamp(29px,7.8vw,36px);margin:8px 0 22px}
+  .mom-briefing-clue{padding:14px 17px}
+  .mom-briefing-clue p{font-size:14px}
+  .mom-briefing-instructions{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.mom-briefing-card,.mom-briefing-alert{animation:none}}
