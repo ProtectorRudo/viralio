@@ -1,5 +1,5 @@
 export type RoomCategory = "terror" | "misterio" | "emociones";
-export type RoomTheme = "case" | "theatre" | "garden" | "ward";
+export type RoomTheme = "case" | "theatre" | "garden" | "ward" | "home";
 export type EscapeExperience = {
   slug: string;
   title: string;
@@ -75,6 +75,27 @@ export const experiences: readonly EscapeExperience[] = [
     tagline: "Hay secretos que sólo florecen a tiempo.",
     synopsis: "Un jardín que empieza a marchitarse, una carta sellada y una cuenta regresiva. Descubrí qué historia se esconde entre las flores.",
     story: ["Un jardín detenido en el tiempo guarda una última carta.", "Investigá cada rincón, seguí las pistas y encontrá el camino hacia una revelación personal.", "Cada campanada cambia lo que está en juego."]
+  },
+  {
+    slug: "donde-estas-mama",
+    title: "¿DÓNDE ESTÁS, MAMÁ?",
+    subtitle: "El último mensaje",
+    category: "emociones",
+    categoryLabel: "Suspenso · Especial Día de la Madre",
+    theme: "home",
+    cover: "/donde-estas-mama/cover.svg",
+    photoCredit: "Arte de portada original de Viralio",
+    duration: "5 minutos",
+    difficulty: "Intermedia",
+    intensity: {difficulty:3, scares:3, surprise:5, tension:5},
+    mode: "Individual · Primera persona 3D",
+    tagline: "Escuchaste su último mensaje. Tenés cinco minutos para encontrarlo.",
+    synopsis: "Una casa vacía. Mensajes inquietantes. Tres habitaciones y un hijo al otro lado de una puerta cerrada. No dejes que el tiempo se agote.",
+    story: [
+      "Volvés a casa y escuchás una llamada de auxilio. Tu hijo está encerrado.",
+      "Recuperá llaves, reconstruí una fotografía, descifrá el mecanismo de la biblioteca y arreglá una caja musical.",
+      "Cada minuto transforma la casa. Todo puede cambiar antes de que llegues a la última puerta."
+    ]
   },
   {
     slug: "aislamiento-15",
