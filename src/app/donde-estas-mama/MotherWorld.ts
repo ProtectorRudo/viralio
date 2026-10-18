@@ -384,12 +384,8 @@ export class MotherWorld {
       const z=centers[s];
       const light=this.addBox(.65,.09,.65,0,3.22,z,this.mat(0xba946e,.35,.28));
       light.castShadow=false;
-      for(let i=0;i<6;i++){
-        const alpha=i*Math.PI/3;
-        const p=new THREE.Mesh(new THREE.SphereGeometry(.018,5,5),new THREE.MeshBasicMaterial({color:0xffe5bd,transparent:true,opacity:.25}));
-        p.position.set(1.2*Math.cos(alpha),1.3+(i%3)*.34,z+1.3*Math.sin(alpha));
-        this.scene.add(p);this.dynamicProps.push(p);
-      }
+      // Remove opaque-looking floating motes: on phones they resembled
+      // the very hint circles players asked us to eliminate.
     }
   }
   /** Adult skinned actor from local CC0 library, visually treated as a fleeting shadow. */
