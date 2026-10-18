@@ -4,7 +4,7 @@ import { loadViralioPBR } from "@/lib/viralio-rooms";
 
 export type MotherStage = 0 | 1 | 2;
 type Spot = { id: string; mesh: THREE.Object3D; stage: MotherStage; radius: number; enabled: boolean };
-type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string};
+type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string; wallMount?:boolean};
 const centers = [0,-8,-16] as const;
 
 export class MotherWorld {
@@ -50,6 +50,9 @@ export class MotherWorld {
   private frameFallAt = -1;
   private sceneMoved = new Set<number>();
   private pickableItems = new Map<string,THREE.Group>();
+  private musicBox:THREE.Group|null=null;
+  private musicBoxLid:THREE.Mesh|null=null;
+  private musicBoxOpenAt=-1;
   private pillow:THREE.Group|null=null;
   private pillowRaisedAt=-1;
   private pillowLifted=false;
@@ -233,7 +236,7 @@ export class MotherWorld {
       if(size.x<.001||size.y<.001||size.z<.001)return null;
       const k=a.id==="mother-child-eli"?Math.min(1.19/size.y,a.width/Math.max(size.x,size.z)*1.35):Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
       scene.scale.setScalar(k);
-      let lift=a.id==="crime-photo-frame"?1.45:0;
+      let lift=0;
       if(a.supportId){
         const support=await this.assetLoads.get(a.stage+":"+a.supportId);
         if(!this.running)return null;
@@ -247,7 +250,7 @@ export class MotherWorld {
       // Correct the pivot in the model's rotated coordinates, not the original AABB.
       const angle=a.rotate||0;
       const horizontalCenter=new THREE.Vector3(center.x*k,0,center.z*k).applyAxisAngle(new THREE.Vector3(0,1,0),angle);
-      scene.position.set(a.x-horizontalCenter.x,-box.min.y*k+.012+lift,centers[a.stage]+a.z-horizontalCenter.z);
+      scene.position.set(a.x-horizontalCenter.x,a.wallMount?1.72-center.y*k:-box.min.y*k+.012+lift,centers[a.stage]+a.z-horizontalCenter.z);
       scene.rotation.y=angle;
       scene.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
       this.scene.add(scene);
@@ -278,6 +281,31 @@ export class MotherWorld {
       }
       this.assetModels.push(scene);
       this.dynamicProps.push(scene);
+      if(a.stage===2&&a.id==="universal-ph-round-wood-table"&&this.musicBox){
+        scene.updateMatrixWorld(true);
+        const top=new THREE.Box3().setFromObject(scene).max.y;
+        this.musicBox.position.y=top+.17;
+        for(const target of this.spots)if(target.stage===2&&target.id==="cajamusical")target.mesh.position.y=top+.18;
+      }
+      if(a.stage===2){
+        const gearForAsset:Record<string,string>={
+          "universal-ph-wooden-crate":"juguetes",
+          "slit-bedside-cabinet":"cajon",
+          "bookshelf-with-bins-original-interior-furnishing":"estante"
+        };
+        const gearId=gearForAsset[a.id];
+        const gear=gearId?this.pickableItems.get(gearId):undefined;
+        if(gear){
+          scene.updateMatrixWorld(true);
+          const top=new THREE.Box3().setFromObject(scene).max.y;
+          gear.position.y=top+.045;
+          if(gearId==="estante")gear.position.z=centers[2]-.84;
+          for(const target of this.spots)if(target.stage===2&&target.id===gearId){
+            target.mesh.position.y=gear.position.y;
+            target.mesh.position.z=gear.position.z;
+          }
+        }
+      }
       return scene;
     }catch(e){console.warn("Asset CC0 no disponible",a.id,e);return null;}
   }
@@ -299,10 +327,10 @@ export class MotherWorld {
       {id:"universal-modular-sofa-set",stage:1,x:-2.31,z:-.38,width:2.1,rotate:Math.PI/2},
       {id:"universal-ph-stone-coffee-table",stage:1,x:-.63,z:.60,width:.96},
       {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.65,z:-1.33,width:1.08},
-      {id:"crime-photo-frame",stage:1,x:-2.35,z:-3.58,width:.7},
+      {id:"crime-photo-frame",stage:1,x:-2.35,z:-3.54,width:.7,wallMount:true},
       {id:"flush-flush-interior-door",stage:1,x:0,z:-3.64,width:1.48,depth:.3},
       {id:"wingback-armchair",stage:1,x:2.48,z:1.92,width:.86,rotate:-.52},
-      {id:"gilt-landscape-picture-frame",stage:1,x:-3.12,z:1.89,width:.54},
+      {id:"gilt-landscape-picture-frame",stage:1,x:-3.55,z:1.89,width:.70,rotate:Math.PI/2,wallMount:true},
       // 03 · Final room: armario clear as the central goal, props at the periphery.
       {id:"two-door-wardrobe-original-interior-furnishing",stage:2,x:0,z:-2.6,width:2.6},
       {id:"universal-ph-wooden-crate",stage:2,x:-2.55,z:-.93,width:1.04},
@@ -316,6 +344,7 @@ export class MotherWorld {
     this.loadStageAssets(0);
     this.createContactShadows();
     this.createPillow();
+    this.createMusicBox();
     this.createFamilyPhoto();
     this.spot("telefono",0,-2.38,1.1,1.14,.78,"Teléfono");
     this.spot("caja",0,3.12,.7,.48,.66,"Mochila");
@@ -355,12 +384,8 @@ export class MotherWorld {
       const z=centers[s];
       const light=this.addBox(.65,.09,.65,0,3.22,z,this.mat(0xba946e,.35,.28));
       light.castShadow=false;
-      for(let i=0;i<6;i++){
-        const alpha=i*Math.PI/3;
-        const p=new THREE.Mesh(new THREE.SphereGeometry(.018,5,5),new THREE.MeshBasicMaterial({color:0xffe5bd,transparent:true,opacity:.25}));
-        p.position.set(1.2*Math.cos(alpha),1.3+(i%3)*.34,z+1.3*Math.sin(alpha));
-        this.scene.add(p);this.dynamicProps.push(p);
-      }
+      // Remove opaque-looking floating motes: on phones they resembled
+      // the very hint circles players asked us to eliminate.
     }
   }
   /** Adult skinned actor from local CC0 library, visually treated as a fleeting shadow. */
@@ -376,16 +401,26 @@ export class MotherWorld {
       const scale=1.79/height;
       scene.scale.setScalar(scale);
       scene.position.y=-bounds.min.y*scale;
-      const shadowMaterial=new THREE.MeshStandardMaterial({
-        color:0x131018,roughness:1,metalness:0,transparent:true,opacity:.9,depthWrite:true
-      });
+      // Preserve the GLB's PBR skin, eyes, garments and textures. The previous
+      // monochrome replacement was the reason the apparition looked all grey.
       scene.traverse(node=>{
-        if(node instanceof THREE.Mesh){node.material=shadowMaterial;node.castShadow=false;node.receiveShadow=false;}
+        if(node instanceof THREE.Mesh){
+          node.castShadow=true;
+          node.receiveShadow=true;
+          if(node.material instanceof THREE.MeshStandardMaterial){
+            node.material=node.material.clone();
+            node.material.roughness=Math.max(.62,node.material.roughness);
+          }
+        }
       });
       const actor=new THREE.Group();
       actor.name="sombra-animada-sam";
       actor.position.set(2.2,0,centers[0]-1.55);
       actor.add(scene);
+      // Brief side light reveals the actual textured actor, without a flat grey body.
+      const accent=new THREE.PointLight(0xe9a995,14,2.7,2);
+      accent.position.set(.55,1.58,.65);
+      actor.add(accent);
       actor.visible=false;
       this.scene.add(actor);
       this.shadowFigure=actor;
@@ -506,6 +541,43 @@ export class MotherWorld {
       this.roomShells[stage].add(surface);
     }
   }
+  /** Antique mahogany music box: hand-authored detailed PBR mechanism where no
+   * dedicated commercial-use GLB is available in the verified library. */
+  private createMusicBox(){
+    const box=new THREE.Group();
+    box.name="caja-musical-fisica";
+    const wood=new THREE.MeshStandardMaterial({color:0x583122,roughness:.5,metalness:.02});
+    const metal=new THREE.MeshStandardMaterial({color:0xb99b60,metalness:.88,roughness:.24});
+    const felt=new THREE.MeshStandardMaterial({color:0x302722,roughness:.94});
+    const shell=new THREE.Mesh(new THREE.BoxGeometry(.65,.26,.45),wood);
+    shell.castShadow=true;shell.receiveShadow=true;box.add(shell);
+    const inset=new THREE.Mesh(new THREE.BoxGeometry(.57,.009,.37),felt);
+    inset.position.y=.135;box.add(inset);
+    for(const x of [-.285,.285])for(const z of [-.18,.18]){
+      const column=new THREE.Mesh(new THREE.CylinderGeometry(.013,.013,.255,10),metal);
+      column.position.set(x,0,z);box.add(column);
+    }
+    const lid=new THREE.Mesh(new THREE.BoxGeometry(.69,.048,.49),wood);
+    lid.position.set(0,.16,-.015);lid.castShadow=true;box.add(lid);
+    const lidTrim=new THREE.Mesh(new THREE.BoxGeometry(.60,.012,.40),metal);
+    lidTrim.position.set(0,.183,-.015);lid.add(lidTrim);
+    const drum=new THREE.Mesh(new THREE.CylinderGeometry(.071,.071,.24,20),metal);
+    drum.rotation.z=Math.PI/2;drum.position.set(0,.17,-.04);box.add(drum);
+    for(let i=0;i<10;i++){
+      const pin=new THREE.Mesh(new THREE.SphereGeometry(.008,7,6),felt);
+      pin.position.set((i-4.5)*.023,.235,-.04);
+      box.add(pin);
+    }
+    const keyhole=new THREE.Mesh(new THREE.TorusGeometry(.027,.009,8,17),metal);
+    keyhole.rotation.x=Math.PI/2;
+    keyhole.position.set(0,-.015,.231);box.add(keyhole);
+    box.position.set(2.45,1.12,centers[2]+1.63);
+    this.roomShells[2].add(box);
+    this.musicBox=box;this.musicBoxLid=lid;
+  }
+  openMusicBox(){
+    if(this.musicBoxOpenAt<0)this.musicBoxOpenAt=this.clock.elapsedTime;
+  }
   /** Bespoke fabric pillow: deformed high-subdivision cloth volume, not a plain box. */
   private createPillow(){
     const group=new THREE.Group();
@@ -583,6 +655,7 @@ export class MotherWorld {
     const spindle=new THREE.Mesh(new THREE.TorusGeometry(r*.35,.017,8,16),steel);
     group.add(spindle);
     group.position.set(x,y,z);
+    group.rotation.x=-Math.PI/2; // The gears lie on the furniture instead of hovering vertically.
     group.visible=this.stage===2;
     this.scene.add(group);this.pickableItems.set(id,group);
   }
@@ -648,6 +721,9 @@ export class MotherWorld {
       this.flickerUntil=performance.now()+470;
     }
     if(stage===2)this.flickerUntil=performance.now()+650;
+    // Request finished room meshes before entering so the props and the
+    // physically supported gears stream in together.
+
     if(this.sceneSurprise?.visible)this.sceneSurprise.position.z=centers[stage]-3.59;
     this.yaw=0;this.pitch=-.04;this.setRotation();this.onFocus("");
   }
@@ -721,15 +797,26 @@ export class MotherWorld {
       const sin=Math.sin(this.yaw),cos=Math.cos(this.yaw);
       const nx=THREE.MathUtils.clamp(this.camera.position.x+(-sin*this.movement.forward+cos*this.movement.strafe)*speed,-3.0,3.0);
       const nz=THREE.MathUtils.clamp(this.camera.position.z+(-cos*this.movement.forward-sin*this.movement.strafe)*speed,centers[this.stage]-2.92,centers[this.stage]+3);
-      // Authored collision radii keep the player out of furniture, not only outside the walls.
-      const obstacles=[
-        [[-2.38,1.14,.78],[3.02,2.34,.38],[3.12,.48,.37],[-2.65,-2.3,.49],[2.14,-1.75,1.14],[-1.32,-2.56,.34]],
-        [[-2.31,-.38,1.09],[-.63,.6,.55],[2.65,-1.33,.68],[2.48,1.92,.53]],
-        [[0,-2.6,1.05],[-2.55,-.93,.63],[-2.65,1.68,.45],[2.62,-.94,.68],[2.45,1.63,.55]]
-      ] as const;
-      const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
+      // Only measured, actually loaded furniture can stop movement; no phantom
+      // circles based on old placements. No collision from wall-hung pictures,
+      // clues, small props or decorative supports.
+      const solidIds=new Set([
+        "hotel-bed-with-headboard-and-bench-original-hotel-furnishing",
+        "universal-modular-sofa-set","wingback-armchair",
+        "filled-bookshelf-small-original-interior-furnishing",
+        "two-door-wardrobe-original-interior-furnishing",
+        "bookshelf-with-bins-original-interior-furnishing"
+      ]);
+      const solids=this.assetModels.filter(m=>m.visible&&m.userData.assetStage===this.stage&&solidIds.has(m.userData.assetId));
+      const bounds=solids.map(mesh=>new THREE.Box3().setFromObject(mesh));
+      const open=(x:number,z:number)=>bounds.every(b=>x<b.min.x-.16||x>b.max.x+.16||z<b.min.z-.16||z>b.max.z+.16);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
       if(open(this.camera.position.x,nz))this.camera.position.z=nz;
+    }
+    if(this.musicBoxLid&&this.musicBoxOpenAt>=0){
+      const t=THREE.MathUtils.smoothstep(this.clock.elapsedTime-this.musicBoxOpenAt,0,1.2);
+      this.musicBoxLid.rotation.x=-t*.72;
+      this.musicBoxLid.position.z=-.015-t*.07;
     }
     if(this.pillow&&this.pillowRaisedAt>=0){
       const progress=THREE.MathUtils.clamp((this.clock.elapsedTime-this.pillowRaisedAt)/.65,0,1);

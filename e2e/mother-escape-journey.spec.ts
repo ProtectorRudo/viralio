@@ -48,6 +48,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
     return {viewport:resolution,canvasPixels:pixels,framesPerSecondInHeadlessChromium:fps,note:"CI software renderer, not measured on physical phone"};
   });
   writeFileSync("visual-qa-evidence/mother-browser-performance.json",JSON.stringify(renderStats,null,2),"utf8");
+  await expect(page.locator(".mom-reticle")).toBeVisible();
   await expect(page.locator('.mom-joystick')).toBeVisible();
   await expect(page.locator('.mom-pad')).toHaveCount(0);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-1.png"});
@@ -105,15 +106,24 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-2.png"});
 
   await interact(-2.35,1.65,-11.5,/Fotografía familiar/);
-  for(const [piece,turns] of [[1,3],[2,1],[3,2],[4,3]] as const){
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-new-photo-puzzle.png"});
+  // Merely rotating pieces is no longer enough: two pairs are out of place.
+  for(const [piece,turns] of [[1,1],[2,3],[3,3],[4,2]] as const){
     for(let i=0;i<turns;i++){
       await page.getByRole("button",{name:"Girar pieza "+piece}).click();
     }
   }
+  await expect(page.getByRole("heading",{name:/Los fragmentos del recuerdo/})).toBeVisible();
+  for(const [a,b] of [[1,2],[3,4]] as const){
+    await page.getByRole("button",{name:"Seleccionar pieza "+a}).click();
+    await page.getByRole("button",{name:"Seleccionar pieza "+b}).click();
+  }
   await expect(page.getByText(/FOTOGRAFÍA RECONSTRUIDA/)).toBeVisible();
 
   await interact(2.65,1.5,-9.33,/Biblioteca/);
-  for(const color of ["rojo","dorado","azul"]){
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-four-book-riddle.png"});
+  // Interpret hojas→verde, corazón→rojo, sol→dorado, cielo→azul.
+  for(const color of ["verde","rojo","dorado","azul"]){
     await page.getByRole("button",{name:"Presionar libro "+color}).click();
   }
   await expect(page.getByText(/COMPARTIMIENTO ABIERTO/)).toBeVisible();
@@ -129,6 +139,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.locator(".mom-inventory")).toContainText("3/3");
 
   await interact(2.45,1.05,-14.37,/Caja musical/);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-music-box-puzzle.png"});
   for(const gear of ["grande","mediano","pequeño"]){
     await page.getByRole("button",{name:"⚙ "+gear}).click();
   }

@@ -1,26 +1,30 @@
 import {describe,expect,it} from "vitest";
 import {
-  BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,photoComplete,
+  BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,swapPhotoTiles,photoComplete,
   enterOrderedItem,timeRemaining,dueMotherBeats
 } from "../src/app/donde-estas-mama/MotherRules";
 
 describe("Día de la Madre — acertijos deterministas",()=>{
-  it("reconstruye la fotografía en cuatro orientaciones",()=>{
-    let pieces=[1,3,2,1];
-    expect(photoComplete(pieces)).toBe(false);
-    for(let i=0;i<pieces.length;i++){
-      while(pieces[i]!==0)pieces=rotatePhotoPiece(pieces,i);
-    }
-    expect(photoComplete(pieces)).toBe(true);
-    expect(photoComplete([0,0,0])).toBe(false);
+  it("solo resuelve la foto al combinar posiciones correctas Y orientaciones",()=>{
+    let pieces=[1,3,2,1],order=[1,0,3,2];
+    for(let i=0;i<pieces.length;i++)while(pieces[i]!==0)pieces=rotatePhotoPiece(pieces,i);
+    expect(photoComplete(pieces,order)).toBe(false);
+    order=swapPhotoTiles(order,0,1);
+    order=swapPhotoTiles(order,2,3);
+    expect(order).toEqual([0,1,2,3]);
+    expect(photoComplete(pieces,order)).toBe(true);
+    expect(photoComplete([0,0,0],order)).toBe(false);
+    expect(swapPhotoTiles(order,0,15)).toEqual(order);
   });
-  it("no deja saltarse colores y obliga a reiniciar tras un error",()=>{
+  it("exige cuatro interpretaciones de símbolos, no el viejo código de tres libros",()=>{
     const wrong=enterOrderedItem([], "azul",BOOK_SEQUENCE);
     expect(wrong).toEqual({next:[],error:true,complete:false});
-    const a=enterOrderedItem([],"rojo",BOOK_SEQUENCE);
-    const b=enterOrderedItem(a.next,"dorado",BOOK_SEQUENCE);
-    const c=enterOrderedItem(b.next,"azul",BOOK_SEQUENCE);
-    expect(c.complete).toBe(true);
+    const a=enterOrderedItem([],"verde",BOOK_SEQUENCE);
+    const b=enterOrderedItem(a.next,"rojo",BOOK_SEQUENCE);
+    const c=enterOrderedItem(b.next,"dorado",BOOK_SEQUENCE);
+    expect(c.complete).toBe(false);
+    const d=enterOrderedItem(c.next,"azul",BOOK_SEQUENCE);
+    expect(d.complete).toBe(true);
   });
   it("solo acepta las tres ruedas grandes a pequeñas",()=>{
     const wrong=enterOrderedItem([],"pequeño",GEAR_SEQUENCE);

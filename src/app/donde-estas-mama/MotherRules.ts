@@ -3,15 +3,20 @@
  * These functions are tested in CI so scene improvements cannot silently break progression.
  */
 export type MotherGear="grande"|"mediano"|"pequeño";
-export const BOOK_SEQUENCE=["rojo","dorado","azul"] as const;
+export const BOOK_SEQUENCE=["verde","rojo","dorado","azul"] as const;
+export const PHOTO_TILES=[0,1,2,3] as const;
+export function swapPhotoTiles(tiles:readonly number[],a:number,b:number):number[]{
+  if(a<0||b<0||a>=tiles.length||b>=tiles.length)return [...tiles];
+  const next=[...tiles];[next[a],next[b]]=[next[b],next[a]];return next;
+}
 export const GEAR_SEQUENCE:readonly MotherGear[]=["grande","mediano","pequeño"];
 
 export function rotatePhotoPiece(pieces:readonly number[],index:number):number[]{
   if(index<0||index>=pieces.length)return [...pieces];
   return pieces.map((p,i)=>i===index?(p+1)%4:p);
 }
-export function photoComplete(pieces:readonly number[]):boolean{
-  return pieces.length===4&&pieces.every(n=>n===0);
+export function photoComplete(pieces:readonly number[],order:readonly number[]=[0,1,2,3]):boolean{
+  return pieces.length===4&&pieces.every(n=>n===0)&&order.length===4&&order.every((n,i)=>n===i);
 }
 export function enterOrderedItem<T extends string>(
   entered:readonly T[],choice:T,solution:readonly T[]
