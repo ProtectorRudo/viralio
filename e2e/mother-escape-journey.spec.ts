@@ -9,7 +9,9 @@ mkdirSync("visual-qa-evidence",{recursive:true});
  * hit targets in MotherWorld and movements are real mouse gestures.
  */
 test("mother's day: full 3-room rescue, physical interactions and emotional ending",async({page})=>{
-  test.setTimeout(120_000);
+  // WebGL2 via software SwiftShader can take longer to capture the final reveal.
+  // This only raises the CI ceiling; the in-game five-minute rescue stays unchanged.
+  test.setTimeout(210_000);
   await page.setViewportSize({width:390,height:844});
   const failures:string[]=[];
   const assetErrors:string[]=[];
