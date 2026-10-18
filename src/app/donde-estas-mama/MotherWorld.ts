@@ -6,7 +6,6 @@ export type MotherStage = 0 | 1 | 2;
 type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage };
 type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number};
 const centers = [0,-8,-16] as const;
-const ink = new THREE.Color(0x121019);
 
 export class MotherWorld {
   private scene = new THREE.Scene();
@@ -32,6 +31,13 @@ export class MotherWorld {
   private fallenFrame: THREE.Mesh | null = null;
   private sceneMoved = new Set<number>();
   private pickableItems = new Map<string,THREE.Group>();
+  private readonly raycaster = new THREE.Raycaster();
+  private readonly pointer = new THREE.Vector2();
+  private readonly cameraBox = new THREE.Box3();
+  private shadowFigure: THREE.Group | null = null;
+  private apparitionUntil = 0;
+  private finalDecorations: THREE.Group | null = null;
+  private readonly ownedTextures: THREE.Texture[] = [];
   onInteract: (id:string)=>void = ()=>{};
   onFocus: (label:string)=>void = ()=>{};
   onNotice: (message:string)=>void = ()=>{};
@@ -174,8 +180,11 @@ export class MotherWorld {
       const k=Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
       scene.scale.setScalar(k);
       const lift = a.id==="desk-call-office-phone" ? .62 : a.id==="mantel-clock" ? .73 : a.id==="crime-photo-frame" ? 1.45 : 0;
-      scene.position.set(a.x-center.x*k,-box.min.y*k+.012+lift,centers[a.stage]+a.z-center.z*k);
-      scene.rotation.y=a.rotate||0;
+      // Correct the pivot in the model's rotated coordinates, not the original AABB.
+      const angle=a.rotate||0;
+      const horizontalCenter=new THREE.Vector3(center.x*k,0,center.z*k).applyAxisAngle(new THREE.Vector3(0,1,0),angle);
+      scene.position.set(a.x-horizontalCenter.x,-box.min.y*k+.012+lift,centers[a.stage]+a.z-horizontalCenter.z);
+      scene.rotation.y=angle;
       scene.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
       this.scene.add(scene);
       scene.userData.assetId=a.id;
@@ -228,8 +237,10 @@ export class MotherWorld {
     const warningCanvas=document.createElement("canvas");warningCanvas.width=512;warningCanvas.height=192;
     const ctx=warningCanvas.getContext("2d");
     if(ctx){ctx.clearRect(0,0,512,192);ctx.font="bold 48px Georgia";ctx.textAlign="center";ctx.fillStyle="#ad2e36";ctx.shadowBlur=10;ctx.shadowColor="#7c131e";ctx.fillText("TE ESTÁ",256,73);ctx.fillText("ESPERANDO",256,138);}
-    this.sceneSurprise=new THREE.Mesh(new THREE.PlaneGeometry(2.45,.95),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(warningCanvas),transparent:true,side:THREE.DoubleSide,depthWrite:false}));
+    const warningTexture=new THREE.CanvasTexture(warningCanvas);this.ownedTextures.push(warningTexture);
+    this.sceneSurprise=new THREE.Mesh(new THREE.PlaneGeometry(2.45,.95),new THREE.MeshBasicMaterial({map:warningTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false}));
     this.sceneSurprise.visible=false;this.scene.add(this.sceneSurprise);
+    this.buildApparition();
     // Decoration: pendant light, floor grilles, floating dust; physical meshes only.
     for(let s=0;s<3;s++){
       const z=centers[s];
@@ -242,6 +253,78 @@ export class MotherWorld {
         this.scene.add(p);this.dynamicProps.push(p);
       }
     }
+  }
+  /** Ghostly hallway silhouette uses geometry and transparency, without an uncanny human stock model. */
+  private buildApparition(){
+    const figure=new THREE.Group();
+    const shadow=new THREE.MeshBasicMaterial({color:0x07090d,transparent:true,opacity:.82,depthWrite:false,side:THREE.DoubleSide});
+    const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.24,.78,7,12),shadow);
+    torso.position.y=1.15;torso.scale.z=.56;figure.add(torso);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.22,16,12),shadow);
+    head.position.y=1.99;head.scale.z=.65;figure.add(head);
+    for(const x of [-.16,.16]){
+      const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.55,5,9),shadow);
+      arm.position.set(x*1.8,1.14,0);arm.rotation.z=x<0?-.19:.19;figure.add(arm);
+    }
+    figure.position.set(2.18,0,centers[1]-.92);
+    figure.visible=false;
+    figure.name="aparicion-pasillo";
+    this.scene.add(figure);
+    this.shadowFigure=figure;
+  }
+  private revealCelebration(){
+    if(this.finalDecorations)return;
+    const group=new THREE.Group();
+    const stageZ=centers[2];
+    const colors=[0xf2b0c4,0xf5d998,0xd3b0df,0xd1e6ce];
+    const cord=new THREE.MeshBasicMaterial({color:0xf5deb8});
+    for(let i=0;i<11;i++){
+      const x=-2.8+i*.56;
+      const color=colors[i%colors.length];
+      const balloon=new THREE.Mesh(new THREE.SphereGeometry(.19,16,12),new THREE.MeshStandardMaterial({color,roughness:.29,metalness:.08}));
+      balloon.scale.set(1,1.35,.86);
+      balloon.position.set(x,2.38+Math.sin(i*1.9)*.20,stageZ-2.37+(i%3)*.08);
+      group.add(balloon);
+      const stringPoints=[
+        new THREE.Vector3(x,balloon.position.y-.26,balloon.position.z),
+        new THREE.Vector3(x+.06,balloon.position.y-.55,balloon.position.z+.03),
+        new THREE.Vector3(x-.05,balloon.position.y-.88,balloon.position.z)
+      ];
+      const string=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(stringPoints),9,.004,4),cord);
+      group.add(string);
+    }
+    const wood=this.mat(0xa77b60,.06,.64);
+    const table=new THREE.Mesh(new THREE.CylinderGeometry(.64,.68,.07,24),wood);
+    table.position.set(0,.75,stageZ-1.94);group.add(table);
+    for(const x of [-.45,.45]){
+      const leg=new THREE.Mesh(new THREE.CylinderGeometry(.04,.046,.72,9),wood);
+      leg.position.set(x,.38,stageZ-1.94);group.add(leg);
+    }
+    const plate=new THREE.Mesh(new THREE.CylinderGeometry(.33,.34,.045,28),this.mat(0xefe7d9,.08,.4));
+    plate.position.set(0,.82,stageZ-1.94);group.add(plate);
+    const cake=new THREE.Mesh(new THREE.CylinderGeometry(.27,.27,.22,32),this.mat(0xf0d3b5,0,.57));
+    cake.position.set(0,.95,stageZ-1.94);group.add(cake);
+    const icing=new THREE.Mesh(new THREE.CylinderGeometry(.285,.285,.065,32),this.mat(0xffe7ec,.03,.4));
+    icing.position.set(0,1.08,stageZ-1.94);group.add(icing);
+    const candle=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,.12,9),this.mat(0xd8a4bf,.2,.3));
+    candle.position.set(0,1.17,stageZ-1.94);group.add(candle);
+    const flame=new THREE.Mesh(new THREE.SphereGeometry(.029,9,9),new THREE.MeshBasicMaterial({color:0xffcf6a}));
+    flame.position.set(0,1.255,stageZ-1.94);group.add(flame);
+    const light=new THREE.PointLight(0xffb77e,17,4,2);
+    light.position.set(0,1.34,stageZ-1.94);group.add(light);
+    const bannerCanvas=document.createElement("canvas");bannerCanvas.width=1024;bannerCanvas.height=200;
+    const ctx=bannerCanvas.getContext("2d");
+    if(ctx){
+      ctx.fillStyle="#f8e8d9";ctx.fillRect(0,0,1024,200);
+      ctx.strokeStyle="#b48479";ctx.lineWidth=10;ctx.strokeRect(7,7,1010,186);
+      ctx.textAlign="center";ctx.font="bold 75px Georgia";ctx.fillStyle="#7f4755";
+      ctx.fillText("¡FELIZ DÍA, MAMÁ!",512,128);
+    }
+    const paper=new THREE.CanvasTexture(bannerCanvas);paper.colorSpace=THREE.SRGBColorSpace;this.ownedTextures.push(paper);
+    const banner=new THREE.Mesh(new THREE.PlaneGeometry(3.65,.72),new THREE.MeshBasicMaterial({map:paper,side:THREE.DoubleSide}));
+    banner.position.set(0,2.54,stageZ-3.30);group.add(banner);
+    group.visible=true;this.scene.add(group);this.finalDecorations=group;
+    // The surprise remains physically in the room and is visible during the reveal.
   }
   private addKey(id:string,x:number,y:number,z:number){
     const group=new THREE.Group(),metal=this.mat(0xd4ae66,.85,.27);
@@ -293,10 +376,9 @@ export class MotherWorld {
   private ray(x:number,y:number){
     const rect=this.renderer.domElement.getBoundingClientRect();
     if(!rect.width||!rect.height)return null;
-    const pointer=new THREE.Vector2((x-rect.left)/rect.width*2-1,-(y-rect.top)/rect.height*2+1);
-    const caster=new THREE.Raycaster();
-    caster.setFromCamera(pointer,this.camera);
-    const hits=caster.intersectObjects(this.spots.filter(s=>s.stage===this.stage).map(s=>s.mesh),false);
+    this.pointer.set((x-rect.left)/rect.width*2-1,-(y-rect.top)/rect.height*2+1);
+    this.raycaster.setFromCamera(this.pointer,this.camera);
+    const hits=this.raycaster.intersectObjects(this.spots.filter(s=>s.stage===this.stage).map(s=>s.mesh),false);
     const valid=hits.find(h=>h.distance<5);
     return valid?.object as THREE.Object3D|undefined;
   }
@@ -319,6 +401,9 @@ export class MotherWorld {
     if(elapsed>=12&&!this.sceneMoved.has(12)&&this.fallenFrame){
       this.sceneMoved.add(12);this.fallenFrame.rotation.z=-.64;this.fallenFrame.position.y=.66;
     }
+    if(elapsed>=50&&elapsed<53){
+      this.apparitionUntil=performance.now()+1800;
+    }
     if(elapsed>=105&&!this.sceneMoved.has(105)){
       this.sceneMoved.add(105);
       const moved=this.dynamicProps.find(o=>o.userData.assetId==="universal-ph-stone-coffee-table");
@@ -330,10 +415,14 @@ export class MotherWorld {
       this.sceneSurprise.visible=true;
     }
     if(elapsed>=170&&elapsed<174)this.flickerUntil=performance.now()+300;
+    if(elapsed>=240&&elapsed<242)this.apparitionUntil=performance.now()+850;
     if(elapsed>=280&&elapsed<283)this.flickerUntil=performance.now()+650;
   }
   win(){
     this.celebratory=true;
+    this.revealCelebration();
+    if(this.shadowFigure)this.shadowFigure.visible=false;
+    if(this.sceneSurprise)this.sceneSurprise.visible=false;
     this.eventLights.forEach(light=>{light.color.setHex(0xffc58c);light.intensity=49;});
     this.scene.background=new THREE.Color(0x382622);
     this.renderer.toneMappingExposure=1.63;
@@ -354,18 +443,32 @@ export class MotherWorld {
     this.frame=requestAnimationFrame(this.animate);
     const dt=Math.min(this.clock.getDelta(),.045);
     if(this.movement.forward||this.movement.strafe){
-      const speed=2.3*dt;
+      const speed=2.3*dt/Math.max(1,Math.hypot(this.movement.forward,this.movement.strafe));
       const sin=Math.sin(this.yaw),cos=Math.cos(this.yaw);
-      this.camera.position.x+=(-sin*this.movement.forward+cos*this.movement.strafe)*speed;
-      this.camera.position.z+=(-cos*this.movement.forward-sin*this.movement.strafe)*speed;
-      this.camera.position.x=THREE.MathUtils.clamp(this.camera.position.x,-3,3);
-      this.camera.position.z=THREE.MathUtils.clamp(this.camera.position.z,centers[this.stage]-2.95,centers[this.stage]+3);
+      const nx=THREE.MathUtils.clamp(this.camera.position.x+(-sin*this.movement.forward+cos*this.movement.strafe)*speed,-3.0,3.0);
+      const nz=THREE.MathUtils.clamp(this.camera.position.z+(-cos*this.movement.forward-sin*this.movement.strafe)*speed,centers[this.stage]-2.92,centers[this.stage]+3);
+      // Authored collision radii keep the player out of furniture, not only outside the walls.
+      const obstacles=[
+        [[-2.05,.8,.86],[2.35,-1.45,.53],[1.9,.65,.48],[-2.2,-2.3,.55]],
+        [[-2,0,1.18],[0,.9,.63],[2.5,-1.3,.72],[2,1.5,.64]],
+        [[0,-2.6,1.05],[-2.5,-1.4,.65],[-2.5,1.4,.59],[2.4,-1.1,.65],[1.5,1.4,.72]]
+      ] as const;
+      const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
+      if(open(nx,this.camera.position.z))this.camera.position.x=nx;
+      if(open(this.camera.position.x,nz))this.camera.position.z=nz;
     }
     const rect=this.renderer.domElement.getBoundingClientRect();
     const focus=this.ray(rect.left+rect.width/2,rect.top+rect.height/2);
     const label=focus?.userData.label||"";
     if(label!==this.lastFocus){this.lastFocus=label;this.onFocus(label);}
     const t=this.clock.elapsedTime;
+    if(this.shadowFigure){
+      this.shadowFigure.visible=!this.celebratory&&performance.now()<this.apparitionUntil&&this.stage!==2;
+      if(this.shadowFigure.visible){
+        this.shadowFigure.position.z=centers[this.stage]-1.55;
+        this.shadowFigure.position.x=2.1+(1.8-(this.apparitionUntil-performance.now())/1000)*-.62;
+      }
+    }
     for(const s of this.spots){
       s.ring.visible=s.stage===this.stage&&!this.celebratory;
       if(s.ring.visible){s.ring.quaternion.copy(this.camera.quaternion);s.ring.scale.setScalar(1+.14*Math.sin(t*3));}
@@ -382,12 +485,8 @@ export class MotherWorld {
     this.surface.removeEventListener("pointermove",this.handlePointerMove);
     this.surface.removeEventListener("pointerup",this.handlePointerUp);
     this.surface.removeEventListener("pointercancel",this.handlePointerUp);
-    this.scene.traverse(o=>{
-      if(o instanceof THREE.Mesh){
-        // Shared GLB geometries and materials remain in the library cache.
-        if(!this.dynamicProps.includes(o) && !o.userData.viralioAssetId) { /* Reused assets handled by loader cache */ }
-      }
-    });
+    // Explicitly dispose generated canvas textures; shared GLB assets stay cached by library loader.
+    this.ownedTextures.forEach(texture=>texture.dispose());
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
