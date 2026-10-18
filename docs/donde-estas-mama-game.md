@@ -15,3 +15,14 @@
 - **Pruebas manuales recomendadas:** abrir tres habitaciones, resolver secuencia de libros y caja musical, vencer antes de 300 s, validar modo fracaso, usar móvil vertical, probar manos izquierda y derecha, comprobar WebGL2, medir FPS, verificar assets sin intersecciones y sin objetos flotantes.
 
 - **Editor para regalar:** `/donde-estas-mama/preparar` produce enlace firmado con parámetros URL; la persona que juega no ve el formulario.
+
+## Auditoría técnica y artística — revisión posterior
+
+- **Puesta en escena:** una silueta momentánea cruza el pasillo; el marco cae, los muebles cambian de posición y aparece un aviso rojo sobre la pared. Las luces parpadean en momentos sincronizados con el reloj.
+- **Geometría y colisiones:** los límites de cada habitación y los radios de mobiliario impiden atravesar paredes, mesas y armarios. Se normaliza el desplazamiento diagonal y se reutiliza la instancia de `Raycaster`.
+- **Streaming:** los modelos GLB se solicitan por etapa, con precarga del siguiente ambiente, conservando los assets CC0 existentes. No se agrega CDN externo.
+- **Final:** al resolver la caja musical, el cronómetro deja de correr, el armario se desplaza durante la secuencia cinematográfica y aparecen en el mundo 3D globos, una torta, una vela y un cartel original. La carta se muestra después de 3,6 segundos.
+- **Fotografía:** la imagen original `public/donde-estas-mama/foto-familiar.svg` se divide en cuatro cuadrantes giratorios para el rompecabezas, sin licencia de terceros.
+- **Tests automáticos:** `tests/mother-escape-rules.test.ts` cubre orientación de las piezas, bloqueo de secuencias, contador y despachos únicos de eventos. `e2e/viralio-escape-home.spec.ts` incluye la ficha, la pantalla de regalo y un smoke test de WebGL2/cronómetro/controles móviles.
+- **Limitación artística explícita:** la celebración representa la sorpresa con escenografía y texto; aún no hay un actor infantil 3D con rig y animación ni grabación infantil auténtica. No usar modelos adultos reducidos de tamaño como sustitutos.
+- **Calidad pendiente de verificación:** recorrido completo de cinco minutos con evidencia en Android/iPhone físicos, capturas de las tres habitaciones, tiempos de carga, FPS y validación del sistema de audio. Los pipelines de compilación no certifican por sí solos un playtest comercial completo.
