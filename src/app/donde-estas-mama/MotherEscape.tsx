@@ -135,7 +135,7 @@ export default function MotherEscape(){
     setInspect(null);setMode("revealing");setMessage(null);
     world.current?.win();sound.current.final();vibrate([80,120,150,100,280]);
     if(revealTimer.current)clearTimeout(revealTimer.current);
-    revealTimer.current=window.setTimeout(()=>setMode("won"),3600);
+    revealTimer.current=setTimeout(()=>setMode("won"),3600);
   },[]);
   const act=useCallback((id:string)=>{
     if(mode!=="playing"||inspect)return;
