@@ -15,9 +15,15 @@ function clean(value:string,max:number){return value.trim().replace(/[<>]/g,"").
 function vibrate(pattern:number|number[]){if(typeof navigator!=="undefined"&&navigator.vibrate)navigator.vibrate(pattern);}
 class MotherSound {
   private ctx:AudioContext|null=null;
+  private enabled=true;
+  setEnabled(enabled:boolean){
+    this.enabled=enabled;
+    if(!enabled)this.stop();
+  }
   private drone:OscillatorNode|null=null;
   private level:GainNode|null=null;
   async start(){
+    if(!this.enabled)return;
     if(!this.ctx)this.ctx=new AudioContext();
     if(this.ctx.state==="suspended")await this.ctx.resume();
     if(this.drone)return;
@@ -28,7 +34,7 @@ class MotherSound {
     this.drone=osc;this.level=gain;
   }
   private pulse(freq:number,duration=.15,volume=.10,position=0){
-    if(!this.ctx)return;
+    if(!this.ctx||!this.enabled)return;
     const osc=this.ctx.createOscillator(),gain=this.ctx.createGain(),panner=this.ctx.createPanner();
     osc.type="sine";osc.frequency.setValueAtTime(freq,this.ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(Math.max(25,freq*.58),this.ctx.currentTime+duration);
@@ -275,7 +281,7 @@ export default function MotherEscape(){
       <header className="mom-hud">
         <div><span className="mom-brand">VIRALIO / ESCAPE</span><span className="mom-location">{["01 · PASILLO","02 · SALA FAMILIAR","03 · DORMITORIO"][stage]}</span></div>
         <div className={"mom-time"+(seconds<=45?" urgent":"")} aria-live={seconds<=20?"assertive":"off"}>{formatTime(seconds)}</div>
-        <button className="mom-sound" onClick={()=>{setMuted(p=>!p);if(!muted)sound.current.stop();else void sound.current.start();}} aria-label={muted?"Activar sonido":"Silenciar"}>{muted?"SONIDO OFF":"♫ ON"}</button>
+        <button className="mom-sound" onClick={()=>{const enabling=muted;sound.current.setEnabled(enabling);setMuted(!enabling);if(enabling)void sound.current.start();}} aria-label={muted?"Activar sonido":"Silenciar"}>{muted?"SONIDO OFF":"♫ ON"}</button>
       </header>
       <div className="mom-objective"><span>OBJETIVO ACTUAL</span><strong>{objective}</strong></div>
       {message&&<div className={"mom-notice mom-notice-"+message.tone} role="status"><div><span>● {message.title}</span><button onClick={()=>setMessage(null)} aria-label="Cerrar aviso">×</button></div><p>{message.body}</p></div>}
