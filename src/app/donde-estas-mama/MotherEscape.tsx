@@ -5,7 +5,7 @@ import type {PointerEvent as ReactPointerEvent} from "react";
 import {MotherWorld,type MotherStage} from "./MotherWorld";
 import "./mother-escape.css";
 
-type Mode="intro"|"playing"|"failed"|"won"|"unsupported";
+type Mode="intro"|"playing"|"revealing"|"failed"|"won"|"unsupported";
 type Inspect=null|"phone"|"portrait"|"books"|"music";
 type Gear="grande"|"mediano"|"pequeño";
 const START=300;
@@ -77,6 +77,7 @@ export default function MotherEscape(){
   const eventsSeen=useRef(new Set<number>());
   const lastSecond=useRef(-1);
   const clueTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const revealTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const moving=useRef({forward:0,strafe:0});
   const actionRef=useRef<(id:string)=>void>(()=>{});
   const [mode,setMode]=useState<Mode>("intro");
@@ -129,6 +130,7 @@ export default function MotherEscape(){
       game.dispose();
       world.current=null;
       if(clueTimer.current)clearTimeout(clueTimer.current);
+      if(revealTimer.current)clearTimeout(revealTimer.current);
       sound.current.dispose();
     };
   },[]);
@@ -139,8 +141,10 @@ export default function MotherEscape(){
     tell("PUERTA ABIERTA",next===1?"Entraste a la sala. Algo se movió detrás de vos.":"La habitación está vacía... pero escuchás golpes dentro del armario.","warning");
   },[tell]);
   const winning=useCallback(()=>{
-    setInspect(null);setMode("won");setMessage(null);
+    setInspect(null);setMode("revealing");setMessage(null);
     world.current?.win();sound.current.final();vibrate([80,120,150,100,280]);
+    if(revealTimer.current)clearTimeout(revealTimer.current);
+    revealTimer.current=window.setTimeout(()=>setMode("won"),3600);
   },[]);
   const act=useCallback((id:string)=>{
     if(mode!=="playing"||inspect)return;
@@ -293,6 +297,7 @@ export default function MotherEscape(){
         </div>
       </div>
     </>}
+    {mode==="revealing"&&<section className="mom-reveal" aria-live="polite"><div className="mom-reveal-line">LA ÚLTIMA PUERTA SE ABRE...</div><div className="mom-reveal-message">«¿Mamá?...»<br/><strong>¡Sorpresa!</strong></div></section>}
     {mode==="intro"&&<section className="mom-screen mom-intro">
       <div className="mom-mark">VIRALIO ORIGINALS <span> / EXPERIENCIA ESPECIAL</span></div>
       <div className="mom-pretitle">UN RESCATE · UNA CASA · CINCO MINUTOS</div>
