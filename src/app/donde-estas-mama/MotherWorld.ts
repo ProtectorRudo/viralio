@@ -50,6 +50,9 @@ export class MotherWorld {
   private frameFallAt = -1;
   private sceneMoved = new Set<number>();
   private pickableItems = new Map<string,THREE.Group>();
+  private musicBox:THREE.Group|null=null;
+  private musicBoxLid:THREE.Mesh|null=null;
+  private musicBoxOpenAt=-1;
   private pillow:THREE.Group|null=null;
   private pillowRaisedAt=-1;
   private pillowLifted=false;
@@ -278,6 +281,12 @@ export class MotherWorld {
       }
       this.assetModels.push(scene);
       this.dynamicProps.push(scene);
+      if(a.stage===2&&a.id==="universal-ph-round-wood-table"&&this.musicBox){
+        scene.updateMatrixWorld(true);
+        const top=new THREE.Box3().setFromObject(scene).max.y;
+        this.musicBox.position.y=top+.17;
+        for(const target of this.spots)if(target.stage===2&&target.id==="cajamusical")target.mesh.position.y=top+.18;
+      }
       if(a.stage===2){
         const gearForAsset:Record<string,string>={
           "universal-ph-wooden-crate":"juguetes",
@@ -335,6 +344,7 @@ export class MotherWorld {
     this.loadStageAssets(0);
     this.createContactShadows();
     this.createPillow();
+    this.createMusicBox();
     this.createFamilyPhoto();
     this.spot("telefono",0,-2.38,1.1,1.14,.78,"Teléfono");
     this.spot("caja",0,3.12,.7,.48,.66,"Mochila");
@@ -534,6 +544,43 @@ export class MotherWorld {
       surface.renderOrder=2;
       this.roomShells[stage].add(surface);
     }
+  }
+  /** Antique mahogany music box: hand-authored detailed PBR mechanism where no
+   * dedicated commercial-use GLB is available in the verified library. */
+  private createMusicBox(){
+    const box=new THREE.Group();
+    box.name="caja-musical-fisica";
+    const wood=new THREE.MeshStandardMaterial({color:0x583122,roughness:.5,metalness:.02});
+    const metal=new THREE.MeshStandardMaterial({color:0xb99b60,metalness:.88,roughness:.24});
+    const felt=new THREE.MeshStandardMaterial({color:0x302722,roughness:.94});
+    const shell=new THREE.Mesh(new THREE.BoxGeometry(.65,.26,.45),wood);
+    shell.castShadow=true;shell.receiveShadow=true;box.add(shell);
+    const inset=new THREE.Mesh(new THREE.BoxGeometry(.57,.009,.37),felt);
+    inset.position.y=.135;box.add(inset);
+    for(const x of [-.285,.285])for(const z of [-.18,.18]){
+      const column=new THREE.Mesh(new THREE.CylinderGeometry(.013,.013,.255,10),metal);
+      column.position.set(x,0,z);box.add(column);
+    }
+    const lid=new THREE.Mesh(new THREE.BoxGeometry(.69,.048,.49),wood);
+    lid.position.set(0,.16,-.015);lid.castShadow=true;box.add(lid);
+    const lidTrim=new THREE.Mesh(new THREE.BoxGeometry(.60,.012,.40),metal);
+    lidTrim.position.set(0,.183,-.015);lid.add(lidTrim);
+    const drum=new THREE.Mesh(new THREE.CylinderGeometry(.071,.071,.24,20),metal);
+    drum.rotation.z=Math.PI/2;drum.position.set(0,.17,-.04);box.add(drum);
+    for(let i=0;i<10;i++){
+      const pin=new THREE.Mesh(new THREE.SphereGeometry(.008,7,6),felt);
+      pin.position.set((i-4.5)*.023,.235,-.04);
+      box.add(pin);
+    }
+    const keyhole=new THREE.Mesh(new THREE.TorusGeometry(.027,.009,8,17),metal);
+    keyhole.rotation.x=Math.PI/2;
+    keyhole.position.set(0,-.015,.231);box.add(keyhole);
+    box.position.set(2.45,1.12,centers[2]+1.63);
+    this.roomShells[2].add(box);
+    this.musicBox=box;this.musicBoxLid=lid;
+  }
+  openMusicBox(){
+    if(this.musicBoxOpenAt<0)this.musicBoxOpenAt=this.clock.elapsedTime;
   }
   /** Bespoke fabric pillow: deformed high-subdivision cloth volume, not a plain box. */
   private createPillow(){
@@ -769,6 +816,11 @@ export class MotherWorld {
       const open=(x:number,z:number)=>bounds.every(b=>x<b.min.x-.16||x>b.max.x+.16||z<b.min.z-.16||z>b.max.z+.16);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
       if(open(this.camera.position.x,nz))this.camera.position.z=nz;
+    }
+    if(this.musicBoxLid&&this.musicBoxOpenAt>=0){
+      const t=THREE.MathUtils.smoothstep(this.clock.elapsedTime-this.musicBoxOpenAt,0,1.2);
+      this.musicBoxLid.rotation.x=-t*.72;
+      this.musicBoxLid.position.z=-.015-t*.07;
     }
     if(this.pillow&&this.pillowRaisedAt>=0){
       const progress=THREE.MathUtils.clamp((this.clock.elapsedTime-this.pillowRaisedAt)/.65,0,1);
