@@ -94,7 +94,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(bed).toHaveCount(0);
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-hidden-key-revealed.png"});
-  await interact(2.06,.67,-2.42,/Llave pequeña/);
+  await interact(2.06,.6,-2.42,/Llave pequeña/);
   await expect(page.getByText(/ENCONTRASTE UNA LLAVE/)).toBeVisible();
   await expect(page.locator(".mom-inventory")).toContainText("Llave");
   await interact(0,1.5,-3.67,/Puerta de la sala/);
