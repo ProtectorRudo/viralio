@@ -26,3 +26,14 @@
 - **Tests automáticos:** `tests/mother-escape-rules.test.ts` cubre orientación de las piezas, bloqueo de secuencias, contador y despachos únicos de eventos. `e2e/viralio-escape-home.spec.ts` incluye la ficha, la pantalla de regalo y un smoke test de WebGL2/cronómetro/controles móviles.
 - **Limitación artística explícita:** la celebración representa la sorpresa con escenografía y texto; aún no hay un actor infantil 3D con rig y animación ni grabación infantil auténtica. No usar modelos adultos reducidos de tamaño como sustitutos.
 - **Calidad pendiente de verificación:** recorrido completo de cinco minutos con evidencia en Android/iPhone físicos, capturas de las tres habitaciones, tiempos de carga, FPS y validación del sistema de audio. Los pipelines de compilación no certifican por sí solos un playtest comercial completo.
+
+## QA de continuidad — 18/10/2026
+
+- **Corrección de controles:** el objetivo de interacción se decide por precisión de apuntado y no por cuál de las esferas de colisión transparentes interseca primero la cámara. Así la mochila no impide seleccionar el perchero y los objetos cercanos no bloquean las pistas del fondo.
+- **Apoyos 3D:** el teléfono y el reloj esperan a que cargue el GLB de su mesa y utilizan la altura real de la superficie para colocarse. El cuadro se anima hasta quedar tendido junto a la pared, sin estar suspendido.
+- **Audio:** el control de silencio bloquea también las señales Web Audio tardías, los clics y los golpes.
+- **Ritmo independiente del tiempo:** recuperar la primera llave tira un cuadro; abrir la sala puede mostrar una aparición con parpadeo; entrar al dormitorio provoca un golpe y parpadeo. Una partida rápida conserva sorpresas en vez de perder las escenas de tensión.
+- **Prueba de navegador añadida:** `e2e/mother-escape-journey.spec.ts` intenta completar las tres habitaciones con puntería de cámara y pulsaciones reales, fotografía, tres libros, tres engranajes, apertura del armario y capturas de la revelación **en viewport 390 × 844**.
+- **CI habilitada:** `.github/workflows/escape-platform-qa.yml` incluye esta prueba Playwright además del lint, typecheck, build y tests de lógica.
+- **Estado de validación:** la compilación de Vercel valida las rutas y tipos; no constituye por sí misma evidencia de que Playwright haya finalizado satisfactoriamente. El conector actual no expone resultados de los jobs `push`, por lo que **no afirmar tests E2E aprobados** sin recuperar su resultado y capturas.
+- **Pendiente comercial:** evaluar personaje infantil GLB animado con licencia verificada, grabación de voz auténtica, prueba táctil en iPhone/Android físicos, FPS, fidelidad de muebles en capturas reales.
