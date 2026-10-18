@@ -48,3 +48,12 @@
 - **Animaciones del niño:** si el archivo incluye clips se emplea `THREE.AnimationMixer`; si solo contiene rig se utiliza movimiento de brazo/cabeza muy sutil; si el recurso no puede cargarse no se coloca una figura humana primitiva como sustituto. Requiere revisión visual del modelo real tras materializarlo.
 - **Consistencia visual:** la fotografía original aparece sobre el soporte 3D de la pared, con muebles apoyados mediante alturas medidas en los GLB y sombras de contacto. Los globos quedan distribuidos a los lados para dejar el mensaje y el personaje visibles.
 - **Exigencia de publicación comercial:** tener el juego compilado y el Playwright de escritorio aprobados no equivale a terminar los ensayos con dispositivos físicos; probar en Android y iPhone y evaluar comportamiento de GPU, uso de memoria y audio antes de campañas de pago.
+
+## Primer acertijo rediseñado — 18/10/2026
+
+- Se retiró por completo la llave del perchero (que ahora es un señuelo no resolutivo) y se colocó una cama con cabecera GLB CC0 real del índice `public/viralio-3d/index.json`: `hotel-bed-with-headboard-and-bench-original-hotel-furnishing`, fuente [Innerscene](https://www.innerscene.com/tools/library/3d-parts/hotel-bed-with-headboard-and-bench-original-hotel-furnishing-700471ba).
+- La almohada tiene geometría de tela subdividida y materiales rugosos, pivote animado y una llave de bronce reducida a escala física. El objeto `key1` y su hotspot permanecen invisibles e inaccesibles hasta levantar la almohada en 3D.
+- El jugador puede examinar la cama y elegir revisar la manta (falsa pista) o levantar la almohada. Al levantarla debe apuntar/tocar la llave por separado para recogerla. Un hotspot directo sobre la almohada también permite interactuar físicamente sin ventana emergente.
+- La mochila contiene una nota con pista indirecta acerca del lugar donde el niño apoya la cabeza; el perchero se puede inspeccionar pero ya no otorga premios.
+- Se sumaron mesa de luz y reloj GLB CC0, sombras de contacto para la cama y colisiones que respetan su volumen. Se mantiene el cartel introductorio y el tiempo de cinco minutos.
+- La prueba `e2e/mother-escape-journey.spec.ts` verifica engaño en el perchero, pista de mochila, manta, levantamiento de almohada, recogida separada de llave y recorrido posterior por las tres habitaciones.
