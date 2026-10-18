@@ -7,7 +7,7 @@ import {MotherWorld,type MotherStage} from "./MotherWorld";
 import {BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,photoComplete,enterOrderedItem,timeRemaining,dueMotherBeats,type MotherGear} from "./MotherRules";
 import "./mother-escape.css";
 
-type Mode="intro"|"playing"|"revealing"|"failed"|"won"|"unsupported";
+type Mode="intro"|"briefing"|"playing"|"revealing"|"failed"|"won"|"unsupported";
 type Inspect=null|"phone"|"portrait"|"books"|"music";
 type Gear=MotherGear;
 const START=300;
@@ -179,12 +179,20 @@ export default function MotherEscape(){
     }
   },[mode,inspect,stage,key1,portraitDone,booksDone,gears,musicDone,tell,prompt,advance,winning,muted]);
   useEffect(()=>{actionRef.current=act;},[act]);
+  const openBriefing=()=>{
+    // Show the very first clue before starting the five-minute countdown.
+    setStage(0);
+    world.current?.setActive(true);
+    world.current?.setStage(0);
+    setMessage(null);
+    setMode("briefing");
+  };
   const begin=()=>{
     setMode("playing");setSeconds(START);
     setStage(0);world.current?.setActive(true);world.current?.setStage(0);setInspect(null);
     endAt.current=performance.now()+START*1000;
     lastSecond.current=-1;eventsSeen.current.clear();
-    setMessage({title:"MENSAJE DE TU HIJO",body:"«Mamá, estoy encerrado. No puedo abrir la puerta. Por favor, vení a buscarme. Tenés cinco minutos.»",tone:"danger"});
+    setMessage(null);
     completed.current=Date.now();
     sound.current.setEnabled(!muted);
     if(!muted)void sound.current.start().then(()=>sound.current.message()).catch(()=>{});
@@ -304,6 +312,19 @@ export default function MotherEscape(){
         </div>
       </div>
     </>}
+    {mode==="briefing"&&<section className="mom-briefing-backdrop" role="dialog" aria-modal="true" aria-labelledby="mom-briefing-title" aria-describedby="mom-briefing-context">
+      <div className="mom-briefing-card">
+        <div className="mom-briefing-kicker"><span className="mom-briefing-alert" aria-hidden="true">●</span> MENSAJE INTERRUMPIDO <span className="mom-briefing-step">01 / 03</span></div>
+        <p className="mom-briefing-voice" id="mom-briefing-context">«Mamá, estoy encerrado. No puedo abrir la puerta... Por favor, vení a buscarme.»</p>
+        <div className="mom-briefing-rule"/>
+        <span className="mom-briefing-label">TU PRIMER OBJETIVO</span>
+        <h2 id="mom-briefing-title">Encontrá la llave que abre la primera puerta.</h2>
+        <div className="mom-briefing-clue"><span>PRIMERA PISTA</span><p>Tu hijo dejó algo entre sus cosas. Examiná los objetos de la habitación: uno de ellos puede decirte por dónde empezar.</p></div>
+        <p className="mom-briefing-instructions">Arrastrá para mirar · Tocá los objetos brillantes · Usá las flechas para moverte.</p>
+        <button className="mom-primary mom-briefing-start" onClick={begin}>EMPEZAR BÚSQUEDA <span aria-hidden="true">↗</span></button>
+        <div className="mom-briefing-clock">◷ TENÉS 05:00 · EL TIEMPO EMPIEZA AL TOCAR EL BOTÓN</div>
+      </div>
+    </section>}
     {mode==="revealing"&&<section className="mom-reveal" aria-live="polite"><div className="mom-reveal-line">LA ÚLTIMA PUERTA SE ABRE...</div><div className="mom-reveal-message">«¿Mamá?...»<br/><strong>¡Sorpresa!</strong></div></section>}
     {mode==="intro"&&<section className="mom-screen mom-intro">
       <div className="mom-mark">VIRALIO ORIGINALS <span> / EXPERIENCIA ESPECIAL</span></div>
@@ -311,7 +332,7 @@ export default function MotherEscape(){
       <h1>¿DÓNDE ESTÁS,<br/><em>MAMÁ?</em></h1>
       <p>Tu hijo desapareció en algún lugar de la casa. Su último mensaje fue interrumpido. Las puertas están cerradas y el tiempo empieza a correr.</p>
       <div className="mom-dossier"><span>◷ 05:00</span><span>◇ 3 HABITACIONES</span><span>✦ 1 OPORTUNIDAD</span></div>
-      <button className="mom-primary" onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
+      <button className="mom-primary" onClick={openBriefing}>ENTRAR A LA CASA <span>↗</span></button>
       <small>Usá auriculares · Tocá para explorar · Deslizá para mirar · Recomendado a partir de 10 años</small>
     </section>}
     {mode==="unsupported"&&<section className="mom-screen mom-failure"><span className="mom-pretitle">DISPOSITIVO NO COMPATIBLE</span><h1>Necesitamos<br/><em>WebGL2.</em></h1><p>Este navegador no permite mostrar la casa en 3D. Probá con Chrome, Safari o Firefox actualizado en un dispositivo compatible.</p><Link className="mom-primary" href="/">VOLVER A VIRALIO ↗</Link></section>}
