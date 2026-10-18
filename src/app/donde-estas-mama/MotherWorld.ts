@@ -4,7 +4,7 @@ import { loadViralioPBR } from "@/lib/viralio-rooms";
 
 export type MotherStage = 0 | 1 | 2;
 type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage };
-type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number};
+type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string};
 const centers = [0,-8,-16] as const;
 
 export class MotherWorld {
@@ -41,6 +41,7 @@ export class MotherWorld {
   private readonly ownedTextures: THREE.Texture[] = [];
   private assetSpecs: AssetSpec[] = [];
   private requestedStages = new Set<MotherStage>();
+  private assetLoads = new Map<string,Promise<THREE.Group|null>>();
   onInteract: (id:string)=>void = ()=>{};
   onFocus: (label:string)=>void = ()=>{};
   onNotice: (message:string)=>void = ()=>{};
@@ -175,21 +176,33 @@ export class MotherWorld {
   private loadStageAssets(stage:MotherStage){
     if(this.requestedStages.has(stage))return;
     this.requestedStages.add(stage);
-    for(const spec of this.assetSpecs){
-      if(spec.stage===stage)void this.asset(spec);
+    const local=this.assetSpecs.filter(a=>a.stage===stage);
+    // Start support furniture first, then ornaments whose vertical position depends on it.
+    for(const spec of [...local.filter(a=>!a.supportId),...local.filter(a=>a.supportId)]){
+      this.assetLoads.set(stage+":"+spec.id,this.asset(spec));
     }
   }
-  private async asset(a:AssetSpec){
+  private async asset(a:AssetSpec):Promise<THREE.Group|null>{
     try{
       const {scene}=await loadViralio3DAsset(a.id);
-      if(!this.running)return;
+      if(!this.running)return null;
       const box=new THREE.Box3().setFromObject(scene);
       const size=new THREE.Vector3(),center=new THREE.Vector3();
       box.getSize(size);box.getCenter(center);
-      if(size.x<.001||size.y<.001||size.z<.001)return;
+      if(size.x<.001||size.y<.001||size.z<.001)return null;
       const k=Math.min(a.width/Math.max(size.x,size.z),2.2/size.y);
       scene.scale.setScalar(k);
-      const lift = a.id==="desk-call-office-phone" ? .62 : a.id==="mantel-clock" ? .73 : a.id==="crime-photo-frame" ? 1.45 : 0;
+      let lift=a.id==="crime-photo-frame"?1.45:0;
+      if(a.supportId){
+        const support=await this.assetLoads.get(a.stage+":"+a.supportId);
+        if(!this.running)return null;
+        if(support){
+          support.updateMatrixWorld(true);
+          lift=Math.max(0,new THREE.Box3().setFromObject(support).max.y)+.008;
+        }else{
+          console.warn("Missing support for decoration",a.id,a.supportId);
+        }
+      }
       // Correct the pivot in the model's rotated coordinates, not the original AABB.
       const angle=a.rotate||0;
       const horizontalCenter=new THREE.Vector3(center.x*k,0,center.z*k).applyAxisAngle(new THREE.Vector3(0,1,0),angle);
@@ -199,17 +212,18 @@ export class MotherWorld {
       this.scene.add(scene);
       scene.userData.assetId=a.id;
       this.dynamicProps.push(scene);
-    }catch(e){console.warn("Asset CC0 no disponible",a.id,e);}
+      return scene;
+    }catch(e){console.warn("Asset CC0 no disponible",a.id,e);return null;}
   }
   private buildProps(){
     const assets:AssetSpec[]=[
       {id:"universal-ph-worn-coffee-table",stage:0,x:-2.05,z:.8,width:1.45},
-      {id:"desk-call-office-phone",stage:0,x:-2.05,z:.8,width:.42},
+      {id:"desk-call-office-phone",stage:0,x:-2.05,z:.8,width:.42,supportId:"universal-ph-worn-coffee-table"},
       {id:"flush-flush-interior-door",stage:0,x:0,z:-3.64,width:1.48,depth:.3},
       {id:"football-coat-stand",stage:0,x:2.35,z:-1.45,width:.9},
       {id:"football-backpack",stage:0,x:1.9,z:.65,width:.77},
       {id:"oak-side-table",stage:0,x:-2.2,z:-2.3,width:.88},
-      {id:"mantel-clock",stage:0,x:-2.2,z:-2.3,width:.65},
+      {id:"mantel-clock",stage:0,x:-2.2,z:-2.3,width:.65,supportId:"oak-side-table"},
       {id:"universal-modular-sofa-set",stage:1,x:-2,z:0,width:2.2,rotate:Math.PI/2},
       {id:"universal-ph-stone-coffee-table",stage:1,x:0,z:.9,width:1.1},
       {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.5,z:-1.3,width:1.15},
