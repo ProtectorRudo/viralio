@@ -55,7 +55,7 @@ export default async function ExperiencePage({params}:Props) {
            <ExperienceIntensity room={room} variant="detail"/>
            <p><strong>Dispositivos:</strong> celular o computadora compatibles con gráficos 3D (WebGL2).</p>
            <p><strong>Recomendación:</strong> jugá con auriculares y en un lugar tranquilo.</p>
-           <div className="ve-room-access-note" role="status">{room.slug==="donde-estas-mama"?<><strong>Experiencia especial disponible.</strong><span>Jugá gratis esta misión de cinco minutos, directamente desde tu navegador.</span></>:<><strong>Acceso individual próximamente.</strong><span>Estamos preparando el sistema de compra de partidas. Los precios y las condiciones se informarán antes de contratar.</span></>}</div>
+           <div className="ve-room-access-note" role="status">{room.slug==="donde-estas-mama"?<><strong>Experiencia especial disponible.</strong><span>Accedé a la misión especial de cinco minutos, directamente desde un navegador compatible.</span></>:<><strong>Acceso individual próximamente.</strong><span>Estamos preparando el sistema de compra de partidas. Los precios y las condiciones se informarán antes de contratar.</span></>}</div>
          </aside>
        </div>
      </section>
