@@ -104,7 +104,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   const bed=page.getByRole("dialog",{name:"Examinar objeto"});
   await expect(bed.getByRole("heading",{name:/Una cama sin hacer/})).toBeVisible();
   await bed.getByRole("button",{name:/REVISAR LA MANTA/}).click();
-  await expect(bed.getByText(/No encontrás ninguna llave/)).toBeVisible();
+  await expect(bed.getByText(/marca antigua en la tela/)).toBeVisible();
   await bed.getByRole("button",{name:/LEVANTAR LA ALMOHADA/}).click();
   await expect(bed).toHaveCount(0);
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
