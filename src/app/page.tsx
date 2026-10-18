@@ -18,7 +18,7 @@ export default function Home(){
    <main id="contenido">
      <section className="ve-hero" aria-labelledby="ve-hero-title">
        <div className="ve-hero-visual" aria-hidden="true">
-         {experiences.map((room,index)=><div key={room.slug} className={`ve-portal ve-portal-${room.theme}`}>
+         {experiences.slice(0,3).map((room,index)=><div key={room.slug} className={`ve-portal ve-portal-${room.theme}`}>
            <div className="ve-portal-photo" style={{backgroundImage:`url("${room.cover}")`}}/>
            <span className="ve-portal-overline">{String(index+1).padStart(2,"0")} / {room.categoryLabel}</span>
            <span className="ve-portal-name">{room.title}</span>
