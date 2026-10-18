@@ -582,7 +582,7 @@ export class MotherWorld {
     hit.position.set(x,y,centers[stage]+z);
     hit.userData.spot=id;hit.userData.label=label;
     this.scene.add(hit);
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.16,.013,8,24),new THREE.MeshBasicMaterial({color:0xffd5a0,transparent:true,opacity:.79,depthTest:false}));
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.115,.009,8,24),new THREE.MeshBasicMaterial({color:0xffd5a0,transparent:true,opacity:.53,depthTest:false}));
     ring.position.set(x,y+.31,centers[stage]+z);
     ring.renderOrder=5;
     this.scene.add(ring);
@@ -724,9 +724,12 @@ export class MotherWorld {
     if(this.pillow&&this.pillowRaisedAt>=0){
       const progress=THREE.MathUtils.clamp((this.clock.elapsedTime-this.pillowRaisedAt)/.65,0,1);
       const lift=progress*progress*(3-2*progress);
-      this.pillow.position.y=this.pillowRestY+.24*lift;
-      this.pillow.position.z=centers[0]-2.42-.26*lift;
-      this.pillow.rotation.x=-.28*lift;
+      // Lift over an arc and set the cushion DOWN on the mattress beside the key.
+      this.pillow.position.x=2.06+.48*lift;
+      this.pillow.position.y=this.pillowRestY+.15*Math.sin(Math.PI*lift);
+      this.pillow.position.z=centers[0]-2.42+.37*lift;
+      this.pillow.rotation.y=.22*lift;
+      this.pillow.rotation.z=.1*lift;
     }
     if(this.celebratory&&this.childModel){
       this.childMixer?.update(dt);
