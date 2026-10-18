@@ -136,3 +136,10 @@
 .mom-reveal-line{font:700 clamp(10px,2.5vw,15px)/1.5 Arial,sans-serif;letter-spacing:.3em;color:#ffedd1;text-shadow:0 2px 15px #000;animation:mom-in .75s both;}
 .mom-reveal-message{font:italic clamp(27px,6.7vw,59px)/1.35 Georgia,serif;color:#fff7e7;text-shadow:0 3px 20px #27130e,0 0 23px #492b20;animation:mom-in 1s .9s both;}
 .mom-reveal-message strong{display:inline-block;font-size:1.3em;color:#ffcab2;font-weight:400;margin-top:12px;}
+
+/* Four genuine quadrants of the same locally authored family photograph. */
+.mom-photo-art{background-image:url("/donde-estas-mama/foto-familiar.svg")!important;background-size:200% 200%!important;background-repeat:no-repeat!important;color:transparent!important;}
+.mom-photo-art.mom-piece-0{background-position:0 0!important;}
+.mom-photo-art.mom-piece-1{background-position:100% 0!important;}
+.mom-photo-art.mom-piece-2{background-position:0 100%!important;}
+.mom-photo-art.mom-piece-3{background-position:100% 100%!important;}
