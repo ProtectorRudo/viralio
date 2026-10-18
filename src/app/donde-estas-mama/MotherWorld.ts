@@ -29,6 +29,7 @@ export class MotherWorld {
   private dynamicProps: THREE.Object3D[] = [];
   private sceneSurprise: THREE.Mesh | null = null;
   private fallenFrame: THREE.Mesh | null = null;
+  private frameFallAt = -1;
   private sceneMoved = new Set<number>();
   private pickableItems = new Map<string,THREE.Group>();
   private readonly raycaster = new THREE.Raycaster();
@@ -438,13 +439,21 @@ export class MotherWorld {
     this.loadStageAssets(stage);
     if(stage<2)this.loadStageAssets((stage+1) as MotherStage);
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
+    if(stage===1){
+      this.apparitionUntil=performance.now()+1900;
+      this.flickerUntil=performance.now()+470;
+    }
+    if(stage===2)this.flickerUntil=performance.now()+650;
     if(this.sceneSurprise?.visible)this.sceneSurprise.position.z=centers[stage]-3.59;
     this.yaw=0;this.pitch=-.04;this.setRotation();this.onFocus("");
   }
+  triggerFrameDrop(){
+    if(this.sceneMoved.has(12)||!this.fallenFrame)return;
+    this.sceneMoved.add(12);
+    this.frameFallAt=this.clock.elapsedTime;
+  }
   setSuspense(elapsed:number){
-    if(elapsed>=12&&!this.sceneMoved.has(12)&&this.fallenFrame){
-      this.sceneMoved.add(12);this.fallenFrame.rotation.z=-.64;this.fallenFrame.position.y=.66;
-    }
+    if(elapsed>=12&&!this.sceneMoved.has(12))this.triggerFrameDrop();
     if(elapsed>=50&&elapsed<53){
       this.apparitionUntil=performance.now()+1800;
     }
@@ -514,6 +523,13 @@ export class MotherWorld {
     const label=focus?.userData.label||"";
     if(label!==this.lastFocus){this.lastFocus=label;this.onFocus(label);}
     const t=this.clock.elapsedTime;
+    if(this.fallenFrame&&this.frameFallAt>=0){
+      const p=THREE.MathUtils.clamp((t-this.frameFallAt)/.62,0,1);
+      const fall=p*p*(3-2*p);
+      this.fallenFrame.position.x=-3.57+.46*fall;
+      this.fallenFrame.position.y=1.77-1.73*fall;
+      this.fallenFrame.rotation.z=-Math.PI/2*fall;
+    }
     if(this.shadowFigure){
       this.shadowFigure.visible=!this.celebratory&&performance.now()<this.apparitionUntil&&this.stage!==2;
       if(this.shadowFigure.visible){
