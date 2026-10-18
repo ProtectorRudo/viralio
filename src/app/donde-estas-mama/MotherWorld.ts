@@ -377,14 +377,17 @@ export class MotherWorld {
     this.wardrobeOriginX=wardrobe?.position.x||0;
     const group=new THREE.Group();
     const stageZ=centers[2];
-    const colors=[0xf2b0c4,0xf5d998,0xd3b0df,0xd1e6ce];
+    const colors=[0xf1c3c8,0xefddc0,0xe6bacf,0xf4e7d7];
     const cord=new THREE.MeshBasicMaterial({color:0xf5deb8});
-    for(let i=0;i<11;i++){
-      const x=-2.8+i*.56;
+    // Two intentional balloon bouquets leave the child's face and the banner unobstructed.
+    for(let i=0;i<10;i++){
+      const side=i<5?-1:1;
+      const offset=i%5;
+      const x=side*(2.04+(offset%3)*.28);
       const color=colors[i%colors.length];
       const balloon=new THREE.Mesh(new THREE.SphereGeometry(.19,16,12),new THREE.MeshStandardMaterial({color,roughness:.29,metalness:.08}));
       balloon.scale.set(1,1.35,.86);
-      balloon.position.set(x,2.38+Math.sin(i*1.9)*.20,stageZ-2.37+(i%3)*.08);
+      balloon.position.set(x,2.18+(i%5)*.13,stageZ-2.77+(i%2)*.16);
       group.add(balloon);
       const stringPoints=[
         new THREE.Vector3(x,balloon.position.y-.26,balloon.position.z),
@@ -597,9 +600,9 @@ export class MotherWorld {
     this.eventLights.forEach(light=>{light.color.setHex(0xffc58c);light.intensity=49;});
     this.scene.background=new THREE.Color(0x382622);
     this.renderer.toneMappingExposure=1.63;
-    for(let i=0;i<32;i++){
-      const mesh=new THREE.Mesh(new THREE.SphereGeometry(.036+Math.random()*.045,6,6),new THREE.MeshBasicMaterial({color:i%2?0xffdca1:0xf6aeb9}));
-      mesh.position.set((Math.random()-.5)*4,.6+Math.random()*2.3,centers[2]-1+(Math.random()-.5)*2);
+    for(let i=0;i<16;i++){
+      const mesh=new THREE.Mesh(new THREE.SphereGeometry(.012+Math.random()*.013,5,5),new THREE.MeshBasicMaterial({color:i%2?0xffdca1:0xf6aeb9}));
+      mesh.position.set((Math.random()-.5)*5,1.2+Math.random()*1.6,centers[2]-1+(Math.random()-.5)*1.8);
       this.scene.add(mesh);this.dynamicProps.push(mesh);
     }
   }
