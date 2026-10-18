@@ -24,6 +24,14 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   expect(compatible,"Chromium must render WebGL2; a skipped 3D test is not a pass").toBe(true);
   await expect(page.locator(".mom-world canvas")).toHaveCount(1);
   await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
+  const introCard=page.getByRole("dialog",{name:/Encontrá la llave que abre la primera puerta/});
+  await expect(introCard).toBeVisible();
+  await expect(introCard.getByText("PRIMERA PISTA")).toBeVisible();
+  await expect(introCard.getByText(/Examiná los objetos de la habitación/)).toBeVisible();
+  await expect(page.locator(".mom-time")).toHaveCount(0);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-first-clue.png"});
+  await introCard.getByRole("button",{name:/EMPEZAR BÚSQUEDA/}).click();
+  await expect(introCard).toHaveCount(0);
   await expect(page.locator(".mom-time")).toHaveText(/0[45]:[0-5]\d/);
   const renderStats=await page.evaluate(async()=>{
     const canvas=document.querySelector<HTMLCanvasElement>(".mom-world canvas");
