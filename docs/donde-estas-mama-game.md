@@ -57,3 +57,12 @@
 - La mochila contiene una nota con pista indirecta acerca del lugar donde el niño apoya la cabeza; el perchero se puede inspeccionar pero ya no otorga premios.
 - Se sumaron mesa de luz y reloj GLB CC0, sombras de contacto para la cama y colisiones que respetan su volumen. Se mantiene el cartel introductorio y el tiempo de cinco minutos.
 - La prueba `e2e/mother-escape-journey.spec.ts` verifica engaño en el perchero, pista de mochila, manta, levantamiento de almohada, recogida separada de llave y recorrido posterior por las tres habitaciones.
+
+## Auditoría visual y controles — 18/10/2026
+
+- Tres salas reorganizadas con mobiliario GLB ya publicado, centros de paso despejados, posiciones de detección y colisiones coordinadas con los modelos. Muebles y objetos pequeños apoyados físicamente. Primer cuarto rotulado como cuarto familiar.
+- Ningún hotspot genera un círculo de ayuda: se eliminaron las mallas toroidales y animaciones pulsantes; los objetivos se descubren examinando el entorno y reciben confirmación solo al apuntar o tocar. El botón opcional `¿PISTA?` permanece para accesibilidad.
+- Joystick circular analógico táctil: dirección y velocidad proporcionales, zona muerta central, captura de puntero, reinicio automático al soltar/cancelar, control de cámara con otro dedo, WASD conservado en escritorio.
+- Se retiraron falsas molduras verticales y tapetes de cubo fino, se añadió un marco de madera a las puertas, se corrigió la mesa de luz que tapaba una puerta y se cerró el vano sin puerta de la última habitación.
+- Evidencia de QA: `e2e/mother-escape-journey.spec.ts` pasa las tres salas tras sus nuevas ubicaciones; `e2e/viralio-escape-home.spec.ts` verifica joystick y retorno de la palanca al centro.
+- Pendiente no certificable en CI: FPS y ergonomía en dispositivos Android y iOS físicos de gama media.
