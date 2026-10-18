@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-label="Pasillo misterioso de una casa, una puerta iluminada y cinco minutos para entrar">
+<defs>
+<linearGradient id="wall" x2="1" y2="1"><stop stop-color="#1b1e29"/><stop offset=".6" stop-color="#272028"/><stop offset="1" stop-color="#100f17"/></linearGradient>
+<linearGradient id="door" x2=".5" y2="1"><stop stop-color="#f3cd9a"/><stop offset=".55" stop-color="#d19366"/><stop offset="1" stop-color="#8b443e"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#ffcda1" stop-opacity=".8"/><stop offset="1" stop-color="#d27a4e" stop-opacity="0"/></radialGradient>
+<linearGradient id="shade" x2="0" y2="1"><stop stop-color="#040611" stop-opacity=".3"/><stop offset=".6" stop-color="#040611" stop-opacity=".05"/><stop offset="1" stop-color="#040611" stop-opacity=".93"/></linearGradient>
+</defs>
+<rect width="1200" height="1500" fill="#101017"/>
+<path d="M0 0H1200V1500H0Z" fill="url(#wall)"/>
+<path d="M0 0L450 270V1250L0 1500Z" fill="#161923"/>
+<path d="M1200 0L750 270V1250L1200 1500Z" fill="#17141e"/>
+<path d="M450 270H750V1250H450Z" fill="#1e1b25" stroke="#655146" stroke-width="9"/>
+<ellipse cx="600" cy="750" rx="395" ry="580" fill="url(#glow)"/>
+<path d="M488 315H712V1195H488Z" fill="url(#door)" stroke="#563c34" stroke-width="16"/>
+<path d="M518 360H681V1140H518Z" fill="none" stroke="#8c6246" stroke-width="11"/>
+<path d="M600 315V1190M518 805H681" stroke="#ae7153" stroke-opacity=".55" stroke-width="7"/>
+<circle cx="667" cy="805" r="11" fill="#fff4ce"/>
+<path d="M0 1500L488 1195H712L1200 1500Z" fill="#2c2221"/>
+<path d="M395 1240L805 1240M330 1300L870 1300M220 1400L980 1400" stroke="#ad7860" stroke-opacity=".2" stroke-width="5"/>
+<rect x="80" y="85" width="1040" height="1330" fill="none" stroke="#a48b77" stroke-opacity=".25" stroke-width="3"/>
+<rect width="1200" height="1500" fill="url(#shade)"/>
+<text x="95" y="145" fill="#e9c9a9" font-size="29" font-family="Arial" letter-spacing="9">VIRALIO ORIGINALS</text>
+<text x="95" y="1060" fill="#fff8ea" font-size="89" font-family="Georgia" letter-spacing="-1">¿DÓNDE</text>
+<text x="95" y="1155" fill="#fff8ea" font-size="89" font-family="Georgia">ESTÁS,</text>
+<text x="95" y="1250" fill="#ffd1b2" font-size="104" font-style="italic" font-family="Georgia">MAMÁ?</text>
+<path d="M96 1286H1100" stroke="#e5ba98" stroke-width="2" opacity=".55"/>
+<text x="95" y="1342" fill="#ecd4bf" font-size="29" font-family="Arial" letter-spacing="4">TENÉS CINCO MINUTOS</text>
+<text x="95" y="1410" fill="#9d9da7" font-size="22" font-family="Arial" letter-spacing="6">ESPECIAL DÍA DE LA MADRE</text>
+</svg>
