@@ -39,6 +39,8 @@ export class MotherWorld {
   private childArm: THREE.Bone | null = null;
   private childHead: THREE.Bone | null = null;
   private childOriginalY = 0;
+  private childOriginalZ = 0;
+  private childOriginalRotation = 0;
   private childArmRest = 0;
   private childHeadRest = 0;
   private activeScene = false;
@@ -244,6 +246,8 @@ export class MotherWorld {
       if(a.id==="mother-child-eli"){
         this.childModel=scene;
         this.childOriginalY=scene.position.y;
+        this.childOriginalZ=scene.position.z;
+        this.childOriginalRotation=scene.rotation.y;
         const armNames:THREE.Bone[]=[],headNames:THREE.Bone[]=[];
         scene.traverse(node=>{
           if(!(node instanceof THREE.Bone))return;
@@ -287,7 +291,7 @@ export class MotherWorld {
       {id:"bookshelf-with-bins-original-interior-furnishing",stage:2,x:2.4,z:-1.1,width:1.15},
       {id:"universal-ph-round-wood-table",stage:2,x:1.5,z:1.4,width:1.1},
       // The child is hidden behind the locked wardrobe until the successful reveal.
-      {id:"mother-child-eli",stage:2,x:-.73,z:-2.66,width:.51,rotate:Math.PI}
+      {id:"mother-child-eli",stage:2,x:-.73,z:-2.66,width:.51,rotate:0}
     ];
     this.assetSpecs=assets;
     // Stage-aware streaming: load only the entrance immediately.
@@ -416,6 +420,11 @@ export class MotherWorld {
     flame.position.set(0,1.255,stageZ-1.94);group.add(flame);
     const light=new THREE.PointLight(0xffb77e,17,4,2);
     light.position.set(0,1.34,stageZ-1.94);group.add(light);
+    const portraitLight=new THREE.SpotLight(0xffe2c1,25,5.5,Math.PI/5,.72,1.8);
+    portraitLight.position.set(-1.2,2.65,stageZ+.25);
+    portraitLight.target.position.set(-.73,1.13,stageZ-2.65);
+    portraitLight.castShadow=false;
+    group.add(portraitLight,portraitLight.target);
     const bannerCanvas=document.createElement("canvas");bannerCanvas.width=1024;bannerCanvas.height=200;
     const ctx=bannerCanvas.getContext("2d");
     if(ctx){
@@ -657,6 +666,8 @@ export class MotherWorld {
       if(this.childHead&&!this.childMixer)this.childHead.rotation.y=this.childHeadRest+.085*Math.sin(tick*1.7);
       // Restrained breathing and a small smile-like lift; no rescaled adult actor.
       this.childModel.position.y=this.childOriginalY+Math.sin(tick*2.6)*.009;
+      this.childModel.position.z=this.childOriginalZ+THREE.MathUtils.smoothstep(tick,.7,2.7)*.12;
+      this.childModel.rotation.y=this.childOriginalRotation+.045*Math.sin(tick*1.4);
     }
     if(this.celebratory){
       const wardrobe=this.dynamicProps.find(o=>o.userData.assetId==="two-door-wardrobe-original-interior-furnishing");
