@@ -78,8 +78,25 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
     await page.keyboard.press("e");
   };
 
-  await interact(2.35,1.5,-1.45,/Perchero/);
+  // The old perchero is now a decoy, not an instant win.
+  await interact(2.7,1.6,2.25,/Perchero/);
+  await expect(page.getByText(/Solo hay algunos abrigos/)).toBeVisible();
+  await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
+
+  await interact(1.9,.8,.65,/Mochila/);
+  await expect(page.getByText(/donde apoyo la cabeza/)).toBeVisible();
+  await interact(1.74,.89,-1.06,/Cama desordenada/);
+  const bed=page.getByRole("dialog",{name:"Examinar objeto"});
+  await expect(bed.getByRole("heading",{name:/Una cama sin hacer/})).toBeVisible();
+  await bed.getByRole("button",{name:/REVISAR LA MANTA/}).click();
+  await expect(bed.getByText(/No encontrás ninguna llave/)).toBeVisible();
+  await bed.getByRole("button",{name:/LEVANTAR LA ALMOHADA/}).click();
+  await expect(bed).toHaveCount(0);
+  await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-hidden-key-revealed.png"});
+  await interact(2.06,.67,-2.42,/Llave pequeña/);
   await expect(page.getByText(/ENCONTRASTE UNA LLAVE/)).toBeVisible();
+  await expect(page.locator(".mom-inventory")).toContainText("Llave");
   await interact(0,1.5,-3.67,/Puerta de la sala/);
   await expect(page.locator(".mom-location")).toContainText("SALA FAMILIAR");
   reset(1);
