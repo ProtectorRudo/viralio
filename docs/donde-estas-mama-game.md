@@ -89,3 +89,11 @@
 - Habitación final: ni los avisos generales ni la caja musical revelan dónde están las tres piezas o en qué orden instalarlas. El orden solo se dice explícitamente en el tercer nivel optativo.
 - Las confirmaciones narrativas dejan de adelantar la puerta siguiente. El puntero y el joystick permanecen.
 - Tests: reglas puras comprueban los 9 × 3 textos y que el nivel 1/2 no contiene palabras solución; Playwright comprueba pistas discretas en móvil y continúa la partida completa.
+
+
+## Cuadro familiar — piezas arrastrables (18/10/2026)
+
+- Las cuatro piezas de la fotografía ahora se pueden **deslizar con el dedo** directamente sobre la otra casilla para intercambiarlas. Implementación con Pointer Events, umbral táctil, captura de puntero, realimentación visual de pieza elevada y casilla destino, reinicio tras cancelación, y bloqueo del clic sintético después de arrastrar.
+- Compatible con mouse y pantalla táctil; también se conserva la selección mediante dos toques/clics por accesibilidad y el botón físico ↻ de cada fragmento para cambiar su orientación.
+- Los cambios de posición reutilizan `swapPhotoTiles` y exigen completar tanto el orden como la rotación; no hay pista visual que revele automáticamente la solución.
+- Playwright verifica una permuta real mediante arrastre de mouse y otra mediante `Input.dispatchTouchEvent` de Chromium, antes de completar el recorrido de las tres habitaciones. Sin navegadores móviles físicos comprobados.
