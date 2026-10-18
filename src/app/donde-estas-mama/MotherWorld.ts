@@ -3,7 +3,7 @@ import { loadViralio3DAsset } from "@/lib/viralio-3d";
 import { loadViralioPBR } from "@/lib/viralio-rooms";
 
 export type MotherStage = 0 | 1 | 2;
-type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage };
+type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage; radius: number };
 type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string};
 const centers = [0,-8,-16] as const;
 
@@ -396,7 +396,7 @@ export class MotherWorld {
     ring.position.set(x,y+.31,centers[stage]+z);
     ring.renderOrder=5;
     this.scene.add(ring);
-    this.spots.push({id,mesh:hit,ring,stage});
+    this.spots.push({id,mesh:hit,ring,stage,radius});
   }
   private setRotation(){
     this.camera.rotation.order="YXZ";
@@ -407,9 +407,22 @@ export class MotherWorld {
     if(!rect.width||!rect.height)return null;
     this.pointer.set((x-rect.left)/rect.width*2-1,-(y-rect.top)/rect.height*2+1);
     this.raycaster.setFromCamera(this.pointer,this.camera);
-    const hits=this.raycaster.intersectObjects(this.spots.filter(s=>s.stage===this.stage).map(s=>s.mesh),false);
-    const valid=hits.find(h=>h.distance<5);
-    return valid?.object as THREE.Object3D|undefined;
+    // Invisible overlapping spheres made nearby objects steal touches from distant,
+    // perfectly centered puzzle props. Rank by aiming accuracy, not the first ray hit.
+    let best:THREE.Object3D|undefined;
+    let bestScore=Infinity;
+    for(const spot of this.spots){
+      if(spot.stage!==this.stage)continue;
+      const direction=spot.mesh.position.clone().sub(this.camera.position);
+      const distance=direction.length();
+      if(distance<.01||distance>6.4)continue;
+      const angle=this.raycaster.ray.direction.angleTo(direction.normalize());
+      const aimTolerance=Math.atan2(Math.min(.63,spot.radius*.68),distance);
+      if(angle>aimTolerance)continue;
+      const score=angle/aimTolerance+distance*.0005;
+      if(score<bestScore){bestScore=score;best=spot.mesh;}
+    }
+    return best;
   }
   private tap(x:number,y:number){
     const target=this.ray(x,y);
