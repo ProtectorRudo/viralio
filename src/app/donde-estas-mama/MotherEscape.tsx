@@ -104,15 +104,24 @@ export default function MotherEscape(){
   useEffect(()=>{
     const params=new URLSearchParams(window.location.search);
     const mama=params.get("mama"),hijo=params.get("hijo"),msg=params.get("mensaje");
+    // URL personalization is intentionally applied only after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if(mama)setRecipient(clean(mama,46));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if(hijo)setSender(clean(hijo,46));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if(msg)setDedication(clean(msg,420));
   },[]);
   useEffect(()=>{
     if(!host.current)return;
-    if(!document.createElement("canvas").getContext("webgl2")){setMode("unsupported");return;}
+    if(!document.createElement("canvas").getContext("webgl2")){
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMode("unsupported");return;
+    }
     let game:MotherWorld;
-    try{game=new MotherWorld(host.current);}catch(error){console.error("WebGL2 no disponible",error);setMode("unsupported");return;}
+    try{game=new MotherWorld(host.current);}catch(error){console.error("WebGL2 no disponible",error);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMode("unsupported");return;}
     world.current=game;
     game.onFocus=setFocus;
     game.onInteract=(id)=>actionRef.current(id);
@@ -236,11 +245,11 @@ export default function MotherEscape(){
     }
   };
   const retry=()=>window.location.reload();
-  const move=(dir:"forward"|"back"|"left"|"right",on:boolean)=>{
+  const move=useCallback((dir:"forward"|"back"|"left"|"right",on:boolean)=>{
     if(dir==="forward"||dir==="back")moving.current.forward=on?(dir==="forward"?1:-1):0;
     else moving.current.strafe=on?(dir==="right"?1:-1):0;
     world.current?.setMotion(moving.current.forward,moving.current.strafe);
-  };
+  },[]);
   const buttonProps=(dir:"forward"|"back"|"left"|"right")=>({
     onPointerDown:(e:ReactPointerEvent<HTMLButtonElement>)=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);move(dir,true);},
     onPointerUp:()=>move(dir,false),
@@ -257,7 +266,7 @@ export default function MotherEscape(){
     const up=(e:KeyboardEvent)=>{const dir=dirs[e.code];if(dir)move(dir,false);};
     window.addEventListener("keydown",down);window.addEventListener("keyup",up);
     return ()=>{window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);world.current?.setMotion(0,0);};
-  },[mode,inspect]);
+  },[mode,inspect,move]);
   const objective=stage===0?"ENCONTRÁ LA LLAVE":stage===1?"RECOMPONÉ LA FOTO Y ABRÍ LA BIBLIOTECA":"REPARÁ LA CAJA MUSICAL";
   return <main className={"mom-game mom-"+mode}>
     <div ref={host} className="mom-world" aria-label="Exploración en primera persona de una casa familiar"/>
