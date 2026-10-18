@@ -53,7 +53,7 @@ export class MotherWorld {
   private pillow:THREE.Group|null=null;
   private pillowRaisedAt=-1;
   private pillowLifted=false;
-  private pillowRestY=.84;
+  private pillowRestY=.62;
   private readonly raycaster = new THREE.Raycaster();
   private readonly pointer = new THREE.Vector2();
   private shadowFigure: THREE.Group | null = null;
@@ -310,8 +310,8 @@ export class MotherWorld {
     this.spot("caja",0,1.9,.8,.65,1.1,"Mochila");
     this.spot("perchero",0,2.7,1.6,2.25,.7,"Perchero");
     this.spot("cama",0,1.74,.89,-1.06,.64,"Cama desordenada");
-    this.spot("almohada",0,2.06,.88,-2.42,.65,"Almohada");
-    this.spot("llave",0,2.06,.67,-2.42,.55,"Llave pequeña");
+    this.spot("almohada",0,2.06,.68,-2.42,.65,"Almohada");
+    this.spot("llave",0,2.06,.6,-2.42,.55,"Llave pequeña");
     this.setSpotEnabled("llave",false);
     this.spot("puerta",0,0,1.5,-3.67,1.25,"Puerta de la sala");
     this.spot("foto",1,-2.35,1.65,-3.5,.88,"Fotografía familiar");
@@ -323,7 +323,7 @@ export class MotherWorld {
     this.spot("cajamusical",2,1.5,1.05,1.35,1.1,"Caja musical");
     this.spot("armario",2,0,1.5,-2.69,1.4,"Armario cerrado");
     // Puzzle pieces are physical metal artifacts in the scene, not screen-only icons.
-    this.addKey("key1",2.06,.69,centers[0]-2.42);
+    this.addKey("key1",2.06,.57,centers[0]-2.42);
     const hiddenKey=this.pickableItems.get("key1");
     if(hiddenKey){hiddenKey.scale.setScalar(.33);hiddenKey.rotation.set(Math.PI/2,.12,.48);hiddenKey.visible=false;}
     this.addGear("juguetes",-2.3,.84,centers[2]-1.4,.13);
