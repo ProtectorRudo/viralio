@@ -39,6 +39,7 @@ export default async function ExperiencePage({params}:Props) {
            {room.slug==="donde-estas-mama"
              ? <Link className="ve-button ve-button-primary" href="/donde-estas-mama">Jugar ahora <span aria-hidden="true">↗</span></Link>
              : <a className="ve-button ve-button-primary" href="https://tehiceesto.com/#escapes" target="_blank" rel="noopener noreferrer">Consultar experiencias para regalar <span aria-hidden="true">↗</span></a>}
+           {room.slug==="donde-estas-mama"&&<Link className="ve-button ve-button-ghost" href="/donde-estas-mama/preparar">Preparar como regalo <span aria-hidden="true">↗</span></Link>}
            <Link className="ve-button ve-button-ghost" href="/#experiencias">Ver todas las salas <span aria-hidden="true">↗</span></Link>
          </div>
        </div>
