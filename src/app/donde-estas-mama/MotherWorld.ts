@@ -51,6 +51,8 @@ export class MotherWorld {
   private readonly raycaster = new THREE.Raycaster();
   private readonly pointer = new THREE.Vector2();
   private shadowFigure: THREE.Group | null = null;
+  private apparitionRequested = false;
+  private apparitionMixer:THREE.AnimationMixer|null = null;
   private apparitionUntil = 0;
   private finalDecorations: THREE.Group | null = null;
   private revealStartedAt = 0;
@@ -318,7 +320,7 @@ export class MotherWorld {
     const warningTexture=new THREE.CanvasTexture(warningCanvas);this.ownedTextures.push(warningTexture);
     this.sceneSurprise=new THREE.Mesh(new THREE.PlaneGeometry(2.45,.95),new THREE.MeshBasicMaterial({map:warningTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false}));
     this.sceneSurprise.visible=false;this.scene.add(this.sceneSurprise);
-    this.buildApparition();
+    // The skinned actor is streamed after the player starts, not during the intro.
     // Decoration: pendant light, floor grilles, floating dust; physical meshes only.
     for(let s=0;s<3;s++){
       const z=centers[s];
@@ -332,23 +334,41 @@ export class MotherWorld {
       }
     }
   }
-  /** Ghostly hallway silhouette uses geometry and transparency, without an uncanny human stock model. */
-  private buildApparition(){
-    const figure=new THREE.Group();
-    const shadow=new THREE.MeshBasicMaterial({color:0x07090d,transparent:true,opacity:.82,depthWrite:false,side:THREE.DoubleSide});
-    const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.24,.78,7,12),shadow);
-    torso.position.y=1.15;torso.scale.z=.56;figure.add(torso);
-    const head=new THREE.Mesh(new THREE.SphereGeometry(.22,16,12),shadow);
-    head.position.y=1.99;head.scale.z=.65;figure.add(head);
-    for(const x of [-.16,.16]){
-      const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.55,5,9),shadow);
-      arm.position.set(x*1.8,1.14,0);arm.rotation.z=x<0?-.19:.19;figure.add(arm);
+  /** Adult skinned actor from local CC0 library, visually treated as a fleeting shadow. */
+  private async prepareApparition(){
+    if(this.apparitionRequested)return;
+    this.apparitionRequested=true;
+    try{
+      const {scene,animations}=await loadViralio3DAsset("npc-sam-locomotion");
+      if(!this.running)return;
+      const bounds=new THREE.Box3().setFromObject(scene);
+      const height=bounds.getSize(new THREE.Vector3()).y;
+      if(height<.2)return;
+      const scale=1.79/height;
+      scene.scale.setScalar(scale);
+      scene.position.y=-bounds.min.y*scale;
+      const shadowMaterial=new THREE.MeshStandardMaterial({
+        color:0x131018,roughness:1,metalness:0,transparent:true,opacity:.9,depthWrite:true
+      });
+      scene.traverse(node=>{
+        if(node instanceof THREE.Mesh){node.material=shadowMaterial;node.castShadow=false;node.receiveShadow=false;}
+      });
+      const actor=new THREE.Group();
+      actor.name="sombra-animada-sam";
+      actor.position.set(2.2,0,centers[0]-1.55);
+      actor.add(scene);
+      actor.visible=false;
+      this.scene.add(actor);
+      this.shadowFigure=actor;
+      if(animations.length){
+        this.apparitionMixer=new THREE.AnimationMixer(scene);
+        const walk=animations.find(clip=>/walk_relaxed|walk/i.test(clip.name))||animations[0];
+        this.apparitionMixer.clipAction(walk).play();
+      }
+    }catch(e){
+      // Never replace an unavailable real skinned character with floating primitive capsules.
+      console.warn("CC0 shadow actor could not be loaded",e);
     }
-    figure.position.set(2.18,0,centers[1]-.92);
-    figure.visible=false;
-    figure.name="aparicion-pasillo";
-    this.scene.add(figure);
-    this.shadowFigure=figure;
   }
   private revealCelebration(){
     if(this.finalDecorations)return;
@@ -528,6 +548,7 @@ export class MotherWorld {
   setActive(active:boolean){this.activeScene=active;}
   setMotion(forward:number,strafe:number){this.movement.forward=forward;this.movement.strafe=strafe;}
   setStage(stage:MotherStage){
+    if(this.activeScene)void this.prepareApparition();
     this.loadStageAssets(stage);
     if(stage<2)this.loadStageAssets((stage+1) as MotherStage);
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
@@ -657,6 +678,7 @@ export class MotherWorld {
     if(this.shadowFigure){
       this.shadowFigure.visible=!this.celebratory&&performance.now()<this.apparitionUntil&&this.stage!==2;
       if(this.shadowFigure.visible){
+        this.apparitionMixer?.update(dt);
         this.shadowFigure.position.z=centers[this.stage]-1.55;
         this.shadowFigure.position.x=2.1+(1.8-(this.apparitionUntil-performance.now())/1000)*-.62;
       }
