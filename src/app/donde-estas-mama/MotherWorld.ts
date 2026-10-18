@@ -278,6 +278,25 @@ export class MotherWorld {
       }
       this.assetModels.push(scene);
       this.dynamicProps.push(scene);
+      if(a.stage===2){
+        const gearForAsset:Record<string,string>={
+          "universal-ph-wooden-crate":"juguetes",
+          "slit-bedside-cabinet":"cajon",
+          "bookshelf-with-bins-original-interior-furnishing":"estante"
+        };
+        const gearId=gearForAsset[a.id];
+        const gear=gearId?this.pickableItems.get(gearId):undefined;
+        if(gear){
+          scene.updateMatrixWorld(true);
+          const top=new THREE.Box3().setFromObject(scene).max.y;
+          gear.position.y=top+.045;
+          if(gearId==="estante")gear.position.z=centers[2]-.84;
+          for(const target of this.spots)if(target.stage===2&&target.id===gearId){
+            target.mesh.position.y=gear.position.y;
+            target.mesh.position.z=gear.position.z;
+          }
+        }
+      }
       return scene;
     }catch(e){console.warn("Asset CC0 no disponible",a.id,e);return null;}
   }
@@ -596,25 +615,6 @@ export class MotherWorld {
     group.rotation.x=-Math.PI/2; // The gears lie on the furniture instead of hovering vertically.
     group.visible=this.stage===2;
     this.scene.add(group);this.pickableItems.set(id,group);
-    const supportName:{[k:string]:string}={
-      juguetes:"universal-ph-wooden-crate",
-      cajon:"slit-bedside-cabinet",
-      estante:"bookshelf-with-bins-original-interior-furnishing"
-    };
-    // Surface heights come from the actual loaded GLB, not approximate constants.
-    void this.assetLoads.get("2:"+supportName[id])?.then(support=>{
-      if(!support||!this.running)return;
-      support.updateMatrixWorld(true);
-      const bounds=new THREE.Box3().setFromObject(support);
-      group.position.y=bounds.max.y+.055;
-      // Front-most placement avoids a gear looking embedded in the back wall.
-      if(id==="estante")group.position.z=centers[2]-.94+.1;
-      for(const spot of this.spots)if(spot.stage===2&&spot.id===id){
-        spot.mesh.position.y=group.position.y;
-        spot.mesh.position.z=group.position.z;
-      }
-    });
-
   }
   collect(id:string){
     const piece=this.pickableItems.get(id);
