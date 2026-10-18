@@ -161,6 +161,9 @@ export class MotherWorld {
         this.addBox(2.55,3.5,.18,-2.45,1.74,wz,wallMat);
         this.addBox(2.55,3.5,.18,2.45,1.74,wz,wallMat);
         this.addBox(2,1,.18,0,3,wz,wallMat);
+        // Opaque warm timber behind the real GLB door conceals empty wall gaps.
+        // The door itself remains foreground geometry, not a flat facade.
+        this.addBox(2.1,2.49,.11,0,1.245,wz+.075,this.mat(0x6b5545));
         // Finish the doorway with a flush frame, rather than black gaps.
         for(const x of [-.98,.98])this.addBox(.38,2.6,.18,x,1.3,wz,wallMat);
         const jamb=this.mat(0x44352e);
@@ -290,8 +293,8 @@ export class MotherWorld {
       {id:"football-backpack",stage:0,x:3.12,z:.48,width:.54},
       {id:"oak-side-table",stage:0,x:-2.65,z:-2.3,width:.79},
       {id:"mantel-clock",stage:0,x:-2.65,z:-2.3,width:.56,supportId:"oak-side-table"},
-      {id:"slit-bedside-cabinet",stage:0,x:.13,z:-2.66,width:.51},
-      {id:"bell-wake-clock",stage:0,x:.13,z:-2.66,width:.23,supportId:"slit-bedside-cabinet"},
+      {id:"slit-bedside-cabinet",stage:0,x:-1.32,z:-2.56,width:.51},
+      {id:"bell-wake-clock",stage:0,x:-1.32,z:-2.56,width:.23,supportId:"slit-bedside-cabinet"},
       // 02 · Family living room: seat grouping on one side, bookshelf on the other.
       {id:"universal-modular-sofa-set",stage:1,x:-2.31,z:-.38,width:2.1,rotate:Math.PI/2},
       {id:"universal-ph-stone-coffee-table",stage:1,x:-.63,z:.60,width:.96},
@@ -486,7 +489,7 @@ export class MotherWorld {
     const texture=new THREE.CanvasTexture(cv);this.ownedTextures.push(texture);
     const footprints:[number,number,number,number,number][]=[
       [0,-2.38,1.14,1.5,1.3],[0,-2.65,-2.3,1.1,1],
-      [0,2.14,-1.75,2.55,2.65],[0,.13,-2.66,.65,.65],
+      [0,2.14,-1.75,2.55,2.65],[0,-1.32,-2.56,.65,.65],
       [0,3.02,2.34,.6,.65],[0,3.12,.48,.75,.65],
       [1,-2.31,-.38,2.25,2.35],[1,-.63,.6,1.1,.95],
       [1,2.65,-1.33,1.45,1.25],[1,2.48,1.92,1.2,1.05],
@@ -720,7 +723,7 @@ export class MotherWorld {
       const nz=THREE.MathUtils.clamp(this.camera.position.z+(-cos*this.movement.forward-sin*this.movement.strafe)*speed,centers[this.stage]-2.92,centers[this.stage]+3);
       // Authored collision radii keep the player out of furniture, not only outside the walls.
       const obstacles=[
-        [[-2.38,1.14,.78],[3.02,2.34,.38],[3.12,.48,.37],[-2.65,-2.3,.49],[2.14,-1.75,1.14],[.13,-2.66,.34]],
+        [[-2.38,1.14,.78],[3.02,2.34,.38],[3.12,.48,.37],[-2.65,-2.3,.49],[2.14,-1.75,1.14],[-1.32,-2.56,.34]],
         [[-2.31,-.38,1.09],[-.63,.6,.55],[2.65,-1.33,.68],[2.48,1.92,.53]],
         [[0,-2.6,1.05],[-2.55,-.93,.63],[-2.65,1.68,.45],[2.62,-.94,.68],[2.45,1.63,.55]]
       ] as const;
