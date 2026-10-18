@@ -106,6 +106,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-2.png"});
 
   await interact(-2.35,1.65,-11.5,/Fotografía familiar/);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-new-photo-puzzle.png"});
   // Merely rotating pieces is no longer enough: two pairs are out of place.
   for(const [piece,turns] of [[1,1],[2,3],[3,3],[4,2]] as const){
     for(let i=0;i<turns;i++){
@@ -120,6 +121,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.getByText(/FOTOGRAFÍA RECONSTRUIDA/)).toBeVisible();
 
   await interact(2.65,1.5,-9.33,/Biblioteca/);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-four-book-riddle.png"});
   // Interpret hojas→verde, corazón→rojo, sol→dorado, cielo→azul.
   for(const color of ["verde","rojo","dorado","azul"]){
     await page.getByRole("button",{name:"Presionar libro "+color}).click();
@@ -137,6 +139,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.locator(".mom-inventory")).toContainText("3/3");
 
   await interact(2.45,1.05,-14.37,/Caja musical/);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-music-box-puzzle.png"});
   for(const gear of ["grande","mediano","pequeño"]){
     await page.getByRole("button",{name:"⚙ "+gear}).click();
   }
