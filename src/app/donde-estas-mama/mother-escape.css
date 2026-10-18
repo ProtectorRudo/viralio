@@ -228,3 +228,16 @@
 .mom-hint-panel p{margin:12px 0;color:#f2e5d9;font:15px/1.55 Georgia,serif}
 .mom-hint-panel small{display:block;color:#baa993;font:11px/1.5 Arial,sans-serif}
 @media(max-width:680px){.mom-hint-panel{bottom:165px;right:14px;width:min(285px,calc(100vw - 28px));padding:13px 15px}.mom-hint-panel p{font-size:14px}}
+
+
+/* Direct tactile photo assembly: drag a fragment onto another slot.
+   Pointer capture keeps the finger anchored and touch-action prevents scrolling. */
+.mom-photo-grid{overflow:visible;touch-action:none}
+.mom-photo-tile{min-width:0;min-height:0;touch-action:none;isolation:isolate}
+.mom-photo-select{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab;position:relative;z-index:1}
+.mom-photo-select .mom-photo-art{pointer-events:none;user-select:none;-webkit-user-select:none}
+.mom-photo-tile.dragging{overflow:visible;z-index:8;isolation:auto;border-color:#f5d1a0;background:#40312a}
+.mom-photo-tile.dragging .mom-photo-select{z-index:9;cursor:grabbing;opacity:.92;filter:drop-shadow(0 12px 14px #050205a8);will-change:transform;outline:2px solid #f6d8aa;outline-offset:-2px}
+.mom-photo-tile.dragging .mom-photo-rotate{opacity:.25;pointer-events:none}
+.mom-photo-tile.drop-target{border-color:#ffe8a4;box-shadow:inset 0 0 0 3px #ffdf8a,0 0 20px #edc46c6b}
+@media(prefers-reduced-motion:reduce){.mom-photo-select,.mom-photo-art{transition:none}}
