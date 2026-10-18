@@ -10,7 +10,7 @@ mkdirSync("visual-qa-evidence",{recursive:true});
  */
 test("mother's day: full 3-room rescue, physical interactions and emotional ending",async({page})=>{
   test.setTimeout(120_000);
-  await page.setViewportSize({width:1280,height:800});
+  await page.setViewportSize({width:390,height:844});
   const failures:string[]=[];
   page.on("pageerror",err=>failures.push(err.message));
   await page.goto("/donde-estas-mama");
@@ -31,10 +31,10 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
     const pitch=Math.atan2(y-camera.y,Math.hypot(x-camera.x,z-camera.z));
     const totalX=-(azimuth-camera.yaw)/.0043;
     const totalY=-(pitch-camera.pitch)/.0035;
-    const segments=Math.max(1,Math.ceil(Math.max(Math.abs(totalX)/160,Math.abs(totalY)/100)));
+    const segments=Math.max(1,Math.ceil(Math.max(Math.abs(totalX)/130,Math.abs(totalY)/90)));
     const stepX=totalX/segments,stepY=totalY/segments;
     for(let n=0;n<segments;n++){
-      const cx=640,cy=380;
+      const cx=195,cy=418;
       await page.mouse.move(cx,cy);
       await page.mouse.down();
       await page.mouse.move(cx+stepX,cy+stepY,{steps:4});
@@ -53,7 +53,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await interact(0,1.5,-3.67,/Puerta de la sala/);
   await expect(page.locator(".mom-location")).toContainText("SALA FAMILIAR");
   reset(1);
-  await page.screenshot({path:"visual-qa-evidence/mother-room-2.png"});
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-2.png"});
 
   await interact(-2.35,1.65,-11.5,/Fotografía familiar/);
   for(const [piece,turns] of [[1,3],[2,1],[3,2],[4,3]] as const){
@@ -72,7 +72,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await interact(0,1.5,-11.67,/Puerta del dormitorio/);
   await expect(page.locator(".mom-location")).toContainText("DORMITORIO");
   reset(2);
-  await page.screenshot({path:"visual-qa-evidence/mother-room-3.png"});
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-3.png"});
 
   await interact(-2.5,1,-17.4,/Caja de juguetes/);
   await interact(-2.5,1,-14.6,/Mesa de luz/);
@@ -86,9 +86,9 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.getByText(/LA CAJA MUSICAL FUNCIONA/)).toBeVisible();
   await interact(0,1.5,-18.69,/Armario cerrado/);
   await expect(page.locator(".mom-reveal")).toBeVisible();
-  await page.screenshot({path:"visual-qa-evidence/mother-reveal.png"});
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-reveal.png"});
   await expect(page.getByRole("heading",{name:/Feliz día/})).toBeVisible({timeout:10000});
   await expect(page.getByText(/UNA CARTA PARA VOS/)).toBeVisible();
-  await page.screenshot({path:"visual-qa-evidence/mother-ending.png"});
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-ending.png"});
   expect(failures).toEqual([]);
 });
