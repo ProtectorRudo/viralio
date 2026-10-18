@@ -1,7 +1,7 @@
 {
   "name": "Viralio Escape Reusable 3D Library",
-  "version": "1.9.0",
-  "curatedAt": "2026-10-15",
+  "version": "1.9.1",
+  "curatedAt": "2026-10-18",
   "description": "CC0 reusable 3D library with investigation support expansion; only models in verified public/viralio-3d/index.json count as physically available.",
   "licensePolicy": "Verify source page and author attribution before changing to another provider; all pinned source pages state CC0.",
   "assets": [
@@ -3864,6 +3864,22 @@
       "source": "https://www.innerscene.com/api/library/parcel-locker-original-public-kiosk-3a9cd0d4/download",
       "status": "curated-source",
       "reusedIn": []
+    },
+    {
+      "id": "mother-child-eli",
+      "title": "Eli — niño de seis años, escala real",
+      "slug": "eli-3d-person-child-age-6-standing-bcaf5944",
+      "category": "personajes-infantiles",
+      "tier": "personaje-estatico",
+      "quality": "CC0 textured MakeHuman child at true 1.19 m height; no validated clips; conditional cinematic reveal only",
+      "license": "CC0-1.0",
+      "author": "Innerscene / MakeHuman-MPFB CC0 contributors",
+      "sourcePage": "https://www.innerscene.com/tools/library/3d-parts/eli-3d-person-child-age-6-standing-bcaf5944",
+      "source": "https://www.innerscene.com/api/library/eli-3d-person-child-age-6-standing-bcaf5944/download",
+      "status": "curated-source",
+      "reusedIn": [
+        "donde-estas-mama"
+      ]
     }
   ]
 }

@@ -17,7 +17,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   page.on("response",res=>{if(res.url().includes("/viralio-3d/")&&res.status()>=400)assetErrors.push(res.status()+" "+res.url());});
   await page.goto("/donde-estas-mama");
   const compatible=await page.evaluate(()=>Boolean(document.createElement("canvas").getContext("webgl2")));
-  test.skip(!compatible,"The runner has no WebGL2 implementation");
+  expect(compatible,"Chromium must render WebGL2; a skipped 3D test is not a pass").toBe(true);
   await expect(page.locator(".mom-world canvas")).toHaveCount(1);
   await page.getByRole("button",{name:/ENTRAR A LA CASA/}).click();
   await expect(page.locator(".mom-time")).toHaveText(/0[45]:[0-5]\d/);
