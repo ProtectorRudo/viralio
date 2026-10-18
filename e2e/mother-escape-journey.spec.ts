@@ -107,7 +107,7 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
 
   await interact(-2.35,1.65,-11.5,/Fotografía familiar/);
   // Merely rotating pieces is no longer enough: two pairs are out of place.
-  for(const [piece,turns] of [[1,3],[2,1],[3,2],[4,3]] as const){
+  for(const [piece,turns] of [[1,1],[2,3],[3,3],[4,2]] as const){
     for(let i=0;i<turns;i++){
       await page.getByRole("button",{name:"Girar pieza "+piece}).click();
     }
