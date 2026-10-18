@@ -197,3 +197,25 @@
 }
 @media(max-width:359px){.mom-joystick{width:100px;height:100px}.mom-joystick-thumb{width:48px;height:48px}.mom-control-label{max-width:125px}}
 @media(prefers-reduced-motion:reduce){.mom-joystick-thumb{transition:none}}
+
+/* Precision crosshair remains visible when no object is in range.
+   Object discovery itself uses NO hotspot rings in the Three.js scene. */
+.mom-reticle{width:24px;height:24px;font:inherit;opacity:.9;filter:drop-shadow(0 1px 3px #000c);transition:opacity .15s,color .15s}
+.mom-reticle span{display:block;width:100%;height:100%;position:relative}
+.mom-reticle span:before,.mom-reticle span:after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#f3e3c9d6;border-radius:1px}
+.mom-reticle span:before{width:1.5px;height:16px}
+.mom-reticle span:after{width:16px;height:1.5px}
+.mom-reticle.is-active span:before,.mom-reticle.is-active span:after{background:#f7cf82}
+.mom-reticle.is-active{filter:drop-shadow(0 0 5px #c89e4a)}
+/* Real photo cut into four, first mixed in position and then rotated: no fake colored gradients. */
+.mom-photo-grid{width:min(320px,100%);gap:3px;padding:5px;background:#776254}
+.mom-photo-tile{position:relative;overflow:hidden;background:#625249;border:2px solid #a78969;display:block;min-width:0}
+.mom-photo-tile.selected{border-color:#f2d78d;box-shadow:inset 0 0 0 2px #ffe1a1,0 0 16px #dfb86b70}
+.mom-photo-select{display:block;width:100%;height:100%;border:none;padding:0;background:#6a6158;overflow:hidden}
+.mom-photo-art{display:block;width:100%;height:100%;background-image:url('/donde-estas-mama/foto-familiar.svg');background-size:200% 200%;background-repeat:no-repeat;transition:transform .22s ease;transform-origin:center}
+.mom-photo-rotate{position:absolute;right:5px;bottom:4px;border:1px solid #f4dbb8;background:#1b1924d9;color:#fff2d4;border-radius:50%;width:35px;height:35px;display:grid;place-items:center;font:700 24px/1 Arial,sans-serif;touch-action:manipulation}
+.mom-book-riddle{font:italic 16px/1.65 Georgia,serif;color:#f3dfbc;border-left:2px solid #c9a77d;background:#fff6e506;padding:12px 14px;margin:14px 0}
+.mom-books{width:100%;gap:5px;padding:12px 5px;border-width:5px}
+.mom-book{width:auto;flex:1;min-width:0;height:138px;font-size:clamp(9px,2.5vw,12px)}
+.mom-book.verde{background:linear-gradient(90deg,#254536,#588060);color:#fff0da}
+@media(max-width:680px){.mom-photo-rotate{width:36px;height:36px}.mom-book-riddle{font-size:15px}.mom-book{height:124px}}
