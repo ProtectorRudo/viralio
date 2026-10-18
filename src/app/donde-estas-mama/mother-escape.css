@@ -241,3 +241,6 @@
 .mom-photo-tile.dragging .mom-photo-rotate{opacity:.25;pointer-events:none}
 .mom-photo-tile.drop-target{border-color:#ffe8a4;box-shadow:inset 0 0 0 3px #ffdf8a,0 0 20px #edc46c6b}
 @media(prefers-reduced-motion:reduce){.mom-photo-select,.mom-photo-art{transition:none}}
+
+/* Keep the rotate button above the draggable tile except during an active drag. */
+.mom-photo-tile .mom-photo-rotate{z-index:4;position:absolute;touch-action:manipulation}
