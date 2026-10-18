@@ -292,6 +292,7 @@ export default function MotherEscape(){
     if(result.error){setGearOrder([]);prompt("Los engranajes se trabaron. Colocalos del más grande al más pequeño.");sound.current.error();return;}
     setGearOrder(result.next);sound.current.click();
     if(result.complete){
+      world.current?.openMusicBox();
       setMusicDone(true);setInspect(null);completed.current=Date.now();
       tell("LA CAJA MUSICAL FUNCIONA","Una melodía empieza a sonar. Oíste cómo se soltó el cierre del armario.","success");
       sound.current.unlock();
