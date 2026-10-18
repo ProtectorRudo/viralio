@@ -97,4 +97,5 @@ jobs:
           path: |
             visual-qa-evidence/viralio-escape-*.png
             visual-qa-evidence/mother-*.png
+            visual-qa-evidence/mother-*.json
           if-no-files-found: warn
