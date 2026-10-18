@@ -38,6 +38,7 @@ export class MotherWorld {
   private childMixer: THREE.AnimationMixer | null = null;
   private childArm: THREE.Bone | null = null;
   private childHead: THREE.Bone | null = null;
+  private childOriginalY = 0;
   private childArmRest = 0;
   private childHeadRest = 0;
   private activeScene = false;
@@ -240,6 +241,7 @@ export class MotherWorld {
       scene.visible=a.stage===this.stage&&(!scene.userData.revealOnly||this.celebratory);
       if(a.id==="mother-child-eli"){
         this.childModel=scene;
+        this.childOriginalY=scene.position.y;
         const armNames:THREE.Bone[]=[],headNames:THREE.Bone[]=[];
         scene.traverse(node=>{
           if(!(node instanceof THREE.Bone))return;
@@ -630,7 +632,7 @@ export class MotherWorld {
       }
       if(this.childHead&&!this.childMixer)this.childHead.rotation.y=this.childHeadRest+.085*Math.sin(tick*1.7);
       // Restrained breathing and a small smile-like lift; no rescaled adult actor.
-      this.childModel.position.y=Math.sin(tick*2.6)*.009;
+      this.childModel.position.y=this.childOriginalY+Math.sin(tick*2.6)*.009;
     }
     if(this.celebratory){
       const wardrobe=this.dynamicProps.find(o=>o.userData.assetId==="two-door-wardrobe-original-interior-furnishing");
