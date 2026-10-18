@@ -5,7 +5,7 @@ import type {PointerEvent as ReactPointerEvent} from "react";
 import {MotherWorld,type MotherStage} from "./MotherWorld";
 import "./mother-escape.css";
 
-type Mode="intro"|"playing"|"failed"|"won";
+type Mode="intro"|"playing"|"failed"|"won"|"unsupported";
 type Inspect=null|"phone"|"portrait"|"books"|"music";
 type Gear="grande"|"mediano"|"pequeño";
 const START=300;
@@ -118,7 +118,9 @@ export default function MotherEscape(){
   },[]);
   useEffect(()=>{
     if(!host.current)return;
-    const game=new MotherWorld(host.current);
+    if(!document.createElement("canvas").getContext("webgl2")){setMode("unsupported");return;}
+    let game:MotherWorld;
+    try{game=new MotherWorld(host.current);}catch(error){console.error("WebGL2 no disponible",error);setMode("unsupported");return;}
     world.current=game;
     game.onFocus=setFocus;
     game.onInteract=(id)=>actionRef.current(id);
@@ -180,6 +182,11 @@ export default function MotherEscape(){
     completed.current=Date.now();
     if(!muted)void sound.current.start().then(()=>sound.current.message()).catch(()=>{});
   };
+  useEffect(()=>{
+    if(!message)return;
+    const id=window.setTimeout(()=>setMessage(null),6500);
+    return ()=>window.clearTimeout(id);
+  },[message]);
   useEffect(()=>{
     if(mode!=="playing")return;
     const timer=window.setInterval(()=>{
@@ -295,6 +302,7 @@ export default function MotherEscape(){
       <button className="mom-primary" onClick={begin}>ENTRAR A LA CASA <span>↗</span></button>
       <small>Usá auriculares · Tocá para explorar · Deslizá para mirar · Recomendado a partir de 10 años</small>
     </section>}
+    {mode==="unsupported"&&<section className="mom-screen mom-failure"><span className="mom-pretitle">DISPOSITIVO NO COMPATIBLE</span><h1>Necesitamos<br/><em>WebGL2.</em></h1><p>Este navegador no permite mostrar la casa en 3D. Probá con Chrome, Safari o Firefox actualizado en un dispositivo compatible.</p><a className="mom-primary" href="/">VOLVER A VIRALIO ↗</a></section>}
     {mode==="failed"&&<section className="mom-screen mom-failure">
       <span className="mom-pretitle">00:00 / LA CASA QUEDÓ EN SILENCIO</span><h1>Se acabó<br/><em>el tiempo.</em></h1>
       <p>La puerta no se abrió. Los golpes cesaron. A veces hay que volver a intentar aquello que más importa.</p>
