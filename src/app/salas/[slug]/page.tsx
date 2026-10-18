@@ -36,7 +36,9 @@ export default async function ExperiencePage({params}:Props) {
            <span>◷ {room.duration}</span><span>Dificultad: {room.difficulty}</span><span>Modo: {room.mode}</span>
          </div>
          <div className="ve-actions">
-           <a className="ve-button ve-button-primary" href="https://tehiceesto.com/#escapes" target="_blank" rel="noopener noreferrer">Consultar experiencias para regalar <span aria-hidden="true">↗</span></a>
+           {room.slug==="donde-estas-mama"
+             ? <Link className="ve-button ve-button-primary" href="/donde-estas-mama">Jugar ahora <span aria-hidden="true">↗</span></Link>
+             : <a className="ve-button ve-button-primary" href="https://tehiceesto.com/#escapes" target="_blank" rel="noopener noreferrer">Consultar experiencias para regalar <span aria-hidden="true">↗</span></a>}
            <Link className="ve-button ve-button-ghost" href="/#experiencias">Ver todas las salas <span aria-hidden="true">↗</span></Link>
          </div>
        </div>
@@ -53,7 +55,7 @@ export default async function ExperiencePage({params}:Props) {
            <ExperienceIntensity room={room} variant="detail"/>
            <p><strong>Dispositivos:</strong> celular o computadora compatibles con gráficos 3D (WebGL2).</p>
            <p><strong>Recomendación:</strong> jugá con auriculares y en un lugar tranquilo.</p>
-           <div className="ve-room-access-note" role="status"><strong>Acceso individual próximamente.</strong><span>Estamos preparando el sistema de compra de partidas. Los precios y las condiciones se informarán antes de contratar.</span></div>
+           <div className="ve-room-access-note" role="status">{room.slug==="donde-estas-mama"?<><strong>Experiencia especial disponible.</strong><span>Jugá gratis esta misión de cinco minutos, directamente desde tu navegador.</span></>:<><strong>Acceso individual próximamente.</strong><span>Estamos preparando el sistema de compra de partidas. Los precios y las condiciones se informarán antes de contratar.</span></>}</div>
          </aside>
        </div>
      </section>
