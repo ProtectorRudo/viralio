@@ -4,7 +4,7 @@ import {useCallback,useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import type {PointerEvent as ReactPointerEvent} from "react";
 import {MotherWorld,type MotherStage} from "./MotherWorld";
-import {BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,photoComplete,enterOrderedItem,timeRemaining,dueMotherBeats,type MotherGear} from "./MotherRules";
+import {BOOK_SEQUENCE,GEAR_SEQUENCE,rotatePhotoPiece,swapPhotoTiles,photoComplete,enterOrderedItem,timeRemaining,dueMotherBeats,type MotherGear} from "./MotherRules";
 import "./mother-escape.css";
 
 type Mode="intro"|"briefing"|"playing"|"revealing"|"failed"|"won"|"unsupported";
@@ -88,6 +88,8 @@ export default function MotherEscape(){
   const [pillowLifted,setPillowLifted]=useState(false);
   const [blanketSearched,setBlanketSearched]=useState(false);
   const [portrait,setPortrait]=useState([1,3,2,1]);
+  const [photoOrder,setPhotoOrder]=useState([1,0,3,2]);
+  const [selectedPhoto,setSelectedPhoto]=useState<number|null>(null);
   const [portraitDone,setPortraitDone]=useState(false);
   const [bookOrder,setBookOrder]=useState<string[]>([]);
   const [booksDone,setBooksDone]=useState(false);
@@ -184,7 +186,7 @@ export default function MotherEscape(){
     }
     if(stage===1){
       if(id==="foto"){setInspect("portrait");return;}
-      if(id==="libros"){if(!portraitDone)prompt("Tres libros tienen lomos de colores. ¿Habrá una pista en la fotografía?");else setInspect("books");return;}
+      if(id==="libros"){if(!portraitDone)prompt("Cuatro libros de colores parecen mover un mecanismo. La fotografía podría revelar la lógica.");else setInspect("books");return;}
       if(id==="puerta"){if(booksDone)advance(2);else prompt("La puerta requiere un mecanismo oculto. Revisá la biblioteca.");return;}
     }
     if(stage===2){
@@ -252,20 +254,31 @@ export default function MotherEscape(){
     },180);
     return ()=>clearInterval(timer);
   },[mode,tell,muted]);
+  const completePhoto=useCallback(()=>{
+    setPortraitDone(true);setInspect(null);completed.current=Date.now();
+    tell("FOTOGRAFÍA RECONSTRUIDA","Detrás encontrás una adivinanza: «Primero despiertan las hojas, luego late el corazón; después llega el sol y al final, el cielo». No hay números: interpretá los cuatro símbolos.","success");
+    sound.current.unlock();
+  },[tell]);
   const turnPiece=useCallback((index:number)=>{
     if(portraitDone)return;
-    const next=rotatePhotoPiece(portrait,index);
+    const piece=photoOrder[index];
+    const next=rotatePhotoPiece(portrait,piece);
     setPortrait(next);sound.current.click();
-    if(photoComplete(next)){
-      setPortraitDone(true);setInspect(null);completed.current=Date.now();
-      tell("FOTOGRAFÍA RECONSTRUIDA","Detrás aparece una pista: ROJO → DORADO → AZUL. La biblioteca está junto a vos.","success");
-      sound.current.unlock();
-    }
-  },[portrait,portraitDone,tell]);
+    if(photoComplete(next,photoOrder))completePhoto();
+  },[portrait,photoOrder,portraitDone,completePhoto]);
+  const selectPhotoPiece=useCallback((index:number)=>{
+    if(portraitDone)return;
+    if(selectedPhoto===null){setSelectedPhoto(index);sound.current.click();return;}
+    setSelectedPhoto(null);
+    if(selectedPhoto===index)return;
+    const next=swapPhotoTiles(photoOrder,selectedPhoto,index);
+    setPhotoOrder(next);sound.current.click();
+    if(photoComplete(portrait,next))completePhoto();
+  },[selectedPhoto,photoOrder,portrait,portraitDone,completePhoto]);
   const chooseBook=useCallback((color:string)=>{
     if(booksDone)return;
     const result=enterOrderedItem(bookOrder,color,BOOK_SEQUENCE);
-    if(result.error){setBookOrder([]);prompt("El mecanismo retrocedió. Observá nuevamente el orden de colores.");sound.current.error();return;}
+    if(result.error){setBookOrder([]);prompt("El mecanismo retrocedió. La adivinanza de la foto habla de cuatro cosas, no de números.");sound.current.error();return;}
     setBookOrder(result.next);sound.current.click();
     if(result.complete){
       setBooksDone(true);setInspect(null);completed.current=Date.now();
@@ -356,7 +369,7 @@ export default function MotherEscape(){
     :stage===1?(booksDone?"ENTRÁ AL DORMITORIO":portraitDone?"DESCIFRÁ LOS LIBROS DE COLORES":"RECONSTRUÍ LA FOTOGRAFÍA")
     :musicDone?"BUSCÁ A TU HIJO EN EL ARMARIO":gears.length===3?"REPARÁ LA CAJA MUSICAL":"ENCONTRÁ LOS TRES ENGRANAJES";
   const contextualHint=stage===0?(key1?"Ahora podés abrir la puerta del fondo de este pasillo.":pillowLifted?"Hay algo pequeño debajo de la almohada. Acercate y tocá el objeto.":"En la mochila hay una nota. Pensá en el lugar donde alguien apoya la cabeza al dormir.")
-    :stage===1?(booksDone?"Escuchaste una cerradura abrirse: probá la puerta del fondo.":portraitDone?"La foto tenía tres colores en un orden. Probá presionar los libros de esa secuencia.":"Los cuatro fragmentos de la foto están girados. Tocá cada uno hasta ver la escena completa.")
+    :stage===1?(booksDone?"Escuchaste una cerradura abrirse: probá la puerta del fondo.":portraitDone?"Traducí la adivinanza: hojas, corazón, sol y cielo. Cada uno representa el color de un libro.":"La fotografía está mezclada: primero intercambiá las piezas para unir la imagen y después giralas hasta que encajen.")
     :musicDone?"La melodía liberó el armario. Ahora podés abrirlo.":gears.length===3?"Acomodá los tres engranajes en el mecanismo musical.":"Revisá la caja de juguetes, la mesa de luz y los estantes.";
   return <main className={"mom-game mom-"+mode}>
     <div ref={host} className="mom-world" aria-label="Exploración en primera persona de una casa familiar"/>
@@ -370,7 +383,7 @@ export default function MotherEscape(){
       <div className="mom-objective"><span>OBJETIVO ACTUAL</span><strong>{objective}</strong></div>
       {message&&<div className={"mom-notice mom-notice-"+message.tone} role="status"><div><span>● {message.title}</span><button onClick={()=>setMessage(null)} aria-label="Cerrar aviso">×</button></div><p>{message.body}</p></div>}
       {clue&&<div className="mom-toast" role="status">{clue}</div>}
-      {focus&&<div className="mom-reticle" aria-hidden="true">+</div>}
+      <div className={"mom-reticle"+(focus?" is-active":"")} aria-hidden="true"><span/></div>
       {focus&&<button className="mom-focus" onClick={()=>world.current?.interactFocus()}>{focus} · TOCAR</button>}
       <div className="mom-bottom">
         <div className="mom-joystick" role="group" aria-label="Joystick circular para moverte" {...joystickEvents}>
@@ -426,8 +439,8 @@ export default function MotherEscape(){
         <button className="mom-inspect-close" onClick={()=>setInspect(null)} aria-label="Volver a la habitación">✕</button>
         {inspect==="bed"&&<><span className="mom-pretitle">OBJETO 01 / CAMA FAMILIAR</span><h2>Una cama sin hacer</h2><p>La manta está arrugada y una almohada quedó corrida hacia la cabecera. ¿Por dónde empezás a buscar?</p><div className="mom-bed-actions"><button onClick={()=>{setBlanketSearched(true);sound.current.click();}}>REVISAR LA MANTA</button><button onClick={raisePillow} disabled={pillowLifted}>LEVANTAR LA ALMOHADA</button></div>{blanketSearched&&<p className="mom-bed-feedback" role="status">Sacudís la manta. No encontrás ninguna llave... pero la almohada parece esconder algo.</p>}<small>Podés volver a tocar la cama para examinarla.</small></>}
         {inspect==="phone"&&<><span className="mom-pretitle">MENSAJE · 01 RECIBIDO</span><h2>Un mensaje de tu hijo</h2><div className="mom-phone"><span>📱 DESCONOCIDO</span><p>«Mamá, no puedo salir. No sé cuánto tiempo tengo. Por favor, vení a buscarme...»</p><small>Entregado hace unos segundos</small></div><p>Antes de cortarse, se escucharon tres golpes desde el fondo de la casa.</p></>}
-        {inspect==="portrait"&&<><span className="mom-pretitle">OBJETO 02 / MARCO FAMILIAR</span><h2>Una fotografía rota</h2><p>Girás las cuatro partes para reconstruir el recuerdo. Tocá cada fragmento para rotarlo.</p><div className="mom-photo-grid">{portrait.map((rotation,i)=><button key={i} onClick={()=>turnPiece(i)} aria-label={"Girar pieza "+(i+1)} className="mom-photo-tile"><span style={{transform:"rotate("+(rotation*90)+"deg)"}} className={"mom-photo-art mom-piece-"+i} aria-hidden="true"/></button>)}</div><small>Las cuatro piezas deben quedar derechas. En el reverso hay una secuencia de colores.</small></>}
-        {inspect==="books"&&<><span className="mom-pretitle">OBJETO 03 / LIBROS DE COLORES</span><h2>La combinación secreta</h2><p>La fotografía tenía escrito: <strong>ROJO → DORADO → AZUL</strong>. Presioná los libros en ese orden.</p><div className="mom-books">{["azul","rojo","dorado"].map(c=><button key={c} className={"mom-book "+c} onClick={()=>chooseBook(c)} aria-label={"Presionar libro "+c}>{c.toUpperCase()}</button>)}</div><small>Secuencia ingresada: {bookOrder.length}/3</small></>}
+        {inspect==="portrait"&&<><span className="mom-pretitle">OBJETO 02 / MARCO FAMILIAR</span><h2>Los fragmentos del recuerdo</h2><p>La imagen tiene sus cuatro partes <strong>mezcladas y giradas</strong>. Seleccioná dos fragmentos para intercambiarlos. Después utilizá ↻ para orientarlos.</p><div className="mom-photo-grid">{photoOrder.map((piece,i)=><div key={i} className={"mom-photo-tile"+(selectedPhoto===i?" selected":"")}><button className="mom-photo-select" onClick={()=>selectPhotoPiece(i)} aria-label={"Seleccionar pieza "+(i+1)}><span className="mom-photo-art" style={{backgroundPosition:(piece%2?100:0)+"% "+(piece>=2?100:0)+"%",transform:"rotate("+(portrait[piece]*90)+"deg)"}} aria-hidden="true"/></button><button className="mom-photo-rotate" onClick={()=>turnPiece(i)} aria-label={"Girar pieza "+(i+1)}>↻</button></div>)}</div><small>{selectedPhoto!==null?"Ahora tocá otra pieza para intercambiarlas.":"Cuando el paisaje quede unido y derecho, se revelará la pista de los cuatro libros."}</small></>}
+        {inspect==="books"&&<><span className="mom-pretitle">OBJETO 03 / LOS CUATRO TOMOS</span><h2>La biblioteca del recuerdo</h2><p>El mecanismo acepta cuatro libros. La pista que apareció detrás de la foto dice:</p><blockquote className="mom-book-riddle">«Primero despiertan las hojas, luego late el corazón; después llega el sol y al final, el cielo».</blockquote><p>Cada imagen representa un color. Elegí los cuatro libros en el orden correcto.</p><div className="mom-books">{["azul","verde","rojo","dorado"].map(c=><button key={c} className={"mom-book "+c} onClick={()=>chooseBook(c)} aria-label={"Presionar libro "+c}>{c.toUpperCase()}</button>)}</div><small>Secuencia ingresada: {bookOrder.length}/4</small></>}
         {inspect==="music"&&<><span className="mom-pretitle">OBJETO 04 / CAJA MUSICAL</span><h2>Tres piezas, una melodía</h2><p>Los engranajes deben encajar del más grande al más pequeño. Elegí qué pieza colocar a continuación.</p><div className="mom-gear-slots"><span>{gearOrder[0]?"⚙":"◯"}</span><span>{gearOrder[1]?"⚙":"◯"}</span><span>{gearOrder[2]?"⚙":"◯"}</span></div><div className="mom-gear-buttons">{["pequeño","grande","mediano"].map(g=><button key={g} disabled={gearOrder.includes(g as Gear)} onClick={()=>placeGear(g as Gear)}>⚙ {g}</button>)}</div><small>{gearOrder.length}/3 engranajes colocados</small></>}
         <button className="mom-back" onClick={()=>setInspect(null)}>← REGRESAR A LA HABITACIÓN</button>
       </section>
