@@ -279,30 +279,33 @@ export class MotherWorld {
     }catch(e){console.warn("Asset CC0 no disponible",a.id,e);return null;}
   }
   private buildProps(){
+    // Furniture grouped against the walls, a clear center aisle in every scene.
     const assets:AssetSpec[]=[
-      {id:"universal-ph-worn-coffee-table",stage:0,x:-2.05,z:.8,width:1.45},
-      {id:"desk-call-office-phone",stage:0,x:-2.05,z:.8,width:.42,supportId:"universal-ph-worn-coffee-table"},
+      // 01 · Child's bedroom: sleeping corner on right, phone and clock on left.
+      {id:"universal-ph-worn-coffee-table",stage:0,x:-2.38,z:1.14,width:1.32},
+      {id:"desk-call-office-phone",stage:0,x:-2.38,z:1.14,width:.42,supportId:"universal-ph-worn-coffee-table"},
       {id:"flush-flush-interior-door",stage:0,x:0,z:-3.64,width:1.48,depth:.3},
-      {id:"football-coat-stand",stage:0,x:2.7,z:2.25,width:.84},
-      {id:"hotel-bed-with-headboard-and-bench-original-hotel-furnishing",stage:0,x:1.97,z:-1.85,width:2.65},
-      {id:"football-backpack",stage:0,x:1.9,z:.65,width:.77},
-      {id:"oak-side-table",stage:0,x:-2.2,z:-2.3,width:.88},
-      {id:"mantel-clock",stage:0,x:-2.2,z:-2.3,width:.65,supportId:"oak-side-table"},
-      {id:"slit-bedside-cabinet",stage:0,x:-.94,z:-2.48,width:.58},
-      {id:"bell-wake-clock",stage:0,x:-.94,z:-2.48,width:.28,supportId:"slit-bedside-cabinet"},
-      {id:"universal-modular-sofa-set",stage:1,x:-2,z:0,width:2.2,rotate:Math.PI/2},
-      {id:"universal-ph-stone-coffee-table",stage:1,x:0,z:.9,width:1.1},
-      {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.5,z:-1.3,width:1.15},
+      {id:"football-coat-stand",stage:0,x:3.02,z:2.34,width:.74},
+      {id:"hotel-bed-with-headboard-and-bench-original-hotel-furnishing",stage:0,x:2.14,z:-1.75,width:2.65},
+      {id:"football-backpack",stage:0,x:3.12,z:.48,width:.54},
+      {id:"oak-side-table",stage:0,x:-2.65,z:-2.3,width:.79},
+      {id:"mantel-clock",stage:0,x:-2.65,z:-2.3,width:.56,supportId:"oak-side-table"},
+      {id:"slit-bedside-cabinet",stage:0,x:.13,z:-2.66,width:.51},
+      {id:"bell-wake-clock",stage:0,x:.13,z:-2.66,width:.23,supportId:"slit-bedside-cabinet"},
+      // 02 · Family living room: seat grouping on one side, bookshelf on the other.
+      {id:"universal-modular-sofa-set",stage:1,x:-2.31,z:-.38,width:2.1,rotate:Math.PI/2},
+      {id:"universal-ph-stone-coffee-table",stage:1,x:-.63,z:.60,width:.96},
+      {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.65,z:-1.33,width:1.08},
       {id:"crime-photo-frame",stage:1,x:-2.35,z:-3.58,width:.7},
       {id:"flush-flush-interior-door",stage:1,x:0,z:-3.64,width:1.48,depth:.3},
-      {id:"wingback-armchair",stage:1,x:2,z:1.5,width:1.05,rotate:-.5},
-      {id:"gilt-landscape-picture-frame",stage:1,x:-3,z:1,width:.6},
+      {id:"wingback-armchair",stage:1,x:2.48,z:1.92,width:.86,rotate:-.52},
+      {id:"gilt-landscape-picture-frame",stage:1,x:-3.12,z:1.89,width:.54},
+      // 03 · Final room: armario clear as the central goal, props at the periphery.
       {id:"two-door-wardrobe-original-interior-furnishing",stage:2,x:0,z:-2.6,width:2.6},
-      {id:"universal-ph-wooden-crate",stage:2,x:-2.5,z:-1.4,width:1.2},
-      {id:"slit-bedside-cabinet",stage:2,x:-2.5,z:1.4,width:.85},
-      {id:"bookshelf-with-bins-original-interior-furnishing",stage:2,x:2.4,z:-1.1,width:1.15},
-      {id:"universal-ph-round-wood-table",stage:2,x:1.5,z:1.4,width:1.1},
-      // The child is hidden behind the locked wardrobe until the successful reveal.
+      {id:"universal-ph-wooden-crate",stage:2,x:-2.55,z:-.93,width:1.04},
+      {id:"slit-bedside-cabinet",stage:2,x:-2.65,z:1.68,width:.68},
+      {id:"bookshelf-with-bins-original-interior-furnishing",stage:2,x:2.62,z:-.94,width:1.12},
+      {id:"universal-ph-round-wood-table",stage:2,x:2.45,z:1.63,width:.86},
       {id:"mother-child-eli",stage:2,x:-.73,z:-2.66,width:.51,rotate:0}
     ];
     this.assetSpecs=assets;
@@ -311,29 +314,29 @@ export class MotherWorld {
     this.createContactShadows();
     this.createPillow();
     this.createFamilyPhoto();
-    this.spot("telefono",0,-2.05,1.1,.8,1.35,"Teléfono");
-    this.spot("caja",0,1.9,.8,.65,1.1,"Mochila");
-    this.spot("perchero",0,2.7,1.6,2.25,.7,"Perchero");
-    this.spot("cama",0,1.74,.89,-1.06,.64,"Cama desordenada");
-    this.spot("almohada",0,2.06,.68,-2.42,.65,"Almohada");
-    this.spot("llave",0,2.06,.6,-2.42,.55,"Llave pequeña");
+    this.spot("telefono",0,-2.38,1.1,1.14,.78,"Teléfono");
+    this.spot("caja",0,3.12,.7,.48,.66,"Mochila");
+    this.spot("perchero",0,3.02,1.5,2.34,.55,"Perchero");
+    this.spot("cama",0,2.05,.88,-1.08,.79,"Cama desordenada");
+    this.spot("almohada",0,2.14,.68,-2.42,.47,"Almohada");
+    this.spot("llave",0,2.14,.6,-2.42,.48,"Llave pequeña");
     this.setSpotEnabled("llave",false);
     this.spot("puerta",0,0,1.5,-3.67,1.25,"Puerta de la sala");
     this.spot("foto",1,-2.35,1.65,-3.5,.88,"Fotografía familiar");
-    this.spot("libros",1,2.4,1.5,-1.3,1.2,"Biblioteca");
+    this.spot("libros",1,2.65,1.5,-1.33,.89,"Biblioteca");
     this.spot("puerta",1,0,1.5,-3.67,1.25,"Puerta del dormitorio");
-    this.spot("juguetes",2,-2.5,1,-1.4,1.1,"Caja de juguetes");
-    this.spot("cajon",2,-2.5,1,1.4,.95,"Mesa de luz");
-    this.spot("estante",2,2.4,1.45,-1.1,1,"Estante");
-    this.spot("cajamusical",2,1.5,1.05,1.35,1.1,"Caja musical");
+    this.spot("juguetes",2,-2.55,.96,-.93,.76,"Caja de juguetes");
+    this.spot("cajon",2,-2.65,.98,1.68,.74,"Mesa de luz");
+    this.spot("estante",2,2.62,1.45,-.94,.81,"Estante");
+    this.spot("cajamusical",2,2.45,1.05,1.63,.74,"Caja musical");
     this.spot("armario",2,0,1.5,-2.69,1.4,"Armario cerrado");
     // Puzzle pieces are physical metal artifacts in the scene, not screen-only icons.
-    this.addKey("key1",2.06,.57,centers[0]-2.42);
+    this.addKey("key1",2.14,.57,centers[0]-2.42);
     const hiddenKey=this.pickableItems.get("key1");
     if(hiddenKey){hiddenKey.scale.setScalar(.33);hiddenKey.rotation.set(Math.PI/2,.12,.48);hiddenKey.visible=false;}
-    this.addGear("juguetes",-2.3,.84,centers[2]-1.4,.13);
-    this.addGear("cajon",-2.5,.92,centers[2]+1.4,.10);
-    this.addGear("estante",2.4,1.48,centers[2]-1.1,.075);
+    this.addGear("juguetes",-2.55,.84,centers[2]-.93,.13);
+    this.addGear("cajon",-2.65,.92,centers[2]+1.68,.10);
+    this.addGear("estante",2.62,1.48,centers[2]-.94,.075);
     // A physical frame falls when the child is heard, and a tangible warning materializes on the wall.
     this.fallenFrame = this.addBox(.075,.88,.68,3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
     this.fallenFrame.rotation.y=-.15;
@@ -482,12 +485,14 @@ export class MotherWorld {
     ctx.fillStyle=grad;ctx.fillRect(0,0,64,64);
     const texture=new THREE.CanvasTexture(cv);this.ownedTextures.push(texture);
     const footprints:[number,number,number,number,number][]=[
-      [0,-2.05,.8,1.85,1.4],[0,-2.2,-2.3,1.2,1.1],
-      [0,1.97,-1.85,2.5,2.6],[0,-.94,-2.48,.8,.9],
-      [0,2.35,-1.45,.95,.95],[1,-2,0,2.8,1.55],
-      [1,2.5,-1.3,1.5,1.2],[1,2,1.5,1.5,1.4],
-      [2,0,-2.6,2.8,1.3],[2,-2.5,1.4,1.15,1.15],
-      [2,2.4,-1.1,1.5,1.3],[2,1.5,1.4,1.45,1.45]
+      [0,-2.38,1.14,1.5,1.3],[0,-2.65,-2.3,1.1,1],
+      [0,2.14,-1.75,2.55,2.65],[0,.13,-2.66,.65,.65],
+      [0,3.02,2.34,.6,.65],[0,3.12,.48,.75,.65],
+      [1,-2.31,-.38,2.25,2.35],[1,-.63,.6,1.1,.95],
+      [1,2.65,-1.33,1.45,1.25],[1,2.48,1.92,1.2,1.05],
+      [2,0,-2.6,2.8,1.3],[2,-2.55,-.93,1.25,1.2],
+      [2,-2.65,1.68,.85,.8],[2,2.62,-.94,1.35,1.15],
+      [2,2.45,1.63,1.15,1.1]
     ];
     for(const [stage,x,z,w,h] of footprints){
       const surface=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
@@ -528,7 +533,7 @@ export class MotherWorld {
       new THREE.Vector3(-.35,.011,-.2)
     ]),36,.005,5),new THREE.MeshStandardMaterial({color:0xbda294,roughness:1}));
     group.add(seam);
-    group.position.set(2.06,this.pillowRestY,centers[0]-2.42);
+    group.position.set(2.14,this.pillowRestY,centers[0]-2.42);
     this.roomShells[0].add(group);
     this.pillow=group;
   }
@@ -715,9 +720,9 @@ export class MotherWorld {
       const nz=THREE.MathUtils.clamp(this.camera.position.z+(-cos*this.movement.forward-sin*this.movement.strafe)*speed,centers[this.stage]-2.92,centers[this.stage]+3);
       // Authored collision radii keep the player out of furniture, not only outside the walls.
       const obstacles=[
-        [[-2.05,.8,.86],[2.7,2.25,.52],[1.9,.65,.48],[-2.2,-2.3,.55],[1.97,-1.85,1.22],[-.94,-2.48,.38]],
-        [[-2,0,1.18],[0,.9,.63],[2.5,-1.3,.72],[2,1.5,.64]],
-        [[0,-2.6,1.05],[-2.5,-1.4,.65],[-2.5,1.4,.59],[2.4,-1.1,.65],[1.5,1.4,.72]]
+        [[-2.38,1.14,.78],[3.02,2.34,.38],[3.12,.48,.37],[-2.65,-2.3,.49],[2.14,-1.75,1.14],[.13,-2.66,.34]],
+        [[-2.31,-.38,1.09],[-.63,.6,.55],[2.65,-1.33,.68],[2.48,1.92,.53]],
+        [[0,-2.6,1.05],[-2.55,-.93,.63],[-2.65,1.68,.45],[2.62,-.94,.68],[2.45,1.63,.55]]
       ] as const;
       const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
@@ -727,7 +732,7 @@ export class MotherWorld {
       const progress=THREE.MathUtils.clamp((this.clock.elapsedTime-this.pillowRaisedAt)/.65,0,1);
       const lift=progress*progress*(3-2*progress);
       // Lift over an arc and set the cushion DOWN on the mattress beside the key.
-      this.pillow.position.x=2.06+.48*lift;
+      this.pillow.position.x=2.14+.43*lift;
       this.pillow.position.y=this.pillowRestY+.15*Math.sin(Math.PI*lift);
       this.pillow.position.z=centers[0]-2.42+.37*lift;
       this.pillow.rotation.y=.22*lift;
