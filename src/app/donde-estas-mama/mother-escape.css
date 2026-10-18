@@ -219,3 +219,12 @@
 .mom-book{width:auto;flex:1;min-width:0;height:138px;font-size:clamp(9px,2.5vw,12px)}
 .mom-book.verde{background:linear-gradient(90deg,#254536,#588060);color:#fff0da}
 @media(max-width:680px){.mom-photo-rotate{width:36px;height:36px}.mom-book-riddle{font-size:15px}.mom-book{height:124px}}
+
+
+/* Opt-in clue ladder: no automatic spoilers or full-screen modal interrupting play. */
+.mom-hint-panel{position:absolute;right:max(17px,env(safe-area-inset-right,0px));bottom:clamp(152px,22vh,208px);z-index:7;width:min(320px,calc(100vw - 32px));padding:17px 19px 14px;background:linear-gradient(145deg,#241f25f5,#15141bfa);border:1px solid #b79a74;box-shadow:0 16px 55px #000b;color:#f4e8d7;pointer-events:auto}
+.mom-hint-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#e5c28e;font:800 10px/1.2 Arial,sans-serif;letter-spacing:.14em}
+.mom-hint-panel-head button{width:30px;height:30px;border:1px solid #a88d7190;background:#262029;color:#f8e7cb;font:23px/1 Arial,sans-serif;touch-action:manipulation}
+.mom-hint-panel p{margin:12px 0;color:#f2e5d9;font:15px/1.55 Georgia,serif}
+.mom-hint-panel small{display:block;color:#baa993;font:11px/1.5 Arial,sans-serif}
+@media(max-width:680px){.mom-hint-panel{bottom:165px;right:14px;width:min(285px,calc(100vw - 28px));padding:13px 15px}.mom-hint-panel p{font-size:14px}}

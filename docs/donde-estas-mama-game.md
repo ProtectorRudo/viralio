@@ -77,3 +77,15 @@
 - **Escenografía:** el cuadro adicional se monta en pared, sin tocar el suelo, y los tres engranajes quedan horizontales y a la altura superior del mueble GLB tras terminar la carga; mesa con caja musical físicamente visible, madera, herrajes y cilindro, que se abre en la resolución. Se retiraron las motas esféricas brillantes confundidas con círculos interactivos.
 - **HUD:** puntero fino permanente en centro de cámara; cambia de luminosidad solo cuando el objeto seleccionado está efectivamente bajo la mira. No vuelve a introducir círculos grandes sobre los muebles.
 - **Evidencia:** unit tests de rotación/intercambio y cuatro libros; Playwright de tres habitaciones con capturas extra del puzle fotográfico, libros y caja musical. CI usa SwiftShader WebGL2; la FPS real en Android/iPhone queda pendiente de medición manual física. La sesión automatizada no sustituye una auditoría visual de todos los ángulos por un jugador.
+
+
+## Dificultad y ayudas opcionales — revisión 18/10/2026
+
+- Sustituido el botón de pista con respuesta contextual única por **tres niveles por cada uno de los nueve objetivos**: primera sugerencia metafórica, segunda orientación sin solución y tercera ayuda concreta. Al completar una meta, la ayuda del nuevo objetivo vuelve al nivel 1; las pistas previas no regalan las posteriores. Si el jugador decide pedir varias, el tercer nivel permanece disponible para accesibilidad.
+- Ninguna respuesta aparece automáticamente al estar quieto. El brillo opcional del botón tarda 65 s sin progreso, no 23 s. El temporizador sigue corriendo.
+- Mochila: nota simbólica sobre el lugar donde empiezan los sueños, no menciona dónde está la llave. La manta no señala a la almohada como escondite.
+- Fotografía: resolverla da una referencia a la inscripción, no despliega todo el verso. El verso se encuentra al examinar los cuatro libros. Se mantienen las reglas visuales del puzzle y su solución completa.
+- Biblioteca: el acertijo no dice «cada imagen representa un color», no enumera el resultado y al fallar solo anuncia el retroceso del mecanismo.
+- Habitación final: ni los avisos generales ni la caja musical revelan dónde están las tres piezas o en qué orden instalarlas. El orden solo se dice explícitamente en el tercer nivel optativo.
+- Las confirmaciones narrativas dejan de adelantar la puerta siguiente. El puntero y el joystick permanecen.
+- Tests: reglas puras comprueban los 9 × 3 textos y que el nivel 1/2 no contiene palabras solución; Playwright comprueba pistas discretas en móvil y continúa la partida completa.

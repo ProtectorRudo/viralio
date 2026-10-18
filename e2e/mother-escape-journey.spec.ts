@@ -9,7 +9,9 @@ mkdirSync("visual-qa-evidence",{recursive:true});
  * hit targets in MotherWorld and movements are real mouse gestures.
  */
 test("mother's day: full 3-room rescue, physical interactions and emotional ending",async({page})=>{
-  test.setTimeout(120_000);
+  // WebGL2 via software SwiftShader can take longer to capture the final reveal.
+  // This only raises the CI ceiling; the in-game five-minute rescue stays unchanged.
+  test.setTimeout(210_000);
   await page.setViewportSize({width:390,height:844});
   const failures:string[]=[];
   const assetErrors:string[]=[];
@@ -52,6 +54,18 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.locator('.mom-joystick')).toBeVisible();
   await expect(page.locator('.mom-pad')).toHaveCount(0);
   await page.screenshot({path:"visual-qa-evidence/mother-mobile-room-1.png"});
+  // Optional hints escalate slowly; early clicks must not disclose the hiding place.
+  const hintButton=page.getByRole("button",{name:/¿PISTA?/});
+  await hintButton.click();
+  await expect(page.locator(".mom-hint-panel")).toContainText("PISTA 1 DE 3");
+  await expect(page.locator(".mom-hint-panel")).not.toContainText(/almohada|cama|perchero/i);
+  await page.screenshot({path:"visual-qa-evidence/mother-mobile-subtle-hint.png"});
+  await page.getByRole("button",{name:"Cerrar pista"}).click();
+  await hintButton.click();
+  await expect(page.locator(".mom-hint-panel")).toContainText("PISTA 2 DE 3");
+  await expect(page.locator(".mom-hint-panel")).not.toContainText(/almohada|cama|perchero/i);
+  await page.getByRole("button",{name:"Cerrar pista"}).click();
+
 
   // Stage-local physical placements. The camera is reset at each doorway.
   const camera={x:0,y:1.65,z:2.25,yaw:0,pitch:-.04};
@@ -87,12 +101,12 @@ test("mother's day: full 3-room rescue, physical interactions and emotional endi
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
 
   await interact(3.12,.7,.48,/Mochila/);
-  await expect(page.getByText(/donde apoyo la cabeza/)).toBeVisible();
+  await expect(page.getByText(/donde empiezan mis sueños/)).toBeVisible();
   await interact(2.05,.88,-1.08,/Cama desordenada/);
   const bed=page.getByRole("dialog",{name:"Examinar objeto"});
   await expect(bed.getByRole("heading",{name:/Una cama sin hacer/})).toBeVisible();
   await bed.getByRole("button",{name:/REVISAR LA MANTA/}).click();
-  await expect(bed.getByText(/No encontrás ninguna llave/)).toBeVisible();
+  await expect(bed.getByText(/marca antigua en la tela/)).toBeVisible();
   await bed.getByRole("button",{name:/LEVANTAR LA ALMOHADA/}).click();
   await expect(bed).toHaveCount(0);
   await expect(page.locator(".mom-inventory")).not.toContainText("Llave");
