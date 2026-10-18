@@ -3,7 +3,7 @@ import { loadViralio3DAsset } from "@/lib/viralio-3d";
 import { loadViralioPBR } from "@/lib/viralio-rooms";
 
 export type MotherStage = 0 | 1 | 2;
-type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage; radius: number };
+type Spot = { id: string; mesh: THREE.Object3D; ring: THREE.Mesh; stage: MotherStage; radius: number; enabled: boolean };
 type AssetSpec = {id:string; stage:MotherStage; x:number; z:number; width:number; depth?:number; rotate?:number; supportId?:string};
 const centers = [0,-8,-16] as const;
 
@@ -50,6 +50,10 @@ export class MotherWorld {
   private frameFallAt = -1;
   private sceneMoved = new Set<number>();
   private pickableItems = new Map<string,THREE.Group>();
+  private pillow:THREE.Group|null=null;
+  private pillowRaisedAt=-1;
+  private pillowLifted=false;
+  private pillowRestY=.84;
   private readonly raycaster = new THREE.Raycaster();
   private readonly pointer = new THREE.Vector2();
   private shadowFigure: THREE.Group | null = null;
@@ -274,10 +278,13 @@ export class MotherWorld {
       {id:"universal-ph-worn-coffee-table",stage:0,x:-2.05,z:.8,width:1.45},
       {id:"desk-call-office-phone",stage:0,x:-2.05,z:.8,width:.42,supportId:"universal-ph-worn-coffee-table"},
       {id:"flush-flush-interior-door",stage:0,x:0,z:-3.64,width:1.48,depth:.3},
-      {id:"football-coat-stand",stage:0,x:2.35,z:-1.45,width:.9},
+      {id:"football-coat-stand",stage:0,x:2.7,z:2.25,width:.84},
+      {id:"hotel-bed-with-headboard-and-bench-original-hotel-furnishing",stage:0,x:1.97,z:-1.85,width:2.65},
       {id:"football-backpack",stage:0,x:1.9,z:.65,width:.77},
       {id:"oak-side-table",stage:0,x:-2.2,z:-2.3,width:.88},
       {id:"mantel-clock",stage:0,x:-2.2,z:-2.3,width:.65,supportId:"oak-side-table"},
+      {id:"slit-bedside-cabinet",stage:0,x:-.94,z:-2.48,width:.58},
+      {id:"bell-wake-clock",stage:0,x:-.94,z:-2.48,width:.28,supportId:"slit-bedside-cabinet"},
       {id:"universal-modular-sofa-set",stage:1,x:-2,z:0,width:2.2,rotate:Math.PI/2},
       {id:"universal-ph-stone-coffee-table",stage:1,x:0,z:.9,width:1.1},
       {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.5,z:-1.3,width:1.15},
@@ -297,10 +304,15 @@ export class MotherWorld {
     // Stage-aware streaming: load only the entrance immediately.
     this.loadStageAssets(0);
     this.createContactShadows();
+    this.createPillow();
     this.createFamilyPhoto();
     this.spot("telefono",0,-2.05,1.1,.8,1.35,"Teléfono");
     this.spot("caja",0,1.9,.8,.65,1.1,"Mochila");
-    this.spot("perchero",0,2.35,1.5,-1.45,1.1,"Perchero");
+    this.spot("perchero",0,2.7,1.6,2.25,.7,"Perchero");
+    this.spot("cama",0,1.74,.89,-1.06,.64,"Cama desordenada");
+    this.spot("almohada",0,2.06,.88,-2.42,.65,"Almohada");
+    this.spot("llave",0,2.06,.67,-2.42,.55,"Llave pequeña");
+    this.setSpotEnabled("llave",false);
     this.spot("puerta",0,0,1.5,-3.67,1.25,"Puerta de la sala");
     this.spot("foto",1,-2.35,1.65,-3.5,.88,"Fotografía familiar");
     this.spot("libros",1,2.4,1.5,-1.3,1.2,"Biblioteca");
@@ -311,7 +323,9 @@ export class MotherWorld {
     this.spot("cajamusical",2,1.5,1.05,1.35,1.1,"Caja musical");
     this.spot("armario",2,0,1.5,-2.69,1.4,"Armario cerrado");
     // Puzzle pieces are physical metal artifacts in the scene, not screen-only icons.
-    this.addKey("key1",2.35,1.17,centers[0]-1.43);
+    this.addKey("key1",2.06,.69,centers[0]-2.42);
+    const hiddenKey=this.pickableItems.get("key1");
+    if(hiddenKey){hiddenKey.scale.setScalar(.33);hiddenKey.rotation.set(Math.PI/2,.12,.48);hiddenKey.visible=false;}
     this.addGear("juguetes",-2.3,.84,centers[2]-1.4,.13);
     this.addGear("cajon",-2.5,.92,centers[2]+1.4,.10);
     this.addGear("estante",2.4,1.48,centers[2]-1.1,.075);
@@ -464,6 +478,7 @@ export class MotherWorld {
     const texture=new THREE.CanvasTexture(cv);this.ownedTextures.push(texture);
     const footprints:[number,number,number,number,number][]=[
       [0,-2.05,.8,1.85,1.4],[0,-2.2,-2.3,1.2,1.1],
+      [0,1.97,-1.85,2.5,2.6],[0,-.94,-2.48,.8,.9],
       [0,2.35,-1.45,.95,.95],[1,-2,0,2.8,1.55],
       [1,2.5,-1.3,1.5,1.2],[1,2,1.5,1.5,1.4],
       [2,0,-2.6,2.8,1.3],[2,-2.5,1.4,1.15,1.15],
@@ -476,6 +491,57 @@ export class MotherWorld {
       surface.position.set(x,.015,centers[stage]+z);
       surface.renderOrder=2;
       this.roomShells[stage].add(surface);
+    }
+  }
+  /** Bespoke fabric pillow: deformed high-subdivision cloth volume, not a plain box. */
+  private createPillow(){
+    const group=new THREE.Group();
+    group.name="almohada-interactiva";
+    const geometry=new THREE.BoxGeometry(.79,.19,.47,16,6,12);
+    const pos=geometry.attributes.position as THREE.BufferAttribute;
+    const v=new THREE.Vector3();
+    for(let i=0;i<pos.count;i++){
+      v.fromBufferAttribute(pos,i);
+      const edge=Math.min(1,Math.abs(v.x)/.395,Math.abs(v.z)/.235);
+      const fold=Math.sin((v.x/.79+.5)*Math.PI)*Math.sin((v.z/.47+.5)*Math.PI);
+      v.y=v.y*(.64+.36*fold)+.017*Math.cos(v.x*19)*Math.sin(v.z*21)*(1-edge*.6);
+      v.x-=Math.sign(v.x)*.025*edge;
+      v.z-=Math.sign(v.z)*.018*edge;
+      pos.setXYZ(i,v.x,v.y,v.z);
+    }
+    geometry.computeVertexNormals();
+    const fabric=new THREE.MeshStandardMaterial({color:0xd5c2b4,roughness:.97,metalness:0,side:THREE.DoubleSide});
+    const cushion=new THREE.Mesh(geometry,fabric);
+    cushion.castShadow=true;cushion.receiveShadow=true;
+    group.add(cushion);
+    // Subtle sewn piping follows the fabric silhouette.
+    const seam=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-.35,.011,-.2),new THREE.Vector3(-.38,.008,0),
+      new THREE.Vector3(-.35,.011,.2),new THREE.Vector3(0,.015,.219),
+      new THREE.Vector3(.35,.011,.2),new THREE.Vector3(.38,.008,0),
+      new THREE.Vector3(.35,.011,-.2),new THREE.Vector3(0,.015,-.219),
+      new THREE.Vector3(-.35,.011,-.2)
+    ]),36,.005,5),new THREE.MeshStandardMaterial({color:0xbda294,roughness:1}));
+    group.add(seam);
+    group.position.set(2.06,this.pillowRestY,centers[0]-2.42);
+    this.roomShells[0].add(group);
+    this.pillow=group;
+  }
+  /** The hidden physical key becomes selectable only once the pillow was moved. */
+  liftPillow(){
+    if(this.pillowLifted)return false;
+    this.pillowLifted=true;
+    this.pillowRaisedAt=this.clock.elapsedTime;
+    this.setSpotEnabled("almohada",false);
+    this.setSpotEnabled("llave",true);
+    const key=this.pickableItems.get("key1");
+    if(key)key.visible=true;
+    return true;
+  }
+  private setSpotEnabled(id:string,enabled:boolean){
+    for(const spot of this.spots)if(spot.stage===0&&spot.id===id){
+      spot.enabled=enabled;
+      spot.ring.visible=enabled;
     }
   }
   private addKey(id:string,x:number,y:number,z:number){
@@ -520,7 +586,7 @@ export class MotherWorld {
     ring.position.set(x,y+.31,centers[stage]+z);
     ring.renderOrder=5;
     this.scene.add(ring);
-    this.spots.push({id,mesh:hit,ring,stage,radius});
+    this.spots.push({id,mesh:hit,ring,stage,radius,enabled:true});
   }
   private setRotation(){
     this.camera.rotation.order="YXZ";
@@ -536,7 +602,7 @@ export class MotherWorld {
     let best:THREE.Object3D|undefined;
     let bestScore=Infinity;
     for(const spot of this.spots){
-      if(spot.stage!==this.stage)continue;
+      if(spot.stage!==this.stage||!spot.enabled)continue;
       const direction=spot.mesh.position.clone().sub(this.camera.position);
       const distance=direction.length();
       if(distance<.01||distance>6.4)continue;
@@ -566,7 +632,7 @@ export class MotherWorld {
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
     this.roomShells.forEach((room,index)=>{room.visible=index===stage;});
     this.assetModels.forEach(model=>{model.visible=model.userData.assetStage===stage&&(!model.userData.revealOnly||this.celebratory);});
-    this.pickableItems.forEach((group,id)=>{group.visible=(id==="key1"?stage===0:stage===2);});
+    this.pickableItems.forEach((group,id)=>{group.visible=(id==="key1"?stage===0&&this.pillowLifted:stage===2);});
     if(stage===1){
       this.apparitionUntil=performance.now()+1900;
       this.flickerUntil=performance.now()+470;
@@ -647,13 +713,20 @@ export class MotherWorld {
       const nz=THREE.MathUtils.clamp(this.camera.position.z+(-cos*this.movement.forward-sin*this.movement.strafe)*speed,centers[this.stage]-2.92,centers[this.stage]+3);
       // Authored collision radii keep the player out of furniture, not only outside the walls.
       const obstacles=[
-        [[-2.05,.8,.86],[2.35,-1.45,.53],[1.9,.65,.48],[-2.2,-2.3,.55]],
+        [[-2.05,.8,.86],[2.7,2.25,.52],[1.9,.65,.48],[-2.2,-2.3,.55],[1.97,-1.85,1.22],[-.94,-2.48,.38]],
         [[-2,0,1.18],[0,.9,.63],[2.5,-1.3,.72],[2,1.5,.64]],
         [[0,-2.6,1.05],[-2.5,-1.4,.65],[-2.5,1.4,.59],[2.4,-1.1,.65],[1.5,1.4,.72]]
       ] as const;
       const open=(x:number,z:number)=>obstacles[this.stage].every(([px,pz,r])=>Math.hypot(x-px,z-centers[this.stage]-pz)>r+.31);
       if(open(nx,this.camera.position.z))this.camera.position.x=nx;
       if(open(this.camera.position.x,nz))this.camera.position.z=nz;
+    }
+    if(this.pillow&&this.pillowRaisedAt>=0){
+      const progress=THREE.MathUtils.clamp((this.clock.elapsedTime-this.pillowRaisedAt)/.65,0,1);
+      const lift=progress*progress*(3-2*progress);
+      this.pillow.position.y=this.pillowRestY+.24*lift;
+      this.pillow.position.z=centers[0]-2.42-.26*lift;
+      this.pillow.rotation.x=-.28*lift;
     }
     if(this.celebratory&&this.childModel){
       this.childMixer?.update(dt);
@@ -698,7 +771,7 @@ export class MotherWorld {
       }
     }
     for(const s of this.spots){
-      s.ring.visible=s.stage===this.stage&&!this.celebratory;
+      s.ring.visible=s.enabled&&s.stage===this.stage&&!this.celebratory;
       if(s.ring.visible){s.ring.quaternion.copy(this.camera.quaternion);s.ring.scale.setScalar(1+.14*Math.sin(t*3));}
     }
     const dark=performance.now()<this.flickerUntil;
