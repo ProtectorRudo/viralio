@@ -91,6 +91,13 @@ export default function MotherEscape(){
   const [portrait,setPortrait]=useState([1,3,2,1]);
   const [photoOrder,setPhotoOrder]=useState([1,0,3,2]);
   const [selectedPhoto,setSelectedPhoto]=useState<number|null>(null);
+  const [draggingPhoto,setDraggingPhoto]=useState<number|null>(null);
+  const [photoDropTarget,setPhotoDropTarget]=useState<number|null>(null);
+  const photoDrag=useRef<{
+    pointerId:number;source:number;startX:number;startY:number;
+    moved:boolean;target:number|null;
+  }|null>(null);
+  const suppressPhotoClickUntil=useRef(0);
   const [portraitDone,setPortraitDone]=useState(false);
   const [bookOrder,setBookOrder]=useState<string[]>([]);
   const [booksDone,setBooksDone]=useState(false);
@@ -278,6 +285,69 @@ export default function MotherEscape(){
     setPhotoOrder(next);sound.current.click();
     if(photoComplete(portrait,next))completePhoto();
   },[selectedPhoto,photoOrder,portrait,portraitDone,completePhoto]);
+  const swapPhotoPositions=useCallback((source:number,target:number)=>{
+    if(portraitDone||source===target)return;
+    const next=swapPhotoTiles(photoOrder,source,target);
+    setPhotoOrder(next);
+    setSelectedPhoto(null);
+    completed.current=Date.now();
+    sound.current.click();
+    if(photoComplete(portrait,next))completePhoto();
+  },[portraitDone,photoOrder,portrait,completePhoto]);
+  const photoTileAt=(root:HTMLElement,x:number,y:number):number|null=>{
+    const slots=root.closest(".mom-photo-grid")?.querySelectorAll<HTMLElement>("[data-photo-slot]");
+    if(!slots)return null;
+    for(const slot of slots){
+      const rect=slot.getBoundingClientRect();
+      if(x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom){
+        return Number(slot.dataset.photoSlot);
+      }
+    }
+    return null;
+  };
+  const photoPointerDown=(e:ReactPointerEvent<HTMLButtonElement>,index:number)=>{
+    if(portraitDone||photoDrag.current!==null||e.button!==0)return;
+    photoDrag.current={
+      pointerId:e.pointerId,source:index,startX:e.clientX,startY:e.clientY,
+      moved:false,target:null
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const photoPointerMove=(e:ReactPointerEvent<HTMLButtonElement>)=>{
+    const drag=photoDrag.current;
+    if(!drag||drag.pointerId!==e.pointerId)return;
+    const dx=e.clientX-drag.startX,dy=e.clientY-drag.startY;
+    if(!drag.moved&&Math.hypot(dx,dy)>9){
+      drag.moved=true;
+      setSelectedPhoto(null);
+      setDraggingPhoto(drag.source);
+    }
+    if(!drag.moved)return;
+    e.currentTarget.style.transform=`translate3d(${dx}px,${dy}px,0)`;
+    const target=photoTileAt(e.currentTarget,e.clientX,e.clientY);
+    drag.target=target!==drag.source?target:null;
+    setPhotoDropTarget(previous=>previous===drag.target?previous:drag.target);
+  };
+  const photoPointerFinish=(e:ReactPointerEvent<HTMLButtonElement>,cancel=false)=>{
+    const drag=photoDrag.current;
+    if(!drag||drag.pointerId!==e.pointerId)return;
+    photoDrag.current=null;
+    e.currentTarget.style.transform="";
+    if(e.currentTarget.hasPointerCapture(e.pointerId)){
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    setDraggingPhoto(null);
+    setPhotoDropTarget(null);
+    if(!cancel&&drag.moved){
+      // Browsers may synthesize a click on touch release; don't also select it.
+      suppressPhotoClickUntil.current=performance.now()+500;
+      if(drag.target!==null)swapPhotoPositions(drag.source,drag.target);
+    }
+  };
+  const photoClick=(index:number)=>{
+    if(performance.now()<suppressPhotoClickUntil.current)return;
+    selectPhotoPiece(index);
+  };
   const chooseBook=useCallback((color:string)=>{
     if(booksDone)return;
     const result=enterOrderedItem(bookOrder,color,BOOK_SEQUENCE);
@@ -456,7 +526,7 @@ export default function MotherEscape(){
         <button className="mom-inspect-close" onClick={()=>setInspect(null)} aria-label="Volver a la habitación">✕</button>
         {inspect==="bed"&&<><span className="mom-pretitle">OBJETO 01 / CAMA FAMILIAR</span><h2>Una cama sin hacer</h2><p>La cama conserva señales de que alguien salió con apuro. No todo parece estar en su sitio.</p><div className="mom-bed-actions"><button onClick={()=>{setBlanketSearched(true);sound.current.click();}}>REVISAR LA MANTA</button><button onClick={raisePillow} disabled={pillowLifted}>LEVANTAR LA ALMOHADA</button></div>{blanketSearched&&<p className="mom-bed-feedback" role="status">Sacudís la manta. Solo hay una marca antigua en la tela.</p>}<small>Podés volver a tocar la cama para examinarla.</small></>}
         {inspect==="phone"&&<><span className="mom-pretitle">MENSAJE · 01 RECIBIDO</span><h2>Un mensaje de tu hijo</h2><div className="mom-phone"><span>📱 DESCONOCIDO</span><p>«Mamá, no puedo salir. No sé cuánto tiempo tengo. Por favor, vení a buscarme...»</p><small>Entregado hace unos segundos</small></div><p>Antes de cortarse, se escucharon tres golpes desde el fondo de la casa.</p></>}
-        {inspect==="portrait"&&<><span className="mom-pretitle">OBJETO 02 / MARCO FAMILIAR</span><h2>Los fragmentos del recuerdo</h2><p>La imagen tiene sus cuatro partes <strong>mezcladas y giradas</strong>. Seleccioná dos fragmentos para intercambiarlos. Después utilizá ↻ para orientarlos.</p><div className="mom-photo-grid">{photoOrder.map((piece,i)=><div key={i} className={"mom-photo-tile"+(selectedPhoto===i?" selected":"")}><button className="mom-photo-select" onClick={()=>selectPhotoPiece(i)} aria-label={"Seleccionar pieza "+(i+1)}><span className="mom-photo-art" style={{backgroundPosition:(piece%2?100:0)+"% "+(piece>=2?100:0)+"%",transform:"rotate("+(portrait[piece]*90)+"deg)"}} aria-hidden="true"/></button><button className="mom-photo-rotate" onClick={()=>turnPiece(i)} aria-label={"Girar pieza "+(i+1)}>↻</button></div>)}</div><small>{selectedPhoto!==null?"Ahora tocá otra pieza para intercambiarlas.":"La imagen tiene marcas tenues en el reverso. Nada aparece hasta recomponerla."}</small></>}
+        {inspect==="portrait"&&<><span className="mom-pretitle">OBJETO 02 / MARCO FAMILIAR</span><h2>Los fragmentos del recuerdo</h2><p>Deslizá cada pieza con el dedo hasta otra posición para intercambiarlas. Si alguna está girada, tocá <strong>↻</strong> para orientarla.</p><div className="mom-photo-grid" role="group" aria-label="Fotografía para recomponer arrastrando los fragmentos">{photoOrder.map((piece,i)=><div key={i} data-photo-slot={i} className={"mom-photo-tile"+(selectedPhoto===i?" selected":"")+(draggingPhoto===i?" dragging":"")+(photoDropTarget===i?" drop-target":"")}><button className="mom-photo-select" type="button" onPointerDown={e=>photoPointerDown(e,i)} onPointerMove={photoPointerMove} onPointerUp={e=>photoPointerFinish(e)} onPointerCancel={e=>photoPointerFinish(e,true)} onLostPointerCapture={e=>photoPointerFinish(e,true)} onClick={()=>photoClick(i)} aria-label={"Seleccionar pieza "+(i+1)} data-piece-id={piece}><span className="mom-photo-art" style={{backgroundPosition:(piece%2?100:0)+"% "+(piece>=2?100:0)+"%",transform:"rotate("+(portrait[piece]*90)+"deg)"}} aria-hidden="true"/></button><button className="mom-photo-rotate" type="button" onClick={()=>turnPiece(i)} aria-label={"Girar pieza "+(i+1)}>↻</button></div>)}</div><small>{selectedPhoto!==null?"También podés tocar otra pieza para intercambiarlas.":"Mantené el dedo sobre una pieza y arrastrala. En computadora también podés usar el mouse."}</small></>}
         {inspect==="books"&&<><span className="mom-pretitle">OBJETO 03 / LOS CUATRO TOMOS</span><h2>La biblioteca del recuerdo</h2><p>Una inscripción casi borrada quedó al descubierto entre las hojas de los tomos:</p><blockquote className="mom-book-riddle">«Aquello que crece en silencio abre el camino. Le sigue lo que late en secreto. Después, la luz que corona el día; al final, el lugar de las nubes».</blockquote><p>Hay cuatro tomos y cuatro frases. Al presionarlos se mueve algo detrás del estante.</p><div className="mom-books">{["azul","verde","rojo","dorado"].map(c=><button key={c} className={"mom-book "+c} onClick={()=>chooseBook(c)} aria-label={"Presionar libro "+c}>{c.toUpperCase()}</button>)}</div><small>Secuencia ingresada: {bookOrder.length}/4</small></>}
         {inspect==="music"&&<><span className="mom-pretitle">OBJETO 04 / CAJA MUSICAL</span><h2>Tres piezas, una melodía</h2><p>El cilindro musical contiene tres ejes. Una inscripción desgastada dice: «Primero la voz profunda; luego responde la del medio; finalmente, la más aguda».</p><div className="mom-gear-slots"><span>{gearOrder[0]?"⚙":"◯"}</span><span>{gearOrder[1]?"⚙":"◯"}</span><span>{gearOrder[2]?"⚙":"◯"}</span></div><div className="mom-gear-buttons">{["pequeño","grande","mediano"].map(g=><button key={g} disabled={gearOrder.includes(g as Gear)} onClick={()=>placeGear(g as Gear)}>⚙ {g}</button>)}</div><small>{gearOrder.length}/3 engranajes colocados</small></>}
         <button className="mom-back" onClick={()=>setInspect(null)}>← REGRESAR A LA HABITACIÓN</button>
