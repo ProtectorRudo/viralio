@@ -28,6 +28,9 @@ export class MotherWorld {
   private celebratory = false;
   private warmLights: THREE.PointLight[] = [];
   private dynamicProps: THREE.Object3D[] = [];
+  private sceneSurprise: THREE.Mesh | null = null;
+  private fallenFrame: THREE.Mesh | null = null;
+  private sceneMoved = new Set<number>();
   onInteract: (id:string)=>void = ()=>{};
   onFocus: (label:string)=>void = ()=>{};
   onNotice: (message:string)=>void = ()=>{};
@@ -169,10 +172,12 @@ export class MotherWorld {
       if(size.x<.001||size.y<.001||size.z<.001)return;
       const k=Math.min(a.width/Math.max(size.x,size.z),a.depth? a.depth/Math.max(size.x,size.z):6,2.2/size.y);
       scene.scale.setScalar(k);
-      scene.position.set(a.x-center.x*k,-box.min.y*k+.012,centers[a.stage]+a.z-center.z*k);
+      const lift = a.id==="desk-call-office-phone" ? .62 : a.id==="mantel-clock" ? .73 : a.id==="crime-photo-frame" ? 1.45 : 0;
+      scene.position.set(a.x-center.x*k,-box.min.y*k+.012+lift,centers[a.stage]+a.z-center.z*k);
       scene.rotation.y=a.rotate||0;
       scene.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});
       this.scene.add(scene);
+      scene.userData.assetId=a.id;
       this.dynamicProps.push(scene);
     }catch(e){console.warn("Asset CC0 no disponible",a.id,e);}
   }
@@ -180,13 +185,16 @@ export class MotherWorld {
     const assets:AssetSpec[]=[
       {id:"universal-ph-worn-coffee-table",stage:0,x:-2.05,z:.8,width:1.45},
       {id:"desk-call-office-phone",stage:0,x:-2.05,z:.8,width:.42},
+      {id:"flush-flush-interior-door",stage:0,x:0,z:-3.64,width:1.48,depth:.3},
       {id:"football-coat-stand",stage:0,x:2.35,z:-1.45,width:.9},
       {id:"universal-ph-wooden-crate",stage:0,x:1.9,z:.65,width:.9},
+      {id:"oak-side-table",stage:0,x:-2.2,z:-2.3,width:.88},
       {id:"mantel-clock",stage:0,x:-2.2,z:-2.3,width:.65},
       {id:"universal-modular-sofa-set",stage:1,x:-2,z:0,width:2.2,rotate:Math.PI/2},
       {id:"universal-ph-stone-coffee-table",stage:1,x:0,z:.9,width:1.1},
       {id:"filled-bookshelf-small-original-interior-furnishing",stage:1,x:2.5,z:-1.3,width:1.15},
-      {id:"crime-photo-frame",stage:1,x:-2.35,z:-2.7,width:.7},
+      {id:"crime-photo-frame",stage:1,x:-2.35,z:-3.58,width:.7},
+      {id:"flush-flush-interior-door",stage:1,x:0,z:-3.64,width:1.48,depth:.3},
       {id:"wingback-armchair",stage:1,x:2,z:1.5,width:1.05,rotate:-.5},
       {id:"gilt-landscape-picture-frame",stage:1,x:-3,z:1,width:.6},
       {id:"two-door-wardrobe-original-interior-furnishing",stage:2,x:0,z:-2.6,width:2.6},
@@ -200,7 +208,7 @@ export class MotherWorld {
     this.spot("caja",0,1.9,.9,.65,1.1,"Caja escolar");
     this.spot("perchero",0,2.35,1.5,-1.45,1.1,"Perchero");
     this.spot("puerta",0,0,1.5,-3.67,1.25,"Puerta de la sala");
-    this.spot("foto",1,-2.35,1.65,-2.7,1.15,"Fotografía familiar");
+    this.spot("foto",1,-2.35,1.65,-3.5,.88,"Fotografía familiar");
     this.spot("libros",1,2.4,1.5,-1.3,1.2,"Biblioteca");
     this.spot("puerta",1,0,1.5,-3.67,1.25,"Puerta del dormitorio");
     this.spot("juguetes",2,-2.5,1,-1.4,1.1,"Caja de juguetes");
@@ -208,6 +216,14 @@ export class MotherWorld {
     this.spot("estante",2,2.4,1.45,-1.1,1,"Estante");
     this.spot("cajamusical",2,1.5,1.05,1.35,1.1,"Caja musical");
     this.spot("armario",2,0,1.5,-2.69,1.4,"Armario cerrado");
+    // A physical frame falls when the child is heard, and a tangible warning materializes on the wall.
+    this.fallenFrame = this.addBox(.68,.88,.075,-3.57,1.77,-.9,this.mat(0x9e7453,.1,.6),true);
+    this.fallenFrame.rotation.y=-.15;
+    const warningCanvas=document.createElement("canvas");warningCanvas.width=512;warningCanvas.height=192;
+    const ctx=warningCanvas.getContext("2d");
+    if(ctx){ctx.clearRect(0,0,512,192);ctx.font="bold 48px Georgia";ctx.textAlign="center";ctx.fillStyle="#ad2e36";ctx.shadowBlur=10;ctx.shadowColor="#7c131e";ctx.fillText("TE ESTÁ",256,73);ctx.fillText("ESPERANDO",256,138);}
+    this.sceneSurprise=new THREE.Mesh(new THREE.PlaneGeometry(2.45,.95),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(warningCanvas),transparent:true,side:THREE.DoubleSide,depthWrite:false}));
+    this.sceneSurprise.visible=false;this.scene.add(this.sceneSurprise);
     // Decoration: pendant light, floor grilles, floating dust; physical meshes only.
     for(let s=0;s<3;s++){
       const z=centers[s];
@@ -258,11 +274,25 @@ export class MotherWorld {
   setMotion(forward:number,strafe:number){this.movement.forward=forward;this.movement.strafe=strafe;}
   setStage(stage:MotherStage){
     this.stage=stage;this.camera.position.set(0,1.65,centers[stage]+2.25);
+    if(this.sceneSurprise?.visible)this.sceneSurprise.position.z=centers[stage]-3.59;
     this.yaw=0;this.pitch=-.04;this.setRotation();this.onFocus("");
   }
   setSuspense(elapsed:number){
-    if(elapsed>=190&&elapsed<193)this.flickerUntil=performance.now()+300;
-    if(elapsed>=260&&elapsed<263)this.flickerUntil=performance.now()+650;
+    if(elapsed>=12&&!this.sceneMoved.has(12)&&this.fallenFrame){
+      this.sceneMoved.add(12);this.fallenFrame.rotation.z=-.64;this.fallenFrame.position.y=.66;
+    }
+    if(elapsed>=105&&!this.sceneMoved.has(105)){
+      this.sceneMoved.add(105);
+      const moved=this.dynamicProps.find(o=>o.userData.assetId==="universal-ph-stone-coffee-table");
+      if(moved){moved.position.x+=.7;moved.rotation.y+=.24;}
+    }
+    if(elapsed>=170&&!this.sceneMoved.has(170)&&this.sceneSurprise){
+      this.sceneMoved.add(170);
+      this.sceneSurprise.position.set(0,1.88,centers[this.stage]-3.59);
+      this.sceneSurprise.visible=true;
+    }
+    if(elapsed>=170&&elapsed<174)this.flickerUntil=performance.now()+300;
+    if(elapsed>=280&&elapsed<283)this.flickerUntil=performance.now()+650;
   }
   win(){
     this.celebratory=true;
