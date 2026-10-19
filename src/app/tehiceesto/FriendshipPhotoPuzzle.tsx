@@ -10,6 +10,7 @@ export default function FriendshipPhotoPuzzle({photo,caption,onSolved,onContinue
   const [done,setDone]=useState(false);
   const notified=useRef(false);
   const pointer=useRef<{slot:number;x:number;y:number}|null>(null);
+  const skipNextClick=useRef(false);
   useEffect(()=>{if(!done||notified.current)return;notified.current=true;onSolved()},[done,onSolved]);
   const swap=(a:number,b:number)=>{
     if(done||a===b)return;
@@ -17,14 +18,14 @@ export default function FriendshipPhotoPuzzle({photo,caption,onSolved,onContinue
     setTiles(updated);setMoves(n=>n+1);setChosen(null);
     if(updated.every((v,i)=>v===i)){setDone(true);navigator.vibrate?.([12,30,12])}
   };
-  const choose=(slot:number)=>{if(done)return;if(chosen===null){setChosen(slot);return}if(chosen===slot){setChosen(null);return}swap(chosen,slot)};
-  const pointerDown=(event:PointerEvent<HTMLButtonElement>,slot:number)=>{pointer.current={slot,x:event.clientX,y:event.clientY}};
+  const choose=(slot:number)=>{if(skipNextClick.current){skipNextClick.current=false;return}if(done)return;if(chosen===null){setChosen(slot);return}if(chosen===slot){setChosen(null);return}swap(chosen,slot)};
+  const pointerDown=(event:PointerEvent<HTMLButtonElement>,slot:number)=>{pointer.current={slot,x:event.clientX,y:event.clientY};event.currentTarget.setPointerCapture(event.pointerId)};
   const pointerUp=(event:PointerEvent<HTMLButtonElement>,slot:number)=>{
     const start=pointer.current;pointer.current=null;
     if(!start||start.slot!==slot||Math.hypot(event.clientX-start.x,event.clientY-start.y)<20)return;
     const buttons=[...event.currentTarget.parentElement!.querySelectorAll<HTMLButtonElement>("button[data-tile-slot]")];
     const target=buttons.find(button=>{const r=button.getBoundingClientRect();return event.clientX>=r.left&&event.clientX<=r.right&&event.clientY>=r.top&&event.clientY<=r.bottom});
-    if(target){const other=Number(target.dataset.tileSlot);if(other!==slot)swap(slot,other)}
+    if(target){const other=Number(target.dataset.tileSlot);if(other!==slot){skipNextClick.current=true;swap(slot,other)}}
   };
   return <section className={"thi-scene friendship-scene friend-puzzle-scene"+(done?" friend-puzzle-complete":"")} data-friend-puzzle>
     <div className="friend-puzzle-aura" aria-hidden="true"/>
