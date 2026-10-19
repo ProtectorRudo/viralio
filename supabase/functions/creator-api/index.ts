@@ -200,6 +200,11 @@ function canonicalRecipeForGift(gift: any, storyValue?: unknown) {
     : [];
   if (stored.length) return stored;
 
+  // Already purchased v3 Friendship gifts retain their historic nine-scene
+  // recipe. The new 11-scene puzzle/door journey belongs only to new v5 sales.
+  if (gift?.experience_slug === "amistad" && gift?.template_version !== "premium-v5") {
+    return ["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"];
+  }
   const current = recipes[String(gift?.experience_slug || "")] || [];
   if (current.length) return [...current];
 
