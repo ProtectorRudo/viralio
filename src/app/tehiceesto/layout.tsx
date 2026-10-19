@@ -23,6 +23,7 @@ import "./tehiceesto-pair-finale-cinema.css";
 import "./tehiceesto-pair-finale-sharp.css";
 import "./tehiceesto-ruby-heart.css";
 import "./tehiceesto-customer-media.css";
+import "./tehiceesto-friendship-premium.css";
 import FloatingWhatsApp from "./FloatingWhatsApp";
 
 export const metadata: Metadata = {
