@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/tehiceesto-cumpleanos-gift-qa.yml"
       - "e2e/tehiceesto-birthday-gift.spec.ts"
+      - "playwright.birthday.config.ts"
       - "src/app/tehiceesto/BirthdayGiftIntro.tsx"
       - "src/app/tehiceesto/BirthdayGiftIntro.css"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
@@ -37,8 +38,17 @@ jobs:
         run: npm run build
       - name: Chromium
         run: npx playwright install --with-deps chromium
+      - name: Start production preview
+        run: |
+          npm start -- -H 127.0.0.1 -p 3000 >/tmp/birthday-gift-qa.log 2>&1 &
+          for i in {1..80}; do
+            if curl --connect-timeout 2 -fsS http://127.0.0.1:3000/tehiceesto/experiencias/cumpleanos >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/birthday-gift-qa.log
+          exit 1
       - name: Mobile + desktop + reduced-motion birthday gift
-        run: npx playwright test e2e/tehiceesto-birthday-gift.spec.ts
+        run: npx playwright test --config=playwright.birthday.config.ts
       - name: Upload screenshots and test traces
         if: always()
         uses: actions/upload-artifact@v4
