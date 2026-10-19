@@ -17,7 +17,7 @@ const sceneNames:Record<SceneType,string>={
   certainty:"Certeza",threshold:"Umbral",childhood:"Infancia",care:"Cuidados",
   sacrifices:"Sacrificios",return:"Volver",lessons:"Lecciones",presence:"Presencia",
   inheritance:"Herencia",lookback:"Mirar de nuevo",casefile:"Expediente",
-  insidejokes:"Códigos internos",incidents:"Incidentes",proof:"Pruebas",pact:"Pacto",
+  insidejokes:"Códigos internos",incidents:"Incidentes",proof:"Pruebas",puzzle:"Foto por reconstruir",pact:"Pacto",
   invitation:"Invitación",portal:"Umbral",gallery:"Museo invisible",timepiece:"El tiempo",recording:"Una voz",
   clues:"Señales",confession:"Carta",passage:"Último paso",reveal:"Revelación",keepsake:"Recuerdo final",
 };
