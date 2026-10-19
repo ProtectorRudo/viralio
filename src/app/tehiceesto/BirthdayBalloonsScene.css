@@ -233,9 +233,11 @@
 }
 /* The floating sales CTA previously obscured the choice-counter on mobile. */
 @media(max-width:650px){
- .thi-root:has(.thi-template-live.thi-theme-cumpleanos[data-scene="balloons"]) .floating-create-cta,
- .thi-root:has(.thi-template-live.thi-theme-cumpleanos[data-scene="balloons"]) .floating-whatsapp--experience{
-  opacity:0!important;visibility:hidden!important;pointer-events:none!important;
+ /* The commercial floating link is mounted outside .thi-root by the site layout.
+    Target the shared document ancestor so it never covers choices/progress. */
+ body:has(.thi-template-live.thi-theme-cumpleanos[data-scene="balloons"]) .floating-create-cta,
+ body:has(.thi-template-live.thi-theme-cumpleanos[data-scene="balloons"]) .floating-whatsapp--experience{
+  display:none!important;opacity:0!important;visibility:hidden!important;pointer-events:none!important;
  }
  .thi-template-live.thi-theme-cumpleanos[data-scene="balloons"] .thi-bday-balloon-scene{
   justify-content:flex-start;padding:clamp(111px,14svh,141px) 12px 105px!important;
