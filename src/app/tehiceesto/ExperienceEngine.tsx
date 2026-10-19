@@ -232,7 +232,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       key={`${runId}-${sceneIndex}-${type}`}
       scene={type}
       experience={experience}
-      photos={type==="memories"?displayPhotos:type==="puzzle"?(photoMedia?.filter(item=>item.scene==="puzzle"||item.scene==="memories"||!item.scene).length?photoMedia.filter(item=>item.scene==="puzzle"||item.scene==="memories"||!item.scene).slice(0,1):scenePhotos.slice(0,1)):scenePhotos}
+      photos={type==="memories"?displayPhotos:type==="puzzle"?[(photoMedia||[]).find(item=>item.scene==="puzzle"&&!item.url.startsWith("data:"))||(photoMedia||[]).find(item=>item.url&&!item.url.startsWith("data:"))||(photoMedia||[]).find(item=>item.scene==="puzzle")||demoPhotos[0]||scenePhotos[0]].filter((item):item is ThiPhoto=>Boolean(item)):scenePhotos}
       memory={memoryLines}
       letterText={letterText||token(copy.letter.body)}
       anecdote={storyContext?.anecdote}
