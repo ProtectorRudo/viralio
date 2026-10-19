@@ -17,6 +17,7 @@ for(const [label,width,height] of [["mobile",390,844],["desktop",1440,960],["sma
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","candles");
   const scene=page.locator(".thi-birthday-wish");
   await expect(scene).toBeVisible();
+  await page.waitForTimeout(1400); // capture settled scene, not an intro view-transition frame
   await expect(scene.locator(".thi-wish-cake-art")).toBeVisible();
   await expect(scene.locator(".thi-wish-candle")).toHaveCount(5);
   await expect(scene.locator(".thi-wish-flame")).toHaveCount(5);
@@ -39,6 +40,11 @@ for(const [label,width,height] of [["mobile",390,844],["desktop",1440,960],["sma
   await page.locator("[data-action='blow-fallback']").click();
   await expect(page.locator(".thi-birthday-ritual")).toHaveClass(/out/);
   await expect(page.locator(".thi-wish-flame").first()).toHaveCSS("opacity","0");
+  await page.waitForTimeout(650);
+  const after=await scene.locator("h2").boundingBox();
+  expect(after).not.toBeNull();
+  expect(after!.y).toBeGreaterThanOrEqual(0);
+  expect(await page.evaluate(()=>window.scrollY)).toBeLessThanOrEqual(3);
   await expect(page.locator("[data-action='advance']")).toBeVisible();
   await page.screenshot({path:`birthday-wish-evidence/${label}-out.png`,fullPage:false});
   await page.locator("[data-action='advance']").click();
