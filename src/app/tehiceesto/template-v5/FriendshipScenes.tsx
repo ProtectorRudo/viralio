@@ -18,6 +18,7 @@ type Props = {
   next: () => void;
   restart: () => void;
   onUnlock: (ready:boolean) => void;
+  persistSignature?: boolean;
 };
 
 const codes = [
@@ -58,7 +59,7 @@ function FriendAction({children,onClick,disabled=false}:FriendActionProps) {
   </button>;
 }
 
-export default function FriendshipScenes({ scene, experience, photos, memory, letterText, anecdote, date, next, restart, onUnlock }: Props) {
+export default function FriendshipScenes({ scene, experience, photos, memory, letterText, anecdote, date, next, restart, onUnlock, persistSignature = false }: Props) {
   const [doorOpen, setDoorOpen] = useState(false);
   const [folderOpen, setFolderOpen] = useState(false);
   const [uncovered, setUncovered] = useState<number[]>([]);
@@ -81,7 +82,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
   const reveal = (i:number) => setUncovered(items => items.includes(i) ? items : [...items,i]);
   const signatureKey = `thi-friendship-signature-v1:${experience.slug}:${experience.demoGiver}:${experience.demoRecipient}`;
   useEffect(()=>{
-    if(scene!=="pact")return;
+    if(scene!=="pact"||!persistSignature)return;
     try{
       const key=signatureKey+":"+window.location.pathname;
       const raw=window.localStorage.getItem(key);
@@ -96,13 +97,13 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
         return ()=>window.clearTimeout(timer);
       }
     }catch{/* Storage can be unavailable in privacy mode. */}
-  },[scene,signatureKey]);
+  },[scene,signatureKey,persistSignature]);
   const saveSignature=(image:string,time:string)=>{
     setSignatureImage(image);
     setSignedAt(time);
     setPactSealed(true);
     setSignatureOpen(false);
-    try{window.localStorage.setItem(signatureKey+":"+window.location.pathname,JSON.stringify({image,signedAt:time}))}catch{/* Keep signed in current session. */}
+    if(persistSignature){try{window.localStorage.setItem(signatureKey+":"+window.location.pathname,JSON.stringify({image,signedAt:time}))}catch{/* Keep signed in current session. */}}
   };
 
   useEffect(() => {
