@@ -101,8 +101,8 @@
   inset -3px 0 3px rgba(255,247,226,.22),
   0 18px 32px rgba(2,2,8,.30),0 0 30px rgba(234,182,134,.11);
  transform-origin:50% 100%;
- animation:thiBdaySatinFloat calc(4.5s + var(--balloon-seq)*.43s) ease-in-out infinite alternate;
- animation-delay:calc(var(--balloon-seq)*-.76s);
+ animation:thiBdaySatinFloat var(--balloon-duration,5s) ease-in-out infinite alternate;
+ animation-delay:var(--balloon-delay,0s);
  transition:opacity .26s ease,filter .26s ease;
 }
 .thi-template-live.thi-theme-cumpleanos[data-scene="balloons"] .thi-bday-satin-highlight{
