@@ -155,6 +155,7 @@ const SCENE_LABELS:Record<string,{title:string;copy:string}>={
   insidejokes:{title:"Los códigos",copy:"Chistes y frases que sólo ustedes entienden."},
   incidents:{title:"Las anécdotas",copy:"Esos episodios que merecen quedar registrados."},
   proof:{title:"Las pruebas",copy:"Pequeñas evidencias de una amistad enorme."},
+  puzzle:{title:"La foto que construimos",copy:"Armá la foto de ustedes pieza por pieza para revelar la carta."},
   pact:{title:"El pacto",copy:"El cierre entre dos personas que se eligieron."},
 };
 
@@ -365,8 +366,8 @@ function Preview({
     />;
   }
 
-  if(gift.template_version==="premium-v5"&&gift.experience_slug==="mama"){
-    const base=getPremiumV5Experience("mama");
+  if(gift.template_version==="premium-v5"&&["mama","amistad"].includes(gift.experience_slug)){
+    const base=getPremiumV5Experience(gift.experience_slug);
     if(!base)return null;
     const experience={
       ...base,
@@ -858,7 +859,7 @@ export default function CustomerStudio({code}:{code:string}){
         ?frozenV3Base
         :gift?.template_version==="premium-v4"
           ?frozenV4Base
-          :gift?.template_version==="premium-v5"&&gift.experience_slug==="mama"
+          :gift?.template_version==="premium-v5"&&["mama","amistad"].includes(gift.experience_slug)
             ?frozenV5Base
             :currentBase;
   const canonical=selectedBase?.recipe||[];
@@ -866,7 +867,7 @@ export default function CustomerStudio({code}:{code:string}){
   const photos=media.filter(item=>item.kind==="image");
   const lightPhotos=photos.filter(item=>item.metadata?.scene==="light");
   const memoryPhotos=photos.filter(item=>item.metadata?.scene!=="light");
-  const photoDestinations=canonical.filter(scene=>["memories","childhood","origin","sacrifices","voices","lessons","presence","inheritance"].includes(scene));
+  const photoDestinations=canonical.filter(scene=>["memories","puzzle","childhood","origin","sacrifices","voices","lessons","presence","inheritance"].includes(scene));
   const lightPhoto=lightPhotos[0];
   const audios=media.filter(item=>item.kind==="audio");
   const voiceAudios=audios.filter(item=>item.metadata?.role!=="soundtrack");
@@ -885,7 +886,7 @@ export default function CustomerStudio({code}:{code:string}){
     hasLightPhoto:lightPhotos.length>0||canonical.includes("light"),
   });
   const sceneTextOverrides=gift?.story_data?.sceneContent||{};
-  const selectedCopy=gift?.template_version==="premium-v5"&&gift.experience_slug==="mama"&&frozenV5Base
+  const selectedCopy=gift?.template_version==="premium-v5"&&["mama","amistad"].includes(gift.experience_slug)&&frozenV5Base
     ?getPremiumV5ExperienceCopy(frozenV5Base)
     :gift?.template_version==="premium-v4"&&frozenV4Base
     ?getPremiumV4ExperienceCopy(frozenV4Base)
