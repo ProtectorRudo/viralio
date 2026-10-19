@@ -6,7 +6,7 @@ export type SceneType =
   | "origin" | "reasons" | "certainty" | "threshold"
   | "childhood" | "care" | "sacrifices" | "return"
   | "lessons" | "presence" | "inheritance" | "lookback"
-  | "casefile" | "insidejokes" | "incidents" | "proof" | "pact"
+  | "casefile" | "insidejokes" | "incidents" | "proof" | "puzzle" | "pact"
   | "invitation" | "portal" | "gallery" | "timepiece" | "recording"
   | "clues" | "confession" | "passage" | "reveal" | "keepsake";
 
@@ -369,10 +369,10 @@ export const experiences: Experience[] = [
     accent:"#79b7ff",
     demoRecipient:"Vale",
     demoGiver:"Cami",
-    opening:"Antes de que esto se ponga sentimental, considero necesario dejar constancia oficial de demasiadas cosas que hicimos.",
+    opening:"Quería regalarte un lugar que fuera solo nuestro: donde las risas, las locuras y los días que nos sostuvimos se convierten en recuerdos para volver a vivir. ¿Te animás a entrar?",
     closing:"Entre todas las personas que la vida podía cruzarme, qué suerte que me tocaste vos.",
     tags:["Amistad","Humor","Recuerdos"],
-    recipe:["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
+    recipe:["intro","door","casefile","memories","insidejokes","incidents","proof","puzzle","letter","pact","finale"],
     demo:{
       quiz:{
         question:"¿Quién mandó el primer mensaje después de aquella pelea absurda?",
