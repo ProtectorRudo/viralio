@@ -12,7 +12,7 @@ function envDefault(name:string){
 const SECRET=envDefault("SUPABASE_SECRET_KEYS");
 // SYNCHRONIZED with frozen premium-v3 demo snapshot. Tests guard all nine journeys.
 function versionForNewGift(slug:string){
-  return slug.startsWith("escape-")?"escape-v1":slug==="pareja"||slug==="mama"?"premium-v5":"premium-v3";
+  return slug.startsWith("escape-")?"escape-v1":["pareja","mama","amistad"].includes(slug)?"premium-v5":"premium-v3";
 }
 
 const recipes:Record<string,string[]>={
@@ -24,7 +24,7 @@ const recipes:Record<string,string[]>={
   propuesta: ["intro","origin","memories","reasons","certainty","letter","threshold","proposal"],
   mama: ["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
   papa: ["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
-  amistad: ["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
+  amistad: ["intro","door","casefile","memories","insidejokes","incidents","proof","puzzle","letter","pact","finale"],
   "escape-caso-m": ["intro","letter","finale"],
   "escape-ultima-funcion": ["intro","letter","finale"],
   "escape-ultima-campanada": ["intro","letter","finale"],
