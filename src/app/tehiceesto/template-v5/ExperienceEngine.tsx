@@ -226,14 +226,14 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
   const openDoor=()=>{if(doorOpen)return;setDoorOpen(true);haptic([12,35,9]);playFx("door")};
   const openLetter=()=>{if(letterOpen)return;setLetterOpen(true);haptic([10,30,8]);playFx("seal")};
 
-  const canAdvance=()=>{if(experience.slug==="amistad")return friendUnlocked;switch(current){case"intro":return experience.slug==="pareja"?pairGiftOpened:experience.slug==="mama"?mamaGiftOpened:true;case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"||experience.slug==="hijos"?stars.length>=starLines.length:stars.length>=3;case"everyday":return false;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?true:experience.slug==="papa"?true:currentAudios.length===0||voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return experience.slug==="papa"?new Set([0,...presenceOpen]).size>=copy.presence.items.length:presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return experience.slug==="papa"?new Set([0,...inheritanceOpen]).size>=copy.inheritance.items.length:inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
+  const canAdvance=()=>{if(experience.slug==="amistad")return current==="intro"?pairGiftOpened:current==="door"?doorOpen:current==="letter"?letterOpen:friendUnlocked;switch(current){case"intro":return experience.slug==="pareja"?pairGiftOpened:experience.slug==="mama"?mamaGiftOpened:true;case"memories":case"timeline":case"video":case"origin":case"childhood":return true;case"door":return doorOpen;case"light":return lightRevealed;case"hold":return holdRevealed;case"stars":return experience.slug==="pareja"||experience.slug==="hijos"?stars.length>=starLines.length:stars.length>=3;case"everyday":return false;case"scratch":return scratched;case"letter":return letterOpen;case"candles":return candlesOut;case"balloons":return popped.length>=3;case"voices":return experience.slug==="mama"?true:experience.slug==="papa"?true:currentAudios.length===0||voicesPlayed.length>0;case"quiz":return quizChoice!==null;case"vault":return vaultOpen;case"capsule":return capsuleOpen;case"archive":return archiveOpen;case"home":return homeOpen.length>=3;case"legacy":return legacyOpen;case"rituals":return ritualsOpen.length>=3;case"chapters":return chapterOpen.length>=2;case"future":return futureOpen;case"reasons":return reasonsOpen.length>=3;case"certainty":return certaintyOpen.length>=3;case"threshold":return thresholdOpen;case"care":return careOpen.length>=3;case"sacrifices":return experience.slug==="mama"?sacrificesOpen.length>=4:sacrificesOpen.length>=3;case"return":return returnOpen;case"lessons":return experience.slug==="papa"?new Set([0,...lessonsOpen]).size>=copy.lessons.items.length:lessonsOpen.length>=Math.min(3,copy.lessons.items.length);case"presence":return experience.slug==="papa"?new Set([0,...presenceOpen]).size>=copy.presence.items.length:presenceOpen.length>=Math.min(2,copy.presence.items.length);case"inheritance":return experience.slug==="papa"?new Set([0,...inheritanceOpen]).size>=copy.inheritance.items.length:inheritanceOpen.length>=Math.min(3,copy.inheritance.items.length);case"lookback":return lookbackOpen;case"casefile":return casefileOpen;case"insidejokes":return insideJokesOpen.length>=3;case"incidents":return incidentsOpen.length>=3;case"proof":return proofOpen.length>=3;case"pact":return pactOpen.length>=3;default:return false}};
 
   function scene(type:SceneType){
-    if(experience.slug==="amistad")return <FriendshipScenes
+    if(experience.slug==="amistad"&&!["intro","door","letter"].includes(type))return <FriendshipScenes
       key={`${runId}-${sceneIndex}-${type}`}
       scene={type}
       experience={experience}
-      photos={type==="memories"?displayPhotos:scenePhotos}
+      photos={type==="memories"?displayPhotos:type==="puzzle"?(photoMedia?.filter(item=>item.scene==="puzzle"||item.scene==="memories"||!item.scene).length?photoMedia.filter(item=>item.scene==="puzzle"||item.scene==="memories"||!item.scene).slice(0,1):scenePhotos.slice(0,1)):scenePhotos}
       memory={memoryLines}
       letterText={letterText||token(copy.letter.body)}
       anecdote={storyContext?.anecdote}
@@ -244,6 +244,18 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
     />;
     switch(type){
       case"intro":
+        if(experience.slug==="amistad")return <CoupleGiftIntro
+          key={`${runId}-friend-gift`}
+          variant="amistad"
+          kicker={token(copy.intro.kicker)}
+          recipient={token(copy.intro.title)}
+          footnote={token(copy.intro.footnote)}
+          opening={token(copy.intro.lead)}
+          cta={token(copy.intro.cta)}
+          initiallyOpened={pairGiftOpened}
+          onOpened={()=>setPairGiftOpened(true)}
+          onContinue={next}
+        />;
         if(experience.slug==="pareja")return <CoupleGiftIntro
           key={`${runId}-gift-intro`}
           kicker={token(copy.intro.kicker)}
@@ -269,7 +281,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           onContinue={next}
         />;
         return <section className="thi-scene thi-intro thi-scene-rich"><div className="thi-glow a"/><div className="thi-glow b"/><div className="thi-intro-constellation" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div><p className="thi-kicker">{token(copy.intro.kicker)}</p><h1>{token(copy.intro.title)}</h1>{experience.slug==="pareja"?<p className="thi-intro-whisper">{token(copy.intro.footnote)}</p>:<div className="thi-hairline"/>}<p className="thi-lead">{token(copy.intro.lead)}</p><button data-action="advance" className="thi-primary thi-primary-premium" onClick={next}><span>{token(copy.intro.cta)}</span><b>→</b></button>{experience.slug!=="pareja"&&<small>{token(copy.intro.footnote)}</small>}</section>;
-      case"door":return experience.slug==="pareja"?<PairCinematicUmbral kicker={token(copy.door.kicker)} title={copy.door.title.map(line=>token(line))} cta={token(copy.door.openCta)} onOpen={openDoor} onAdvance={next} />:<section className="thi-scene thi-scene-door thi-scene-rich"><p className="thi-kicker">{token(copy.door.kicker)}</p><h2>{titleLines(copy.door.title)}</h2><div className="thi-door-light" aria-hidden="true"/><div className="thi-door-floor" aria-hidden="true"/><button data-action="open-door" className={`thi-door-wrap ${doorOpen?"opening":""}`} onClick={openDoor}><span className="thi-door-frame"><span className="thi-door"><i/><b/></span><span className="thi-door-world"/></span></button>{!doorOpen?<p className="thi-hint">{token(copy.door.closedHint)}</p>:<button data-action="advance" className="thi-primary thi-door-enter" onClick={next}>{token(copy.door.openCta)}</button>}</section>;
+      case"door":return experience.slug==="pareja"||experience.slug==="amistad"?<PairCinematicUmbral kicker={token(copy.door.kicker)} title={copy.door.title.map(line=>token(line))} cta={token(copy.door.openCta)} onOpen={openDoor} onAdvance={next} invitation={experience.slug==="amistad"?"Del otro lado nos esperan los recuerdos que solo nosotros entendemos.":undefined} recipient={experience.slug==="amistad"?experience.demoRecipient:undefined} />:<section className="thi-scene thi-scene-door thi-scene-rich"><p className="thi-kicker">{token(copy.door.kicker)}</p><h2>{titleLines(copy.door.title)}</h2><div className="thi-door-light" aria-hidden="true"/><div className="thi-door-floor" aria-hidden="true"/><button data-action="open-door" className={`thi-door-wrap ${doorOpen?"opening":""}`} onClick={openDoor}><span className="thi-door-frame"><span className="thi-door"><i/><b/></span><span className="thi-door-world"/></span></button>{!doorOpen?<p className="thi-hint">{token(copy.door.closedHint)}</p>:<button data-action="advance" className="thi-primary thi-door-enter" onClick={next}>{token(copy.door.openCta)}</button>}</section>;
       case"memories":{
         if(experience.slug==="mama"){
           const mamaMemoryItems=(displayPhotos.length?displayPhotos:memoryLines.map(caption=>({url:"",caption,fit:"cover" as const,position:"center" as const}))).slice(0,customerGift?20:3);
@@ -478,7 +490,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       />;
       case"scratch":return <section className="thi-scene thi-scene-scratch thi-scene-rich"><p className="thi-kicker">{token(copy.scratch.kicker)}</p><h2>{titleLines(copy.scratch.title)}</h2><ScratchReveal accent={experience.accent} themeSlug={experience.slug} eyebrow={token(copy.scratch.eyebrow)} reward={token(copy.scratch.reward)} note={token(copy.scratch.note)} coverTitle={token(copy.scratch.coverTitle)} coverHint={token(copy.scratch.coverHint)} fallbackLabel={token(copy.scratch.fallbackLabel)} revealed={scratched} onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime")}}/><button data-action="advance" className="thi-primary" disabled={!scratched} onClick={next}>{token(copy.scratch.cta)}</button></section>;
       case"hold":return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"||experience.slug==="cumpleanos"} heartbeat={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);if(experience.slug!=="pareja")playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
-      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"||experience.slug==="cumpleanos"?"thi-pair-letter":""} ${experience.slug==="mama"?"thi-mama-letter":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
+      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"||experience.slug==="cumpleanos"?"thi-pair-letter":""} ${experience.slug==="mama"||experience.slug==="amistad"?"thi-mama-letter":""} ${experience.slug==="amistad"?"thi-friend-letter-premium":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
         <div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
         <p className="thi-kicker">{token(copy.letter.kicker)}</p>
         <h2>{titleLines(copy.letter.title)}</h2>
@@ -487,18 +499,18 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           data-action="open-letter"
           className={`thi-envelope ${letterOpen?"open":""}`}
           onClick={()=>{
-            if(experience.slug==="mama"&&mamaLetterSwipeRef.current.swiped){
+            if((experience.slug==="mama"||experience.slug==="amistad")&&mamaLetterSwipeRef.current.swiped){
               mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped:false};
               return;
             }
             openLetter();
           }}
-          onPointerDown={experience.slug==="mama"?(event)=>{
+          onPointerDown={experience.slug==="mama"||experience.slug==="amistad"?(event)=>{
             if(letterOpen||!event.isPrimary)return;
             mamaLetterSwipeRef.current={pointerId:event.pointerId,x:event.clientX,y:event.clientY,swiped:false};
             try{event.currentTarget.setPointerCapture(event.pointerId)}catch{}
           }:undefined}
-          onPointerUp={experience.slug==="mama"?(event)=>{
+          onPointerUp={experience.slug==="mama"||experience.slug==="amistad"?(event)=>{
             const start=mamaLetterSwipeRef.current;
             if(letterOpen||start.pointerId!==event.pointerId)return;
             const dx=event.clientX-start.x;
@@ -508,7 +520,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
             try{if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
             if(swiped)openLetter();
           }:undefined}
-          onPointerCancel={experience.slug==="mama"?(event)=>{
+          onPointerCancel={experience.slug==="mama"||experience.slug==="amistad"?(event)=>{
             if(mamaLetterSwipeRef.current.pointerId!==event.pointerId)return;
             mamaLetterSwipeRef.current={pointerId:null,x:0,y:0,swiped:false};
           }:undefined}
