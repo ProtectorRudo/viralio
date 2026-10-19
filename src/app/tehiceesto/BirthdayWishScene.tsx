@@ -26,6 +26,15 @@ const sparks = [
 export default function BirthdayWishScene({
   kicker,title,blown,micLabels,wishLabel,continueLabel,onBlow,onContinue,
 }:Props){
+  const extinguish=()=>{
+    onBlow();
+    // Mobile browsers sometimes keep a scroll offset after replacing the
+    // microphone button with the wish reveal. Re-anchor the new scene.
+    if(typeof window!=="undefined"){
+      requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:"instant"}));
+      window.setTimeout(()=>window.scrollTo({top:0,left:0,behavior:"instant"}),110);
+    }
+  };
   return <section className="thi-scene thi-scene-candles thi-scene-rich thi-birthday-wish">
     <div className="thi-wish-lightshaft" aria-hidden="true"/>
     <div className="thi-wish-glimmer" aria-hidden="true">
@@ -44,7 +53,7 @@ export default function BirthdayWishScene({
       <p>{blown ? "Tu deseo queda entre vos y las velas." : "Cerrá los ojos un segundo."}</p>
     </div>
     <div className="thi-wish-actions">
-      <CandleBlow birthdayMode blown={blown} labels={micLabels} onBlow={onBlow}/>
+      <CandleBlow birthdayMode blown={blown} labels={micLabels} onBlow={extinguish}/>
       {blown && <p className="thi-wish-made">{wishLabel}</p>}
       {blown && <button data-action="advance" className="thi-wish-continue" onClick={onContinue}>{continueLabel} <span aria-hidden="true">→</span></button>}
     </div>
