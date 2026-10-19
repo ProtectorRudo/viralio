@@ -9,11 +9,13 @@ type Props = {
   cta: string;
   onOpen: () => void;
   onAdvance: () => void;
+  invitation?: string;
+  recipient?: string;
 };
 
 type DoorPhase = "closed" | "opening" | "open" | "entering";
 
-export default function PairCinematicUmbral({ kicker, title, cta, onOpen, onAdvance }: Props) {
+export default function PairCinematicUmbral({ kicker, title, cta, onOpen, onAdvance, invitation = "Del otro lado estamos nosotros.", recipient }: Props) {
   const [phase, setPhase] = useState<DoorPhase>("closed");
   const phaseRef = useRef<DoorPhase>("closed");
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -75,13 +77,14 @@ export default function PairCinematicUmbral({ kicker, title, cta, onOpen, onAdva
               <i className="pcu-door-panel-upper" />
               <i className="pcu-door-panel-lower" />
               <i className="pcu-door-knob" />
+              {recipient&&<span className="pcu-door-friend-name">{recipient}</span>}
             </span>
             <span className="pcu-threshold-glimmer" />
           </span>
         </button>
 
         <div className="pcu-invitation">
-          <p>Del otro lado estamos nosotros.</p>
+          <p>{invitation}</p>
           {!opened ? (
             <span className="pcu-open-instruction" role="status">
               {phase === "opening" ? "Abriendo para vos…" : "Tocá la puerta para abrir"}
