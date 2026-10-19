@@ -58,7 +58,12 @@ for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["
       if(await globalCta.count())await expect(globalCta).toBeHidden();
     }
     mkdirSync("birthday-voices-evidence",{recursive:true});
-    await page.screenshot({path:`birthday-voices-evidence/${name}-idle.png`,fullPage:true});
+    // A browser view transition snapshots the previous chapter; wait until
+    // the transition completes before capturing the actual user viewport.
+    await page.waitForTimeout(1300);
+    await page.evaluate(()=>window.scrollTo({top:0,left:0,behavior:"instant"}));
+    await page.waitForTimeout(200);
+    await page.screenshot({path:`birthday-voices-evidence/${name}-idle.png`,fullPage:false});
     const play=scene.locator('[data-action="birthday-voice"]');
     await play.nth(0).click();
     await expect(cards.nth(0)).toHaveClass(/active/);
@@ -70,7 +75,9 @@ for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await expect(cards.nth(1)).toHaveClass(/active/);
     await expect(cards.nth(0)).not.toHaveClass(/active/);
     await expect(scene.locator(".thi-bday-voice-next")).toBeVisible();
-    await page.screenshot({path:`birthday-voices-evidence/${name}-selected.png`,fullPage:true});
+    await page.evaluate(()=>window.scrollTo({top:0,left:0,behavior:"instant"}));
+    await page.waitForTimeout(400);
+    await page.screenshot({path:`birthday-voices-evidence/${name}-selected.png`,fullPage:false});
     await scene.locator(".thi-bday-voice-next").click();
     await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hold");
     expect(errors).toEqual([]);
