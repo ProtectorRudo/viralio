@@ -100,7 +100,7 @@ export const experiences: Experience[] = [
     accent:"#ffb35c",
     demoRecipient:"Sofi",
     demoGiver:"Tus personas favoritas",
-    opening:"Hoy no queríamos regalarte sólo otro saludo. Queríamos regalarte un momento que te recuerde, sin apuro, cuánto significás para nosotros.",
+    opening:"Hoy no queríamos mandarte solamente un mensaje. Queríamos hacerte un lugar.",
     closing:"Que este año te encuentre rodeada de todo lo que te hace bien.",
     tags:["Cumpleaños","Amigos","Familia"],
     recipe:["intro","candles","balloons","memories","light","voices","hold","letter","finale"],
