@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: "tehiceesto-birthday-gift.spec.ts",
+  testMatch: "tehiceesto-birthday-*.spec.ts",
   fullyParallel: false,
   retries: 0,
   reporter: "list",
