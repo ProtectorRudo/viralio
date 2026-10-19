@@ -3,11 +3,32 @@
 // release: internal conversion CTA
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function FloatingWhatsApp() {
   const pathname = usePathname();
+  const [hiddenDuringBirthdayChoice,setHiddenDuringBirthdayChoice]=useState(false);
 
-  if (
+  useEffect(()=>{
+    if(!pathname.includes("/experiencias/cumpleanos")){
+      return;
+    }
+    // The birthday engine changes scenes without changing the URL.
+    // Observe its active scene so the floating sales CTA cannot cover
+    // the balloon counter or an audio player on compact touchscreens.
+    const refresh=()=>{
+      const stage=document.querySelector("main.thi-experience.thi-theme-cumpleanos")?.getAttribute("data-scene");
+      const compact=window.matchMedia("(max-width: 650px)").matches;
+      setHiddenDuringBirthdayChoice(compact&&(stage==="balloons"||stage==="voices"));
+    };
+    refresh();
+    const observer=new MutationObserver(refresh);
+    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["data-scene"]});
+    window.addEventListener("resize",refresh,{passive:true});
+    return ()=>{observer.disconnect();window.removeEventListener("resize",refresh)};
+  },[pathname]);
+
+  if (hiddenDuringBirthdayChoice || (
     pathname.includes("/r/") ||
     pathname.includes("/escape-r/") ||
     pathname.includes("/escapes/") ||
@@ -18,7 +39,7 @@ export default function FloatingWhatsApp() {
     pathname.endsWith("/mis-regalos") ||
     pathname.includes("/editar/") ||
     pathname.endsWith("/crear")
-  ) {
+  )) {
     return null;
   }
 
