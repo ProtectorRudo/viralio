@@ -14,7 +14,7 @@ type Props = {
   initiallyOpened?: boolean;
   onOpened?: () => void;
   onContinue: () => void;
-  variant?: "pareja" | "mama";
+  variant?: "pareja" | "mama" | "amistad";
 };
 
 function makeUnwrapSound() {
@@ -76,8 +76,9 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
   const revealed = phase === "revealed";
   const activated = phase !== "closed";
   const forMama = variant === "mama";
+  const forFriendship = variant === "amistad";
   return (
-    <section className={"thi-scene couple-gift-intro gift-phase-" + phase + (forMama ? " mama-gift-intro" : "")} data-gift-design="satin-bow-v3" data-gift-occasion={variant} aria-label={forMama ? "Un regalo para mamá" : "Un regalo pensado para vos"}>
+    <section className={"thi-scene couple-gift-intro gift-phase-" + phase + (forMama ? " mama-gift-intro" : forFriendship ? " friend-gift-intro" : "")} data-gift-design="satin-bow-v3" data-gift-occasion={variant} aria-label={forMama ? "Un regalo para mamá" : forFriendship ? "Un regalo para una amistad inolvidable" : "Un regalo pensado para vos"}>
       <div className="couple-gift-backdrop" aria-hidden="true">
         <span className="couple-gift-halo" />
         <span className="couple-gift-ambient ambient-one" />
@@ -87,7 +88,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
       </div>
 
       <div className="couple-gift-content">
-        <p className={"couple-gift-prelude" + (activated ? " folded-away" : "")}>{forMama ? "HAY ALGO QUE GUARDAMOS PARA VOS, MAMÁ" : "ALGUIEN PREPARÓ ALGO QUE ES SÓLO PARA VOS"}</p>
+        <p className={"couple-gift-prelude" + (activated ? " folded-away" : "")}>{forMama ? "HAY ALGO QUE GUARDAMOS PARA VOS, MAMÁ" : forFriendship ? "ALGUIEN HIZO ALGO QUE NO ENTRA EN UN MENSAJE" : "ALGUIEN PREPARÓ ALGO QUE ES SÓLO PARA VOS"}</p>
         <div className="couple-gift-theatre">
           <div className="couple-gift-reveal" aria-hidden={!revealed}>
             <p className="couple-gift-dedication">{kicker}</p>
@@ -114,7 +115,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
               <i className="couple-gift-face-edge edge-right" />
               <i className="couple-gift-base-ribbon" />
               <i className="couple-gift-base-metallic" />
-              <i className="couple-gift-emboss">{forMama ? "PARA VOS, MAMÁ" : "HECHO PARA VOS"}</i>
+              <i className="couple-gift-emboss">{forMama ? "PARA VOS, MAMÁ" : forFriendship ? "ENTRE NOSOTROS" : "HECHO PARA VOS"}</i>
             </span>
             <span className="couple-gift-lid">
               <i className="couple-gift-lid-top" />
@@ -198,7 +199,7 @@ export default function CoupleGiftIntro({ kicker, recipient, footnote, opening, 
           <button data-action="advance" className="couple-gift-continue" onClick={onContinue} disabled={!revealed}>
             {cta} <span aria-hidden="true">→</span>
           </button>
-          <small>{forMama ? "Una historia hecha con amor para vos." : "Un recorrido hecho para una sola persona."}</small>
+          <small>{forMama ? "Una historia hecha con amor para vos." : forFriendship ? "Una historia que solo nosotros entendemos." : "Un recorrido hecho para una sola persona."}</small>
         </div>
       </div>
     </section>
