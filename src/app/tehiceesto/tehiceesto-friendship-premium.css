@@ -162,7 +162,7 @@
 
 /* The cinematic Paar doorway has a more specific !important burgundy backdrop.
    Match specificity explicitly to keep Friendship's navy/gold language across scenes. */
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pair-cinematic-umbral{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pair-cinematic-umbral{
   background:
     radial-gradient(ellipse 62% 42% at 51% 49%,rgba(61,93,128,.17),transparent 74%),
     radial-gradient(ellipse 52% 55% at 2% 17%,rgba(31,60,91,.27),transparent 78%),
@@ -170,17 +170,17 @@
     linear-gradient(154deg,#101c2b 0%,#0b1422 53%,#090f1b 100%)!important;
   color:#f7e9d6;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-door-picture{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-door-picture{
   background:radial-gradient(ellipse at 50% 38%,#f9dfac 0%,#a98a69 22%,#46516a 57%,#172131 100%);
   filter:contrast(1.05) saturate(.82);
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-door-bloom{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-door-bloom{
   background:radial-gradient(ellipse at 50% 55%,rgba(233,201,156,.48),rgba(91,126,159,.21) 43%,transparent 72%);
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-orbit{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-orbit{
   border-color:rgba(191,178,154,.09);
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-door-friend-name{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-door-friend-name{
   top:40%;left:50%;right:auto;transform:translate(-50%,-50%);
   width:auto;max-width:77%;min-width:0;
   padding:4px 11px 7px;
@@ -192,11 +192,11 @@
   color:#f2cf99;
   text-shadow:0 1px 1px rgba(28,20,22,.95),0 0 18px rgba(241,196,124,.22);
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-door-friend-name::after{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-door-friend-name::after{
   content:"";display:block;height:1px;width:min(112px,80%);margin:8px auto 0;
   background:linear-gradient(90deg,transparent,rgba(235,199,146,.72),transparent);
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-invitation>button{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-invitation>button{
   background:linear-gradient(135deg,#dec5a0,#ab8c66)!important;
   color:#17243a!important;border:1px solid rgba(255,236,192,.55)!important;
   box-shadow:0 11px 32px rgba(0,0,0,.33),inset 0 1px rgba(255,255,255,.3);
@@ -204,19 +204,19 @@
 
 /* After the wax seal opens, place the entire letter outside the envelope.
    The letter's height is determined by its customer's actual text, not clipped. */
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium{
   overflow:visible!important;
   min-height:100svh;
   padding-bottom:max(155px,calc(120px + env(safe-area-inset-bottom)))!important;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open{
   z-index:3;overflow:visible;
   margin-bottom:20px;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper{
   opacity:0!important;visibility:hidden!important;pointer-events:none!important;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .friend-letter-unfolded{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .friend-letter-unfolded{
   position:relative;z-index:8;
   width:min(520px,calc(100% - 24px));
   margin:-83px auto 0;
@@ -233,21 +233,21 @@
   animation:friendLetterOutside .8s cubic-bezier(.19,.85,.2,1) both;
   overflow-wrap:anywhere;white-space:normal;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .friend-letter-unfolded small{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .friend-letter-unfolded small{
   display:block;font:500 clamp(16px,2.4vw,20px)/1.2 "Instrument Serif",Georgia,serif;
   color:#7d6356;letter-spacing:.015em;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .friend-letter-unfolded p{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .friend-letter-unfolded p{
   margin:0;white-space:pre-wrap;
   font:400 clamp(19px,2.55vw,25px)/1.41 "Instrument Serif",Georgia,serif;
   color:#443544;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .friend-letter-unfolded em{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .friend-letter-unfolded em{
   display:block;align-self:flex-start;margin-top:3px;
   font:italic 400 clamp(23px,3vw,29px)/1.2 "Instrument Serif",Georgia,serif;
   color:#916052;
 }
-.thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium.is-open>.thi-primary{
+:is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium.is-open>.thi-primary{
   position:relative;z-index:9;
   margin-top:32px!important;margin-bottom:0;
 }
@@ -256,40 +256,40 @@
   to{opacity:1;transform:translateY(0) rotate(0);filter:blur(0)}
 }
 @media(max-width:650px){
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pair-cinematic-umbral{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pair-cinematic-umbral{
     padding:112px 17px 130px!important;
     min-height:100svh!important;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-content{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-content{
     min-height:0;
     gap:13px;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-heading h2{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-heading h2{
     font-size:clamp(48px,12vw,66px)!important;
     line-height:.99!important;max-width:360px!important;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-door-hit{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-door-hit{
     margin:2px auto 7px!important;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="door"] .pcu-door-friend-name{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pcu-door-friend-name{
     font-size:clamp(23px,6.8vw,31px);
     max-width:70%;padding:4px 5px 8px;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium{
     padding-top:104px;padding-inline:14px!important;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium .thi-envelope{
     margin-top:51px!important;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .friend-letter-unfolded{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .friend-letter-unfolded{
     width:min(100%,460px);
     margin:-67px auto 0;
     padding:28px 25px 32px;gap:19px;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .friend-letter-unfolded p{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .friend-letter-unfolded p{
     font-size:clamp(19px,5.05vw,23px);line-height:1.4;
   }
-  .thi-experience.thi-template-live.thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium.is-open>.thi-primary{
+  :is(.thi-experience.thi-template-live.thi-theme-amistad,.thi-experience.thi-template-v5.thi-theme-amistad)[data-scene="letter"] .thi-friend-letter-premium.is-open>.thi-primary{
     margin-top:28px!important;
   }
 }
