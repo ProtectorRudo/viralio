@@ -19,6 +19,7 @@ import Link from "next/link";
 import type { Experience,SceneType } from "./data";
 import ScratchReveal from "./ScratchReveal";
 import CandleBlow from "./CandleBlow";
+import BirthdayWishScene from "./BirthdayWishScene";
 import BirthdayLantern from "./BirthdayLantern";
 import BirthdayVoices from "./BirthdayVoices";
 import LightReveal from "./LightReveal";
@@ -551,7 +552,18 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         </article>}
         {!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":experience.slug==="mama"?"Deslizá para abrir":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}
       </section>;
-      case"candles":return <section className="thi-scene thi-scene-candles thi-scene-rich"><p className="thi-kicker">{token(copy.candles.kicker)}</p><h2>{titleLines(copy.candles.title)}</h2>{experience.slug==="cumpleanos"?<div className={`thi-birthday-ritual ${candlesOut?"out":""}`}>
+      case"candles":
+        if(experience.slug==="cumpleanos")return <BirthdayWishScene
+          kicker={token(copy.candles.kicker)}
+          title={titleLines(copy.candles.title)}
+          blown={candlesOut}
+          micLabels={{idle:token(copy.candles.micIdle),active:token(copy.candles.micActive),fallback:token(copy.candles.tapFallback),unavailable:token(copy.candles.tapUnavailable)}}
+          wishLabel={token(copy.candles.wishLabel)}
+          continueLabel={token(copy.candles.cta)}
+          onBlow={()=>{setCandlesOut(true);haptic([10,20,10]);playFx("chime")}}
+          onContinue={next}
+        />;
+        return <section className="thi-scene thi-scene-candles thi-scene-rich"><p className="thi-kicker">{token(copy.candles.kicker)}</p><h2>{titleLines(copy.candles.title)}</h2>{experience.slug==="cumpleanos"?<div className={`thi-birthday-ritual ${candlesOut?"out":""}`}>
         <div className="thi-birthday-candlelight" aria-hidden="true"/>
         <div className="thi-birthday-table" aria-hidden="true"/>
         <div className="thi-birthday-cake-premium" aria-label="Torta de cumpleaños con cinco velas">
