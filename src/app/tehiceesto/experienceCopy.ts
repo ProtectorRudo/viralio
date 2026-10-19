@@ -49,7 +49,7 @@ export type ExperienceCopy = {
 const BASE_COPY: ExperienceCopy = {
   ui:{
     sceneLabels:{
-      intro:"Comienzo",door:"Puerta",memories:"Recuerdos",stars:"Estrellas",everyday:"Un día cualquiera",scratch:"Sorpresa",
+      intro:"Comienzo",door:"Puerta",puzzle:"Nuestro rompecabezas",memories:"Recuerdos",stars:"Estrellas",everyday:"Un día cualquiera",scratch:"Sorpresa",
       letter:"Carta",finale:"Final",candles:"Deseo",balloons:"Mensajes",timeline:"Historia",
       voices:"Voz",quiz:"Pregunta",vault:"Bóveda",capsule:"Futuro",proposal:"La pregunta",
       video:"Video",light:"Instante",hold:"Promesa",
@@ -325,14 +325,15 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     }
   },
   amistad:{
-    intro:{kicker:"Archivo confidencial · acceso sólo para {recipient}",cta:"Abrir expediente",footnote:"Si aparece una foto comprometedora, negamos todo"},
+    intro:{kicker:"UN REGALO PARA UNA AMISTAD IRREPETIBLE",title:"{recipient}",cta:"Entrar a nuestra historia →",footnote:"Hay recuerdos que no caben en una caja. Este regalo sí los guarda.",lead:"Quería regalarte un pequeño lugar para algo enorme: nuestra amistad. Un recorrido por lo que vivimos, lo que nos hizo reír y lo que siempre vamos a llevar con nosotros."},
+    door:{kicker:"DEL OTRO LADO HAY ALGO QUE SOLO VOS Y YO ENTENDEMOS",title:["Hay personas que llegan.","Y se vuelven historia."],closedHint:"Tocá la puerta",openCta:"Entrar a nuestros recuerdos →"},
     quiz:{kicker:"Primero comprobemos que sos vos",cta:"Ok, demasiada evidencia →"},
     memories:{kicker:"Material que jamás debería llegar a un grupo familiar",title:["Malas decisiones.","Excelentes recuerdos."],cta:"Siguiente prueba →"},
     light:{kicker:"Hay una historia que no conviene iluminar demasiado",title:"Bueno. Sólo un poco.",revealedLabel:"prueba encontrada ✦",cta:"Cerrar evidencia →"},
     balloons:{kicker:"Declaraciones oficialmente vinculantes",title:["Reventá tres.","Después no hay reclamos."],popLabel:"ABRIR",remainingOne:"Queda 1",remainingMany:"Quedan {count}",cta:"Acepto todo →"},
     scratch:{kicker:"Cupón con validez legal dudosa",title:["Pero igual","lo vas a usar."],coverTitle:"RASPÁ, COBARDE",coverHint:"hay plan abajo",fallbackLabel:"hacer trampa",cta:"Plan cerrado →"},
     hold:{kicker:"Momento incómodamente sincero",title:["Sí, ahora viene","la parte sentimental."],instruction:"aguantá un segundo",cta:"Bueno, basta →"},
-    letter:{kicker:"No uses esto en mi contra",title:["Me voy a poner seria","durante treinta segundos."],sealHint:"Abrir bajo tu responsabilidad",cta:"Prometo no llorar →"},
+    letter:{kicker:"ESTO SÍ MERECÍA QUEDAR ESCRITO",title:["Hay amistades que no se explican.","Se agradecen."],sealHint:"Deslizá o tocá el sello para abrir",cta:"Seguir nuestra historia →"},
     finale:{kicker:"Fin del archivo",lead:"Nos vemos afuera de Internet para seguir tomando decisiones cuestionables.",restartLabel:"Reabrir expediente"},
   },
 };
