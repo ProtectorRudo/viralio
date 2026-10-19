@@ -62,7 +62,7 @@ jobs:
             ["/crear"]="¿A quién querés"
             ["/experiencias/mama"]="Todo lo que hiciste sin pedir aplausos"
             ["/experiencias/papa"]="Todo eso tuyo que se nos quedó"
-            ["/experiencias/amistad"]="Algunas amistades no se explican."
+            ["/experiencias/amistad"]="ALGUIEN HIZO ALGO QUE NO ENTRA EN UN MENSAJE"
           )
           for route in "${!checks[@]}"; do
             body="$(curl -fsSL --max-time 25 "https://tehiceesto.com$route")"
