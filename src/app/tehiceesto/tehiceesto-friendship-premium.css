@@ -45,3 +45,112 @@
 :is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium>.thi-primary{margin-top:105px}
 }
 @media(prefers-reduced-motion:reduce){.friend-gift-intro *, .thi-friend-letter-premium *{animation-duration:.01ms!important}}
+
+
+/* Friendship letter — the same genuine three-stage keepsake as Mamá:
+   closed paper hidden, seal breaks, flap turns back, handwritten note rises.
+   Restrict strictly to new v5 Friendship; historic snapshots stay untouched. */
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium{
+  min-height:100svh;justify-content:flex-start;
+  padding-top:clamp(102px,12svh,130px);
+  isolation:isolate;overflow:visible;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium>h2{
+  font-family:var(--thi-serif);font-weight:400;line-height:.98;
+  width:min(750px,92vw);font-size:clamp(40px,6vw,64px);
+  text-wrap:balance;letter-spacing:-.04em;
+  transition:opacity .65s ease,transform .65s ease,filter .65s ease;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope{
+  position:relative;z-index:6;border:0;background:transparent;perspective:1200px;
+  transform-style:preserve-3d;touch-action:pan-y;
+  margin-top:clamp(52px,6svh,70px);margin-bottom:24px;
+  cursor:grab;transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope .back{
+  position:absolute;inset:0;z-index:1;border:1px solid rgba(227,203,160,.25);
+  background:repeating-linear-gradient(13deg,rgba(241,225,199,.025) 0 1px,transparent 1px 5px),linear-gradient(145deg,#536077,#384963 58%,#263348);
+  box-shadow:inset 0 2px 3px rgba(244,229,200,.21),inset 0 -21px 34px rgba(18,21,40,.22);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope .flap{
+  position:absolute;left:0;right:0;top:0;height:65%;display:block;z-index:6;
+  transform-origin:50% 0;transform:rotateX(0deg);backface-visibility:hidden;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  background:linear-gradient(155deg,rgba(255,253,235,.13),transparent 49%),linear-gradient(125deg,#8990a1,#516079 64%,#35445d);
+  transition:transform .9s .22s cubic-bezier(.18,.82,.16,1),z-index 0s .47s;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope .front{
+  position:absolute;inset:0;z-index:5;overflow:hidden;
+  clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%);
+  background:repeating-linear-gradient(8deg,rgba(255,245,220,.03) 0 1px,transparent 1px 5px),linear-gradient(145deg,#697891,#506078 68%,#36455e);
+  box-shadow:inset 0 -18px 34px rgba(23,30,48,.18),inset 0 1px rgba(255,248,220,.19);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope .paper{
+  position:absolute;z-index:3;left:7%;right:7%;bottom:14px;height:350px;
+  min-height:0;max-height:none;display:flex;flex-direction:column;
+  border-radius:1px;text-align:left;
+  background:repeating-linear-gradient(92deg,rgba(107,79,56,.022) 0 1px,transparent 1px 5px),linear-gradient(160deg,#fffaf0,#eee0ca);
+  box-shadow:0 -10px 25px rgba(25,25,41,.15),inset 0 0 35px rgba(94,64,36,.045);
+  transform-origin:50% 100%;
+  transition:transform .95s .55s cubic-bezier(.16,.84,.16,1),opacity .34s .61s ease,box-shadow .8s .57s ease;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope:not(.open){
+  overflow:hidden;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope:not(.open) .paper{
+  opacity:0!important;visibility:hidden!important;transform:translateY(130px) rotate(0deg)!important;
+  pointer-events:none;box-shadow:none;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope .wax{
+  position:absolute;z-index:9;top:55%;left:50%;width:58px;height:58px;
+  transform:translate(-50%,-50%) rotate(-5deg);border-radius:49% 51% 47% 52%;
+  background:radial-gradient(circle at 32% 23%,#f1d5a2,#b08d57 42%,#795838 88%);
+  box-shadow:inset 4px 4px 8px rgba(255,242,197,.22),inset -6px -6px 12px rgba(71,43,24,.33),0 10px 22px rgba(12,15,25,.37);
+  transition:transform .4s ease,opacity .33s ease;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open{
+  overflow:visible;transform:translateY(14px);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .wax{
+  opacity:0;transform:translate(-50%,-50%) rotate(12deg) scale(1.22);filter:blur(1px);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .flap{
+  z-index:2;transform:rotateX(-178deg);filter:brightness(.78);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper{
+  opacity:1;visibility:visible;z-index:4;
+  transform:translateY(-135px) rotate(-.18deg);
+  box-shadow:0 25px 60px rgba(21,18,30,.24),0 0 55px rgba(232,194,145,.09);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium.is-open>h2{
+  opacity:.22;transform:translateY(-8px) scale(.985);
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper>small,
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper>strong,
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper>em{
+  opacity:1;transition:opacity .32s .83s ease;
+}
+@media(max-width:650px){
+  :is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium{
+    padding-top:clamp(90px,11svh,110px);padding-inline:14px;
+    padding-bottom:185px!important;
+  }
+  :is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope{
+    height:225px;width:min(84vw,395px);margin-top:clamp(50px,7svh,68px);
+  }
+  :is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope .paper{
+    height:296px;left:6%;right:6%;padding:22px 19px;
+  }
+  :is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope.open .paper{
+    transform:translateY(-117px) rotate(-.18deg);
+  }
+  :is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium>.thi-primary{
+    margin-top:94px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium .thi-envelope *,
+  .thi-theme-amistad[data-scene="letter"] .thi-friend-letter-premium>h2{
+    transition-duration:.01ms!important;transition-delay:0s!important;
+  }
+}
