@@ -1,0 +1,218 @@
+/*
+ * Cumpleaños / Deseo — approved candlelit editorial direction.
+ * Scopes every override to LIVE birthday > candles. Frozen templates and
+ * the other eight stages retain their original design and behavior.
+ */
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"]{
+  --wish-gold:#eec483;--wish-ivory:#fff3e5;--wish-night:#100c13;
+  background:
+    radial-gradient(ellipse 72% 33% at 35% 31%,rgba(145,79,40,.44),transparent 90%),
+    radial-gradient(ellipse 57% 36% at 77% 68%,rgba(38,31,67,.33),transparent 100%),
+    linear-gradient(158deg,#201219 0%,#120b12 50%,#080a15 100%)!important;
+  color:var(--wish-ivory);
+  overflow-x:clip;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-wish{
+  isolation:isolate;position:relative;
+  box-sizing:border-box;min-height:100svh;
+  padding:clamp(118px,16svh,168px) 18px clamp(96px,13svh,128px);
+  display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:0;overflow:hidden;
+  background:transparent!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-wish::before{
+  content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(circle at 14% 21%,rgba(255,224,147,.16),transparent 20%),
+    radial-gradient(circle at 50% 50%,rgba(235,147,58,.13),transparent 35%),
+    radial-gradient(ellipse at 100% 90%,rgba(32,24,59,.28),transparent 70%);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-wish::after{
+  content:"";position:absolute;inset:0;z-index:-1;opacity:.3;pointer-events:none;
+  background-image:radial-gradient(circle at 24% 25%,#ffd8a3 0 .65px,transparent 1px),
+    radial-gradient(circle at 76% 65%,#d9ae74 0 .6px,transparent 1.5px);
+  background-size:143px 151px,189px 174px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-lightshaft{
+  position:absolute;inset:-18% -20%;pointer-events:none;z-index:-1;
+  background:
+    conic-gradient(from 156deg at 12% 4%,transparent 0deg,rgba(255,206,125,.15) 13deg,rgba(250,196,116,.02) 24deg,transparent 36deg 360deg),
+    radial-gradient(ellipse at 25% 9%,rgba(239,172,87,.38),transparent 51%);
+  mix-blend-mode:screen;opacity:.78;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-glimmer{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-glimmer i{
+  position:absolute;left:var(--sx);top:var(--sy);width:3px;height:3px;border-radius:50%;
+  background:#ffe0a2;box-shadow:0 0 8px #f4b260,0 0 24px rgba(244,165,67,.55);
+  opacity:.33;animation:thi-wish-star 5.3s ease-in-out infinite;animation-delay:var(--sd);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-glimmer i:nth-child(3n){
+  width:5px;height:5px;opacity:.64;
+  background:radial-gradient(#fff8da,#f1bd77 75%,transparent);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading{
+  position:relative;z-index:2;width:min(650px,100%);margin:0 auto 3px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading>.thi-kicker{
+  color:#eec488!important;font-size:clamp(10px,1.1vw,12px)!important;letter-spacing:.27em!important;
+  line-height:1.5;margin:0 auto 15px!important;font-weight:600;opacity:.95;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading>h2{
+  font:400 clamp(42px,6.1vw,75px)/1.065 var(--thi-serif,Georgia,serif)!important;
+  color:#fff5e9!important;letter-spacing:-.045em!important;max-width:650px;
+  margin:0 auto 18px!important;text-wrap:balance;text-shadow:0 3px 35px rgba(250,170,95,.12);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading-ornament{
+  display:flex;align-items:center;justify-content:center;gap:15px;
+  color:#f4cc91;font-size:17px;line-height:1;margin:0 auto 1px;
+  text-shadow:0 0 18px rgba(255,188,101,.33);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading-ornament span{
+  display:block;height:1px;width:clamp(68px,16vw,120px);
+  background:linear-gradient(90deg,transparent,rgba(249,201,144,.8));
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading-ornament span:last-child{transform:rotate(180deg)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual{
+  position:relative!important;width:min(690px,100%)!important;
+  height:auto!important;min-height:0!important;margin:0 auto!important;
+  aspect-ratio:760 / 622;display:block!important;isolation:isolate;
+  overflow:visible;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-cake-halo{
+  position:absolute;inset:9% 4% 10%;z-index:-1;border-radius:50%;
+  background:radial-gradient(ellipse at 48% 48%,rgba(243,158,79,.42),rgba(159,79,34,.1) 42%,transparent 75%);
+  filter:blur(24px);pointer-events:none;transition:opacity .9s ease;
+  animation:thi-wish-halo 7s ease-in-out infinite alternate;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-cake-art{
+  position:absolute;display:block;inset:-2% 0 auto;
+  width:100%;height:auto;overflow:visible;
+  filter:drop-shadow(0 23px 25px rgba(7,4,7,.35));
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-cake-art .thi-wish-flame{
+  animation:thi-wish-flame-dance 1.25s ease-in-out infinite alternate;
+  transform-box:fill-box;transform-origin:center 85%;
+  opacity:1;transition:opacity .3s ease;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-cake-art .thi-wish-smoke{
+  opacity:0;transform:translateY(5px);transform-box:fill-box;
+  transition:opacity .6s ease,transform 1.5s ease;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual.out .thi-wish-flame{
+  opacity:0!important;animation:none;transform:scale(.1);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual.out .thi-wish-smoke{
+  opacity:.76;transform:translateY(-15px);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual.out .thi-wish-cake-halo{opacity:.19}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-ribbon{
+  position:absolute;bottom:15%;width:105px;height:16px;z-index:0;opacity:.46;
+  border:2px solid #bc9051;border-left:none;border-right:none;border-radius:100%;
+  filter:blur(1px);pointer-events:none;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-ribbon-left{left:-5%;transform:rotate(20deg)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-ribbon-right{right:-5%;transform:rotate(-20deg)}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual>p{
+  position:absolute!important;left:4%;right:4%;bottom:-1%;margin:0!important;
+  color:#e8c597!important;font:italic 400 clamp(18px,2.3vw,25px)/1.4 var(--thi-serif,Georgia,serif)!important;
+  text-shadow:0 2px 12px #0d070b;letter-spacing:.003em!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual>p::after{
+  content:"✦";display:block;margin:5px auto 0;color:#efc187;font:normal 13px/1 var(--thi-serif,Georgia,serif);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions{
+  position:relative;z-index:3;margin:16px auto 0;width:min(420px,100%);
+  display:flex;flex-direction:column;align-items:center;gap:11px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-blow-controls-birthday{
+  margin:0!important;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-blow-mic{
+  appearance:none;min-width:0!important;width:min(340px,100%)!important;min-height:61px;
+  padding:15px 26px!important;margin:0 auto!important;border-radius:999px!important;
+  background:linear-gradient(117deg,#fde8bf 0%,#edbf7c 41%,#dca861 75%,#f2d099 100%)!important;
+  border:1px solid rgba(255,238,190,.74)!important;
+  color:#332016!important;font:600 clamp(16px,2.3vw,20px)/1.2 var(--thi-serif,Georgia,serif)!important;
+  box-shadow:0 15px 32px rgba(2,1,5,.39),0 0 35px rgba(229,163,78,.17),inset 0 2px 2px rgba(255,252,234,.69)!important;
+  display:flex!important;align-items:center;justify-content:center;gap:15px;
+  letter-spacing:.005em;transition:transform .25s ease,box-shadow .25s ease;cursor:pointer;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-blow-mic i{
+  color:#674323!important;font-size:16px!important;font-style:normal!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-blow-mic:hover{
+  transform:translateY(-3px);
+  box-shadow:0 20px 38px rgba(2,1,5,.48),0 0 39px rgba(241,176,97,.22)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-blow-mic:focus-visible,
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-continue:focus-visible{
+  outline:2px solid #fff2c9;outline-offset:5px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-bday-blow-help{
+  font-size:12px;color:#f0cfa6;text-align:center;line-height:1.5;max-width:330px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-wish-made{
+  margin:2px auto 0!important;color:#ebcaab!important;font:italic 18px var(--thi-serif,Georgia,serif);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-wish-continue{
+  min-height:54px;width:min(330px,100%);padding:12px 22px;border-radius:999px;
+  border:1px solid rgba(246,211,155,.46);
+  background:rgba(39,23,27,.78);color:#f9dbac;
+  font:600 15px var(--thi-serif,Georgia,serif);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:18px;transition:background .2s,transform .2s;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-wish-continue:hover{
+  background:rgba(84,47,39,.85);transform:translateY(-2px);
+}
+@keyframes thi-wish-flame-dance{0%{transform:rotate(-3deg) scale(.96)}100%{transform:rotate(4deg) scale(1.05)}}
+@keyframes thi-wish-star{0%,100%{opacity:.21;transform:scale(.7)}40%{opacity:.84;transform:scale(1.35)}}
+@keyframes thi-wish-halo{from{opacity:.6;transform:scale(.95)}to{opacity:1;transform:scale(1.08)}}
+@media(max-width:650px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-wish{
+   padding:clamp(100px,14svh,123px) 12px clamp(90px,12svh,114px);
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading>.thi-kicker{
+   font-size:10px!important;letter-spacing:.22em!important;margin-bottom:13px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading>h2{
+   font-size:clamp(40px,10.7vw,51px)!important;line-height:1.04!important;
+   max-width:380px;margin-bottom:13px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading-ornament{
+   margin:0 auto 6px;font-size:13px;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual{
+   width:min(410px,102vw)!important;aspect-ratio:760 / 620;
+   margin:-6px auto 0!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual>p{
+   font-size:clamp(17px,4.8vw,21px)!important;bottom:0;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions{
+   margin-top:7px;width:min(355px,100%);
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions .thi-blow-mic{
+   width:min(320px,100%)!important;min-height:58px!important;
+ }
+}
+@media(max-height:720px) and (max-width:650px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-wish{
+   padding-top:87px;padding-bottom:85px;justify-content:flex-start;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-heading>h2{
+   font-size:clamp(36px,9.6vw,44px)!important;margin-bottom:5px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-ritual{
+   width:min(360px,100%)!important;aspect-ratio:760 / 590;margin-top:-10px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-actions{margin-top:3px}
+}
+@media(prefers-reduced-motion:reduce){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-flame,
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-glimmer i,
+ .thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-wish-cake-halo{
+   animation:none!important;
+ }
+}
