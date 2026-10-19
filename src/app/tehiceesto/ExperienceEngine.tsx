@@ -240,6 +240,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
       onUnlock={setFriendUnlocked}
       next={next}
       restart={restart}
+      persistSignature={customerGift&&!previewScene}
     />;
     switch(type){
       case"intro":
@@ -531,6 +532,11 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           <span className="front"/>
           <span className="wax"><i/><b>♥</b></span>
         </button>
+        {experience.slug==="amistad"&&letterOpen&&<article className="friend-letter-unfolded" aria-label="Carta completamente abierta">
+          <small>{token(copy.letter.recipientLabel)}</small>
+          <p>{copyOverride?.letter?.body?token(String(copyOverride.letter.body)):letterText||token(copy.letter.body)}</p>
+          <em>{token(copy.letter.signature)}</em>
+        </article>}
         {!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":experience.slug==="mama"?"Deslizá para abrir":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}
       </section>;
       case"candles":return <section className="thi-scene thi-scene-candles thi-scene-rich"><p className="thi-kicker">{token(copy.candles.kicker)}</p><h2>{titleLines(copy.candles.title)}</h2>{experience.slug==="cumpleanos"?<div className={`thi-birthday-ritual ${candlesOut?"out":""}`}>
