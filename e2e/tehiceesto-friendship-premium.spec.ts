@@ -24,6 +24,11 @@ test("Amistad premium: once escenas, apertura regalo, puerta, rompecabezas y pac
   await scene("door");
   await expect(page.locator(".pair-cinematic-umbral")).toBeVisible();
   await expect(page.locator(".pcu-door-friend-name")).toContainText("Vale");
+  const doorStyle=await page.locator(".pair-cinematic-umbral").evaluate(node=>getComputedStyle(node).backgroundImage);
+  expect(doorStyle).toContain("rgb(16, 28, 43)");
+  const nameStyle=await page.locator(".pcu-door-friend-name").evaluate(node=>({background:getComputedStyle(node).backgroundColor,border:getComputedStyle(node).borderTopWidth}));
+  expect(nameStyle.background).toBe("rgba(0, 0, 0, 0)");
+  expect(nameStyle.border).toBe("0px");
   await noOverflow();
   await capture("amistad-02-puerta-mobile");
   await page.locator('[data-action="open-door"]').click();
@@ -87,6 +92,14 @@ test("Amistad premium: once escenas, apertura regalo, puerta, rompecabezas y pac
   await capture("amistad-09-sobre-cerrado-mobile");
   await page.locator('.thi-friend-letter-premium [data-action="open-letter"]').click();
   await expect(page.locator(".thi-friend-letter-premium .thi-envelope.open")).toBeVisible();
+  const readable=page.locator(".thi-friend-letter-premium .friend-letter-unfolded");
+  await expect(readable).toBeVisible();
+  await expect(readable).toContainText("Podría ponerme sentimental");
+  const paperInfo=await readable.evaluate(node=>({height:node.clientHeight,scroll:node.scrollHeight,bottom:node.getBoundingClientRect().bottom}));
+  expect(paperInfo.height).toBeGreaterThan(120);
+  expect(paperInfo.scroll).toBeLessThanOrEqual(paperInfo.height+2);
+  const advanceTop=await page.locator('.thi-friend-letter-premium [data-action="advance"]').evaluate(node=>node.getBoundingClientRect().top);
+  expect(advanceTop).toBeGreaterThan(paperInfo.bottom-3);
   await noOverflow();
   await capture("amistad-09-carta-abierta-mobile");
   await page.locator('.thi-friend-letter-premium [data-action="advance"]').click();
@@ -111,8 +124,7 @@ test("Amistad premium: once escenas, apertura regalo, puerta, rompecabezas y pac
   await expect(page.locator(".friend-pact-scene.fully-sealed")).toBeVisible();
   await expect(page.locator(".friend-pact-handwritten")).toBeVisible();
   const persisted=await page.evaluate(()=>Object.entries(localStorage).find(([key])=>key.startsWith("thi-friendship-signature-v1:amistad:"))?.[1]);
-  expect(persisted).toBeTruthy();
-  expect(JSON.parse(persisted!).image).toMatch(/^data:image\/png;base64,/);
+  expect(persisted).toBeUndefined(); // Demo replay must always have a fresh unsigned pact.
   await noOverflow();
   await capture("amistad-08-pacto-firmado-mobile");
   await page.locator('.friend-pact-scene [data-action="advance"]').click();
