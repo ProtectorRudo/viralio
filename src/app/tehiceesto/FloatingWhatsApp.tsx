@@ -3,30 +3,25 @@
 // release: internal conversion CTA
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export default function FloatingWhatsApp() {
   const pathname = usePathname();
-  const [hiddenDuringBirthdayChoice,setHiddenDuringBirthdayChoice]=useState(false);
-
-  useEffect(()=>{
-    if(!pathname.includes("/experiencias/cumpleanos")){
-      return;
-    }
-    // The birthday engine changes scenes without changing the URL.
-    // Observe its active scene so the floating sales CTA cannot cover
-    // the balloon counter or an audio player on compact touchscreens.
-    const refresh=()=>{
+  const hiddenDuringBirthdayChoice=useSyncExternalStore(
+    notify=>{
+      if(!pathname.includes("/experiencias/cumpleanos"))return ()=>{};
+      const observer=new MutationObserver(notify);
+      observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["data-scene"]});
+      window.addEventListener("resize",notify,{passive:true});
+      return ()=>{observer.disconnect();window.removeEventListener("resize",notify)};
+    },
+    ()=>{
+      if(!pathname.includes("/experiencias/cumpleanos"))return false;
       const stage=document.querySelector("main.thi-experience.thi-theme-cumpleanos")?.getAttribute("data-scene");
-      const compact=window.matchMedia("(max-width: 650px)").matches;
-      setHiddenDuringBirthdayChoice(compact&&(stage==="balloons"||stage==="voices"));
-    };
-    refresh();
-    const observer=new MutationObserver(refresh);
-    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["data-scene"]});
-    window.addEventListener("resize",refresh,{passive:true});
-    return ()=>{observer.disconnect();window.removeEventListener("resize",refresh)};
-  },[pathname]);
+      return window.matchMedia("(max-width: 650px)").matches&&(stage==="balloons"||stage==="voices");
+    },
+    ()=>false
+  );
 
   if (hiddenDuringBirthdayChoice || (
     pathname.includes("/r/") ||
