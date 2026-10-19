@@ -14,7 +14,22 @@ async function advanceOne(page:Page){
     if(current==="insidejokes"){for(const i of [0,1,2])await page.locator('[data-action="insidejoke-open"]').nth(i).click();await page.locator('.friend-codes [data-action="advance"]').click();return}
     if(current==="incidents"){for(const i of [0,1,2])await page.locator('[data-action="incident-open"]').nth(i).click();await page.locator('.friend-incidents [data-action="advance"]').click();return}
     if(current==="proof"){for(const i of [0,1,2])await page.locator('[data-action="proof-open"]').nth(i).click();await page.locator('.friend-presence [data-action="advance"]').click();return}
-    if(current==="letter"){await page.locator('[data-action="letter-open"]').click();await page.locator('.friend-letter-scene [data-action="advance"]').click();return}
+    if(current==="puzzle"){
+      const pieces=page.locator(".friend-puzzle-tile");
+      await expect(pieces).toHaveCount(9);
+      for(let index=0;index<9;index++){
+        const labels=await pieces.evaluateAll(nodes=>nodes.map(node=>node.getAttribute("aria-label")||""));
+        const wanted=labels.findIndex(label=>label.includes("pieza "+(index+1)));
+        if(wanted!==index){
+          await pieces.nth(index).click();
+          await pieces.nth(wanted).click();
+        }
+      }
+      await expect(page.locator(".friend-puzzle-completion")).toBeVisible();
+      await page.locator(".friend-puzzle-completion [data-action='advance']").click();
+      return;
+    }
+    if(current==="letter"){await page.locator('.thi-friend-letter-premium [data-action="open-letter"]').click();await page.locator('.thi-friend-letter-premium [data-action="advance"]').click();return}
     if(current==="pact"){for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();await page.locator('.friend-pact-scene [data-action="advance"]').click();await page.locator('.friend-pact-scene [data-action="advance"]').click();return}
   }
   if(current==="intro"){const gift=page.locator(".couple-gift-intro.gift-phase-closed");if(await gift.count()){await page.locator(".couple-gift-unseal").click();await page.locator(".gift-phase-revealed").waitFor({timeout:8000})}await page.locator('[data-action="advance"]').click()}
@@ -103,6 +118,34 @@ test("home v2 explains the product fast and makes recipient choice immediate",as
   if(!reduced){
     await expect.poll(()=>scroller.evaluate(el=>el.scrollLeft),{timeout:3000}).toBeGreaterThan(0);
   }
+});
+
+test("Friendship v5 unwrapping, inward threshold, 9-piece photo puzzle, sealed letter and final pact are one uninterrupted mobile journey",async({page})=>{
+  test.setTimeout(120_000);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/tehiceesto/experiencias/amistad");
+  await waitForScene(page,"intro");
+  const box=page.locator(".couple-gift-intro.friend-gift-intro");
+  await expect(box).toHaveAttribute("data-gift-occasion","amistad");
+  await expect(box).toHaveClass(/gift-phase-closed/);
+  await expect(page.locator(".couple-gift-continue")).toBeDisabled();
+  await page.locator(".couple-gift-unseal").click();
+  await expect(box).toHaveClass(/gift-phase-revealed/,{timeout:9000});
+  await expect(page.locator(".couple-gift-continue")).toBeEnabled();
+  await page.locator(".couple-gift-continue").click();
+  await waitForScene(page,"door");
+  await expect(page.locator(".pair-cinematic-umbral")).toBeVisible();
+  for(let step=0;step<12&&await sceneName(page)!=="puzzle";step++)await advanceOne(page);
+  await waitForScene(page,"puzzle");
+  await expect(page.locator(".friend-puzzle-tile")).toHaveCount(9);
+  await expect(page.locator(".friend-puzzle-completion")).toHaveCount(0);
+  await advanceOne(page);
+  await waitForScene(page,"letter");
+  await expect(page.locator(".thi-friend-letter-premium .thi-envelope")).toBeVisible();
+  await advanceOne(page);
+  await waitForScene(page,"pact");
+  await advanceOne(page);
+  await waitForScene(page,"finale");
 });
 
 for(const slug of slugs)test(`Te Hice Esto demo ${slug} completes without getting stuck`,async({page})=>{test.setTimeout(45_000);await page.setViewportSize({width:390,height:844});await page.goto(`/tehiceesto/experiencias/${slug}`);await waitForScene(page,"intro");for(let step=0;step<20;step++){const current=await sceneName(page);if(current==="finale"||current==="proposal")break;const before=current;await advanceOne(page);await expect.poll(()=>sceneName(page),{timeout:4000,message:`${slug} did not advance from scene ${before}`}).not.toBe(before)}expect(["finale","proposal"],`${slug} never reached an ending`).toContain(await sceneName(page))});
