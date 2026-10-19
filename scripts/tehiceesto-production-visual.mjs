@@ -38,12 +38,12 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
   if(route.startsWith("/experiencias/")){
     scene=await page.locator("main.thi-experience").getAttribute("data-scene");
     if(advanceDemo&&scene==="intro"){
-      if(route==="/experiencias/pareja"||route==="/experiencias/mama"){
+      if(["/experiencias/pareja","/experiencias/mama","/experiencias/amistad"].includes(route)){
         const gift=page.locator(".couple-gift-intro.gift-phase-closed");
         await gift.waitFor({timeout:15000});
-        const occasion=route.endsWith("/mama")?"mama":"pareja";
-        if(route==="/experiencias/mama" && (await gift.getAttribute("data-gift-occasion"))!=="mama")
-          throw new Error("Mamá gift is not using its own satin-wrap variant: "+String(await gift.getAttribute("data-gift-occasion")));
+        const occasion=route.split("/").at(-1);
+        if((await gift.getAttribute("data-gift-occasion"))!==occasion)
+          throw new Error(occasion+" gift is not using its own satin-wrap variant: "+String(await gift.getAttribute("data-gift-occasion")));
         if(!(await page.locator(".couple-gift-continue").isDisabled()))
           throw new Error("Gift CTA unexpectedly enabled before unwrapping");
         if(await page.locator(".couple-gift-reveal").evaluate(el=>Number.parseFloat(getComputedStyle(el).opacity))>0.05)
