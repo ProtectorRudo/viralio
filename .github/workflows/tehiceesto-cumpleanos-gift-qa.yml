@@ -7,12 +7,15 @@ on:
       - ".github/workflows/tehiceesto-cumpleanos-gift-qa.yml"
       - "e2e/tehiceesto-birthday-gift.spec.ts"
       - "e2e/tehiceesto-birthday-wish.spec.ts"
+      - "e2e/tehiceesto-birthday-balloons.spec.ts"
       - "playwright.birthday.config.ts"
       - "src/app/tehiceesto/BirthdayGiftIntro.tsx"
       - "src/app/tehiceesto/BirthdayGiftIntro.css"
       - "src/app/tehiceesto/BirthdayCakeIllustration.tsx"
       - "src/app/tehiceesto/BirthdayWishScene.tsx"
       - "src/app/tehiceesto/BirthdayWishScene.css"
+      - "src/app/tehiceesto/BirthdayBalloonsScene.tsx"
+      - "src/app/tehiceesto/BirthdayBalloonsScene.css"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
       - "src/app/tehiceesto/data.ts"
       - "src/app/tehiceesto/experienceCopy.ts"
@@ -51,7 +54,7 @@ jobs:
           done
           cat /tmp/birthday-gift-qa.log
           exit 1
-      - name: Mobile + desktop + reduced-motion birthday gift and cake
+      - name: Mobile + desktop birthday gift, cake and three-balloon limit
         run: npx playwright test --config=playwright.birthday.config.ts
       - name: Upload screenshots and test traces
         if: always()
@@ -62,5 +65,6 @@ jobs:
             test-results/
             playwright-report/
             birthday-wish-evidence/
+            birthday-balloons-evidence/
           if-no-files-found: warn
           retention-days: 7
