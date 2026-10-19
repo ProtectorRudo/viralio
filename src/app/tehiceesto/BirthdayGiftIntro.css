@@ -1,0 +1,141 @@
+/* CUMPLEAÑOS · THE FIRST GIFT
+   Deliberately scoped: Pareja, Mamá and all frozen customer models are untouched.
+   Palette samples the existing birthday chapters: plum, muted coral and candlelit champagne. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap{
+  width:100%;
+  min-height:100svh;
+  position:relative;
+  isolation:isolate;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-intro{
+  --gift-rose:#d79692;
+  --gift-champagne:#edbf7d;
+  --gift-cloth:linear-gradient(100deg,#8d604b 0%,#d3a472 9%,#fff1ce 24%,#bd865d 45%,#f6d4a2 62%,#8e6047 80%,#f2d3a9 100%);
+  --gift-box:linear-gradient(122deg,#502a41 0%,#a96478 14%,#d69394 35%,#7a465c 58%,#b97888 78%,#4b283e 100%);
+  min-height:100svh;
+  color:#fff0e5;
+  background:#110b11;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-intro::before{
+  background:
+    radial-gradient(ellipse 52% 40% at 50% 55%,rgba(182,101,75,.29),transparent 78%),
+    radial-gradient(ellipse 68% 58% at 0% 8%,rgba(103,48,77,.60),transparent 76%),
+    radial-gradient(ellipse 44% 35% at 100% 84%,rgba(162,105,62,.28),transparent 77%),
+    linear-gradient(158deg,#2b1424 0%,#170e16 51%,#0b090f 100%);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-intro::after{
+  background:linear-gradient(180deg,rgba(0,0,0,.05),transparent 38%,rgba(0,0,0,.26)),
+  repeating-radial-gradient(circle at 33% 27%,rgba(255,228,189,.08) 0 .5px,transparent .9px 7px);
+  opacity:.46;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-ambient.ambient-one{background:#82455d;opacity:.40}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-ambient.ambient-two{background:#aa624b;opacity:.40}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-ambient.ambient-three{background:#a97751;opacity:.24}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-halo{
+  border-color:rgba(246,206,163,.1);
+  box-shadow:0 0 0 110px rgba(236,167,115,.016),0 0 0 240px rgba(245,173,123,.008);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-prelude{
+  color:#ebc9aa;
+  letter-spacing:.22em;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-prelude::after{
+  content:"✦";
+  display:block;
+  color:#e8b781;
+  font-size:16px;
+  line-height:1;
+  margin:17px auto -4px;
+  letter-spacing:0;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-box-base{
+  background:linear-gradient(90deg,rgba(10,4,9,.4),transparent 14%,rgba(255,227,202,.18) 40%,transparent 64%,rgba(12,4,11,.4)),
+  repeating-linear-gradient(179deg,rgba(255,229,200,.045) 0 1px,transparent 1px 5px),var(--gift-box);
+  box-shadow:inset 1px 2px 3px rgba(250,219,185,.35),inset -6px -14px 22px rgba(41,10,37,.55),0 30px 45px rgba(6,2,9,.59);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-lid-top{
+  background:linear-gradient(105deg,rgba(255,239,210,.17),transparent 50%,rgba(17,6,18,.2)),
+    linear-gradient(132deg,#9a5a6b 0%,#e3a2a0 34%,#c08091 62%,#6b394e 100%);
+  border-color:rgba(252,206,171,.46);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-lid-front{
+  background:linear-gradient(92deg,#583148,#bd7885 27%,#cf8c91 51%,#6b374e);
+  border-color:rgba(245,189,154,.34);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-box-interior{
+  background:radial-gradient(ellipse at 50% 16%,#fff4ca 0%,#e5b782 22%,#7b4651 63%,#190d18 100%);
+  border-color:#95596d;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-bloom{
+  background:radial-gradient(ellipse,#fff1c2 0%,rgba(239,182,108,.56) 26%,rgba(195,108,99,.24) 59%,transparent 80%);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-tag{
+  background:repeating-linear-gradient(95deg,rgba(144,87,47,.04) 0 1px,transparent 1px 5px),
+    linear-gradient(132deg,#fff4dc,#f1d6b0 68%,#d5aa78);
+  color:#53332f;
+  border-color:rgba(255,249,222,.77);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-tag b{color:#a06560}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-tap-hint{color:#edcaad}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-dedication{color:#edbd89}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-reveal h1{
+  font-family:var(--thi-serif,Georgia,serif)!important;
+  font-weight:400!important;
+  color:#fff1e8!important;
+  text-shadow:0 5px 50px rgba(219,139,104,.17);
+  font-size:clamp(66px,11vw,108px)!important;
+  letter-spacing:-.052em!important;
+  line-height:1.04!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-subtitle i{
+  background:linear-gradient(90deg,transparent,#d9a67d,transparent);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-subtitle p{color:#e9caa9}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-opening{
+  color:#f6e8df;
+  font-family:var(--thi-serif,Georgia,serif);
+  font-size:clamp(19px,2.6vw,24px);
+  font-weight:400;
+  line-height:1.47;
+  max-width:440px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-continue{
+  border:1px solid rgba(255,228,181,.42)!important;
+  border-radius:999px!important;
+  color:#3e2b30!important;
+  background:linear-gradient(120deg,#f9e7c8 0%,#ebbc87 48%,#f6d8a7 100%)!important;
+  box-shadow:0 15px 40px rgba(3,2,7,.28),inset 0 1px 0 rgba(255,250,232,.7)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-footer small{color:#caa995}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-emboss{letter-spacing:.12em}
+@media(max-width:650px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-intro{
+    padding-top:max(78px,env(safe-area-inset-top));
+    padding-bottom:max(94px,env(safe-area-inset-bottom));
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-theatre{
+    width:min(390px,94vw);
+    height:clamp(330px,51svh,430px);
+    margin-bottom:16px;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-reveal h1{
+    font-size:clamp(56px,17vw,83px)!important;
+    overflow-wrap:anywhere;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-opening{
+    font-size:clamp(18px,4.8vw,21px);
+    max-width:315px;
+    margin:10px auto 0;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-prelude{
+    font-size:9px;
+    max-width:310px;
+  }
+}
+@media(max-width:375px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-opening{font-size:17px}
+ .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-reveal h1{font-size:clamp(50px,16.5vw,70px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-prelude::after{animation:none}
+}
