@@ -1,7 +1,7 @@
 /* PAREJA / UMBRAL
    Cinematic doorway art from approved source image. Only modifies this live scene.
    Portrait art is a reusable fixed asset; copy stays dynamic in ExperienceEngine. */
-.thi-template-live.thi-theme-pareja[data-scene="door"] .pair-cinematic-umbral {
+:is(.thi-template-live.thi-theme-pareja,.thi-template-live.thi-theme-amistad,.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pair-cinematic-umbral {
   position:relative!important;isolation:isolate;display:flex!important;
   width:100%!important;min-height:100svh!important;overflow:hidden!important;
   padding:116px 18px 112px!important;
@@ -115,7 +115,7 @@
   opacity:0;transform:translateY(-8px);transition:opacity .55s ease,transform .55s ease;
 }
 @media(max-width:650px){
- .thi-template-live.thi-theme-pareja[data-scene="door"] .pair-cinematic-umbral{
+ :is(.thi-template-live.thi-theme-pareja,.thi-template-live.thi-theme-amistad,.thi-template-v5.thi-theme-amistad)[data-scene="door"] .pair-cinematic-umbral{
    padding:112px 13px 108px!important;
    min-height:100svh!important;
  }
