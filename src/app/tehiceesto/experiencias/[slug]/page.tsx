@@ -33,8 +33,9 @@ export default async function ExperiencePage({params}:{params:Promise<{slug:stri
 
   // Mamá is sold as the same immutable premium-v5 experience shown in this demo.
   const mamaV5=experience.slug==="mama"?getPremiumV5Experience("mama"):undefined;
+  const friendshipV5=experience.slug==="amistad"?getPremiumV5Experience("amistad"):undefined;
   return <div className={`thi-demo-page thi-demo-page-${experience.slug}`}>
     <div className="thi-demo-ribbon"><span>EJEMPLO · {experience.title}</span><Link href={createHref}>Quiero esta →</Link></div>
-    {mamaV5?<PremiumV5Engine experience={mamaV5}/>:<ExperienceEngine experience={experience}/>}
+    {mamaV5?<PremiumV5Engine experience={mamaV5}/>:friendshipV5?<PremiumV5Engine experience={friendshipV5}/>:<ExperienceEngine experience={experience}/>}
   </div>;
 }
