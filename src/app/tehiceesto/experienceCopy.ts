@@ -163,7 +163,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     finale:{kicker:"Por si alguna vez dudás",lead:"Lo demás lo seguimos haciendo afuera de esta pantalla.",roseMessage:"Te amo",roseSubtitle:"Y te volvería a elegir.",roseKicker:"Un secretito para vos",roseTapLabel:"Tocá la rosa",roseTapHint:"Hay algo más para vos",roseBloomHint:"Un momento más…",roseEnvelopeHint:"Un secreto para vos…",roseSaveLabel:"Guardar este instante",roseFarewellKicker:"Un final que permanece",roseFarewellTitle:"Gracias por llegar hasta acá.",restartLabel:"Volver a vivir nuestra historia"},
   },
   cumpleanos:{
-    intro:{kicker:"Hoy hubo gente que quiso hacer algo más que saludarte",cta:"Empezar mi cumpleaños",footnote:"Prometemos no cantar todos al mismo tiempo"},
+    intro:{kicker:"Un regalo pequeño. Un cariño enorme.",cta:"Empezar este día especial",footnote:"De quienes tienen la suerte de compartir la vida con vos"},
     candles:{kicker:"Primero, lo obvio",title:["Pedí un deseo.","Pero uno bueno."],wishLabel:"✦ listo, no lo cuentes",cta:"Ahora sí →"},
     balloons:{kicker:"Algunos globos vienen con condiciones",title:["Reventá tres.","Después no digas que no avisamos."],popLabel:"TOCÁ",remainingOne:"Queda 1",remainingMany:"Quedan {count}",cta:"Seguir festejando →"},
     memories:{kicker:"Pruebas de que ya vivimos bastante",title:["Fotos que explican","por qué te queremos."],cta:"Guardar estos recuerdos →"},
