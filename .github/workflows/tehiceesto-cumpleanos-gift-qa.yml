@@ -8,6 +8,7 @@ on:
       - "e2e/tehiceesto-birthday-gift.spec.ts"
       - "e2e/tehiceesto-birthday-wish.spec.ts"
       - "e2e/tehiceesto-birthday-balloons.spec.ts"
+      - "e2e/tehiceesto-birthday-voices.spec.ts"
       - "playwright.birthday.config.ts"
       - "src/app/tehiceesto/BirthdayGiftIntro.tsx"
       - "src/app/tehiceesto/BirthdayGiftIntro.css"
@@ -16,6 +17,8 @@ on:
       - "src/app/tehiceesto/BirthdayWishScene.css"
       - "src/app/tehiceesto/BirthdayBalloonsScene.tsx"
       - "src/app/tehiceesto/BirthdayBalloonsScene.css"
+      - "src/app/tehiceesto/BirthdayVoices.tsx"
+      - "src/app/tehiceesto/BirthdayVoicesPremium.css"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
       - "src/app/tehiceesto/data.ts"
       - "src/app/tehiceesto/experienceCopy.ts"
@@ -54,7 +57,7 @@ jobs:
           done
           cat /tmp/birthday-gift-qa.log
           exit 1
-      - name: Mobile + desktop birthday gift, cake and three-balloon limit
+      - name: Mobile + desktop birthday gift, cake, balloons and voice recordings
         run: npx playwright test --config=playwright.birthday.config.ts
       - name: Upload screenshots and test traces
         if: always()
@@ -66,5 +69,6 @@ jobs:
             playwright-report/
             birthday-wish-evidence/
             birthday-balloons-evidence/
+            birthday-voices-evidence/
           if-no-files-found: warn
           retention-days: 7
