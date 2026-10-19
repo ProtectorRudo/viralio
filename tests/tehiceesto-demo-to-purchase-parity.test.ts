@@ -3,6 +3,7 @@ import {join} from "node:path";
 import {describe,it,expect} from "vitest";
 import {experiences as liveModels} from "../src/app/tehiceesto/data";
 import {experiences as frozenModels} from "../src/app/tehiceesto/template-v3/data";
+import {experiences as v5Models} from "../src/app/tehiceesto/template-v5/data";
 
 const read=(p:string)=>readFileSync(join(process.cwd(),p),"utf8");
 describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
@@ -12,7 +13,7 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
     expect(frozenModels.map(model=>model.slug).sort()).toEqual(live);
     expect(liveModels).toHaveLength(9);
     for(const demo of liveModels){
-      const sold=frozenModels.find(x=>x.slug===demo.slug);
+      const sold=(demo.slug==="amistad"?v5Models:frozenModels).find(x=>x.slug===demo.slug);
       expect(sold).toBeDefined();
       expect(sold!.recipe).toEqual(demo.recipe);
       expect(sold!.opening).toEqual(demo.opening);
@@ -35,7 +36,7 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
   });
   it("preserves v3 for previously sold gifts and creates new Pareja orders from frozen v5",()=>{
     const src=read("supabase/functions/order-create/index.ts");
-    expect(src).toContain('slug==="pareja"||slug==="mama"?"premium-v5":"premium-v3"');
+    expect(src).toContain('["pareja","mama","amistad"].includes(slug)?"premium-v5":"premium-v3"');
     expect(src).toContain("template_version:versionForNewGift(experienceSlug)");
     expect(src).toContain("templateVersion:templateVersion||");
     for(const model of liveModels){
@@ -104,12 +105,31 @@ describe("TeHiceEsto demo-to-purchase parity: nine frozen premium models",()=>{
     expect(versioned).toContain('thi-template-v5');
     expect(v5Data).toContain('slug:"mama"');
     expect(giftPage).toContain('frozenV5?PremiumV5Engine:ExperienceEngine');
-    expect(studio).toContain('gift.template_version==="premium-v5"&&gift.experience_slug==="mama"');
+    expect(studio).toContain('gift.template_version==="premium-v5"&&["mama","amistad"].includes(gift.experience_slug)');
     expect(studio).toContain('photoMedia={withChoices(fillV5GiftPhotos(');
     expect(account).toContain('gift.templateVersion === "premium-v5" && gift.experienceSlug === "pareja"');
     expect(creator).toContain('gift.template_version === "premium-v5" && gift.experience_slug === "pareja"');
     expect(accountEdge).toContain('gift?.template_version==="premium-v5"&&gift?.experience_slug==="pareja"');
-    expect(creator).toContain('["pareja","mama"].includes(experienceSlug) ? "premium-v5" : "premium-v3"');
+    expect(creator).toContain('["pareja","mama","amistad"].includes(experienceSlug) ? "premium-v5" : "premium-v3"');
+  });
+  it("uses one 11-scene friendship v5 model from demo to checkout to customer studio",()=>{
+    const liveFriend=liveModels.find(model=>model.slug==="amistad")!;
+    const v5Friend=v5Models.find(model=>model.slug==="amistad")!;
+    const previous=frozenModels.find(model=>model.slug==="amistad")!;
+    expect(liveFriend.recipe).toEqual(["intro","door","casefile","memories","insidejokes","incidents","proof","puzzle","letter","pact","finale"]);
+    expect(v5Friend.recipe).toEqual(liveFriend.recipe);
+    expect(previous.recipe).not.toContain("puzzle");
+    const engine=read("src/app/tehiceesto/template-v5/ExperienceEngine.tsx");
+    const demo=read("src/app/tehiceesto/experiencias/[slug]/page.tsx");
+    const customer=read("src/app/tehiceesto/editar/CustomerStudio.tsx");
+    const puzzle=read("src/app/tehiceesto/FriendshipPhotoPuzzle.tsx");
+    expect(engine).toContain('variant="amistad"');
+    expect(engine).toContain('experience.slug==="pareja"||experience.slug==="amistad"?<PairCinematicUmbral');
+    expect(engine).toContain('type==="puzzle"');
+    expect(puzzle).toContain('data-friend-puzzle');
+    expect(puzzle).toContain('onSolved()');
+    expect(demo).toContain('friendshipV5');
+    expect(customer).toContain('["mama","amistad"].includes(gift.experience_slug)');
   });
   it("never traps recipients or displays demo voices when a purchased gift has no audio",()=>{
     const engine=read("src/app/tehiceesto/template-v3/ExperienceEngine.tsx");
