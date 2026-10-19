@@ -15,7 +15,9 @@ async function openBirthdayBalloons(page:Page){
   await page.locator(".couple-gift-continue").click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","candles");
   await page.locator('[data-action="blow-mic"]').click();
-  await page.locator('[data-action="blow-fallback"]').click();
+  // The cake microphone itself is covered by its own separate E2E suite.
+  // Dispatch the fallback without Playwright waiting for unrelated page motion.
+  await page.locator('[data-action="blow-fallback"]').dispatchEvent('click');
   await expect(page.locator('.thi-birthday-ritual')).toHaveClass(/out/);
   await page.locator('[data-action="advance"]').click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","balloons");
