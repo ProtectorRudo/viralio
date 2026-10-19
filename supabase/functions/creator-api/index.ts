@@ -66,7 +66,7 @@ const recipes:Record<string,string[]>={
   propuesta: ["intro","origin","memories","reasons","certainty","letter","threshold","proposal"],
   mama: ["intro","childhood","memories","care","sacrifices","voices","letter","finale"],
   papa: ["intro","memories","lessons","presence","inheritance","voices","letter","lookback","finale"],
-  amistad: ["intro","casefile","memories","insidejokes","incidents","proof","letter","pact","finale"],
+  amistad: ["intro","door","casefile","memories","insidejokes","incidents","proof","puzzle","letter","pact","finale"],
 };
 
 function cleanText(value: unknown, max: number) {
@@ -944,7 +944,7 @@ Deno.serve(async (req: Request) => {
         .update({
           status: "awaiting_payment",
           experience_slug: experienceSlug,
-          template_version: ["pareja","mama"].includes(experienceSlug) ? "premium-v5" : "premium-v3",
+          template_version: ["pareja","mama","amistad"].includes(experienceSlug) ? "premium-v5" : "premium-v3",
           giver_name: giverName,
           recipient_name: recipientName,
           feeling: feeling || null,
@@ -997,7 +997,7 @@ Deno.serve(async (req: Request) => {
       .insert({
         status: "awaiting_payment",
         experience_slug: experienceSlug,
-        template_version: experienceSlug==="pareja" ? "premium-v4" : experienceSlug==="mama" ? "premium-v5" : "premium-v3",
+        template_version: experienceSlug==="pareja" ? "premium-v4" : ["mama","amistad"].includes(experienceSlug) ? "premium-v5" : "premium-v3",
         giver_name: giverName,
         recipient_name: recipientName,
         feeling: feeling || null,
