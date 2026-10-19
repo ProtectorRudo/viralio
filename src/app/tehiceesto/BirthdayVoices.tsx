@@ -1,5 +1,5 @@
 "use client";
-import {useRef,useState} from "react";
+import {useRef,useState,type CSSProperties} from "react";
 import "./BirthdayVoicesPremium.css";
 
 type Voice={name:string;message:string;url?:string};
@@ -78,7 +78,7 @@ export default function BirthdayVoices({voices,heard,status,onHeard,onToggle,onS
             <input id={`thi-voice-progress-${i}`} data-action="birthday-voice-seek"
               type="range" min="0" max="100" step="0.1" value={Math.round(realProgress*1000)/10}
               onChange={event=>seek(i,Number(event.currentTarget.value))}
-              style={{"--audio-progress":`${realProgress*100}%`} as React.CSSProperties}/>
+              style={{"--audio-progress":`${realProgress*100}%`} as CSSProperties}/>
           </div>}
           {active&&audioError===i&&<p className="thi-bday-voice-error" role="alert">Este audio no pudo reproducirse. Probá nuevamente.</p>}
         </article>;
