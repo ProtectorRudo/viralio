@@ -1,0 +1,90 @@
+import {expect,test,type Page} from "@playwright/test";
+import {mkdirSync} from "node:fs";
+
+async function goToBirthdayVoices(page:Page){
+  await page.addInitScript(()=>{
+    Object.defineProperty(navigator,"mediaDevices",{configurable:true,value:{getUserMedia:async()=>{
+      throw new Error("Microphone intentionally unavailable for test");
+    }}});
+  });
+  await page.goto("/tehiceesto/experiencias/cumpleanos");
+  const main=page.locator("main.thi-experience");
+  await expect(main).toHaveAttribute("data-scene","intro");
+  await page.locator(".couple-gift-unseal").click();
+  await expect(page.locator(".gift-phase-revealed")).toBeVisible({timeout:10000});
+  await page.locator(".couple-gift-continue").click();
+  await expect(main).toHaveAttribute("data-scene","candles");
+  await page.locator('[data-action="blow-mic"]').click();
+  await page.locator('[data-action="blow-fallback"]').dispatchEvent("click");
+  await expect(page.locator(".thi-birthday-ritual")).toHaveClass(/out/);
+  await page.locator(".thi-wish-continue").click();
+  await expect(main).toHaveAttribute("data-scene","balloons");
+  const balloons=page.locator('[data-action="balloon"]');
+  for(const n of [0,1,2])await balloons.nth(n).click();
+  await page.locator('.thi-bday-balloon-continue').click();
+  await expect(main).toHaveAttribute("data-scene","memories");
+  await page.locator('.thi-scene-memories [data-action="advance"]').click();
+  await expect(main).toHaveAttribute("data-scene","light");
+  for(const n of [1,2,3])await page.locator(`[data-action="birthday-light-${n}"]`).click();
+  await page.locator('[data-action="advance"]').click();
+  await expect(main).toHaveAttribute("data-scene","voices");
+}
+
+for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["desktop",1440,960]] as const){
+  test(`birthday voice cards preserve pause, resume and the original messages at ${name}`,async({page})=>{
+    test.setTimeout(115000);
+    const errors:string[]=[];
+    page.on("pageerror",e=>errors.push(e.message));
+    await page.setViewportSize({width,height});
+    await goToBirthdayVoices(page);
+    const scene=page.locator(".thi-bday-voice-scene");
+    const cards=scene.locator(".thi-bday-voice-tile");
+    await expect(cards).toHaveCount(4);
+    await expect(cards.nth(0)).toContainText("Mamá");
+    await expect(cards.nth(1)).toContainText("Nati");
+    await expect(cards.nth(2)).toContainText("Fran");
+    await expect(cards.nth(3)).toContainText("Los del grupo");
+    const a=await cards.nth(0).boundingBox();
+    const b=await cards.nth(1).boundingBox();
+    expect(a).not.toBeNull();expect(b).not.toBeNull();
+    expect(b!.y).toBeGreaterThan(a!.y+a!.height-4);
+    await expect(scene.locator(".thi-bday-voice-waveform")).toHaveCount(4);
+    await expect(scene.locator(".thi-bday-voice-waveform i")).toHaveCount(152);
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+    expect(overflow).toBeLessThanOrEqual(3);
+    if(width<=650){
+      await expect(scene.locator(".thi-bday-voice-inline-cta")).toBeVisible();
+      const globalCta=page.locator(".floating-whatsapp--experience");
+      if(await globalCta.count())await expect(globalCta).toBeHidden();
+    }
+    mkdirSync("birthday-voices-evidence",{recursive:true});
+    await page.screenshot({path:`birthday-voices-evidence/${name}-idle.png`,fullPage:true});
+    const play=scene.locator('[data-action="birthday-voice"]');
+    await play.nth(0).click();
+    await expect(cards.nth(0)).toHaveClass(/active/);
+    await expect(scene.locator(".thi-bday-voice-player")).toBeVisible();
+    await expect(scene.locator('[data-action="birthday-voice-toggle"]')).toBeVisible();
+    await scene.locator('[data-action="birthday-voice-toggle"]').click();
+    await expect(cards.nth(0)).toHaveClass(/active/);
+    await play.nth(1).click();
+    await expect(cards.nth(1)).toHaveClass(/active/);
+    await expect(cards.nth(0)).not.toHaveClass(/active/);
+    await expect(scene.locator(".thi-bday-voice-next")).toBeVisible();
+    await page.screenshot({path:`birthday-voices-evidence/${name}-selected.png`,fullPage:true});
+    await scene.locator(".thi-bday-voice-next").click();
+    await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hold");
+    expect(errors).toEqual([]);
+  });
+}
+test("voice cards keep reduced-motion preference and do not invent audio duration",async({page})=>{
+  test.setTimeout(100000);
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await goToBirthdayVoices(page);
+  const scene=page.locator(".thi-bday-voice-scene");
+  await expect(scene.locator(".thi-bday-voice-time").first()).toContainText("Dedicatoria");
+  await scene.locator('[data-action="birthday-voice"]').first().click();
+  const wave=scene.locator(".thi-bday-voice-waveform i").first();
+  expect(await wave.evaluate(el=>getComputedStyle(el).animationName)).toBe("none");
+  await expect(scene.locator(".thi-bday-voice-player")).toBeVisible();
+});
