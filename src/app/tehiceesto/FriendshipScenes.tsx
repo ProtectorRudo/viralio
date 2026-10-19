@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Experience, SceneType } from "./data";
 import FriendSignaturePad from "./FriendSignaturePad";
+import FriendshipPhotoPuzzle from "./FriendshipPhotoPuzzle";
 
 
 type Photo = { url: string; caption?: string; fit?: "cover" | "contain"; position?: "center" | "top" | "bottom" | "left" | "right" };
@@ -63,6 +64,7 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
   const [uncovered, setUncovered] = useState<number[]>([]);
   const [activePresence, setActivePresence] = useState(-1);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
+  const [puzzleSolved,setPuzzleSolved] = useState(false);
   const [pactSealed, setPactSealed] = useState(false);
   const [signatureOpen,setSignatureOpen] = useState(false);
   const [signatureImage,setSignatureImage] = useState<string|null>(null);
@@ -110,9 +112,9 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
   }, [scene, doorOpen, next]);
 
   useEffect(() => {
-    const ready = scene === "intro" ? doorOpen : scene === "casefile" ? folderOpen : scene === "memories" ? true : scene === "insidejokes" || scene === "incidents" || scene === "proof" ? uncovered.length >= 3 : scene === "letter" ? envelopeOpen : scene === "pact" ? pactSealed : false;
+    const ready = scene === "intro" ? doorOpen : scene === "casefile" ? folderOpen : scene === "memories" ? true : scene === "insidejokes" || scene === "incidents" || scene === "proof" ? uncovered.length >= 3 : scene === "letter" ? envelopeOpen : scene === "puzzle" ? puzzleSolved : scene === "pact" ? pactSealed : false;
     onUnlock(ready);
-  }, [scene,doorOpen,folderOpen,uncovered,envelopeOpen,pactSealed,onUnlock]);
+  }, [scene,doorOpen,folderOpen,uncovered,envelopeOpen,puzzleSolved,pactSealed,onUnlock]);
 
 
 
@@ -257,6 +259,14 @@ export default function FriendshipScenes({ scene, experience, photos, memory, le
       <FriendAction onClick={next} disabled={uncovered.length<3}>{uncovered.length<3?"Iluminá tres recuerdos":"Hay algo que quiero decirte"}</FriendAction>
     </section>
   );
+
+  if (scene === "puzzle") return <FriendshipPhotoPuzzle
+    photo={photos[0]?.url}
+    position={photos[0]?.position}
+    caption={photos[0]?.caption}
+    onSolved={()=>setPuzzleSolved(true)}
+    onContinue={next}
+  />;
 
   if (scene === "letter") return (
     <section className="thi-scene friendship-scene friend-letter-scene">
