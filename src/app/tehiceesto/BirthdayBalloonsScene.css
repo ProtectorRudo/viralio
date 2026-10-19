@@ -306,7 +306,7 @@
   animation:none!important;
  }
  .thi-template-live.thi-theme-cumpleanos[data-scene="balloons"] .thi-bday-balloon-btn.pop .thi-bday-satin-body{
-  opacity:0!important;
+  opacity:0!important;animation:none!important;transform:scale(.2)!important;
  }
  .thi-template-live.thi-theme-cumpleanos[data-scene="balloons"] .thi-bday-balloon-btn.pop .thi-bday-reveal-note{
   animation:none!important;opacity:1!important;transform:none!important;
