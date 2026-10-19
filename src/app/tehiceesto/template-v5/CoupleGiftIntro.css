@@ -934,3 +934,48 @@
 @media(prefers-reduced-motion:reduce){
   .mama-gift-intro .couple-gift-dust span{animation:none}
 }
+
+
+/* FRIENDSHIP SATIN EDITION · same mechanism, separate midnight-ink/gold identity.
+   Only the current demo and new premium-v5 Amistad gifts. */
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="intro"] .friend-gift-intro{
+  --gift-rose:#93aac8;
+  --gift-champagne:#e6c995;
+  --gift-cloth:linear-gradient(97deg,#84683c,#e0c995 15%,#fff3d1 30%,#c8a16c 53%,#f6e4ba 78%,#8e6d3b);
+  --gift-box:linear-gradient(115deg,#1d283d 0%,#40536f 17%,#73829a 36%,#33455e 58%,#6d8095 79%,#1d2a41);
+  background:radial-gradient(ellipse 55% 46% at 52% 47%,rgba(110,126,178,.20),transparent 82%),
+    radial-gradient(ellipse 36% 52% at 1% 13%,rgba(83,103,157,.20),transparent 85%),
+    linear-gradient(155deg,#121622 0%,#0c1422 50%,#0b101b 100%);
+  color:#f7f0e4;
+}
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="intro"] .friend-gift-intro .couple-gift-prelude,
+:is(.thi-template-live,.thi-template-v5).thi-theme-amistad[data-scene="intro"] .friend-gift-intro .couple-gift-dedication{color:#ebd4aa}
+.friend-gift-intro .couple-gift-ambient.ambient-one{background:#6880a7}
+.friend-gift-intro .couple-gift-ambient.ambient-two{background:#b09263}
+.friend-gift-intro .couple-gift-box-base{
+  background-image:linear-gradient(98deg,rgba(12,20,41,.48),transparent 12%,rgba(245,228,190,.18) 38%,transparent 67%,rgba(13,18,36,.38)),var(--gift-box);
+  border-color:rgba(224,205,155,.35);
+}
+.friend-gift-intro .couple-gift-lid-top{
+  background:linear-gradient(116deg,#23344d,#607590 36%,#455875 63%,#1e2e4b);
+  border-color:rgba(244,226,174,.43);
+}
+.friend-gift-intro .couple-gift-lid-front{background:linear-gradient(98deg,#202b42,#677c96 31%,#374d6b 72%,#1a273e)}
+.friend-gift-intro .couple-gift-base-ribbon,
+.friend-gift-intro .couple-gift-lid-ribbon{background:var(--gift-cloth)}
+.friend-gift-intro .couple-gift-box-interior{background:radial-gradient(ellipse at 50% 10%,#f9e9ca,#8f8294 31%,#283752 66%,#121c2c)}
+.friend-gift-intro .couple-gift-bloom{background:radial-gradient(ellipse,rgba(255,236,189,.85),rgba(236,201,149,.45) 34%,rgba(145,171,219,.22) 63%,transparent 78%)}
+.friend-gift-intro .couple-gift-tag{
+  background:linear-gradient(145deg,#fff8e9,#e6d3b8);
+  color:#36405a;border-color:#c3a97e;
+}
+.friend-gift-intro .couple-gift-tap-hint,
+.friend-gift-intro .couple-gift-subtitle{color:#e4d2b6}
+.friend-gift-intro .couple-gift-reveal h1{color:#fff3df}
+.friend-gift-intro .couple-gift-opening{color:#f1e7da}
+.friend-gift-intro .couple-gift-footer .couple-gift-continue{
+  background:linear-gradient(116deg,#f6e6c1,#d9b987 55%,#f7e5c4);
+  border:1px solid rgba(255,236,195,.54);
+  color:#282e3d;
+}
+@media(prefers-reduced-motion:reduce){.friend-gift-intro .couple-gift-dust span{animation:none}}
