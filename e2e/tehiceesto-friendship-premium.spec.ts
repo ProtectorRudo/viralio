@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil", async ({page},testInfo) => {
+test("Amistad premium: once escenas, apertura regalo, puerta, rompecabezas y pacto en móvil", async ({page},testInfo) => {
   test.setTimeout(120_000);
   await page.setViewportSize({width:390,height:844});
   await page.goto("/tehiceesto/experiencias/amistad");
@@ -10,12 +10,25 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
   const capture=async(name:string)=>testInfo.attach(name,{body:await page.screenshot({fullPage:true}),contentType:"image/png"});
 
   await scene("intro");
-  await expect(page.locator(".friend-door-name")).toContainText("Vale");
-  await expect(page.locator(".friend-door-nameplate")).toContainText("UN RECUERDO PARA");
-  await expect(page.getByRole("heading",{name:/Algunas amistades no se explican/i})).toBeVisible();
+  const gift=page.locator(".couple-gift-intro.friend-gift-intro");
+  await expect(gift).toHaveAttribute("data-gift-occasion","amistad");
+  await expect(gift).toHaveClass(/gift-phase-closed/);
+  await expect(page.locator(".couple-gift-continue")).toBeDisabled();
   await noOverflow();
-  await capture("amistad-01-puerta-mobile");
+  await capture("amistad-01-regalo-cerrado-mobile");
+  await page.locator(".couple-gift-unseal").click();
+  await expect(gift).toHaveClass(/gift-phase-revealed/,{timeout:9000});
+  await expect(page.locator(".couple-gift-continue")).toBeEnabled();
+  await capture("amistad-01-regalo-abierto-mobile");
+  await page.locator(".couple-gift-continue").click();
+  await scene("door");
+  await expect(page.locator(".pair-cinematic-umbral")).toBeVisible();
+  await expect(page.locator(".pcu-door-friend-name")).toContainText("Vale");
+  await noOverflow();
+  await capture("amistad-02-puerta-mobile");
   await page.locator('[data-action="open-door"]').click();
+  await expect(page.locator(".pair-cinematic-umbral.is-open")).toBeVisible();
+  await page.locator('.pair-cinematic-umbral [data-action="advance"]').click();
   await scene("casefile");
   await expect(page.locator(".friend-case-folder")).toBeVisible();
   await page.locator('[data-action="casefile-open"]').click();
@@ -56,16 +69,27 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
   await noOverflow();
   await page.locator('.friend-presence [data-action="advance"]').click();
 
+  await scene("puzzle");
+  const pieces=page.locator(".friend-puzzle-tile");
+  await expect(pieces).toHaveCount(9);
+  await capture("amistad-08-rompecabezas-mobile");
+  for(let index=0;index<9;index++){
+    const labels=await pieces.evaluateAll(nodes=>nodes.map(node=>node.getAttribute("aria-label")||""));
+    const wanted=labels.findIndex(label=>label.includes("pieza "+(index+1)));
+    if(wanted!==index){await pieces.nth(index).click();await pieces.nth(wanted).click()}
+  }
+  await expect(page.locator(".friend-puzzle-completion")).toBeVisible();
+  await capture("amistad-08-rompecabezas-completo-mobile");
+  await page.locator(".friend-puzzle-completion [data-action='advance']").click();
   await scene("letter");
-  await expect(page.locator(".friend-envelope-wrap.open")).toHaveCount(0);
-  await expect(page.locator(".friend-letter-sheet")).toHaveCSS("visibility","hidden");
-  await expect.poll(()=>page.locator(".friend-letter-scene h2").evaluate(e=>e.getBoundingClientRect().top)).toBeGreaterThan(120);
-  await capture("amistad-07-sobre-cerrado-mobile");
-  await page.locator('[data-action="letter-open"]').click();
-  await expect(page.locator(".friend-envelope-wrap.open")).toHaveCount(1);
+  await expect(page.locator(".thi-friend-letter-premium .thi-envelope")).toBeVisible();
+  await expect(page.locator(".thi-friend-letter-premium .thi-envelope .paper")).toHaveCSS("visibility","hidden");
+  await capture("amistad-09-sobre-cerrado-mobile");
+  await page.locator('.thi-friend-letter-premium [data-action="open-letter"]').click();
+  await expect(page.locator(".thi-friend-letter-premium .thi-envelope.open")).toBeVisible();
   await noOverflow();
-  await capture("amistad-07-carta-abierta-mobile");
-  await page.locator('.friend-letter-scene [data-action="advance"]').click();
+  await capture("amistad-09-carta-abierta-mobile");
+  await page.locator('.thi-friend-letter-premium [data-action="advance"]').click();
 
   await scene("pact");
   for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();
@@ -99,16 +123,24 @@ test("Amistad premium: nueve escenas, interacciones físicas y responsive móvil
 
   await page.locator('[data-action="restart"]').last().click();
   await scene("intro");
+  await expect(page.locator(".couple-gift-intro.friend-gift-intro")).toBeVisible();
 });
 
 test("Amistad premium: entrada y dossier en desktop sin desborde", async ({page},testInfo) => {
   test.setTimeout(35_000);
   await page.setViewportSize({width:1440,height:900});
   await page.goto("/tehiceesto/experiencias/amistad");
-  await expect(page.locator(".friend-door-name")).toContainText("Vale");
+  await expect(page.locator(".couple-gift-intro.friend-gift-intro")).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(2);
+  await testInfo.attach("amistad-regalo-desktop",{body:await page.screenshot({fullPage:true}),contentType:"image/png"});
+  await page.locator(".couple-gift-unseal").click();
+  await page.locator(".gift-phase-revealed").waitFor({timeout:9000});
+  await page.locator(".couple-gift-continue").click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","door");
+  await expect(page.locator(".pcu-door-friend-name")).toContainText("Vale");
   await testInfo.attach("amistad-puerta-desktop",{body:await page.screenshot({fullPage:true}),contentType:"image/png"});
   await page.locator('[data-action="open-door"]').click();
+  await page.locator('.pair-cinematic-umbral [data-action="advance"]').click();
   await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","casefile");
   await expect(page.locator(".friend-case-folder")).toBeVisible();
   await testInfo.attach("amistad-expediente-desktop",{body:await page.screenshot({fullPage:true}),contentType:"image/png"});
