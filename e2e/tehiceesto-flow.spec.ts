@@ -30,7 +30,23 @@ async function advanceOne(page:Page){
       return;
     }
     if(current==="letter"){await page.locator('.thi-friend-letter-premium [data-action="open-letter"]').click();await page.locator('.thi-friend-letter-premium [data-action="advance"]').click();return}
-    if(current==="pact"){for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();await page.locator('.friend-pact-scene [data-action="advance"]').click();await page.locator('.friend-pact-scene [data-action="advance"]').click();return}
+    if(current==="pact"){
+      for(const i of [0,1,2,3])await page.locator('[data-action="pact-open"]').nth(i).click();
+      await page.locator('.friend-pact-scene [data-action="advance"]').click();
+      const canvas=page.locator(".friend-signature-canvas");
+      await expect(canvas).toBeVisible();
+      const area=await canvas.boundingBox();
+      if(!area)throw new Error("Friendship signature canvas has no box");
+      await page.mouse.move(area.x+area.width*.20,area.y+area.height*.60);
+      await page.mouse.down();
+      await page.mouse.move(area.x+area.width*.40,area.y+area.height*.35,{steps:8});
+      await page.mouse.move(area.x+area.width*.66,area.y+area.height*.56,{steps:8});
+      await page.mouse.up();
+      await page.locator('[data-action="signature-confirm"]').click();
+      await expect(page.locator(".friend-pact-scene.fully-sealed")).toBeVisible();
+      await page.locator('.friend-pact-scene [data-action="advance"]').click();
+      return;
+    }
   }
   if(current==="intro"){const gift=page.locator(".couple-gift-intro.gift-phase-closed");if(await gift.count()){await page.locator(".couple-gift-unseal").click();await page.locator(".gift-phase-revealed").waitFor({timeout:8000})}await page.locator('[data-action="advance"]').click()}
   else if(current==="door"){await page.locator('[data-action="open-door"]').click();await page.locator('[data-action="advance"]').click()}
