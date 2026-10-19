@@ -59,7 +59,7 @@ export default function BirthdayBalloonsScene({
           data-action="balloon"
           data-balloon-index={i}
           className={`thi-bday-balloon-btn ${selected?"pop is-revealed":""} ${locked?"is-locked":""}`}
-          style={{"--balloon-light":colors[0],"--balloon-dark":colors[1],"--balloon-pearl":colors[2],"--balloon-seq":i} as CSSProperties}
+          style={{"--balloon-light":colors[0],"--balloon-dark":colors[1],"--balloon-pearl":colors[2],"--balloon-seq":i,"--balloon-delay":`${-i*.71}s`,"--balloon-duration":`${4.6+i*.29}s`} as CSSProperties}
           aria-label={selected?`Globo ${i+1}: ${message}`:locked?`Globo ${i+1} bloqueado: ya elegiste tres`:`Explotar globo ${i+1}`}
           aria-pressed={selected}
           disabled={locked||selected}
