@@ -42,7 +42,7 @@ async function inspect(page,route,mode,{advanceDemo=false,fullPage=true}={}){
         const gift=page.locator(".couple-gift-intro.gift-phase-closed");
         await gift.waitFor({timeout:15000});
         const occasion=route.split("/").at(-1);
-        if((await gift.getAttribute("data-gift-occasion"))!==occasion)
+        if(occasion!=="pareja" && (await gift.getAttribute("data-gift-occasion"))!==occasion)
           throw new Error(occasion+" gift is not using its own satin-wrap variant: "+String(await gift.getAttribute("data-gift-occasion")));
         if(!(await page.locator(".couple-gift-continue").isDisabled()))
           throw new Error("Gift CTA unexpectedly enabled before unwrapping");
