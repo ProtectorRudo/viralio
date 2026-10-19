@@ -31,6 +31,7 @@ type GiftTheme=typeof THEMES[keyof typeof THEMES];
 /** Intentional visual slots in the nine gift journeys. Extra scene photos are never removed. */
 export const PRIVATE_PHOTO_SLOTS:Readonly<Record<string,number>>={
   memories:3,
+  puzzle:1,
   childhood:1,
   origin:1,
   light:2,
