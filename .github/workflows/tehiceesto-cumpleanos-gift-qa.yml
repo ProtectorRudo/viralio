@@ -1,0 +1,51 @@
+name: Te Hice Esto · Cumpleaños gift QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tehiceesto-cumpleanos-gift-qa.yml"
+      - "e2e/tehiceesto-birthday-gift.spec.ts"
+      - "src/app/tehiceesto/BirthdayGiftIntro.tsx"
+      - "src/app/tehiceesto/BirthdayGiftIntro.css"
+      - "src/app/tehiceesto/ExperienceEngine.tsx"
+      - "src/app/tehiceesto/data.ts"
+      - "src/app/tehiceesto/experienceCopy.ts"
+      - "src/app/tehiceesto/CoupleGiftIntro.tsx"
+      - "src/app/tehiceesto/CoupleGiftIntro.css"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: birthday-gift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  birthday-gift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Mobile + desktop + reduced-motion birthday gift
+        run: npx playwright test e2e/tehiceesto-birthday-gift.spec.ts
+      - name: Upload screenshots and test traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: birthday-gift-visual-evidence
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 7
