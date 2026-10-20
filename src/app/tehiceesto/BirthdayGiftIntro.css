@@ -139,3 +139,51 @@
 @media(prefers-reduced-motion:reduce){
  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-prelude::after{animation:none}
 }
+
+
+/* BIRTHDAY INTRO CTA · comfortable touch target and editorial proportions
+ * Screenshot audit: the inherited inline-size produced a narrow, squat pill.
+ * Apply only to the live Birthday model — never to Couple or customer copies. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-footer .couple-gift-continue{
+  box-sizing:border-box!important;
+  width:min(420px,calc(100vw - 48px))!important;
+  max-width:100%!important;
+  min-width:0!important;
+  min-height:66px!important;
+  padding:16px 25px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:17px!important;
+  font:500 clamp(18px,2.4vw,22px)/1.2 var(--thi-serif,Georgia,serif)!important;
+  letter-spacing:-.01em!important;
+  white-space:nowrap;
+  text-align:center;
+  border-radius:999px!important;
+  box-shadow:0 16px 35px rgba(7,2,10,.32),inset 0 1px 0 rgba(255,249,232,.76)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-continue>span{
+  flex:none;
+  display:inline-block;
+  font-size:23px!important;
+  line-height:1!important;
+  transform:translateY(-1px);
+}
+@media(max-width:650px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-footer .couple-gift-continue{
+    width:min(390px,calc(100vw - 40px))!important;
+    min-height:68px!important;
+    padding:17px 19px!important;
+    gap:14px!important;
+    font-size:clamp(17px,4.7vw,20px)!important;
+  }
+}
+@media(max-width:360px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="intro"] .birthday-gift-wrap .couple-gift-footer .couple-gift-continue{
+    width:calc(100vw - 34px)!important;
+    min-height:64px!important;
+    padding:14px 13px!important;
+    gap:9px!important;
+    font-size:17px!important;
+  }
+}
