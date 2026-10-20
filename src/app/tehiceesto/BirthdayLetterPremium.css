@@ -1,0 +1,302 @@
+/* CUMPLEAÑOS · CARTA COMO UN RECUERDO
+   Premium stationary treatment directly inspired by the already-proven
+   Couple physical keepsake. Reuses the original letter DOM and its seal /
+   flap / note interactions. Scoped only to the LIVE birthday scene. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"]{
+  background:
+    radial-gradient(ellipse 65% 40% at 42% 35%,rgba(127,70,43,.25),transparent 75%),
+    radial-gradient(ellipse 55% 37% at 90% 77%,rgba(78,39,56,.13),transparent 85%),
+    linear-gradient(153deg,#1d1012 0%,#110b0f 55%,#09080e 100%)!important;
+  overflow-x:clip;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter.thi-birthday-letter-premium{
+  position:relative;isolation:isolate;
+  display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start!important;
+  width:100%;min-height:100svh;box-sizing:border-box;
+  padding:clamp(126px,15svh,156px) 16px clamp(104px,12svh,124px)!important;
+  gap:0;text-align:center;overflow:hidden;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium::before{
+  content:"";pointer-events:none;position:absolute;inset:0;z-index:-1;
+  background:
+    radial-gradient(ellipse at 12% 22%,rgba(251,200,123,.11),transparent 36%),
+    radial-gradient(ellipse at 64% 57%,rgba(226,155,97,.08),transparent 52%);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-kicker{
+  position:relative;z-index:8;
+  color:#e6bd95!important;font:600 10px/1.55 Arial,sans-serif!important;
+  letter-spacing:.25em!important;text-transform:uppercase;
+  margin:0 0 16px!important;transition:opacity .55s ease,transform .65s ease;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>h2{
+  position:relative;z-index:8;
+  width:min(690px,100%);max-width:690px!important;
+  font:400 clamp(36px,6.0vw,64px)/1.06 var(--thi-serif,Georgia,serif)!important;
+  color:#fff0e3!important;letter-spacing:-.042em!important;
+  text-align:center;text-wrap:balance;margin:0 auto 23px!important;
+  text-shadow:0 12px 45px rgba(0,0,0,.36);
+  transition:opacity .72s ease,transform .72s ease,filter .72s ease;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-letter-aura{
+  position:absolute;width:min(700px,100%);height:450px;left:50%;top:40%;
+  transform:translate(-50%,-50%);z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(248,202,151,.22),rgba(174,99,68,.07) 42%,transparent 77%);
+  filter:blur(23px);opacity:.65;transition:opacity .95s,transform .95s;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium.is-open .thi-letter-aura{
+  opacity:1;transform:translate(-50%,-50%) scale(1.14);
+}
+/* Envelope body: physically folded cotton paper, ivory rather than flat beige. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope{
+  --letter-cream:#f7e6d0;
+  position:relative;isolation:isolate;z-index:5;
+  flex:none!important;display:block!important;
+  width:min(520px,90vw)!important;height:clamp(245px,56.5vw,330px)!important;
+  margin:clamp(19px,3.3svh,32px) auto 8px!important;
+  padding:0!important;border:0!important;border-radius:5px!important;
+  background:transparent!important;box-shadow:none!important;
+  cursor:pointer;perspective:1300px;transform-style:preserve-3d;
+  filter:drop-shadow(0 29px 38px rgba(0,0,0,.47)) drop-shadow(0 0 19px rgba(244,183,112,.085));
+  transition:margin .7s ease,transform .7s ease,filter .7s ease;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope:focus-visible{
+  outline:2px solid #ffe4aa;outline-offset:6px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .back{
+  position:absolute;inset:0;z-index:1;border-radius:5px;
+  background:
+    radial-gradient(ellipse at 15% 8%,rgba(255,254,233,.68),transparent 57%),
+    repeating-linear-gradient(101deg,rgba(142,86,49,.019) 0 1px,transparent 1px 5px),
+    linear-gradient(122deg,#fbe8ce 0%,#f0d2af 60%,#cfa280 100%)!important;
+  border:1px solid rgba(255,227,185,.75);
+  box-shadow:inset 1px 2px rgba(255,255,248,.76),inset -9px -12px 21px rgba(105,59,42,.13),
+    0 22px 65px rgba(0,0,0,.25)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .back::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.20;
+  background:repeating-radial-gradient(circle at 21% 13%,rgba(115,79,49,.23) 0 .45px,transparent .65px 3px);
+  mix-blend-mode:multiply;
+}
+/* Top fold is a separate hinged 3D face, decorated in gold botanical engravings. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .flap{
+  display:block!important;position:absolute!important;inset:auto!important;left:0!important;right:0!important;top:0!important;
+  z-index:7;height:69%!important;
+  clip-path:polygon(0 0,100% 0,50% 100%)!important;
+  transform:rotateX(0deg);transform-origin:50% 0;
+  backface-visibility:hidden;
+  background:
+    linear-gradient(168deg,rgba(255,255,245,.54) 0%,transparent 42%),
+    repeating-linear-gradient(79deg,rgba(124,80,57,.022) 0 1px,transparent 1px 4px),
+    linear-gradient(150deg,#fdf0dc 2%,#efd7b8 55%,#c89570 100%)!important;
+  box-shadow:inset 0 1px rgba(255,252,238,.72),0 8px 18px rgba(87,47,29,.13);
+  transition:transform .82s .15s cubic-bezier(.2,.76,.17,1),z-index 0s .48s,filter .8s;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .flap::after{
+  content:"";position:absolute;inset:0;
+  background:url("/tehiceesto/birthday-letter-botanical.svg") no-repeat 98% -24px/45% auto;
+  opacity:.64;pointer-events:none;transform:scaleX(-1);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .front{
+  position:absolute;inset:0;z-index:5;border-radius:0 0 4px 4px;
+  clip-path:polygon(0 0,50% 65%,100% 0,100% 100%,0 100%)!important;
+  background:
+    linear-gradient(160deg,rgba(255,254,235,.24),transparent 49%),
+    repeating-linear-gradient(95deg,rgba(117,77,50,.017) 0 1px,transparent 1px 4px),
+    linear-gradient(138deg,#e9cdb0,#f6dfc3 41%,#c79775 100%)!important;
+  border:1px solid rgba(255,229,190,.4);
+  box-shadow:inset 0 5px 12px rgba(112,62,42,.09),inset 0 -17px 27px rgba(94,49,35,.09);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .front::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    url("/tehiceesto/birthday-letter-botanical.svg") no-repeat -30px 111%/43% auto,
+    linear-gradient(36deg,transparent 49.75%,rgba(162,112,64,.49) 50%,transparent 50.25%),
+    linear-gradient(-36deg,transparent 49.75%,rgba(255,241,212,.48) 50%,transparent 50.25%);
+  opacity:.61;
+}
+/* The wax seal is antique bronze, polished on its crest with a pressed heart. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .wax{
+  display:grid!important;place-items:center;
+  position:absolute!important;z-index:9;
+  left:50%!important;top:64%!important;
+  width:clamp(50px,7.2vw,66px)!important;height:clamp(50px,7.2vw,66px)!important;
+  transform:translate(-50%,-50%) rotate(-6deg);
+  border-radius:46% 51% 47% 51%!important;
+  background:
+    radial-gradient(ellipse at 28% 15%,rgba(255,235,182,.95),transparent 34%),
+    radial-gradient(ellipse at 42% 38%,#c98c48 0%,#a66b36 42%,#684122 83%,#3d241b 100%)!important;
+  border:2px solid rgba(221,158,84,.75)!important;
+  box-shadow:
+    inset 0 2px 3px rgba(255,236,178,.88),
+    inset -4px -6px 7px rgba(66,28,16,.45),
+    0 6px 0 rgba(113,56,27,.19),
+    0 11px 22px rgba(50,22,16,.38),
+    0 0 0 3px rgba(112,65,35,.17)!important;
+  color:#ffe9b4!important;
+  transition:opacity .3s .37s,transform .49s cubic-bezier(.2,.8,.2,1),filter .49s;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .wax::before{
+  content:"";position:absolute;inset:5px;border-radius:48%;
+  border:1.5px solid rgba(249,204,140,.75);
+  box-shadow:inset 0 0 0 2px rgba(91,49,22,.19),0 0 0 1px rgba(99,49,18,.35);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .wax::after{
+  content:"";position:absolute;inset:-3px;border-radius:43% 49% 46% 52%;
+  border:1px solid rgba(255,223,160,.34);pointer-events:none;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .wax>b{
+  position:relative;z-index:2;color:#e2a55a!important;font:normal 25px/1 Georgia,serif!important;
+  text-shadow:0 -1px 0 #5e301d,1px 2px 0 rgba(255,227,175,.62),0 0 8px rgba(255,219,161,.3);
+  transform:translateY(-1px);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .wax>i{
+  display:block;position:absolute;left:50%;top:10%;bottom:10%;width:2px;
+  transform:translateX(-50%) scaleY(0);
+  background:linear-gradient(transparent,#64351e,transparent);
+  opacity:.61;transition:transform .29s ease;
+}
+/* In the closed state the note is tucked behind the front fold. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper{
+  position:absolute!important;z-index:3;inset:auto!important;
+  left:7%!important;right:7%!important;bottom:10px!important;
+  width:86%!important;height:clamp(312px,40vw,385px)!important;
+  padding:clamp(21px,3vw,34px)!important;
+  display:flex!important;flex-direction:column;align-items:stretch!important;gap:11px;
+  border:1px solid rgba(144,99,63,.14);border-radius:2px!important;
+  background:
+    radial-gradient(ellipse at 12% 4%,rgba(255,255,255,.72),transparent 48%),
+    repeating-linear-gradient(94deg,rgba(124,79,42,.018) 0 1px,transparent 1px 5px),
+    linear-gradient(156deg,#fff6e8,#f3e4ce 57%,#dabb9a)!important;
+  color:#48372b!important;
+  box-shadow:0 13px 28px rgba(54,29,21,.19),inset 0 1px rgba(255,255,240,.69)!important;
+  opacity:0!important;visibility:hidden!important;
+  overflow:hidden!important;pointer-events:none;
+  transform:translateY(118px) scale(.96)!important;
+  transform-origin:50% 100%;
+  transition:transform 1.04s .32s cubic-bezier(.16,.78,.2,1),opacity .31s .3s,visibility 0s .29s,filter .7s;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper>small{
+  color:#866a52!important;font:500 12px/1.25 Arial,sans-serif!important;
+  text-align:left;margin:0 0 4px!important;letter-spacing:.04em;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper>small::after{
+  content:"";display:block;width:45px;height:1px;background:#ad8a69;opacity:.6;margin-top:13px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper>strong{
+  color:#46372e!important;
+  font:400 clamp(16px,2.25vw,20px)/1.46 var(--thi-serif,Georgia,serif)!important;
+  text-align:left;letter-spacing:-.012em;
+  margin:7px 0 10px!important;overflow-y:auto!important;max-height:100%;
+  scrollbar-width:thin;scrollbar-color:#ae987d transparent;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper>em{
+  margin-top:auto!important;color:#916444!important;
+  font:italic 400 clamp(17px,2.8vw,23px)/1.25 var(--thi-serif,Georgia,serif)!important;
+  text-align:left;
+}
+/* 1. seal releases  2. flap folds back  3. note glides out */
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium.is-open>.thi-kicker,
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium.is-open>h2{
+  opacity:.12;transform:translateY(-14px);filter:blur(1px);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open{
+  margin-top:clamp(61px,8svh,94px)!important;
+  transform:translateY(13px);filter:drop-shadow(0 28px 50px rgba(0,0,0,.42));
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .wax{
+  transform:translate(-50%,-50%) rotate(13deg) scale(.72)!important;
+  opacity:0!important;filter:blur(1px);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .wax>i{
+  transform:translateX(-50%) rotate(8deg) scaleY(1);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .flap{
+  transform:rotateX(-177deg)!important;z-index:1;filter:brightness(.92);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .paper{
+  z-index:6;opacity:1!important;visibility:visible!important;pointer-events:auto;
+  transform:translateY(-124px) rotate(-.2deg) scale(1)!important;
+  box-shadow:0 28px 54px rgba(32,17,14,.27),0 0 60px rgba(250,210,161,.12);
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .paper>*{
+  visibility:visible!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-hint{
+  position:relative;z-index:8;margin:18px 0 0!important;
+  color:#e0b487!important;font:400 14px/1.5 var(--thi-serif,Georgia,serif)!important;
+  letter-spacing:.03em;text-align:center;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-letter-continue{
+  position:relative;z-index:9;display:flex;align-items:center;justify-content:center;gap:13px;
+  margin:clamp(27px,4svh,43px) auto 0!important;
+  min-height:50px;padding:12px 26px;
+  width:min(325px,100%);border-radius:999px!important;
+  background:linear-gradient(110deg,#f9e3be,#e2b47e 65%,#f1d1a4)!important;
+  border:1px solid #f7dcad!important;color:#3d2a20!important;
+  box-shadow:0 12px 24px rgba(2,1,7,.32),inset 0 1px rgba(255,248,229,.8)!important;
+  font:600 16px/1.2 var(--thi-serif,Georgia,serif)!important;
+  cursor:pointer;opacity:1;transform:none;animation:none;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-letter-continue:focus-visible{
+  outline:2px solid #fff1cf;outline-offset:5px;
+}
+@media(max-width:650px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter.thi-birthday-letter-premium{
+    padding:clamp(118px,14svh,140px) 12px 100px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-kicker{
+    font-size:10px!important;margin-bottom:13px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>h2{
+    font-size:clamp(36px,9.1vw,46px)!important;line-height:1.07!important;
+    max-width:390px!important;margin-bottom:15px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope{
+    width:min(90vw,425px)!important;
+    height:clamp(240px,63vw,275px)!important;
+    margin-top:clamp(19px,3svh,26px)!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .wax{
+    top:65%!important;width:57px!important;height:57px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .flap::after{
+    background-position:98% -13px;background-size:54% auto;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper{
+    height:clamp(305px,92vw,360px)!important;
+    padding:25px 20px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope .paper>strong{
+    font-size:clamp(15px,4.05vw,19px)!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open{
+    margin-top:59px!important;transform:translateY(8px);
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .paper{
+    transform:translateY(-109px) rotate(-.2deg)!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-letter-continue{
+    min-height:49px;margin-top:26px!important;
+  }
+}
+@media(max-width:380px) and (max-height:760px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter.thi-birthday-letter-premium{
+    padding-top:105px!important;padding-bottom:91px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>h2{
+    font-size:35px!important;margin-bottom:10px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope{
+    height:236px!important;margin-top:10px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .paper{
+    transform:translateY(-102px)!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope *,
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>h2,
+  .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium>.thi-kicker{
+    transition-duration:.01ms!important;transition-delay:0s!important;
+  }
+}
