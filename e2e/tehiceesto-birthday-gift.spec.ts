@@ -32,6 +32,12 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 960 
     await expect(gift.locator(".couple-gift-opening")).toContainText("cuánto significás para nosotros");
     await expect(gift.locator(".couple-gift-continue")).toBeEnabled();
     await page.waitForTimeout(700);
+    const ctaBox=await gift.locator(".couple-gift-continue").boundingBox();
+    expect(ctaBox).not.toBeNull();
+    expect(ctaBox!.height).toBeGreaterThanOrEqual(63);
+    expect(ctaBox!.width).toBeGreaterThanOrEqual(viewport.width<=650 ? viewport.width*.78 : 385);
+    expect(ctaBox!.x).toBeGreaterThanOrEqual(12);
+    expect(ctaBox!.x+ctaBox!.width).toBeLessThanOrEqual(viewport.width-12);
 
     const space = await gift.evaluate(el => {
       const name = el.querySelector(".couple-gift-reveal h1")!.getBoundingClientRect();
