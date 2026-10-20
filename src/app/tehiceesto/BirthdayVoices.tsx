@@ -1,5 +1,5 @@
 "use client";
-import {useRef,useState,type CSSProperties} from "react";
+import {useEffect,useRef,useState,type CSSProperties} from "react";
 import "./BirthdayVoicesPremium.css";
 
 type Voice={name:string;message:string;url?:string};
@@ -15,6 +15,16 @@ export default function BirthdayVoices({voices,heard,status,onHeard,onToggle,onS
   const [durations,setDurations]=useState<Record<number,number>>({});
   const [audioError,setAudioError]=useState<number|null>(null);
   const players=useRef<(HTMLAudioElement|null)[]>([]);
+  // Transitions from the tall lantern chapter can retain scroll position,
+  // hiding this chapter's heading behind the browser toolbar.
+  useEffect(()=>{
+    if(typeof window==="undefined")return;
+    const reset=()=>window.scrollTo({top:0,left:0,behavior:"instant"});
+    const frame=window.requestAnimationFrame(()=>window.requestAnimationFrame(reset));
+    const settle=window.setTimeout(reset,440);
+    return ()=>{window.cancelAnimationFrame(frame);window.clearTimeout(settle)};
+  },[]);
+
   const playing=selected!==null&&Boolean(voices[selected]?.url)?realPlaying:selected!==null&&status==="playing";
 
   const toggle=(i:number)=>{
@@ -103,11 +113,15 @@ export default function BirthdayVoices({voices,heard,status,onHeard,onToggle,onS
       <span>{playing?"REPRODUCIENDO GRABACIÓN":audioError===selected?"NO SE PUDO REPRODUCIR":"PODÉS VOLVER A ESCUCHAR"}</span>
       <button data-action="birthday-voice-toggle" type="button" onClick={()=>toggle(selected!)}>{playing?"Ⅱ Pausar":"▶ Reproducir"}</button>
     </div>}
+
     <div className="thi-bday-voice-footer">
-      {heard.length>0&&<button type="button" data-action="advance" className="thi-bday-voice-next" onClick={()=>{
+      <p className="thi-bday-voice-footer-hint">{heard.length>0
+        ?"Este momento queda guardado. ¿Seguimos?"
+        :"Escuchá las voces a tu ritmo, o seguí cuando quieras."}</p>
+      <button type="button" data-action="advance" className="thi-bday-voice-next" onClick={()=>{
         players.current.forEach(player=>player?.pause());onStop();onNext();
-      }}>{cta} <span aria-hidden="true">→</span></button>}
-      <a className="thi-bday-voice-inline-cta" href="../crear?experiencia=cumpleanos"><span aria-hidden="true">♥</span> Quiero el mío</a>
+      }}><span>{cta.replace(/\\s*[→➜]\\s*$/,"")}</span><span aria-hidden="true">→</span></button>
+      <a className="thi-bday-voice-inline-cta" href="/tehiceesto/crear?experiencia=cumpleanos"><span aria-hidden="true">♥</span> Quiero el mío</a>
     </div>
   </div>;
 }
