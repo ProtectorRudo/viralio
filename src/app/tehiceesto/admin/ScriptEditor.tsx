@@ -9,7 +9,7 @@ type FieldDef={path:string;label:string;kind:FieldKind;hint?:string};
 
 const sceneNames:Record<SceneType,string>={
   intro:"Entrada",door:"Puerta",memories:"Recuerdos",light:"Luz",stars:"Estrellas",everyday:"Un día cualquiera",
-  scratch:"Raspadita",hold:"Mantener",letter:"Carta",candles:"Velitas",balloons:"Globos",
+  scratch:"Raspadita",hold:"Mantener",hugs:"Abrazos",letter:"Carta",candles:"Velitas",balloons:"Globos",
   timeline:"Línea de tiempo",voices:"Audio / voces",quiz:"Pregunta",vault:"Bóveda",
   capsule:"Cápsula",video:"Video",proposal:"Propuesta",finale:"Final",
   archive:"Archivo familiar",home:"La casa",legacy:"Legado",rituals:"Rituales",
@@ -31,6 +31,7 @@ const sceneDescriptions:Partial<Record<SceneType,string>>={
   everyday:"Una habitación íntima: las tres frases aparecen al tocar las tazas, la ventana y el portarretrato.",
   scratch:"Una sorpresa concreta: plan, promesa, cupón o próximo recuerdo.",
   hold:"El segundo de pausa antes de una revelación emocional.",
+  hugs:"Un abrazo colectivo de luz que crece y revela mensajes personales antes de la carta.",
   letter:"La parte más íntima del recorrido.",
   candles:"El ritual de cumpleaños: deseo, instrucción y confirmación.",
   balloons:"Mensajes cortos que aparecen uno a uno.",
@@ -115,6 +116,17 @@ const fields:Partial<Record<SceneType,FieldDef[]>>={
     {path:"hold.symbol",label:"Símbolo",kind:"text"},
     {path:"hold.reveal",label:"Frase que aparece al completar",kind:"textarea"},
     {path:"hold.cta",label:"Botón para continuar",kind:"text"},
+  ],
+  hugs:[
+    {path:"hugs.kicker",label:"Frase superior",kind:"text"},
+    {path:"hugs.title",label:"Título principal",kind:"text"},
+    {path:"hugs.subtitle",label:"Subtítulo",kind:"textarea"},
+    {path:"hugs.callouts",label:"Cinco dedicatorias breves",kind:"lines",hint:"Una dedicatoria por renglón; permite adaptar los abrazos a familia y amigos."},
+    {path:"hugs.closing",label:"Texto antes de completar",kind:"textarea"},
+    {path:"hugs.finale",label:"Dedicatoria después del abrazo colectivo",kind:"textarea"},
+    {path:"hugs.readyLabel",label:"Botón para el primer abrazo",kind:"text"},
+    {path:"hugs.moreLabel",label:"Botón para recibir más",kind:"text"},
+    {path:"hugs.cta",label:"Botón para abrir la carta",kind:"text"},
   ],
   letter:[
     {path:"letter.kicker",label:"Frase superior",kind:"text"},
