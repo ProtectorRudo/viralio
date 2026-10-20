@@ -26,6 +26,7 @@ import BirthdayVoices from "./BirthdayVoices";
 import LightReveal from "./LightReveal";
 import ChildLightQuest from "./ChildLightQuest";
 import HoldReveal from "./HoldReveal";
+import BirthdayWishOrb from "./BirthdayWishOrb";
 import PairEverydayScene from "./PairEverydayScene";
 import { getExperienceCopy,type DeepPartial,type ExperienceCopy } from "./experienceCopy";
 import { mediaBelongsToScene } from "./mediaRouting";
@@ -499,7 +500,21 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
         onContinue={next}
       />;
       case"scratch":return <section className="thi-scene thi-scene-scratch thi-scene-rich"><p className="thi-kicker">{token(copy.scratch.kicker)}</p><h2>{titleLines(copy.scratch.title)}</h2><ScratchReveal accent={experience.accent} themeSlug={experience.slug} eyebrow={token(copy.scratch.eyebrow)} reward={token(copy.scratch.reward)} note={token(copy.scratch.note)} coverTitle={token(copy.scratch.coverTitle)} coverHint={token(copy.scratch.coverHint)} fallbackLabel={token(copy.scratch.fallbackLabel)} revealed={scratched} onReveal={()=>{setScratched(true);haptic([8,20,8]);playFx("chime")}}/><button data-action="advance" className="thi-primary" disabled={!scratched} onClick={next}>{token(copy.scratch.cta)}</button></section>;
-      case"hold":return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"||experience.slug==="cumpleanos"} heartbeat={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);if(experience.slug!=="pareja")playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
+      case"hold":
+        if(experience.slug==="cumpleanos")return <BirthdayWishOrb
+          kicker={token(copy.hold.kicker)}
+          title={token(copy.hold.title[0])}
+          subtitle={token(copy.hold.title[1]||"")}
+          prompt={token(copy.hold.prompt)}
+          instruction={token(copy.hold.instruction)}
+          reveal={token(copy.hold.reveal)}
+          signature={token(copy.hold.signature||"Con todo nuestro cariño ♡")}
+          cta={token(copy.hold.cta)}
+          revealed={holdRevealed}
+          onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);playFx("seal")}}
+          onContinue={next}
+        />;
+        return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"||experience.slug==="cumpleanos"} heartbeat={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);if(experience.slug!=="pareja")playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
       case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"||experience.slug==="cumpleanos"?"thi-pair-letter":""} ${experience.slug==="mama"||experience.slug==="amistad"?"thi-mama-letter":""} ${experience.slug==="amistad"?"thi-friend-letter-premium":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
         <div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
         <p className="thi-kicker">{token(copy.letter.kicker)}</p>
