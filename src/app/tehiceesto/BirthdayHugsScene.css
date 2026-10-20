@@ -309,3 +309,25 @@
    transition:none!important;
  }
 }
+
+
+/* Compact-phone finale: after the hundredth hug the dedicatory letter is
+   the hero. Retract the introduction rather than letting it slide beneath
+   the persistent back navigation when the final CTA comes into view. */
+@media(max-width:375px) and (max-height:760px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs.is-complete{
+    padding-top:103px!important;
+    padding-bottom:86px!important;
+    justify-content:flex-start!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs.is-complete .thi-bday-hugs-heading{
+    display:none!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs.is-complete .thi-bday-hugs-theatre{
+    height:270px!important;
+    margin:0 auto!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs.is-complete .thi-bday-hugs-finale{
+    gap:5px!important;
+  }
+}
