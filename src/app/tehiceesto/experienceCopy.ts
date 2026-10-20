@@ -28,7 +28,7 @@ export type ExperienceCopy = {
   stars: { kicker:string; title:string[]; items:string[]; hiddenLabel:string; completeLabel:string; remainingOne:string; remainingMany:string; cta:string };
   everyday: { kicker:string; title:string; hint:string; moments:string[]; closing:string; cta:string };
   scratch: { kicker:string; title:string[]; eyebrow:string; reward:string; note:string; coverTitle:string; coverHint:string; fallbackLabel:string; cta:string };
-  hold: { kicker:string; title:string[]; prompt:string; reveal:string; instruction:string; cta:string; symbol:string };
+  hold: { kicker:string; title:string[]; prompt:string; reveal:string; instruction:string; cta:string; symbol:string; signature?:string };
   letter: { kicker:string; title:string[]; body:string; recipientLabel:string; signature:string; sealHint:string; cta:string };
   candles: { kicker:string; title:string[]; micIdle:string; micActive:string; tapFallback:string; tapUnavailable:string; wishLabel:string; cta:string };
   balloons: { kicker:string; title:string[]; items:string[]; remainingOne:string; remainingMany:string; cta:string; popLabel:string };
@@ -169,7 +169,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     memories:{kicker:"Pruebas de que ya vivimos bastante",title:["Fotos que explican","por qué te queremos."],cta:"Guardar estos recuerdos →"},
     light:{kicker:"Otra vuelta al sol",title:"Hay recuerdos que se descubren despacio.",secret:"No son solamente los años. Es todo lo lindo que vivimos con vos.",clues:["Esa vez que terminamos riéndonos hasta que nos dolía la panza.","Los días comunes que se convirtieron en nuestros mejores recuerdos.","Y todo eso que hacés por los demás sin darte cuenta."],hint:"Deslizá para buscar tres recuerdos",revealedLabel:"los tres recuerdos son tuyos ✦",cta:"Llevarme estos recuerdos →"},
     voices:{kicker:"Tu gente tenía cosas para decir",title:["Elegí una voz.","Después otra."],playLabel:"Escuchar mensaje",playingLabel:"mensaje abierto",cta:"Continuar con la sorpresa →"},
-    hold:{kicker:"Un deseo que no entra en una vela",title:["Ahora nos toca a nosotros.","Pedimos algo para vos."],prompt:"Mantené esta luz",reveal:"Que siempre tengas motivos para reírte así. Y que podamos estar cerca para verlo.",instruction:"mantené apretado hasta iluminarlo",cta:"Me lo guardo →"},
+    hold:{kicker:"Un deseo para vos",title:["Ahora nos toca a nosotros.","Hay algo que queremos desearte."],prompt:"Mantené presionada esta luz",reveal:"Que siempre tengas motivos para reírte así. Y que podamos estar cerca para verlo.",instruction:"Mantené tu dedo sobre la esfera para descubrirlo",signature:"Con todo nuestro cariño ♡",cta:"Guardar este deseo y continuar →"},
     letter:{kicker:"La parte sin chistes",title:["Hay cosas que merecen","escribirse con calma."],sealHint:"Tocá el sello",cta:"Me llevo esta carta →"},
     finale:{kicker:"Feliz vuelta al sol",lead:"Que el próximo año traiga historias que todavía no sabemos contar.",restartLabel:"Volver a festejar",fromLabel:"Con cariño, mamá, Nati, Fran y todos los que te queremos."},
   },
