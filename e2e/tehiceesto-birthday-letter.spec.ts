@@ -28,6 +28,11 @@ async function reachLetter(page:Page){
   await page.locator('[data-action="hold-accessible"]').click();
   await expect(page.locator('[data-wish-revealed="true"]')).toBeVisible();
   await page.locator(".thi-wish-orb-continue").click();
+  await expect(stage).toHaveAttribute("data-scene","hugs");
+  await page.locator('[data-action="receive-hugs"]').click();
+  await page.locator('[data-action="finish-hugs"]').click();
+  await expect(page.locator('[data-hugs-complete="true"]')).toBeVisible();
+  await page.locator(".thi-bday-hugs-continue").click();
   await expect(stage).toHaveAttribute("data-scene","letter");
   await page.waitForTimeout(850);
 }
