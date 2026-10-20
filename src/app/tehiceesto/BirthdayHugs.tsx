@@ -47,7 +47,6 @@ export default function BirthdayHugs({
   const [phase,setPhase]=useState<Phase>("waiting");
   const [count,setCount]=useState(0);
   const [activeNote,setActiveNote]=useState(0);
-  const [softMotion,setSoftMotion]=useState(false);
   const raf=useRef<number|null>(null);
   const begun=useRef<number|null>(null);
   const lastTick=useRef(-1);
@@ -101,22 +100,16 @@ export default function BirthdayHugs({
     if(phaseRef.current==="complete")return;
     complete();
   };
-  useEffect(()=>{
-    const media=window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update=()=>setSoftMotion(media.matches);update();
-    media.addEventListener?.("change",update);
-    return ()=>{
-      media.removeEventListener?.("change",update);
-      if(raf.current!==null)cancelAnimationFrame(raf.current);
-      if(completionTimer.current!==null)window.clearTimeout(completionTimer.current);
-    };
+  useEffect(()=>()=>{
+    if(raf.current!==null)cancelAnimationFrame(raf.current);
+    if(completionTimer.current!==null)window.clearTimeout(completionTimer.current);
   },[]);
 
   const active=phase==="pouring"||phase==="final-hug";
   const completed=phase==="complete";
   const visualCount=Math.min(TOTAL,count);
   const uniqueNote=spoken[Math.min(activeNote,spoken.length-1)];
-  return <section className={`thi-scene thi-scene-rich thi-bday-hugs ${active?"is-running":""} ${phase==="final-hug"?"is-climax":""} ${completed?"is-complete":""} ${softMotion?"is-reduced":""}`}
+  return <section className={`thi-scene thi-scene-rich thi-bday-hugs ${active?"is-running":""} ${phase==="final-hug"?"is-climax":""} ${completed?"is-complete":""}`}
     aria-label="Un abrazo de todos para vos" data-hugs-phase={phase}>
     <header className="thi-bday-hugs-header">
       <p className="thi-kicker">{kicker}</p>
