@@ -50,6 +50,17 @@ for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     expect(b!.y).toBeGreaterThan(a!.y+a!.height-4);
     await expect(scene.locator(".thi-bday-voice-waveform")).toHaveCount(4);
     await expect(scene.locator(".thi-bday-voice-waveform i")).toHaveCount(152);
+    const nextReady=scene.locator('[data-action="advance"]');
+    await expect(nextReady).toBeVisible();
+    await expect(nextReady).toBeEnabled();
+    await expect(nextReady).toContainText("Continuar con la sorpresa");
+    await page.waitForTimeout(650);
+    const header=await scene.locator("h2").boundingBox();
+    expect(header).not.toBeNull();
+    expect(header!.y).toBeGreaterThanOrEqual(80);
+    const firstCard=await cards.nth(0).boundingBox();
+    expect(firstCard!.y).toBeGreaterThan(header!.y+header!.height);
+
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(3);
     if(width<=650){
@@ -89,9 +100,22 @@ test("voice cards keep reduced-motion preference and do not invent audio duratio
   await page.emulateMedia({reducedMotion:"reduce"});
   await goToBirthdayVoices(page);
   const scene=page.locator(".thi-bday-voice-scene");
-  await expect(scene.locator(".thi-bday-voice-time").first()).toContainText("Dedicatoria");
+  await expect(scene.locator(".thi-bday-voice-meta small").first()).toContainText("MENSAJE 01");
   await scene.locator('[data-action="birthday-voice"]').first().click();
   const wave=scene.locator(".thi-bday-voice-waveform i").first();
   expect(await wave.evaluate(el=>getComputedStyle(el).animationName)).toBe("none");
   await expect(scene.locator(".thi-bday-voice-player")).toBeVisible();
+});
+
+test("birthday voices always have a visible functional continue button, even before listening",async({page})=>{
+  test.setTimeout(110000);
+  await page.setViewportSize({width:390,height:844});
+  await goToBirthdayVoices(page);
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","voices");
+  const next=page.locator(".thi-bday-voice-next");
+  await expect(next).toBeVisible();
+  await expect(next).toBeEnabled();
+  await expect(next).toContainText("Continuar con la sorpresa");
+  await next.click();
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hold");
 });
