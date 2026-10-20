@@ -27,6 +27,7 @@ import LightReveal from "./LightReveal";
 import ChildLightQuest from "./ChildLightQuest";
 import HoldReveal from "./HoldReveal";
 import BirthdayWishOrb from "./BirthdayWishOrb";
+import "./BirthdayLetterPremium.css";
 import PairEverydayScene from "./PairEverydayScene";
 import { getExperienceCopy,type DeepPartial,type ExperienceCopy } from "./experienceCopy";
 import { mediaBelongsToScene } from "./mediaRouting";
@@ -515,7 +516,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           onContinue={next}
         />;
         return <section className="thi-scene thi-scene-hold thi-scene-rich"><p className="thi-kicker">{token(copy.hold.kicker)}</p><h2>{titleLines(copy.hold.title)}</h2><HoldReveal accent={experience.accent} symbol={token(copy.hold.symbol)} prompt={token(copy.hold.prompt)} reveal={token(copy.hold.reveal)} instruction={token(copy.hold.instruction)} revealed={holdRevealed} cinematic={experience.slug==="pareja"||experience.slug==="cumpleanos"} heartbeat={experience.slug==="pareja"} onReveal={()=>{setHoldRevealed(true);haptic([18,45,18,45,28]);if(experience.slug!=="pareja")playFx("seal")}}/>{holdRevealed&&<button data-action="advance" className="thi-primary" onClick={next}>{token(copy.hold.cta)}</button>}</section>;
-      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"||experience.slug==="cumpleanos"?"thi-pair-letter":""} ${experience.slug==="mama"||experience.slug==="amistad"?"thi-mama-letter":""} ${experience.slug==="amistad"?"thi-friend-letter-premium":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
+      case"letter":return <section className={`thi-scene thi-scene-letter thi-scene-rich ${experience.slug==="pareja"||experience.slug==="cumpleanos"?"thi-pair-letter":""} ${experience.slug==="cumpleanos"?"thi-birthday-letter-premium":""} ${experience.slug==="mama"||experience.slug==="amistad"?"thi-mama-letter":""} ${experience.slug==="amistad"?"thi-friend-letter-premium":""} ${experience.slug==="papa"?"thi-papa-letter":""} ${letterOpen?"is-open":""}`}>
         <div className="thi-pair-letter-atmosphere" aria-hidden="true"><i/><i/><i/><i/><b/><b/></div>
         <p className="thi-kicker">{token(copy.letter.kicker)}</p>
         <h2>{titleLines(copy.letter.title)}</h2>
@@ -566,7 +567,7 @@ export default function ExperienceEngine({experience,letterText,photoMedia,audio
           <p>{copyOverride?.letter?.body?token(String(copyOverride.letter.body)):letterText||token(copy.letter.body)}</p>
           <em>{token(copy.letter.signature)}</em>
         </article>}
-        {!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":experience.slug==="mama"?"Deslizá para abrir":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}
+        {!letterOpen?<p className="thi-hint">{experience.slug==="pareja"?"Tocá el sello":experience.slug==="mama"?"Deslizá para abrir":token(copy.letter.sealHint)}</p>:<button data-action="advance" className={experience.slug==="pareja"||experience.slug==="cumpleanos"?"thi-letter-continue":"thi-primary"} onClick={next}>{experience.slug==="pareja"?"Continuar →":token(copy.letter.cta)}</button>}
       </section>;
       case"candles":
         if(experience.slug==="cumpleanos")return <BirthdayWishScene
