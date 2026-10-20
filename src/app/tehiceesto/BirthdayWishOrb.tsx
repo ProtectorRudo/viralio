@@ -27,7 +27,7 @@ export default function BirthdayWishOrb({
   const lastRef=useRef<number|null>(null);
   const rafRef=useRef<number|null>(null);
   const revealRef=useRef(onReveal);
-  revealRef.current=onReveal;
+  useEffect(()=>{revealRef.current=onReveal},[onReveal]);
 
   const complete=useCallback(()=>{
     if(doneRef.current)return;
@@ -37,7 +37,7 @@ export default function BirthdayWishOrb({
     revealRef.current();
   },[]);
 
-  const tick=useCallback((now:number)=>{
+  const tick=useCallback(function animateFrame(now:number){
     const dt=Math.min(80,lastRef.current===null?0:now-lastRef.current);
     lastRef.current=now;
     if(doneRef.current){rafRef.current=null;return}
@@ -48,7 +48,7 @@ export default function BirthdayWishOrb({
     if(next>=1){complete();rafRef.current=null;return}
     if(pressedRef.current)setPhase(next>.83?"nearly":next>.43?"glowing":"warming");
     else if(next===0)setPhase("idle");
-    if(pressedRef.current||next>0)rafRef.current=requestAnimationFrame(tick);
+    if(pressedRef.current||next>0)rafRef.current=requestAnimationFrame(animateFrame);
     else{rafRef.current=null;lastRef.current=null}
   },[complete]);
 
@@ -90,7 +90,7 @@ export default function BirthdayWishOrb({
     event.preventDefault();stop();
   };
 
-  const completed=revealed||doneRef.current;
+  const completed=revealed||phase==="revealed";
   const lines=reveal.trim().split(/(?<=[.!?])\s+/).filter(Boolean);
   return <section className={`thi-scene thi-scene-rich thi-birthday-wish-orb ${completed?"is-revealed":""} ${holding?"is-holding":""}`}
       style={{"--wish-charge":`${Math.round(charge*100)}%`,"--wish-energy":charge.toFixed(3)} as CSSProperties}>
