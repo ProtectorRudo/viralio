@@ -32,7 +32,7 @@ async function reachBirthdayWish(page:Page){
 }
 
 for(const [label,width,height] of [["mobile",390,844],["small-mobile",360,700],["desktop",1440,960]] as const){
-  test(`interactive crystal wish reaches emotional letter and next scene - ${label}`,async({page})=>{
+  test(`interactive crystal wish reaches collective hugs and next scene - ${label}`,async({page})=>{
     test.setTimeout(120000);
     await page.setViewportSize({width,height});
     const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
@@ -75,7 +75,7 @@ for(const [label,width,height] of [["mobile",390,844],["small-mobile",360,700],[
     const postOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
     expect(postOverflow).toBeLessThanOrEqual(3);
     await next.click();
-    await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
+    await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hugs");
     expect(errors).toEqual([]);
   });
 }
@@ -91,5 +91,5 @@ test("birthday glass wish respects reduced-motion and works with accessibility f
   await expect(page.locator('[data-wish-revealed="true"]')).toBeVisible();
   await expect(page.locator('[data-action="advance"]')).toBeVisible();
   await page.locator('.thi-wish-orb-continue').click();
-  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","letter");
+  await expect(page.locator("main.thi-experience")).toHaveAttribute("data-scene","hugs");
 });
