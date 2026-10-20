@@ -1,0 +1,125 @@
+/* TeHiceEsto · Cumpleaños · Atmósfera maestra (referencia: escena Globos).
+ *
+ * La iluminación del escenario pertenece a la EXPERIENCIA, no a cada capítulo.
+ * No tocar decoraciones internas (torta, linterna, globos, cristal, sobre, fotos).
+ * Aplicar exclusivamente a Cumpleaños; ningún otro modelo cambia.
+ */
+.thi-template-live.thi-theme-cumpleanos {
+  --cumpleanos-night:
+    radial-gradient(ellipse 92% 60% at 26% 14%,rgba(154,93,46,.38),transparent 76%),
+    radial-gradient(ellipse 86% 45% at 57% 42%,rgba(111,65,49,.15),transparent 78%),
+    radial-gradient(ellipse 72% 56% at 90% 92%,rgba(56,38,91,.26),transparent 80%),
+    linear-gradient(158deg,#211811 0%,#171013 40%,#110d13 67%,#090910 100%);
+  --cumpleanos-local-light:
+    radial-gradient(ellipse 60% 40% at 14% 14%,rgba(248,183,97,.08),transparent 77%),
+    radial-gradient(ellipse 58% 55% at 70% 72%,rgba(208,119,86,.05),transparent 80%);
+  --cumpleanos-starlight:
+    radial-gradient(circle at 12% 17%,rgba(249,219,177,.31) 0 1.15px,transparent 1.55px),
+    radial-gradient(circle at 74% 25%,rgba(255,235,211,.27) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 36% 63%,rgba(252,213,178,.20) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 87% 74%,rgba(247,217,183,.22) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 19% 88%,rgba(244,208,179,.19) 0 1px,transparent 1.5px);
+  background:var(--cumpleanos-night)!important;
+  background-color:#100c11!important;
+}
+
+/* These two fixed planes never remount during scene transitions.
+   Replacing their content per scene is the primary source of color jumps. */
+.thi-template-live.thi-theme-cumpleanos::before{
+  background:var(--cumpleanos-local-light)!important;
+  opacity:1!important;
+}
+.thi-template-live.thi-theme-cumpleanos::after{
+  background-image:
+    var(--cumpleanos-starlight),
+    repeating-linear-gradient(103deg,transparent 0 104px,rgba(233,173,100,.043) 105px,transparent 106px 192px)!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  opacity:.56!important;
+  animation:none!important;
+}
+
+/* Kill only the full-screen standalone backdrops, NOT scene effects.
+   In particular the flashlight surface must keep its own deep darkness. */
+.thi-template-live.thi-theme-cumpleanos:is(
+  [data-scene="candles"],
+  [data-scene="balloons"],
+  [data-scene="light"],
+  [data-scene="voices"],
+  [data-scene="hold"],
+  [data-scene="letter"],
+  [data-scene="memories"],
+  [data-scene="finale"],
+  [data-scene="intro"]
+){
+  background:var(--cumpleanos-night)!important;
+}
+
+/* The gift scene previously painted an opaque violet scene over the stage,
+   hiding the warm background on all mobile devices. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"]
+  .birthday-gift-wrap .couple-gift-intro{
+  background:transparent!important;
+  background-color:transparent!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"]
+  .birthday-gift-wrap .couple-gift-intro::before{
+  background:
+    radial-gradient(ellipse 42% 28% at 49% 56%,rgba(225,152,91,.15),transparent 86%)!important;
+  opacity:1!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"]
+  .birthday-gift-wrap .couple-gift-intro::after{
+  background:
+    radial-gradient(ellipse at 50% 52%,rgba(255,195,124,.055),transparent 69%)!important;
+  opacity:1!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"]
+  .birthday-gift-wrap .couple-gift-ambient.ambient-one{
+  background:#a36a40!important;
+  opacity:.18!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"]
+  .birthday-gift-wrap .couple-gift-ambient.ambient-two{
+  background:#ac704e!important;
+  opacity:.19!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="intro"]
+  .birthday-gift-wrap .couple-gift-ambient.ambient-three{
+  background:#775b60!important;
+  opacity:.10!important;
+}
+
+/* Preserve the editorial/finale layout but discard the black slab behind it. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="finale"]
+  .thi-bday-finale.thi-final{
+  background:transparent!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="memories"]
+  .thi-scene-memories{
+  background:transparent!important;
+}
+/* All interactive chapters inherit the same atmosphere. These are just
+   transparency guards: their bespoke lamps, reflections and props remain. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="candles"] .thi-birthday-wish,
+.thi-template-live.thi-theme-cumpleanos[data-scene="balloons"] .thi-bday-balloon-scene,
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene,
+.thi-template-live.thi-theme-cumpleanos[data-scene="hold"] .thi-birthday-wish-orb,
+.thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium,
+.thi-template-live.thi-theme-cumpleanos[data-scene="light"] .thi-bday-light-scene{
+  background-color:transparent!important;
+}
+/* The default bluish scene halo previously shifted chapter colors. */
+.thi-template-live.thi-theme-cumpleanos .thi-experience-orb.orb-a{
+  background:#ad7b45!important;
+  opacity:.15!important;
+}
+.thi-template-live.thi-theme-cumpleanos .thi-experience-orb.orb-b{
+  background:#56466f!important;
+  opacity:.11!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .thi-template-live.thi-theme-cumpleanos::after{
+    animation:none!important;
+  }
+}
