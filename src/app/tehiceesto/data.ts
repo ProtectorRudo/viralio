@@ -1,6 +1,6 @@
 export type SceneType =
   | "intro" | "door" | "memories" | "stars" | "scratch" | "letter"
-  | "finale" | "candles" | "balloons" | "timeline" | "voices" | "quiz"
+  | "finale" | "candles" | "balloons" | "timeline" | "voices" | "hugs" | "quiz"
   | "vault" | "capsule" | "proposal" | "video" | "light" | "hold" | "everyday"
   | "archive" | "home" | "legacy" | "rituals" | "chapters" | "future"
   | "origin" | "reasons" | "certainty" | "threshold"
@@ -103,7 +103,7 @@ export const experiences: Experience[] = [
     opening:"Hoy no queríamos mandarte solamente un mensaje. Queríamos hacerte un lugar.",
     closing:"Que este año te encuentre rodeada de todo lo que te hace bien.",
     tags:["Cumpleaños","Amigos","Familia"],
-    recipe:["intro","candles","balloons","memories","light","voices","hold","letter","finale"],
+    recipe:["intro","candles","balloons","memories","light","voices","hold","hugs","letter","finale"],
     demo:{
       balloons:["Te queremos","Hoy mandás vos","Una cena pendiente","Un abrazo gigante","Elegís el plan","Otra vuelta al sol"],
       memories:[
