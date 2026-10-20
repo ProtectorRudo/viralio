@@ -75,7 +75,7 @@ for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(3);
     if(width<=650){
-      await expect(scene.locator(".thi-bday-voice-inline-cta")).toBeVisible();
+      await expect(scene.locator(".thi-bday-voice-inline-cta")).toBeHidden();
       const globalCta=page.locator(".floating-whatsapp--experience");
       if(await globalCta.count())await expect(globalCta).toBeHidden();
     }
