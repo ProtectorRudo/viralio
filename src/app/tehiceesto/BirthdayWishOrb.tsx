@@ -38,7 +38,7 @@ export default function BirthdayWishOrb({
   },[]);
 
   const tick=useCallback(function animateFrame(now:number){
-    const dt=Math.min(80,lastRef.current===null?0:now-lastRef.current);
+    const dt=Math.max(0,lastRef.current===null?0:now-lastRef.current);
     lastRef.current=now;
     if(doneRef.current){rafRef.current=null;return}
     const prev=chargeRef.current;
