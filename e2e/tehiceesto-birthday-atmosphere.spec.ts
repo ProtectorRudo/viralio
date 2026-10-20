@@ -1,7 +1,7 @@
 import {expect,test,type Page} from "@playwright/test";
 import {mkdirSync} from "node:fs";
 
-const SCENES=["intro","candles","balloons","memories","light","voices","hold","letter","finale"] as const;
+const SCENES=["intro","candles","balloons","memories","light","voices","hold","hugs","letter","finale"] as const;
 type Backdrop={scene:string;root:string;ambient:string;stars:string;overflow:number;introFill?:string;finalFill?:string};
 
 async function snapshot(page:Page,mode:string,records:Backdrop[]){
@@ -42,7 +42,7 @@ async function enter(page:Page){
 }
 
 for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["desktop",1440,960]] as const){
-  test(`single amber/ink backdrop stays identical through all nine birthday scenes - ${mode}`,async({page})=>{
+  test(`single amber/ink backdrop stays identical through all ten birthday scenes - ${mode}`,async({page})=>{
     test.setTimeout(165_000);
     const errors:string[]=[];
     page.on("pageerror",e=>errors.push(e.message));
@@ -80,6 +80,12 @@ for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await page.locator('[data-action="hold-accessible"]').click();
     await expect(page.locator('[data-wish-revealed="true"]')).toBeVisible();
     await page.locator(".thi-wish-orb-continue").click();
+    await expect(main).toHaveAttribute("data-scene","hugs");
+    await snapshot(page,mode,records);
+    await page.locator('[data-action="receive-hugs"]').click();
+    await page.locator('[data-action="finish-hugs"]').click();
+    await expect(page.locator('[data-hugs-complete="true"]')).toBeVisible();
+    await page.locator(".thi-bday-hugs-continue").click();
     await expect(main).toHaveAttribute("data-scene","letter");
     await snapshot(page,mode,records);
     await page.locator('[data-action="open-letter"]').click();
