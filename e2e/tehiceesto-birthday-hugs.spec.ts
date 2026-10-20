@@ -48,8 +48,15 @@ for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     expect(titleBox!.y).toBeGreaterThanOrEqual(75);
 
     await expect(scene.locator(".thi-bday-hugs-ribbon")).toHaveCount(8);
-    await expect(scene.locator(".thi-bday-hugs-callout")).toHaveCount(5);
-    await expect(scene.locator(".thi-bday-hugs-center-badge")).toContainText("Para vos");
+    await expect(scene.locator(".thi-bday-hugs-callout")).toHaveCount(0);
+    await expect(scene.locator(".thi-bday-hugs-center-badge")).toContainText("PARA VOS");
+    const artBox=await scene.locator(".thi-bday-hugs-art").boundingBox();
+    expect(artBox).not.toBeNull();
+    expect(artBox!.x).toBeGreaterThanOrEqual(7);
+    expect(artBox!.x+artBox!.width).toBeLessThanOrEqual(width-7);
+    const kickerBox=await scene.locator(".thi-bday-hugs-heading .thi-kicker").boundingBox();
+    expect(kickerBox).not.toBeNull();
+    expect(kickerBox!.y).toBeGreaterThanOrEqual(105);
     await expect(page.locator('.thi-progress-next')).toBeDisabled();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(3);
     if(width<=650){
@@ -61,7 +68,7 @@ for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await page.locator('[data-action="receive-hugs"]').click();
     await expect(scene).toHaveClass(/is-receiving/);
     await expect(scene.locator(".thi-bday-hugs-progress")).toBeVisible();
-    await expect(scene.locator(".thi-bday-hugs-callout.appeared").first()).toBeVisible();
+    await expect(scene.locator(".thi-bday-hugs-closing")).toContainText("Este va con todo nuestro cariño");
     await page.waitForTimeout(1150);
     await page.screenshot({path:`birthday-hugs-evidence/${mode}-receiving.png`,fullPage:false});
     await page.locator('[data-action="receive-hugs"]').click();
@@ -70,6 +77,7 @@ for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await page.locator('[data-action="finish-hugs"]').click();
     await expect(scene).toHaveAttribute("data-hugs-complete","true");
     await expect(scene.locator(".thi-bday-hugs-finale")).toContainText("Ojalá pudiéramos estar ahí");
+    await expect(scene.locator(".thi-bday-hugs-center-badge>span")).toHaveText("100");
     await expect(scene.locator(".thi-bday-hugs-continue")).toContainText("Abrir nuestra carta");
     await expect(page.locator('.thi-progress-next')).toBeEnabled();
     await page.waitForTimeout(800);
