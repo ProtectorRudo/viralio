@@ -70,7 +70,7 @@ export default function BirthdayVoices({voices,heard,status,onHeard,onToggle,onS
             <div className="thi-bday-voice-person">
               <span className="thi-bday-voice-meta">
                 <small>MENSAJE {String(i+1).padStart(2,"0")}</small>
-                <span className="thi-bday-voice-time">{hasAudio?(duration>0?`${formatTime(active?elapsed:0)} / ${formatTime(duration)}`:"Audio personal"):"Dedicatoria"}</span>
+                <span className="thi-bday-voice-time">{hasAudio?(duration>0?`${formatTime(active?elapsed:0)} / ${formatTime(duration)}`:"Audio personal"):""}</span>
               </span>
               <strong>{v.name}</strong>
               <div className="thi-bday-voice-waveform" role="img" aria-label={hasAudio?"Visualización decorativa de la grabación":"Visualización decorativa de la voz"}>
@@ -120,7 +120,7 @@ export default function BirthdayVoices({voices,heard,status,onHeard,onToggle,onS
         :"Escuchá las voces a tu ritmo, o seguí cuando quieras."}</p>
       <button type="button" data-action="advance" className="thi-bday-voice-next" onClick={()=>{
         players.current.forEach(player=>player?.pause());onStop();onNext();
-      }}><span>{cta.replace(/\\s*[→➜]\\s*$/,"")}</span><span aria-hidden="true">→</span></button>
+      }}><span>{cta.replace(/\s*[→➜]\s*$/,"")}</span><span aria-hidden="true">→</span></button>
       <a className="thi-bday-voice-inline-cta" href="/tehiceesto/crear?experiencia=cumpleanos"><span aria-hidden="true">♥</span> Quiero el mío</a>
     </div>
   </div>;
