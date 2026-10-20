@@ -45,6 +45,15 @@ export default function BirthdayHugsScene({
   const completedCallback=useRef(onComplete);
   const pulseCallback=useRef(onBurst);
   useEffect(()=>{completedCallback.current=onComplete;pulseCallback.current=onBurst},[onComplete,onBurst]);
+  // A browser view transition may preserve the scroll of the tall wish chapter.
+  // Align the hug chapter at its own header when the scene mounts.
+  useEffect(()=>{
+    const reset=()=>window.scrollTo({top:0,left:0,behavior:"instant"});
+    const initial=window.requestAnimationFrame(reset);
+    const settled=window.setTimeout(reset,430);
+    return ()=>{window.cancelAnimationFrame(initial);window.clearTimeout(settled)};
+  },[]);
+
 
   const finish=useCallback(()=>{
     if(completedRef.current)return;
