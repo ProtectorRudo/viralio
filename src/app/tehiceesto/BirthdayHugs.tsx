@@ -8,7 +8,7 @@ type Props={
   recipient:string; kicker:string; title:string; subtitle:string; prompt:string;
   noteLabel:string; notes:string[]; finaleTitle:string; finaleBody:string;
   signature:string; nextLabel:string;
-  onContinue:()=>void;
+  onContinue:()=>void; onFinished:()=>void;
 };
 const DURATION=16000;
 const TOTAL=100;
@@ -42,7 +42,7 @@ function playSound(){
 }
 
 export default function BirthdayHugs({
-  recipient,kicker,title,subtitle,prompt,noteLabel,notes,finaleTitle,finaleBody,signature,nextLabel,onContinue
+  recipient,kicker,title,subtitle,prompt,noteLabel,notes,finaleTitle,finaleBody,signature,nextLabel,onContinue,onFinished
 }:Props){
   const [phase,setPhase]=useState<Phase>("waiting");
   const [count,setCount]=useState(0);
@@ -63,7 +63,8 @@ export default function BirthdayHugs({
     setCount(TOTAL);setActiveNote(Math.max(spoken.length-1,0));
     phaseRef.current="complete";setPhase("complete");
     safeVibrate([14,48,22]);
-  },[spoken.length]);
+    onFinished();
+  },[spoken.length,onFinished]);
 
   const grandFinale=useCallback(()=>{
     if(phaseRef.current!=="pouring")return;
