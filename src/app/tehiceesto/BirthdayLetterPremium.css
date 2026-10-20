@@ -300,3 +300,20 @@
     transition-duration:.01ms!important;transition-delay:0s!important;
   }
 }
+
+/* Visual QA 390×844 and 360×700:
+   The letter formerly climbed underneath the floating back control.
+   Set a safe paper stop while centering the unopened keepsake. */
+@media(max-width:650px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-scene-letter.thi-birthday-letter-premium{
+   justify-content:center!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .paper{
+   transform:translateY(-48px) rotate(-.2deg)!important;
+ }
+}
+@media(max-width:380px) and (max-height:760px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="letter"] .thi-birthday-letter-premium .thi-envelope.open .paper{
+   transform:translateY(-43px) rotate(-.2deg)!important;
+ }
+}
