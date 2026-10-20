@@ -18,7 +18,7 @@ export default function FloatingWhatsApp() {
     ()=>{
       if(!pathname.includes("/experiencias/cumpleanos"))return false;
       const stage=document.querySelector("main.thi-experience.thi-theme-cumpleanos")?.getAttribute("data-scene");
-      return window.matchMedia("(max-width: 650px)").matches&&(stage==="balloons"||stage==="voices"||stage==="hold");
+      return window.matchMedia("(max-width: 650px)").matches&&(stage==="balloons"||stage==="voices"||stage==="hold"||stage==="letter");
     },
     ()=>false
   );
