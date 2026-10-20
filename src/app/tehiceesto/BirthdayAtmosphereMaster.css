@@ -44,6 +44,7 @@
 .thi-template-live.thi-theme-cumpleanos:is(
   [data-scene="candles"],
   [data-scene="balloons"],
+  [data-scene="hugs"],
   [data-scene="light"],
   [data-scene="voices"],
   [data-scene="hold"],
