@@ -32,6 +32,7 @@ on:
       - "public/tehiceesto/birthday-letter-botanical.svg"
       - "src/app/tehiceesto/FloatingWhatsApp.tsx"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
+      - "src/app/tehiceesto/admin/ScriptEditor.tsx"
       - "src/app/tehiceesto/data.ts"
       - "src/app/tehiceesto/experienceCopy.ts"
       - "src/app/tehiceesto/CoupleGiftIntro.tsx"
