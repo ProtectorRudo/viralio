@@ -478,3 +478,26 @@
     width:38px!important;height:38px!important;
   }
 }
+
+
+/* Final small-screen spacing: keep the journey's Continue control safely
+   above the persistent chapter arrows instead of overlapping them. */
+@media(max-width:650px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-inner{
+    box-sizing:border-box!important;
+    min-height:77px!important;
+    padding:6px 12px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-waveform{
+    height:18px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-waveform i{
+    max-height:18px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-person strong{
+    font-size:18px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voices-grid{
+    gap:7px!important;
+  }
+}
