@@ -43,6 +43,10 @@ for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     const scene=page.locator(".thi-bday-hugs");
     await expect(page.locator(".thi-scene-meta")).toContainText("08 / 10");
     await expect(scene.locator("h2")).toContainText("Hay abrazos que querían llegar hasta vos");
+    const titleBox=await scene.locator("h2").boundingBox();
+    expect(titleBox).not.toBeNull();
+    expect(titleBox!.y).toBeGreaterThanOrEqual(75);
+
     await expect(scene.locator(".thi-bday-hugs-ribbon")).toHaveCount(8);
     await expect(scene.locator(".thi-bday-hugs-callout")).toHaveCount(5);
     await expect(scene.locator(".thi-bday-hugs-center-badge")).toContainText("Para vos");
