@@ -44,10 +44,14 @@ for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await expect(cards.nth(1)).toContainText("Nati");
     await expect(cards.nth(2)).toContainText("Fran");
     await expect(cards.nth(3)).toContainText("Los del grupo");
-    const a=await cards.nth(0).boundingBox();
-    const b=await cards.nth(1).boundingBox();
-    expect(a).not.toBeNull();expect(b).not.toBeNull();
-    expect(b!.y).toBeGreaterThan(a!.y+a!.height-4);
+    // Read both card rectangles in the same animation frame after the
+    // scene-entry transition. Separate readings mid-transition can appear
+    // to overlap even when the settled cards are correctly spaced.
+    await page.waitForTimeout(900);
+    const rects=await cards.evaluateAll(nodes=>nodes.slice(0,2).map(el=>el.getBoundingClientRect().toJSON()));
+    const [a,b]=rects;
+    expect(a).toBeTruthy();expect(b).toBeTruthy();
+    expect(b.y).toBeGreaterThan(a.y+a.height+2);
     await expect(scene.locator(".thi-bday-voice-waveform")).toHaveCount(4);
     await expect(scene.locator(".thi-bday-voice-waveform i")).toHaveCount(152);
     const nextReady=scene.locator('[data-action="advance"]');
