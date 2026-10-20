@@ -29,6 +29,7 @@ export type ExperienceCopy = {
   everyday: { kicker:string; title:string; hint:string; moments:string[]; closing:string; cta:string };
   scratch: { kicker:string; title:string[]; eyebrow:string; reward:string; note:string; coverTitle:string; coverHint:string; fallbackLabel:string; cta:string };
   hold: { kicker:string; title:string[]; prompt:string; reveal:string; instruction:string; cta:string; symbol:string; signature?:string };
+  hugs: { kicker:string; title:string; subtitle:string; callouts:string[]; closing:string; finale:string; readyLabel:string; moreLabel:string; cta:string };
   letter: { kicker:string; title:string[]; body:string; recipientLabel:string; signature:string; sealHint:string; cta:string };
   candles: { kicker:string; title:string[]; micIdle:string; micActive:string; tapFallback:string; tapUnavailable:string; wishLabel:string; cta:string };
   balloons: { kicker:string; title:string[]; items:string[]; remainingOne:string; remainingMany:string; cta:string; popLabel:string };
@@ -50,7 +51,7 @@ const BASE_COPY: ExperienceCopy = {
   ui:{
     sceneLabels:{
       intro:"Comienzo",door:"Puerta",puzzle:"Nuestro rompecabezas",memories:"Recuerdos",stars:"Estrellas",everyday:"Un día cualquiera",scratch:"Sorpresa",
-      letter:"Carta",finale:"Final",candles:"Deseo",balloons:"Mensajes",timeline:"Historia",
+      letter:"Carta",finale:"Final",candles:"Deseo",balloons:"Mensajes",timeline:"Historia",hugs:"Abrazos",
       voices:"Voz",quiz:"Pregunta",vault:"Bóveda",capsule:"Futuro",proposal:"La pregunta",
       video:"Video",light:"Instante",hold:"Promesa",
       archive:"Archivo",home:"La casa",legacy:"Legado",rituals:"Rituales",chapters:"Capítulos",future:"Lo que sigue",
@@ -83,6 +84,7 @@ const BASE_COPY: ExperienceCopy = {
   },
   scratch:{kicker:"Hay algo escondido",title:["Esto sí tenés que descubrirlo."],eyebrow:"Vale por",reward:"un recuerdo nuevo juntos",note:"sin vencimiento",coverTitle:"RASPÁ PARA DESCUBRIR",coverHint:"con el dedo o el mouse",fallbackLabel:"revelar sin raspar",cta:"Ya lo descubrí →"},
   hold:{kicker:"Antes de seguir",title:["Hay cosas que merecen","un segundo más."],prompt:"Mantené el símbolo",reveal:"Esto también quería decírtelo.",instruction:"mantené apretado",cta:"Seguir →",symbol:"♥"},
+  hugs:{kicker:"Todos los abrazos que tenemos para vos",title:"Hay abrazos que querían llegar hasta vos.",subtitle:"No hay distancia que les gane a las ganas de abrazarte.",callouts:["Este va con todo nuestro cariño.","Otro abrazo más.","Te mandamos todos los que faltan.","Un abrazo gigante para vos.","Que se multipliquen siempre."],closing:"De muchas personas, en muchos lugares, llegan hoy hasta vos. Abrazos reales, sinceros, inmensos.",finale:"Ojalá pudiéramos estar ahí para abrazarte todas las veces que te merecés. Mientras tanto, que nunca te falte el cariño de quienes te queremos.",readyLabel:"Recibir mi primer abrazo",moreLabel:"Recibir más abrazos",cta:"Abrir nuestra carta →"},
   letter:{kicker:"La parte que no podía entrar en una foto",title:["Hay palabras que merecen","abrirse despacio."],body:"Gracias por convertir tantos días comunes en recuerdos extraordinarios.",recipientLabel:"Para {recipient}",signature:"— {giver}",sealHint:"Rompé el sello",cta:"Guardar estas palabras →"},
   candles:{kicker:"Pedí un deseo",title:["Antes de seguir,","faltan las velitas."],micIdle:"Soplar de verdad",micActive:"Soplá ahora…",tapFallback:"o apagarlas tocando",tapUnavailable:"Apagar tocando",wishLabel:"✦ deseo guardado",cta:"Seguir →"},
   balloons:{kicker:"No todos los globos están vacíos",title:["Reventá tres."],items:[],remainingOne:"Falta 1",remainingMany:"Faltan {count}",cta:"Continuar →",popLabel:"POP"},
@@ -170,6 +172,7 @@ const DEMO_OVERRIDES: Record<string, DeepPartial<ExperienceCopy>> = {
     light:{kicker:"Otra vuelta al sol",title:"Hay recuerdos que se descubren despacio.",secret:"No son solamente los años. Es todo lo lindo que vivimos con vos.",clues:["Esa vez que terminamos riéndonos hasta que nos dolía la panza.","Los días comunes que se convirtieron en nuestros mejores recuerdos.","Y todo eso que hacés por los demás sin darte cuenta."],hint:"Deslizá para buscar tres recuerdos",revealedLabel:"los tres recuerdos son tuyos ✦",cta:"Llevarme estos recuerdos →"},
     voices:{kicker:"Tu gente tenía cosas para decir",title:["Elegí una voz.","Después otra."],playLabel:"Escuchar mensaje",playingLabel:"mensaje abierto",cta:"Continuar con la sorpresa →"},
     hold:{kicker:"Un deseo para vos",title:["Ahora nos toca a nosotros.","Hay algo que queremos desearte."],prompt:"Mantené presionada esta luz",reveal:"Que siempre tengas motivos para reírte así. Y que podamos estar cerca para verlo.",instruction:"Mantené tu dedo sobre la esfera para descubrirlo",signature:"Con todo nuestro cariño ♡",cta:"Guardar este deseo y continuar →"},
+    hugs:{kicker:"TODOS LOS ABRAZOS PARA VOS",title:"Hay abrazos que querían llegar hasta vos.",subtitle:"Desde muchos lugares, con todo nuestro cariño.",callouts:["Este va con todo nuestro cariño.","Otro abrazo más.","Te mandamos todos los que faltan.","Un abrazo gigante para vos.","Que se multipliquen siempre."],closing:"De muchas personas, en muchos lugares, llegan hoy hasta vos. Abrazos reales, sinceros, inmensos.",finale:"Ojalá pudiéramos estar ahí para abrazarte todas las veces que te merecés. Mientras tanto, que nunca te falte el cariño de quienes te queremos.",readyLabel:"Recibir mi primer abrazo",moreLabel:"Recibir más abrazos",cta:"Abrir nuestra carta →"},
     letter:{kicker:"La parte sin chistes",title:["Hay cosas que merecen","escribirse con calma."],sealHint:"Tocá el sello",cta:"Me llevo esta carta →"},
     finale:{kicker:"Feliz vuelta al sol",lead:"Que el próximo año traiga historias que todavía no sabemos contar.",restartLabel:"Volver a festejar",fromLabel:"Con cariño, mamá, Nati, Fran y todos los que te queremos."},
   },
