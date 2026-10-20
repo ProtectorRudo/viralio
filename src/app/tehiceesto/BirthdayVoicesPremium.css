@@ -501,3 +501,12 @@
     gap:7px!important;
   }
 }
+
+/* Keep marketing conversion out of the listening scene: the secondary link
+   fell across the persistent progress / arrows on compact browser viewports.
+   It returns automatically in the next chapter. */
+@media(max-width:650px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-inline-cta{
+    display:none!important;
+  }
+}
