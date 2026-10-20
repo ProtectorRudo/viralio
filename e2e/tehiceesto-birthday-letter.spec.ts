@@ -90,6 +90,16 @@ for(const [mode,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await expect(letter.locator("em")).not.toBeEmpty();
     await expect(scene.locator(".thi-letter-continue")).toBeVisible();
     await page.waitForTimeout(1150);
+    if(width<=650){
+      const paperBox=await letter.boundingBox();
+      const continueBox=await scene.locator(".thi-letter-continue").boundingBox();
+      expect(paperBox).not.toBeNull();
+      expect(continueBox).not.toBeNull();
+      // Never cross the upper back button / browser safe area.
+      expect(paperBox!.y).toBeGreaterThanOrEqual(109);
+      // Keep the continue control clear of the persistent progress bar.
+      expect(continueBox!.y+continueBox!.height).toBeLessThan(height-47);
+    }
     await page.screenshot({path:`birthday-letter-evidence/${mode}-opened.png`,fullPage:false});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(3);
     await scene.locator(".thi-letter-continue").click();
