@@ -54,6 +54,13 @@ for(const [name,width,height] of [["mobile",390,844],["small-mobile",360,700],["
     await expect(nextReady).toBeVisible();
     await expect(nextReady).toBeEnabled();
     await expect(nextReady).toContainText("Continuar con la sorpresa");
+    if(width===390){
+      // Persistent chapter arrows occupy the last ~65px of the viewport.
+      // The primary CTA must not sit underneath them.
+      const buttonBox=await nextReady.boundingBox();
+      expect(buttonBox).not.toBeNull();
+      expect(buttonBox!.y+buttonBox!.height).toBeLessThan(height-65);
+    }
     await page.waitForTimeout(650);
     const header=await scene.locator("h2").boundingBox();
     expect(header).not.toBeNull();
