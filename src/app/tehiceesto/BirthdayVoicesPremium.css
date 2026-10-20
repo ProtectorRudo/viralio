@@ -319,3 +319,162 @@
     animation:none!important;
   }
 }
+
+
+/* Cumpleaños / VOICES v2 · quiet refinement
+ * The previous layout pushed the editorial heading underneath mobile browser
+ * chrome on long scenes and let the sales CTA overpower the actual next step.
+ * Preserve the birthday's plum–amber language and prioritize the journey. */
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene{
+  scroll-margin-top:0;
+  justify-content:flex-start!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-footer{
+  width:100%;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center;
+  gap:10px!important;
+  margin-top:17px!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-footer-hint{
+  color:#d5b59f;
+  font:italic 400 clamp(13px,1.65vw,15px)/1.35 var(--thi-serif,Georgia,serif);
+  text-align:center;
+  margin:0 auto 0!important;
+  max-width:380px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-footer button.thi-bday-voice-next{
+  width:min(350px,100%)!important;min-height:54px!important;
+  background:linear-gradient(117deg,#eed4af,#e0b176 58%,#efcca0)!important;
+  border:1px solid rgba(255,227,177,.67)!important;
+  color:#35231e!important;
+  border-radius:999px!important;
+  font:600 15px/1.1 var(--thi-serif,Georgia,serif)!important;
+  box-shadow:0 13px 30px rgba(6,3,9,.35),inset 0 1px rgba(255,246,219,.72)!important;
+  padding:13px 22px!important;
+  display:flex;gap:20px;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-next>span:last-child{
+  font:normal 20px/1 Georgia,serif;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-next:focus-visible{
+  outline:2px solid #f7d5a7;outline-offset:4px;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-inline-cta{
+  margin:0 auto;
+  font-size:13px!important;min-height:37px!important;
+  padding:5px 14px!important;
+  border-color:rgba(210,155,127,.22)!important;
+  color:#dbc6bb!important;
+  background:rgba(26,18,29,.40)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-inline-cta>span{
+  width:22px!important;height:22px!important;font-size:12px!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-tile{
+  border-radius:17px!important;
+  border-color:rgba(211,153,135,.30)!important;
+  background:linear-gradient(130deg,rgba(73,42,53,.43),rgba(23,18,32,.86))!important;
+  box-shadow:0 12px 24px rgba(2,1,7,.23),inset 0 1px rgba(252,215,194,.055)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-tile.active{
+  border-color:rgba(246,191,150,.76)!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-meta small{
+  color:#d6a59a!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-time:empty{display:none}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-person strong{
+  font-family:var(--thi-serif,Georgia,serif)!important;
+  font-weight:400!important;
+  color:#f9eadf!important;
+}
+.thi-template-live.thi-theme-cumpleanos[data-scene="voices"] button.thi-bday-voice-action{
+  color:#edc294!important;border-color:rgba(231,189,147,.68)!important;
+  box-shadow:none!important;
+}
+@media (max-width:650px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene{
+    padding:clamp(133px,15svh,147px) 16px 105px!important;
+    width:100%!important;
+    min-height:100svh;
+    justify-content:flex-start!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene>.thi-kicker{
+    font-size:9px!important;
+    line-height:1.3!important;
+    margin:0 auto 10px!important;
+    letter-spacing:.20em!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene>h2{
+    font-size:clamp(36px,9.1vw,43px)!important;
+    line-height:1.06!important;
+    letter-spacing:-.045em!important;
+    max-width:370px!important;
+    margin:0 auto 3px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-ornament{
+    margin:6px auto 7px!important;
+    font-size:11px;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voices-intro{
+    max-width:345px!important;
+    font-size:14px!important;
+    line-height:1.38!important;
+    margin:0 auto 15px!important;
+    color:#e0c8bc!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voices-grid{
+    gap:8px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-inner{
+    min-height:87px!important;
+    padding:9px 12px!important;
+    grid-template-columns:41px minmax(0,1fr) 42px!important;
+    gap:11px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-icon{
+    width:41px!important;height:41px!important;
+    font-size:22px!important;
+    box-shadow:0 5px 13px rgba(0,0,0,.20)!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-person{
+    gap:3px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-person strong{
+    font-size:19px!important;
+    line-height:1.12!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-waveform{
+    height:23px!important;margin:0!important;
+    gap:2px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-waveform i{
+    max-width:3px!important;
+    transform:scaleY(.74);
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] button.thi-bday-voice-action{
+    width:41px!important;height:41px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-footer{
+    margin-top:14px!important;gap:10px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-footer button.thi-bday-voice-next{
+    width:min(330px,100%)!important;
+    min-height:51px!important;
+    font-size:16px!important;
+  }
+}
+@media (max-width:375px){
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-scene{
+    padding-top:130px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-inner{
+    grid-template-columns:38px minmax(0,1fr) 37px!important;gap:9px!important;
+  }
+  .thi-template-live.thi-theme-cumpleanos[data-scene="voices"] .thi-bday-voice-icon{
+    width:38px!important;height:38px!important;
+  }
+}
