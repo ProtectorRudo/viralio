@@ -28,6 +28,7 @@ import ChildLightQuest from "./ChildLightQuest";
 import HoldReveal from "./HoldReveal";
 import BirthdayWishOrb from "./BirthdayWishOrb";
 import "./BirthdayLetterPremium.css";
+import "./BirthdayAtmosphereMaster.css";
 import PairEverydayScene from "./PairEverydayScene";
 import { getExperienceCopy,type DeepPartial,type ExperienceCopy } from "./experienceCopy";
 import { mediaBelongsToScene } from "./mediaRouting";
