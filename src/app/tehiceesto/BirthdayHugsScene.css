@@ -331,3 +331,35 @@
     gap:5px!important;
   }
 }
+
+
+/* QA desktop 1440×960: stage artwork + title must fit without the
+   earlier tall-scene scroll pushing the heading behind browser chrome. */
+@media(min-width:651px){
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs{
+   justify-content:flex-start!important;
+   padding-top:clamp(104px,11svh,118px)!important;
+   padding-bottom:78px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-heading .thi-kicker{
+   margin-bottom:10px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-heading h2{
+   font-size:clamp(43px,4.5vw,57px)!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-subtitle{
+   margin-top:8px!important;font-size:18px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-theatre{
+   height:clamp(320px,30vw,408px)!important;margin-top:2px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-footer{
+   gap:8px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-finale-text{
+   font-size:20px!important;
+ }
+ .thi-template-live.thi-theme-cumpleanos[data-scene="hugs"] .thi-bday-hugs-continue{
+   min-height:54px!important;
+ }
+}
