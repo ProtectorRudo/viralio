@@ -9,6 +9,7 @@ on:
       - "e2e/tehiceesto-birthday-wish.spec.ts"
       - "e2e/tehiceesto-birthday-balloons.spec.ts"
       - "e2e/tehiceesto-birthday-voices.spec.ts"
+      - "e2e/tehiceesto-birthday-orb.spec.ts"
       - "playwright.birthday.config.ts"
       - "src/app/tehiceesto/BirthdayGiftIntro.tsx"
       - "src/app/tehiceesto/BirthdayGiftIntro.css"
@@ -19,6 +20,8 @@ on:
       - "src/app/tehiceesto/BirthdayBalloonsScene.css"
       - "src/app/tehiceesto/BirthdayVoices.tsx"
       - "src/app/tehiceesto/BirthdayVoicesPremium.css"
+      - "src/app/tehiceesto/BirthdayWishOrb.tsx"
+      - "src/app/tehiceesto/BirthdayWishOrb.css"
       - "src/app/tehiceesto/FloatingWhatsApp.tsx"
       - "src/app/tehiceesto/ExperienceEngine.tsx"
       - "src/app/tehiceesto/data.ts"
@@ -71,5 +74,6 @@ jobs:
             birthday-wish-evidence/
             birthday-balloons-evidence/
             birthday-voices-evidence/
+            birthday-orb-evidence/
           if-no-files-found: warn
           retention-days: 7
