@@ -5,6 +5,9 @@ import {tokenForBusiness} from "./provider-tokens";
 
 /** Durable queue. No WhatsApp send operation exists anywhere in this module. */
 export async function processCierrePdfJobs(maxJobs=2){
+ // Do not exhaust retry attempts while the pilot is not provisioned with AI/media keys.
+ if(!process.env.CIERRE_OPENAI_API_KEY||!process.env.CIERRE_TOKEN_ENCRYPTION_KEY)
+  return {processed:0,seen:0,mode:"shadow",messages_sent:0,paused:"credentials_not_configured"};
  const sql=cierreDb();
  const jobs=await sql.unsafe(
   "with next as (select id from public.cierre_pdf_jobs where (status='pending' or (status='processing' and locked_at < now()-interval '3 minutes')) and attempts<3 order by created_at limit $1 for update skip locked) update public.cierre_pdf_jobs j set status='processing', attempts=attempts+1,locked_at=now() from next where j.id=next.id returning j.id,j.business_id,j.opportunity_id,j.meta_phone_number_id,j.media_id,j.filename",
