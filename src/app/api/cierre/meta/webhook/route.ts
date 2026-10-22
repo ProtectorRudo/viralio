@@ -71,12 +71,12 @@ async function observe(m:Msg):Promise<boolean>{
    (Boolean(m.mediaId)||Boolean(m.filename?.toLowerCase().endsWith(".pdf")));
   if(pdf){
    // Any newer PDF can revise an old quote; never send until its content is verified.
-   if(active.length && new Date(active[0].sent_at)<=m.at &&
+   if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime() &&
       !["blocked","superseded"].includes(active[0].status))
      await tx.unsafe(
       "update public.cierre_opportunities set status='superseded',reason='Se envió un documento posterior',eligibility='blocked' where id=$1",
       [active[0].id]);
-   if(!active.length || new Date(active[0].sent_at)<=m.at){
+   if(!active.length || new Date(active[0].sent_at).getTime()<=m.at.getTime()){
     const quoteRef="DOC-"+m.id.slice(-70);
     const created=await tx.unsafe(
      "insert into public.cierre_opportunities(business_id,contact_ref,quote_ref,source_event_id,sent_at,last_activity_at,status,reason,document_state,ai_state,contact_saved,eligibility) values($1,$2,$3,$4,$5,$5,'review','PDF en verificación','not_read','not_evaluated',$6,'blocked') on conflict(business_id,quote_ref) do nothing returning id",
@@ -90,16 +90,16 @@ async function observe(m:Msg):Promise<boolean>{
       "update public.cierre_opportunities set document_state='unavailable',ai_state='unavailable',reason='Sin acceso al archivo PDF desde Meta' where id=$1",
       [created[0].id]);
    }
-  }else if(active.length && new Date(active[0].sent_at)<=m.at &&
+  }else if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime() &&
     !["blocked","superseded"].includes(active[0].status)){
    const hard=["optout","purchase","rejected","human_followup"].includes(signal);
-   const late=new Date(active[0].last_activity_at)>m.at;
+   const late=new Date(active[0].last_activity_at).getTime()>m.at.getTime();
    const status=hard?"blocked":late?"review":signal==="question"?"waiting":"review";
    const reason=hard?"Compra, baja, rechazo o seguimiento manual":late?"Mensaje recibido fuera de orden":"Actividad posterior al PDF; requiere revisión";
    await tx.unsafe(
     "update public.cierre_opportunities set status=$1,reason=$2,eligibility='blocked',last_activity_at=greatest(last_activity_at,$3) where id=$4 and status not in ('blocked','superseded')",
     [status,reason,m.at,active[0].id]);
-  }else if(active.length && new Date(active[0].sent_at)<=m.at &&
+  }else if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime() &&
      ["optout","purchase","rejected"].includes(signal)){
    await tx.unsafe(
     "update public.cierre_opportunities set status='blocked',reason='Compra, rechazo o baja',eligibility='blocked' where id=$1",
