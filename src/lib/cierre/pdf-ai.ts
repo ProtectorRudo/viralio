@@ -109,7 +109,7 @@ export async function extractQuoteFields(pdf:Buffer,filename:string):Promise<Quo
    throw Error("invalid_pdf");
   const content=[
     {type:"input_file",filename:/^[\w .()\-]{1,100}\.pdf$/i.test(filename)?filename:"presupuesto.pdf",
-      file_data:"data:application/pdf;base64,"+pdf.toString("base64"),detail:"low"},
+      file_data:"data:application/pdf;base64,"+pdf.toString("base64")},
     {type:"input_text",text:"Identificá si el documento realmente es un PRESUPUESTO o cotización (no factura, nota de débito, recibo ni remito). Extraé únicamente el número/identificador de presupuesto y el MONTO TOTAL final expresado en ARS/USD, sin confundir subtotal, impuestos o pagos parciales. Si no podés confirmar el dato devolvé null y confidence low. Reason máximo 120 caracteres."}
   ];
   const result=await requestAI(content,"cierre_quote_v1",extractionSchema,250) as Partial<QuoteExtraction>;
