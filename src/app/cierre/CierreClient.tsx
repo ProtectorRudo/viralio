@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import MetaSignupButton from "./MetaSignupButton";
 
 const SUPABASE_URL = "https://bwsgxpttnrctklrcjmjs.supabase.co";
 const PUBLISHABLE_KEY = "sb_publishable_2wOSRn_o7M6OqRSikERXUg_2RGQWkFW";
@@ -263,8 +264,8 @@ export default function CierreClient(){
       <div className="ci-connect-grid">
        <section className="ci-card ci-connect-card"><div className="ci-whatsapp-mark">◉</div><h2>WhatsApp Business</h2><p>La conexión debe hacerse desde el flujo oficial de Meta. Según la cuenta y el proveedor, el proceso puede incluir escanear un QR desde WhatsApp Business.</p>
        <div className="ci-connection-status"><span className="ci-led muted"/><div><b>{connection?.state==="connected"?"Vinculación registrada":connection?.state==="pending"?"Verificación pendiente":"No conectado"}</b><small>{connection?.phone_masked||"Ningún número vinculado todavía"}</small></div></div>
-       <button className="ci-primary" disabled>Conectar con Meta (pendiente de habilitación)</button>
-       <small className="ci-desc">Para activarlo necesitamos la configuración aprobada de Meta Embedded Signup y el receptor de webhooks. No solicitamos códigos ni contraseñas de WhatsApp.</small>
+       <MetaSignupButton businessId={business.id} accessToken={session.access_token} onConnected={()=>void manualReload()}/>
+       <small className="ci-desc">CIERRE nunca solicita tu contraseña de WhatsApp. La verificación, incluido un eventual QR, ocurre directamente en Meta.</small>
        </section>
        <section className="ci-card ci-connect-steps"><h2>Así será la vinculación</h2><div className="ci-flow"><div><span>01</span><p><b>Iniciás sesión</b> en la plataforma de Meta</p></div><div><span>02</span><p><b>Elegís el número</b> existente de WhatsApp Business</p></div><div><span>03</span><p><b>Verificás desde el celular</b>, escaneando el QR oficial si aparece</p></div><div><span>04</span><p><b>Validamos eventos</b> de cliente, empleado y documentos</p></div></div>
         <div className="ci-quiet">La conexión nunca supone autorización para enviar mensajes. Primero comprobamos recepción y seguridad.</div></section>
