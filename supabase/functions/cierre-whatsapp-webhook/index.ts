@@ -25,6 +25,24 @@ function adminKey(){
   return typeof dict?.default==="string"?dict.default:"";
  }catch{return "";}
 }
+function fromBase64(input:string){
+ const s=atob(input.replace(/-/g,"+").replace(/_/g,"/"));
+ return Uint8Array.from(s,c=>c.charCodeAt(0));
+}
+function base64Url(input:Uint8Array){
+ return btoa(String.fromCharCode(...input)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
+}
+async function sealRecipient(businessId:string,contactRef:string,phone:string){
+ const secret=Deno.env.get("CIERRE_TOKEN_ENCRYPTION_KEY")||"";
+ const keyBytes=fromBase64(secret);
+ if(keyBytes.length!==32)throw Error("recipient_encryption_not_ready");
+ const key=await crypto.subtle.importKey("raw",keyBytes,{name:"AES-GCM"},false,["encrypt"]);
+ const iv=crypto.getRandomValues(new Uint8Array(12));
+ const aad=enc.encode("cierre:recipient:v1:"+businessId+":"+contactRef);
+ const ciphertext=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv,additionalData:aad},key,enc.encode(phone)));
+ return "v1."+base64Url(iv)+"."+base64Url(ciphertext);
+}
+
 function cleanPhone(v:unknown){
  const s=String(v??"").replace(/[\s()+-]/g,"");
  return /^\d{6,20}$/.test(s)?s:null;
@@ -200,7 +218,21 @@ Deno.serve(async request=>{
      p_media_id:event.mediaId,p_filename:event.filename
     })
    }) as {accepted?:boolean};
-   if(result?.accepted){accepted++;newEvents.push(event);}
+   if(result?.accepted){
+    accepted++;newEvents.push(event);
+    // Store recoverable phone ONLY as authenticated encryption, scoped to a signed
+    // Meta message. Hashes alone cannot address future WhatsApp messages.
+    if(Deno.env.get("CIERRE_TOKEN_ENCRYPTION_KEY")){
+     try{
+      const cipher=await sealRecipient(businessId,digest,event.contact);
+      await dbCall(base,key,"rpc/cierre_store_verified_recipient",{
+       method:"POST",body:JSON.stringify({
+        p_phone_id:event.phoneId,p_event_id:event.id,p_contact_ref:digest,p_encrypted_phone:cipher
+       })
+      });
+     }catch{/* Fail closed: no encrypted recipient means no follow-up can be staged. */}
+    }
+   }
   }
   let contactsAccepted=0;
   for(const c of contacts){
