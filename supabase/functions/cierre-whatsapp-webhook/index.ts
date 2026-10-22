@@ -73,6 +73,31 @@ function parse(body:unknown){
  }
  return found.slice(0,150);
 }
+
+function parseContacts(body:unknown){
+ const out:{phoneId:string;contact:string;saved:boolean;at:string}[]=[];
+ if(!body||typeof body!=="object")return out;
+ const entries=(body as {entry?:unknown[]}).entry;
+ for(const entry of Array.isArray(entries)?entries.slice(0,15):[]){
+  const changes=(entry as {changes?:unknown[]})?.changes;
+  for(const raw of Array.isArray(changes)?changes.slice(0,15):[]){
+   const change=raw as {field?:string;value?:{metadata?:{phone_number_id?:string};state_sync?:unknown[]}};
+   if(change.field!=="smb_app_state_sync")continue;
+   const phoneId=String(change.value?.metadata?.phone_number_id??"");
+   if(!/^\d{5,35}$/.test(phoneId))continue;
+   for(const item of Array.isArray(change.value?.state_sync)?change.value.state_sync.slice(0,1000):[]){
+    const row=item as {type?:string;action?:string;contact?:{phone_number?:string};metadata?:{timestamp?:string}};
+    const contact=cleanPhone(row.contact?.phone_number);
+    const stamp=Number(row.metadata?.timestamp||"0")*1000;
+    if(row.type!=="contact"||!["add","remove"].includes(row.action||"")||!contact||
+       !Number.isFinite(stamp)||stamp<=0)continue;
+    out.push({phoneId,contact,saved:row.action==="add",at:new Date(stamp).toISOString()});
+   }
+  }
+ }
+ return out.slice(0,1000);
+}
+
 async function dbCall(url:string,key:string,path:string,init:RequestInit={}){
  const result=await fetch(url+"/rest/v1/"+path,{
   ...init,headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json",...init.headers},cache:"no-store"
@@ -103,6 +128,7 @@ Deno.serve(async request=>{
  if(!data||typeof data!=="object"||(data as {object?:string}).object!=="whatsapp_business_account")
   return reply({error:"invalid_object"},400);
  const messages=parse(data);
+ const contacts=parseContacts(data);
  try{
   let accepted=0;
   const mapping=new Map<string,string>();
@@ -124,7 +150,24 @@ Deno.serve(async request=>{
    }) as {accepted?:boolean};
    if(result?.accepted)accepted++;
   }
-  return reply({ok:true,accepted,received:messages.length,mode:"shadow",sent:0});
+  let contactsAccepted=0;
+  for(const c of contacts){
+   let businessId=mapping.get(c.phoneId);
+   if(!businessId){
+    const rows=await dbCall(base,key,"cierre_connections?select=business_id&meta_phone_number_id=eq."+c.phoneId+"&state=eq.connected&limit=1") as {business_id:string}[];
+    businessId=rows?.[0]?.business_id;
+    if(!businessId)continue;
+    mapping.set(c.phoneId,businessId);
+   }
+   const digest=await sign(enc.encode(businessId+"|"+c.contact),hashSecret);
+   const result=await dbCall(base,key,"rpc/cierre_sync_verified_contact",{
+    method:"POST",body:JSON.stringify({
+     p_phone_id:c.phoneId,p_contact_ref:digest,p_is_saved:c.saved,p_at:c.at
+    })
+   }) as {accepted?:boolean};
+   if(result?.accepted)contactsAccepted++;
+  }
+  return reply({ok:true,accepted,received:messages.length,contacts_accepted:contactsAccepted,mode:"shadow",sent:0});
  }catch{
   // Must return 503 for retry; the RPC is idempotent on business + event ID.
   return reply({error:"temporary_processing_failure"},503);
