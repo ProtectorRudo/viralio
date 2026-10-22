@@ -177,6 +177,27 @@ export default function CierreClient(){
   }catch(e){setNotice(safeError(e));}
   finally{setBusy(false);}
  }
+ async function blockOpportunity(quoteId:string,action:"sold"|"human_followup"|"optout"){
+  if(!session||busy)return;
+  const verb=action==="sold"?"confirmar que la venta se concretó":action==="human_followup"?
+   "confirmar que el vendedor ya realizó seguimiento":"bloquear futuros mensajes a este contacto";
+  if(!window.confirm("¿Querés "+verb+"? Este cambio bloquea automáticamente los seguimientos del presupuesto."))return;
+  setBusy(true);setNotice("");
+  try{
+   let active=session;
+   if(active.expires_at && active.expires_at<Math.floor(Date.now()/1000)+60){
+     active=await renewSession(active);setSession(active);sessionStorage.setItem(SESSION_KEY,JSON.stringify(active));
+   }
+   const r=await fetch("/api/cierre/opportunities/close",{
+     method:"POST",headers:{"Authorization":"Bearer "+active.access_token,"Content-Type":"application/json"},
+     body:JSON.stringify({opportunity_id:quoteId,action}),cache:"no-store"
+   });
+   if(!r.ok)throw Error("No se pudo registrar el cierre. Verificá la conexión e intentá nuevamente.");
+   await reload(active);
+   setNotice("Bloqueo guardado. No se enviará ningún mensaje.");
+  }catch(err){setNotice(safeError(err));}
+  finally{setBusy(false);}
+ }
  async function logout(){
   const s=session;sessionStorage.removeItem(SESSION_KEY);setSession(null);setBusiness(null);setSettings(null);setOpportunities([]);setConnection(null);setNotice("");
   if(s){void endpoint("/auth/v1/logout",{method:"POST"},s.access_token).catch(()=>undefined);}
@@ -256,7 +277,11 @@ export default function CierreClient(){
     {view==="quotes"&&<>
       <section className="ci-pagelead"><div><span className="ci-eyebrow">OPERACIONES</span><h1>Presupuestos.</h1><p>Historial exclusivo de {business.name}.</p></div></section>
       <section className="ci-card"><div className="ci-card-header"><h2>Oportunidades observadas</h2><select value={filter} onChange={e=>setFilter(e.target.value)} className="ci-filter"><option value="all">Todos los estados</option><option value="candidate">Posible seguimiento</option><option value="review">Revisión</option><option value="waiting">Esperando</option><option value="blocked">Bloqueados</option><option value="superseded">Reemplazados</option></select></div>
-      {visible.length?<div className="ci-quote-list">{visible.map(q=><article key={q.id}><div><b>{q.quote_number?"Presupuesto Nº "+q.quote_number:q.quote_ref}</b><span>{q.amount!==null&&q.currency?new Intl.NumberFormat("es-AR",{style:"currency",currency:q.currency}).format(Number(q.amount))+" · ":""}PDF: {q.document_state==="extracted"?"leído por IA":q.document_state==="unavailable"?"no disponible":"sin verificar"} · {q.reason}</span></div><span className={"ci-status "+q.status}>{summaryText(q.status)}</span></article>)}</div>:
+      {visible.length?<div className="ci-quote-list">{visible.map(q=><article key={q.id}><div><b>{q.quote_number?"Presupuesto Nº "+q.quote_number:q.quote_ref}</b><span>{q.amount!==null&&q.currency?new Intl.NumberFormat("es-AR",{style:"currency",currency:q.currency}).format(Number(q.amount))+" · ":""}PDF: {q.document_state==="extracted"?"leído por IA":q.document_state==="unavailable"?"no disponible":"sin verificar"} · {q.reason}</span></div><div className="ci-quote-controls"><span className={"ci-status "+q.status}>{summaryText(q.status)}</span>{q.status!=="blocked"&&q.status!=="superseded"&&<div className="ci-inline-actions">
+        <button disabled={busy} onClick={()=>void blockOpportunity(q.id,"sold")} title="La venta se concretó fuera de WhatsApp">✓ Vendido</button>
+        <button disabled={busy} onClick={()=>void blockOpportunity(q.id,"human_followup")} title="El vendedor ya hizo seguimiento">Ya contactado</button>
+        <button disabled={busy} onClick={()=>void blockOpportunity(q.id,"optout")} title="No volver a contactar a este cliente">No contactar</button>
+       </div>}</div></article>)}</div>:
        <div className="ci-empty"><div className="ci-empty-circle">▤</div><h3>No hay presupuestos en este estado</h3><p>Los datos llegarán mediante una conexión oficial de WhatsApp, no por mensajes inventados.</p></div>}</section>
     </>}
     {view==="connect"&&<>
