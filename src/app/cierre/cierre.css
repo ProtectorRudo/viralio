@@ -40,3 +40,14 @@
 .ci-ai-summary .ci-quiet{margin:18px 0 0;font-size:11px}
 @media(max-width:1180px){.ci-config-layout{grid-template-columns:1fr}.ci-ai-summary{max-width:none}}
 @media(max-width:620px){.ci-easysettings{padding:8px 16px}.ci-easysettings>section{grid-template-columns:1fr;gap:10px;padding:23px 0}.ci-pickgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ci-savebar{flex-direction:column;align-items:stretch}.ci-savebar .ci-primary{width:100%}}
+
+/* Per-quote manual safety controls (owner only, server-authenticated) */
+.ci-quote-controls{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
+.ci-inline-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ci-inline-actions button{font-size:11px;white-space:nowrap;border-radius:8px;
+ border:1px solid #3a6460;padding:7px 9px;background:#1b3537;color:#b7e7d5}
+.ci-inline-actions button:first-child{background:#214f3f;color:#abf7c9}
+.ci-inline-actions button:last-child{border-color:#805555;color:#ffd0cb;background:#40292c}
+.ci-inline-actions button:disabled{opacity:.4}
+@media(max-width:700px){.ci-quote-controls{align-items:flex-start;width:100%}
+.ci-inline-actions{justify-content:flex-start}}
