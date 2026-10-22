@@ -3,6 +3,7 @@ import {createHmac,timingSafeEqual} from "node:crypto";
 import {cierreDb,contactDigest} from "@/lib/cierre/db";
 import {processCierrePdfJobs} from "@/lib/cierre/pdf-jobs";
 import {classifyCustomerTextWithAI} from "@/lib/cierre/pdf-ai";
+import {assessTimeline, type TimelineEvent} from "@/lib/cierre/timeline";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -158,18 +159,23 @@ async function observe(m:Msg):Promise<boolean>{
    }
   }else if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime() &&
     !["blocked","superseded"].includes(active[0].status)){
-   const hard=["optout","purchase","rejected","human_followup"].includes(signal);
-   const late=new Date(active[0].last_activity_at).getTime()>m.at.getTime();
-   const status=hard?"blocked":late?"review":signal==="question"?"waiting":"review";
-   const reason=hard?"Compra, baja, rechazo o seguimiento manual":late?"Mensaje recibido fuera de orden":"Actividad posterior al PDF; requiere revisión";
+   // Re-evaluate all signals in event-time order, not delivery-time order.
+   // The customer can thank the seller without blocking a legitimate quote,
+   // but a purchase/opt-out must block even if received out of order.
+   const rows=await tx.unsafe(
+    "select event_id,event_at,direction,signal,ai_signal from public.cierre_webhook_events where business_id=$1 and contact_ref=$2 and event_at>=$3 order by event_at,event_id limit 501",
+    [b,ref,active[0].sent_at]
+   );
+   const events:TimelineEvent[]=rows.map(row=>({
+    eventId:String(row.event_id),atMs:new Date(row.event_at).getTime(),
+    direction:row.direction==="out"?"out":"in",signal:String(row.signal),aiSignal:row.ai_signal?String(row.ai_signal):null
+   }));
+   const d=assessTimeline(new Date(active[0].sent_at).getTime(),events);
+   const safeStatus=d.status==="candidate"?"review":d.status; // PDF validation will later decide whether candidate
+   const reason=d.status==="candidate"?"Conversación sin cierre; esperando verificación de PDF":d.reason;
    await tx.unsafe(
     "update public.cierre_opportunities set status=$1,reason=$2,eligibility='blocked',last_activity_at=greatest(last_activity_at,$3) where id=$4 and status not in ('blocked','superseded')",
-    [status,reason,m.at,active[0].id]);
-  }else if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime() &&
-     ["optout","purchase","rejected"].includes(signal)){
-   await tx.unsafe(
-    "update public.cierre_opportunities set status='blocked',reason='Compra, rechazo o baja',eligibility='blocked' where id=$1",
-    [active[0].id]);
+    [safeStatus,reason,new Date(d.lastActivityMs),active[0].id]);
   }
   await tx.unsafe(
    "update public.cierre_connections set last_event_at=now(),inbound_seen=inbound_seen or $1,seller_echo_seen=seller_echo_seen or $2,pdf_echo_seen=pdf_echo_seen or $3,updated_at=now() where business_id=$4",
