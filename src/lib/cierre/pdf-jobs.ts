@@ -1,6 +1,7 @@
 import "server-only";
 import {cierreDb} from "./db";
 import {extractQuoteFields,retrievePdfInMemory} from "./pdf-ai";
+import {tokenForBusiness} from "./provider-tokens";
 
 /** Durable queue. No WhatsApp send operation exists anywhere in this module. */
 export async function processCierrePdfJobs(maxJobs=2){
@@ -12,7 +13,8 @@ export async function processCierrePdfJobs(maxJobs=2){
  let completed=0;
  for(const job of jobs){
   try{
-   const pdf=await retrievePdfInMemory(String(job.media_id),String(job.meta_phone_number_id));
+   const token=await tokenForBusiness(String(job.business_id));
+   const pdf=await retrievePdfInMemory(String(job.media_id),String(job.meta_phone_number_id),token);
    const x=await extractQuoteFields(pdf,String(job.filename));
    const verified=x.state==="extracted"&&x.is_quote;
    const prefs=await sql.unsafe(
