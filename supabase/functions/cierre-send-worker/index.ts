@@ -113,8 +113,10 @@ Deno.serve(async(req)=>{
   const answer=await response.json().catch(()=>null) as {messages?:Array<{id?:string}>}|null;
   const messageId=String(answer?.messages?.[0]?.id||"");
   if(response.ok&&/^wamid[.][a-zA-Z0-9_=.-]{5,250}$/.test(messageId)){
-   await finish("sent",messageId);
-   return reply({mode:"production",messages_sent:1,delivery_recorded:true});
+   const receipt=await finish("sent",messageId) as {ok?:boolean}|null;
+   return reply({mode:"production",messages_sent:1,
+    delivery_recorded:receipt?.ok===true,
+    requires_reconciliation:receipt?.ok!==true});
   }
   // Distinguish neither transient errors nor 5xx by retrying: a request may
   // have been accepted even when the HTTP result was lost.
