@@ -2,6 +2,7 @@ import {after,NextRequest,NextResponse} from "next/server";
 import {createHmac,timingSafeEqual} from "node:crypto";
 import {cierreDb,contactDigest} from "@/lib/cierre/db";
 import {processCierrePdfJobs} from "@/lib/cierre/pdf-jobs";
+import {classifyCustomerTextWithAI} from "@/lib/cierre/pdf-ai";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -36,6 +37,59 @@ function eventsFrom(payload:unknown):Msg[]{
  }
  return out.slice(0,150);
 }
+type ContactSync={phoneId:string;phone:string;saved:boolean};
+function contactsFrom(payload:unknown):ContactSync[]{
+ const out:ContactSync[]=[];
+ if(!payload||typeof payload!=="object")return out;
+ const entries=(payload as {entry?:unknown[]}).entry;
+ for(const e of Array.isArray(entries)?entries.slice(0,15):[]){
+  const changes=(e as {changes?:unknown[]}).changes;
+  for(const raw of Array.isArray(changes)?changes.slice(0,15):[]){
+   const c=raw as {field?:string;value?:{metadata?:{phone_number_id?:string};state_sync?:unknown[]}};
+   if(c.field!=="smb_app_state_sync")continue;
+   const id=String(c.value?.metadata?.phone_number_id||"");
+   if(!/^\d{5,35}$/.test(id))continue;
+   for(const rawContact of Array.isArray(c.value?.state_sync)?c.value.state_sync.slice(0,500):[]){
+    const item=rawContact as {type?:string;action?:string;contact?:{phone_number?:string}};
+    const phone=String(item.contact?.phone_number||"").replace(/\D/g,"");
+    if(item.type!=="contact"||!/^\d{6,20}$/.test(phone)||!["add","remove"].includes(item.action||""))continue;
+    out.push({phoneId:id,phone,saved:item.action==="add"});
+   }
+  }
+ }
+ return out.slice(0,2000);
+}
+async function applyContactSync(items:ContactSync[]){
+ if(!items.length)return;
+ const sql=cierreDb();
+ for(const row of items){
+  const tenants=await sql.unsafe("select business_id from public.cierre_connections where meta_phone_number_id=$1 and state='connected' limit 1",[row.phoneId]);
+  if(!tenants.length)continue;
+  const b=String(tenants[0].business_id),ref=contactDigest(b,row.phone);
+  await sql.unsafe("insert into public.cierre_contact_directory(business_id,contact_ref,is_saved,synced_at) values($1,$2,$3,now()) on conflict(business_id,contact_ref) do update set is_saved=excluded.is_saved,synced_at=now()",[b,ref,row.saved]);
+  await sql.unsafe("update public.cierre_connections set contact_sync_state=case when contact_sync_state='verified' then 'verified' else 'partial' end,updated_at=now() where business_id=$1",[b]);
+ }
+}
+async function assessText(m:Msg){
+ // AI is a second safety layer, not an authorisation to message clients.
+ if(m.direction!=="in"||m.kind!=="text"||!m.text.trim()||!process.env.CIERRE_OPENAI_API_KEY)return;
+ const ai=await classifyCustomerTextWithAI(m.text);
+ if(!ai)return;
+ const sql=cierreDb();
+ const phone=await sql.unsafe("select business_id from public.cierre_connections where meta_phone_number_id=$1 and state='connected' limit 1",[m.phoneId]);
+ if(!phone.length)return;
+ const b=String(phone[0].business_id),ref=contactDigest(b,m.contact);
+ const severe=ai.confidence==="high"&&["purchase","rejection","optout"].includes(ai.intent);
+ await sql.begin(async tx=>{
+  await tx.unsafe("select pg_advisory_xact_lock(hashtext($1))",[b+"|"+ref]);
+  await tx.unsafe("update public.cierre_webhook_events set ai_signal=$1 where business_id=$2 and event_id=$3",[ai.intent,b,m.id]);
+  if(ai.intent==="optout"&&ai.confidence==="high")
+   await tx.unsafe("insert into public.cierre_contact_blocks(business_id,contact_ref,reason) values($1,$2,'optout') on conflict do nothing",[b,ref]);
+  if(severe)await tx.unsafe("update public.cierre_opportunities set status='blocked',eligibility='blocked',conversation_ai_state='evaluated',reason='IA detectó compra, rechazo o baja; no contactar' where business_id=$1 and contact_ref=$2 and sent_at<=$3 and status not in ('blocked','superseded')",[b,ref,m.at]);
+  else await tx.unsafe("update public.cierre_opportunities set conversation_ai_state=$1 where business_id=$2 and contact_ref=$3 and sent_at<=$4 and status not in ('blocked','superseded')",[ai.confidence==="high"?"evaluated":"needs_review",b,ref,m.at]);
+ });
+}
+
 function classify(m:Msg){
  if(m.kind!=="text")return "unverified";
  const v=m.text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
@@ -64,6 +118,7 @@ async function observe(m:Msg):Promise<boolean>{
    "insert into public.cierre_webhook_events(event_id,business_id,contact_ref,event_at,direction,kind,signal) values($1,$2,$3,$4,$5,$6,$7) on conflict do nothing returning event_id",
    [m.id,b,ref,m.at,m.direction,m.kind,signal]);
   if(!ins.length)return false;
+  if(signal==="optout")await tx.unsafe("insert into public.cierre_contact_blocks(business_id,contact_ref,reason) values($1,$2,'optout') on conflict do nothing",[b,ref]);
   const active=await tx.unsafe(
    "select id,status,sent_at,last_activity_at from public.cierre_opportunities where business_id=$1 and contact_ref=$2 order by sent_at desc limit 1 for update",
    [b,ref]);
@@ -77,10 +132,17 @@ async function observe(m:Msg):Promise<boolean>{
       "update public.cierre_opportunities set status='superseded',reason='Se envió un documento posterior',eligibility='blocked' where id=$1",
       [active[0].id]);
    if(!active.length || new Date(active[0].sent_at).getTime()<=m.at.getTime()){
+    const blockedContact=await tx.unsafe("select 1 from public.cierre_contact_blocks where business_id=$1 and contact_ref=$2 limit 1",[b,ref]);
+    const later=await tx.unsafe("select signal,ai_signal,event_at from public.cierre_webhook_events where business_id=$1 and contact_ref=$2 and event_at>=$3 and event_id<>$4 order by event_at desc limit 500",[b,ref,m.at,m.id]);
+    const mustBlock=blockedContact.length>0||later.some(row=>["optout","purchase","rejected","human_followup"].includes(String(row.signal))||["purchase","rejection","optout"].includes(String(row.ai_signal)));
+    const followActivity=later.length>0;
+    const startingState=mustBlock?"blocked":"review";
+    const initialReason=mustBlock?"Señal de compra, rechazo, baja o seguimiento posterior detectada":followActivity?"Mensajes posteriores pendientes de revisión":"PDF en verificación";
+    const latestAt=later.reduce((max,row)=>Math.max(max,new Date(row.event_at).getTime()),m.at.getTime());
     const quoteRef="DOC-"+m.id.slice(-70);
     const created=await tx.unsafe(
-     "insert into public.cierre_opportunities(business_id,contact_ref,quote_ref,source_event_id,sent_at,last_activity_at,status,reason,document_state,ai_state,contact_saved,eligibility) values($1,$2,$3,$4,$5,$5,'review','PDF en verificación','not_read','not_evaluated',$6,'blocked') on conflict(business_id,quote_ref) do nothing returning id",
-     [b,ref,quoteRef,m.id,m.at,saved]);
+     "insert into public.cierre_opportunities(business_id,contact_ref,quote_ref,source_event_id,sent_at,last_activity_at,status,reason,document_state,ai_state,contact_saved,eligibility) values($1,$2,$3,$4,$5,$6,$7,$8,'not_read','not_evaluated',$9,'blocked') on conflict(business_id,quote_ref) do nothing returning id",
+     [b,ref,quoteRef,m.id,m.at,new Date(latestAt),startingState,initialReason,saved]);
     if(created.length && m.mediaId && /^\d{5,35}$/.test(m.mediaId))
      await tx.unsafe(
       "insert into public.cierre_pdf_jobs(business_id,opportunity_id,meta_phone_number_id,media_id,filename) values($1,$2,$3,$4,$5) on conflict do nothing",
@@ -130,10 +192,15 @@ export async function POST(req:NextRequest){
  if(!data||typeof data!=="object"||(data as {object?:string}).object!=="whatsapp_business_account")
   return json({ok:false,reason:"invalid_object"},400);
  const messages=eventsFrom(data);
+ const contactChanges=contactsFrom(data);
  try{
+  await applyContactSync(contactChanges);
   let accepted=0;
   for(const m of messages){if(await observe(m))accepted++;}
-  if(accepted)after(async()=>{await processCierrePdfJobs(2).catch(()=>undefined);});
-  return json({ok:true,accepted,mode:"shadow",messages_sent:0});
+  if(accepted)after(async()=>{
+   await processCierrePdfJobs(2).catch(()=>undefined);
+   for(const m of messages.slice(0,8))await assessText(m).catch(()=>undefined);
+  });
+  return json({ok:true,accepted,contact_changes:contactChanges.length,mode:"shadow",messages_sent:0});
  }catch{return json({ok:false,reason:"database_not_ready"},503);}
 }
