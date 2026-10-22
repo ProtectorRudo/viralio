@@ -17,7 +17,7 @@ La complejidad de permisos, Meta, IA, PDF, deduplicación, consentimiento y cobr
 - Meta webhooks: \`https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/cierre-whatsapp-webhook\`, versión 3 ACTIVE, sin necesidad de Vercel.
 - Lector PDF con IA: \`https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/cierre-pdf-worker\`, versión 1 ACTIVE.
 - Conector oficial de Meta: \`https://bwsgxpttnrctklrcjmjs.supabase.co/functions/v1/cierre-meta-connect\`, versión 1 ACTIVE.
-- Evaluador horario: \`cron.job.cierre_shadow_review_hourly\`, cada hora al minuto 08. Registra decisiones en \`cierre_shadow_reviews\`. Nunca envía mensajes.
+- Evaluador horario: \`cron.job.cierre_shadow_review_hourly\`, cada 5 minutos. Registra decisiones en \`cierre_shadow_reviews\`. Nunca envía mensajes.
 - Backend DDL/seguridad: RPC de ingestión firmado, contactos, conexión, cola, extracción, seguridad. Todas las tablas propias tienen RLS.
 - Código versionado en \`ProtectorRudo/viralio/supabase/functions/\`.
 
@@ -60,7 +60,7 @@ Los permisos y la aprobación Meta, incluyendo habilitar \`smb_message_echoes\`,
 5. La función Edge registra el documento y lo coloca en cola sin asumir que sea un presupuesto.
 6. Si hay claves configuradas, el webhook invoca en segundo plano al lector PDF. Se consultan Media ID, contenido del PDF y extracción estructurada. Los fallos quedan reintentables en Postgres.
 7. Las respuestas del cliente y las intervenciones humanas se guardan como señales sin texto en claro. Rechazos, baja y pagos bloquean seguimiento.
-8. Cada hora, la base compara última interacción + horas elegidas y registra estado de revisión, espera, bloqueo o \`shadow_due\`.
+8. Cada 5 minutos, la base compara última interacción + horas elegidas y registra estado de revisión, espera, bloqueo o \`shadow_due\`.
 9. El panel muestra el resultado de prueba y permite pausar o marcar una venta manualmente.
 
 ## Importante: todavía NO funcional al 100% con clientes reales
@@ -83,3 +83,11 @@ La aceptación de un piloto completo requiere pruebas con números voluntarios, 
 Portal alternativo: https://protectorrudo.github.io/cierre/
 
 Cuando la app Meta esté configurada, el botón de conectar se habilitará al consultar \`/functions/v1/cierre-meta-connect\`. Una cuenta común no puede registrar falsamente un número como conectado. El dueño solo ve sus tres opciones y el control de pausa.
+
+## Control técnico adicional
+
+- Meta Webhook, PDF Worker y Meta Connect se encuentran desplegados como Supabase Edge Functions activas. No están vinculadas al número real del corralón hasta configurar credenciales y completar Embedded Signup.
+- Los PDF se procesan inicialmente mediante una llamada de fondo con `EdgeRuntime.waitUntil()` cuando llegan eventos firmados de documentos. Para recuperar fallos que queden en cola durante una caída prolongada, todavía se requiere una llamada programada segura con `CIERRE_JOB_SECRET`.
+- El evaluador de vencimientos funciona **cada 5 minutos** y únicamente escribe diagnósticos. En ningún caso invoca Meta para enviar mensajes.
+- Se verificaron funciones privilegiadas: `anon` y `authenticated` no pueden usar la ingestión de eventos de Meta ni la conexión de números; `service_role` sí.
+- La auditoría de Supabase señala tablas internas sin políticas SELECT para usuarios; esto es intencional ya que no se concedió acceso al navegador. El cierre manual es un `SECURITY DEFINER` con comprobación de propiedad y requiere cuenta autenticada.
