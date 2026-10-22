@@ -2,6 +2,7 @@ import "server-only";
 import {cierreDb} from "./db";
 import {extractQuoteFields,retrievePdfInMemory} from "./pdf-ai";
 import {tokenForBusiness} from "./provider-tokens";
+import {assessTimeline,type TimelineEvent} from "./timeline";
 
 /** Durable queue. No WhatsApp send operation exists anywhere in this module. */
 export async function processCierrePdfJobs(maxJobs=2){
@@ -20,25 +21,57 @@ export async function processCierrePdfJobs(maxJobs=2){
    const pdf=await retrievePdfInMemory(String(job.media_id),String(job.meta_phone_number_id),token);
    const x=await extractQuoteFields(pdf,String(job.filename));
    const verified=x.state==="extracted"&&x.is_quote;
-   const prefs=await sql.unsafe(
-    "select s.contact_scope,c.contact_sync_state from public.cierre_settings s join public.cierre_connections c on c.business_id=s.business_id where s.business_id=$1",
-    [job.business_id]
-   );
-   const existing=await sql.unsafe("select status,contact_saved,sent_at,last_activity_at from public.cierre_opportunities where id=$1",[job.opportunity_id]);
-   if(!existing.length)continue;
-   const item=existing[0];
-   const sameActivity=new Date(item.sent_at).getTime()===new Date(item.last_activity_at).getTime();
-   const allowed=prefs[0]?.contact_scope==="all"||
-     (prefs[0]?.contact_sync_state==="verified" && item.contact_saved!==null &&
-     (prefs[0]?.contact_scope==="saved"?item.contact_saved===true:item.contact_saved===false));
-   const candidate=verified&&sameActivity&&allowed;
-   const msg=!verified?"PDF sin número, monto o confianza verificables":
-     !allowed?"No se verificó el criterio de contactos guardados":!sameActivity?
-     "Hay mensajes posteriores que requieren revisión":"PDF leído; seguimiento todavía desactivado por seguridad";
-   await sql.unsafe(
-    "update public.cierre_opportunities set quote_number=$1,amount=$2,currency=$3,document_state=$4,ai_state=$5,status=case when status in ('blocked','superseded') then status else $6 end,reason=case when status in ('blocked','superseded') then reason else $7 end,eligibility='blocked' where id=$8",
-    [verified?x.quote_number:null,verified?x.amount:null,verified?x.currency:null,x.state,x.state==="unavailable"?"unavailable":verified?"evaluated":"needs_review",candidate?"candidate":"review",msg,job.opportunity_id]
-   );
+   // Serialize evaluation with the same per-contact advisory lock as the webhook.
+   // Without this, a delayed PDF processing task could clear a newly observed sale.
+   await sql.begin(async tx=>{
+     const first=await tx.unsafe(
+       "select id,business_id,contact_ref,source_event_id,status,sent_at,contact_saved from public.cierre_opportunities where id=$1",
+       [job.opportunity_id]
+     );
+     if(!first.length)return;
+     const item=first[0],b=String(item.business_id),ref=String(item.contact_ref);
+     await tx.unsafe("select pg_advisory_xact_lock(hashtext($1))",[b+"|"+ref]);
+     const records=await tx.unsafe(
+       "select event_id,event_at,direction,signal,ai_signal from public.cierre_webhook_events where business_id=$1 and contact_ref=$2 and event_at>=$3 and event_id<>$4 order by event_at,event_id limit 501",
+       [b,ref,item.sent_at,item.source_event_id||""]
+     );
+     const events:TimelineEvent[]=records.map(row=>({
+       eventId:String(row.event_id),atMs:new Date(row.event_at).getTime(),
+       direction:row.direction==="out"?"out":"in",
+       signal:String(row.signal),aiSignal:row.ai_signal?String(row.ai_signal):null
+     }));
+     const decision=assessTimeline(new Date(item.sent_at).getTime(),events);
+     const prefs=await tx.unsafe(
+       "select s.contact_scope,c.contact_sync_state from public.cierre_settings s join public.cierre_connections c on c.business_id=s.business_id where s.business_id=$1",[b]
+     );
+     const mode=String(prefs[0]?.contact_scope||"all");
+     const saved=item.contact_saved;
+     const allowed=mode==="all"||
+       (prefs[0]?.contact_sync_state==="verified" && typeof saved==="boolean" &&
+        (mode==="saved"?saved===true:saved===false));
+     const alreadyBlocked=["blocked","superseded"].includes(String(item.status));
+     const wasQuote=verified&&!alreadyBlocked;
+     let next: "candidate"|"waiting"|"review"|"blocked"|"superseded" =
+        alreadyBlocked?String(item.status) as "blocked"|"superseded":decision.status;
+     if(!wasQuote || !allowed || decision.status==="review")next=alreadyBlocked?next:"review";
+     // Files that aren't quotes do NOT supersede any previous quote.
+     const reason=alreadyBlocked?"Estado bloqueado: no reactivar":!verified?
+       "Documento no confirmado como presupuesto":!allowed?
+       "Filtro de contactos sin agenda verificada":decision.reason;
+     const lastActivity=new Date(decision.lastActivityMs);
+     await tx.unsafe(
+       "update public.cierre_opportunities set quote_number=$1,amount=$2,currency=$3,document_state=$4,ai_state=$5,status=case when status in ('blocked','superseded') then status else $6 end,reason=case when status in ('blocked','superseded') then reason else $7 end,last_activity_at=greatest(last_activity_at,$8),eligibility='blocked' where id=$9",
+       [verified?x.quote_number:null,verified?x.amount:null,verified?x.currency:null,x.state,
+        x.state==="unavailable"?"unavailable":verified?"evaluated":"needs_review",
+        next,reason,lastActivity,job.opportunity_id]
+     );
+     if(verified){
+       await tx.unsafe(
+         "update public.cierre_opportunities set status='superseded',eligibility='blocked',reason='Presupuesto posterior verificado por IA' where business_id=$1 and contact_ref=$2 and sent_at<$3 and status not in ('blocked','superseded')",
+         [b,ref,item.sent_at]
+       );
+     }
+   });
    await sql.unsafe("update public.cierre_pdf_jobs set status=$1,last_error=null,finished_at=now(),locked_at=null where id=$2",[verified?"done":"needs_review",job.id]);
    completed++;
   }catch{
