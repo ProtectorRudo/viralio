@@ -9,9 +9,9 @@ const SESSION_KEY = "cierre_tenant_session_v1";
 
 type AuthSession = { access_token: string; refresh_token: string; expires_at?: number; user?: {id: string; email?: string} };
 type Business = { id:string; owner_id:string; name:string; industry:string; created_at:string };
-type Settings = { business_id:string; followup_hours:number; followup_text:string; shadow_only:boolean };
-type Connection = { state:string; phone_masked:string|null; last_event_at:string|null; inbound_seen:boolean; seller_echo_seen:boolean };
-type Opportunity = { id:string; contact_ref:string; quote_ref:string; sent_at:string; last_activity_at:string; status:string; reason:string };
+type Settings = { business_id:string; followup_hours:number; followup_text:string; contact_scope:"all"|"saved"|"unsaved"; ai_enabled:boolean;shadow_only:boolean };
+type Connection = { state:string; phone_masked:string|null; last_event_at:string|null; inbound_seen:boolean; seller_echo_seen:boolean; pdf_echo_seen:boolean; contact_sync_state:"unverified"|"partial"|"verified" };
+type Opportunity = { id:string;contact_ref:string;quote_ref:string;quote_number:string|null;amount:number|null;currency:string|null;document_state:string;ai_state:string;sent_at:string;last_activity_at:string;status:string;reason:string };
 type View = "overview" | "quotes" | "connect" | "settings";
 const money = (num:number) => num.toLocaleString("es-AR");
 function ago(d:string){return new Date(d).toLocaleDateString("es-AR",{day:"2-digit",month:"short",year:"numeric"});}
@@ -58,6 +58,8 @@ export default function CierreClient(){
  const [businessName,setBusinessName] = useState("");
  const [industry,setIndustry] = useState("corralon");
  const [hours,setHours] = useState("36");
+ const [contactScope,setContactScope] = useState<"all"|"saved"|"unsaved">("all");
+ const [runtimeStatus,setRuntimeStatus] = useState<{ai_configured:boolean;meta_webhook_configured:boolean;media_access_configured:boolean;queue_runner_configured:boolean}|null>(null);
  const [message,setMessage] = useState(DEFAULT_TEXT);
  const [busy,setBusy] = useState(false);
  const [booting,setBooting] = useState(true);
@@ -67,18 +69,19 @@ export default function CierreClient(){
 
  async function reload(s:AuthSession){
   const u=await account(s);
+  void fetch("/api/cierre/status",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(x=>setRuntimeStatus(x)).catch(()=>setRuntimeStatus(null));
   const list=await rest("cierre_businesses",s.access_token,"?select=id,owner_id,name,industry,created_at&owner_id=eq."+encodeURIComponent(u.id)+"&limit=1") as Business[];
   if(list?.length){
     const b=list[0];
     const id=encodeURIComponent(b.id);
     const [prefs, conn, quotes]=await Promise.all([
-      rest("cierre_settings",s.access_token,"?select=business_id,followup_hours,followup_text,shadow_only&business_id=eq."+id+"&limit=1"),
-      rest("cierre_connections",s.access_token,"?select=state,phone_masked,last_event_at,inbound_seen,seller_echo_seen&business_id=eq."+id+"&limit=1"),
-      rest("cierre_opportunities",s.access_token,"?select=id,contact_ref,quote_ref,sent_at,last_activity_at,status,reason&business_id=eq."+id+"&order=last_activity_at.desc&limit=150")
+      rest("cierre_settings",s.access_token,"?select=business_id,followup_hours,followup_text,contact_scope,ai_enabled,shadow_only&business_id=eq."+id+"&limit=1"),
+      rest("cierre_connections",s.access_token,"?select=state,phone_masked,last_event_at,inbound_seen,seller_echo_seen,pdf_echo_seen,contact_sync_state&business_id=eq."+id+"&limit=1"),
+      rest("cierre_opportunities",s.access_token,"?select=id,contact_ref,quote_ref,quote_number,amount,currency,document_state,ai_state,sent_at,last_activity_at,status,reason&business_id=eq."+id+"&order=last_activity_at.desc&limit=150")
     ]) as [Settings[],Connection[],Opportunity[]];
     setBusiness(b);setSettings(prefs?.[0]||null);
     setConnection(conn?.[0]||null);setOpportunities(quotes||[]);
-    setHours(String(prefs?.[0]?.followup_hours||36));setMessage(prefs?.[0]?.followup_text||DEFAULT_TEXT);
+    setHours(String(prefs?.[0]?.followup_hours||36));setContactScope(prefs?.[0]?.contact_scope||"all");setMessage(prefs?.[0]?.followup_text||DEFAULT_TEXT);
   }else{setBusiness(null);setSettings(null);setConnection(null);setOpportunities([]);}
  }
  useEffect(()=>{
@@ -159,7 +162,7 @@ export default function CierreClient(){
   setSaving(true);setNotice("");
   try{
     if(message.trim().length<35||message.length>800)throw Error("El mensaje debe tener entre 35 y 800 caracteres.");
-    const obj={business_id:business.id,followup_hours:Number(hours),followup_text:message.trim(),shadow_only:true};
+    const obj={business_id:business.id,followup_hours:Number(hours),contact_scope:contactScope,ai_enabled:true,followup_text:message.trim(),shadow_only:true};
     await rest("cierre_settings",session.access_token,"?on_conflict=business_id","POST",obj,{Prefer:"resolution=merge-duplicates,return=minimal"});
     await reload(session);setNotice("Configuración guardada. Los envíos reales siguen desactivados.");
   }catch(err){setNotice(safeError(err));}
@@ -241,7 +244,7 @@ export default function CierreClient(){
      <div className="ci-main-grid">
       <section className="ci-card"><div className="ci-card-header"><div><h2>Actividad comercial</h2><p>Información del negocio, sin datos ficticios</p></div><button className="ci-action-link" onClick={()=>setView("quotes")}>Ver todos ↗</button></div>
        {opportunities.length===0?<div className="ci-empty"><div className="ci-empty-circle">▤</div><h3>Acá aparecerán los presupuestos</h3><p>Cuando terminemos de conectar WhatsApp, cada PDF detectado tendrá su estado y su motivo.</p><button onClick={()=>setView("connect")}>Conectar mi WhatsApp</button></div>:
-       <div className="ci-quote-list">{opportunities.slice(0,5).map(q=><article key={q.id}><div><b>{q.quote_ref}</b><span>{q.contact_ref} · {ago(q.sent_at)}</span></div><span className={"ci-status "+q.status}>{summaryText(q.status)}</span></article>)}</div>}
+       <div className="ci-quote-list">{opportunities.slice(0,5).map(q=><article key={q.id}><div><b>{q.quote_number?"Presupuesto Nº "+q.quote_number:q.quote_ref}</b><span>{q.amount!==null&&q.currency?new Intl.NumberFormat("es-AR",{style:"currency",currency:q.currency}).format(Number(q.amount))+" · ":""}{q.contact_ref.slice(0,10)}… · {ago(q.sent_at)}</span></div><span className={"ci-status "+q.status}>{summaryText(q.status)}</span></article>)}</div>}
       </section>
       <section className="ci-card ci-how"><div className="ci-card-header"><div><h2>Cómo trabaja CIERRE</h2><p>Automático cuando se habilite la conexión</p></div></div>
        <div className="ci-flow"><div><span>01</span><p><b>Detecta</b> el presupuesto PDF enviado</p></div><div><span>02</span><p><b>Interpreta</b> lo que sucede después</p></div><div><span>03</span><p><b>Bloquea</b> compras y seguimientos previos</p></div><div><span>04</span><p><b>Observa</b> antes de habilitar un único mensaje</p></div></div>
@@ -252,7 +255,7 @@ export default function CierreClient(){
     {view==="quotes"&&<>
       <section className="ci-pagelead"><div><span className="ci-eyebrow">OPERACIONES</span><h1>Presupuestos.</h1><p>Historial exclusivo de {business.name}.</p></div></section>
       <section className="ci-card"><div className="ci-card-header"><h2>Oportunidades observadas</h2><select value={filter} onChange={e=>setFilter(e.target.value)} className="ci-filter"><option value="all">Todos los estados</option><option value="candidate">Posible seguimiento</option><option value="review">Revisión</option><option value="waiting">Esperando</option><option value="blocked">Bloqueados</option><option value="superseded">Reemplazados</option></select></div>
-      {visible.length?<div className="ci-quote-list">{visible.map(q=><article key={q.id}><div><b>{q.quote_ref}</b><span>Contacto: {q.contact_ref} · {ago(q.sent_at)} · {q.reason}</span></div><span className={"ci-status "+q.status}>{summaryText(q.status)}</span></article>)}</div>:
+      {visible.length?<div className="ci-quote-list">{visible.map(q=><article key={q.id}><div><b>{q.quote_number?"Presupuesto Nº "+q.quote_number:q.quote_ref}</b><span>{q.amount!==null&&q.currency?new Intl.NumberFormat("es-AR",{style:"currency",currency:q.currency}).format(Number(q.amount))+" · ":""}PDF: {q.document_state==="extracted"?"leído por IA":q.document_state==="unavailable"?"no disponible":"sin verificar"} · {q.reason}</span></div><span className={"ci-status "+q.status}>{summaryText(q.status)}</span></article>)}</div>:
        <div className="ci-empty"><div className="ci-empty-circle">▤</div><h3>No hay presupuestos en este estado</h3><p>Los datos llegarán mediante una conexión oficial de WhatsApp, no por mensajes inventados.</p></div>}</section>
     </>}
     {view==="connect"&&<>
@@ -271,14 +274,32 @@ export default function CierreClient(){
       </section>
     </>}
     {view==="settings"&&<>
-      <section className="ci-pagelead"><div><span className="ci-eyebrow">PREFERENCIAS</span><h1>Un mensaje. Una oportunidad.</h1><p>Configurás el seguimiento una sola vez; el negocio sigue atendiendo normalmente.</p></div></section>
-      <div className="ci-connect-grid"><section className="ci-card ci-form-card"><h2>Política de seguimiento</h2><p>Guardamos la configuración por negocio, incluso mientras los envíos están desactivados.</p>
-      <form onSubmit={updateSettings}><label>Esperar desde la última interacción<select value={hours} onChange={e=>setHours(e.target.value)}><option value="24">24 horas</option><option value="36">36 horas</option><option value="48">48 horas</option><option value="72">72 horas</option></select></label>
-       <label>Mensaje fijo del comercio<textarea rows={6} value={message} maxLength={800} onChange={e=>setMessage(e.target.value)}/></label>
-       <p className="ci-desc">La variable {"{nombre}"} requiere datos verificados. El texto deberá adaptarse a una plantilla aprobada por Meta cuando habilitemos envíos reales.</p>
-       <button className="ci-primary" type="submit" disabled={saving}>{saving?"Guardando…":"Guardar configuración"}</button></form>
-      </section>
-      <section className="ci-card ci-connect-steps"><h2>Protecciones obligatorias</h2><div className="ci-guarantees"><div>✓ Una sola oportunidad por presupuesto</div><div>✓ Bloqueo al detectar rechazo o compra</div><div>✓ Revisión de preguntas pendientes</div><div>✓ Sin chatbot respondiendo al cliente</div><div>✓ Sin mensajes reales durante el piloto</div></div><div className="ci-quiet">Modo sombra: {settings?.shadow_only!==false?"activo y obligatorio":"no disponible"}. No puede desactivarse desde el panel.</div></section></div>
+     <section className="ci-pagelead"><div><span className="ci-eyebrow">CONFIGURACIÓN SENCILLA</span><h1>Vos elegís. CIERRE observa.</h1><p>Tres decisiones y listo. Los empleados siguen usando WhatsApp como siempre.</p></div></section>
+     <div className="ci-config-layout">
+      <form className="ci-card ci-easysettings" onSubmit={updateSettings}>
+       <section><span className="ci-config-n">01</span><div><h2>¿Cuándo hacemos el seguimiento?</h2><p>Contamos desde la última interacción. Si hubo una consulta o una venta, no enviamos nada.</p>
+        <div className="ci-pickgrid">{[24,36,48,72].map(h=><button key={h} type="button" className={"ci-pick "+(hours===String(h)?"selected":"")} onClick={()=>setHours(String(h))}><b>{h} h</b><small>{h===24?"Un día":h===36?"Un día y medio":h===48?"Dos días":"Tres días"}</small></button>)}</div>
+       </div></section>
+       <section><span className="ci-config-n">02</span><div><h2>¿A quiénes?</h2><p>Seleccioná a qué clientes se aplicará el seguimiento, una vez que validemos la agenda sincronizada.</p>
+        <div className="ci-contact-options">
+         {([{key:"all",title:"Todos los clientes",desc:"Sin importar si están guardados"},{key:"saved",title:"Solo agendados",desc:"Contactos guardados en WhatsApp Business"},{key:"unsaved",title:"Solo sin agendar",desc:"Números que no están en la agenda"}] as const).map(v=><button key={v.key} type="button" className={"ci-contact-option "+(contactScope===v.key?"selected":"")} onClick={()=>setContactScope(v.key)}><span className="ci-choice-radio"/><span><b>{v.title}</b><small>{v.desc}</small></span></button>)}
+        </div>
+        {contactScope!=="all"&&<div className="ci-mini-warning">La selección queda guardada, pero se aplicará solo después de que la sincronización de contactos esté verificada. Nunca asumiremos que un contacto es «sin agendar» porque falte en una lista incompleta.</div>}
+       </div></section>
+       <section><span className="ci-config-n">03</span><div><h2>¿Qué mensaje enviaría CIERRE?</h2><p>Un solo mensaje predeterminado y personalizado. CIERRE no participa en la conversación posterior.</p>
+        <textarea value={message} minLength={35} maxLength={800} rows={5} onChange={e=>setMessage(e.target.value)}/>
+        <small className="ci-fieldhint">Podés usar {"{nombre}"} cuando esté verificado. Una futura activación requerirá una plantilla aprobada por Meta y consentimiento.</small>
+       </div></section>
+       <div className="ci-savebar"><span>● Modo prueba: no se envían WhatsApps</span><button className="ci-primary" type="submit" disabled={saving}>{saving?"Guardando…":"Guardar mis preferencias"}</button></div>
+      </form>
+      <aside className="ci-card ci-ai-summary">
+       <span className="ci-eyebrow">INTELIGENCIA Y SEGURIDAD</span><h2>CIERRE piensa antes de escribir.</h2>
+       <div className="ci-ai-feature"><span>◈</span><div><b>Lectura del PDF</b><p>Extrae número, total y moneda cuando Meta permite recuperar el documento.</p><small>{runtimeStatus?.ai_configured&&runtimeStatus.media_access_configured?"Módulo configurado; falta probar un PDF real":"Pendiente de credenciales o validación real"}</small></div></div>
+       <div className="ci-ai-feature"><span>◉</span><div><b>Interpretación del cliente</b><p>Considera compras, rechazo, dudas y respuestas ambiguas. Ante incertidumbre, no actúa.</p><small>{runtimeStatus?.ai_configured?"IA configurada en servidor":"IA preparada, pero sin clave activa confirmada"}</small></div></div>
+       <div className="ci-ai-feature"><span>⊘</span><div><b>Cero seguimientos duplicados</b><p>Señales de venta y actividad humana bloquean las oportunidades.</p></div></div>
+       <div className="ci-quiet">Ningún cliente recibirá un seguimiento automático durante este piloto. Faltan verificar la conexión oficial, la cobertura y las condiciones de envío.</div>
+      </aside>
+     </div>
     </>}
     <footer className="ci-footer">CIERRE · Tecnología por Viralio <span>Privacidad y seguridad primero · Versión piloto</span></footer>
     </div>
