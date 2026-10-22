@@ -130,12 +130,9 @@ async function observe(m:Msg):Promise<boolean>{
   const pdf=m.direction==="out"&&m.kind==="document"&&
    (Boolean(m.mediaId)||Boolean(m.filename?.toLowerCase().endsWith(".pdf")));
   if(pdf){
-   // Any newer PDF can revise an old quote; never send until its content is verified.
-   if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime() &&
-      !["blocked","superseded"].includes(active[0].status))
-     await tx.unsafe(
-      "update public.cierre_opportunities set status='superseded',reason='Se envió un documento posterior',eligibility='blocked' where id=$1",
-      [active[0].id]);
+   // Do not supersede an existing quote yet. This document might be a
+   // receipt or invoice, even if Meta reports a valid PDF Media ID.
+   // Only validated quote PDFs can replace previous quotes in the queue.
    if(!active.length || new Date(active[0].sent_at).getTime()<=m.at.getTime()){
     const blockedContact=await tx.unsafe("select 1 from public.cierre_contact_blocks where business_id=$1 and contact_ref=$2 limit 1",[b,ref]);
     const later=await tx.unsafe("select signal,ai_signal,event_at from public.cierre_webhook_events where business_id=$1 and contact_ref=$2 and event_at>=$3 and event_id<>$4 order by event_at desc limit 500",[b,ref,m.at,m.id]);
