@@ -1,14 +1,7 @@
 name: Te Hice Esto production visual audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/tehiceesto-production-visual.yml"
-      - "scripts/tehiceesto-production-visual.mjs"
-      - "src/app/tehiceesto/**"
-      - "src/proxy.ts"
-      - "next.config.ts"
+  workflow_dispatch:
 
 concurrency:
   group: tehiceesto-production-visual

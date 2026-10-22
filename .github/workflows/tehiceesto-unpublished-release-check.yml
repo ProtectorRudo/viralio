@@ -1,13 +1,7 @@
 name: Te Hice Esto source release gate
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/tehiceesto-unpublished-release-check.yml"
-      - "src/app/tehiceesto/**"
-      - "supabase/functions/commerce-withdrawals/**"
-      - "scripts/tehiceesto-launch-readiness-audit.mjs"
   workflow_dispatch:
+
 concurrency:
   group: tehiceesto-source-release
   cancel-in-progress: true

@@ -1,30 +1,6 @@
 name: Te Hice Esto · Pareja gift visual QA
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/tehiceesto-pareja-gift-qa.yml"
-      - "src/app/tehiceesto/CoupleGiftIntro.tsx"
-      - "src/app/tehiceesto/CoupleGiftIntro.css"
-      - "src/app/tehiceesto/ExperienceEngine.tsx"
-      - "src/app/tehiceesto/PairRoseFinaleCinematic.tsx"
-      - "src/app/tehiceesto/tehiceesto-pair-finale-cinema.css"
-      - "src/app/tehiceesto/tehiceesto-pair-finale-sharp.css"
-      - "public/tehiceesto/pareja/finale/**"
-      - "src/app/tehiceesto/RubyHeart.tsx"
-      - "src/app/tehiceesto/HoldReveal.tsx"
-      - "src/app/tehiceesto/tehiceesto-ruby-heart.css"
-      - "src/app/tehiceesto/PairCinematicUmbral.tsx"
-      - "src/app/tehiceesto/PairCinematicUmbral.css"
-      - "src/app/tehiceesto/PairVoicePremium.tsx"
-      - "src/app/tehiceesto/PairVoicePremium.css"
-      - "src/app/tehiceesto/PairMemoryLight.tsx"
-      - "src/app/tehiceesto/PairMemoryLight.css"
-      - "src/app/tehiceesto/PairHeartConstellation.tsx"
-      - "src/app/tehiceesto/PairHeartConstellation.css"
-      - "src/app/tehiceesto/tehiceesto-everyday.css"
-      - "public/tehiceesto/everyday-cinematic-hd.avif"
   workflow_dispatch:
 
 permissions:

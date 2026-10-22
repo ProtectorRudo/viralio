@@ -10,8 +10,7 @@ on:
       - 'src/app/tehiceesto/vendor/**'
       - 'tests/tehiceesto-audio-upload.test.ts'
       - '.github/workflows/tehiceesto-audio-compat.yml'
-  push:
-    branches: [main, fix/tehiceesto-whatsapp-audio-20261009]
+  workflow_dispatch:
 
 permissions:
   contents: read

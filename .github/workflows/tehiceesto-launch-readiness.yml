@@ -1,13 +1,5 @@
 name: Te Hice Esto commercial launch certification (post-deploy)
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/tehiceesto-launch-readiness.yml"
-      - "scripts/tehiceesto-launch-readiness-audit.mjs"
-      - "src/app/tehiceesto/**"
-      - "src/proxy.ts"
-      - "next.config.ts"
   workflow_dispatch:
 
 concurrency:

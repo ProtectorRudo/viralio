@@ -12,18 +12,8 @@ on:
       - 'e2e/mother-escape-journey.spec.ts'
       - 'e2e/viralio-escape-home.spec.ts'
       - '.github/workflows/escape-platform-qa.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'src/app/page.tsx'
-      - 'src/app/comercios/**'
-      - 'src/app/salas/**'
-      - 'src/app/escape-platform/**'
-      - 'src/app/donde-estas-mama/**'
-      - 'tests/mother-escape-rules.test.ts'
-      - 'e2e/mother-escape-journey.spec.ts'
-      - 'e2e/viralio-escape-home.spec.ts'
-      - '.github/workflows/escape-platform-qa.yml'
+  workflow_dispatch:
+
 permissions:
   contents: read
 jobs:

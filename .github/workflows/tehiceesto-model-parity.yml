@@ -9,13 +9,7 @@ on:
       - "supabase/functions/creator-api/**"
       - "tests/tehiceesto-**"
       - ".github/workflows/tehiceesto-model-parity.yml"
-  push:
-    branches: [main]
-    paths:
-      - "src/app/tehiceesto/**"
-      - "supabase/functions/order-create/**"
-      - "supabase/functions/creator-api/**"
-      - ".github/workflows/tehiceesto-model-parity.yml"
+  workflow_dispatch:
 
 concurrency:
   group: tehiceesto-parity-${{ github.ref }}

@@ -1,15 +1,5 @@
 name: TeHiceEsto Hijos release verification
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/tehiceesto-hijos-release.yml'
-      - 'src/app/tehiceesto/ExperienceEngine.tsx'
-      - 'src/app/tehiceesto/experienceCopy.ts'
-      - 'src/app/tehiceesto/data.ts'
-      - 'src/app/tehiceesto/layout.tsx'
-      - 'src/app/tehiceesto/tehiceesto-hijos-live.css'
-      - 'tests/tehiceesto-hijos-premium.test.ts'
   workflow_dispatch:
 
 permissions:

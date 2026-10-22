@@ -1,42 +1,7 @@
 name: Te Hice Esto · Cumpleaños gift QA
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/tehiceesto-cumpleanos-gift-qa.yml"
-      - "e2e/tehiceesto-birthday-gift.spec.ts"
-      - "e2e/tehiceesto-birthday-wish.spec.ts"
-      - "e2e/tehiceesto-birthday-balloons.spec.ts"
-      - "e2e/tehiceesto-birthday-voices.spec.ts"
-      - "e2e/tehiceesto-birthday-orb.spec.ts"
-      - "e2e/tehiceesto-birthday-letter.spec.ts"
-      - "e2e/tehiceesto-birthday-atmosphere.spec.ts"
-      - "e2e/tehiceesto-birthday-hugs.spec.ts"
-      - "playwright.birthday.config.ts"
-      - "src/app/tehiceesto/BirthdayGiftIntro.tsx"
-      - "src/app/tehiceesto/BirthdayGiftIntro.css"
-      - "src/app/tehiceesto/BirthdayCakeIllustration.tsx"
-      - "src/app/tehiceesto/BirthdayWishScene.tsx"
-      - "src/app/tehiceesto/BirthdayWishScene.css"
-      - "src/app/tehiceesto/BirthdayBalloonsScene.tsx"
-      - "src/app/tehiceesto/BirthdayBalloonsScene.css"
-      - "src/app/tehiceesto/BirthdayVoices.tsx"
-      - "src/app/tehiceesto/BirthdayVoicesPremium.css"
-      - "src/app/tehiceesto/BirthdayWishOrb.tsx"
-      - "src/app/tehiceesto/BirthdayWishOrb.css"
-      - "src/app/tehiceesto/BirthdayLetterPremium.css"
-      - "src/app/tehiceesto/BirthdayAtmosphereMaster.css"
-      - "src/app/tehiceesto/BirthdayHugsScene.tsx"
-      - "src/app/tehiceesto/BirthdayHugsScene.css"
-      - "public/tehiceesto/birthday-letter-botanical.svg"
-      - "src/app/tehiceesto/FloatingWhatsApp.tsx"
-      - "src/app/tehiceesto/ExperienceEngine.tsx"
-      - "src/app/tehiceesto/admin/ScriptEditor.tsx"
-      - "src/app/tehiceesto/data.ts"
-      - "src/app/tehiceesto/experienceCopy.ts"
-      - "src/app/tehiceesto/CoupleGiftIntro.tsx"
-      - "src/app/tehiceesto/CoupleGiftIntro.css"
+  workflow_dispatch:
 
 permissions:
   contents: read
