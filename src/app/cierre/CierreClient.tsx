@@ -20,7 +20,7 @@ function safeError(e:unknown){return e instanceof Error ? e.message : "No se pud
 async function endpoint(path:string, init:RequestInit={}, token?:string) {
  const headers:Record<string,string> = {"apikey":PUBLISHABLE_KEY,"Content-Type":"application/json"};
  if(token)headers.Authorization="Bearer "+token;
- const response=await fetch(SUPABASE_URL+path,{...init,headers:{...headers,...init.headers as Record<string,string>},cache:"no-store"});
+ const response=await fetch(SUPABASE_URL+path,{...init,headers:{...headers,...(init.headers as Record<string,string> | undefined)},cache:"no-store"});
  const txt=await response.text();
  let result:unknown;try{result=txt?JSON.parse(txt):null;}catch{result=null;}
  if(!response.ok){
@@ -51,7 +51,8 @@ export default function CierreClient(){
  const [connection,setConnection] = useState<Connection|null>(null);
  const [opportunities,setOpportunities] = useState<Opportunity[]>([]);
  const [view,setView] = useState<View>("overview");
- const [loginMode,setLoginMode] = useState<"login"|"signup"|"reset">("login");
+ const [loginMode,setLoginMode] = useState<"login"|"signup"|"reset"|"newpass">("login");
+ const [recoverySession,setRecoverySession] = useState<AuthSession|null>(null);
  const [email,setEmail] = useState("");
  const [password,setPassword] = useState("");
  const [businessName,setBusinessName] = useState("");
@@ -84,6 +85,16 @@ export default function CierreClient(){
    let active=true;
    async function bootstrap(){
     try{
+      const fragment = new URLSearchParams(window.location.hash.replace(/^#/,""));
+      const access_token=fragment.get("access_token"), refresh_token=fragment.get("refresh_token");
+      if(access_token&&refresh_token){
+        const fromEmail:AuthSession={access_token,refresh_token,expires_at:Math.floor(Date.now()/1000)+Number(fragment.get("expires_in")||3600)};
+        window.history.replaceState(null,"",window.location.pathname+window.location.search);
+        if(fragment.get("type")==="recovery"){
+          setRecoverySession(fromEmail);setLoginMode("newpass");return;
+        }
+        await reload(fromEmail);setSession(fromEmail);sessionStorage.setItem(SESSION_KEY,JSON.stringify(fromEmail));return;
+      }
       const raw=sessionStorage.getItem(SESSION_KEY);
       if(raw){
         let s=JSON.parse(raw) as AuthSession;
@@ -106,6 +117,13 @@ export default function CierreClient(){
  async function submitAuth(e:FormEvent<HTMLFormElement>){
   e.preventDefault();setNotice("");setBusy(true);
   try{
+   if(loginMode==="newpass"){
+      if(!recoverySession)throw Error("El enlace de recuperación venció. Solicitalo nuevamente.");
+      if(password.length<8)throw Error("La contraseña nueva debe tener al menos 8 caracteres.");
+      await endpoint("/auth/v1/user",{method:"PUT",body:JSON.stringify({password})},recoverySession.access_token);
+      setRecoverySession(null);setLoginMode("login");setPassword("");
+      setNotice("Contraseña actualizada. Ingresá con tus nuevas credenciales.");return;
+   }
    const clean=email.trim().toLowerCase();
    if(!clean||!clean.includes("@"))throw Error("Ingresá un correo válido.");
    if(loginMode==="reset"){
@@ -175,15 +193,15 @@ export default function CierreClient(){
    <section className="ci-auth-panel"><div className="ci-auth-box">
     <div className="ci-auth-icon">⌁</div>
     <span className="ci-eyebrow">ACCESO A COMERCIOS</span>
-    <h2>{loginMode==="login"?"Entrá a tu negocio":loginMode==="signup"?"Creá tu cuenta":"Recuperá tu acceso"}</h2>
-    <p>{loginMode==="login"?"Tu panel comercial privado.":loginMode==="signup"?"Un usuario para cada comercio, con acceso protegido.":"Te enviaremos instrucciones a tu correo."}</p>
+    <h2>{loginMode==="login"?"Entrá a tu negocio":loginMode==="signup"?"Creá tu cuenta":loginMode==="newpass"?"Elegí una contraseña nueva":"Recuperá tu acceso"}</h2>
+    <p>{loginMode==="login"?"Tu panel comercial privado.":loginMode==="signup"?"Un usuario para cada comercio, con acceso protegido.":loginMode==="newpass"?"Actualizá tu clave para volver a ingresar.":"Te enviaremos instrucciones a tu correo."}</p>
     <form onSubmit={submitAuth}>
-     <label>Correo electrónico<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@corralon.com"/></label>
-     {loginMode!=="reset"&&<label>Contraseña<input type="password" minLength={8} required autoComplete={loginMode==="signup"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Al menos 8 caracteres"/></label>}
+     {loginMode!=="newpass"&&<label>Correo electrónico<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@corralon.com"/></label>}
+     {loginMode!=="reset"&&<label>Contraseña<input type="password" minLength={8} required autoComplete={loginMode==="signup"||loginMode==="newpass"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Al menos 8 caracteres"/></label>}
      {notice&&<div className="ci-notice" role="status">{notice}</div>}
-     <button className="ci-primary" type="submit" disabled={busy}>{busy?"Procesando…":loginMode==="login"?"Ingresar a CIERRE":loginMode==="signup"?"Crear cuenta":"Enviar enlace"}</button>
+     <button className="ci-primary" type="submit" disabled={busy}>{busy?"Procesando…":loginMode==="login"?"Ingresar a CIERRE":loginMode==="signup"?"Crear cuenta":loginMode==="newpass"?"Actualizar contraseña":"Enviar enlace"}</button>
     </form>
-    <div className="ci-auth-links"><button type="button" onClick={()=>{setLoginMode(loginMode==="signup"?"login":"signup");setNotice("");}}>{loginMode==="signup"?"Ya tengo cuenta": "Crear cuenta nueva"}</button><button type="button" onClick={()=>{setLoginMode(loginMode==="reset"?"login":"reset");setNotice("");}}>{loginMode==="reset"?"Volver":"Olvidé mi contraseña"}</button></div>
+    {loginMode!=="newpass"&&<div className="ci-auth-links"><button type="button" onClick={()=>{setLoginMode(loginMode==="signup"?"login":"signup");setNotice("");}}>{loginMode==="signup"?"Ya tengo cuenta": "Crear cuenta nueva"}</button><button type="button" onClick={()=>{setLoginMode(loginMode==="reset"?"login":"reset");setNotice("");}}>{loginMode==="reset"?"Volver":"Olvidé mi contraseña"}</button></div>}
     <p className="ci-safe-note">Acceso por correo y contraseña. El panel no se conecta ni accede a WhatsApp sin autorización explícita del comercio.</p>
    </div></section>
   </main>:
