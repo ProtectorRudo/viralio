@@ -125,11 +125,16 @@ async function observe(m:Msg):Promise<boolean>{
   if(!ins.length)return false;
   if(signal==="optout")await tx.unsafe("insert into public.cierre_contact_blocks(business_id,contact_ref,reason) values($1,$2,'optout') on conflict do nothing",[b,ref]);
   const active=await tx.unsafe(
-   "select id,status,sent_at,last_activity_at from public.cierre_opportunities where business_id=$1 and contact_ref=$2 order by sent_at desc limit 1 for update",
+   "select id,status,sent_at,last_activity_at,source_event_id,document_state from public.cierre_opportunities where business_id=$1 and contact_ref=$2 order by sent_at desc limit 1 for update",
    [b,ref]);
   const pdf=m.direction==="out"&&m.kind==="document"&&
    (Boolean(m.mediaId)||Boolean(m.filename?.toLowerCase().endsWith(".pdf")));
   if(pdf){
+   if(active.length && new Date(active[0].sent_at).getTime()<=m.at.getTime())
+     await tx.unsafe(
+      "update public.cierre_opportunities set status='review',reason='Documento adicional pendiente de identificación',eligibility='blocked' where business_id=$1 and contact_ref=$2 and sent_at<=$3 and status in ('candidate','waiting')",
+      [b,ref,m.at]
+     );
    // Do not supersede an existing quote yet. This document might be a
    // receipt or invoice, even if Meta reports a valid PDF Media ID.
    // Only validated quote PDFs can replace previous quotes in the queue.
@@ -160,19 +165,29 @@ async function observe(m:Msg):Promise<boolean>{
    // The customer can thank the seller without blocking a legitimate quote,
    // but a purchase/opt-out must block even if received out of order.
    const rows=await tx.unsafe(
-    "select event_id,event_at,direction,signal,ai_signal from public.cierre_webhook_events where business_id=$1 and contact_ref=$2 and event_at>=$3 order by event_at,event_id limit 501",
-    [b,ref,active[0].sent_at]
+    "select event_id,event_at,direction,signal,ai_signal from public.cierre_webhook_events where business_id=$1 and contact_ref=$2 and event_at>=$3 and event_id<>$4 order by event_at,event_id limit 501",
+    [b,ref,active[0].sent_at,active[0].source_event_id||""]
    );
    const events:TimelineEvent[]=rows.map(row=>({
     eventId:String(row.event_id),atMs:new Date(row.event_at).getTime(),
     direction:row.direction==="out"?"out":"in",signal:String(row.signal),aiSignal:row.ai_signal?String(row.ai_signal):null
    }));
    const d=assessTimeline(new Date(active[0].sent_at).getTime(),events);
-   const safeStatus=d.status==="candidate"?"review":d.status; // PDF validation will later decide whether candidate
+   const safeStatus=d.status==="candidate" && active[0].document_state!=="extracted"?"review":d.status; // PDFs must be verified first
    const reason=d.status==="candidate"?"Conversación sin cierre; esperando verificación de PDF":d.reason;
    await tx.unsafe(
     "update public.cierre_opportunities set status=$1,reason=$2,eligibility='blocked',last_activity_at=greatest(last_activity_at,$3) where id=$4 and status not in ('blocked','superseded')",
     [safeStatus,reason,new Date(d.lastActivityMs),active[0].id]);
+   // A payment, rejection, opt-out or previous human follow-up must block all
+   // unfinished quotes for this contact, even if the newest document was an invoice.
+   if(d.status==="blocked")await tx.unsafe(
+      "update public.cierre_opportunities set status='blocked',reason='Cierre o baja detectado en la conversación',eligibility='blocked' where business_id=$1 and contact_ref=$2 and sent_at<=$3 and status not in ('blocked','superseded')",
+      [b,ref,m.at]
+   );
+   else if(signal!=="ack")await tx.unsafe(
+      "update public.cierre_opportunities set status='review',reason='Actividad posterior en conversación con varios documentos',eligibility='blocked' where business_id=$1 and contact_ref=$2 and id<>$3 and sent_at<=$4 and status in ('candidate','waiting')",
+      [b,ref,active[0].id,m.at]
+   );
   }
   await tx.unsafe(
    "update public.cierre_connections set last_event_at=now(),inbound_seen=inbound_seen or $1,seller_echo_seen=seller_echo_seen or $2,pdf_echo_seen=pdf_echo_seen or $3,updated_at=now() where business_id=$4",
