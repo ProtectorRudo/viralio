@@ -259,18 +259,9 @@ Deno.serve(async request=>{
     const runtime=(globalThis as typeof globalThis&{EdgeRuntime?:{waitUntil:(p:Promise<unknown>)=>void}}).EdgeRuntime;
     if(runtime?.waitUntil)runtime.waitUntil(work);
   }
-  const jobSecret=Deno.env.get("CIERRE_JOB_SECRET")||"";
-  const hasPdf=messages.some(m=>m.direction==="out"&&m.kind==="document");
-  if(accepted>0&&hasPdf&&jobSecret.length>=24){
-    const background=fetch(base+"/functions/v1/cierre-pdf-worker",{
-      method:"POST",headers:{"Authorization":"Bearer "+jobSecret,"Content-Type":"application/json"},
-      body:"{}",cache:"no-store"
-    }).then(async response=>{await response.arrayBuffer();}).catch(()=>{});
-    const runtime=(globalThis as typeof globalThis&{
-      EdgeRuntime?:{waitUntil:(promise:Promise<unknown>)=>void}
-    }).EdgeRuntime;
-    if(runtime?.waitUntil)runtime.waitUntil(background);
-  }
+  // PDF jobs are durably stored by the intake RPC. A private pg_cron/Vault
+  // worker wakes up every 5 minutes ONLY when there is pending work.
+  // Do not invoke it with an outdated webhook secret.
   return reply({ok:true,accepted,received:messages.length,contacts_accepted:contactsAccepted,mode:"shadow",sent:0});
  }catch{
   // Must return 503 for retry; the RPC is idempotent on business + event ID.
