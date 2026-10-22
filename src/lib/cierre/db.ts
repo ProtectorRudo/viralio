@@ -5,7 +5,9 @@ import {createHmac} from "node:crypto";
 type Sql=ReturnType<typeof postgres>;
 const cache=globalThis as typeof globalThis & {cierreSql?:Sql};
 export function cierreDb():Sql{
- const url=process.env.CIERRE_DATABASE_URL||process.env.DATABASE_URL;
+ // CIERRE stores tenant tables in its dedicated Supabase project. Never fall back
+ // to Viralio DATABASE_URL, which may refer to another PostgreSQL instance.
+ const url=process.env.CIERRE_DATABASE_URL;
  if(!url)throw Error("CIERRE_DATABASE_URL_not_configured");
  if(!cache.cierreSql)cache.cierreSql=postgres(url,{max:3,idle_timeout:15,prepare:false});
  return cache.cierreSql;
