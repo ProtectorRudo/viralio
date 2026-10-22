@@ -167,6 +167,20 @@ Deno.serve(async request=>{
    }) as {accepted?:boolean};
    if(result?.accepted)contactsAccepted++;
   }
+  // Optional best-effort immediate PDF processing, separate from signed ingest.
+  // Durable jobs remain in PostgreSQL for manual/hourly retry if the worker fails.
+  const jobSecret=Deno.env.get("CIERRE_JOB_SECRET")||"";
+  const hasPdf=messages.some(m=>m.direction==="out"&&m.kind==="document");
+  if(accepted>0&&hasPdf&&jobSecret.length>=24){
+    const background=fetch(base+"/functions/v1/cierre-pdf-worker",{
+      method:"POST",headers:{"Authorization":"Bearer "+jobSecret,"Content-Type":"application/json"},
+      body:"{}",cache:"no-store"
+    }).then(async response=>{await response.arrayBuffer();}).catch(()=>{});
+    const runtime=(globalThis as typeof globalThis&{
+      EdgeRuntime?:{waitUntil:(promise:Promise<unknown>)=>void}
+    }).EdgeRuntime;
+    if(runtime?.waitUntil)runtime.waitUntil(background);
+  }
   return reply({ok:true,accepted,received:messages.length,contacts_accepted:contactsAccepted,mode:"shadow",sent:0});
  }catch{
   // Must return 503 for retry; the RPC is idempotent on business + event ID.
