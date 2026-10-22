@@ -73,12 +73,16 @@ async function applyContactSync(items:ContactSync[]){
 async function assessText(m:Msg){
  // AI is a second safety layer, not an authorisation to message clients.
  if(m.direction!=="in"||m.kind!=="text"||!m.text.trim()||!process.env.CIERRE_OPENAI_API_KEY)return;
- const ai=await classifyCustomerTextWithAI(m.text);
- if(!ai)return;
+ const preliminary=classify(m);
+ if(!["ambiguous","unknown"].includes(preliminary))return;
  const sql=cierreDb();
  const phone=await sql.unsafe("select business_id from public.cierre_connections where meta_phone_number_id=$1 and state='connected' limit 1",[m.phoneId]);
  if(!phone.length)return;
  const b=String(phone[0].business_id),ref=contactDigest(b,m.contact);
+ const active=await sql.unsafe("select 1 from public.cierre_opportunities where business_id=$1 and contact_ref=$2 and sent_at<=$3 and status not in ('blocked','superseded') limit 1",[b,ref,m.at]);
+ if(!active.length)return;
+ const ai=await classifyCustomerTextWithAI(m.text);
+ if(!ai)return;
  const severe=ai.confidence==="high"&&["purchase","rejection","optout"].includes(ai.intent);
  await sql.begin(async tx=>{
   await tx.unsafe("select pg_advisory_xact_lock(hashtext($1))",[b+"|"+ref]);
@@ -196,10 +200,11 @@ export async function POST(req:NextRequest){
  try{
   await applyContactSync(contactChanges);
   let accepted=0;
-  for(const m of messages){if(await observe(m))accepted++;}
+  const newMessages:Msg[]=[];
+  for(const m of messages){if(await observe(m)){accepted++;newMessages.push(m);}}
   if(accepted)after(async()=>{
    await processCierrePdfJobs(2).catch(()=>undefined);
-   for(const m of messages.slice(0,8))await assessText(m).catch(()=>undefined);
+   for(const m of newMessages.slice(0,8))await assessText(m).catch(()=>undefined);
   });
   return json({ok:true,accepted,contact_changes:contactChanges.length,mode:"shadow",messages_sent:0});
  }catch{return json({ok:false,reason:"database_not_ready"},503);}
