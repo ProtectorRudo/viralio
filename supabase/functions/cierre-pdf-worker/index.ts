@@ -117,10 +117,13 @@ async function parsePdf(pdf:Uint8Array,filename:string){
 }
 Deno.serve(async req=>{
  if(req.method!=="POST")return json({mode:"shadow",can_send:false},200);
- const secret=Deno.env.get("CIERRE_JOB_SECRET")||"";
- if(secret.length<24||!equal(req.headers.get("authorization")||"","Bearer "+secret))return json({error:"unauthorized"},401);
+ const token=(req.headers.get("authorization")||"").replace(/^Bearer /,"");
+ if(!token||token.length<64||token.length>256)return json({error:"unauthorized"},401);
  const url=Deno.env.get("SUPABASE_URL")||"",k=key();
- if(!url||!k||!Deno.env.get("CIERRE_OPENAI_API_KEY")||!Deno.env.get("CIERRE_TOKEN_ENCRYPTION_KEY"))
+ if(!url||!k)return json({error:"backend_unavailable",mode:"shadow"},503);
+ const authorized=await call(url,k,"rpc/cierre_verify_pdf_worker_cron","POST",{p_token:token}).catch(()=>false);
+ if(authorized!==true)return json({error:"unauthorized"},401);
+ if(!Deno.env.get("CIERRE_OPENAI_API_KEY")||!Deno.env.get("CIERRE_TOKEN_ENCRYPTION_KEY"))
   return json({error:"not_fully_configured",mode:"shadow"},503);
  let jobs:Job[];
  try{jobs=await call(url,k,"rpc/cierre_claim_pdf_jobs","POST",{p_limit:2}) as Job[];}
