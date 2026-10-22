@@ -6,8 +6,8 @@ export async function GET(){
   mode:"shadow",can_send:false,
   ai_configured:Boolean(process.env.CIERRE_OPENAI_API_KEY),
   meta_webhook_configured:Boolean(process.env.CIERRE_META_APP_SECRET&&process.env.CIERRE_META_VERIFY_TOKEN&&process.env.CIERRE_CONTACT_HASH_KEY),
-  media_access_configured:Boolean(process.env.CIERRE_META_TOKEN),
+  media_access_configured:Boolean(process.env.CIERRE_TOKEN_ENCRYPTION_KEY),
   queue_runner_configured:Boolean(process.env.CIERRE_JOB_SECRET),
-  version:"0.5.0"
+  version:"0.6.0"
  },{headers:{"Cache-Control":"no-store"}});
 }
