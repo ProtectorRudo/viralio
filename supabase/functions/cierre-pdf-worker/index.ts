@@ -123,6 +123,21 @@ Deno.serve(async req=>{
  if(!url||!k)return json({error:"backend_unavailable",mode:"shadow"},503);
  const authorized=await call(url,k,"rpc/cierre_verify_pdf_worker_cron","POST",{p_token:token}).catch(()=>false);
  if(authorized!==true)return json({error:"unauthorized"},401);
+ // Safe read-only diagnostic, authorized through the same private Vault token.
+ // GET model metadata makes no billable model inference and reveals no API key.
+ const body=await req.json().catch(()=>null) as {check_ai?:boolean}|null;
+ if(body?.check_ai===true){
+  const apiKey=Deno.env.get("CIERRE_OPENAI_API_KEY")||"";
+  if(!apiKey)return json({configured:false,valid:false,reason:"key_not_configured"},200);
+  const model=Deno.env.get("CIERRE_AI_MODEL")||"gpt-4.1-mini";
+  try{
+   const check=await fetch("https://api.openai.com/v1/models/"+encodeURIComponent(model),{
+    headers:{Authorization:"Bearer "+apiKey},cache:"no-store",signal:AbortSignal.timeout(10000)
+   });
+   return json({configured:true,valid:check.ok,model,
+      provider_status:check.status,mode:"read_only_diagnostic",tokens_used:0},200);
+  }catch{return json({configured:true,valid:false,reason:"provider_unreachable"},200);}
+ }
  if(!Deno.env.get("CIERRE_OPENAI_API_KEY")||!Deno.env.get("CIERRE_TOKEN_ENCRYPTION_KEY"))
   return json({error:"not_fully_configured",mode:"shadow"},503);
  let jobs:Job[];
