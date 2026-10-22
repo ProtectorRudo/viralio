@@ -81,9 +81,8 @@ async function readLimitedBody(res:Response):Promise<Buffer>{
  if(buf.length<50 || buf.subarray(0,5).toString("ascii")!=="%PDF-")throw Error("invalid_pdf_signature");
  return buf;
 }
-export async function retrievePdfInMemory(mediaId:string,phoneNumberId:string):Promise<Buffer>{
- const token=process.env.CIERRE_META_TOKEN;
- if(!token)throw Error("cierre_meta_token_not_configured");
+export async function retrievePdfInMemory(mediaId:string,phoneNumberId:string,token:string):Promise<Buffer>{
+ if(!token)throw Error("tenant_meta_token_not_configured");
  if(!/^\d{5,35}$/.test(mediaId)||!/^\d{5,35}$/.test(phoneNumberId))throw Error("invalid_media_identity");
  if(!/^v\d{1,2}\.0$/.test(GRAPH_API_VERSION))throw Error("invalid_graph_version");
  const metadata=new URL("https://graph.facebook.com/"+GRAPH_API_VERSION+"/"+mediaId);
