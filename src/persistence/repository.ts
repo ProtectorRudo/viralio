@@ -31,6 +31,7 @@ export interface TransactionRepository {
 
   getMerchantAccountBySlug(slug: string): Promise<MerchantAccount | undefined>;
   getMerchantAccountById(merchantId: string): Promise<MerchantAccount | undefined>;
+  listMerchantAccounts(): Promise<MerchantAccount[]>;
   insertMerchantAccount(account: MerchantAccount): Promise<void>;
 
   getMerchantDeletionBySlug(slug: string): Promise<MerchantDeletionRecord | undefined>;
