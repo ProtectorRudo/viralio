@@ -16,8 +16,8 @@ function versionForNewGift(slug:string){
 }
 
 const recipes:Record<string,string[]>={
-  "frasco365": ["jar365"],
-  "siete-dias": ["day1","day2","day3","day4","day5","day6","day7"],
+  "frasco365":["jar365"],
+  "siete-dias":["day1","day2","day3","day4","day5","day6","day7"],
   pareja: ["intro","door","memories","voices","light","stars","everyday","scratch","hold","letter","finale"],
   cumpleanos: ["intro","candles","balloons","memories","light","voices","hold","letter","finale"],
   hijos: ["intro","timeline","memories","voices","light","stars","capsule","hold","letter","finale"],
@@ -193,7 +193,8 @@ Deno.serve(async(req:Request)=>{
   if(["abuelos","aniversario","propuesta"].includes(experienceSlug)){
     return reply(origin,{error:"experience_coming_soon",message:"Esta experiencia estará disponible próximamente."},409);
   }
-  const customerName=clean(body.customerName,100);
+  // Buyer only provides email and WhatsApp. The giver name is customized after payment.
+  const customerName=clean(body.customerName,100)||"Alguien que te quiere";
   const email=clean(body.email,180).toLowerCase();
   const whatsapp=clean(body.whatsapp,40).replace(/[^0-9+]/g,"");
   const consent=body.consent===true;
