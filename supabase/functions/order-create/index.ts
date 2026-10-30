@@ -12,10 +12,12 @@ function envDefault(name:string){
 const SECRET=envDefault("SUPABASE_SECRET_KEYS");
 // SYNCHRONIZED with frozen premium-v3 demo snapshot. Tests guard all nine journeys.
 function versionForNewGift(slug:string){
-  return slug.startsWith("escape-")?"escape-v1":["pareja","mama","amistad"].includes(slug)?"premium-v5":"premium-v3";
+  return slug==="frasco365"?"jar365-v1":slug==="siete-dias"?"seven-days-v1":slug.startsWith("escape-")?"escape-v1":["pareja","mama","amistad"].includes(slug)?"premium-v5":"premium-v3";
 }
 
 const recipes:Record<string,string[]>={
+  "frasco365": ["jar365"],
+  "siete-dias": ["day1","day2","day3","day4","day5","day6","day7"],
   pareja: ["intro","door","memories","voices","light","stars","everyday","scratch","hold","letter","finale"],
   cumpleanos: ["intro","candles","balloons","memories","light","voices","hold","letter","finale"],
   hijos: ["intro","timeline","memories","voices","light","stars","capsule","hold","letter","finale"],
