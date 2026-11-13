@@ -1,0 +1,82 @@
+name: Trío PvP - APK Android aislado
+on:
+  push:
+    branches:
+      - feat/trio-pvp-android-20261113
+    paths:
+      - 'android/trio-pvp/**'
+      - '.github/workflows/trio-pvp-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trio-pvp-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-trio-pvp:
+    name: Validar y compilar APK debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Obtener rama aislada
+        uses: actions/checkout@v4
+
+      - name: Preparar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar Android 35
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Preparar Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Reconstruir y verificar fuentes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/trio-pvp"
+          cat android/trio-pvp/source.b64.part{1,2,3,4} > "$RUNNER_TEMP/trio-pvp.b64"
+          base64 --decode "$RUNNER_TEMP/trio-pvp.b64" > "$RUNNER_TEMP/trio-pvp.tgz"
+          echo "5a869a524c345d7d800868f61fc944a6ac9977b1ccc4edc0f3d400c62cd2cd93  $RUNNER_TEMP/trio-pvp.tgz" | sha256sum --check
+          tar -tzf "$RUNNER_TEMP/trio-pvp.tgz" >/dev/null
+          tar -xzf "$RUNNER_TEMP/trio-pvp.tgz" -C "$RUNNER_TEMP/trio-pvp"
+          echo "Guía de compilación: GitHub Actions, rama aislada Viralio." > "$RUNNER_TEMP/trio-pvp/COMPILAR_APK.md"
+          echo "TRIO_ROOT=$RUNNER_TEMP/trio-pvp" >> "$GITHUB_ENV"
+
+      - name: Pruebas estáticas y de motor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$TRIO_ROOT/scripts/check-project.py"
+          bash "$TRIO_ROOT/scripts/test-core.sh"
+
+      - name: Compilar APK debug
+        shell: bash
+        run: gradle -p "$TRIO_ROOT" --no-daemon --stacktrace assembleDebug
+
+      - name: Comprobar salida APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$TRIO_ROOT/app/build/outputs/apk/debug/app-debug.apk"
+          unzip -t "$TRIO_ROOT/app/build/outputs/apk/debug/app-debug.apk" | tail -1
+          sha256sum "$TRIO_ROOT/app/build/outputs/apk/debug/app-debug.apk"
+
+      - name: Publicar APK como artifact, no como sitio
+        uses: actions/upload-artifact@v4
+        with:
+          name: trio-pvp-v0-3-alpha-debug
+          path: ${{ env.TRIO_ROOT }}/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
