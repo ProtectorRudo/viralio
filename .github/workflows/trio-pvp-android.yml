@@ -61,6 +61,9 @@ jobs:
           echo "5a869a524c345d7d800868f61fc944a6ac9977b1ccc4edc0f3d400c62cd2cd93  $RUNNER_TEMP/trio-pvp.tgz" | sha256sum --check
           tar -tzf "$RUNNER_TEMP/trio-pvp.tgz" >/dev/null
           tar -xzf "$RUNNER_TEMP/trio-pvp.tgz" -C "$RUNNER_TEMP/trio-pvp"
+          # Patch auditable del alpha v0.3: import faltante en Java.
+          sed -i '/^import android.Manifest;/a import android.app.AlertDialog;' "$RUNNER_TEMP/trio-pvp/app/src/main/java/com/triopvp/aliado/MainActivity.java"
+          grep -q '^import android.app.AlertDialog;' "$RUNNER_TEMP/trio-pvp/app/src/main/java/com/triopvp/aliado/MainActivity.java"
           echo "Guía de compilación: GitHub Actions, rama aislada Viralio." > "$RUNNER_TEMP/trio-pvp/COMPILAR_APK.md"
           echo "TRIO_ROOT=$RUNNER_TEMP/trio-pvp" >> "$GITHUB_ENV"
 
