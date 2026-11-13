@@ -1,0 +1,578 @@
+--- a/app/src/main/java/com/triopvp/aliado/MainActivity.java
++++ b/app/src/main/java/com/triopvp/aliado/MainActivity.java
+@@ -2,6 +2,7 @@
+ 
+ import android.Manifest;
+ import android.app.Activity;
++import android.app.AlertDialog;
+ import android.content.*;
+ import android.content.pm.PackageManager;
+ import android.graphics.Color;
+@@ -17,235 +18,222 @@
+ import com.triopvp.aliado.core.*;
+ import java.util.*;
+ 
+-/**
+- * Configuración manual y control explícito de la captura. No utiliza login ni
+- * servicios de Pokémon GO. No realiza toques automatizados.
+- */
++/** Configuración del equipo, búsqueda y control local de captura. */
+ public final class MainActivity extends Activity {
+     private static final int PROJECTION_REQUEST=1002, NOTIFICATION_REQUEST=1003;
+-    private static final int BG=Color.rgb(8,19,29), CARD=Color.rgb(17,39,50), MINT=Color.rgb(143,235,210);
+-    private static final int TEXT=Color.rgb(230,246,249), MUTED=Color.rgb(171,194,204);
++    private static final int BG=Color.rgb(7,19,27), CARD=Color.rgb(15,36,47), MINT=Color.rgb(145,236,209);
++    private static final int TEXT=Color.rgb(234,247,250), MUTED=Color.rgb(169,192,204);
+     private Dex dex;
+-    private Spinner opponent;
++    private SearchableField opponent;
+     private TextView output,status;
+     private final List<Row> teamRows=new ArrayList<>();
+     private final List<String> names=new ArrayList<>();
+     private final List<String> types=TypeChart.TYPES;
+     private boolean initializing=true;
+     private boolean pendingOverlayPermission=false;
+-    private static class Row {Spinner name,fast,c1,c2;}
++    private static class Row {SearchableField name,fast,c1,c2;}
+ 
+     @Override protected void onCreate(Bundle state) {
+         super.onCreate(state);
+         getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
+         getWindow().getDecorView().setSystemUiVisibility(0);
+-        try { dex=Dex.load(getAssets().open("dex.tsv")); }
+-        catch(Exception ex){ new AlertDialog.Builder(this).setTitle("Error de catálogo").setMessage(ex.getMessage()).show();return; }
+-        for(Pokemon p:dex.all()) names.add(p.name);
+-        showMain();
+-        initializing=false;
+-        saveTeam();
+-    }
+-    private int dp(int n) {return (int)(getResources().getDisplayMetrics().density*n+0.5f);}
+-    private GradientDrawable box(int color,int stroke) {
+-        GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(16));
++        try {dex=Dex.load(getAssets().open("dex.tsv"));}
++        catch(Exception ex){new AlertDialog.Builder(this).setTitle("Error de catálogo").setMessage(ex.getMessage()).show();return;}
++        for(Pokemon p:dex.all())names.add(p.name);
++        showMain();initializing=false;saveTeam();
++    }
++    private int dp(int n){return (int)(getResources().getDisplayMetrics().density*n+0.5f);}
++    private GradientDrawable box(int color,int stroke,int radius){
++        GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));
+         d.setStroke(dp(1),stroke);return d;
+     }
+-    private TextView txt(String content,int size,int color,boolean bold) {
+-        TextView t=new TextView(this);t.setText(content);t.setTextSize(size);t.setTextColor(color);
+-        if(bold)t.setTypeface(null,1);
+-        return t;
+-    }
+-    private LinearLayout column() {LinearLayout l=new LinearLayout(this);l.setOrientation(LinearLayout.VERTICAL);return l;}
+-    private void add(LinearLayout parent,View v,int top) {
+-        LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(top);parent.addView(v,lp);
+-    }
+-    private LinearLayout card() {LinearLayout x=column();x.setPadding(dp(16),dp(13),dp(16),dp(15));x.setBackground(box(CARD,Color.rgb(38,74,87)));return x;}
+-    private Spinner spinner(List<String> choices,int selection) {
+-        Spinner s=new Spinner(this);
+-        ArrayAdapter<String> a=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,choices){
+-            @Override public View getView(int position,View convertView,android.view.ViewGroup parent){
+-                TextView t=(TextView)super.getView(position,convertView,parent);t.setTextColor(TEXT); t.setTextSize(15);return t;
+-            }
+-            @Override public View getDropDownView(int pos,View convertView,android.view.ViewGroup parent){
+-                TextView t=(TextView)super.getDropDownView(pos,convertView,parent);t.setTextColor(Color.rgb(25,36,46));return t;
+-            }
+-        };
+-        a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+-        s.setAdapter(a);s.setSelection(Math.max(0,Math.min(selection,choices.size()-1)));s.setMinimumHeight(dp(42));return s;
+-    }
+-    private int index(List<String> values,String value,int fallback) {
+-        int i=values.indexOf(value);return i>=0?i:fallback;
+-    }
+-    private Row createTeamRow(int slot) {
+-        android.content.SharedPreferences pref=getSharedPreferences("team",MODE_PRIVATE);
++    private TextView txt(String value,int size,int color,boolean bold){
++        TextView t=new TextView(this);t.setText(value);t.setTextSize(size);t.setTextColor(color);
++        if(bold)t.setTypeface(null,1);return t;
++    }
++    private LinearLayout column(){LinearLayout l=new LinearLayout(this);l.setOrientation(LinearLayout.VERTICAL);return l;}
++    private void add(LinearLayout parent,View view,int top){
++        LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.topMargin=dp(top);parent.addView(view,lp);
++    }
++    private LinearLayout card(){
++        LinearLayout x=column();x.setPadding(dp(16),dp(16),dp(16),dp(16));
++        x.setBackground(box(CARD,Color.rgb(39,75,87),20));return x;
++    }
++    private SearchableField pokemonField(String current,String title){
++        return new SearchableField(this,names,names,current,title,true);
++    }
++    private SearchableField typeField(String current,String title){
++        List<String> display=new ArrayList<>();for(String type:types)display.add(TypeChart.spanish(type));
++        return new SearchableField(this,types,display,current,title,false);
++    }
++    private Row createTeamRow(int slot,LinearLayout root){
++        android.content.SharedPreferences prefs=getSharedPreferences("team",MODE_PRIVATE);
+         String fallback=new String[]{"Annihilape","Morpeko","Clodsire"}[slot];
+-        String current=pref.getString("name"+slot,fallback);
++        String current=prefs.getString("name"+slot,fallback);
+         if(dex.byName(current)==null)current=fallback;
+-        Pokemon p=dex.byName(current);
+-        LinearLayout section=card();
+-        add(section,txt("POKÉMON "+(slot+1),12,MINT,true),0);
++        Pokemon pokemon=dex.byName(current);
++        LinearLayout card=card();
++        LinearLayout top=new LinearLayout(this);top.setOrientation(LinearLayout.HORIZONTAL);top.setGravity(Gravity.CENTER_VERTICAL);
++        TextView name=txt("0"+(slot+1),14,MINT,true);top.addView(name);
++        TextView hint=txt("  TU POKÉMON",12,MUTED,true);top.addView(hint);
++        add(card,top,0);
+         Row row=new Row();
+-        row.name=spinner(names,index(names,current,0));add(section,row.name,2);
+-        row.fast=typeSpinner(pref.getString("fast"+slot,p.defaultFast));
+-        row.c1=typeSpinner(pref.getString("c1"+slot,p.defaultCharged1));
+-        row.c2=typeSpinner(pref.getString("c2"+slot,p.defaultCharged2));
+-        add(section,txt("Tipo del ataque rápido",12,MUTED,false),7);add(section,row.fast,0);
+-        add(section,txt("Tipo del ataque cargado 1",12,MUTED,false),4);add(section,row.c1,0);
+-        add(section,txt("Tipo del ataque cargado 2",12,MUTED,false),4);add(section,row.c2,0);
+-        add((LinearLayout)findViewById(1000),section,10);
+-        row.name.setOnItemSelectedListener(new SimpleSelected(()->{
++        row.name=pokemonField(current,"Buscar Pokémon para tu equipo");add(card,row.name,12);
++        row.fast=typeField(prefs.getString("fast"+slot,pokemon.defaultFast),"Tipo del ataque rápido");
++        row.c1=typeField(prefs.getString("c1"+slot,pokemon.defaultCharged1),"Tipo del cargado 1");
++        row.c2=typeField(prefs.getString("c2"+slot,pokemon.defaultCharged2),"Tipo del cargado 2");
++        add(card,txt("TIPOS DE TUS MOVIMIENTOS",11,MUTED,true),15);
++        LinearLayout attacks=new LinearLayout(this);attacks.setOrientation(LinearLayout.HORIZONTAL);
++        for(int i=0;i<3;i++){
++            final String label=new String[]{"RÁPIDO","CARGADO 1","CARGADO 2"}[i];
++            final SearchableField field=new SearchableField[]{row.fast,row.c1,row.c2}[i];
++            LinearLayout cell=column();
++            add(cell,txt(label,10,MUTED,true),0);
++            add(cell,field,5);
++            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1f);
++            if(i>0)lp.leftMargin=dp(7);
++            attacks.addView(cell,lp);
++        }
++        add(card,attacks,8);add(root,card,11);
++        row.name.setOnValueChanged(()->{
+             if(initializing)return;
+-            String selected=names.get(row.name.getSelectedItemPosition());
+-            if(!selected.equals(getSharedPreferences("team",MODE_PRIVATE).getString("name"+slot,""))) {
+-                Pokemon chosen=dex.byName(selected);
+-                row.fast.setSelection(index(types,chosen.defaultFast,0));
+-                row.c1.setSelection(index(types,chosen.defaultCharged1,0));
+-                row.c2.setSelection(index(types,chosen.defaultCharged2,0));
++            Pokemon selected=dex.byName(row.name.getValue());
++            if(selected!=null){
++                row.fast.setValueSilently(selected.defaultFast);
++                row.c1.setValueSilently(selected.defaultCharged1);
++                row.c2.setValueSilently(selected.defaultCharged2);
+             }
+             saveTeam();
+-        }));
+-        row.fast.setOnItemSelectedListener(new SimpleSelected(this::saveTeam));
+-        row.c1.setOnItemSelectedListener(new SimpleSelected(this::saveTeam));
+-        row.c2.setOnItemSelectedListener(new SimpleSelected(this::saveTeam));
++        });
++        row.fast.setOnValueChanged(this::saveTeam);
++        row.c1.setOnValueChanged(this::saveTeam);
++        row.c2.setOnValueChanged(this::saveTeam);
+         return row;
+     }
+-    private Spinner typeSpinner(String desired) {
+-        List<String> descriptions=new ArrayList<>();
+-        for(String type:types)descriptions.add(TypeChart.spanish(type));
+-        return spinner(descriptions,index(types,desired,0));
+-    }
+-    private static class SimpleSelected implements AdapterView.OnItemSelectedListener {
+-        private final Runnable run;
+-        SimpleSelected(Runnable run){this.run=run;}
+-        @Override public void onItemSelected(AdapterView<?> a,View v,int i,long id){run.run();}
+-        @Override public void onNothingSelected(AdapterView<?> p){}
+-    }
+-    private void showMain() {
++    private void showMain(){
+         ScrollView sv=new ScrollView(this);sv.setFillViewport(true);sv.setBackgroundColor(BG);
+-        LinearLayout root=column();root.setId(1000);root.setPadding(dp(17),dp(21),dp(17),dp(44));
++        LinearLayout root=column();root.setPadding(dp(17),dp(22),dp(17),dp(55));
+         sv.addView(root);setContentView(sv);
+-        add(root,txt("TRÍO PvP",32,MINT,true),0);
+-        add(root,txt("Asistente elemental para Pokémon GO · prototipo Android nativo",14,MUTED,false),5);
+-        TextView hint=txt("Captura y OCR en este teléfono, sin internet ni acceso a tu cuenta. No toca el juego. El uso de un asistente en vivo puede incumplir las normas de Niantic.",13,TEXT,false);
+-        hint.setPadding(dp(12),dp(12),dp(12),dp(12));hint.setBackground(box(Color.rgb(33,49,49),Color.rgb(70,111,94)));
+-        add(root,hint,17);
+-        add(root,txt("1 · Elegí tus tres Pokémon y los tipos de sus movimientos",16,TEXT,true),18);
+-        for(int i=0;i<3;i++)teamRows.add(createTeamRow(i));
+-        add(root,txt("2 · Probá el análisis sin capturar la pantalla",16,TEXT,true),23);
++        TextView eyebrow=txt("ASISTENTE DE COMBATES  /  ALPHA 0.4",11,MINT,true);add(root,eyebrow,0);
++        add(root,txt("Tu mejor cambio.\nEn un vistazo.",29,TEXT,true),9);
++        add(root,txt("Elegí tus 3 Pokémon. Buscá por nombre y compará qué integrante tiene mejor afinidad elemental.",14,MUTED,false),8);
++        LinearLayout caution=column();caution.setPadding(dp(13),dp(11),dp(13),dp(11));
++        caution.setBackground(box(Color.rgb(22,46,46),Color.rgb(64,100,87),14));
++        add(caution,txt("PRIVADO EN TU TELÉFONO",11,MINT,true),0);
++        add(caution,txt("El OCR funciona localmente y no accede a tu cuenta. Un asistente en vivo puede incumplir las normas de Niantic.",12,TEXT,false),5);
++        add(root,caution,18);
++        add(root,txt("01  ·  ARMÁ TU EQUIPO",16,TEXT,true),24);
++        add(root,txt("Tocá un Pokémon para buscarlo. Los ataques se completan con tipos sugeridos y podés cambiarlos.",12,MUTED,false),6);
++        for(int i=0;i<3;i++)teamRows.add(createTeamRow(i,root));
++        add(root,txt("02  ·  PROBÁ UN ENFRENTAMIENTO",16,TEXT,true),26);
+         LinearLayout test=card();
+-        add(test,txt("Rival de ejemplo",13,MUTED,false),0);
+-        opponent=spinner(names,index(names,"Venusaur",0));add(test,opponent,2);
+-        Button demo=button("Calcular mi mejor opción",false);
+-        add(test,demo,9);demo.setOnClickListener(v->showManual());
+-        output=txt("Elegí el rival y tocá «Calcular». Este modo no requiere permisos.",13,TEXT,false);
+-        add(test,output,13);add(root,test,9);
+-        add(root,txt("3 · Captura automática (opcional)",16,TEXT,true),23);
++        add(test,txt("POKÉMON RIVAL",11,MUTED,true),0);
++        opponent=pokemonField("Venusaur","Buscar Pokémon rival");add(test,opponent,9);
++        Button demo=button("Comparar mi equipo",true);
++        add(test,demo,13);demo.setOnClickListener(v->showManual());
++        output=txt("Seleccioná al rival y compará. No requiere permisos.",13,TEXT,false);
++        add(test,output,14);add(root,test,11);
++        add(root,txt("03  ·  CAPTURA AUTOMÁTICA",16,TEXT,true),26);
+         LinearLayout actions=card();
+-        add(actions,txt("Requiere autorizar la ventana flotante y la captura de pantalla para cada sesión.",13,MUTED,false),0);
+-        Button start=button("Activar captura y recomendación flotante",true);add(actions,start,12);
++        add(actions,txt("Opcional: requiere captura autorizada y permiso para la ventana flotante. Probalo primero fuera de combates oficiales.",13,MUTED,false),0);
++        Button start=button("Iniciar reconocimiento flotante",true);add(actions,start,14);
+         start.setOnClickListener(v->requestAutomatic());
+-        Button stop=button("Detener y cerrar la ventana",false);add(actions,stop,8);
++        Button stop=button("Detener reconocimiento",false);add(actions,stop,10);
+         stop.setOnClickListener(v->{startService(new Intent(this,CaptureService.class).setAction(CaptureService.ACTION_STOP));status.setText("Captura detenida desde la aplicación.");});
+-        status=txt("Sin captura activa. El modo manual siempre está disponible.",12,MUTED,false);
+-        add(actions,status,12);add(root,actions,9);
+-        add(root,txt("Importante: las recomendaciones son por tipos y tipos de ataques configurados. No calculan PS, energía, escudos, IV ni ataques ocultos del adversario. El catálogo inicial cubre 91 nombres/variantes, no todos los Pokémon.",12,MUTED,false),20);
++        status=txt("Sin captura activa",12,MUTED,false);add(actions,status,12);add(root,actions,11);
++        add(root,txt("Los resultados solo consideran afinidades elementales y tipos de ataque declarados. No incluyen energía, escudos, IV ni movimientos ocultos. Catálogo inicial: 91 Pokémon y variantes.",12,MUTED,false),20);
+     }
+     private Button button(String text,boolean primary){
+-        Button b=new Button(this);b.setText(text);b.setAllCaps(false);
+-        b.setTextColor(primary?Color.rgb(9,34,30):TEXT);
+-        b.setBackground(box(primary?MINT:Color.rgb(37,66,80),primary?MINT:Color.rgb(71,105,120)));
+-        b.setPadding(dp(8),dp(12),dp(8),dp(12));return b;
+-    }
+-    private List<TeamMember> getTeam() {
++        Button b=new Button(this);b.setText(text);b.setAllCaps(false);b.setTextSize(14);
++        b.setTextColor(primary?Color.rgb(8,31,27):TEXT);
++        b.setBackground(box(primary?MINT:Color.rgb(33,65,77),primary?MINT:Color.rgb(67,102,116),13));
++        b.setPadding(dp(9),dp(12),dp(9),dp(12));return b;
++    }
++    private List<TeamMember> getTeam(){
+         List<TeamMember> members=new ArrayList<>();
+-        for(Row row:teamRows) {
+-            Pokemon p=dex.byName(names.get(row.name.getSelectedItemPosition()));
+-            members.add(new TeamMember(p,types.get(row.fast.getSelectedItemPosition()),
+-                types.get(row.c1.getSelectedItemPosition()),types.get(row.c2.getSelectedItemPosition())));
++        for(Row row:teamRows){
++            Pokemon p=dex.byName(row.name.getValue());
++            members.add(new TeamMember(p,row.fast.getValue(),row.c1.getValue(),row.c2.getValue()));
+         }
+         return members;
+     }
+     private void saveTeam(){
+         if(initializing||teamRows.size()!=3)return;
+-        android.content.SharedPreferences.Editor e=getSharedPreferences("team",MODE_PRIVATE).edit();
+-        for(int i=0;i<3;i++) {
++        android.content.SharedPreferences.Editor editor=getSharedPreferences("team",MODE_PRIVATE).edit();
++        for(int i=0;i<3;i++){
+             Row r=teamRows.get(i);
+-            if(r.name.getSelectedItemPosition()<0||r.fast.getSelectedItemPosition()<0||r.c1.getSelectedItemPosition()<0||r.c2.getSelectedItemPosition()<0)return;
+-            e.putString("name"+i,names.get(r.name.getSelectedItemPosition()))
+-             .putString("fast"+i,types.get(r.fast.getSelectedItemPosition()))
+-             .putString("c1"+i,types.get(r.c1.getSelectedItemPosition()))
+-             .putString("c2"+i,types.get(r.c2.getSelectedItemPosition()));
+-        }
+-        e.apply();
++            editor.putString("name"+i,r.name.getValue())
++                  .putString("fast"+i,r.fast.getValue())
++                  .putString("c1"+i,r.c1.getValue())
++                  .putString("c2"+i,r.c2.getValue());
++        }
++        editor.apply();
+     }
+     private void showManual(){
+         try{
+-            Pokemon rival=dex.byName(names.get(opponent.getSelectedItemPosition()));
+-            List<BattleAdvisor.Rating> r=BattleAdvisor.rank(getTeam(),rival);
+-            StringBuilder b=new StringBuilder("Rival: "+rival.name+" ("+String.join(" / ",rival.types)+")\n\n");
+-            for(int i=0;i<r.size();i++) {
+-                BattleAdvisor.Rating x=r.get(i);
+-                b.append(i+1).append(". ").append(x.member.pokemon.name);
+-                if(i==0)b.append("  ← MEJOR OPCIÓN ELEMENTAL");
+-                b.append("\n   Rápido ×").append(fmt(x.fastMultiplier));
+-                b.append(" · Cargado ×").append(fmt(x.chargedMultiplier));
+-                b.append(" · Riesgo STAB ×").append(fmt(x.worstIncoming)).append("\n");
++            Pokemon rival=dex.byName(opponent.getValue());
++            List<BattleAdvisor.Rating> ratings=BattleAdvisor.rank(getTeam(),rival);
++            StringBuilder text=new StringBuilder("Rival: "+rival.name+" ("+String.join(" / ",rival.types)+")\n\n");
++            for(int i=0;i<ratings.size();i++){
++                BattleAdvisor.Rating x=ratings.get(i);
++                text.append(i==0?"★ ":"  ").append(x.member.pokemon.name);
++                if(i==0)text.append(" · MEJOR AFINIDAD");
++                text.append("\n  Rápido ×").append(fmt(x.fastMultiplier))
++                    .append(" · Cargado ×").append(fmt(x.chargedMultiplier))
++                    .append(" · Riesgo STAB ×").append(fmt(x.worstIncoming)).append("\n\n");
+             }
+-            b.append("\nNo es una probabilidad real de victoria.");
+-            output.setText(b.toString());
++            text.append("Esto no es una probabilidad real de victoria.");
++            output.setText(text.toString());
+         }catch(Exception e){output.setText("No pude calcular: "+e.getMessage());}
+     }
+-    private String fmt(double v){return String.format(Locale.US,"%.2f",v);}
++    private String fmt(double number){return String.format(Locale.US,"%.2f",number);}
+     private void requestAutomatic(){
+         saveTeam();
+         if(!Settings.canDrawOverlays(this)){
+-            status.setText("Autorizá «Mostrar sobre otras apps». Al volver, Android pedirá la captura.");
++            status.setText("Autorizá «Mostrar sobre otras apps». Al volver se solicitará la captura.");
+             pendingOverlayPermission=true;
+-            Intent i=new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,Uri.parse("package:"+getPackageName()));
+-            startActivity(i);return;
+-        }
+-        if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) {
+-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},NOTIFICATION_REQUEST);
+-            // No bloqueamos el modo captura si se deniegan notificaciones.
++            startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,Uri.parse("package:"+getPackageName())));
+             return;
+         }
++        if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED){
++            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},NOTIFICATION_REQUEST);return;
++        }
+         beginConsent();
+     }
+-    @Override public void onRequestPermissionsResult(int request,String[] p,int[] g) {
+-        super.onRequestPermissionsResult(request,p,g);
++    @Override public void onRequestPermissionsResult(int request,String[] perms,int[] grants){
++        super.onRequestPermissionsResult(request,perms,grants);
+         if(request==NOTIFICATION_REQUEST)beginConsent();
+     }
+-    private void beginConsent() {
+-        MediaProjectionManager m=(MediaProjectionManager)getSystemService(MEDIA_PROJECTION_SERVICE);
+-        try{
+-            Intent consent=m.createScreenCaptureIntent(); // Android 14+: permite seleccionar solo Pokémon GO.
+-            startActivityForResult(consent,PROJECTION_REQUEST);
+-        }catch(Exception e){status.setText("Android no permitió solicitar captura: "+e.getMessage());}
+-    }
+-    @Override protected void onResume() {
++    private void beginConsent(){
++        MediaProjectionManager manager=(MediaProjectionManager)getSystemService(MEDIA_PROJECTION_SERVICE);
++        try{startActivityForResult(manager.createScreenCaptureIntent(),PROJECTION_REQUEST);}
++        catch(Exception e){status.setText("Android no permitió solicitar captura: "+e.getMessage());}
++    }
++    @Override protected void onResume(){
+         super.onResume();
+-        if(pendingOverlayPermission&&status!=null&&Settings.canDrawOverlays(this)) {
++        if(pendingOverlayPermission&&status!=null&&Settings.canDrawOverlays(this)){
+             pendingOverlayPermission=false;
+             status.setText("Ventana autorizada; solicitando captura...");
+             beginConsent();
+         }
+     }
+-    @Override protected void onActivityResult(int request,int result,Intent data) {
++    @Override protected void onActivityResult(int request,int result,Intent data){
+         super.onActivityResult(request,result,data);
+         if(request!=PROJECTION_REQUEST)return;
+         if(result!=RESULT_OK||data==null){status.setText("No autorizaste la captura. Podés seguir usando el modo manual.");return;}
+-        List<TeamMember> t=getTeam();
+-        String[] names=new String[3],fast=new String[3],c1=new String[3],c2=new String[3];
++        List<TeamMember> current=getTeam();
++        String[] teamNames=new String[3],fast=new String[3],c1=new String[3],c2=new String[3];
+         for(int i=0;i<3;i++){
+-            names[i]=t.get(i).pokemon.name;fast[i]=t.get(i).fast;c1[i]=t.get(i).charged1;c2[i]=t.get(i).charged2;
++            teamNames[i]=current.get(i).pokemon.name;fast[i]=current.get(i).fast;
++            c1[i]=current.get(i).charged1;c2[i]=current.get(i).charged2;
+         }
+         Intent start=new Intent(this,CaptureService.class).setAction(CaptureService.ACTION_START)
+             .putExtra(CaptureService.EXTRA_RESULT_CODE,result)
+             .putExtra(CaptureService.EXTRA_RESULT_DATA,data)
+-            .putExtra(CaptureService.EXTRA_NAMES,names)
+-            .putExtra(CaptureService.EXTRA_FAST,fast).putExtra(CaptureService.EXTRA_C1,c1).putExtra(CaptureService.EXTRA_C2,c2);
+-        try{startForegroundService(start);status.setText("Captura solicitada. Abrí el juego y revisá la ventana flotante.");}
++            .putExtra(CaptureService.EXTRA_NAMES,teamNames)
++            .putExtra(CaptureService.EXTRA_FAST,fast).putExtra(CaptureService.EXTRA_C1,c1)
++            .putExtra(CaptureService.EXTRA_C2,c2);
++        try{startForegroundService(start);status.setText("Captura solicitada. Revisá la ventana flotante.");}
+         catch(Exception e){status.setText("No se pudo iniciar: "+e.getMessage());}
+     }
+ }
+--- /dev/null
++++ b/app/src/main/java/com/triopvp/aliado/SearchableField.java
+@@ -0,0 +1,169 @@
++package com.triopvp.aliado;
++
++import android.app.Dialog;
++import android.content.Context;
++import android.graphics.Color;
++import android.graphics.drawable.GradientDrawable;
++import android.text.Editable;
++import android.text.TextWatcher;
++import android.view.Gravity;
++import android.view.View;
++import android.view.ViewGroup;
++import android.view.Window;
++import android.view.WindowManager;
++import android.view.inputmethod.InputMethodManager;
++import android.widget.BaseAdapter;
++import android.widget.EditText;
++import android.widget.LinearLayout;
++import android.widget.ListView;
++import android.widget.TextView;
++import java.text.Normalizer;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Locale;
++
++/** Selector accesible con búsqueda: reemplaza Spinner y sus menús de contraste impredecible. */
++public final class SearchableField extends LinearLayout {
++    private static final int PANEL=Color.rgb(18,42,52), BORDER=Color.rgb(62,99,111);
++    private static final int TEXT=Color.rgb(240,249,249), MUTED=Color.rgb(170,194,203);
++    private static final int MINT=Color.rgb(142,237,208), BACK=Color.rgb(9,23,32);
++    private final List<String> keys;
++    private final List<String> labels;
++    private final String title;
++    private final boolean pokemon;
++    private final TextView valueText;
++    private String value;
++    private Runnable listener;
++
++    public SearchableField(Context context,List<String> keys,List<String> labels,String selected,String title,boolean pokemon) {
++        super(context);
++        if(keys.size()!=labels.size()||keys.isEmpty())throw new IllegalArgumentException("Opciones inválidas");
++        this.keys=new ArrayList<>(keys);
++        this.labels=new ArrayList<>(labels);
++        this.title=title;
++        this.pokemon=pokemon;
++        setOrientation(HORIZONTAL);
++        setGravity(Gravity.CENTER_VERTICAL);
++        setPadding(dp(14),dp(pokemon?14:11),dp(12),dp(pokemon?14:11));
++        setBackground(round(PANEL,BORDER,13));
++        setClickable(true);setFocusable(true);
++        valueText=new TextView(context);
++        valueText.setTextColor(TEXT);
++        valueText.setTextSize(pokemon?17:14);
++        valueText.setTypeface(null,pokemon?1:0);
++        valueText.setSingleLine(true);
++        valueText.setEllipsize(android.text.TextUtils.TruncateAt.END);
++        addView(valueText,new LayoutParams(0,LayoutParams.WRAP_CONTENT,1f));
++        TextView arrow=new TextView(context);
++        arrow.setText(pokemon?"⌕  ▾":"▾");
++        arrow.setTextColor(MINT);arrow.setTextSize(pokemon?20:16);
++        addView(arrow,new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
++        setValueSilently(selected);
++        setOnClickListener(v->open());
++    }
++    private int dp(float n){return (int)(n*getResources().getDisplayMetrics().density+0.5f);}
++    private GradientDrawable round(int fill,int stroke,int radius){
++        GradientDrawable d=new GradientDrawable();d.setColor(fill);d.setCornerRadius(dp(radius));
++        if(stroke!=0)d.setStroke(dp(1),stroke);
++        return d;
++    }
++    private TextView text(String s,int size,int color,boolean bold){
++        TextView t=new TextView(getContext());t.setText(s);t.setTextSize(size);t.setTextColor(color);
++        if(bold)t.setTypeface(null,1);return t;
++    }
++    public String getValue(){return value;}
++    public void setOnValueChanged(Runnable callback){listener=callback;}
++    public void setValue(String selected){
++        String before=value;setValueSilently(selected);
++        if(!value.equals(before)&&listener!=null)listener.run();
++    }
++    public void setValueSilently(String selected){
++        int i=keys.indexOf(selected);
++        if(i<0)i=0;
++        value=keys.get(i);valueText.setText(labels.get(i));
++        setContentDescription(title+": "+labels.get(i)+". Tocá dos veces para buscar y cambiar.");
++    }
++    private static String normalize(String s){
++        return Normalizer.normalize(s,Normalizer.Form.NFD).replaceAll("\\p{M}+","")
++            .toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+"," ").trim();
++    }
++    private void open(){
++        Context c=getContext();
++        Dialog dialog=new Dialog(c);
++        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
++        LinearLayout sheet=new LinearLayout(c);sheet.setOrientation(VERTICAL);
++        sheet.setPadding(dp(18),dp(20),dp(18),dp(12));
++        sheet.setBackground(round(BACK,Color.rgb(56,100,111),22));
++        TextView heading=text(title,20,TEXT,true);
++        sheet.addView(heading,new LayoutParams(-1,-2));
++        TextView subtitle=text(pokemon?"Escribí el nombre para encontrarlo rápido":"Elegí el tipo de movimiento",13,MUTED,false);
++        LayoutParams subLp=new LayoutParams(-1,-2);subLp.topMargin=dp(5);sheet.addView(subtitle,subLp);
++        EditText search=new EditText(c);
++        search.setSingleLine(true);
++        search.setTextColor(TEXT);search.setHintTextColor(MUTED);
++        search.setTextSize(16);search.setHint(pokemon?"Buscar Pokémon…":"Buscar tipo…");
++        search.setPadding(dp(14),dp(9),dp(14),dp(9));
++        search.setBackground(round(PANEL,BORDER,13));
++        search.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
++        LayoutParams inputLp=new LayoutParams(-1,dp(50));inputLp.topMargin=dp(16);sheet.addView(search,inputLp);
++        ListView list=new ListView(c);
++        list.setBackgroundColor(Color.TRANSPARENT);
++        list.setDividerHeight(0);
++        list.setCacheColorHint(Color.TRANSPARENT);
++        list.setVerticalScrollBarEnabled(true);
++        ChoiceAdapter adapter=new ChoiceAdapter();
++        list.setAdapter(adapter);
++        LayoutParams listLp=new LayoutParams(-1,0,1f);listLp.topMargin=dp(12);sheet.addView(list,listLp);
++        TextView close=text("CERRAR",13,MINT,true);
++        close.setGravity(Gravity.CENTER);close.setPadding(dp(10),dp(13),dp(10),dp(10));
++        close.setOnClickListener(v->dialog.dismiss());
++        sheet.addView(close,new LayoutParams(-1,-2));
++        dialog.setContentView(sheet);
++        Window window=dialog.getWindow();
++        if(window!=null){
++            window.setBackgroundDrawableResource(android.R.color.transparent);
++            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE|
++                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
++            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
++            WindowManager.LayoutParams p=window.getAttributes();p.dimAmount=.72f;window.setAttributes(p);
++        }
++        list.setOnItemClickListener((parent,view,pos,id)->{
++            setValue(adapter.keyAt(pos));dialog.dismiss();
++        });
++        search.addTextChangedListener(new TextWatcher(){
++            @Override public void beforeTextChanged(CharSequence s,int start,int count,int after){}
++            @Override public void onTextChanged(CharSequence s,int start,int before,int count){adapter.filter(s.toString());}
++            @Override public void afterTextChanged(Editable e){}
++        });
++        dialog.show();
++        if(window!=null){
++            int screen=getResources().getDisplayMetrics().widthPixels;
++            int height=getResources().getDisplayMetrics().heightPixels;
++            window.setLayout(Math.min(screen-dp(24),dp(520)),Math.min((int)(height*.75f),dp(670)));
++            window.setGravity(Gravity.CENTER);
++        }
++    }
++    private final class ChoiceAdapter extends BaseAdapter {
++        private final List<Integer> visible=new ArrayList<>();
++        ChoiceAdapter(){filter("");}
++        void filter(String query){
++            String q=normalize(query);visible.clear();
++            for(int i=0;i<labels.size();i++)if(normalize(labels.get(i)).contains(q))visible.add(i);
++            notifyDataSetChanged();
++        }
++        String keyAt(int pos){return keys.get(visible.get(pos));}
++        @Override public int getCount(){return visible.size();}
++        @Override public Object getItem(int i){return labels.get(visible.get(i));}
++        @Override public long getItemId(int i){return visible.get(i);}
++        @Override public View getView(int pos,View old,ViewGroup parent){
++            int idx=visible.get(pos);boolean current=value.equals(keys.get(idx));
++            TextView cell= old instanceof TextView?(TextView)old:text("",16,TEXT,false);
++            cell.setText(labels.get(idx)+(current?"   ✓":""));
++            cell.setTextColor(current?MINT:TEXT);
++            cell.setTypeface(null,current?1:0);
++            cell.setPadding(dp(14),dp(15),dp(14),dp(15));
++            cell.setBackground(round(current?Color.rgb(25,62,65):Color.TRANSPARENT,0,10));
++            return cell;
++        }
++    }
++}
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -6,8 +6,8 @@
+         applicationId 'com.triopvp.aliado'
+         minSdk 29
+         targetSdk 35
+-        versionCode 2
+-        versionName '0.3.0-alpha'
++        versionCode 3
++        versionName '0.4.0-alpha'
+     }
+     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+ }
