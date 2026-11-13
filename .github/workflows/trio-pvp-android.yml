@@ -61,9 +61,11 @@ jobs:
           echo "5a869a524c345d7d800868f61fc944a6ac9977b1ccc4edc0f3d400c62cd2cd93  $RUNNER_TEMP/trio-pvp.tgz" | sha256sum --check
           tar -tzf "$RUNNER_TEMP/trio-pvp.tgz" >/dev/null
           tar -xzf "$RUNNER_TEMP/trio-pvp.tgz" -C "$RUNNER_TEMP/trio-pvp"
-          # Patch auditable del alpha v0.3: import faltante en Java.
-          sed -i '/^import android.Manifest;/a import android.app.AlertDialog;' "$RUNNER_TEMP/trio-pvp/app/src/main/java/com/triopvp/aliado/MainActivity.java"
-          grep -q '^import android.app.AlertDialog;' "$RUNNER_TEMP/trio-pvp/app/src/main/java/com/triopvp/aliado/MainActivity.java"
+          # UX v0.4 aislada: búsqueda por nombre y selectores accesibles.
+          cd "$RUNNER_TEMP/trio-pvp"
+          patch -p1 --batch --forward < "$GITHUB_WORKSPACE/android/trio-pvp/patches/ui-v04.patch"
+          test -s app/src/main/java/com/triopvp/aliado/SearchableField.java
+          grep -q 'versionName.*0.4.0-alpha' app/build.gradle
           echo "Guía de compilación: GitHub Actions, rama aislada Viralio." > "$RUNNER_TEMP/trio-pvp/COMPILAR_APK.md"
           echo "TRIO_ROOT=$RUNNER_TEMP/trio-pvp" >> "$GITHUB_ENV"
 
@@ -89,7 +91,7 @@ jobs:
       - name: Publicar APK como artifact, no como sitio
         uses: actions/upload-artifact@v4
         with:
-          name: trio-pvp-v0-3-alpha-debug
+          name: trio-pvp-v0-4-alpha-debug
           path: ${{ env.TRIO_ROOT }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
